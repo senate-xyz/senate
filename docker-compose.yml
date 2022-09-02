@@ -1,0 +1,26 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./web-nextapp/Dockerfile
+    ports:
+      - "3000:3000"
+  notification-service:
+    build:
+      context: .
+      dockerfile: ./services/notifications/Dockerfile
+    ports:
+      - "3001:3001"
+  bot-discord:
+    build:
+      context: .
+      dockerfile: ./services/bot-discord/Dockerfile
+    ports:
+      - "3010:3010"
+  bot-slack:
+    build:
+      context: .
+      dockerfile: ./services/bot-slack/Dockerfile
+    ports:
+      - "3011:3011"
