@@ -1,0 +1,17 @@
+name: docker-compose-actions-workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the stack
+        run: docker-compose up -d
+      - name: Test web app
+        run: docker run --network container:web appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3000/
+      - name: Test notification service
+        run: docker run --network container:notification-service appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3001/
+      - name: Test discord bot
+        run: docker run --network container:bot-discord appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3010/
+      - name: Test slack bot
+        run: docker run --network container:bot-slack appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3011/

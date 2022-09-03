@@ -13,9 +13,6 @@ COPY /services/notifications/tsconfig.json ./
 # copy source code to /app/src folder
 COPY /services/notifications/src /app/src
 
-# check files list
-RUN ls -a
-
 RUN yarn
 RUN yarn build
 

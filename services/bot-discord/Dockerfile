@@ -13,9 +13,6 @@ COPY /services/bot-discord/tsconfig.json ./
 # copy source code to /app/src folder
 COPY /services/bot-discord/src /app/src
 
-# check files list
-RUN ls -a
-
 RUN yarn
 RUN yarn build
 
