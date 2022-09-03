@@ -19,8 +19,7 @@ import {
   FiStar,
   FiSettings,
 } from "react-icons/fi";
-import IconType from "react-icons";
-import { ReactText } from "react";
+import { IconType } from "react-icons/lib";
 
 interface LinkItemProps {
   name: string;
@@ -86,7 +85,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 
 interface NavItemProps extends FlexProps {
   icon: IconType;
-  children?: ReactText;
+  children?: string;
 }
 const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
   return (
