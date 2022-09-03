@@ -21,8 +21,8 @@ interface LinkItemProps {
   icon: IconType;
 }
 const LinkItems: Array<LinkItemProps> = [
-  { name: "Home", icon: FiHome, href: "/proposals" },
-  { name: "Trending", icon: FiTrendingUp, href: "/daos" },
+  { name: "Proposals", icon: FiHome, href: "/proposals" },
+  { name: "DAOs", icon: FiTrendingUp, href: "/daos" },
 ];
 
 export default function NavBar(/*{ children }: { children: ReactNode }*/) {
@@ -60,7 +60,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       onMouseLeave={onClose}
       h="100%"
     >
-      <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
+      <Flex h="20" alignItems="center" mx="2" justifyContent="space-between">
         <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
           Logo
         </Text>
@@ -126,7 +126,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       onMouseOver={onOpen}
       h="100%"
     >
-      <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
+      <Flex h="20" alignItems="center" mx="2" justifyContent="space-between">
         <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
           Logo
         </Text>
