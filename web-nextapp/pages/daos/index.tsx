@@ -1,69 +1,19 @@
-import {
-  Grid,
-  Text,
-  HStack,
-  Table,
-  TableCaption,
-  TableContainer,
-  Tbody,
-  Td,
-  Tfoot,
-  Th,
-  Thead,
-  Tr,
-  VStack,
-  Divider,
-  Flex,
-  Stat,
-  StatHelpText,
-  StatNumber,
-  Avatar,
-} from "@chakra-ui/react";
+import { Grid, Text, VStack, Divider, Flex, Avatar } from "@chakra-ui/react";
 import { NextPage } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NavBar from "../../components/navbar/NavBar";
-
-interface DaoProps {
-  name: string;
-  pfp: string;
-}
-const DaoItems: Array<DaoProps> = [
-  {
-    name: "SomeDao",
-    pfp: "https://www.rd.com/wp-content/uploads/2021/04/GettyImages-1070620072-scaled.jpg",
-  },
-  {
-    name: "AnotherDao",
-    pfp: "https://www.rd.com/wp-content/uploads/2021/04/GettyImages-1070620072-scaled.jpg",
-  },
-  {
-    name: "KittyDao",
-    pfp: "https://www.rd.com/wp-content/uploads/2021/04/GettyImages-988013222-scaled-e1618857975729.jpg",
-  },
-  {
-    name: "NoDogsDao",
-    pfp: "https://www.rd.com/wp-content/uploads/2021/04/GettyImages-988013222-scaled-e1618857975729.jpg",
-  },
-  {
-    name: "SomeDao 2",
-    pfp: "https://www.rd.com/wp-content/uploads/2021/04/GettyImages-1070620072-scaled.jpg",
-  },
-  {
-    name: "AnotherDao 2",
-    pfp: "https://www.rd.com/wp-content/uploads/2021/04/GettyImages-1070620072-scaled.jpg",
-  },
-  {
-    name: "KittyDao 2",
-    pfp: "https://www.rd.com/wp-content/uploads/2021/04/GettyImages-988013222-scaled-e1618857975729.jpg",
-  },
-  {
-    name: "NoDogsDao 2",
-    pfp: "https://www.rd.com/wp-content/uploads/2021/04/GettyImages-988013222-scaled-e1618857975729.jpg",
-  },
-];
+import { DaoType } from "../../types";
 
 const Daos: NextPage = () => {
-  const [daos, setDaos] = useState(DaoItems);
+  const [daos, setDaos] = useState([]);
+
+  useEffect(() => {
+    fetch(`/api/listSupportedDaos`)
+      .then((response) => response.json())
+      .then(async (data) => {
+        setDaos(data);
+      });
+  }, []);
 
   return (
     <Flex flexDir="row">
@@ -75,10 +25,10 @@ const Daos: NextPage = () => {
           <Divider></Divider>
           <VStack>
             <Grid templateColumns="repeat(5, 1fr)" gap={6}>
-              {daos.map((dao) => {
+              {daos.map((dao: DaoType) => {
                 return (
                   <Flex
-                    key={dao.name}
+                    key={dao.id}
                     m="2rem"
                     align="center"
                     flexDir="column"
@@ -86,7 +36,7 @@ const Daos: NextPage = () => {
                     borderRadius="5px"
                     borderColor="gray.400"
                   >
-                    <Avatar src={dao.pfp}></Avatar>
+                    <Avatar src={dao.image}></Avatar>
                     <Text>{dao.name}</Text>
                   </Flex>
                 );

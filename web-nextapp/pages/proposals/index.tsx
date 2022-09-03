@@ -17,8 +17,20 @@ import {
 } from "@chakra-ui/react";
 import { NextPage } from "next";
 import NavBar from "../../components/navbar/NavBar";
+import { useEffect, useState } from "react";
+import { ProposalType } from "../../types";
 
 export const Proposals: NextPage = () => {
+  const [proposals, setProposals] = useState([]);
+
+  useEffect(() => {
+    fetch(`/api/listProposals`)
+      .then((response) => response.json())
+      .then(async (data) => {
+        setProposals(data);
+      });
+  }, []);
+
   return (
     <Flex flexDir="row">
       <NavBar />
@@ -29,38 +41,24 @@ export const Proposals: NextPage = () => {
           <Divider></Divider>
           <TableContainer w="full">
             <Table variant="simple">
-              <TableCaption>Imperial to metric conversion factors</TableCaption>
               <Thead>
                 <Tr>
-                  <Th>To convert</Th>
-                  <Th>into</Th>
-                  <Th isNumeric>multiply by</Th>
+                  <Th>Proposal</Th>
+                  <Th>Time Left</Th>
+                  <Th>Voted</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                <Tr>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td isNumeric>25.4</Td>
-                </Tr>
-                <Tr>
-                  <Td>feet</Td>
-                  <Td>centimetres (cm)</Td>
-                  <Td isNumeric>30.48</Td>
-                </Tr>
-                <Tr>
-                  <Td>yards</Td>
-                  <Td>metres (m)</Td>
-                  <Td isNumeric>0.91444</Td>
-                </Tr>
+                {proposals.map((proposal: ProposalType) => {
+                  return (
+                    <Tr key={proposal.id}>
+                      <Td>{proposal.name}</Td>
+                      <Td>{proposal.timeLeft}</Td>
+                      <Td>{proposal.voted ? "Yay" : "Nay"}</Td>
+                    </Tr>
+                  );
+                })}
               </Tbody>
-              <Tfoot>
-                <Tr>
-                  <Th>To convert</Th>
-                  <Th>into</Th>
-                  <Th isNumeric>multiply by</Th>
-                </Tr>
-              </Tfoot>
             </Table>
           </TableContainer>
         </VStack>
