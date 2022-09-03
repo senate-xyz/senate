@@ -12,13 +12,7 @@ import {
   BoxProps,
   FlexProps,
 } from "@chakra-ui/react";
-import {
-  FiHome,
-  FiTrendingUp,
-  FiCompass,
-  FiStar,
-  FiSettings,
-} from "react-icons/fi";
+import { FiHome, FiTrendingUp } from "react-icons/fi";
 import { IconType } from "react-icons/lib";
 
 interface LinkItemProps {
@@ -99,7 +93,7 @@ const NavItem = ({ icon, link, children, ...rest }: NavItemProps) => {
         role="group"
         cursor="pointer"
         _hover={{
-          bg: "cyan.400",
+          bg: "red.400",
           color: "white",
         }}
         {...rest}
