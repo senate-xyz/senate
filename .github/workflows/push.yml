@@ -8,10 +8,10 @@ jobs:
       - name: Build the stack
         run: docker-compose up -d
       - name: Test web app
-        run: docker run --network container:web appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3000/
+        run: docker run --network container:senate_web_1 appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3000/
       - name: Test notification service
-        run: docker run --network container:notification-service appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3001/
+        run: docker run --network container:senate_notification-service_1 appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3001/
       - name: Test discord bot
-        run: docker run --network container:bot-discord appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3010/
+        run: docker run --network container:senate_bot-discord_1 appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3010/
       - name: Test slack bot
-        run: docker run --network container:bot-slack appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3011/
+        run: docker run --network container:senate_bot-slack_1 appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3011/
