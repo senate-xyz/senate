@@ -23,14 +23,12 @@ import { IconType } from "react-icons/lib";
 
 interface LinkItemProps {
   name: string;
+  href: string;
   icon: IconType;
 }
 const LinkItems: Array<LinkItemProps> = [
-  { name: "Home", icon: FiHome },
-  { name: "Trending", icon: FiTrendingUp },
-  { name: "Explore", icon: FiCompass },
-  { name: "Favourites", icon: FiStar },
-  { name: "Settings", icon: FiSettings },
+  { name: "Home", icon: FiHome, href: "/proposals" },
+  { name: "Trending", icon: FiTrendingUp, href: "/daos" },
 ];
 
 export default function NavBar(/*{ children }: { children: ReactNode }*/) {
@@ -38,12 +36,11 @@ export default function NavBar(/*{ children }: { children: ReactNode }*/) {
   return (
     <Box bg={useColorModeValue("gray.100", "gray.900")} h="100vh">
       <Drawer
-        autoFocus={false}
+        autoFocus={true}
         isOpen={isOpen}
         placement="left"
         onClose={onClose}
-        returnFocusOnClose={false}
-        onOverlayClick={onClose}
+        returnFocusOnClose={true}
         size="xs"
       >
         <DrawerContent>
@@ -75,7 +72,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         </Text>
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon}>
+        <NavItem key={link.name} icon={link.icon} link={link.href}>
           {link.name}
         </NavItem>
       ))}
@@ -85,12 +82,13 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 
 interface NavItemProps extends FlexProps {
   icon: IconType;
+  link: string;
   children?: string;
 }
-const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
+const NavItem = ({ icon, link, children, ...rest }: NavItemProps) => {
   return (
     <Link
-      href="#"
+      href={link}
       style={{ textDecoration: "none" }}
       _focus={{ boxShadow: "none" }}
     >
@@ -140,7 +138,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         </Text>
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon}></NavItem>
+        <NavItem key={link.name} icon={link.icon} link={link.href}></NavItem>
       ))}
     </Flex>
   );

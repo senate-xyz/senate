@@ -1,15 +1,16 @@
 import type { NextPage } from "next";
-import { Flex } from "@chakra-ui/react";
-import NavBar from "../components/dashboard/navbar/NavBar";
-import { MainBox } from "../components/dashboard/container/MainBox";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
-  return (
-    <Flex flexDir="row">
-      <NavBar></NavBar>
-      <MainBox></MainBox>
-    </Flex>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    // Always do navigations after the first render
+    router.push("/proposals", undefined, { shallow: true });
+  }, [router]);
+
+  return <div />;
 };
 
 export default Home;
