@@ -20,6 +20,13 @@ const DynamicSubscriptions = dynamic(
   }
 );
 
+const DynamiSettings = dynamic(
+  () => import("../components/mainBox/settings/Settings"),
+  {
+    suspense: true,
+  }
+);
+
 const Home: NextPage = () => {
   const [page, setPage] = useState(Pages.Dashboard);
 
@@ -33,6 +40,7 @@ const Home: NextPage = () => {
       <Suspense fallback={`Loading...`}>
         {page == Pages.Dashboard && <DyanmicProposals />}
         {page == Pages.Subscriptions && <DynamicSubscriptions />}
+        {page == Pages.Settings && <DynamiSettings />}
       </Suspense>
     </Flex>
   );

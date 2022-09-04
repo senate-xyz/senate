@@ -19,6 +19,7 @@ export enum Pages {
   None = 1,
   Dashboard,
   Subscriptions,
+  Settings,
 }
 
 export interface LinkItemSPAProps {

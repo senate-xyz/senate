@@ -10,13 +10,18 @@ import {
   BoxProps,
   FlexProps,
 } from "@chakra-ui/react";
-import { FiHome, FiTrendingUp } from "react-icons/fi";
+import { FiHome, FiList, FiSettings } from "react-icons/fi";
 import { NavItemSPA } from "./NavBarSPA";
 import { LinkItemSPAProps, Pages } from "../../types";
 
 const LinkItems: Array<LinkItemSPAProps> = [
   { name: "Dashboard", id: Pages.Dashboard, icon: FiHome },
-  { name: "Subscriptions", id: Pages.Subscriptions, icon: FiTrendingUp },
+  {
+    name: "Subscriptions",
+    id: Pages.Subscriptions,
+    icon: FiList,
+  },
+  { name: "Settings", id: Pages.Settings, icon: FiSettings },
 ];
 
 export default function NavBar(props: { page: Pages; setPage: any }) {
