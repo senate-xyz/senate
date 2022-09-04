@@ -1,13 +1,10 @@
 import {
   Grid,
   Text,
-  HStack,
   Table,
-  TableCaption,
   TableContainer,
   Tbody,
   Td,
-  Tfoot,
   Th,
   Thead,
   Tr,
@@ -15,12 +12,11 @@ import {
   Divider,
   Flex,
 } from "@chakra-ui/react";
-import { NextPage } from "next";
-import NavBar from "../../components/navbar/NavBar";
-import { useEffect, useState } from "react";
-import { ProposalType } from "../../types";
 
-export const Proposals: NextPage = () => {
+import { useEffect, useState } from "react";
+import { ProposalType } from "../../../types";
+
+export const Proposals = () => {
   const [proposals, setProposals] = useState([]);
 
   useEffect(() => {
@@ -32,9 +28,7 @@ export const Proposals: NextPage = () => {
   }, []);
 
   return (
-    <Flex flexDir="row">
-      <NavBar />
-
+    <Flex flexDir="row" w="full">
       <Grid bg="gray.200" minH="100vh" w="full">
         <VStack bg="gray.100" m="10" align="start" spacing={5} p="5">
           <Text>Proposals</Text>

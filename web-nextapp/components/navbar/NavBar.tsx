@@ -2,9 +2,7 @@ import React from "react";
 import {
   Box,
   Flex,
-  Icon,
   useColorModeValue,
-  Link,
   Drawer,
   DrawerContent,
   Text,
@@ -13,19 +11,15 @@ import {
   FlexProps,
 } from "@chakra-ui/react";
 import { FiHome, FiTrendingUp } from "react-icons/fi";
-import { IconType } from "react-icons/lib";
+import { NavItemSPA } from "./NavBarSPA";
+import { LinkItemSPAProps, Pages } from "../../types";
 
-interface LinkItemProps {
-  name: string;
-  href: string;
-  icon: IconType;
-}
-const LinkItems: Array<LinkItemProps> = [
-  { name: "Proposals", icon: FiHome, href: "/proposals" },
-  { name: "DAOs", icon: FiTrendingUp, href: "/daos" },
+const LinkItems: Array<LinkItemSPAProps> = [
+  { name: "Dashboard", id: Pages.Dashboard, icon: FiHome },
+  { name: "Subscriptions", id: Pages.Subscriptions, icon: FiTrendingUp },
 ];
 
-export default function NavBar(/*{ children }: { children: ReactNode }*/) {
+export default function NavBar(props: { page: Pages; setPage: any }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Box bg={useColorModeValue("gray.100", "gray.900")} h="100vh">
@@ -38,23 +32,22 @@ export default function NavBar(/*{ children }: { children: ReactNode }*/) {
         size="xs"
       >
         <DrawerContent>
-          <SidebarContent onClose={onClose} />
+          <OpenContent onClose={onClose} setPage={props.setPage} />
         </DrawerContent>
       </Drawer>
-      {/* mobilenav */}
-      <MobileNav onOpen={onOpen} />
+      <ClosedContent onOpen={onOpen} setPage={props.setPage} />
     </Box>
   );
 }
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
+  setPage: () => void;
 }
 
-const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+const OpenContent = ({ onClose, setPage, ...rest }: SidebarProps) => {
   return (
     <Box
-      // bg={useColorModeValue("white", "gray.900")}
       borderRight="1px"
       borderRightColor={useColorModeValue("gray.200", "gray.700")}
       onMouseLeave={onClose}
@@ -66,58 +59,19 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         </Text>
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon} link={link.href}>
+        <NavItemSPA key={link.name} item={link} setPage={setPage}>
           {link.name}
-        </NavItem>
+        </NavItemSPA>
       ))}
     </Box>
   );
 };
 
-interface NavItemProps extends FlexProps {
-  icon: IconType;
-  link: string;
-  children?: string;
-}
-const NavItem = ({ icon, link, children, ...rest }: NavItemProps) => {
-  return (
-    <Link
-      href={link}
-      style={{ textDecoration: "none" }}
-      _focus={{ boxShadow: "none" }}
-    >
-      <Flex
-        align="center"
-        p="4"
-        borderRadius="lg"
-        role="group"
-        cursor="pointer"
-        _hover={{
-          bg: "red.400",
-          color: "white",
-        }}
-        {...rest}
-      >
-        {icon && (
-          <Icon
-            mr="4"
-            fontSize="16"
-            _groupHover={{
-              color: "white",
-            }}
-            as={icon}
-          />
-        )}
-        {children}
-      </Flex>
-    </Link>
-  );
-};
-
 interface MobileProps extends FlexProps {
   onOpen: () => void;
+  setPage: () => void;
 }
-const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
+const ClosedContent = ({ onOpen, setPage, ...rest }: MobileProps) => {
   return (
     <Flex
       bg={useColorModeValue("white", "gray.900")}
@@ -132,7 +86,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         </Text>
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon} link={link.href}></NavItem>
+        <NavItemSPA key={link.name} item={link} setPage={setPage}></NavItemSPA>
       ))}
     </Flex>
   );

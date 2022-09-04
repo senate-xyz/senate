@@ -1,3 +1,5 @@
+import { IconType } from "react-icons/lib";
+
 export interface DaoType {
   id: number;
   name: string;
@@ -11,4 +13,16 @@ export interface ProposalType {
   name: string;
   timeLeft: string;
   voted: boolean;
+}
+
+export enum Pages {
+  None = 1,
+  Dashboard,
+  Subscriptions,
+}
+
+export interface LinkItemSPAProps {
+  name: string;
+  id: Pages;
+  icon: IconType;
 }

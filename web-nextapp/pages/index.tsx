@@ -1,16 +1,25 @@
 import type { NextPage } from "next";
-import { useEffect } from "react";
-import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { Flex } from "@chakra-ui/react";
+import NavBar from "../components/navbar/NavBar";
+import { Pages } from "../types";
+import Proposals from "../components/mainBox/proposals/Proposals";
+import Subscriptions from "../components/mainBox/subscriptions/Subscriptions";
 
 const Home: NextPage = () => {
-  const router = useRouter();
+  const [page, setPage] = useState(Pages.Dashboard);
 
   useEffect(() => {
-    // Always do navigations after the first render
-    router.push("/proposals", undefined, { shallow: true });
-  }, [router]);
+    console.log(page);
+  }, [page]);
 
-  return <div />;
+  return (
+    <Flex flexDir="row" w="100vw">
+      <NavBar page={page} setPage={setPage} />
+      {page == Pages.Dashboard && <Proposals />}
+      {page == Pages.Subscriptions && <Subscriptions />}
+    </Flex>
+  );
 };
 
 export default Home;
