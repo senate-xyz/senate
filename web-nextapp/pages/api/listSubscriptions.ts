@@ -42,7 +42,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       notificationSettings: {
         discord: false,
         slack: false,
-        notificationOptions: [{ type: NotificationTypes.sixHours }],
+        notificationOptions: [],
       },
     },
   ];
