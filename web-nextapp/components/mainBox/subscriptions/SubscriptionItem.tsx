@@ -16,9 +16,15 @@ import {
   useDisclosure,
   Center,
   VStack,
+  Button,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
 } from "@chakra-ui/react";
 import { NotificationTypes, SubscriptionType } from "../../../types";
 import { FaDiscord, FaSlack, FaCheck } from "react-icons/fa";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export const SubscriptionItem = (props: { dao: SubscriptionType }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -71,54 +77,75 @@ export const SubscriptionItem = (props: { dao: SubscriptionType }) => {
                     isChecked={props.dao.notificationSettings.slack}
                   ></Switch>
                 </HStack>
-                <Box>
-                  {props.dao.notificationSettings.notificationOptions.find(
-                    (x) => x.type === NotificationTypes.New
-                  ) && <Icon as={FaCheck} />}
-                  &nbsp; New Proposal
-                </Box>
-                <Box>
-                  {props.dao.notificationSettings.notificationOptions.find(
-                    (x) => x.type === NotificationTypes.threeDays
-                  ) && <Icon as={FaCheck} />}
-                  &nbsp; 3 days left to vote
-                </Box>
-                <Box>
-                  {props.dao.notificationSettings.notificationOptions.find(
-                    (x) => x.type === NotificationTypes.twoDays
-                  ) && <Icon as={FaCheck} />}
-                  &nbsp; 2 days left to vote
-                </Box>
-                <Box>
-                  {props.dao.notificationSettings.notificationOptions.find(
-                    (x) => x.type === NotificationTypes.oneDay
-                  ) && <Icon as={FaCheck} />}
-                  &nbsp; 1 day left to vote
-                </Box>
-                <Box>
-                  {props.dao.notificationSettings.notificationOptions.find(
-                    (x) => x.type === NotificationTypes.twelveHours
-                  ) && <Icon as={FaCheck} />}
-                  &nbsp; 12 hours left to vote
-                </Box>
-                <Box>
-                  {props.dao.notificationSettings.notificationOptions.find(
-                    (x) => x.type === NotificationTypes.sixHours
-                  ) && <Icon as={FaCheck} />}
-                  &nbsp; 6 hours left to vote
-                </Box>
-                <Box>
-                  {props.dao.notificationSettings.notificationOptions.find(
-                    (x) => x.type === NotificationTypes.threeHours
-                  ) && <Icon as={FaCheck} />}
-                  &nbsp; 3 hours left to vote
-                </Box>
-                <Box>
-                  {props.dao.notificationSettings.notificationOptions.find(
-                    (x) => x.type === NotificationTypes.oneHour
-                  ) && <Icon as={FaCheck} />}
-                  &nbsp; 1 hour left to vote
-                </Box>
+                {props.dao.notificationSettings.notificationOptions.map(
+                  (opt) => {
+                    switch (opt.type) {
+                      case NotificationTypes.New:
+                        return (
+                          <HStack>
+                            <FaCheck /> <Text>On new proposal</Text>
+                          </HStack>
+                        );
+                      case NotificationTypes.threeDays:
+                        return (
+                          <HStack>
+                            <FaCheck /> <Text>3 days before</Text>
+                          </HStack>
+                        );
+                      case NotificationTypes.twoDays:
+                        return (
+                          <HStack>
+                            <FaCheck /> <Text>2 days before</Text>
+                          </HStack>
+                        );
+                      case NotificationTypes.oneDay:
+                        return (
+                          <HStack>
+                            <FaCheck /> <Text>1 day before</Text>
+                          </HStack>
+                        );
+                      case NotificationTypes.twelveHours:
+                        return (
+                          <HStack>
+                            <FaCheck /> <Text>12 hours before</Text>
+                          </HStack>
+                        );
+                      case NotificationTypes.sixHours:
+                        return (
+                          <HStack>
+                            <FaCheck /> <Text>6 hours before</Text>
+                          </HStack>
+                        );
+                      case NotificationTypes.threeHours:
+                        return (
+                          <HStack>
+                            <FaCheck /> <Text>3 hours before</Text>
+                          </HStack>
+                        );
+                      case NotificationTypes.oneHour:
+                        return (
+                          <HStack>
+                            <FaCheck /> <Text>1 hour before</Text>
+                          </HStack>
+                        );
+                    }
+                  }
+                )}
+                <Menu>
+                  <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                    Add new notification
+                  </MenuButton>
+                  <MenuList>
+                    <MenuItem>New Proposal</MenuItem>
+                    <MenuItem>3 days left to vote</MenuItem>
+                    <MenuItem>2 days left to vote</MenuItem>
+                    <MenuItem>1 day left to vote</MenuItem>
+                    <MenuItem>12 hours left to vote</MenuItem>
+                    <MenuItem>6 hours left to vote</MenuItem>
+                    <MenuItem>3 hours left to vote</MenuItem>
+                    <MenuItem>1 hour left to vote</MenuItem>
+                  </MenuList>
+                </Menu>
               </VStack>
             </Center>
           </ModalBody>
