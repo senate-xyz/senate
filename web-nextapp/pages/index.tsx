@@ -3,8 +3,22 @@ import { useEffect, useState } from "react";
 import { Flex } from "@chakra-ui/react";
 import NavBar from "../components/navbar/NavBar";
 import { Pages } from "../types";
-import Proposals from "../components/mainBox/proposals/Proposals";
-import Subscriptions from "../components/mainBox/subscriptions/Subscriptions";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+
+const DyanmicProposals = dynamic(
+  () => import("../components/mainBox/proposals/Proposals"),
+  {
+    suspense: true,
+  }
+);
+
+const DynamicSubscriptions = dynamic(
+  () => import("../components/mainBox/subscriptions/Subscriptions"),
+  {
+    suspense: true,
+  }
+);
 
 const Home: NextPage = () => {
   const [page, setPage] = useState(Pages.Dashboard);
@@ -16,8 +30,10 @@ const Home: NextPage = () => {
   return (
     <Flex flexDir="row" w="100vw">
       <NavBar page={page} setPage={setPage} />
-      {page == Pages.Dashboard && <Proposals />}
-      {page == Pages.Subscriptions && <Subscriptions />}
+      <Suspense fallback={`Loading...`}>
+        {page == Pages.Dashboard && <DyanmicProposals />}
+        {page == Pages.Subscriptions && <DynamicSubscriptions />}
+      </Suspense>
     </Flex>
   );
 };
