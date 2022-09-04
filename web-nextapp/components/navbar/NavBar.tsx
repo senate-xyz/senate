@@ -21,7 +21,7 @@ const LinkItems: Array<LinkItemSPAProps> = [
     id: Pages.Subscriptions,
     icon: FiList,
   },
-  { name: "Settings", id: Pages.Settings, icon: FiSettings },
+  // { name: "Settings", id: Pages.Settings, icon: FiSettings },
 ];
 
 export default function NavBar(props: { page: Pages; setPage: any }) {
