@@ -6,9 +6,10 @@ import {
   Flex,
   Spinner,
   Center,
+  HStack,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { DaoType } from "../../../types";
+import { SubscriptionType } from "../../../types";
 
 import { SubscriptionItem } from "./SubscriptionItem";
 
@@ -24,26 +25,24 @@ const Subscriptions = () => {
   }, []);
 
   return (
-    <Flex flexDir="row" w="full">
-      <Grid bg="gray.200" minH="100vh" w="full">
-        <VStack bg="gray.100" m="10" align="start" spacing={5} p="5">
+    <Flex flexDir="row" minW="full">
+      <Grid bg="gray.200" minH="100vh" minW="full">
+        <VStack bg="gray.100" m="10" align="start" spacing={2} p="5">
           <Text>DAOs</Text>
           <Divider />
-          <VStack>
-            <Grid templateColumns="repeat(5, 1fr)" gap={6}>
-              {!daos.length && (
-                <Center>
-                  <Spinner />
-                </Center>
-              )}
-              {daos.map((dao: DaoType) => {
-                return (
-                  <div key={dao.id}>
-                    <SubscriptionItem dao={dao} />
-                  </div>
-                );
-              })}
-            </Grid>
+          <VStack minW="full">
+            {!daos.length && (
+              <Center>
+                <Spinner />
+              </Center>
+            )}
+            {daos.map((dao: SubscriptionType) => {
+              return (
+                <Flex key={dao.id} minW="full">
+                  <SubscriptionItem dao={dao} />
+                </Flex>
+              );
+            })}
           </VStack>
         </VStack>
       </Grid>

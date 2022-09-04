@@ -1,11 +1,33 @@
 import { IconType } from "react-icons/lib";
 
-export interface DaoType {
+export interface SubscriptionType {
   id: number;
   name: string;
   image: string;
   url: string;
-  governance_contract: string;
+  governanceContract: string;
+  notificationSettings: NotificationSettings;
+}
+
+export interface NotificationSettings {
+  discord: boolean;
+  slack: boolean;
+  notificationOptions: Array<notificationOptions>;
+}
+
+export interface notificationOptions {
+  type: NotificationTypes;
+}
+
+export enum NotificationTypes {
+  New = 1,
+  threeDays,
+  twoDays,
+  oneDay,
+  twelveHours,
+  sixHours,
+  threeHours,
+  oneHour,
 }
 
 export interface ProposalType {
