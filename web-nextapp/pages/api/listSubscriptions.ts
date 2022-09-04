@@ -28,7 +28,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       governanceContract: "0xdeaddeaddead",
       notificationSettings: {
         discord: true,
-        slack: false,
+        slack: true,
         notificationOptions: [{ type: NotificationTypes.twoDays }],
       },
     },

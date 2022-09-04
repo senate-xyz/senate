@@ -17,7 +17,7 @@ const Subscriptions = () => {
   const [daos, setDaos] = useState([]);
 
   useEffect(() => {
-    fetch(`/api/listSupportedDaos`)
+    fetch(`/api/listSubscriptions`)
       .then((response) => response.json())
       .then(async (data) => {
         setDaos(data);
