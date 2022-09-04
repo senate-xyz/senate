@@ -25,12 +25,12 @@ const Subscriptions = () => {
   }, []);
 
   return (
-    <Flex flexDir="row" minW="full">
-      <Grid bg="gray.200" minH="100vh" minW="full">
+    <Flex flexDir="row" w="full">
+      <Grid bg="gray.200" minH="100vh" w="full">
         <VStack bg="gray.100" m="10" align="start" spacing={2} p="5">
           <Text>DAOs</Text>
           <Divider />
-          <VStack minW="full">
+          <VStack w="full">
             {!daos.length && (
               <Center>
                 <Spinner />
@@ -38,7 +38,7 @@ const Subscriptions = () => {
             )}
             {daos.map((dao: SubscriptionType) => {
               return (
-                <Flex key={dao.id} minW="full">
+                <Flex key={dao.id} w="full">
                   <SubscriptionItem dao={dao} />
                 </Flex>
               );

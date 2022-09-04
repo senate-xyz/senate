@@ -22,7 +22,7 @@ export const SubscriptionItem = (props: { dao: SubscriptionType }) => {
       border="1px"
       borderRadius="5px"
       borderColor="gray.400"
-      minW="full"
+      w="full"
     >
       <Avatar src={props.dao.image}></Avatar>
       <Text>{props.dao.name}</Text>
