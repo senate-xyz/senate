@@ -53,7 +53,7 @@ export const SubscriptionItem = (props: { dao: SubscriptionType }) => {
       <Spacer />
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
+        <ModalOverlay backdropFilter="blur(2px)" />
         <ModalContent>
           <ModalHeader>Set notification frequency</ModalHeader>
           <ModalCloseButton />
