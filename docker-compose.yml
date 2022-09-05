@@ -6,10 +6,16 @@ services:
       dockerfile: ./web-nextapp/Dockerfile
     ports:
       - "3000:3000"
-  notification-service:
+  notification-orchestrator:
     build:
       context: .
-      dockerfile: ./services/notifications/Dockerfile
+      dockerfile: ./services/notifications-orchestrator/Dockerfile
+    ports:
+      - "3002:3002"
+  proposal-detective:
+    build:
+      context: .
+      dockerfile: ./services/proposal-detective/Dockerfile
     ports:
       - "3001:3001"
   bot-discord:

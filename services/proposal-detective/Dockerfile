@@ -7,11 +7,11 @@ RUN apk update
 WORKDIR /app
 
 # copy configs to /app folder
-COPY /services/notifications/package*.json ./
+COPY /services/proposal-detective/package*.json ./
 COPY /yarn.lock ./
-COPY /services/notifications/tsconfig.json ./
+COPY /services/proposal-detective/tsconfig.json ./
 # copy source code to /app/src folder
-COPY /services/notifications/src /app/src
+COPY /services/proposal-detective/src /app/src
 
 RUN yarn
 RUN yarn build

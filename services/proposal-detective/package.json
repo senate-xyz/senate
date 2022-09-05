@@ -1,5 +1,5 @@
 {
-  "name": "notifications",
+  "name": "proposal-detective",
   "version": "1.0.0",
   "main": "dist/app.js",
   "scripts": {

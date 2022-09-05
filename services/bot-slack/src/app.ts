@@ -4,5 +4,5 @@ const app = express();
 const port = 3011;
 
 app.listen(port, () => {
-  console.log(`App running on ${port}.`);
+  console.log(`Slack bot service running on ${port}.`);
 });
