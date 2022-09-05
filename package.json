@@ -5,7 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "yarn workspaces foreach -pi run dev",
+    "dev": "yarn workspaces foreach -ip -j unlimited run dev",
     "build": "yarn workspaces foreach -t run build",
     "start": "yarn workspaces foreach -t run start"
   },
@@ -16,7 +16,7 @@
     "services/bot-discord",
     "services/bot-slack"
   ],
-  "dependencies": {
+  "devDependencies": {
     "foreach": "^2.0.6"
   },
   "packageManager": "yarn@3.2.3"
