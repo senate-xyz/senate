@@ -10,7 +10,7 @@ jobs:
       - name: Test web app
         run: docker run --network container:senate_web_1 appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3000/
       - name: Test proposal detective
-        run: docker run --network container:senate_proposal-detective_1 appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3002/
+        run: docker run --network container:senate_proposal-detective_1 appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3001/
       - name: Test notification orchestrator
         run: docker run --network container:senate_notification-orchestrator_1 appropriate/curl -s --retry 10 --retry-connrefused http://localhost:3002/
       - name: Test discord bot
