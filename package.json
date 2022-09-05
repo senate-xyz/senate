@@ -11,6 +11,7 @@
   },
   "workspaces": [
     "web-nextapp",
+    "services/proposal-scraper",
     "services/notifications",
     "services/bot-discord",
     "services/bot-slack"
