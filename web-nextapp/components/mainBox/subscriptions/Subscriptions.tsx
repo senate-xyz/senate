@@ -13,11 +13,13 @@ import { SubscriptionType } from "../../../types";
 
 import { SubscriptionItem } from "./SubscriptionItem";
 
+const TEST_USER = "0xbob";
+
 const Subscriptions = () => {
-  const [daos, setDaos] = useState([]);
+  const [daos, setDaos] = useState<SubscriptionType[]>([]);
 
   useEffect(() => {
-    fetch(`/api/listSubscriptions`)
+    fetch(`/api/listSubscriptions?userInputAddress=${TEST_USER}`)
       .then((response) => response.json())
       .then(async (data) => {
         setDaos(data);
@@ -36,10 +38,10 @@ const Subscriptions = () => {
                 <Spinner />
               </Center>
             )}
-            {daos.map((dao: SubscriptionType) => {
+            {daos.map((sub: SubscriptionType) => {
               return (
-                <Flex key={dao.id} w="full">
-                  <SubscriptionItem dao={dao} />
+                <Flex key={sub.id} w="full">
+                  <SubscriptionItem sub={sub} />
                 </Flex>
               );
             })}
