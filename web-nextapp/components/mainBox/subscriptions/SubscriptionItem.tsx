@@ -65,7 +65,7 @@ export const SubscriptionItem = (props: { sub: SubscriptionType }) => {
                   <Switch
                     isChecked={
                       props.sub.notificationChannels.filter(
-                        (channel) =>
+                        (channel: any) =>
                           channel.type == NotificationChannelTypes.Discord
                       ).length > 0
                     }
