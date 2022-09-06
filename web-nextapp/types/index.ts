@@ -1,40 +1,33 @@
+import { Prisma } from "@prisma/client";
 import { IconType } from "react-icons/lib";
 
-export interface SubscriptionType {
-  id: number;
-  name: string;
-  image: string;
-  url: string;
-  governanceContract: string;
-  notificationSettings: NotificationSettings;
-}
+export type SubscriptionType = Prisma.SubscriptionGetPayload<{
+  include: {
+    Dao: true;
+    notificationChannels: {
+      select: {
+        type: true;
+        connector: true;
+      };
+    };
+    notificationSettings: {
+      select: {
+        time: true;
+      };
+    };
+  };
+}>;
 
-export interface NotificationSettings {
-  discord: boolean;
-  slack: boolean;
-  notificationOptions: Array<notificationOptions>;
-}
+export type ProposalType = Prisma.ProposalGetPayload<{
+  include: {
+    dao: true;
+  };
+}>;
 
-export interface notificationOptions {
-  type: NotificationTypes;
-}
-
-export enum NotificationTypes {
-  New = 1,
-  threeDays,
-  twoDays,
-  oneDay,
-  twelveHours,
-  sixHours,
-  threeHours,
-  oneHour,
-}
-
-export interface ProposalType {
-  id: number;
-  name: string;
-  timeLeft: string;
-  voted: boolean;
+export enum NotificationChannelTypes {
+  None = 0,
+  Discord,
+  Slack,
 }
 
 export enum Pages {
