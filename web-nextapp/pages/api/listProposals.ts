@@ -27,7 +27,7 @@ export default async function handler(
   const userProposals = await prisma.proposal.findMany({
     where: {
       daoId: {
-        in: userDaos.map((dao) => dao.daoId),
+        in: userDaos.map((dao: any) => dao.daoId),
       },
     },
     include: {

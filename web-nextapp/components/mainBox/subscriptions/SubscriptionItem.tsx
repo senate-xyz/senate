@@ -83,7 +83,7 @@ export const SubscriptionItem = (props: { sub: SubscriptionType }) => {
                   ></Switch>
                 </HStack>
                 <VStack>
-                  {props.sub.notificationSettings.map((opt) => {
+                  {props.sub.notificationSettings.map((opt: any) => {
                     return (
                       <HStack key={opt.time.toString()}>
                         <FaCheck /> <Text>{opt.time.toString()}</Text>
