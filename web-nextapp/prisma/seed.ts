@@ -15,6 +15,14 @@ async function main() {
   }
 
   await prisma.user.upsert({
+    where: { address: "system" },
+    update: {},
+    create: {
+      address: "system",
+    },
+  });
+
+  await prisma.user.upsert({
     where: { address: "0xalice" },
     update: {},
     create: {
@@ -36,6 +44,67 @@ async function main() {
     create: {
       name: "DeveloperDAO",
       address: "0xdd",
+      picture:
+        "https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492__340.jpg",
+    },
+  });
+
+  await prisma.user.update({
+    where: { address: "system" },
+    data: {
+      subscriptions: {
+        create: [
+          {
+            daoId: dd.id,
+          },
+        ],
+      },
+    },
+  });
+
+  const fwb = await prisma.dao.upsert({
+    where: { address: "0xfwb_dao" },
+    update: {},
+    create: {
+      name: "Friends with Benefits",
+      address: "0xfwb_dao",
+      picture:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHw52s6qYdz5Q2-xKEI3VE7UAJcQ67FwcNJg&usqp=CAU",
+    },
+  });
+
+  await prisma.user.update({
+    where: { address: "system" },
+    data: {
+      subscriptions: {
+        create: [
+          {
+            daoId: fwb.id,
+          },
+        ],
+      },
+    },
+  });
+
+  const nouns = await prisma.dao.upsert({
+    where: { address: "0xnouns_dao" },
+    update: {},
+    create: {
+      name: "Nouns",
+      address: "0xnouns",
+    },
+  });
+
+  await prisma.user.update({
+    where: { address: "system" },
+    data: {
+      subscriptions: {
+        create: [
+          {
+            daoId: nouns.id,
+          },
+        ],
+      },
     },
   });
 
@@ -64,15 +133,6 @@ async function main() {
       daoId: dd.id,
       timeCreated: new Date(Date.now()),
       timeEnd: new Date(Date.now() + 1000),
-    },
-  });
-
-  const fwb = await prisma.dao.upsert({
-    where: { address: "0xfwb_dao" },
-    update: {},
-    create: {
-      name: "Friends with Benefits",
-      address: "0xfwb_dao",
     },
   });
 

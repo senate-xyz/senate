@@ -18,6 +18,8 @@ export type SubscriptionType = Prisma.SubscriptionGetPayload<{
   };
 }>;
 
+export type UnsubscribedType = Prisma.DaoGetPayload<{}>;
+
 export type ProposalType = Prisma.ProposalGetPayload<{
   include: {
     dao: true;

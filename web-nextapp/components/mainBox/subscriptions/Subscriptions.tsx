@@ -9,20 +9,30 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { SubscriptionType } from "../../../types";
+import { SubscriptionType, UnsubscribedType } from "../../../types";
 
-import { SubscriptionItem } from "./SubscriptionItem";
+import { SubscribedItem } from "./SubscribedItem";
+import { UnsubscribedItem } from "./UnsubscribedItem";
 
 const TEST_USER = "0xbob";
 
 const Subscriptions = () => {
-  const [daos, setDaos] = useState<SubscriptionType[]>([]);
+  const [subscribed, setSubscribed] = useState<SubscriptionType[]>([]);
+  const [unsubscribed, setUnsubscribed] = useState<UnsubscribedType[]>([]);
 
   useEffect(() => {
-    fetch(`/api/listSubscriptions?userInputAddress=${TEST_USER}`)
+    fetch(`/api/listSubscribed?userInputAddress=${TEST_USER}`)
       .then((response) => response.json())
       .then(async (data) => {
-        setDaos(data);
+        setSubscribed(data);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch(`/api/listUnsubscribed?userInputAddress=${TEST_USER}`)
+      .then((response) => response.json())
+      .then(async (data) => {
+        setUnsubscribed(data);
       });
   }, []);
 
@@ -33,15 +43,23 @@ const Subscriptions = () => {
           <Text>DAOs</Text>
           <Divider />
           <VStack w="full">
-            {!daos.length && (
+            {!subscribed.length && !unsubscribed.length && (
               <Center>
                 <Spinner />
               </Center>
             )}
-            {daos.map((sub: SubscriptionType) => {
+            {subscribed.map((sub: SubscriptionType) => {
               return (
                 <Flex key={sub.id} w="full">
-                  <SubscriptionItem sub={sub} />
+                  <SubscribedItem sub={sub} />
+                </Flex>
+              );
+            })}
+
+            {unsubscribed.map((unsub: UnsubscribedType) => {
+              return (
+                <Flex key={unsub.id} w="full">
+                  <UnsubscribedItem unsub={unsub} />
                 </Flex>
               );
             })}
