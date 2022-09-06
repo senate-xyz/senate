@@ -2,7 +2,7 @@
   "name": "web-nextapp",
   "version": "0.1.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "prisma generate && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
