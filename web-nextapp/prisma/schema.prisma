@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  address       String         @unique
+  subscriptions Subscription[]
+}
+
+model Dao {
+  id           Int            @id @default(autoincrement())
+  name         String         @default("No name")
+  picture      String         @default("https://via.placeholder.com/200x200")
+  address      String         @unique
+  Subscription Subscription[]
+  Proposal     Proposal[]
+}
+
+model Subscription {
+  id                   Int                    @id @default(autoincrement())
+  User                 User                   @relation(fields: [userId], references: [id])
+  userId               Int
+  Dao                  Dao                    @relation(fields: [daoId], references: [id])
+  daoId                Int
+  notificationChannels NotificationChannel[]
+  notificationSettings NotificationSettings[]
+}
+
+model NotificationChannel {
+  id             Int          @id @default(autoincrement())
+  Subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  subscriptionId Int
+  type           Int
+  connector      String
+}
+
+model NotificationSettings {
+  id             Int          @id @default(autoincrement())
+  Subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  subscriptionId Int
+  time           DateTime
+}
+
+model Proposal {
+  id          Int      @id @default(autoincrement())
+  dao         Dao      @relation(fields: [daoId], references: [id])
+  daoId       Int
+  title       String
+  description String
+  timeCreated DateTime
+  timeEnd     DateTime
+  url         String
+}

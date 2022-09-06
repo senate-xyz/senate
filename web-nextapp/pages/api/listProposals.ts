@@ -1,26 +1,39 @@
+import { PrismaClient } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ProposalType } from "../../types";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const DaoItems: Array<ProposalType> = [
-    {
-      id: 1,
-      name: "A proposal",
-      timeLeft: "1 day",
-      voted: true,
+const prisma = new PrismaClient();
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const { userInputAddress } = req.query;
+
+  const userId = await prisma.user.findUnique({
+    where: {
+      address: userInputAddress as string,
     },
-    {
-      id: 2,
-      name: "Another proposal",
-      timeLeft: "1 minute",
-      voted: false,
+    select: {
+      id: true,
     },
-    {
-      id: 3,
-      name: "Merge?",
-      timeLeft: "1 month",
-      voted: true,
+  });
+
+  const userDaos = await prisma.subscription.findMany({
+    where: { userId: userId?.id },
+    select: {
+      daoId: true,
     },
-  ];
-  res.status(200).json(DaoItems);
+  });
+
+  const userProposals = await prisma.proposal.findMany({
+    where: {
+      daoId: {
+        in: userDaos.map((dao) => dao.daoId),
+      },
+    },
+    include: {
+      dao: true,
+    },
+  });
+
+  res.status(200).json(userProposals);
 }

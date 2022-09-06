@@ -1,50 +1,42 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { NotificationTypes, SubscriptionType } from "../../types";
+import { PrismaClient } from "@prisma/client";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const DaoItems: Array<SubscriptionType> = [
-    {
-      id: 1,
-      name: "SomeDao",
-      image:
-        "https://www.rd.com/wp-content/uploads/2021/04/GettyImages-1070620072-scaled.jpg",
-      url: "google.com",
-      governanceContract: "0xdeaddeaddead",
+const prisma = new PrismaClient();
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const { userInputAddress } = req.query;
+
+  const userId = await prisma.user.findUnique({
+    where: {
+      address: userInputAddress as string,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  const userSubscriptions = await prisma.subscription.findMany({
+    where: {
+      userId: userId?.id,
+    },
+    distinct: "daoId",
+    include: {
+      Dao: true,
+      notificationChannels: {
+        select: {
+          type: true,
+          connector: true,
+        },
+      },
       notificationSettings: {
-        discord: true,
-        slack: false,
-        notificationOptions: [
-          { type: NotificationTypes.New },
-          { type: NotificationTypes.sixHours },
-        ],
+        select: {
+          time: true,
+        },
       },
     },
-    {
-      id: 2,
-      name: "SomeDao",
-      image:
-        "https://www.rd.com/wp-content/uploads/2021/04/GettyImages-1070620072-scaled.jpg",
-      url: "google.com",
-      governanceContract: "0xdeaddeaddead",
-      notificationSettings: {
-        discord: true,
-        slack: true,
-        notificationOptions: [{ type: NotificationTypes.twoDays }],
-      },
-    },
-    {
-      id: 1,
-      name: "SomeDao",
-      image:
-        "https://www.rd.com/wp-content/uploads/2021/04/GettyImages-1070620072-scaled.jpg",
-      url: "google.com",
-      governanceContract: "0xdeaddeaddead",
-      notificationSettings: {
-        discord: false,
-        slack: false,
-        notificationOptions: [],
-      },
-    },
-  ];
-  res.status(200).json(DaoItems);
+  });
+
+  res.status(200).json(userSubscriptions);
 }
