@@ -3,12 +3,16 @@ import { NotificationChannelTypes } from "../types";
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.user.deleteMany();
-  await prisma.dao.deleteMany();
-  await prisma.proposal.deleteMany();
-  await prisma.subscription.deleteMany();
-  await prisma.notificationChannel.deleteMany();
-  await prisma.notificationSettings.deleteMany();
+  try {
+    await prisma.user.deleteMany();
+    await prisma.dao.deleteMany();
+    await prisma.proposal.deleteMany();
+    await prisma.subscription.deleteMany();
+    await prisma.notificationChannel.deleteMany();
+    await prisma.notificationSettings.deleteMany();
+  } catch (e) {
+    console.log("db already empty");
+  }
 
   await prisma.user.upsert({
     where: { address: "0xalice" },
