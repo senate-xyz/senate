@@ -26,7 +26,7 @@ import { NotificationChannelTypes, SubscriptionType } from "../../../types";
 import { FaDiscord, FaSlack, FaCheck } from "react-icons/fa";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
-export const SubscriptionItem = (props: { sub: SubscriptionType }) => {
+export const SubscribedItem = (props: { sub: SubscriptionType }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (

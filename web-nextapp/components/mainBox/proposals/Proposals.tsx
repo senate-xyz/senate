@@ -17,6 +17,7 @@ import {
   Center,
   Spinner,
 } from "@chakra-ui/react";
+import Moment from "react-moment";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
@@ -53,8 +54,7 @@ export const Proposals = () => {
                   <Tr>
                     <Th>Proposal</Th>
                     <Th>Description</Th>
-                    <Th>Time Created</Th>
-                    <Th>Time End</Th>
+                    <Th>Time Left</Th>
                     <Th>Voted</Th>
                   </Tr>
                 </Thead>
@@ -74,8 +74,12 @@ export const Proposals = () => {
                         <Td maxW={"20rem"}>
                           <Text noOfLines={1}>{proposal.description}</Text>
                         </Td>
-                        <Td>{proposal.timeCreated.toString()}</Td>
-                        <Td>{proposal.timeEnd.toString()}</Td>
+                        <Td>
+                          <Moment diff={proposal.timeCreated} unit="minutes">
+                            {proposal.timeEnd}
+                          </Moment>
+                        </Td>
+
                         <Td>Hardcoded yes</Td>
                       </Tr>
                     );
