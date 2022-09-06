@@ -14,6 +14,8 @@ import {
   Avatar,
   Link,
   HStack,
+  Center,
+  Spinner,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
@@ -39,42 +41,49 @@ export const Proposals = () => {
         <VStack bg="gray.100" m="10" align="start" spacing={5} p="5">
           <Text>Proposals</Text>
           <Divider></Divider>
-          <TableContainer w="full">
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Proposal</Th>
-                  <Th>Description</Th>
-                  <Th>Time Created</Th>
-                  <Th>Time End</Th>
-                  <Th>Voted</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {proposals.map((proposal: ProposalType) => {
-                  return (
-                    <Tr key={proposal.id}>
-                      <Td>
-                        <HStack>
-                          <Avatar src={proposal.dao.picture}></Avatar>
-                          <Link href={proposal.url} isExternal maxW="20rem">
-                            <Text noOfLines={1}>{proposal.title}</Text>
-                          </Link>
-                          <ExternalLinkIcon mx="2px" />
-                        </HStack>
-                      </Td>
-                      <Td maxW={"20rem"}>
-                        <Text noOfLines={1}>{proposal.description}</Text>
-                      </Td>
-                      <Td>{proposal.timeCreated.toString()}</Td>
-                      <Td>{proposal.timeEnd.toString()}</Td>
-                      <Td>Hardcoded yes</Td>
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-          </TableContainer>
+          {!proposals.length && (
+            <Center w="full">
+              <Spinner />
+            </Center>
+          )}
+          {proposals.length && (
+            <TableContainer w="full">
+              <Table variant="simple">
+                <Thead>
+                  <Tr>
+                    <Th>Proposal</Th>
+                    <Th>Description</Th>
+                    <Th>Time Created</Th>
+                    <Th>Time End</Th>
+                    <Th>Voted</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {proposals.map((proposal: ProposalType) => {
+                    return (
+                      <Tr key={proposal.id}>
+                        <Td>
+                          <HStack>
+                            <Avatar src={proposal.dao.picture}></Avatar>
+                            <Link href={proposal.url} isExternal maxW="20rem">
+                              <Text noOfLines={1}>{proposal.title}</Text>
+                            </Link>
+                            <ExternalLinkIcon mx="2px" />
+                          </HStack>
+                        </Td>
+                        <Td maxW={"20rem"}>
+                          <Text noOfLines={1}>{proposal.description}</Text>
+                        </Td>
+                        <Td>{proposal.timeCreated.toString()}</Td>
+                        <Td>{proposal.timeEnd.toString()}</Td>
+                        <Td>Hardcoded yes</Td>
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            </TableContainer>
+          )}
         </VStack>
       </Grid>
     </Flex>
