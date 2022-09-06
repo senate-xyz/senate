@@ -22,34 +22,29 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
-import { NotificationTypes, SubscriptionType } from "../../../types";
+import { NotificationChannelTypes, SubscriptionType } from "../../../types";
 import { FaDiscord, FaSlack, FaCheck } from "react-icons/fa";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
-export const SubscriptionItem = (props: { dao: SubscriptionType }) => {
+export const SubscriptionItem = (props: { sub: SubscriptionType }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <HStack
       p="1rem"
       border="1px"
       borderRadius="5px"
       borderColor={
-        props.dao.notificationSettings.discord ||
-        props.dao.notificationSettings.slack
-          ? "gray.400"
-          : "gray.200"
+        props.sub.notificationChannels.length > 0 ? "gray.400" : "gray.200"
       }
       background={
-        props.dao.notificationSettings.discord ||
-        props.dao.notificationSettings.slack
-          ? "gray.200"
-          : "gray.100"
+        props.sub.notificationChannels.length > 0 ? "gray.200" : "gray.100"
       }
       w="full"
       onClick={onOpen}
     >
-      <Avatar src={props.dao.image}></Avatar>
-      <Text>{props.dao.name}</Text>
+      <Avatar src={props.sub.Dao.picture}></Avatar>
+      <Text>{props.sub.Dao.name}</Text>
       <Spacer />
 
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -61,76 +56,41 @@ export const SubscriptionItem = (props: { dao: SubscriptionType }) => {
             <Center>
               <VStack>
                 <HStack>
-                  <Avatar src={props.dao.image}></Avatar>
-                  <Text>{props.dao.name}</Text>
+                  <Avatar src={props.sub.Dao.picture}></Avatar>
+                  <Text>{props.sub.Dao.name}</Text>
                 </HStack>
                 <Divider />
                 <HStack>
                   <Icon as={FaDiscord} />
                   <Switch
-                    isChecked={props.dao.notificationSettings.discord}
+                    isChecked={
+                      props.sub.notificationChannels.filter(
+                        (channel) =>
+                          channel.type == NotificationChannelTypes.Discord
+                      ).length > 0
+                    }
                   ></Switch>
                 </HStack>
                 <HStack>
                   <Icon as={FaSlack} />
                   <Switch
-                    isChecked={props.dao.notificationSettings.slack}
+                    isChecked={
+                      props.sub.notificationChannels.filter(
+                        (channel) =>
+                          channel.type == NotificationChannelTypes.Slack
+                      ).length > 0
+                    }
                   ></Switch>
                 </HStack>
-                {props.dao.notificationSettings.notificationOptions.map(
-                  (opt) => {
-                    switch (opt.type) {
-                      case NotificationTypes.New:
-                        return (
-                          <HStack>
-                            <FaCheck /> <Text>On new proposal</Text>
-                          </HStack>
-                        );
-                      case NotificationTypes.threeDays:
-                        return (
-                          <HStack>
-                            <FaCheck /> <Text>3 days before</Text>
-                          </HStack>
-                        );
-                      case NotificationTypes.twoDays:
-                        return (
-                          <HStack>
-                            <FaCheck /> <Text>2 days before</Text>
-                          </HStack>
-                        );
-                      case NotificationTypes.oneDay:
-                        return (
-                          <HStack>
-                            <FaCheck /> <Text>1 day before</Text>
-                          </HStack>
-                        );
-                      case NotificationTypes.twelveHours:
-                        return (
-                          <HStack>
-                            <FaCheck /> <Text>12 hours before</Text>
-                          </HStack>
-                        );
-                      case NotificationTypes.sixHours:
-                        return (
-                          <HStack>
-                            <FaCheck /> <Text>6 hours before</Text>
-                          </HStack>
-                        );
-                      case NotificationTypes.threeHours:
-                        return (
-                          <HStack>
-                            <FaCheck /> <Text>3 hours before</Text>
-                          </HStack>
-                        );
-                      case NotificationTypes.oneHour:
-                        return (
-                          <HStack>
-                            <FaCheck /> <Text>1 hour before</Text>
-                          </HStack>
-                        );
-                    }
-                  }
-                )}
+                <VStack>
+                  {props.sub.notificationSettings.map((opt) => {
+                    return (
+                      <HStack key={opt.time.toString()}>
+                        <FaCheck /> <Text>{opt.time.toString()}</Text>
+                      </HStack>
+                    );
+                  })}
+                </VStack>
                 <Menu>
                   <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
                     Add new notification
