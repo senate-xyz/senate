@@ -7,7 +7,7 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY ./web-nextapp/package.json . 
 COPY ./yarn.lock .
-COPY ./web-nextapp/prisma/schema.prisma ./prisma/schema.prisma
+COPY ./prisma/schema.prisma ./prisma/schema.prisma
 
 RUN yarn
 ENV DATABASE_URL="file:./dev.db"

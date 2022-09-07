@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import { Flex } from "@chakra-ui/react";
 import NavBar from "../components/navbar/NavBar";
-import { Pages } from "../types";
+import { Pages } from "../../types";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 

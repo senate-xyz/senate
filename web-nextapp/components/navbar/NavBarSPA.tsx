@@ -1,6 +1,6 @@
 import { Flex, FlexProps, Icon } from "@chakra-ui/react";
 
-import { LinkItemSPAProps, Pages } from "../../types";
+import { LinkItemSPAProps, Pages } from "../../../types";
 
 interface NavItemProps extends FlexProps {
   item: LinkItemSPAProps;

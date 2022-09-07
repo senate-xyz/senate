@@ -6,10 +6,9 @@ import {
   Flex,
   Spinner,
   Center,
-  HStack,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { SubscriptionType, UnsubscribedType } from "../../../types";
+import { SubscriptionType, UnsubscribedType } from "../../../../types";
 
 import { SubscribedItem } from "./SubscribedItem";
 import { UnsubscribedItem } from "./UnsubscribedItem";
