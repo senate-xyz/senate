@@ -1,5 +1,4 @@
 import { Prisma } from "@prisma/client";
-import { IconType } from "react-icons/lib";
 
 export type SubscriptionType = Prisma.SubscriptionGetPayload<{
   include: {
@@ -42,5 +41,5 @@ export enum Pages {
 export interface LinkItemSPAProps {
   name: string;
   id: Pages;
-  icon: IconType;
+  icon: number;
 }

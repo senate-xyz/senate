@@ -5,9 +5,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "yarn workspaces foreach -ip -j unlimited run dev",
-    "build": "yarn workspaces foreach -t run build",
-    "start": "yarn workspaces foreach -t run start"
+    "dev": "yarn workspaces foreach -ip -t -j unlimited run dev",
+    "build": "yarn workspaces foreach -ip -j unlimited run build",
+    "start": "yarn workspaces foreach -ip -j unlimited run start"
   },
   "workspaces": [
     "web-nextapp",

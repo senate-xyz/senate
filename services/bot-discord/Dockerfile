@@ -1,21 +1,27 @@
-FROM node:16-alpine
+FROM --platform=linux/amd64 node:16-alpine
 
 # update packages
 RUN apk update
 
-# create root application folder
 WORKDIR /app
 
+COPY /types ./types
+COPY /prisma/schema.prisma ./prisma/schema.prisma
+
+# create root application folder
+WORKDIR /app/services/bot-discord
+
 # copy configs to /app folder
-COPY /services/bot-discord/package*.json ./
-COPY /yarn.lock ./
-COPY /services/bot-discord/tsconfig.json ./
+COPY /services/bot-discord/package.json .
+COPY /services/bot-discord/tsconfig.json .
 # copy source code to /app/src folder
-COPY /services/bot-discord/src /app/src
+COPY /services/bot-discord/src ./src
 
 RUN yarn
+RUN npx prisma generate
+RUN cp -R ./node_modules ../../types/
 RUN yarn build
 
 EXPOSE 3010
 
-CMD [ "node", "./dist/app.js" ]
+CMD [ "node", "./dist/services/bot-discord/src/app.js" ]
