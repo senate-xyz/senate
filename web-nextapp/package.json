@@ -2,13 +2,13 @@
   "name": "web-nextapp",
   "version": "0.1.0",
   "scripts": {
-    "dev": "prisma generate && next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "prisma generate --schema=../prisma/schema.prisma && next dev",
+    "build": "ENVIRONMENT=../.env next build",
+    "start": "ENVIRONMENT=../.env next start",
+    "lint": "ENVIRONMENT=../.env next lint"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} ../prisma/seed.ts"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.9",
@@ -19,6 +19,7 @@
     "framer-motion": "^7.2.1",
     "moment": "^2.29.4",
     "next": "12.2.5",
+    "prisma": "^4.3.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
@@ -30,7 +31,6 @@
     "@types/react-dom": "18.0.6",
     "eslint": "8.23.0",
     "eslint-config-next": "12.2.5",
-    "prisma": "^4.3.1",
     "typescript": "4.8.2"
   }
 }

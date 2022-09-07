@@ -21,7 +21,7 @@ import Moment from "react-moment";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
-import { ProposalType } from "../../../types";
+import { ProposalType } from "../../../../types";
 
 const TEST_USER = "0xbob";
 

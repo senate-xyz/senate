@@ -22,7 +22,7 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
-import { NotificationChannelTypes, SubscriptionType } from "../../../types";
+import { NotificationChannelTypes, SubscriptionType } from "../../../../types";
 import { FaDiscord, FaSlack, FaCheck } from "react-icons/fa";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 

@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { FiHome, FiList, FiSettings } from "react-icons/fi";
 import { NavItemSPA } from "./NavBarSPA";
-import { LinkItemSPAProps, Pages } from "../../types";
+import { LinkItemSPAProps, Pages } from "../../../types";
 
 const LinkItems: Array<LinkItemSPAProps> = [
   { name: "Dashboard", id: Pages.Dashboard, icon: FiHome },
