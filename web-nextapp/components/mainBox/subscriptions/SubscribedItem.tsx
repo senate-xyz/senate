@@ -145,7 +145,7 @@ export const SubscribedItem = (props: { sub: SubscriptionType }) => {
                 </VStack>
                 <Menu>
                   <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-                    Add new notification
+                    Set notification
                   </MenuButton>
                   <MenuList>
                     <MenuItem
