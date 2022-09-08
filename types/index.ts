@@ -11,7 +11,8 @@ export type SubscriptionType = Prisma.SubscriptionGetPayload<{
     };
     notificationSettings: {
       select: {
-        time: true;
+        createdTime: true;
+        delay: true;
       };
     };
   };
@@ -25,10 +26,30 @@ export type ProposalType = Prisma.ProposalGetPayload<{
   };
 }>;
 
-export enum NotificationChannelTypes {
+export type NotificationSettings = Prisma.NotificationSettingsGetPayload<{
+  select: {
+    createdTime: true;
+    delay: true;
+  };
+}>;
+
+export enum NotificationChannel {
   None = 0,
   Discord,
   Slack,
+}
+
+export enum NotificationInterval {
+  None = 0,
+  NewProposal = -1,
+  OneHour = 3600,
+  TwoHours = 3600 * 2,
+  ThreeHours = 3600 * 3,
+  SixHours = 3600 * 6,
+  TwelveHours = 3600 * 12,
+  OneDay = 86400,
+  TwoDays = 86400 * 2,
+  ThreeDays = 86400 * 3,
 }
 
 export enum Pages {
