@@ -20,6 +20,7 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Spinner,
 } from "@chakra-ui/react";
 import {
   DaoType,
@@ -40,6 +41,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
 
   const [notifSettings, setNotifSettings] = useState<NotificationSetting[]>([]);
   const [notifChannels, setNotifChannels] = useState<NotificationChannel[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const getData = () => {
     fetch(
@@ -52,6 +54,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
     ).then((response) => {
       response.json().then((data) => {
         setNotifSettings(data);
+        setLoading(false);
       });
     });
 
@@ -65,6 +68,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
     ).then((response) => {
       response.json().then((data) => {
         setNotifChannels(data);
+        setLoading(false);
       });
     });
   };
@@ -79,6 +83,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
       connector: "#defaultConnector",
     };
 
+    setLoading(true);
     fetch(
       `/api/notificationChannels?userAddress=${String(
         TEST_USER
@@ -98,6 +103,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
       delay: arg,
     };
 
+    setLoading(true);
     fetch(
       `/api/notificationSettings?userAddress=${String(
         TEST_USER
@@ -136,6 +142,11 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                 <HStack>
                   <Avatar src={props.dao.picture}></Avatar>
                   <Text>{props.dao.name}</Text>
+                  {loading && (
+                    <Center w="full">
+                      <Spinner />
+                    </Center>
+                  )}
                 </HStack>
                 <Divider />
                 <HStack>

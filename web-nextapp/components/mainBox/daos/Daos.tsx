@@ -13,12 +13,14 @@ import { SubscriptionItem } from "./DaoItem";
 
 const Subscriptions = () => {
   const [subscribed, setSubscribed] = useState<DaoType[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`/api/daos`, { method: "GET" })
       .then((response) => response.json())
       .then(async (data) => {
         setSubscribed(data);
+        setLoading(false);
       });
   }, []);
 
@@ -28,12 +30,12 @@ const Subscriptions = () => {
         <VStack bg="gray.100" m="10" align="start" spacing={2} p="5">
           <Text>DAOs</Text>
           <Divider />
+          {loading && (
+            <Center w="full">
+              <Spinner />
+            </Center>
+          )}
           <VStack w="full">
-            {!subscribed.length && (
-              <Center>
-                <Spinner />
-              </Center>
-            )}
             {subscribed.map((dao: DaoType, index: number) => {
               return (
                 <Flex key={index} w="full">
