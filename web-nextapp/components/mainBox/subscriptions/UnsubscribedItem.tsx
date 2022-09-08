@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Box,
   Divider,
   HStack,
   Icon,
@@ -22,8 +21,8 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
-import { NotificationChannelTypes, UnsubscribedType } from "../../../../types";
-import { FaDiscord, FaSlack, FaCheck } from "react-icons/fa";
+import { UnsubscribedType } from "../../../../types";
+import { FaDiscord, FaSlack } from "react-icons/fa";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export const UnsubscribedItem = (props: { unsub: UnsubscribedType }) => {

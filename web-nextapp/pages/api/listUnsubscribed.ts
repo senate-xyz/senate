@@ -32,7 +32,8 @@ export default async function handler(
       },
       notificationSettings: {
         select: {
-          time: true,
+          createdTime: true,
+          delay: true,
         },
       },
     },

@@ -128,3 +128,4 @@ dist
 .DS_Store
 package-lock.json
 web-nextapp/prisma/migrations
+prisma/dev.db

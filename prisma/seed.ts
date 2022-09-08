@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { NotificationChannelTypes } from "../types";
+import { NotificationChannel, NotificationInterval } from "../types";
 const prisma = new PrismaClient();
 
 async function main() {
@@ -189,20 +189,20 @@ async function main() {
             notificationChannels: {
               create: [
                 {
-                  type: NotificationChannelTypes.Discord,
+                  type: NotificationChannel.Discord,
                   connector: "#discordChannel",
                 },
                 {
-                  type: NotificationChannelTypes.Slack,
+                  type: NotificationChannel.Slack,
                   connector: "#slackChannel",
                 },
               ],
             },
             notificationSettings: {
               create: [
-                { time: new Date(1662410000000) },
-                { time: new Date(1662420000000) },
-                { time: new Date(1662430000000) },
+                { delay: NotificationInterval.OneHour },
+                { delay: NotificationInterval.SixHours },
+                { delay: NotificationInterval.TwoDays },
               ],
             },
           },
@@ -221,20 +221,21 @@ async function main() {
             notificationChannels: {
               create: [
                 {
-                  type: NotificationChannelTypes.Discord,
+                  type: NotificationChannel.Discord,
                   connector: "#discordChannel",
                 },
                 {
-                  type: NotificationChannelTypes.Slack,
+                  type: NotificationChannel.Slack,
                   connector: "#slackChannel",
                 },
               ],
             },
             notificationSettings: {
               create: [
-                { time: new Date(1662440000000) },
-                { time: new Date(1662450000000) },
-                { time: new Date(1662460000000) },
+                { delay: NotificationInterval.OneHour },
+                { delay: NotificationInterval.SixHours },
+                { delay: NotificationInterval.OneDay },
+                { delay: NotificationInterval.TwoDays },
               ],
             },
           },
@@ -243,18 +244,18 @@ async function main() {
             notificationChannels: {
               create: [
                 {
-                  type: NotificationChannelTypes.Discord,
+                  type: NotificationChannel.Discord,
                   connector: "#discordChannel",
                 },
               ],
             },
             notificationSettings: {
               create: [
-                { time: new Date(1662470000000) },
-                { time: new Date(1662480000000) },
-                { time: new Date(1662500000000) },
-                { time: new Date(1662510000000) },
-                { time: new Date(1662520000000) },
+                { delay: NotificationInterval.OneHour },
+                { delay: NotificationInterval.TwoHours },
+                { delay: NotificationInterval.SixHours },
+                { delay: NotificationInterval.OneDay },
+                { delay: NotificationInterval.TwoDays },
               ],
             },
           },
