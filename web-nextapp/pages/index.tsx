@@ -14,7 +14,7 @@ const DyanmicProposals = dynamic(
 );
 
 const DynamicSubscriptions = dynamic(
-  () => import("../components/mainBox/subscriptions/Subscriptions"),
+  () => import("../components/mainBox/daos/Daos"),
   {
     suspense: true,
   }
@@ -29,10 +29,6 @@ const DynamiSettings = dynamic(
 
 const Home: NextPage = () => {
   const [page, setPage] = useState(Pages.Dashboard);
-
-  useEffect(() => {
-    console.log(page);
-  }, [page]);
 
   return (
     <Flex flexDir="row" w="100vw">

@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { NotificationChannel, NotificationInterval } from "../types";
+import { NotificationChannelType, NotificationInterval } from "../types";
 const prisma = new PrismaClient();
 
 async function main() {
@@ -9,20 +9,12 @@ async function main() {
     await prisma.proposal.deleteMany();
     await prisma.subscription.deleteMany();
     await prisma.notificationChannel.deleteMany();
-    await prisma.notificationSettings.deleteMany();
+    await prisma.notificationSetting.deleteMany();
   } catch (e) {
     console.log("db already empty");
   }
 
-  await prisma.user.upsert({
-    where: { address: "system" },
-    update: {},
-    create: {
-      address: "system",
-    },
-  });
-
-  await prisma.user.upsert({
+  const alice = await prisma.user.upsert({
     where: { address: "0xalice" },
     update: {},
     create: {
@@ -30,7 +22,7 @@ async function main() {
     },
   });
 
-  await prisma.user.upsert({
+  const bob = await prisma.user.upsert({
     where: { address: "0xbob" },
     update: {},
     create: {
@@ -49,19 +41,6 @@ async function main() {
     },
   });
 
-  await prisma.user.update({
-    where: { address: "system" },
-    data: {
-      subscriptions: {
-        create: [
-          {
-            daoId: dd.id,
-          },
-        ],
-      },
-    },
-  });
-
   const fwb = await prisma.dao.upsert({
     where: { address: "0xfwb_dao" },
     update: {},
@@ -73,38 +52,12 @@ async function main() {
     },
   });
 
-  await prisma.user.update({
-    where: { address: "system" },
-    data: {
-      subscriptions: {
-        create: [
-          {
-            daoId: fwb.id,
-          },
-        ],
-      },
-    },
-  });
-
   const nouns = await prisma.dao.upsert({
     where: { address: "0xnouns_dao" },
     update: {},
     create: {
       name: "Nouns",
       address: "0xnouns",
-    },
-  });
-
-  await prisma.user.update({
-    where: { address: "system" },
-    data: {
-      subscriptions: {
-        create: [
-          {
-            daoId: nouns.id,
-          },
-        ],
-      },
     },
   });
 
@@ -179,86 +132,90 @@ async function main() {
     },
   });
 
-  await prisma.user.update({
-    where: { address: "0xalice" },
+  // await prisma.subscription.create({
+  //   data: {
+  //     User: {
+  //       connect: {
+  //         id: alice.id,
+  //       },
+  //     },
+  //     Dao: {
+  //       connect: {
+  //         id: fwb.id,
+  //       },
+  //     },
+  //     notificationChannels: {
+  //       create: [
+  //         {
+  //           type: NotificationChannelType.Discord,
+  //           connector: "#discordChannel",
+  //         },
+  //         {
+  //           type: NotificationChannelType.Slack,
+  //           connector: "#slackChannel",
+  //         },
+  //       ],
+  //     },
+  //     notificationSettings: {
+  //       create: [
+  //         { delay: NotificationInterval.OneHour },
+  //         { delay: NotificationInterval.SixHours },
+  //         { delay: NotificationInterval.TwoDays },
+  //       ],
+  //     },
+  //   },
+  // });
+
+  // await prisma.subscription.create({
+  //   data: {
+  //     User: {
+  //       connect: {
+  //         id: bob.id,
+  //       },
+  //     },
+  //     Dao: {
+  //       connect: {
+  //         id: fwb.id,
+  //       },
+  //     },
+  //     notificationChannels: {
+  //       create: [
+  //         {
+  //           type: NotificationChannelType.Discord,
+  //           connector: "#discordChannel",
+  //         },
+  //       ],
+  //     },
+  //     notificationSettings: {
+  //       create: [{ delay: NotificationInterval.OneHour }],
+  //     },
+  //   },
+  // });
+
+  await prisma.subscription.create({
     data: {
-      subscriptions: {
+      User: {
+        connect: {
+          id: bob.id,
+        },
+      },
+      Dao: {
+        connect: {
+          id: dd.id,
+        },
+      },
+      notificationChannels: {
         create: [
           {
-            daoId: fwb.id,
-            notificationChannels: {
-              create: [
-                {
-                  type: NotificationChannel.Discord,
-                  connector: "#discordChannel",
-                },
-                {
-                  type: NotificationChannel.Slack,
-                  connector: "#slackChannel",
-                },
-              ],
-            },
-            notificationSettings: {
-              create: [
-                { delay: NotificationInterval.OneHour },
-                { delay: NotificationInterval.SixHours },
-                { delay: NotificationInterval.TwoDays },
-              ],
-            },
+            type: NotificationChannelType.Discord,
+            connector: "#discordChannel",
           },
         ],
       },
-    },
-  });
-
-  await prisma.user.update({
-    where: { address: "0xbob" },
-    data: {
-      subscriptions: {
+      notificationSettings: {
         create: [
-          {
-            daoId: fwb.id,
-            notificationChannels: {
-              create: [
-                {
-                  type: NotificationChannel.Discord,
-                  connector: "#discordChannel",
-                },
-                {
-                  type: NotificationChannel.Slack,
-                  connector: "#slackChannel",
-                },
-              ],
-            },
-            notificationSettings: {
-              create: [
-                { delay: NotificationInterval.OneHour },
-                { delay: NotificationInterval.SixHours },
-                { delay: NotificationInterval.OneDay },
-                { delay: NotificationInterval.TwoDays },
-              ],
-            },
-          },
-          {
-            daoId: dd.id,
-            notificationChannels: {
-              create: [
-                {
-                  type: NotificationChannel.Discord,
-                  connector: "#discordChannel",
-                },
-              ],
-            },
-            notificationSettings: {
-              create: [
-                { delay: NotificationInterval.OneHour },
-                { delay: NotificationInterval.TwoHours },
-                { delay: NotificationInterval.SixHours },
-                { delay: NotificationInterval.OneDay },
-                { delay: NotificationInterval.TwoDays },
-              ],
-            },
-          },
+          { delay: NotificationInterval.OneHour },
+          { delay: NotificationInterval.TwoHours },
         ],
       },
     },

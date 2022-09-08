@@ -31,26 +31,26 @@ model Dao {
 }
 
 model Subscription {
-  id                   Int                    @id @default(autoincrement())
-  User                 User                   @relation(fields: [userId], references: [id])
+  id                   Int                   @id @default(autoincrement())
+  User                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId               Int
-  Dao                  Dao                    @relation(fields: [daoId], references: [id])
+  Dao                  Dao                   @relation(fields: [daoId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   daoId                Int
   notificationChannels NotificationChannel[]
-  notificationSettings NotificationSettings[]
+  notificationSettings NotificationSetting[]
 }
 
 model NotificationChannel {
   id             Int          @id @default(autoincrement())
-  Subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  Subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
   subscriptionId Int
   type           Int
   connector      String
 }
 
-model NotificationSettings {
+model NotificationSetting {
   id             Int          @id @default(autoincrement())
-  Subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  Subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
   subscriptionId Int
   createdTime    DateTime     @default(now())
   delay          Int
@@ -58,7 +58,7 @@ model NotificationSettings {
 
 model Proposal {
   id          Int      @id @default(autoincrement())
-  dao         Dao      @relation(fields: [daoId], references: [id])
+  dao         Dao      @relation(fields: [daoId], references: [id], onDelete: Cascade)
   daoId       Int
   title       String
   description String

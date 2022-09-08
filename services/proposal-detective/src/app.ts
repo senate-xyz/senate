@@ -1,6 +1,6 @@
 import express from "express";
-import { SubscriptionType } from "../../../types/index";
-let integrationTestType: SubscriptionType;
+import { ProposalType } from "./../../../types/index";
+let integrationTestType: ProposalType;
 
 const app = express();
 const port = 3001;
