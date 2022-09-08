@@ -25,11 +25,13 @@ import { ProposalType, TEST_USER } from "../../../../types";
 
 export const Proposals = () => {
   const [proposals, setProposals] = useState<ProposalType[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`/api/proposals/?userInputAddress=${TEST_USER}`)
       .then((response) => response.json())
       .then(async (data) => {
+        setLoading(false);
         setProposals(data);
       });
   }, []);
@@ -40,7 +42,7 @@ export const Proposals = () => {
         <VStack bg="gray.100" m="10" align="start" spacing={5} p="5">
           <Text>Proposals</Text>
           <Divider></Divider>
-          {!proposals.length && (
+          {loading && (
             <Center w="full">
               <Spinner />
             </Center>
