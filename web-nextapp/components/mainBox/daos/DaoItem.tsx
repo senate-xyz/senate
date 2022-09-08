@@ -21,57 +21,94 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
-import { CheckIcon } from "@chakra-ui/icons";
 import {
+  DaoType,
   NotificationChannel,
+  NotificationChannelType,
   NotificationInterval,
-  NotificationSettings,
-  SubscriptionType,
+  NotificationSetting,
+  TEST_USER,
 } from "../../../../types";
-import { FaDiscord, FaSlack, FaCheck } from "react-icons/fa";
-import { ChevronDownIcon, BellIcon } from "@chakra-ui/icons";
+import { FaDiscord, FaSlack } from "react-icons/fa";
+import { ChevronDownIcon, BellIcon, CheckIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
 import moment from "moment";
+import { Prisma } from "@prisma/client";
 
-export const SubscribedItem = (props: { sub: SubscriptionType }) => {
+export const SubscriptionItem = (props: { dao: DaoType }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [discordChecked, setDiscordChecked] = useState(false);
-  const [slackChecked, setSlackChcked] = useState(false);
-  const [notifSettings, setNotifSettings] = useState<NotificationSettings[]>(
-    []
-  );
+  const [notifSettings, setNotifSettings] = useState<NotificationSetting[]>([]);
+  const [notifChannels, setNotifChannels] = useState<NotificationChannel[]>([]);
+
+  const getData = () => {
+    fetch(
+      `/api/notificationSettings?userAddress=${String(
+        TEST_USER
+      )}&daoId=${String(props.dao.id)}`,
+      {
+        method: "GET",
+      }
+    ).then((response) => {
+      response.json().then((data) => {
+        setNotifSettings(data);
+      });
+    });
+
+    fetch(
+      `/api/notificationChannels?userAddress=${String(
+        TEST_USER
+      )}&daoId=${String(props.dao.id)}`,
+      {
+        method: "GET",
+      }
+    ).then((response) => {
+      response.json().then((data) => {
+        setNotifChannels(data);
+      });
+    });
+  };
 
   useEffect(() => {
-    setDiscordChecked(
-      props.sub.notificationChannels.filter(
-        (channel: any) => channel.type == NotificationChannel.Discord
-      ).length > 0
-    );
-
-    setSlackChcked(
-      props.sub.notificationChannels.filter(
-        (channel: any) => channel.type == NotificationChannel.Slack
-      ).length > 0
-    );
-
-    setNotifSettings(props.sub.notificationSettings);
+    getData();
   }, [props]);
 
-  const setNotif = (arg0: NotificationInterval) => {
-    let tmp: NotificationSettings[] = [];
+  const setChannel = (arg: NotificationChannelType, method: string) => {
+    let tmp: NotificationChannel = {
+      type: arg,
+      connector: "#defaultConnector",
+    };
 
-    let found = notifSettings.find((e) => e.delay == arg0);
+    fetch(
+      `/api/notificationChannels?userAddress=${String(
+        TEST_USER
+      )}&daoId=${String(props.dao.id)}`,
+      {
+        method: method,
+        body: JSON.stringify(tmp),
+      }
+    ).then(() => {
+      getData();
+    });
+  };
 
-    if (found) {
-      tmp = notifSettings.filter((i) => i != found);
-    } else
-      tmp = [
-        ...notifSettings,
-        { createdTime: new Date(), delay: arg0 as number },
-      ];
+  const setSetting = (arg: NotificationInterval, method: string) => {
+    let tmp: NotificationSetting = {
+      createdTime: new Date(),
+      delay: arg,
+    };
 
-    setNotifSettings(tmp);
+    fetch(
+      `/api/notificationSettings?userAddress=${String(
+        TEST_USER
+      )}&daoId=${String(props.dao.id)}`,
+      {
+        method: method,
+        body: JSON.stringify(tmp),
+      }
+    ).then(() => {
+      getData();
+    });
   };
 
   return (
@@ -79,17 +116,13 @@ export const SubscribedItem = (props: { sub: SubscriptionType }) => {
       p="1rem"
       border="1px"
       borderRadius="5px"
-      borderColor={
-        props.sub.notificationChannels.length > 0 ? "gray.400" : "gray.200"
-      }
-      background={
-        props.sub.notificationChannels.length > 0 ? "gray.200" : "gray.100"
-      }
+      borderColor={notifChannels.length > 0 ? "gray.400" : "gray.200"}
+      background={notifChannels.length > 0 ? "gray.200" : "gray.100"}
       w="full"
       onClick={onOpen}
     >
-      <Avatar src={props.sub.Dao.picture}></Avatar>
-      <Text>{props.sub.Dao.name}</Text>
+      <Avatar src={props.dao.picture}></Avatar>
+      <Text>{props.dao.name}</Text>
       <Spacer />
 
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -101,25 +134,47 @@ export const SubscribedItem = (props: { sub: SubscriptionType }) => {
             <Center>
               <VStack>
                 <HStack>
-                  <Avatar src={props.sub.Dao.picture}></Avatar>
-                  <Text>{props.sub.Dao.name}</Text>
+                  <Avatar src={props.dao.picture}></Avatar>
+                  <Text>{props.dao.name}</Text>
                 </HStack>
                 <Divider />
                 <HStack>
                   <Icon as={FaDiscord} />
                   <Switch
-                    isChecked={discordChecked}
+                    isChecked={
+                      notifChannels.filter(
+                        (opt) => opt.type == NotificationChannelType.Discord
+                      ).length > 0
+                    }
                     onChange={() => {
-                      setDiscordChecked(!discordChecked);
+                      setChannel(
+                        NotificationChannelType.Discord,
+                        notifChannels.filter(
+                          (opt) => opt.type == NotificationChannelType.Discord
+                        ).length > 0
+                          ? "DELETE"
+                          : "PUT"
+                      );
                     }}
                   ></Switch>
                 </HStack>
                 <HStack>
                   <Icon as={FaSlack} />
                   <Switch
-                    isChecked={slackChecked}
+                    isChecked={
+                      notifChannels.filter(
+                        (opt) => opt.type == NotificationChannelType.Slack
+                      ).length > 0
+                    }
                     onChange={() => {
-                      setSlackChcked(!slackChecked);
+                      setChannel(
+                        NotificationChannelType.Slack,
+                        notifChannels.filter(
+                          (opt) => opt.type == NotificationChannelType.Slack
+                        ).length > 0
+                          ? "DELETE"
+                          : "PUT"
+                      );
                     }}
                   ></Switch>
                 </HStack>
@@ -150,7 +205,15 @@ export const SubscribedItem = (props: { sub: SubscriptionType }) => {
                   <MenuList>
                     <MenuItem
                       onClick={() => {
-                        setNotif(NotificationInterval.NewProposal);
+                        setSetting(
+                          NotificationInterval.NewProposal,
+                          notifSettings.filter(
+                            (opt) =>
+                              opt.delay == NotificationInterval.NewProposal
+                          ).length > 0
+                            ? "DELETE"
+                            : "PUT"
+                        );
                       }}
                     >
                       <HStack>
@@ -162,7 +225,14 @@ export const SubscribedItem = (props: { sub: SubscriptionType }) => {
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setNotif(NotificationInterval.OneHour);
+                        setSetting(
+                          NotificationInterval.OneHour,
+                          notifSettings.filter(
+                            (opt) => opt.delay == NotificationInterval.OneHour
+                          ).length > 0
+                            ? "DELETE"
+                            : "PUT"
+                        );
                       }}
                     >
                       <HStack>
@@ -174,7 +244,14 @@ export const SubscribedItem = (props: { sub: SubscriptionType }) => {
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setNotif(NotificationInterval.TwoHours);
+                        setSetting(
+                          NotificationInterval.TwoHours,
+                          notifSettings.filter(
+                            (opt) => opt.delay == NotificationInterval.TwoHours
+                          ).length > 0
+                            ? "DELETE"
+                            : "PUT"
+                        );
                       }}
                     >
                       <HStack>
@@ -186,7 +263,15 @@ export const SubscribedItem = (props: { sub: SubscriptionType }) => {
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setNotif(NotificationInterval.ThreeHours);
+                        setSetting(
+                          NotificationInterval.ThreeHours,
+                          notifSettings.filter(
+                            (opt) =>
+                              opt.delay == NotificationInterval.ThreeHours
+                          ).length > 0
+                            ? "DELETE"
+                            : "PUT"
+                        );
                       }}
                     >
                       <HStack>
@@ -198,7 +283,14 @@ export const SubscribedItem = (props: { sub: SubscriptionType }) => {
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setNotif(NotificationInterval.SixHours);
+                        setSetting(
+                          NotificationInterval.SixHours,
+                          notifSettings.filter(
+                            (opt) => opt.delay == NotificationInterval.SixHours
+                          ).length > 0
+                            ? "DELETE"
+                            : "PUT"
+                        );
                       }}
                     >
                       <HStack>
@@ -210,7 +302,15 @@ export const SubscribedItem = (props: { sub: SubscriptionType }) => {
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setNotif(NotificationInterval.TwelveHours);
+                        setSetting(
+                          NotificationInterval.TwelveHours,
+                          notifSettings.filter(
+                            (opt) =>
+                              opt.delay == NotificationInterval.TwelveHours
+                          ).length > 0
+                            ? "DELETE"
+                            : "PUT"
+                        );
                       }}
                     >
                       <HStack>
@@ -222,7 +322,14 @@ export const SubscribedItem = (props: { sub: SubscriptionType }) => {
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setNotif(NotificationInterval.OneDay);
+                        setSetting(
+                          NotificationInterval.OneDay,
+                          notifSettings.filter(
+                            (opt) => opt.delay == NotificationInterval.OneDay
+                          ).length > 0
+                            ? "DELETE"
+                            : "PUT"
+                        );
                       }}
                     >
                       <HStack>
@@ -234,7 +341,14 @@ export const SubscribedItem = (props: { sub: SubscriptionType }) => {
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setNotif(NotificationInterval.TwoDays);
+                        setSetting(
+                          NotificationInterval.TwoDays,
+                          notifSettings.filter(
+                            (opt) => opt.delay == NotificationInterval.TwoDays
+                          ).length > 0
+                            ? "DELETE"
+                            : "PUT"
+                        );
                       }}
                     >
                       <HStack>
@@ -246,7 +360,14 @@ export const SubscribedItem = (props: { sub: SubscriptionType }) => {
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setNotif(NotificationInterval.ThreeDays);
+                        setSetting(
+                          NotificationInterval.ThreeDays,
+                          notifSettings.filter(
+                            (opt) => opt.delay == NotificationInterval.ThreeDays
+                          ).length > 0
+                            ? "DELETE"
+                            : "PUT"
+                        );
                       }}
                     >
                       <HStack>

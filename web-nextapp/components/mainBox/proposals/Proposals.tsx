@@ -21,15 +21,13 @@ import Moment from "react-moment";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
-import { ProposalType } from "../../../../types";
-
-const TEST_USER = "0xbob";
+import { ProposalType, TEST_USER } from "../../../../types";
 
 export const Proposals = () => {
   const [proposals, setProposals] = useState<ProposalType[]>([]);
 
   useEffect(() => {
-    fetch(`/api/listProposals/?userInputAddress=${TEST_USER}`)
+    fetch(`/api/proposals/?userInputAddress=${TEST_USER}`)
       .then((response) => response.json())
       .then(async (data) => {
         setProposals(data);

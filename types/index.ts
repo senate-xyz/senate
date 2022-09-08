@@ -1,24 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-export type SubscriptionType = Prisma.SubscriptionGetPayload<{
-  include: {
-    Dao: true;
-    notificationChannels: {
-      select: {
-        type: true;
-        connector: true;
-      };
-    };
-    notificationSettings: {
-      select: {
-        createdTime: true;
-        delay: true;
-      };
-    };
-  };
-}>;
-
-export type UnsubscribedType = Prisma.DaoGetPayload<{}>;
+export type DaoType = Prisma.DaoGetPayload<{}>;
 
 export type ProposalType = Prisma.ProposalGetPayload<{
   include: {
@@ -26,14 +8,21 @@ export type ProposalType = Prisma.ProposalGetPayload<{
   };
 }>;
 
-export type NotificationSettings = Prisma.NotificationSettingsGetPayload<{
+export type NotificationSetting = Prisma.NotificationSettingGetPayload<{
   select: {
     createdTime: true;
     delay: true;
   };
 }>;
 
-export enum NotificationChannel {
+export type NotificationChannel = Prisma.NotificationChannelGetPayload<{
+  select: {
+    type: true;
+    connector: true;
+  };
+}>;
+
+export enum NotificationChannelType {
   None = 0,
   Discord,
   Slack,
@@ -64,3 +53,5 @@ export interface LinkItemSPAProps {
   id: Pages;
   icon: number;
 }
+
+export const TEST_USER = "0xbob";
