@@ -146,6 +146,15 @@ const findGovernorBravoProposals = async (dao: any) => {
     );
     let proposalUrl = dao.proposalUrl + proposals[i].eventData.id;
 
+    await prisma.dao.update({
+      where: {
+        id: dao.id,
+      },
+      data: {
+        latestBlock: proposals[i].txBlock + 1,
+      },
+    });
+
     // TODO create only if the record doesn't exist
     let proposal = await prisma.proposal.upsert({
       where: { id: 0 },
