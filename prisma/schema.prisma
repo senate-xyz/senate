@@ -5,21 +5,29 @@ generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 // datasource db {
-//   provider = "sqlite"
-//   url      = "file:./dev.db"
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
 // }
 
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
 model User {
-  id            Int            @id @default(autoincrement())
-  address       String         @unique
-  proxyContracts String[]
-  subscriptions Subscription[]
+  id             Int             @id @default(autoincrement())
+  address        String          @unique
+  proxyContracts ProxyContract[]
+  subscriptions  Subscription[]
+  UserVote       UserVote[]
+}
+
+model ProxyContract {
+  id      Int    @id @default(autoincrement())
+  address String
+  User    User?  @relation(fields: [userId], references: [id])
+  userId  Int?
 }
 
 model Dao {
@@ -61,8 +69,8 @@ model NotificationSetting {
 }
 
 model Proposal {
-  id          Int      @id @default(autoincrement())
-  dao         Dao      @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  id          Int        @id @default(autoincrement())
+  dao         Dao        @relation(fields: [daoId], references: [id], onDelete: Cascade)
   daoId       Int
   title       String
   description String
@@ -70,4 +78,15 @@ model Proposal {
   voteStarts  DateTime
   voteEnds    DateTime
   url         String
+  UserVote    UserVote[]
+}
+
+model UserVote {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  proposal   Proposal @relation(fields: [proposalId], references: [id])
+  proposalId Int
+  voteOption Int
+  voteName   String
 }

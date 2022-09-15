@@ -42,6 +42,7 @@ export default async function handler(
       },
       include: {
         dao: true,
+        UserVote: true,
       },
       orderBy: {
         voteEnds: "desc",
@@ -56,6 +57,7 @@ export default async function handler(
       },
       include: {
         dao: true,
+        UserVote: true,
       },
     });
   }
