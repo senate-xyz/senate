@@ -17,11 +17,11 @@ import {
   Center,
   Spinner,
 } from "@chakra-ui/react";
-import Moment from "react-moment";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
 import { ProposalType, TEST_USER } from "../../../../types";
+import moment from "moment";
 
 export const Proposals = () => {
   const [proposals, setProposals] = useState<ProposalType[]>([]);
@@ -74,11 +74,7 @@ export const Proposals = () => {
                         <Td maxW={"20rem"}>
                           <Text noOfLines={1}>{proposal.description}</Text>
                         </Td>
-                        <Td>
-                          <Moment diff={proposal.created} unit="minutes">
-                            {proposal.voteEnds}
-                          </Moment>
-                        </Td>
+                        <Td>{moment(proposal.voteEnds).fromNow()}</Td>
 
                         <Td>Hardcoded yes</Td>
                       </Tr>
@@ -93,4 +89,5 @@ export const Proposals = () => {
     </Flex>
   );
 };
+
 export default Proposals;

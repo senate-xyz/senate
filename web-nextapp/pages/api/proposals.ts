@@ -24,10 +24,15 @@ export default async function handler(
     },
   });
 
+  const DAYS_AGO = 10;
+  let date = new Date(new Date().setDate(new Date().getDate() - DAYS_AGO));
   const userProposals = await prisma.proposal.findMany({
     where: {
       daoId: {
         in: userDaos.map((dao: any) => dao.daoId),
+      },
+      voteEnds: {
+        gt: date,
       },
     },
     include: {
