@@ -9,27 +9,32 @@ export type ProposalType = Prisma.ProposalGetPayload<{
   };
 }>;
 
-export type NotificationSetting = Prisma.NotificationSettingGetPayload<{
+export enum ProposalTypeEnum {
+  Snapshot = 0,
+  Chain,
+}
+
+export type NotificationSettingType = Prisma.NotificationSettingGetPayload<{
   select: {
     createdTime: true;
     delay: true;
   };
 }>;
 
-export type NotificationChannel = Prisma.NotificationChannelGetPayload<{
+export type NotificationChannelType = Prisma.NotificationChannelGetPayload<{
   select: {
     type: true;
     connector: true;
   };
 }>;
 
-export enum NotificationChannelType {
+export enum NotificationChannelEnum {
   None = 0,
   Discord,
   Slack,
 }
 
-export enum NotificationInterval {
+export enum NotificationIntervalEnum {
   None = 0,
   NewProposal = -1,
   OneHour = 3600,
@@ -42,7 +47,7 @@ export enum NotificationInterval {
   ThreeDays = 86400 * 3,
 }
 
-export enum Pages {
+export enum PagesEnum {
   None = 1,
   Dashboard,
   Subscriptions,
@@ -51,8 +56,8 @@ export enum Pages {
 
 export interface LinkItemSPAProps {
   name: string;
-  id: Pages;
+  id: PagesEnum;
   icon: number;
 }
 
-export const TEST_USER = "0xbob";
+export const TEST_USER = "0xa93ae3a2ce1714f422ec2d799c48a56b2035c872";

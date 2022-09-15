@@ -24,10 +24,10 @@ import {
 } from "@chakra-ui/react";
 import {
   DaoType,
-  NotificationChannel,
   NotificationChannelType,
-  NotificationInterval,
-  NotificationSetting,
+  NotificationChannelEnum,
+  NotificationIntervalEnum,
+  NotificationSettingType,
   TEST_USER,
 } from "../../../../types";
 import { FaDiscord, FaSlack } from "react-icons/fa";
@@ -39,8 +39,12 @@ import { Prisma } from "@prisma/client";
 export const SubscriptionItem = (props: { dao: DaoType }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [notifSettings, setNotifSettings] = useState<NotificationSetting[]>([]);
-  const [notifChannels, setNotifChannels] = useState<NotificationChannel[]>([]);
+  const [notifSettings, setNotifSettings] = useState<NotificationSettingType[]>(
+    []
+  );
+  const [notifChannels, setNotifChannels] = useState<NotificationChannelType[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
 
   const getData = () => {
@@ -77,8 +81,8 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
     getData();
   }, [props]);
 
-  const setChannel = (arg: NotificationChannelType, method: string) => {
-    let tmp: NotificationChannel = {
+  const setChannel = (arg: NotificationChannelEnum, method: string) => {
+    let tmp: NotificationChannelType = {
       type: arg,
       connector: "#defaultConnector",
     };
@@ -97,8 +101,8 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
     });
   };
 
-  const setSetting = (arg: NotificationInterval, method: string) => {
-    let tmp: NotificationSetting = {
+  const setSetting = (arg: NotificationIntervalEnum, method: string) => {
+    let tmp: NotificationSettingType = {
       createdTime: new Date(),
       delay: arg,
     };
@@ -154,14 +158,14 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                   <Switch
                     isChecked={
                       notifChannels.filter(
-                        (opt) => opt.type == NotificationChannelType.Discord
+                        (opt) => opt.type == NotificationChannelEnum.Discord
                       ).length > 0
                     }
                     onChange={() => {
                       setChannel(
-                        NotificationChannelType.Discord,
+                        NotificationChannelEnum.Discord,
                         notifChannels.filter(
-                          (opt) => opt.type == NotificationChannelType.Discord
+                          (opt) => opt.type == NotificationChannelEnum.Discord
                         ).length > 0
                           ? "DELETE"
                           : "PUT"
@@ -174,14 +178,14 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                   <Switch
                     isChecked={
                       notifChannels.filter(
-                        (opt) => opt.type == NotificationChannelType.Slack
+                        (opt) => opt.type == NotificationChannelEnum.Slack
                       ).length > 0
                     }
                     onChange={() => {
                       setChannel(
-                        NotificationChannelType.Slack,
+                        NotificationChannelEnum.Slack,
                         notifChannels.filter(
-                          (opt) => opt.type == NotificationChannelType.Slack
+                          (opt) => opt.type == NotificationChannelEnum.Slack
                         ).length > 0
                           ? "DELETE"
                           : "PUT"
@@ -217,10 +221,10 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     <MenuItem
                       onClick={() => {
                         setSetting(
-                          NotificationInterval.NewProposal,
+                          NotificationIntervalEnum.NewProposal,
                           notifSettings.filter(
                             (opt) =>
-                              opt.delay == NotificationInterval.NewProposal
+                              opt.delay == NotificationIntervalEnum.NewProposal
                           ).length > 0
                             ? "DELETE"
                             : "PUT"
@@ -229,7 +233,8 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     >
                       <HStack>
                         {notifSettings.filter(
-                          (opt) => opt.delay == NotificationInterval.NewProposal
+                          (opt) =>
+                            opt.delay == NotificationIntervalEnum.NewProposal
                         ).length > 0 && <CheckIcon />}
                         <Text>New proposal</Text>
                       </HStack>
@@ -237,9 +242,10 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     <MenuItem
                       onClick={() => {
                         setSetting(
-                          NotificationInterval.OneHour,
+                          NotificationIntervalEnum.OneHour,
                           notifSettings.filter(
-                            (opt) => opt.delay == NotificationInterval.OneHour
+                            (opt) =>
+                              opt.delay == NotificationIntervalEnum.OneHour
                           ).length > 0
                             ? "DELETE"
                             : "PUT"
@@ -248,7 +254,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     >
                       <HStack>
                         {notifSettings.filter(
-                          (opt) => opt.delay == NotificationInterval.OneHour
+                          (opt) => opt.delay == NotificationIntervalEnum.OneHour
                         ).length > 0 && <CheckIcon />}
                         <Text>1 hour left to vote</Text>
                       </HStack>
@@ -256,9 +262,10 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     <MenuItem
                       onClick={() => {
                         setSetting(
-                          NotificationInterval.TwoHours,
+                          NotificationIntervalEnum.TwoHours,
                           notifSettings.filter(
-                            (opt) => opt.delay == NotificationInterval.TwoHours
+                            (opt) =>
+                              opt.delay == NotificationIntervalEnum.TwoHours
                           ).length > 0
                             ? "DELETE"
                             : "PUT"
@@ -267,7 +274,8 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     >
                       <HStack>
                         {notifSettings.filter(
-                          (opt) => opt.delay == NotificationInterval.TwoHours
+                          (opt) =>
+                            opt.delay == NotificationIntervalEnum.TwoHours
                         ).length > 0 && <CheckIcon />}
                         <Text>2 hours left to vote</Text>
                       </HStack>
@@ -275,10 +283,10 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     <MenuItem
                       onClick={() => {
                         setSetting(
-                          NotificationInterval.ThreeHours,
+                          NotificationIntervalEnum.ThreeHours,
                           notifSettings.filter(
                             (opt) =>
-                              opt.delay == NotificationInterval.ThreeHours
+                              opt.delay == NotificationIntervalEnum.ThreeHours
                           ).length > 0
                             ? "DELETE"
                             : "PUT"
@@ -287,7 +295,8 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     >
                       <HStack>
                         {notifSettings.filter(
-                          (opt) => opt.delay == NotificationInterval.ThreeHours
+                          (opt) =>
+                            opt.delay == NotificationIntervalEnum.ThreeHours
                         ).length > 0 && <CheckIcon />}
                         <Text>3 hours left to vote</Text>
                       </HStack>
@@ -295,9 +304,10 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     <MenuItem
                       onClick={() => {
                         setSetting(
-                          NotificationInterval.SixHours,
+                          NotificationIntervalEnum.SixHours,
                           notifSettings.filter(
-                            (opt) => opt.delay == NotificationInterval.SixHours
+                            (opt) =>
+                              opt.delay == NotificationIntervalEnum.SixHours
                           ).length > 0
                             ? "DELETE"
                             : "PUT"
@@ -306,7 +316,8 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     >
                       <HStack>
                         {notifSettings.filter(
-                          (opt) => opt.delay == NotificationInterval.SixHours
+                          (opt) =>
+                            opt.delay == NotificationIntervalEnum.SixHours
                         ).length > 0 && <CheckIcon />}
                         <Text>6 hours left to vote</Text>
                       </HStack>
@@ -314,10 +325,10 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     <MenuItem
                       onClick={() => {
                         setSetting(
-                          NotificationInterval.TwelveHours,
+                          NotificationIntervalEnum.TwelveHours,
                           notifSettings.filter(
                             (opt) =>
-                              opt.delay == NotificationInterval.TwelveHours
+                              opt.delay == NotificationIntervalEnum.TwelveHours
                           ).length > 0
                             ? "DELETE"
                             : "PUT"
@@ -326,7 +337,8 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     >
                       <HStack>
                         {notifSettings.filter(
-                          (opt) => opt.delay == NotificationInterval.TwelveHours
+                          (opt) =>
+                            opt.delay == NotificationIntervalEnum.TwelveHours
                         ).length > 0 && <CheckIcon />}
                         <Text>12 hours left to vote</Text>
                       </HStack>
@@ -334,9 +346,10 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     <MenuItem
                       onClick={() => {
                         setSetting(
-                          NotificationInterval.OneDay,
+                          NotificationIntervalEnum.OneDay,
                           notifSettings.filter(
-                            (opt) => opt.delay == NotificationInterval.OneDay
+                            (opt) =>
+                              opt.delay == NotificationIntervalEnum.OneDay
                           ).length > 0
                             ? "DELETE"
                             : "PUT"
@@ -345,7 +358,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     >
                       <HStack>
                         {notifSettings.filter(
-                          (opt) => opt.delay == NotificationInterval.OneDay
+                          (opt) => opt.delay == NotificationIntervalEnum.OneDay
                         ).length > 0 && <CheckIcon />}
                         <Text>1 day left to vote</Text>
                       </HStack>
@@ -353,9 +366,10 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     <MenuItem
                       onClick={() => {
                         setSetting(
-                          NotificationInterval.TwoDays,
+                          NotificationIntervalEnum.TwoDays,
                           notifSettings.filter(
-                            (opt) => opt.delay == NotificationInterval.TwoDays
+                            (opt) =>
+                              opt.delay == NotificationIntervalEnum.TwoDays
                           ).length > 0
                             ? "DELETE"
                             : "PUT"
@@ -364,7 +378,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     >
                       <HStack>
                         {notifSettings.filter(
-                          (opt) => opt.delay == NotificationInterval.TwoDays
+                          (opt) => opt.delay == NotificationIntervalEnum.TwoDays
                         ).length > 0 && <CheckIcon />}
                         <Text>2 days left to vote</Text>
                       </HStack>
@@ -372,9 +386,10 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     <MenuItem
                       onClick={() => {
                         setSetting(
-                          NotificationInterval.ThreeDays,
+                          NotificationIntervalEnum.ThreeDays,
                           notifSettings.filter(
-                            (opt) => opt.delay == NotificationInterval.ThreeDays
+                            (opt) =>
+                              opt.delay == NotificationIntervalEnum.ThreeDays
                           ).length > 0
                             ? "DELETE"
                             : "PUT"
@@ -383,7 +398,8 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     >
                       <HStack>
                         {notifSettings.filter(
-                          (opt) => opt.delay == NotificationInterval.ThreeDays
+                          (opt) =>
+                            opt.delay == NotificationIntervalEnum.ThreeDays
                         ).length > 0 && <CheckIcon />}
                         <Text>3 days left to vote</Text>
                       </HStack>
