@@ -106,7 +106,6 @@ export default async function handler(
           notificationChannels: {
             deleteMany: {
               type: payload.type,
-              connector: payload.connector,
             },
           },
         },
