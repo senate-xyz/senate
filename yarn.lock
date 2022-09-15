@@ -5550,17 +5550,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-moment@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "react-moment@npm:1.1.2"
-  peerDependencies:
-    moment: ^2.29.0
-    prop-types: ^15.7.0
-    react: ^16.0 || ^17.0.0 || ^18.0.0
-  checksum: 89ad1a668b98015950682ce0c55de29e96915e0c001167089a78377da1fce9ea3484f6203f48e59c677df5474bdf6bd4cf0d75867f1ccb6135b3103d4a12c1d8
-  languageName: node
-  linkType: hard
-
 "react-remove-scroll-bar@npm:^2.3.3":
   version: 2.3.3
   resolution: "react-remove-scroll-bar@npm:2.3.3"
@@ -6468,7 +6457,6 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-icons: ^4.4.0
-    react-moment: ^1.1.2
     typescript: ^4.8.2
   languageName: unknown
   linkType: soft
