@@ -83,7 +83,7 @@ function findVotes(subs: Subscription[]) {
                   },
                 },
                 voteOption: vote.choice,
-                voteName: vote.proposal.choices[vote.choice],
+                voteName: vote.proposal.choices[vote.choice - 1],
               },
             })
           )
