@@ -26,12 +26,12 @@ import { ProposalType, TEST_USER } from "../../../../types";
 import moment from "moment";
 
 const pastDaysOptions = [
-  { id: 1, name: "One day" },
-  { id: 2, name: "Two Days" },
-  { id: 3, name: "Three Days" },
-  { id: 7, name: "One week" },
-  { id: 14, name: "Two Weeks" },
-  { id: 30, name: "One Month" },
+  { id: 1, name: "Include yesterday" },
+  { id: 2, name: "Include two days ago" },
+  { id: 3, name: "Include three days ago" },
+  { id: 7, name: "Include one week ago" },
+  { id: 14, name: "Include two weeks ago" },
+  { id: 30, name: "Include one month ago" },
 ];
 
 export const Proposals = () => {
@@ -72,7 +72,7 @@ export const Proposals = () => {
             <Text>Proposals</Text>
             <Spacer />
             <Select
-              placeholder="Include past days"
+              placeholder="Upcoming only"
               w="20rem"
               onChange={(e) => getPastDays(e.target.selectedIndex)}
             >
