@@ -16,6 +16,8 @@ import {
   HStack,
   Center,
   Spinner,
+  Select,
+  Spacer,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
@@ -23,12 +25,21 @@ import { useEffect, useState } from "react";
 import { ProposalType, TEST_USER } from "../../../../types";
 import moment from "moment";
 
+const pastDaysOptions = [
+  { id: 1, name: "One day" },
+  { id: 2, name: "Two Days" },
+  { id: 3, name: "Three Days" },
+  { id: 7, name: "One week" },
+  { id: 14, name: "Two Weeks" },
+  { id: 30, name: "One Month" },
+];
+
 export const Proposals = () => {
   const [proposals, setProposals] = useState<ProposalType[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/proposals/?userInputAddress=${TEST_USER}`)
+    fetch(`/api/proposals/?userInputAddress=${TEST_USER}&includePastDays=0`)
       .then((response) => response.json())
       .then(async (data) => {
         setLoading(false);
@@ -36,11 +47,44 @@ export const Proposals = () => {
       });
   }, []);
 
+  const getPastDays = (pastDaysIndex: number) => {
+    setLoading(true);
+
+    let daysAgo;
+    if (pastDaysIndex > 0) daysAgo = pastDaysOptions[pastDaysIndex].id;
+    else daysAgo = 0;
+
+    fetch(
+      `/api/proposals/?userInputAddress=${TEST_USER}&includePastDays=${daysAgo}`
+    )
+      .then((response) => response.json())
+      .then(async (data) => {
+        setLoading(false);
+        setProposals(data);
+      });
+  };
+
   return (
     <Flex flexDir="row" w="full">
       <Grid bg="gray.200" minH="100vh" w="full">
         <VStack bg="gray.100" m="10" align="start" spacing={5} p="5">
-          <Text>Proposals</Text>
+          <HStack w="full">
+            <Text>Proposals</Text>
+            <Spacer />
+            <Select
+              placeholder="Include past days"
+              w="20rem"
+              onChange={(e) => getPastDays(e.target.selectedIndex)}
+            >
+              {pastDaysOptions.map((option) => {
+                return (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
+                  </option>
+                );
+              })}
+            </Select>
+          </HStack>
           <Divider></Divider>
           {loading && (
             <Center w="full">
