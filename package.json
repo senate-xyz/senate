@@ -9,6 +9,10 @@
     "build": "yarn workspaces foreach -t run build",
     "start": "yarn workspaces foreach -t run start"
   },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} ./prisma/seed.ts",
+    "schema": "./prisma/schema.prisma"
+  },
   "workspaces": [
     "web-nextapp",
     "services/proposal-detective",
@@ -19,5 +23,8 @@
   "devDependencies": {
     "foreach": "^2.0.6"
   },
-  "packageManager": "yarn@3.2.3"
+  "packageManager": "yarn@3.2.3",
+  "dependencies": {
+    "yarn": "^1.22.19"
+  }
 }

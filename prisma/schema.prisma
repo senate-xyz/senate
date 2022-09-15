@@ -13,6 +13,7 @@ datasource db {
 model User {
   id            Int            @id @default(autoincrement())
   address       String         @unique
+  proxyContracts String[]
   subscriptions Subscription[]
 }
 
@@ -21,6 +22,9 @@ model Dao {
   name         String         @default("No name")
   picture      String         @default("https://via.placeholder.com/200x200")
   address      String         @unique
+  abi          String
+  latestBlock  Int
+  proposalUrl  String
   Subscription Subscription[]
   Proposal     Proposal[]
 }
@@ -56,7 +60,8 @@ model Proposal {
   daoId       Int
   title       String
   description String
-  timeCreated DateTime
-  timeEnd     DateTime
+  created     DateTime
+  voteStarts  DateTime
+  voteEnds    DateTime
   url         String
 }
