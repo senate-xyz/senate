@@ -18,8 +18,12 @@ import {
   Spinner,
   Select,
   Spacer,
+  AlertIcon,
+  Alert,
+  AlertTitle,
+  AlertDescription,
 } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
 import { ProposalType, TEST_USER } from "../../../../types";
@@ -121,9 +125,23 @@ export const Proposals = () => {
                         <Td>{moment(proposal.voteEnds).fromNow()}</Td>
 
                         <Td>
-                          {proposal.userVote.length
-                            ? proposal.userVote[0].voteName
-                            : "Not available"}
+                          {moment(proposal.voteEnds).isBefore(new Date()) ? (
+                            //past vote
+                            proposal.userVote.length ? (
+                              proposal.userVote[0].voteName
+                            ) : (
+                              "Not available"
+                            )
+                          ) : //future vote
+                          proposal.userVote.length ? (
+                            proposal.userVote[0].voteName
+                          ) : (
+                            <HStack>
+                              <WarningTwoIcon color="red.400" />
+                              <Text>Did not vote yet!</Text>
+                              <WarningTwoIcon color="red.400" />
+                            </HStack>
+                          )}
                         </Td>
                       </Tr>
                     );
