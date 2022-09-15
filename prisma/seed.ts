@@ -218,40 +218,19 @@ async function main() {
             notificationChannels: {
               create: [
                 {
-                  type: NotificationChannelTypes.Discord,
+                  type: NotificationChannelType.Discord,
                   connector: "#discordChannel",
                 },
                 {
-                  type: NotificationChannelTypes.Slack,
+                  type: NotificationChannelType.Slack,
                   connector: "#slackChannel",
                 },
               ],
             },
             notificationSettings: {
               create: [
-                { time: new Date(1662440000000) },
-                { time: new Date(1662450000000) },
-                { time: new Date(1662460000000) },
-              ],
-            },
-          },
-          {
-            daoId: uniswap.id,
-            notificationChannels: {
-              create: [
-                {
-                  type: NotificationChannelTypes.Discord,
-                  connector: "#discordChannel",
-                },
-              ],
-            },
-            notificationSettings: {
-              create: [
-                { time: new Date(1662470000000) },
-                { time: new Date(1662480000000) },
-                { time: new Date(1662500000000) },
-                { time: new Date(1662510000000) },
-                { time: new Date(1662520000000) },
+                { delay: NotificationInterval.OneHour },
+                { delay: NotificationInterval.TwoHours },
               ],
             },
           },
@@ -260,18 +239,38 @@ async function main() {
             notificationChannels: {
               create: [
                 {
-                  type: NotificationChannelTypes.Discord,
+                  type: NotificationChannelType.Discord,
                   connector: "#discordChannel",
+                },
+                {
+                  type: NotificationChannelType.Slack,
+                  connector: "#slackChannel",
+                },
+              ],
+            },
+            notificationSettings: {
+              create: [{ delay: NotificationInterval.OneHour }],
+            },
+          },
+          {
+            daoId: uniswap.id,
+            notificationChannels: {
+              create: [
+                {
+                  type: NotificationChannelType.Discord,
+                  connector: "#discordChannel",
+                },
+                {
+                  type: NotificationChannelType.Slack,
+                  connector: "#slackChannel",
                 },
               ],
             },
             notificationSettings: {
               create: [
-                { time: new Date(1662470000000) },
-                { time: new Date(1662480000000) },
-                { time: new Date(1662500000000) },
-                { time: new Date(1662510000000) },
-                { time: new Date(1662520000000) },
+                { delay: NotificationInterval.OneHour },
+                { delay: NotificationInterval.TwoHours },
+                { delay: NotificationInterval.OneDay },
               ],
             },
           },
