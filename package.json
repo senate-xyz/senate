@@ -20,10 +20,6 @@
     "services/bot-discord",
     "services/bot-slack"
   ],
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} ./prisma/seed.ts",
-    "schema": "./prisma/schema.prisma"
-  },
   "devDependencies": {
     "foreach": "^2.0.6"
   },

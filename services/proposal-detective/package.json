@@ -1,11 +1,11 @@
 {
   "name": "proposal-detective",
   "version": "1.0.0",
-  "main": "dist/app.js",
+  "main": "dist/detective.js",
   "types": "../../types/index.ts",
   "scripts": {
     "dev": "prisma generate && nodemon",
-    "start": "tsc && node dist/services/proposal-detective/src/app.js",
+    "start": "tsc && node dist/services/proposal-detective/src/detective.js",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,11 +15,11 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@prisma/client": "^4.3.1",
     "axios": "^0.27.2",
     "dotenv": "^16.0.2",
     "ethers": "^5.7.0",
     "express": "^4.18.1",
-    "@prisma/client": "^4.3.1",
     "prisma": "^4.3.1"
   },
   "devDependencies": {
