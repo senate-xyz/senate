@@ -11,19 +11,19 @@ import {
   FlexProps,
 } from "@chakra-ui/react";
 import { NavItemSPA } from "./NavBarSPA";
-import { LinkItemSPAProps, Pages } from "../../../types";
+import { LinkItemSPAProps, PagesEnum } from "../../../types";
 
 const LinkItems: Array<LinkItemSPAProps> = [
-  { name: "Dashboard", id: Pages.Dashboard, icon: 1 },
+  { name: "Dashboard", id: PagesEnum.Dashboard, icon: 1 },
   {
     name: "Subscriptions",
-    id: Pages.Subscriptions,
+    id: PagesEnum.Subscriptions,
     icon: 2,
   },
   // { name: "Settings", id: Pages.Settings, icon: FiSettings },
 ];
 
-export default function NavBar(props: { page: Pages; setPage: any }) {
+export default function NavBar(props: { page: PagesEnum; setPage: any }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Box bg={useColorModeValue("gray.100", "gray.900")} h="100vh">

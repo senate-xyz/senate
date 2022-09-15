@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import { ethers } from "ethers";
 import axios from "axios";
+import { ProposalTypeEnum } from "./../../../../types/index";
 
 dotenv.config();
 
@@ -162,6 +163,8 @@ const findGovernorBravoProposals = async (dao: any) => {
       create: {
         daoId: dao.id,
         title: String(title),
+        type: ProposalTypeEnum.Chain,
+        snapshotId: "",
         description: String(description),
         created: new Date(proposalCreatedTimestamp * 1000),
         voteStarts: new Date(votingStartsTimestamp * 1000),

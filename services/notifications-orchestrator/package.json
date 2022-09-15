@@ -11,7 +11,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "prisma": {
-    "schema": "./../../prisma/schema.prisma"
+    "schema": "./../../prisma/schema.prisma",
+    "seed": "./../../prisma/seed.ts"
   },
   "license": "MIT",
   "dependencies": {

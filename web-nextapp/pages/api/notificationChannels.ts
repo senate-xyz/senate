@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import { NotificationChannel } from "../../../types";
+import { NotificationChannelType } from "../../../types";
 
 const prisma = new PrismaClient();
 export default async function handler(
@@ -37,7 +37,7 @@ export default async function handler(
       res.status(200).json(notificationChannels);
       break;
     case "PUT":
-      let putPayload: NotificationChannel = JSON.parse(body);
+      let putPayload: NotificationChannelType = JSON.parse(body);
 
       let putUser = await prisma.user.findUnique({
         where: {
@@ -80,7 +80,7 @@ export default async function handler(
       break;
 
     case "DELETE":
-      let payload: NotificationChannel = JSON.parse(body);
+      let payload: NotificationChannelType = JSON.parse(body);
 
       let deleteUser = await prisma.user.findUnique({
         where: {

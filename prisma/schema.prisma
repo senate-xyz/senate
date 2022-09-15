@@ -2,18 +2,19 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 // datasource db {
-//   provider = "sqlite"
-//   url      = "file:./dev.db"
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
 // }
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
 
 model User {
   id             Int             @id @default(autoincrement())
@@ -31,15 +32,16 @@ model ProxyContract {
 }
 
 model Dao {
-  id           Int            @id @default(autoincrement())
-  name         String         @default("No name")
-  picture      String         @default("https://via.placeholder.com/200x200")
-  address      String         @unique
-  abi          String
-  latestBlock  Int
-  proposalUrl  String
-  Subscription Subscription[]
-  Proposal     Proposal[]
+  id            Int            @id @default(autoincrement())
+  name          String         @default("No name")
+  picture       String         @default("https://via.placeholder.com/200x200")
+  address       String         @unique
+  snapshotSpace String
+  abi           String
+  latestBlock   Int
+  proposalUrl   String
+  Subscription  Subscription[]
+  Proposal      Proposal[]
 }
 
 model Subscription {
@@ -72,6 +74,8 @@ model Proposal {
   id          Int        @id @default(autoincrement())
   dao         Dao        @relation(fields: [daoId], references: [id], onDelete: Cascade)
   daoId       Int
+  type        Int
+  snapshotId  String     @unique
   title       String
   description String
   created     DateTime

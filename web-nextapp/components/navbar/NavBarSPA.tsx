@@ -1,11 +1,11 @@
 import { Flex, FlexProps, Icon } from "@chakra-ui/react";
 import { FiHome, FiList } from "react-icons/fi";
 
-import { LinkItemSPAProps, Pages } from "../../../types";
+import { LinkItemSPAProps, PagesEnum } from "../../../types";
 
 interface NavItemProps extends FlexProps {
   item: LinkItemSPAProps;
-  setPage: (name: Pages) => void;
+  setPage: (name: PagesEnum) => void;
   children?: string;
 }
 

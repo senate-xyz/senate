@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import { Flex } from "@chakra-ui/react";
 import NavBar from "../components/navbar/NavBar";
-import { Pages } from "../../types";
+import { PagesEnum } from "../../types";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
@@ -28,15 +28,15 @@ const DynamiSettings = dynamic(
 );
 
 const Home: NextPage = () => {
-  const [page, setPage] = useState(Pages.Dashboard);
+  const [page, setPage] = useState(PagesEnum.Dashboard);
 
   return (
     <Flex flexDir="row" w="100vw">
       <NavBar page={page} setPage={setPage} />
       <Suspense fallback={`Loading...`}>
-        {page == Pages.Dashboard && <DyanmicProposals />}
-        {page == Pages.Subscriptions && <DynamicSubscriptions />}
-        {page == Pages.Settings && <DynamiSettings />}
+        {page == PagesEnum.Dashboard && <DyanmicProposals />}
+        {page == PagesEnum.Subscriptions && <DynamicSubscriptions />}
+        {page == PagesEnum.Settings && <DynamiSettings />}
       </Suspense>
     </Flex>
   );
