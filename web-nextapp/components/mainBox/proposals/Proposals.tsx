@@ -51,7 +51,7 @@ export const Proposals = () => {
     setLoading(true);
 
     let daysAgo;
-    if (pastDaysIndex > 0) daysAgo = pastDaysOptions[pastDaysIndex].id;
+    if (pastDaysIndex > 0) daysAgo = pastDaysOptions[pastDaysIndex - 1].id;
     else daysAgo = 0;
 
     fetch(
