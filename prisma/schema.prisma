@@ -20,7 +20,7 @@ model User {
   address        String          @unique
   proxyContracts ProxyContract[]
   subscriptions  Subscription[]
-  UserVote       UserVote[]
+  userVote       UserVote[]
 }
 
 model ProxyContract {
@@ -78,7 +78,7 @@ model Proposal {
   voteStarts  DateTime
   voteEnds    DateTime
   url         String
-  UserVote    UserVote[]
+  userVote    UserVote[]
 }
 
 model UserVote {
