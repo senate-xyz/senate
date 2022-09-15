@@ -20,6 +20,7 @@ model User {
   address        String          @unique
   proxyContracts ProxyContract[]
   subscriptions  Subscription[]
+  UserVote       UserVote[]
 }
 
 model ProxyContract {
@@ -68,8 +69,8 @@ model NotificationSetting {
 }
 
 model Proposal {
-  id          Int      @id @default(autoincrement())
-  dao         Dao      @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  id          Int        @id @default(autoincrement())
+  dao         Dao        @relation(fields: [daoId], references: [id], onDelete: Cascade)
   daoId       Int
   title       String
   description String
@@ -77,4 +78,15 @@ model Proposal {
   voteStarts  DateTime
   voteEnds    DateTime
   url         String
+  UserVote    UserVote[]
+}
+
+model UserVote {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  proposal   Proposal @relation(fields: [proposalId], references: [id])
+  proposalId Int
+  voteOption Int
+  voteName   String
 }
