@@ -6,7 +6,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { userInputAddress } = req.query;
+  const { userInputAddress, includePastDays } = req.query;
 
   const userId = await prisma.user.findUnique({
     where: {
@@ -24,16 +24,41 @@ export default async function handler(
     },
   });
 
-  const userProposals = await prisma.proposal.findMany({
-    where: {
-      daoId: {
-        in: userDaos.map((dao: any) => dao.daoId),
+  let userProposals;
+
+  if (includePastDays) {
+    let date = new Date(
+      new Date().setDate(new Date().getDate() - Number(includePastDays))
+    );
+
+    userProposals = await prisma.proposal.findMany({
+      where: {
+        daoId: {
+          in: userDaos.map((dao: any) => dao.daoId),
+        },
+        voteEnds: {
+          gt: date,
+        },
       },
-    },
-    include: {
-      dao: true,
-    },
-  });
+      include: {
+        dao: true,
+      },
+      orderBy: {
+        voteEnds: "desc",
+      },
+    });
+  } else {
+    userProposals = await prisma.proposal.findMany({
+      where: {
+        daoId: {
+          in: userDaos.map((dao: any) => dao.daoId),
+        },
+      },
+      include: {
+        dao: true,
+      },
+    });
+  }
 
   res.status(200).json(userProposals);
 }
