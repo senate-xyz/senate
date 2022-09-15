@@ -75,8 +75,8 @@ export const Proposals = () => {
                           <Text noOfLines={1}>{proposal.description}</Text>
                         </Td>
                         <Td>
-                          <Moment diff={proposal.timeCreated} unit="minutes">
-                            {proposal.timeEnd}
+                          <Moment diff={proposal.created} unit="minutes">
+                            {proposal.voteEnds}
                           </Moment>
                         </Td>
 
