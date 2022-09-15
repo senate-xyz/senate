@@ -120,7 +120,11 @@ export const Proposals = () => {
                         </Td>
                         <Td>{moment(proposal.voteEnds).fromNow()}</Td>
 
-                        <Td>Hardcoded yes</Td>
+                        <Td>
+                          {proposal.userVote.length
+                            ? proposal.userVote[0].voteName
+                            : "Not available"}
+                        </Td>
                       </Tr>
                     );
                   })}
