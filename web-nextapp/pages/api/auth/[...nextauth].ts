@@ -27,15 +27,17 @@ export default async function auth(
       },
       async authorize(credentials) {
         try {
-          console.log(credentials);
-
           const siwe = new SiweMessage(credentials?.message || "{}");
 
-          // const domain = process.env.DOMAIN;
-          // if (siwe.domain !== domain) {
-          //   console.log("bad domain");
-          //   return null;
-          // }
+          console.log(`siwe.domain : ${siwe.domain}`);
+          console.log(`siwe.nonce : ${siwe.nonce}`);
+          console.log(`csrf: ${await getCsrfToken({ req })}`);
+
+          const domain = process.env.DOMAIN;
+          if (siwe.domain !== domain) {
+            console.log("bad domain");
+            return null;
+          }
 
           if (siwe.nonce !== (await getCsrfToken({ req }))) {
             console.log("bad token");
