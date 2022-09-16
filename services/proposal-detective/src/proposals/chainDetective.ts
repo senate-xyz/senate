@@ -193,7 +193,7 @@ async function main() {
     },
   });
   console.log(daos);
-  findOngoingProposals(daos);
+  //findOngoingProposals(daos);
   // wait 15 minutes
   // }
 }
