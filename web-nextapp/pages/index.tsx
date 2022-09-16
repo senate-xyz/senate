@@ -20,8 +20,8 @@ const DynamicSubscriptions = dynamic(
   }
 );
 
-const DynamiSettings = dynamic(
-  () => import("../components/mainBox/settings/Settings"),
+const DynamicTracker = dynamic(
+  () => import("../components/mainBox/tracker/Tracker"),
   {
     suspense: true,
   }
@@ -36,7 +36,7 @@ const Home: NextPage = () => {
       <Suspense fallback={`Loading...`}>
         {page == PagesEnum.Dashboard && <DyanmicProposals />}
         {page == PagesEnum.Subscriptions && <DynamicSubscriptions />}
-        {page == PagesEnum.Settings && <DynamiSettings />}
+        {page == PagesEnum.Tracker && <DynamicTracker />}
       </Suspense>
     </Flex>
   );

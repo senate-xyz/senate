@@ -19,7 +19,7 @@ async function main() {
   //await findOngoingProposals(daos);
 
   let subscriptions = await prisma.subscription.findMany();
-  await findVotes(subscriptions);
+  //await findVotes(subscriptions);
 }
 
 function findVotes(subs: Subscription[]) {
@@ -63,8 +63,6 @@ function findVotes(subs: Subscription[]) {
       .then((data) => {
         return data.data.votes;
       });
-
-    console.log(votes);
 
     if (votes)
       await prisma
