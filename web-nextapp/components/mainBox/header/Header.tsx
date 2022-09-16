@@ -18,6 +18,8 @@ export default function Header() {
     try {
       await connect(connectData.connectors[0]);
 
+      console.log(window.location.host);
+
       const message = new SiweMessage({
         domain: window.location.host,
         address: accountData?.address,
