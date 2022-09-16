@@ -1,10 +1,20 @@
-import express from "express";
 import { ProposalType } from "./../../../types/index";
+import { getChainProposals } from "./proposals/chainDetective";
+import { getSnapshotProposals } from "./proposals/snapshotProposals";
+import { getSnapshotVotes } from "./votes/snapshotVotes";
 let integrationTestType: ProposalType;
 
-const app = express();
-const port = 3001;
+const main = async () => {
+  console.log(`proposalDetective start`);
 
-app.listen(port, () => {
-  console.log(`Proposal detective service running on ${port}.`);
-});
+  console.log(`getChainProposals`);
+  await getChainProposals();
+
+  console.log(`getSnapshotProposals`);
+  await getSnapshotProposals();
+
+  console.log(`getSnapshotVotes`);
+  await getSnapshotVotes();
+};
+
+main();

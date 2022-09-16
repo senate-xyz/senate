@@ -4,7 +4,7 @@
   "types": "../../types/index.ts",
   "scripts": {
     "dev": "prisma generate && nodemon",
-    "start": "tsc && node dist/services/proposal-detective/src/proposals/snapshotDetective.js",
+    "start": "tsc && node dist/services/proposal-detective/src/app.js",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1"

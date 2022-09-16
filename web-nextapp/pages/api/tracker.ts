@@ -62,7 +62,5 @@ export default async function handler(
     },
   });
 
-  console.log(userProposals);
-
   res.status(200).json(userProposals);
 }

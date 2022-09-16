@@ -35,10 +35,10 @@ model Dao {
   id            Int            @id @default(autoincrement())
   name          String         @default("No name")
   picture       String         @default("https://via.placeholder.com/200x200")
-  address       String
-  snapshotSpace String
+  address       String //contract address used for on chain proposals
+  snapshotSpace String //snapshot space address used for snapshot proposals
   abi           String
-  latestBlock   Int
+  latestBlock   Int //used for chain proposals fetching
   proposalUrl   String
   Subscription  Subscription[]
   Proposal      Proposal[]
@@ -75,7 +75,7 @@ model Proposal {
   dao         Dao        @relation(fields: [daoId], references: [id], onDelete: Cascade)
   daoId       Int
   type        Int
-  snapshotId  String     @unique @default(cuid())
+  snapshotId  String     @unique @default(cuid()) //used for snapshot proposal fetching uniqueness
   title       String
   description String
   created     DateTime
@@ -91,6 +91,7 @@ model UserVote {
   userId     Int
   proposal   Proposal @relation(fields: [proposalId], references: [id])
   proposalId Int
+  snapshotId String   @unique @default(cuid()) //used for snapshot votes fetching uniqueness
   voteOption Int
   voteName   String
 }

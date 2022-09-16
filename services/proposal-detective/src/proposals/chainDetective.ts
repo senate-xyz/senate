@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import { ethers } from "ethers";
 import axios from "axios";
-import { ProposalTypeEnum } from "./../../../../types/index";
+import { ProposalTypeEnum } from "./../../../../types";
 
 dotenv.config();
 
@@ -171,20 +171,18 @@ const findGovernorBravoProposals = async (dao: any) => {
         url: proposalUrl,
       },
     });
-
-    console.log(proposal);
   }
+
+  console.log(`inserted ${proposals.length} chain proposals`);
 };
 
-const findOngoingProposals = (daos: any) => {
+const findOngoingProposals = async (daos: any) => {
   for (let i = 0; i < daos.length; i++) {
-    findGovernorBravoProposals(daos[i]);
+    await findGovernorBravoProposals(daos[i]);
   }
 };
 
-async function main() {
-  //await getAaveProposals();
-  // while (true) {
+export const getChainProposals = async () => {
   let daos = await prisma.dao.findMany({
     where: {
       address: {
@@ -192,18 +190,6 @@ async function main() {
       },
     },
   });
-  console.log(daos);
-  //findOngoingProposals(daos);
-  // wait 15 minutes
-  // }
-}
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+  await findOngoingProposals(daos);
+};

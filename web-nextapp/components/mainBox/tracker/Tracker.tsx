@@ -141,7 +141,7 @@ export const Tracker = () => {
                                 proposal.userVote.length ? (
                                   proposal.userVote[0].voteName
                                 ) : (
-                                  "Not available"
+                                  "Did not vote"
                                 )
                               ) : //future vote
                               proposal.userVote.length ? (
