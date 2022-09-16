@@ -25,17 +25,9 @@ import {
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
-import { ProposalType, TEST_USER } from "../../../../types";
+import { ProposalType } from "../../../../types";
 import moment from "moment";
-
-const pastDaysOptions = [
-  { id: 1, name: "Include yesterday" },
-  { id: 2, name: "Include two days ago" },
-  { id: 3, name: "Include three days ago" },
-  { id: 7, name: "Include one week ago" },
-  { id: 14, name: "Include two weeks ago" },
-  { id: 30, name: "Include one month ago" },
-];
+import { useAccount } from "wagmi";
 
 export const Tracker = () => {
   const [votes, setVotes] = useState<ProposalType[]>([]);
@@ -43,12 +35,19 @@ export const Tracker = () => {
   const [selectedDao, setSelectedDao] = useState<string>();
   const [loading, setLoading] = useState(true);
 
+  const [{ data: accountData }] = useAccount();
+
   useEffect(() => {
     setDaos([]);
     setSelectedDao("");
-    fetch(`/api/tracker/?userInputAddress=${TEST_USER}`)
-      .then((response) => response.json())
+
+    fetch(`/api/tracker/?userInputAddress=${accountData?.address}`)
+      .then((response) => {
+        if (response.status == 404) return;
+        return response.json();
+      })
       .then(async (data) => {
+        if (!data) return;
         setLoading(false);
         setVotes(data);
       });

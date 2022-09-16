@@ -1,11 +1,17 @@
+import { PrismaClient } from "@prisma/client";
+import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 
+const prisma = new PrismaClient();
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
-export default async function auth(req, res) {
+export default async function auth(
+  req: NextApiRequest,
+  res: NextApiResponse<any>
+) {
   const providers = [
     CredentialsProvider({
       name: "Ethereum",
@@ -35,7 +41,18 @@ export default async function auth(req, res) {
             return null;
           }
 
-          await siwe.validate(credentials?.signature || "");
+          await siwe
+            .validate(credentials?.signature || "")
+            .then(async (user) => {
+              console.log(`New login from ${JSON.stringify(user)}`);
+              await prisma.user.upsert({
+                where: { address: user.address },
+                update: {},
+                create: {
+                  address: user.address,
+                },
+              });
+            });
           return {
             id: siwe.address,
           };
@@ -45,14 +62,6 @@ export default async function auth(req, res) {
       },
     }),
   ];
-
-  const isDefaultSigninPage =
-    req.method === "GET" && req.query.nextauth.includes("signin");
-
-  // Hides Sign-In with Ethereum from default sign page
-  if (isDefaultSigninPage) {
-    providers.pop();
-  }
 
   return await NextAuth(req, res, {
     // https://next-auth.js.org/configuration/providers/oauth
@@ -67,7 +76,7 @@ export default async function auth(req, res) {
     callbacks: {
       async session({ session, token }) {
         session.address = token.sub;
-        session.user.name = token.sub;
+        session.user!.name = token.sub;
         return session;
       },
     },

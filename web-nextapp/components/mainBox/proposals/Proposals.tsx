@@ -22,47 +22,52 @@ import {
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
-import { ProposalType, TEST_USER } from "../../../../types";
+import { ProposalType } from "../../../../types";
 import moment from "moment";
+import { useAccount } from "wagmi";
 
-const pastDaysOptions = [
-  { id: 1, name: "Include yesterday" },
-  { id: 2, name: "Include two days ago" },
-  { id: 3, name: "Include three days ago" },
-  { id: 7, name: "Include one week ago" },
-  { id: 14, name: "Include two weeks ago" },
-  { id: 30, name: "Include one month ago" },
-];
+// const pastDaysOptions = [
+//   { id: 1, name: "Include yesterday" },
+//   { id: 2, name: "Include two days ago" },
+//   { id: 3, name: "Include three days ago" },
+//   { id: 7, name: "Include one week ago" },
+//   { id: 14, name: "Include two weeks ago" },
+//   { id: 30, name: "Include one month ago" },
+// ];
 
 export const Proposals = () => {
   const [proposals, setProposals] = useState<ProposalType[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [{ data: accountData }] = useAccount();
+
   useEffect(() => {
-    fetch(`/api/proposals/?userInputAddress=${TEST_USER}&includePastDays=0`)
-      .then((response) => response.json())
-      .then(async (data) => {
-        setLoading(false);
-        setProposals(data);
-      });
-  }, []);
-
-  const getPastDays = (pastDaysIndex: number) => {
-    setLoading(true);
-
-    let daysAgo;
-    if (pastDaysIndex > 0) daysAgo = pastDaysOptions[pastDaysIndex - 1].id;
-    else daysAgo = 0;
-
     fetch(
-      `/api/proposals/?userInputAddress=${TEST_USER}&includePastDays=${daysAgo}`
+      `/api/proposals/?userInputAddress=${accountData?.address}&includePastDays=0`
     )
       .then((response) => response.json())
       .then(async (data) => {
         setLoading(false);
         setProposals(data);
       });
-  };
+  }, [accountData]);
+
+  // const getPastDays = (pastDaysIndex: number) => {
+  //   setLoading(true);
+
+  //   let daysAgo;
+  //   if (pastDaysIndex > 0) daysAgo = pastDaysOptions[pastDaysIndex - 1].id;
+  //   else daysAgo = 0;
+
+  //   fetch(
+  //     `/api/proposals/?userInputAddress=${accountData?.address}&includePastDays=${daysAgo}`
+  //   )
+  //     .then((response) => response.json())
+  //     .then(async (data) => {
+  //       setLoading(false);
+  //       setProposals(data);
+  //     });
+  // };
 
   return (
     <Flex flexDir="row" w="full">
@@ -71,7 +76,7 @@ export const Proposals = () => {
           <HStack w="full">
             <Text>Proposals</Text>
             <Spacer />
-            <Select
+            {/* <Select
               placeholder="Upcoming only"
               w="20rem"
               onChange={(e) => getPastDays(e.target.selectedIndex)}
@@ -83,7 +88,7 @@ export const Proposals = () => {
                   </option>
                 );
               })}
-            </Select>
+            </Select> */}
           </HStack>
           <Divider></Divider>
           {loading && (
