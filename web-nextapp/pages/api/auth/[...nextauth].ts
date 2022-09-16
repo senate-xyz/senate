@@ -31,10 +31,10 @@ export default async function auth(
 
           const siwe = new SiweMessage(credentials?.message || "{}");
 
-          const domain = process.env.DOMAIN;
-          if (siwe.domain !== domain) {
-            return null;
-          }
+          // const domain = process.env.DOMAIN;
+          // if (siwe.domain !== domain) {
+          //   return null;
+          // }
 
           if (siwe.nonce !== (await getCsrfToken({ req }))) {
             return null;
