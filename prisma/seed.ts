@@ -99,6 +99,21 @@ async function main() {
     },
   });
 
+  const stakeborg = await prisma.dao.upsert({
+    where: { address: "0xstakeborg" },
+    update: {},
+    create: {
+      name: "StakeborgDAO",
+      address: "stakeborgdao.eth",
+      snapshotSpace: "stakeborgdao.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/20119/small/stquY-WB_400x400.jpg?1636522705",
+      latestBlock: 12006099,
+      proposalUrl: "https://github.com/Stakeborg-Community",
+      abi: "none",
+    },
+  });
+
   await prisma.user.update({
     where: { address: "0xa93ae3a2ce1714f422ec2d799c48a56b2035c872" },
     data: {
@@ -106,6 +121,20 @@ async function main() {
         create: [
           {
             daoId: dd.id,
+            notificationChannels: {
+              create: [
+                {
+                  type: NotificationChannelEnum.Discord,
+                  connector: "#discordChannel",
+                },
+              ],
+            },
+            notificationSettings: {
+              create: [{ delay: NotificationIntervalEnum.OneHour }],
+            },
+          },
+          {
+            daoId: stakeborg.id,
             notificationChannels: {
               create: [
                 {

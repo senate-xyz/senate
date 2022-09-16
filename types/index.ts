@@ -51,6 +51,7 @@ export enum PagesEnum {
   None = 1,
   Dashboard,
   Subscriptions,
+  Tracker,
   Settings,
 }
 

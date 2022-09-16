@@ -20,7 +20,7 @@ const LinkItems: Array<LinkItemSPAProps> = [
     id: PagesEnum.Subscriptions,
     icon: 2,
   },
-  // { name: "Settings", id: Pages.Settings, icon: FiSettings },
+  { name: "Vote tracker", id: PagesEnum.Tracker, icon: 3 },
 ];
 
 export default function NavBar(props: { page: PagesEnum; setPage: any }) {
