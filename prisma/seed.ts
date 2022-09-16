@@ -43,7 +43,7 @@ async function main() {
   });
 
   const aave = await prisma.dao.upsert({
-    where: { address: "0xaave" },
+    where: { id: 0 },
     update: {},
     create: {
       name: "Aave",
@@ -57,7 +57,7 @@ async function main() {
   });
 
   const uniswap = await prisma.dao.upsert({
-    where: { address: "0xuni" },
+    where: { id: 0 },
     update: {},
     create: {
       name: "Uniswap",
@@ -72,7 +72,7 @@ async function main() {
   });
 
   const compound = await prisma.dao.upsert({
-    where: { address: "0xcomp" },
+    where: { id: 0 },
     update: {},
     create: {
       name: "Compound",
@@ -86,11 +86,11 @@ async function main() {
   });
 
   const dd = await prisma.dao.upsert({
-    where: { address: "0xdd" },
+    where: { id: 0 },
     update: {},
     create: {
       name: "DeveloperDAO",
-      address: "devdao.eth",
+      address: "",
       snapshotSpace: "devdao.eth",
       picture: "https://avatars.githubusercontent.com/u/90118409?s=200&v=4",
       latestBlock: 12006099,
@@ -100,11 +100,11 @@ async function main() {
   });
 
   const stakeborg = await prisma.dao.upsert({
-    where: { address: "0xstakeborg" },
+    where: { id: 0 },
     update: {},
     create: {
       name: "StakeborgDAO",
-      address: "stakeborgdao.eth",
+      address: "",
       snapshotSpace: "stakeborgdao.eth",
       picture:
         "https://assets.coingecko.com/coins/images/20119/small/stquY-WB_400x400.jpg?1636522705",
@@ -145,6 +145,55 @@ async function main() {
             },
             notificationSettings: {
               create: [{ delay: NotificationIntervalEnum.OneHour }],
+            },
+          },
+          {
+            daoId: aave.id,
+            notificationChannels: {
+              create: [
+                {
+                  type: NotificationChannelEnum.Discord,
+                  connector: "#discordChannel",
+                },
+              ],
+            },
+            notificationSettings: {
+              create: [{ delay: NotificationIntervalEnum.OneHour }],
+            },
+          },
+          {
+            daoId: compound.id,
+            notificationChannels: {
+              create: [
+                {
+                  type: NotificationChannelEnum.Slack,
+                  connector: "#slackChannel",
+                },
+              ],
+            },
+            notificationSettings: {
+              create: [{ delay: NotificationIntervalEnum.TwoHours }],
+            },
+          },
+          {
+            daoId: uniswap.id,
+            notificationChannels: {
+              create: [
+                {
+                  type: NotificationChannelEnum.Discord,
+                  connector: "#discordChannel",
+                },
+                {
+                  type: NotificationChannelEnum.Slack,
+                  connector: "#slackChannel",
+                },
+              ],
+            },
+            notificationSettings: {
+              create: [
+                { delay: NotificationIntervalEnum.OneHour },
+                { delay: NotificationIntervalEnum.TwoHours },
+              ],
             },
           },
         ],

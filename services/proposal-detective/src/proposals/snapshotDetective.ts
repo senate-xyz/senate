@@ -19,7 +19,7 @@ async function main() {
   //await findOngoingProposals(daos);
 
   let subscriptions = await prisma.subscription.findMany();
-  //await findVotes(subscriptions);
+  await findVotes(subscriptions);
 }
 
 function findVotes(subs: Subscription[]) {
@@ -90,7 +90,7 @@ function findVotes(subs: Subscription[]) {
   });
 }
 
-async function findOngoingProposals(daos: Dao[]) {
+function findOngoingProposals(daos: Dao[]) {
   daos.map(async (dao) => {
     let proposals = await axios
       .get("https://hub.snapshot.org/graphql", {
@@ -100,7 +100,7 @@ async function findOngoingProposals(daos: Dao[]) {
                 proposals (
                 first:1000,
                   where: {
-                    space_in: ["${dao.address}"],
+                    space_in: ["${dao.snapshotSpace}"],
                   },
                   orderBy: "created",
                   orderDirection: desc

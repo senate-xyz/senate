@@ -35,7 +35,7 @@ model Dao {
   id            Int            @id @default(autoincrement())
   name          String         @default("No name")
   picture       String         @default("https://via.placeholder.com/200x200")
-  address       String         @unique
+  address       String
   snapshotSpace String
   abi           String
   latestBlock   Int
@@ -75,7 +75,7 @@ model Proposal {
   dao         Dao        @relation(fields: [daoId], references: [id], onDelete: Cascade)
   daoId       Int
   type        Int
-  snapshotId  String     @unique
+  snapshotId  String     @unique @default(cuid())
   title       String
   description String
   created     DateTime

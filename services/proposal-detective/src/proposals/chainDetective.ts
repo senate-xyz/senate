@@ -164,7 +164,6 @@ const findGovernorBravoProposals = async (dao: any) => {
         daoId: dao.id,
         title: String(title),
         type: ProposalTypeEnum.Chain,
-        snapshotId: "",
         description: String(description),
         created: new Date(proposalCreatedTimestamp * 1000),
         voteStarts: new Date(votingStartsTimestamp * 1000),
@@ -186,7 +185,13 @@ const findOngoingProposals = (daos: any) => {
 async function main() {
   //await getAaveProposals();
   // while (true) {
-  let daos = await prisma.dao.findMany();
+  let daos = await prisma.dao.findMany({
+    where: {
+      address: {
+        not: "",
+      },
+    },
+  });
   console.log(daos);
   findOngoingProposals(daos);
   // wait 15 minutes
