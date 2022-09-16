@@ -74,8 +74,8 @@ const fetchProposalInfoFromIPFS = async (hexHash: string) => {
     title = response.data.title;
     description = response.data.description;
   } catch (error) {
-    title = "Unknown";
-    description = "Unknown";
+    title = "Failed to retrieve title";
+    description = "Failed to retrieve description";
   }
 
   return {
@@ -84,12 +84,28 @@ const fetchProposalInfoFromIPFS = async (hexHash: string) => {
   };
 };
 
+const formatTitle = (text: String) : String => {
+  let temp = text.split("\n")[0];
+
+  if (!temp) {
+    console.log(text);
+    return "Title unavailable"
+  }
+
+  if (temp[0] === '#') {
+    return temp.substring(2);
+  }
+
+  return temp;
+}
+
 // Some DAOs store onchain the proposal title and full description in the same variable.
 // This function parses that entire text and returns the title and the description
 const parseDescription = async (text: String) => {
+
   return {
-    title: "Title",
-    description: "Description",
+    title: formatTitle(text),
+    description: text ? text.split("\n").slice(1).join("\n") : "Description unavailable",
   };
 };
 
@@ -142,52 +158,85 @@ const findGovernorBravoProposals = async (dao: any) => {
       (proposals[i].eventData.endBlock - proposals[i].txBlock) * 15;
     let { title, description } = await getProposalTitleAndDescription(
       dao.address,
-      proposals[i].eventData[11]
+      proposals[i].eventData.ipfsHash ? proposals[i].eventData.ipfsHash : proposals[i].eventData.description
     );
     let proposalUrl = dao.proposalUrl + proposals[i].eventData.id;
 
-    await prisma.dao.update({
-      where: {
-        id: dao.id,
-      },
-      data: {
-        latestBlock: proposals[i].txBlock + 1,
-      },
-    });
+    console.log(dao.id, Number(proposals[i].eventData[0]));
+    console.log(title)
+    console.log("\n==============================================\n")
+    //console.log(proposals[i].eventData.ipfsHash ? proposals[i].eventData.ipfsHash : proposals[i].eventData.description);
 
-    // TODO create only if the record doesn't exist
-    let proposal = await prisma.proposal.upsert({
-      where: { id: 0 },
-      update: {},
-      create: {
-        daoId: dao.id,
-        title: String(title),
-        description: String(description),
-        created: new Date(proposalCreatedTimestamp * 1000),
-        voteStarts: new Date(votingStartsTimestamp * 1000),
-        voteEnds: new Date(votingEndsTimestamp * 1000),
-        url: proposalUrl,
-      },
-    });
+    // await prisma.dao.update({
+    //   where: {
+    //     id: dao.id,
+    //   },
+    //   data: {
+    //     latestBlock: proposals[i].txBlock + 1,
+    //   },
+    // });
 
-    console.log(proposal);
+    // let proposal = await prisma.proposal.upsert({
+    //   where: { id: 0 },
+    //   update: {},
+    //   create: {
+    //     daoId: dao.id,
+    //     title: String(title),
+    //     description: String(description),
+    //     created: new Date(proposalCreatedTimestamp * 1000),
+    //     voteStarts: new Date(votingStartsTimestamp * 1000),
+    //     voteEnds: new Date(votingEndsTimestamp * 1000),
+    //     url: proposalUrl,
+    //   },
+    // });
+
+    // console.log(proposal);
   }
 };
 
 const findOngoingProposals = (daos: any) => {
+  console.log("Searching for new proposals")
   for (let i = 0; i < daos.length; i++) {
     findGovernorBravoProposals(daos[i]);
   }
+  console.log("Done searching. Going to take a nap now");
 };
 
+// const playground = async (dao : any) => {
+//   const govBravoIface = new ethers.utils.Interface(dao.abi);
+
+//   const logs = await provider.getLogs({
+//     fromBlock: 0,
+//     address: dao.address,
+//     topics: [govBravoIface.getEventTopic("ProposalCreated")],
+//   });
+
+//   console.log(logs[logs.length-1]);
+
+//   const proposals = logs.map((log) => ({
+//     txBlock: log.blockNumber,
+//     eventData: govBravoIface.parseLog({
+//       topics: log.topics,
+//       data: log.data,
+//     }).args,
+//   }));
+
+//   //console.log(proposals);
+//   for(let i=0; i<proposals.length; i++) {
+//     //console.log(proposals[i].eventData.description)
+//     console.log(proposals[i].eventData.description.split("\n")[0])
+//     console.log("\n========================================\n")
+//   }
+//   console.log(proposals.length);
+// }
+
 async function main() {
-  //await getAaveProposals();
-  // while (true) {
   let daos = await prisma.dao.findMany();
-  console.log(daos);
+  //console.log(daos);
   findOngoingProposals(daos);
-  // wait 15 minutes
-  // }
+
+  //setInterval(findOngoingProposals, 5*60*1000, daos);
+  //await playground(daos[1]);
 }
 
 main()
