@@ -46,16 +46,16 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
   );
   const [loading, setLoading] = useState(true);
 
-  const [{ data: accountData }] = useAccount();
+  const { address } = useAccount();
 
   const getData = () => {
     let settingsDone = false;
     let channelsDone = false;
 
     fetch(
-      `/api/notificationSettings?userAddress=${
-        accountData?.address
-      }&daoId=${String(props.dao.id)}`,
+      `/api/notificationSettings?userAddress=${address}&daoId=${String(
+        props.dao.id
+      )}`,
       {
         method: "GET",
       }
@@ -68,9 +68,9 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
     });
 
     fetch(
-      `/api/notificationChannels?userAddress=${String(
-        accountData?.address
-      )}&daoId=${String(props.dao.id)}`,
+      `/api/notificationChannels?userAddress=${String(address)}&daoId=${String(
+        props.dao.id
+      )}`,
       {
         method: "GET",
       }
@@ -85,19 +85,19 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
 
   useEffect(() => {
     getData();
-  }, [accountData]);
+  }, []);
 
   const setChannel = (arg: NotificationChannelEnum, method: string) => {
     let tmp: NotificationChannelType = {
       type: arg,
       connector: "#defaultConnector",
     };
-    if (!accountData) return;
+    if (!address) return;
     setLoading(true);
     fetch(
-      `/api/notificationChannels?userAddress=${
-        accountData?.address
-      }&daoId=${String(props.dao.id)}`,
+      `/api/notificationChannels?userAddress=${address}&daoId=${String(
+        props.dao.id
+      )}`,
       {
         method: method,
         body: JSON.stringify(tmp),
@@ -112,12 +112,12 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
       createdTime: new Date(),
       delay: arg,
     };
-    if (!accountData) return;
+    if (!address) return;
     setLoading(true);
     fetch(
-      `/api/notificationSettings?userAddress=${
-        accountData?.address
-      }&daoId=${String(props.dao.id)}`,
+      `/api/notificationSettings?userAddress=${address}&daoId=${String(
+        props.dao.id
+      )}`,
       {
         method: method,
         body: JSON.stringify(tmp),

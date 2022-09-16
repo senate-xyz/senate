@@ -1,11 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 
-const prisma = new PrismaClient();
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 export default async function auth(
@@ -29,9 +27,10 @@ export default async function auth(
       },
       async authorize(credentials) {
         try {
-          const siwe = new SiweMessage(
-            JSON.parse(credentials?.message || "{}")
-          );
+          console.log(JSON.stringify(credentials));
+
+          const siwe = new SiweMessage(credentials?.message || "{}");
+
           const domain = process.env.DOMAIN;
           if (siwe.domain !== domain) {
             return null;
@@ -41,18 +40,7 @@ export default async function auth(
             return null;
           }
 
-          await siwe
-            .validate(credentials?.signature || "")
-            .then(async (user) => {
-              console.log(`New login from ${JSON.stringify(user)}`);
-              await prisma.user.upsert({
-                where: { address: user.address },
-                update: {},
-                create: {
-                  address: user.address,
-                },
-              });
-            });
+          await siwe.validate(credentials?.signature || "");
           return {
             id: siwe.address,
           };
@@ -62,6 +50,14 @@ export default async function auth(
       },
     }),
   ];
+
+  const isDefaultSigninPage =
+    req.method === "GET" && req.query.nextauth?.includes("signin");
+
+  // Hides Sign-In with Ethereum from default sign page
+  if (isDefaultSigninPage) {
+    providers.pop();
+  }
 
   return await NextAuth(req, res, {
     // https://next-auth.js.org/configuration/providers/oauth
