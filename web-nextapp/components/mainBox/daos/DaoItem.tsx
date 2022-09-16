@@ -28,13 +28,12 @@ import {
   NotificationChannelEnum,
   NotificationIntervalEnum,
   NotificationSettingType,
-  TEST_USER,
 } from "../../../../types";
 import { FaDiscord, FaSlack } from "react-icons/fa";
 import { ChevronDownIcon, BellIcon, CheckIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
 import moment from "moment";
-import { Prisma } from "@prisma/client";
+import { useAccount } from "wagmi";
 
 export const SubscriptionItem = (props: { dao: DaoType }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -47,24 +46,30 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
   );
   const [loading, setLoading] = useState(true);
 
+  const [{ data: accountData }] = useAccount();
+
   const getData = () => {
+    let settingsDone = false;
+    let channelsDone = false;
+
     fetch(
-      `/api/notificationSettings?userAddress=${String(
-        TEST_USER
-      )}&daoId=${String(props.dao.id)}`,
+      `/api/notificationSettings?userAddress=${
+        accountData?.address
+      }&daoId=${String(props.dao.id)}`,
       {
         method: "GET",
       }
     ).then((response) => {
       response.json().then((data) => {
         setNotifSettings(data);
-        setLoading(false);
+        settingsDone = true;
+        if (channelsDone == true) setLoading(false);
       });
     });
 
     fetch(
       `/api/notificationChannels?userAddress=${String(
-        TEST_USER
+        accountData?.address
       )}&daoId=${String(props.dao.id)}`,
       {
         method: "GET",
@@ -72,26 +77,27 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
     ).then((response) => {
       response.json().then((data) => {
         setNotifChannels(data);
-        setLoading(false);
+        channelsDone = true;
+        if (settingsDone == true) setLoading(false);
       });
     });
   };
 
   useEffect(() => {
     getData();
-  }, [props]);
+  }, [accountData]);
 
   const setChannel = (arg: NotificationChannelEnum, method: string) => {
     let tmp: NotificationChannelType = {
       type: arg,
       connector: "#defaultConnector",
     };
-
+    if (!accountData) return;
     setLoading(true);
     fetch(
-      `/api/notificationChannels?userAddress=${String(
-        TEST_USER
-      )}&daoId=${String(props.dao.id)}`,
+      `/api/notificationChannels?userAddress=${
+        accountData?.address
+      }&daoId=${String(props.dao.id)}`,
       {
         method: method,
         body: JSON.stringify(tmp),
@@ -106,12 +112,12 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
       createdTime: new Date(),
       delay: arg,
     };
-
+    if (!accountData) return;
     setLoading(true);
     fetch(
-      `/api/notificationSettings?userAddress=${String(
-        TEST_USER
-      )}&daoId=${String(props.dao.id)}`,
+      `/api/notificationSettings?userAddress=${
+        accountData?.address
+      }&daoId=${String(props.dao.id)}`,
       {
         method: method,
         body: JSON.stringify(tmp),

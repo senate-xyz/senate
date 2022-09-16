@@ -27,7 +27,7 @@ model User {
 model ProxyContract {
   id      Int    @id @default(autoincrement())
   address String
-  User    User?  @relation(fields: [userId], references: [id])
+  User    User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  Int?
 }
 
@@ -87,9 +87,9 @@ model Proposal {
 
 model UserVote {
   id         Int      @id @default(autoincrement())
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
-  proposal   Proposal @relation(fields: [proposalId], references: [id])
+  proposal   Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
   proposalId Int
   snapshotId String   @unique @default(cuid()) //used for snapshot votes fetching uniqueness
   voteOption Int
