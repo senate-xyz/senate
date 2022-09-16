@@ -39,18 +39,16 @@ export const Proposals = () => {
   const [proposals, setProposals] = useState<ProposalType[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [{ data: accountData }] = useAccount();
+  const { address } = useAccount();
 
   useEffect(() => {
-    fetch(
-      `/api/proposals/?userInputAddress=${accountData?.address}&includePastDays=0`
-    )
+    fetch(`/api/proposals/?userInputAddress=${address}&includePastDays=0`)
       .then((response) => response.json())
-      .then(async (data) => {
+      .then(async (res) => {
         setLoading(false);
-        setProposals(data);
+        setProposals(res);
       });
-  }, [accountData]);
+  }, []);
 
   // const getPastDays = (pastDaysIndex: number) => {
   //   setLoading(true);

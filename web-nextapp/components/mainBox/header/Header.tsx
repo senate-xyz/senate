@@ -1,46 +1,63 @@
-import { Box, Button, Flex, HStack, Text, VStack } from "@chakra-ui/react";
+import { Button, Text, VStack } from "@chakra-ui/react";
 import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { SiweMessage } from "siwe";
-import { useConnect, useSignMessage, useNetwork, useAccount } from "wagmi";
+import {
+  useConnect,
+  useSignMessage,
+  useNetwork,
+  useAccount,
+  useDisconnect,
+} from "wagmi";
 
-// The approach used in this component shows how to build a sign in and sign out
-// component that works on pages which support both client and server side
-// rendering, and avoids any flash incorrect content on initial page load.
 export default function Header() {
-  const { data: session, status } = useSession();
-  const [{ data: connectData }, connect] = useConnect();
-  const [, signMessage] = useSignMessage();
-  const [{ data: networkData }] = useNetwork();
-  const [{ data: accountData }] = useAccount();
+  const { data: session } = useSession();
 
-  const handleLogin = async () => {
-    try {
-      await connect(connectData.connectors[0]);
-
-      console.log(window.location.host);
-
-      const message = new SiweMessage({
-        domain: window.location.host,
-        address: accountData?.address,
-        statement: "Sign in with Ethereum to the app.",
-        uri: window.location.origin,
-        version: "1",
-        chainId: networkData?.chain?.id,
-        nonce: await getCsrfToken(),
-      });
-      const { data: signature, error } = await signMessage({
-        message: message.prepareMessage(),
-      });
+  const { connect, connectors } = useConnect();
+  const { disconnect } = useDisconnect();
+  const { chain } = useNetwork();
+  const { address, isConnected } = useAccount();
+  const [message, setMessage] = useState("");
+  const { signMessage } = useSignMessage({
+    message: message,
+    onSuccess(signature) {
+      console.log(message);
+      console.log(signature);
       signIn("credentials", {
-        message: JSON.stringify(message),
+        message: message,
         redirect: false,
         signature,
       });
+    },
+  });
+
+  const handleLogin = async () => {
+    try {
+      if (!isConnected)
+        connectors.map(async (connector) => {
+          await connect({ connector });
+        });
+
+      const tmpmessage = new SiweMessage({
+        domain: window.location.host,
+        address: address,
+        statement: "Sign in with Ethereum to the app.",
+        uri: window.location.origin,
+        version: "1",
+        chainId: chain?.id,
+        nonce: await getCsrfToken(),
+      });
+
+      setMessage(tmpmessage.prepareMessage());
     } catch (error) {
       window.alert(error);
     }
   };
+
+  useEffect(() => {
+    if (message.length > 0) signMessage();
+  }, [message]);
 
   return (
     <VStack align="end">
@@ -52,9 +69,10 @@ export default function Header() {
             onClick={(e) => {
               e.preventDefault();
               signOut();
+              disconnect();
             }}
           >
-            <Link href={`/api/auth/signout`}> Sign out</Link>
+            <Link href={`/api/auth/signout`}>Sign out</Link>
           </Button>
         </VStack>
       ) : (

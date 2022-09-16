@@ -35,13 +35,13 @@ export const Tracker = () => {
   const [selectedDao, setSelectedDao] = useState<string>();
   const [loading, setLoading] = useState(true);
 
-  const [{ data: accountData }] = useAccount();
+  const { address } = useAccount();
 
   useEffect(() => {
     setDaos([]);
     setSelectedDao("");
 
-    fetch(`/api/tracker/?userInputAddress=${accountData?.address}`)
+    fetch(`/api/tracker/?userInputAddress=${address}`)
       .then((response) => {
         if (response.status == 404) return;
         return response.json();
