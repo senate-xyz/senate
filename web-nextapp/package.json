@@ -11,6 +11,12 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} ../prisma/seed.ts",
     "schema": "../prisma/schema.prisma"
   },
+  "proxy": {
+    "/api/*": {
+      "target": "http://localhost:3000",
+      "secure": false
+    }
+  },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.9",
     "@chakra-ui/react": "^2.3.1",
