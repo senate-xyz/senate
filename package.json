@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "dev": "yarn workspaces foreach -ip -t -j unlimited run dev",
+    "web": "yarn workspace web-nextapp dev",
     "build": "yarn workspaces foreach -ip -j unlimited run build",
     "start": "yarn workspaces foreach -ip -j unlimited run start"
   },

@@ -45,7 +45,7 @@ export default async function handler(
         userVote: true,
       },
       orderBy: {
-        voteEnds: "desc",
+        voteEnds: "asc",
       },
     });
   } else {
