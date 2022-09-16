@@ -7,16 +7,13 @@ import compoundGovBravo from "../abis/compountGovBravo.json";
 const prisma = new PrismaClient();
 
 async function main() {
-  try {
-    await prisma.subscription.deleteMany();
-    await prisma.notificationChannel.deleteMany();
-    await prisma.notificationSetting.deleteMany();
-    await prisma.user.deleteMany();
-    await prisma.dao.deleteMany();
-    await prisma.proposal.deleteMany();
-  } catch (e) {
-    console.log("db already empty");
-  }
+  await prisma.userVote.deleteMany();
+  await prisma.proposal.deleteMany();
+  await prisma.notificationChannel.deleteMany();
+  await prisma.notificationSetting.deleteMany();
+  await prisma.subscription.deleteMany();
+  await prisma.dao.deleteMany();
+  await prisma.user.deleteMany();
 
   const alice = await prisma.user.upsert({
     where: { address: "0xalice" },
