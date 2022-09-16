@@ -20,10 +20,13 @@
     "framer-motion": "^7.2.1",
     "moment": "^2.29.4",
     "next": "12.2.5",
+    "next-auth": "^4.10.3",
     "prisma": "^4.3.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-icons": "^4.4.0"
+    "react-icons": "^4.4.0",
+    "siwe": "^1.1.6",
+    "wagmi": "^0.2.18"
   },
   "devDependencies": {
     "@types/node": "^18.7.14",
