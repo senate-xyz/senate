@@ -11,12 +11,6 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} ../prisma/seed.ts",
     "schema": "../prisma/schema.prisma"
   },
-  "proxy": {
-    "/api/*": {
-      "target": "http://localhost:3000",
-      "secure": false
-    }
-  },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.9",
     "@chakra-ui/react": "^2.3.1",
@@ -26,13 +20,10 @@
     "framer-motion": "^7.2.1",
     "moment": "^2.29.4",
     "next": "12.2.5",
-    "next-auth": "^4.10.3",
     "prisma": "^4.3.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-icons": "^4.4.0",
-    "siwe": "^1.1.6",
-    "wagmi": "^0.6"
+    "react-icons": "^4.4.0"
   },
   "devDependencies": {
     "@types/node": "^18.7.14",
