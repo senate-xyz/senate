@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Flex } from "@chakra-ui/react";
 import NavBar from "../components/navbar/NavBar";
 import { PagesEnum } from "../../types";
@@ -27,17 +27,24 @@ const DynamicTracker = dynamic(
   }
 );
 
+const DynamicHeader = dynamic(() => import("../components/header/Header"), {
+  suspense: true,
+});
+
 const Home: NextPage = () => {
   const [page, setPage] = useState(PagesEnum.Dashboard);
 
   return (
     <Flex flexDir="row" w="100vw">
       <NavBar page={page} setPage={setPage} />
-      <Suspense fallback={`Loading...`}>
-        {page == PagesEnum.Dashboard && <DyanmicProposals />}
-        {page == PagesEnum.Subscriptions && <DynamicSubscriptions />}
-        {page == PagesEnum.Tracker && <DynamicTracker />}
-      </Suspense>
+      <Flex w="full" flexDir="column" bg="gray.200">
+        <DynamicHeader />
+        <Suspense fallback={`Loading...`}>
+          {page == PagesEnum.Dashboard && <DyanmicProposals />}
+          {page == PagesEnum.Subscriptions && <DynamicSubscriptions />}
+          {page == PagesEnum.Tracker && <DynamicTracker />}
+        </Suspense>
+      </Flex>
     </Flex>
   );
 };
