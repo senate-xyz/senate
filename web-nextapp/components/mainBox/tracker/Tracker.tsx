@@ -21,32 +21,36 @@ import {
   TabList,
   TabPanels,
   Tabs,
+  useToast,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
-import { ProposalType, TEST_USER } from "../../../../types";
+import { ProposalType } from "../../../../types";
 import moment from "moment";
-
-const pastDaysOptions = [
-  { id: 1, name: "Include yesterday" },
-  { id: 2, name: "Include two days ago" },
-  { id: 3, name: "Include three days ago" },
-  { id: 7, name: "Include one week ago" },
-  { id: 14, name: "Include two weeks ago" },
-  { id: 30, name: "Include one month ago" },
-];
+import { useSession } from "next-auth/react";
 
 export const Tracker = () => {
+  const { data: session } = useSession();
+  const toast = useToast();
   const [votes, setVotes] = useState<ProposalType[]>([]);
   const [daos, setDaos] = useState<string[]>([]);
   const [selectedDao, setSelectedDao] = useState<string>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!session)
+      toast({
+        title: "Not signed in",
+        description: "Vote tracker requires you to sign in first",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+
     setDaos([]);
     setSelectedDao("");
-    fetch(`/api/tracker/?userInputAddress=${TEST_USER}`)
+    fetch(`/api/tracker/?userInputAddress=${session?.user?.name}`)
       .then((response) => response.json())
       .then(async (data) => {
         setLoading(false);

@@ -4,7 +4,7 @@ import { SiweMessage } from "siwe";
 import { useAccount, useConnect, useNetwork, useSignMessage } from "wagmi";
 
 export const Header = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   const { connectors, connectAsync } = useConnect();
   const { address, isConnected } = useAccount();

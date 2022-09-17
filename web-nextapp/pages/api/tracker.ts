@@ -8,14 +8,18 @@ export default async function handler(
 ) {
   const { userInputAddress } = req.query;
 
-  const user = await prisma.user.findUnique({
-    where: {
-      address: userInputAddress as string,
-    },
-    select: {
-      id: true,
-    },
-  });
+  const user = await prisma.user
+    .findFirstOrThrow({
+      where: {
+        address: userInputAddress as string,
+      },
+      select: {
+        id: true,
+      },
+    })
+    .catch(() => {
+      res.status(200).json([]);
+    });
 
   const userDaos = await prisma.subscription.findMany({
     where: { userId: user?.id },
