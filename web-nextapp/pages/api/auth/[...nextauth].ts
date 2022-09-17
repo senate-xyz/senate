@@ -1,9 +1,11 @@
+import { PrismaClient } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 
+const prisma = new PrismaClient();
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 export default async function auth(
@@ -52,6 +54,18 @@ export default async function auth(
           }
 
           await siwe.validate(credentials?.signature || "");
+
+          await prisma.user.upsert({
+            where: {
+              address: siwe.address,
+            },
+            create: {
+              address: siwe.address,
+            },
+            update: {
+              address: siwe.address,
+            },
+          });
           return {
             id: siwe.address,
           };

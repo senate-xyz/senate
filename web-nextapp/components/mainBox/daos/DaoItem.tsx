@@ -21,6 +21,7 @@ import {
   MenuItem,
   MenuList,
   Spinner,
+  useToast,
 } from "@chakra-ui/react";
 import {
   DaoType,
@@ -28,16 +29,18 @@ import {
   NotificationChannelEnum,
   NotificationIntervalEnum,
   NotificationSettingType,
-  TEST_USER,
 } from "../../../../types";
 import { FaDiscord, FaSlack } from "react-icons/fa";
 import { ChevronDownIcon, BellIcon, CheckIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
 import moment from "moment";
-import { Prisma } from "@prisma/client";
+import { useSession } from "next-auth/react";
 
 export const SubscriptionItem = (props: { dao: DaoType }) => {
+  const { data: session } = useSession();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
 
   const [notifSettings, setNotifSettings] = useState<NotificationSettingType[]>(
     []
@@ -49,9 +52,9 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
 
   const getData = () => {
     fetch(
-      `/api/notificationSettings?userAddress=${String(
-        TEST_USER
-      )}&daoId=${String(props.dao.id)}`,
+      `/api/notificationSettings?userAddress=${
+        session?.user?.name
+      }&daoId=${String(props.dao.id)}`,
       {
         method: "GET",
       }
@@ -63,9 +66,9 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
     });
 
     fetch(
-      `/api/notificationChannels?userAddress=${String(
-        TEST_USER
-      )}&daoId=${String(props.dao.id)}`,
+      `/api/notificationChannels?userAddress=${
+        session?.user?.name
+      }&daoId=${String(props.dao.id)}`,
       {
         method: "GET",
       }
@@ -89,9 +92,9 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
 
     setLoading(true);
     fetch(
-      `/api/notificationChannels?userAddress=${String(
-        TEST_USER
-      )}&daoId=${String(props.dao.id)}`,
+      `/api/notificationChannels?userAddress=${
+        session?.user?.name
+      }&daoId=${String(props.dao.id)}`,
       {
         method: method,
         body: JSON.stringify(tmp),
@@ -109,15 +112,26 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
 
     setLoading(true);
     fetch(
-      `/api/notificationSettings?userAddress=${String(
-        TEST_USER
-      )}&daoId=${String(props.dao.id)}`,
+      `/api/notificationSettings?userAddress=${
+        session?.user?.name
+      }&daoId=${String(props.dao.id)}`,
       {
         method: method,
         body: JSON.stringify(tmp),
       }
     ).then(() => {
       getData();
+    });
+  };
+
+  const signedOutWarning = () => {
+    toast({
+      title: "Not signed in",
+      description:
+        "Subscribing to DAOs notifications requires you to sign in first",
+      status: "warning",
+      duration: 3000,
+      isClosable: true,
     });
   };
 
@@ -129,7 +143,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
       borderColor={notifChannels.length > 0 ? "gray.400" : "gray.200"}
       background={notifChannels.length > 0 ? "gray.200" : "gray.100"}
       w="full"
-      onClick={onOpen}
+      onClick={session ? onOpen : signedOutWarning}
     >
       <Avatar src={props.dao.picture}></Avatar>
       <Text>{props.dao.name}</Text>

@@ -18,12 +18,15 @@ import {
   Spinner,
   Select,
   Spacer,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
-import { ProposalType, TEST_USER } from "../../../../types";
+import { ProposalType } from "../../../../types";
 import moment from "moment";
+import { useSession } from "next-auth/react";
 
 const pastDaysOptions = [
   { id: 1, name: "Include yesterday" },
@@ -35,17 +38,22 @@ const pastDaysOptions = [
 ];
 
 export const Proposals = () => {
+  const { data: session } = useSession();
   const [proposals, setProposals] = useState<ProposalType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectValue, setSelectValue] = useState(0);
 
   useEffect(() => {
-    fetch(`/api/proposals/?userInputAddress=${TEST_USER}&includePastDays=0`)
+    fetch(
+      `/api/proposals/?userInputAddress=${session?.user?.name}&includePastDays=0`
+    )
       .then((response) => response.json())
       .then(async (data) => {
         setLoading(false);
         setProposals(data);
+        setSelectValue(0);
       });
-  }, []);
+  }, [session]);
 
   const getPastDays = (pastDaysIndex: number) => {
     setLoading(true);
@@ -55,7 +63,7 @@ export const Proposals = () => {
     else daysAgo = 0;
 
     fetch(
-      `/api/proposals/?userInputAddress=${TEST_USER}&includePastDays=${daysAgo}`
+      `/api/proposals/?userInputAddress=${session?.user?.name}&includePastDays=${daysAgo}`
     )
       .then((response) => response.json())
       .then(async (data) => {
@@ -68,6 +76,13 @@ export const Proposals = () => {
     <Flex flexDir="row" w="full">
       <Grid bg="gray.200" minH="100vh" w="full">
         <VStack bg="gray.100" m="10" align="start" spacing={5} p="5">
+          {!proposals.length && (
+            <Alert status="warning">
+              <AlertIcon />
+              No data. New accounts require up to 10 minutes to fetch new
+              data...
+            </Alert>
+          )}
           <HStack w="full">
             <Text>Proposals</Text>
             <Spacer />
@@ -75,6 +90,7 @@ export const Proposals = () => {
               placeholder="Upcoming only"
               w="20rem"
               onChange={(e) => getPastDays(e.target.selectedIndex)}
+              value={selectValue}
             >
               {pastDaysOptions.map((option) => {
                 return (

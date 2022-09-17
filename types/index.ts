@@ -60,6 +60,3 @@ export interface LinkItemSPAProps {
   id: PagesEnum;
   icon: number;
 }
-
-//export const TEST_USER = "0xa93ae3a2ce1714f422ec2d799c48a56b2035c872";
-export const TEST_USER = "0xbob";

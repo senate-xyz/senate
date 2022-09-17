@@ -18,7 +18,14 @@ export default async function handler(
   });
 
   const userDaos = await prisma.subscription.findMany({
-    where: { userId: userId?.id },
+    where: {
+      AND: {
+        userId: userId?.id,
+        notificationChannels: {
+          every: {},
+        },
+      },
+    },
     select: {
       daoId: true,
     },
@@ -45,7 +52,7 @@ export default async function handler(
         userVote: true,
       },
       orderBy: {
-        voteEnds: "asc",
+        voteEnds: "desc",
       },
     });
   } else {
