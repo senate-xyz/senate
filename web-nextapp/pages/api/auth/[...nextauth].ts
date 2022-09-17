@@ -30,24 +30,24 @@ export default async function auth(
           const siwe = new SiweMessage(
             JSON.parse(credentials?.message as string) || "{}"
           );
-          console.log(siwe);
 
           const nextAuthUrl =
             process.env.NEXTAUTH_URL ||
             (process.env.VERCEL_URL
               ? `https://${process.env.VERCEL_URL}`
               : null);
-          console.log(nextAuthUrl);
 
           if (siwe.domain !== nextAuthUrl) {
             console.log("bad domain");
+            console.log(siwe);
+            console.log(nextAuthUrl);
             return null;
           }
 
-          console.log(await getCsrfToken({ req }));
-
           if (siwe.nonce !== (await getCsrfToken({ req }))) {
             console.log("bad nonce");
+            console.log(siwe);
+            console.log(await getCsrfToken({ req }));
             return null;
           }
 
