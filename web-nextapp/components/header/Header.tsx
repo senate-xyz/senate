@@ -20,23 +20,27 @@ export const Header = () => {
           })
         );
 
-      const message = new SiweMessage({
-        domain: window.location.host,
-        address: address,
-        statement: "Sign in with Ethereum to the app.",
-        uri: window.location.origin,
-        version: "1",
-        chainId: chain?.id,
-        nonce: await getCsrfToken(),
-      });
-      const signature = await signMessageAsync({
-        message: message.prepareMessage(),
-      });
-      signIn("credentials", {
-        message: JSON.stringify(message),
-        redirect: false,
-        signature,
-      });
+      if (isConnected) {
+        const message = new SiweMessage({
+          domain: window.location.host,
+          address: address,
+          statement: "Sign in with Ethereum to the app.",
+          uri: window.location.origin,
+          version: "1",
+          chainId: chain?.id,
+          nonce: await getCsrfToken(),
+        });
+        const signature = await signMessageAsync({
+          message: message.prepareMessage(),
+        });
+
+        signIn("credentials", {
+          message: JSON.stringify(message),
+          signature,
+          redirect: false,
+          callbackUrl: message.uri,
+        });
+      }
     } catch (error) {
       window.alert(error);
     }
@@ -48,7 +52,7 @@ export const Header = () => {
         <Flex flexDir="column" mt="2rem" mr="2rem">
           <Text>Signed in as {session.user?.name}</Text>
           <Button
-            onClick={(e) => {
+            onClick={() => {
               signOut();
             }}
           >
@@ -59,7 +63,7 @@ export const Header = () => {
         <Button
           mt="2rem"
           mr="2rem"
-          onClick={(e) => {
+          onClick={() => {
             handleLogin();
           }}
         >
