@@ -37,7 +37,7 @@ export default async function auth(
               ? `https://${process.env.VERCEL_URL}`
               : null);
 
-          if (siwe.domain !== nextAuthUrl) {
+          if (siwe.uri !== nextAuthUrl) {
             console.log("bad domain");
             console.log(siwe);
             console.log(nextAuthUrl);
