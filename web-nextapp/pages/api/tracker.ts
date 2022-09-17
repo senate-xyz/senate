@@ -8,7 +8,7 @@ export default async function handler(
 ) {
   const { userInputAddress } = req.query;
 
-  const user = await prisma.user.findFirst({
+  const user = await prisma.user.findUnique({
     where: {
       address: userInputAddress as string,
     },
@@ -24,7 +24,7 @@ export default async function handler(
     },
   });
 
-  let userProposals = [];
+  let userProposals;
 
   userProposals = await prisma.proposal.findMany({
     where: {
