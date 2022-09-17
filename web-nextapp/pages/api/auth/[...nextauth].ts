@@ -38,17 +38,13 @@ export default async function auth(
               ? `https://${process.env.VERCEL_URL}`
               : null);
           console.log(nextAuthUrl);
-          if (!nextAuthUrl) {
-            console.log(`bad url ${nextAuthUrl}`);
-            return null;
-          }
 
-          const nextAuthHost = new URL(nextAuthUrl).host;
-          console.log(nextAuthHost);
-          if (siwe.domain !== nextAuthHost) {
+          if (siwe.domain !== nextAuthUrl) {
             console.log("bad domain");
             return null;
           }
+
+          console.log(await getCsrfToken({ req }));
 
           if (siwe.nonce !== (await getCsrfToken({ req }))) {
             console.log("bad nonce");
