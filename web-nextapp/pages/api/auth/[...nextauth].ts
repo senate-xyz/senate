@@ -46,6 +46,7 @@ export default async function auth(
             console.log("bad domain");
             return null;
           }
+          console.log(nextAuthHost);
 
           if (siwe.nonce !== (await getCsrfToken({ req }))) {
             console.log("bad nonce");
