@@ -48,7 +48,7 @@ export const Header = () => {
 
   return (
     <Flex w="full" align="end" justify="end">
-      {isConnected && session?.user ? (
+      {session?.user ? (
         <Flex flexDir="column" mt="2rem" mr="2rem">
           <Text>Signed in as {session.user?.name}</Text>
           <Button
