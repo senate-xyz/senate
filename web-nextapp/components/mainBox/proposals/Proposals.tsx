@@ -29,12 +29,12 @@ import moment from "moment";
 import { useSession } from "next-auth/react";
 
 const pastDaysOptions = [
-  { id: 1, name: "Include yesterday" },
-  { id: 2, name: "Include two days ago" },
-  { id: 3, name: "Include three days ago" },
-  { id: 7, name: "Include one week ago" },
-  { id: 14, name: "Include two weeks ago" },
-  { id: 30, name: "Include one month ago" },
+  { id: 1, days: 1, name: "Include yesterday" },
+  { id: 2, days: 2, name: "Include two days ago" },
+  { id: 3, days: 3, name: "Include three days ago" },
+  { id: 4, days: 7, name: "Include one week ago" },
+  { id: 5, days: 14, name: "Include two weeks ago" },
+  { id: 6, days: 30, name: "Include one month ago" },
 ];
 
 export const Proposals = () => {
@@ -59,7 +59,7 @@ export const Proposals = () => {
     setLoading(true);
 
     let daysAgo;
-    if (pastDaysIndex > 0) daysAgo = pastDaysOptions[pastDaysIndex - 1].id;
+    if (pastDaysIndex > 0) daysAgo = pastDaysOptions[pastDaysIndex - 1].days;
     else daysAgo = 0;
 
     fetch(
@@ -89,7 +89,10 @@ export const Proposals = () => {
             <Select
               placeholder="Upcoming only"
               w="20rem"
-              onChange={(e) => getPastDays(e.target.selectedIndex)}
+              onChange={(e) => {
+                setSelectValue(e.target.selectedIndex);
+                getPastDays(e.target.selectedIndex);
+              }}
               value={selectValue}
             >
               {pastDaysOptions.map((option) => {
@@ -139,8 +142,14 @@ export const Proposals = () => {
                         <Td>
                           {moment(proposal.voteEnds).isBefore(new Date()) ? (
                             //past vote
-                            proposal.userVote.length ? (
-                              proposal.userVote[0].voteName
+
+                            proposal.userVote[0]?.user.address ==
+                            session?.user?.name ? (
+                              proposal.userVote.length ? (
+                                proposal.userVote[0].voteName
+                              ) : (
+                                "Did not vote"
+                              )
                             ) : (
                               "Did not vote"
                             )
