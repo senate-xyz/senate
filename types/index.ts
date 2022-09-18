@@ -5,7 +5,11 @@ export type DaoType = Prisma.DaoGetPayload<{}>;
 export type ProposalType = Prisma.ProposalGetPayload<{
   include: {
     dao: true;
-    userVote: true;
+    userVote: {
+      include: {
+        user: true;
+      };
+    };
   };
 }>;
 
