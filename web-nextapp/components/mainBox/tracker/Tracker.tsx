@@ -76,7 +76,7 @@ export const Tracker = () => {
       <Grid bg="gray.200" minH="100vh" w="full">
         <VStack bg="gray.100" m="10" align="start" spacing={5} p="5">
           <HStack w="full">
-            <Text>Votes tracker</Text>
+            <Text>Vote tracker</Text>
             <Spacer />
           </HStack>
           <Divider></Divider>
