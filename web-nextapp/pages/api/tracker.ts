@@ -40,7 +40,9 @@ export default async function handler(
       },
 
       userVote: {
-        some: {},
+        some: {
+          userId: user?.id,
+        },
       },
     },
     include: {
