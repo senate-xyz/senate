@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Dao } from "@prisma/client";
 import { ethers } from "ethers";
 import axios from "axios";
 import { ProposalTypeEnum } from "./../../../../types";
@@ -66,7 +66,7 @@ const provider = new ethers.providers.JsonRpcProvider({
 //   }
 // }
 
-const fetchProposalInfoFromIPFS = async (hexHash: string) => {
+const fetchProposalInfoFromIPFS = async (hexHash: string) : Promise<{title: string, description: string}> => {
   let title, description;
   try {
     const response = await axios.get(
@@ -87,7 +87,7 @@ const fetchProposalInfoFromIPFS = async (hexHash: string) => {
 
 // Some DAOs store onchain the proposal title and full description in the same variable.
 // This function parses that entire text and returns the title and the description
-const parseDescription = async (text: String) => {
+const parseDescription = async (text: String) : Promise<{title: String, description: String}> => {
   return {
     title: "Title",
     description: "Description",
@@ -107,7 +107,7 @@ const getProposalTitleAndDescription = async (
 };
 
 // TODO: Replace any with DAO type
-const findGovernorBravoProposals = async (dao: any) => {
+const findGovernorBravoProposals = async (dao: Dao) => {
   const govBravoIface = new ethers.utils.Interface(dao.abi);
 
   const logs = await provider.getLogs({
@@ -164,6 +164,7 @@ const findGovernorBravoProposals = async (dao: any) => {
         daoId: dao.id,
         title: String(title),
         type: ProposalTypeEnum.Chain,
+        onchainId: Number(proposals[i].eventData.id),
         description: String(description),
         created: new Date(proposalCreatedTimestamp * 1000),
         voteStarts: new Date(votingStartsTimestamp * 1000),
@@ -171,12 +172,16 @@ const findGovernorBravoProposals = async (dao: any) => {
         url: proposalUrl,
       },
     });
+
+    console.log(proposal);
   }
 
+  console.log("\n\n");
   console.log(`inserted ${proposals.length} chain proposals`);
+  console.log("======================================================\n\n")
 };
 
-const findOngoingProposals = async (daos: any) => {
+const findOngoingProposals = async (daos: Dao[]) => {
   for (let i = 0; i < daos.length; i++) {
     await findGovernorBravoProposals(daos[i]);
   }

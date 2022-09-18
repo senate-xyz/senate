@@ -76,6 +76,7 @@ model Proposal {
   daoId       Int
   type        Int
   snapshotId  String     @unique @default(cuid()) //used for snapshot proposal fetching uniqueness
+  onchainId   Int        @default(-1) 
   title       String
   description String
   created     DateTime
