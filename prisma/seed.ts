@@ -29,7 +29,7 @@ async function main() {
       onchainHandler: DaoOnChainHandler.Bravo1,
       snapshotSpace: "aave.eth",
       picture: "https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png",
-      latestBlock: 11427398,
+      latestBlock: 15446733,
       proposalUrl: "https://app.aave.com/governance/proposal/?proposalId=",
       abi: aaveGovBravo.abi,
     },
@@ -107,17 +107,42 @@ async function main() {
       snapshotSpace: "",
       picture:
         "https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png",
-      latestBlock: 12006099,
+      latestBlock: 15446733,
       proposalUrl: "https://vote.makerdao.com/executive/",
       abi: makerChief.abi,
     },
   });
 
-  const delegateContract = await prisma.user.upsert({
-    where: { address: "0x967d901496d3c3695f7adcec1a6a8d7eae4cf101" },
+  const delegate = await prisma.user.upsert({
+    where: { address: "0xCdB792c14391F7115Ba77A7Cd27f724fC9eA2091" },
     update: {},
     create: {
-      address: "0x967d901496d3c3695f7adcec1a6a8d7eae4cf101",
+      address: "0xCdB792c14391F7115Ba77A7Cd27f724fC9eA2091",
+    },
+  });
+
+  await prisma.user.update({
+    where: { address: "0xCdB792c14391F7115Ba77A7Cd27f724fC9eA2091" },
+    data: {
+      subscriptions: {
+        create: [
+          {
+            daoId: maker.id,
+          },
+          {
+            daoId: compound.id,
+          },
+          {
+            daoId: uniswap.id,
+          },
+          {
+            daoId: dd.id,
+          },
+          {
+            daoId: stakeborg.id,
+          },
+        ],
+      },
     },
   });
 

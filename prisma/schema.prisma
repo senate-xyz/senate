@@ -78,6 +78,7 @@ model Proposal {
   type        Int
   snapshotId  String     @unique @default(cuid()) //used for snapshot proposal fetching uniqueness
   txHash      String     @unique @default(cuid()) //used for fetching onchain uniqueness
+  spellAddress String    @unique @default(cuid()) // used for fetching maker uniqueness
   onchainId   Int        @default(-1)
   title       String
   description String
@@ -89,13 +90,14 @@ model Proposal {
 }
 
 model UserVote {
-  id         Int      @id @default(autoincrement())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     Int
-  proposal   Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
-  proposalId Int
-  snapshotId String   @unique @default(cuid()) //used for snapshot votes fetching uniqueness
-  txHash     String   @unique @default(cuid()) //used for fetching onchain uniqueness
-  voteOption Int
-  voteName   String
+  id           Int      @id @default(autoincrement())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       Int
+  proposal     Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  proposalId   Int
+  snapshotId   String   @unique @default(cuid()) //used for snapshot votes fetching uniqueness
+  txHash       String   @unique @default(cuid()) //used for fetching onchain uniqueness
+  spellAddress String   @unique @default(cuid()) // used for fetching maker uniqueness
+  voteOption   Int
+  voteName     String
 }
