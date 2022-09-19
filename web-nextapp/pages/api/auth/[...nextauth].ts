@@ -1,9 +1,11 @@
+import { PrismaClient } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 
+const prisma = new PrismaClient();
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 export default async function auth(
@@ -27,29 +29,48 @@ export default async function auth(
       },
       async authorize(credentials) {
         try {
-          const siwe = new SiweMessage(credentials?.message || "{}");
+          const siwe = new SiweMessage(
+            JSON.parse(credentials?.message as string) || "{}"
+          );
 
-          console.log(`siwe.domain : ${siwe.domain}`);
-          console.log(`siwe.nonce : ${siwe.nonce}`);
-          console.log(`csrf: ${await getCsrfToken({ req })}`);
+          const nextAuthUrl =
+            process.env.NEXTAUTH_URL ||
+            (process.env.VERCEL_URL
+              ? `https://${process.env.VERCEL_URL}`
+              : null);
 
-          const domain = process.env.DOMAIN;
-          if (siwe.domain !== domain) {
+          if (siwe.uri !== nextAuthUrl) {
             console.log("bad domain");
+            console.log(siwe);
+            console.log(nextAuthUrl);
             return null;
           }
 
           if (siwe.nonce !== (await getCsrfToken({ req }))) {
-            console.log("bad token");
+            console.log("bad nonce");
+            console.log(siwe);
+            console.log(await getCsrfToken({ req }));
             return null;
           }
 
           await siwe.validate(credentials?.signature || "");
+
+          await prisma.user.upsert({
+            where: {
+              address: siwe.address,
+            },
+            create: {
+              address: siwe.address,
+            },
+            update: {
+              address: siwe.address,
+            },
+          });
           return {
             id: siwe.address,
           };
         } catch (e) {
-          console.log(`err: ${e}`);
+          console.log(e);
           return null;
         }
       },
@@ -59,7 +80,7 @@ export default async function auth(
   const isDefaultSigninPage =
     req.method === "GET" && req.query.nextauth?.includes("signin");
 
-  // Hides Sign-In with Ethereum from default sign page
+  // Hide Sign-In with Ethereum from default sign page
   if (isDefaultSigninPage) {
     providers.pop();
   }
@@ -70,14 +91,12 @@ export default async function auth(
     session: {
       strategy: "jwt",
     },
-    jwt: {
-      secret: process.env.JWT_SECRET,
-    },
-    secret: process.env.NEXT_AUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
       async session({ session, token }) {
         session.address = token.sub;
         session.user!.name = token.sub;
+        session.user!.image = "https://www.fillmurray.com/128/128";
         return session;
       },
     },

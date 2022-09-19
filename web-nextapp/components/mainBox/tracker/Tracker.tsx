@@ -21,33 +21,38 @@ import {
   TabList,
   TabPanels,
   Tabs,
+  useToast,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
 import { ProposalType } from "../../../../types";
 import moment from "moment";
-import { useAccount } from "wagmi";
+import { useSession } from "next-auth/react";
 
 export const Tracker = () => {
+  const { data: session } = useSession();
+  const toast = useToast();
   const [votes, setVotes] = useState<ProposalType[]>([]);
   const [daos, setDaos] = useState<string[]>([]);
   const [selectedDao, setSelectedDao] = useState<string>();
   const [loading, setLoading] = useState(true);
 
-  const { address } = useAccount();
-
   useEffect(() => {
+    if (!session)
+      toast({
+        title: "Not signed in",
+        description: "Vote tracker requires you to sign in first",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+
     setDaos([]);
     setSelectedDao("");
-
-    fetch(`/api/tracker/?userInputAddress=${address}`)
-      .then((response) => {
-        if (response.status == 404) return;
-        return response.json();
-      })
+    fetch(`/api/tracker/?userInputAddress=${session?.user?.name}`)
+      .then((response) => response.json())
       .then(async (data) => {
-        if (!data) return;
         setLoading(false);
         setVotes(data);
       });
@@ -71,7 +76,7 @@ export const Tracker = () => {
       <Grid bg="gray.200" minH="100vh" w="full">
         <VStack bg="gray.100" m="10" align="start" spacing={5} p="5">
           <HStack w="full">
-            <Text>Votes tracker</Text>
+            <Text>Vote tracker</Text>
             <Spacer />
           </HStack>
           <Divider></Divider>

@@ -8,7 +8,7 @@ export default async function handler(
 ) {
   const { userInputAddress, includePastDays } = req.query;
 
-  const userId = await prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       address: userInputAddress as string,
     },
@@ -18,7 +18,14 @@ export default async function handler(
   });
 
   const userDaos = await prisma.subscription.findMany({
-    where: { userId: userId?.id },
+    where: {
+      AND: {
+        userId: user?.id,
+        notificationChannels: {
+          every: {},
+        },
+      },
+    },
     select: {
       daoId: true,
     },
@@ -42,10 +49,17 @@ export default async function handler(
       },
       include: {
         dao: true,
-        userVote: true,
+        userVote: {
+          where: {
+            userId: user?.id,
+          },
+          include: {
+            user: true,
+          },
+        },
       },
       orderBy: {
-        voteEnds: "asc",
+        voteEnds: "desc",
       },
     });
   } else {
@@ -57,7 +71,14 @@ export default async function handler(
       },
       include: {
         dao: true,
-        userVote: true,
+        userVote: {
+          where: {
+            userId: user?.id,
+          },
+          include: {
+            user: true,
+          },
+        },
       },
     });
   }

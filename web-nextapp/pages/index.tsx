@@ -5,7 +5,6 @@ import NavBar from "../components/navbar/NavBar";
 import { PagesEnum } from "../../types";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import Header from "../components/mainBox/header/Header";
 
 const DyanmicProposals = dynamic(
   () => import("../components/mainBox/proposals/Proposals"),
@@ -28,15 +27,18 @@ const DynamicTracker = dynamic(
   }
 );
 
+const DynamicHeader = dynamic(() => import("../components/header/Header"), {
+  suspense: true,
+});
+
 const Home: NextPage = () => {
   const [page, setPage] = useState(PagesEnum.Dashboard);
 
   return (
     <Flex flexDir="row" w="100vw">
       <NavBar page={page} setPage={setPage} />
-
       <Flex w="full" flexDir="column" bg="gray.200">
-        <Header />
+        <DynamicHeader />
         <Suspense fallback={`Loading...`}>
           {page == PagesEnum.Dashboard && <DyanmicProposals />}
           {page == PagesEnum.Subscriptions && <DynamicSubscriptions />}
