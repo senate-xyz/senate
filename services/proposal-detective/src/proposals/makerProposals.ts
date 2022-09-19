@@ -12,7 +12,6 @@ const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
 });
 
-
 export const getMakerProposals = async () => {
   let maker = await prisma.dao.findFirst({
     where: {
@@ -23,7 +22,6 @@ export const getMakerProposals = async () => {
   if (maker !== null) {
     await findMakerProposals(maker);
   }
-  
 };
 
 const findMakerProposals = async (dao: Dao) => {
@@ -39,42 +37,80 @@ const findMakerProposals = async (dao: Dao) => {
     const voteSingleActionTopic =
     "0xa69beaba00000000000000000000000000000000000000000000000000000000";
 
-  const logs = await provider.getLogs({
-    fromBlock: 15044958,
-    address: dao.address,
-    topics: [
-      [voteMultipleActionsTopic, voteSingleActionTopic]
-    ],
-  });
+    const logs = await provider.getLogs({
+      fromBlock: dao.latestBlock,
+      address: dao.address,
+      topics: [
+        [voteMultipleActionsTopic, voteSingleActionTopic]
+      ],
+    });
 
-  const spellsAddressSet = new Set<string>();
-  for (let i = 0; i < logs.length; i++) {
-    let log = logs[i];
-    console.log(log);
-    //let logTimestamp = await getEventTimestamp(log.blockNumber);
-    let eventArgs = iface.decodeEventLog("LogNote", log.data);
+    const spellAddressesSet = new Set<string>();
+    for (let i = 0; i < logs.length; i++) {
+      let log = logs[i];
+      let eventArgs = iface.decodeEventLog("LogNote", log.data);
 
-    let decodedFunctionData =
-      log.topics[0] === voteSingleActionTopic
-        ? iface.decodeFunctionData("vote(bytes32)", eventArgs.fax)
-        : iface.decodeFunctionData("vote(address[])", eventArgs.fax);
+      let decodedFunctionData =
+        log.topics[0] === voteSingleActionTopic
+          ? iface.decodeFunctionData("vote(bytes32)", eventArgs.fax)
+          : iface.decodeFunctionData("vote(address[])", eventArgs.fax);
 
-    let spells : string[] =
-      decodedFunctionData.yays !== undefined
-        ? decodedFunctionData.yays
-        : await getSlateYays(chiefContract, decodedFunctionData.slate);
+      let spells : string[] =
+        decodedFunctionData.yays !== undefined
+          ? decodedFunctionData.yays
+          : await getSlateYays(chiefContract, decodedFunctionData.slate);
 
-    spells.forEach(spell => {
-        spellsAddressSet.add(spell);
-    })
-  }
+      spells.forEach(spell => {
+          spellAddressesSet.add(spell);
+      })
+    }
 
-  spellsAddressSet.forEach(spell => {
-    // Spells have unique addresses. Stuffing these into the snapshotId field
-    // Add spells to database
-  })
+    let spellAddresses = Array.from(spellAddressesSet);
 
-  console.log(spellsAddressSet.size);
+    for (let i = 0; i< spellAddresses.length; i++) {
+      try {
+        const response = await axios.get('https://vote.makerdao.com/api/executive/' + spellAddresses[i]);
+        
+        await prisma.proposal.upsert({
+          where: { 
+            spellAddress: spellAddresses[i] 
+          },
+          update: {
+            spellAddress: spellAddresses[i],
+            daoId: dao.id,
+            title: response.data.title,
+            type: ProposalTypeEnum.Chain,
+            description: response.data.content,
+            created: new Date(response.data.date),
+            voteStarts: new Date(response.data.date),
+            voteEnds: new Date(calculateVotingPeriodEndDate(response.data.spellData)),
+            url: dao.proposalUrl + response.data.key
+          },
+          create: {
+            spellAddress: spellAddresses[i],
+            daoId: dao.id,
+            title: response.data.title,
+            type: ProposalTypeEnum.Chain,
+            description: response.data.content,
+            created: new Date(response.data.date),
+            voteStarts: new Date(response.data.date),
+            voteEnds: new Date(calculateVotingPeriodEndDate(response.data.spellData)),
+            url: dao.proposalUrl + response.data.key
+          }
+        })
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    console.log("\n\n");
+    console.log(`inserted ${spellAddresses.length} chain proposals`);
+    console.log("======================================================\n\n");
+}
+
+const calculateVotingPeriodEndDate = (spellData: any) => {
+    return spellData.hasBeenCast ? spellData.dateExecuted :
+              (spellData.hasBeenScheduled ? spellData.nextCastTime : spellData.expiration); 
 }
 
 const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
@@ -93,6 +129,4 @@ const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
     }
   
     return yays;
-  };
-
-//11954225 
+};
