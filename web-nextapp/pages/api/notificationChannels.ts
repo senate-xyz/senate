@@ -13,8 +13,6 @@ export default async function handler(
     body,
   } = req;
 
-  console.log(userAddress);
-
   switch (method) {
     case "GET":
       let user = await prisma.user

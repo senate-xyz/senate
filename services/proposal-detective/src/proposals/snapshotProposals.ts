@@ -53,9 +53,12 @@ const findOngoingProposals = async (daos: Dao[]) => {
         })
         .then((data) => {
           return data.data.proposals;
+        })
+        .catch((e) => {
+          proposals = [];
         });
 
-      if (proposals)
+      if (proposals.length)
         await prisma
           .$transaction(
             proposals.map((proposal: any) =>
@@ -64,7 +67,6 @@ const findOngoingProposals = async (daos: Dao[]) => {
                   snapshotId: proposal.id,
                 },
                 update: {
-                  snapshotId: proposal.id,
                   daoId: dao.id,
                   title: String(proposal.title),
                   type: ProposalTypeEnum.Snapshot,
