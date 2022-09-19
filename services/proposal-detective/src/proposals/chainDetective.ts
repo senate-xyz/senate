@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Dao } from "@prisma/client";
 import { ethers } from "ethers";
 import axios from "axios";
-import { ProposalTypeEnum } from "./../../../../types";
+import { DaoOnChainHandler, ProposalTypeEnum } from "./../../../../types";
 
 dotenv.config();
 
@@ -12,61 +12,9 @@ const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
 });
 
-// const AaveGovIface = new ethers.utils.Interface(aaveGovV2.abi);
-// const AaveGov = new ethers.Contract(
-//   AAVE_GOV_V2_ADDRESS,
-//   aaveGovV2.abi,
-//   provider
-// );
-
-// const getAaveProposals = async () => {
-//   const latestBlock = await provider.getBlockNumber();
-//   const logs = await provider.getLogs({
-//     fromBlock: 0,
-//     address: AaveGov.address,
-//     topics: [
-//       AaveGovIface.getEventTopic("ProposalCreated")
-//     ],
-//   });
-
-//   const proposals = logs.map(log => ({
-//     txBlock: log.blockNumber,
-//     eventData: AaveGovIface.parseLog({
-//             topics: log.topics,
-//             data: log.data
-//           }).args
-//     }))
-
-//   const ongoingProposals = proposals.filter(proposal => proposal.eventData.endBlock > latestBlock);
-
-//   for (let i=0; i<proposals.length; i++) {
-//     let proposalCreatedTimestamp = (await provider.getBlock(proposals[i].txBlock)).timestamp;
-//     let votingStartsTimestamp = proposalCreatedTimestamp + (proposals[i].eventData.startBlock - proposals[i].txBlock) * 15;
-//     let votingEndsTimestamp = proposalCreatedTimestamp + (proposals[i].eventData.endBlock - proposals[i].txBlock) * 15;
-//     let {title, description} = await fetchProposalInfoFromIPFS(proposals[i].eventData.ipfsHash);
-//     let proposalUrl = "https://app.aave.com/governance/proposal/?proposalId=" + proposals[i].eventData.id;
-
-//     let proposal = await prisma.proposal.upsert({
-//       where: { id: 0 },
-//       update: {},
-//       create: {
-//         daoId: 1,
-//         title: title,
-//         description: description,
-//         created: new Date(proposalCreatedTimestamp * 1000),
-//         voteStarts: new Date(votingStartsTimestamp * 1000),
-//         voteEnds: new Date(votingEndsTimestamp * 1000),
-//         url: proposalUrl
-
-//       }
-
-//     })
-
-//     console.log(proposal);
-//   }
-// }
-
-const fetchProposalInfoFromIPFS = async (hexHash: string) => {
+const fetchProposalInfoFromIPFS = async (
+  hexHash: string
+): Promise<{ title: string; description: string }> => {
   let title, description;
   try {
     const response = await axios.get(
@@ -85,12 +33,29 @@ const fetchProposalInfoFromIPFS = async (hexHash: string) => {
   };
 };
 
+const formatTitle = (text: String): String => {
+  let temp = text.split("\n")[0];
+
+  if (!temp) {
+    console.log(text);
+    return "Title unavailable";
+  }
+
+  if (temp[0] === "#") {
+    return temp.substring(2);
+  }
+
+  return temp;
+};
+
 // Some DAOs store onchain the proposal title and full description in the same variable.
 // This function parses that entire text and returns the title and the description
 const parseDescription = async (text: String) => {
   return {
-    title: "Title",
-    description: "Description",
+    title: formatTitle(text),
+    description: text
+      ? text.split("\n").slice(1).join("\n")
+      : "Description unavailable",
   };
 };
 
@@ -107,7 +72,7 @@ const getProposalTitleAndDescription = async (
 };
 
 // TODO: Replace any with DAO type
-const findGovernorBravoProposals = async (dao: any) => {
+const findGovernorBravoProposals = async (dao: Dao) => {
   const govBravoIface = new ethers.utils.Interface(dao.abi);
 
   const logs = await provider.getLogs({
@@ -118,6 +83,7 @@ const findGovernorBravoProposals = async (dao: any) => {
 
   const proposals = logs.map((log) => ({
     txBlock: log.blockNumber,
+    txHash: log.transactionHash,
     eventData: govBravoIface.parseLog({
       topics: log.topics,
       data: log.data,
@@ -143,9 +109,13 @@ const findGovernorBravoProposals = async (dao: any) => {
       (proposals[i].eventData.endBlock - proposals[i].txBlock) * 15;
     let { title, description } = await getProposalTitleAndDescription(
       dao.address,
-      proposals[i].eventData[11]
+      proposals[i].eventData.ipfsHash
+        ? proposals[i].eventData.ipfsHash
+        : proposals[i].eventData.description
     );
     let proposalUrl = dao.proposalUrl + proposals[i].eventData.id;
+
+    let proposalHash = proposals[i].txHash;
 
     await prisma.dao.update({
       where: {
@@ -158,12 +128,25 @@ const findGovernorBravoProposals = async (dao: any) => {
 
     // TODO create only if the record doesn't exist
     let proposal = await prisma.proposal.upsert({
-      where: { id: 0 },
-      update: {},
-      create: {
+      where: { txHash: proposalHash },
+      update: {
+        txHash: proposalHash,
         daoId: dao.id,
         title: String(title),
         type: ProposalTypeEnum.Chain,
+        onchainId: Number(proposals[i].eventData.id),
+        description: String(description),
+        created: new Date(proposalCreatedTimestamp * 1000),
+        voteStarts: new Date(votingStartsTimestamp * 1000),
+        voteEnds: new Date(votingEndsTimestamp * 1000),
+        url: proposalUrl,
+      },
+      create: {
+        txHash: proposalHash,
+        daoId: dao.id,
+        title: String(title),
+        type: ProposalTypeEnum.Chain,
+        onchainId: Number(proposals[i].eventData.id),
         description: String(description),
         created: new Date(proposalCreatedTimestamp * 1000),
         voteStarts: new Date(votingStartsTimestamp * 1000),
@@ -171,12 +154,16 @@ const findGovernorBravoProposals = async (dao: any) => {
         url: proposalUrl,
       },
     });
+
+    console.log(proposal);
   }
 
+  console.log("\n\n");
   console.log(`inserted ${proposals.length} chain proposals`);
+  console.log("======================================================\n\n");
 };
 
-const findOngoingProposals = async (daos: any) => {
+const findOngoingProposals = async (daos: Dao[]) => {
   for (let i = 0; i < daos.length; i++) {
     await findGovernorBravoProposals(daos[i]);
   }
@@ -185,8 +172,13 @@ const findOngoingProposals = async (daos: any) => {
 export const getChainProposals = async () => {
   let daos = await prisma.dao.findMany({
     where: {
-      address: {
-        not: "",
+      AND: {
+        address: {
+          not: "",
+        },
+        onchainHandler: {
+          in: [DaoOnChainHandler.Bravo1, DaoOnChainHandler.Bravo2],
+        },
       },
     },
   });
