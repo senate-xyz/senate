@@ -15,11 +15,11 @@ const main = async () => {
   console.log("getChainVotes");
   await getChainVotes();
 
-  // console.log(`getSnapshotProposals`);
-  // await getSnapshotProposals();
+  console.log(`getSnapshotProposals`);
+  await getSnapshotProposals();
 
-  // console.log(`getSnapshotVotes`);
-  // await getSnapshotVotes();
+  console.log(`getSnapshotVotes`);
+  await getSnapshotVotes();
 
   // console.log('getMakerProposals');
   // await getMakerProposals()
