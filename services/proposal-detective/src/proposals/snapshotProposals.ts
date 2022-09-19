@@ -67,7 +67,6 @@ const findOngoingProposals = async (daos: Dao[]) => {
                   snapshotId: proposal.id,
                 },
                 update: {
-                  snapshotId: proposal.id,
                   daoId: dao.id,
                   title: String(proposal.title),
                   type: ProposalTypeEnum.Snapshot,

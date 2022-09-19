@@ -10,22 +10,22 @@ let integrationTestType: ProposalType;
 const main = async () => {
   console.log(`proposalDetective start`);
 
-  // console.log(`getChainProposals`);
-  // await getChainProposals();
+  console.log(`getChainProposals`);
+  await getChainProposals();
 
-  // console.log("getChainVotes");
-  // await getChainVotes();
+  console.log("getChainVotes");
+  await getChainVotes();
 
-  // console.log(`getSnapshotProposals`);
-  // await getSnapshotProposals();
+  console.log(`getSnapshotProposals`);
+  await getSnapshotProposals();
 
-  // console.log(`getSnapshotVotes`);
-  // await getSnapshotVotes();
+  console.log(`getSnapshotVotes`);
+  await getSnapshotVotes();
 
-  console.log('getMakerProposals');
+  console.log("getMakerProposals");
   await getMakerProposals();
 
-  console.log('getMakerVotes');
+  console.log("getMakerVotes");
   await getMakerVotes();
 };
 
