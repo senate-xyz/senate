@@ -58,9 +58,12 @@ const updateSingleSub = async (sub: Subscription) => {
     })
     .then((data) => {
       return data.data.votes;
+    })
+    .catch((e) => {
+      votes = [];
     });
 
-  if (votes)
+  if (votes.length)
     await prisma
       .$transaction(
         votes.map((vote: any) =>
