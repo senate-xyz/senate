@@ -1,8 +1,7 @@
 import dotenv from "dotenv";
 import { PrismaClient, Dao, Subscription, User } from "@prisma/client";
 import { BigNumber, ethers } from "ethers";
-import axios from "axios";
-import { DaoOnChainHandler, ProposalTypeEnum } from "../../../../types";
+import { DaoOnChainHandler } from "../../../../types";
 import { hexZeroPad } from "ethers/lib/utils";
 
 dotenv.config();
