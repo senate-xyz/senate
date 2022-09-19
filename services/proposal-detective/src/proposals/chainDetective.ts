@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { PrismaClient, Dao } from "@prisma/client";
 import { ethers } from "ethers";
 import axios from "axios";
-import { ProposalTypeEnum } from "./../../../../types";
+import { DaoOnChainHandler, ProposalTypeEnum } from "./../../../../types";
 
 dotenv.config();
 
@@ -12,7 +12,9 @@ const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
 });
 
-const fetchProposalInfoFromIPFS = async (hexHash: string) : Promise<{title: string, description: string}> => {
+const fetchProposalInfoFromIPFS = async (
+  hexHash: string
+): Promise<{ title: string; description: string }> => {
   let title, description;
   try {
     const response = await axios.get(
@@ -31,28 +33,29 @@ const fetchProposalInfoFromIPFS = async (hexHash: string) : Promise<{title: stri
   };
 };
 
-const formatTitle = (text: String) : String => {
+const formatTitle = (text: String): String => {
   let temp = text.split("\n")[0];
 
   if (!temp) {
     console.log(text);
-    return "Title unavailable"
+    return "Title unavailable";
   }
 
-  if (temp[0] === '#') {
+  if (temp[0] === "#") {
     return temp.substring(2);
   }
 
   return temp;
-}
+};
 
 // Some DAOs store onchain the proposal title and full description in the same variable.
 // This function parses that entire text and returns the title and the description
 const parseDescription = async (text: String) => {
-
   return {
     title: formatTitle(text),
-    description: text ? text.split("\n").slice(1).join("\n") : "Description unavailable",
+    description: text
+      ? text.split("\n").slice(1).join("\n")
+      : "Description unavailable",
   };
 };
 
@@ -80,6 +83,7 @@ const findGovernorBravoProposals = async (dao: Dao) => {
 
   const proposals = logs.map((log) => ({
     txBlock: log.blockNumber,
+    txHash: log.transactionHash,
     eventData: govBravoIface.parseLog({
       topics: log.topics,
       data: log.data,
@@ -105,9 +109,13 @@ const findGovernorBravoProposals = async (dao: Dao) => {
       (proposals[i].eventData.endBlock - proposals[i].txBlock) * 15;
     let { title, description } = await getProposalTitleAndDescription(
       dao.address,
-      proposals[i].eventData.ipfsHash ? proposals[i].eventData.ipfsHash : proposals[i].eventData.description
+      proposals[i].eventData.ipfsHash
+        ? proposals[i].eventData.ipfsHash
+        : proposals[i].eventData.description
     );
     let proposalUrl = dao.proposalUrl + proposals[i].eventData.id;
+
+    let proposalHash = proposals[i].txHash;
 
     await prisma.dao.update({
       where: {
@@ -120,9 +128,21 @@ const findGovernorBravoProposals = async (dao: Dao) => {
 
     // TODO create only if the record doesn't exist
     let proposal = await prisma.proposal.upsert({
-      where: { id: 0 },
-      update: {},
+      where: { txHash: proposalHash },
+      update: {
+        txHash: proposalHash,
+        daoId: dao.id,
+        title: String(title),
+        type: ProposalTypeEnum.Chain,
+        onchainId: Number(proposals[i].eventData.id),
+        description: String(description),
+        created: new Date(proposalCreatedTimestamp * 1000),
+        voteStarts: new Date(votingStartsTimestamp * 1000),
+        voteEnds: new Date(votingEndsTimestamp * 1000),
+        url: proposalUrl,
+      },
       create: {
+        txHash: proposalHash,
         daoId: dao.id,
         title: String(title),
         type: ProposalTypeEnum.Chain,
@@ -140,7 +160,7 @@ const findGovernorBravoProposals = async (dao: Dao) => {
 
   console.log("\n\n");
   console.log(`inserted ${proposals.length} chain proposals`);
-  console.log("======================================================\n\n")
+  console.log("======================================================\n\n");
 };
 
 const findOngoingProposals = async (daos: Dao[]) => {
@@ -152,8 +172,13 @@ const findOngoingProposals = async (daos: Dao[]) => {
 export const getChainProposals = async () => {
   let daos = await prisma.dao.findMany({
     where: {
-      address: {
-        not: "",
+      AND: {
+        address: {
+          not: "",
+        },
+        onchainHandler: {
+          in: [DaoOnChainHandler.Bravo1, DaoOnChainHandler.Bravo2],
+        },
       },
     },
   });

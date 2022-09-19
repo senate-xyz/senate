@@ -2,6 +2,13 @@ import { Prisma } from "@prisma/client";
 
 export type DaoType = Prisma.DaoGetPayload<{}>;
 
+export enum DaoOnChainHandler {
+  None = 0,
+  Bravo1,
+  Bravo2,
+  Maker,
+}
+
 export type ProposalType = Prisma.ProposalGetPayload<{
   include: {
     dao: true;
