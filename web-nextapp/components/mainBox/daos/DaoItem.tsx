@@ -21,6 +21,7 @@ import {
   MenuItem,
   MenuList,
   Spinner,
+  useToast,
 } from "@chakra-ui/react";
 import {
   DaoType,
@@ -33,10 +34,13 @@ import { FaDiscord, FaSlack } from "react-icons/fa";
 import { ChevronDownIcon, BellIcon, CheckIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
 import moment from "moment";
-import { useAccount } from "wagmi";
+import { useSession } from "next-auth/react";
 
 export const SubscriptionItem = (props: { dao: DaoType }) => {
+  const { data: session } = useSession();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
 
   const [notifSettings, setNotifSettings] = useState<NotificationSettingType[]>(
     []
@@ -46,58 +50,51 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
   );
   const [loading, setLoading] = useState(true);
 
-  const { address } = useAccount();
-
   const getData = () => {
-    let settingsDone = false;
-    let channelsDone = false;
-
     fetch(
-      `/api/notificationSettings?userAddress=${address}&daoId=${String(
-        props.dao.id
-      )}`,
+      `/api/notificationSettings?userAddress=${
+        session?.user?.name
+      }&daoId=${String(props.dao.id)}`,
       {
         method: "GET",
       }
     ).then((response) => {
       response.json().then((data) => {
         setNotifSettings(data);
-        settingsDone = true;
-        if (channelsDone == true) setLoading(false);
+        setLoading(false);
       });
     });
 
     fetch(
-      `/api/notificationChannels?userAddress=${String(address)}&daoId=${String(
-        props.dao.id
-      )}`,
+      `/api/notificationChannels?userAddress=${
+        session?.user?.name
+      }&daoId=${String(props.dao.id)}`,
       {
         method: "GET",
       }
     ).then((response) => {
       response.json().then((data) => {
         setNotifChannels(data);
-        channelsDone = true;
-        if (settingsDone == true) setLoading(false);
+        setLoading(false);
       });
     });
   };
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [props]);
 
   const setChannel = (arg: NotificationChannelEnum, method: string) => {
     let tmp: NotificationChannelType = {
       type: arg,
       connector: "#defaultConnector",
     };
-    if (!address) return;
+
     setLoading(true);
     fetch(
-      `/api/notificationChannels?userAddress=${address}&daoId=${String(
-        props.dao.id
-      )}`,
+      `/api/notificationChannels?userAddress=${
+        session?.user?.name
+      }&daoId=${String(props.dao.id)}`,
       {
         method: method,
         body: JSON.stringify(tmp),
@@ -112,18 +109,29 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
       createdTime: new Date(),
       delay: arg,
     };
-    if (!address) return;
+
     setLoading(true);
     fetch(
-      `/api/notificationSettings?userAddress=${address}&daoId=${String(
-        props.dao.id
-      )}`,
+      `/api/notificationSettings?userAddress=${
+        session?.user?.name
+      }&daoId=${String(props.dao.id)}`,
       {
         method: method,
         body: JSON.stringify(tmp),
       }
     ).then(() => {
       getData();
+    });
+  };
+
+  const signedOutWarning = () => {
+    toast({
+      title: "Not signed in",
+      description:
+        "Subscribing to DAOs notifications requires you to sign in first",
+      status: "warning",
+      duration: 3000,
+      isClosable: true,
     });
   };
 
@@ -135,7 +143,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
       borderColor={notifChannels.length > 0 ? "gray.400" : "gray.200"}
       background={notifChannels.length > 0 ? "gray.200" : "gray.100"}
       w="full"
-      onClick={onOpen}
+      onClick={session ? onOpen : signedOutWarning}
     >
       <Avatar src={props.dao.picture}></Avatar>
       <Text>{props.dao.name}</Text>

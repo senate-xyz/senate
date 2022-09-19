@@ -13,13 +13,19 @@ export default async function handler(
     body,
   } = req;
 
+  console.log(userAddress);
+
   switch (method) {
     case "GET":
-      let user = await prisma.user.findFirst({
-        where: {
-          address: String(userAddress),
-        },
-      });
+      let user = await prisma.user
+        .findFirstOrThrow({
+          where: {
+            address: String(userAddress),
+          },
+        })
+        .catch(() => {
+          res.status(200).json([]);
+        });
 
       let subscription = await prisma.subscription.findFirst({
         where: {
@@ -39,7 +45,7 @@ export default async function handler(
     case "PUT":
       let putPayload: NotificationChannelType = JSON.parse(body);
 
-      let putUser = await prisma.user.findUnique({
+      let putUser = await prisma.user.findFirstOrThrow({
         where: {
           address: String(userAddress),
         },
@@ -82,7 +88,7 @@ export default async function handler(
     case "DELETE":
       let payload: NotificationChannelType = JSON.parse(body);
 
-      let deleteUser = await prisma.user.findUnique({
+      let deleteUser = await prisma.user.findFirstOrThrow({
         where: {
           address: String(userAddress),
         },

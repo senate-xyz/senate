@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "prisma generate && next dev",
+    "web": "yarn workspace web-nextapp dev",
     "build": "ENVIRONMENT=../.env next build",
     "start": "ENVIRONMENT=../.env next start",
     "lint": "ENVIRONMENT=../.env next lint"
@@ -11,18 +12,13 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} ../prisma/seed.ts",
     "schema": "../prisma/schema.prisma"
   },
-  "proxy": {
-    "/api/*": {
-      "target": "http://localhost:3000",
-      "secure": false
-    }
-  },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.9",
     "@chakra-ui/react": "^2.3.1",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@prisma/client": "^4.3.1",
+    "ethers": "5.5.1",
     "framer-motion": "^7.2.1",
     "moment": "^2.29.4",
     "next": "12.2.5",
@@ -32,7 +28,7 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
     "siwe": "^1.1.6",
-    "wagmi": "^0.6"
+    "wagmi": "^0.6.6"
   },
   "devDependencies": {
     "@types/node": "^18.7.14",
