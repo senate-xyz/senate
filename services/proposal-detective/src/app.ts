@@ -3,6 +3,7 @@ import { getChainProposals } from "./proposals/chainDetective";
 import { getSnapshotProposals } from "./proposals/snapshotProposals";
 import { getSnapshotVotes } from "./votes/snapshotVotes";
 import { getChainVotes } from "./votes/chainVotes";
+import { getMakerProposals } from "./proposals/makerProposals";
 let integrationTestType: ProposalType;
 
 const main = async () => {
@@ -19,6 +20,9 @@ const main = async () => {
 
   console.log('getChainVotes');
   await getChainVotes()
+
+  // console.log('getMakerProposals');
+  // await getMakerProposals()
 };
 
 main();

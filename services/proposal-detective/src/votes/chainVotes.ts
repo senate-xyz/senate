@@ -24,7 +24,7 @@ const findVotes = async (subs: Subscription[]) => {
         await updateSingleSub(sub);
       })
     );
-  };
+};
 
   const updateSingleSub = async (sub: Subscription) => {
     let user = await prisma.user.findFirst({
@@ -34,17 +34,15 @@ const findVotes = async (subs: Subscription[]) => {
       });
     
     let dao = await prisma.dao.findFirst({
-    where: {
-        id: sub.daoId,
-    },
+        where: {
+            id: sub.daoId,
+        },
     });
 
-    if (user && dao) {
+    if (user !== null && dao !== null) {
         let votes = await getVotes(dao, user);
 
         if (votes) {
-            // get active proposals for DAO
-            // build proposals map
             let proposals = await prisma.proposal.findMany({
                 where: {
                     type: {
@@ -60,26 +58,56 @@ const findVotes = async (subs: Subscription[]) => {
                 proposals.map(proposal => [proposal.onchainId, proposal.id])
             )
 
-            votes.forEach(vote => {
-                if (proposalsMap.has(vote.proposalId)) {
-                    let proposalDbId = proposalsMap.get(vote.proposalId);
+            votes.forEach(async (vote) => {
+                if (proposalsMap.has(vote.proposalOnChainId)) {
+                    let proposalDbId = proposalsMap.get(vote.proposalOnChainId);
 
-                    prisma.userVote.upsert({
-                        where: {
-                            proposalId: proposalDbId,
-                            userId: user.id,
-                        },
-                        update: {
-                            proposalId: proposalDbId,
-                            userId: user.id,
-                            voteOption: vote.support
-                        },
-                        create: {
-                            proposalId: proposalDbId,
-                            userId: user.id,
-                            voteOption: vote.support
-                        }
-                    })
+                    /// Sooo, this didn't work because proposalId and userId are not unique fields. I thought of fetching the UserVote first, then create or update new field
+                    /// An alternative would be to use a composite key (userId + propsalId) as UserVote PK. Maybe the most sustainable option long term but not sure it's the easiest one since we need to deliver this thing today.
+
+                    // prisma.userVote.upsert({
+                    //     where: {
+                    //         proposalId: proposalDbId,
+                    //         userId: user?.id,
+                    //     },
+                    //     update: {
+                    //         proposalId: proposalDbId,
+                    //         userId: user?.id,
+                    //         voteOption: vote.support
+                    //     },
+                    //     create: {
+                    //         proposalId: Number(proposalDbId),
+                    //         userId: user?.id,
+                    //         voteOption: vote.support
+                    //     }
+                    // })
+
+                    /// This also didn't work because data needs to be some twisted type.
+
+                    // See if user vote already exists
+                    // let existingUserVote = await prisma.userVote.findFirst({
+                    //     where: {
+                    //         proposalId: proposalDbId,
+                    //         userId: user?.id,
+                    //     }
+                    // });
+
+                    // If it does not exist -> add it to database
+                    // if (existingUserVote === null) {
+                    //     prisma.userVote.create({
+                    //         data: {
+                    //             proposalId: proposalDbId,
+                    //             userId: user?.id,
+                    //             voteOption: vote.support,
+                    //             voteName: ""
+                    //         }
+                            
+                    //     })
+                    // } else {
+                    //   If it exists, update it
+                    //}
+
+                    
                 }
             })
         }
@@ -104,7 +132,7 @@ const findVotes = async (subs: Subscription[]) => {
 
         return {
             voterAddress: eventData.address,
-            proposalId: eventData.proposalId,
+            proposalOnChainId: eventData.proposalId,
             support: eventData.support,
         }
     })
