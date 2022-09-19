@@ -69,17 +69,6 @@ const updateSingleSub = async (sub: Subscription) => {
               snapshotId: vote.id,
             },
             update: {
-              snapshotId: vote.id,
-              user: {
-                connect: {
-                  id: user?.id,
-                },
-              },
-              proposal: {
-                connect: {
-                  snapshotId: vote.proposal.id,
-                },
-              },
               voteOption: vote.choice,
               voteName: vote.proposal.choices[vote.choice - 1],
             },

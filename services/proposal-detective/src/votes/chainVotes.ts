@@ -72,19 +72,6 @@ const updateSingleSub = async (sub: Subscription) => {
             txHash: vote.txHash,
           },
           update: {
-            txHash: vote.txHash,
-            user: {
-              connect: {
-                id: user?.id,
-              },
-            },
-            proposal: {
-              connect: {
-                id: proposals.find(
-                  (proposal) => proposal.onchainId == vote.proposalOnChainId
-                )?.id,
-              },
-            },
             voteOption: vote.support,
             voteName: vote.support ? "Yes" : "No",
           },
