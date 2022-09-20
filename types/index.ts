@@ -43,6 +43,8 @@ export enum NotificationChannelEnum {
   None = 0,
   Discord,
   Slack,
+  Telegram,
+  EPNS,
 }
 
 export enum NotificationIntervalEnum {

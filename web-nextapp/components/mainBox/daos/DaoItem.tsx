@@ -30,7 +30,13 @@ import {
   NotificationIntervalEnum,
   NotificationSettingType,
 } from "../../../../types";
-import { FaDiscord, FaSlack } from "react-icons/fa";
+import {
+  FaBell,
+  FaDiscord,
+  FaEthereum,
+  FaSlack,
+  FaTelegram,
+} from "react-icons/fa";
 import { ChevronDownIcon, BellIcon, CheckIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
 import moment from "moment";
@@ -42,87 +48,86 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
-  const [notifSettings, setNotifSettings] = useState<NotificationSettingType[]>(
-    []
-  );
-  const [notifChannels, setNotifChannels] = useState<NotificationChannelType[]>(
-    []
-  );
+  const [subscribe, setSubscribe] = useState(false);
+
   const [loading, setLoading] = useState(true);
 
-  const getData = () => {
-    fetch(
-      `/api/notificationSettings?userAddress=${
-        session?.user?.name
-      }&daoId=${String(props.dao.id)}`,
-      {
-        method: "GET",
-      }
-    ).then((response) => {
-      response.json().then((data) => {
-        setNotifSettings(data);
-        setLoading(false);
-      });
-    });
-
-    fetch(
-      `/api/notificationChannels?userAddress=${
-        session?.user?.name
-      }&daoId=${String(props.dao.id)}`,
-      {
-        method: "GET",
-      }
-    ).then((response) => {
-      response.json().then((data) => {
-        setNotifChannels(data);
-        setLoading(false);
-      });
-    });
-  };
+  // const [notifSettings, setNotifSettings] = useState<NotificationSettingType[]>(
+  //   []
+  // );
+  // const [notifChannels, setNotifChannels] = useState<NotificationChannelType[]>(
+  //   []
+  // );
 
   useEffect(() => {
-    getData();
-  }, [props]);
-
-  const setChannel = (arg: NotificationChannelEnum, method: string) => {
-    let tmp: NotificationChannelType = {
-      type: arg,
-      connector: "#defaultConnector",
-    };
-
-    setLoading(true);
     fetch(
-      `/api/notificationChannels?userAddress=${
+      `/api/settings/individual/subscription?userAddress=${
         session?.user?.name
       }&daoId=${String(props.dao.id)}`,
       {
-        method: method,
-        body: JSON.stringify(tmp),
+        method: "GET",
       }
-    ).then(() => {
-      getData();
+    ).then((response) => {
+      response.json().then((data) => {
+        setSubscribe(data);
+        setLoading(false);
+      });
     });
-  };
+  }, [props, session?.user?.name]);
 
-  const setSetting = (arg: NotificationIntervalEnum, method: string) => {
-    let tmp: NotificationSettingType = {
-      createdTime: new Date(),
-      delay: arg,
-    };
-
+  const storeSubscribe = (val: boolean) => {
     setLoading(true);
     fetch(
-      `/api/notificationSettings?userAddress=${
+      `/api/settings/individual/subscription?userAddress=${
         session?.user?.name
       }&daoId=${String(props.dao.id)}`,
       {
-        method: method,
-        body: JSON.stringify(tmp),
+        method: val ? "PUT" : "DELETE",
       }
-    ).then(() => {
-      getData();
+    ).then((response) => {
+      setLoading(false);
     });
   };
+
+  // const setChannel = (arg: NotificationChannelEnum, method: string) => {
+  //   let tmp: NotificationChannelType = {
+  //     type: arg,
+  //     connector: "#defaultConnector",
+  //   };
+
+  //   setLoading(true);
+  //   fetch(
+  //     `/api/individualsettings/notificationChannels?userAddress=${
+  //       session?.user?.name
+  //     }&daoId=${String(props.dao.id)}`,
+  //     {
+  //       method: method,
+  //       body: JSON.stringify(tmp),
+  //     }
+  //   ).then(() => {
+  //     getData();
+  //   });
+  // };
+
+  // const setSetting = (arg: NotificationIntervalEnum, method: string) => {
+  //   let tmp: NotificationSettingType = {
+  //     createdTime: new Date(),
+  //     delay: arg,
+  //   };
+
+  //   setLoading(true);
+  //   fetch(
+  //     `/api/individualsettings/notificationSettings?userAddress=${
+  //       session?.user?.name
+  //     }&daoId=${String(props.dao.id)}`,
+  //     {
+  //       method: method,
+  //       body: JSON.stringify(tmp),
+  //     }
+  //   ).then(() => {
+  //     getData();
+  //   });
+  // };
 
   const signedOutWarning = () => {
     toast({
@@ -140,8 +145,8 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
       p="1rem"
       border="1px"
       borderRadius="5px"
-      borderColor={notifChannels.length > 0 ? "gray.400" : "gray.200"}
-      background={notifChannels.length > 0 ? "gray.200" : "gray.100"}
+      borderColor={subscribe ? "gray.400" : "gray.200"}
+      background={subscribe ? "gray.200" : "gray.100"}
       w="full"
       onClick={session ? onOpen : signedOutWarning}
     >
@@ -152,7 +157,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay backdropFilter="blur(2px)" />
         <ModalContent>
-          <ModalHeader>Set notification frequency</ModalHeader>
+          <ModalHeader>Set notification settings</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Center>
@@ -168,48 +173,113 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                 </HStack>
                 <Divider />
                 <HStack>
-                  <Icon as={FaDiscord} />
+                  <Icon as={FaBell} />
                   <Switch
-                    isChecked={
-                      notifChannels.filter(
-                        (opt) => opt.type == NotificationChannelEnum.Discord
-                      ).length > 0
-                    }
+                    isChecked={subscribe}
                     onChange={() => {
-                      setChannel(
-                        NotificationChannelEnum.Discord,
-                        notifChannels.filter(
-                          (opt) => opt.type == NotificationChannelEnum.Discord
-                        ).length > 0
-                          ? "DELETE"
-                          : "PUT"
-                      );
+                      storeSubscribe(!subscribe);
+                      setSubscribe(!subscribe);
                     }}
                   ></Switch>
                 </HStack>
-                <HStack>
-                  <Icon as={FaSlack} />
-                  <Switch
-                    isChecked={
-                      notifChannels.filter(
-                        (opt) => opt.type == NotificationChannelEnum.Slack
-                      ).length > 0
-                    }
-                    onChange={() => {
-                      setChannel(
-                        NotificationChannelEnum.Slack,
-                        notifChannels.filter(
-                          (opt) => opt.type == NotificationChannelEnum.Slack
-                        ).length > 0
-                          ? "DELETE"
-                          : "PUT"
-                      );
-                    }}
-                  ></Switch>
-                </HStack>
+
+                <Divider />
+                <Text>DAO specific settings</Text>
+                <Text>🚧 under construction 🚧</Text>
+                <Divider />
+                <VStack>
+                  <HStack>
+                    <Icon as={FaBell} /> <Text>EPNS</Text>
+                    <Switch
+                      disabled
+                      // isChecked={
+                      //   notifChannels.filter(
+                      //     (opt) => opt.type == NotificationChannelEnum.Slack
+                      //   ).length > 0
+                      // }
+                      // onChange={() => {
+                      //   setChannel(
+                      //     NotificationChannelEnum.Slack,
+                      //     notifChannels.filter(
+                      //       (opt) => opt.type == NotificationChannelEnum.Slack
+                      //     ).length > 0
+                      //       ? "DELETE"
+                      //       : "PUT"
+                      //   );
+                      // }}
+                    ></Switch>
+                  </HStack>
+                  <HStack>
+                    <Icon as={FaDiscord} />
+                    <Text>Discord</Text>
+                    <Switch
+                      disabled
+                      // isChecked={
+                      //   notifChannels.filter(
+                      //     (opt) => opt.type == NotificationChannelEnum.Discord
+                      //   ).length > 0
+                      // }
+                      // onChange={() => {
+                      //   setChannel(
+                      //     NotificationChannelEnum.Discord,
+                      //     notifChannels.filter(
+                      //       (opt) => opt.type == NotificationChannelEnum.Discord
+                      //     ).length > 0
+                      //       ? "DELETE"
+                      //       : "PUT"
+                      //   );
+                      // }}
+                    ></Switch>
+                  </HStack>
+                  <HStack>
+                    <Icon as={FaSlack} />
+                    <Text>Slack</Text>
+                    <Switch
+                      disabled
+                      // isChecked={
+                      //   notifChannels.filter(
+                      //     (opt) => opt.type == NotificationChannelEnum.Slack
+                      //   ).length > 0
+                      // }
+                      // onChange={() => {
+                      //   setChannel(
+                      //     NotificationChannelEnum.Slack,
+                      //     notifChannels.filter(
+                      //       (opt) => opt.type == NotificationChannelEnum.Slack
+                      //     ).length > 0
+                      //       ? "DELETE"
+                      //       : "PUT"
+                      //   );
+                      // }}
+                    ></Switch>
+                  </HStack>
+                  <HStack>
+                    <Icon as={FaTelegram} />
+                    <Text>Telegram</Text>
+                    <Switch
+                      disabled
+                      // isChecked={
+                      //   notifChannels.filter(
+                      //     (opt) => opt.type == NotificationChannelEnum.Slack
+                      //   ).length > 0
+                      // }
+                      // onChange={() => {
+                      //   setChannel(
+                      //     NotificationChannelEnum.Slack,
+                      //     notifChannels.filter(
+                      //       (opt) => opt.type == NotificationChannelEnum.Slack
+                      //     ).length > 0
+                      //       ? "DELETE"
+                      //       : "PUT"
+                      //   );
+                      // }}
+                    ></Switch>
+                  </HStack>
+                </VStack>
+                <Divider />
                 <VStack>
                   <Text>Active notifications:</Text>
-                  {notifSettings.map(
+                  {/* {notifSettings.map(
                     (opt: { createdTime: Date; delay: number }, index) => {
                       return (
                         <HStack key={index}>
@@ -225,196 +295,200 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                         </HStack>
                       );
                     }
-                  )}
+                  )} */}
                 </VStack>
                 <Menu>
-                  <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                  <MenuButton
+                    disabled
+                    as={Button}
+                    rightIcon={<ChevronDownIcon />}
+                  >
                     Set notification
                   </MenuButton>
                   <MenuList>
                     <MenuItem
                       onClick={() => {
-                        setSetting(
-                          NotificationIntervalEnum.NewProposal,
-                          notifSettings.filter(
-                            (opt) =>
-                              opt.delay == NotificationIntervalEnum.NewProposal
-                          ).length > 0
-                            ? "DELETE"
-                            : "PUT"
-                        );
+                        // setSetting(
+                        //   NotificationIntervalEnum.NewProposal,
+                        //   notifSettings.filter(
+                        //     (opt) =>
+                        //       opt.delay == NotificationIntervalEnum.NewProposal
+                        //   ).length > 0
+                        //     ? "DELETE"
+                        //     : "PUT"
+                        // );
                       }}
                     >
                       <HStack>
-                        {notifSettings.filter(
+                        {/* {notifSettings.filter(
                           (opt) =>
                             opt.delay == NotificationIntervalEnum.NewProposal
-                        ).length > 0 && <CheckIcon />}
+                        ).length > 0 && <CheckIcon />} */}
                         <Text>New proposal</Text>
                       </HStack>
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setSetting(
-                          NotificationIntervalEnum.OneHour,
-                          notifSettings.filter(
-                            (opt) =>
-                              opt.delay == NotificationIntervalEnum.OneHour
-                          ).length > 0
-                            ? "DELETE"
-                            : "PUT"
-                        );
+                        // setSetting(
+                        //   NotificationIntervalEnum.OneHour,
+                        //   notifSettings.filter(
+                        //     (opt) =>
+                        //       opt.delay == NotificationIntervalEnum.OneHour
+                        //   ).length > 0
+                        //     ? "DELETE"
+                        //     : "PUT"
+                        // );
                       }}
                     >
                       <HStack>
-                        {notifSettings.filter(
+                        {/* {notifSettings.filter(
                           (opt) => opt.delay == NotificationIntervalEnum.OneHour
-                        ).length > 0 && <CheckIcon />}
+                        ).length > 0 && <CheckIcon />} */}
                         <Text>1 hour left to vote</Text>
                       </HStack>
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setSetting(
-                          NotificationIntervalEnum.TwoHours,
-                          notifSettings.filter(
-                            (opt) =>
-                              opt.delay == NotificationIntervalEnum.TwoHours
-                          ).length > 0
-                            ? "DELETE"
-                            : "PUT"
-                        );
+                        // setSetting(
+                        //   NotificationIntervalEnum.TwoHours,
+                        //   notifSettings.filter(
+                        //     (opt) =>
+                        //       opt.delay == NotificationIntervalEnum.TwoHours
+                        //   ).length > 0
+                        //     ? "DELETE"
+                        //     : "PUT"
+                        // );
                       }}
                     >
                       <HStack>
-                        {notifSettings.filter(
+                        {/* {notifSettings.filter(
                           (opt) =>
                             opt.delay == NotificationIntervalEnum.TwoHours
-                        ).length > 0 && <CheckIcon />}
+                        ).length > 0 && <CheckIcon />} */}
                         <Text>2 hours left to vote</Text>
                       </HStack>
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setSetting(
-                          NotificationIntervalEnum.ThreeHours,
-                          notifSettings.filter(
-                            (opt) =>
-                              opt.delay == NotificationIntervalEnum.ThreeHours
-                          ).length > 0
-                            ? "DELETE"
-                            : "PUT"
-                        );
+                        // setSetting(
+                        //   NotificationIntervalEnum.ThreeHours,
+                        //   notifSettings.filter(
+                        //     (opt) =>
+                        //       opt.delay == NotificationIntervalEnum.ThreeHours
+                        //   ).length > 0
+                        //     ? "DELETE"
+                        //     : "PUT"
+                        // );
                       }}
                     >
                       <HStack>
-                        {notifSettings.filter(
+                        {/* {notifSettings.filter(
                           (opt) =>
                             opt.delay == NotificationIntervalEnum.ThreeHours
-                        ).length > 0 && <CheckIcon />}
+                        ).length > 0 && <CheckIcon />} */}
                         <Text>3 hours left to vote</Text>
                       </HStack>
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setSetting(
-                          NotificationIntervalEnum.SixHours,
-                          notifSettings.filter(
-                            (opt) =>
-                              opt.delay == NotificationIntervalEnum.SixHours
-                          ).length > 0
-                            ? "DELETE"
-                            : "PUT"
-                        );
+                        // setSetting(
+                        //   NotificationIntervalEnum.SixHours,
+                        //   notifSettings.filter(
+                        //     (opt) =>
+                        //       opt.delay == NotificationIntervalEnum.SixHours
+                        //   ).length > 0
+                        //     ? "DELETE"
+                        //     : "PUT"
+                        // );
                       }}
                     >
                       <HStack>
-                        {notifSettings.filter(
+                        {/* {notifSettings.filter(
                           (opt) =>
                             opt.delay == NotificationIntervalEnum.SixHours
-                        ).length > 0 && <CheckIcon />}
+                        ).length > 0 && <CheckIcon />} */}
                         <Text>6 hours left to vote</Text>
                       </HStack>
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setSetting(
-                          NotificationIntervalEnum.TwelveHours,
-                          notifSettings.filter(
-                            (opt) =>
-                              opt.delay == NotificationIntervalEnum.TwelveHours
-                          ).length > 0
-                            ? "DELETE"
-                            : "PUT"
-                        );
+                        // setSetting(
+                        //   NotificationIntervalEnum.TwelveHours,
+                        //   notifSettings.filter(
+                        //     (opt) =>
+                        //       opt.delay == NotificationIntervalEnum.TwelveHours
+                        //   ).length > 0
+                        //     ? "DELETE"
+                        //     : "PUT"
+                        // );
                       }}
                     >
                       <HStack>
-                        {notifSettings.filter(
+                        {/* {notifSettings.filter(
                           (opt) =>
                             opt.delay == NotificationIntervalEnum.TwelveHours
-                        ).length > 0 && <CheckIcon />}
+                        ).length > 0 && <CheckIcon />} */}
                         <Text>12 hours left to vote</Text>
                       </HStack>
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setSetting(
-                          NotificationIntervalEnum.OneDay,
-                          notifSettings.filter(
-                            (opt) =>
-                              opt.delay == NotificationIntervalEnum.OneDay
-                          ).length > 0
-                            ? "DELETE"
-                            : "PUT"
-                        );
+                        // setSetting(
+                        //   NotificationIntervalEnum.OneDay,
+                        //   notifSettings.filter(
+                        //     (opt) =>
+                        //       opt.delay == NotificationIntervalEnum.OneDay
+                        //   ).length > 0
+                        //     ? "DELETE"
+                        //     : "PUT"
+                        // );
                       }}
                     >
                       <HStack>
-                        {notifSettings.filter(
+                        {/* {notifSettings.filter(
                           (opt) => opt.delay == NotificationIntervalEnum.OneDay
-                        ).length > 0 && <CheckIcon />}
+                        ).length > 0 && <CheckIcon />} */}
                         <Text>1 day left to vote</Text>
                       </HStack>
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setSetting(
-                          NotificationIntervalEnum.TwoDays,
-                          notifSettings.filter(
-                            (opt) =>
-                              opt.delay == NotificationIntervalEnum.TwoDays
-                          ).length > 0
-                            ? "DELETE"
-                            : "PUT"
-                        );
+                        // setSetting(
+                        //   NotificationIntervalEnum.TwoDays,
+                        //   notifSettings.filter(
+                        //     (opt) =>
+                        //       opt.delay == NotificationIntervalEnum.TwoDays
+                        //   ).length > 0
+                        //     ? "DELETE"
+                        //     : "PUT"
+                        // );
                       }}
                     >
                       <HStack>
-                        {notifSettings.filter(
+                        {/* {notifSettings.filter(
                           (opt) => opt.delay == NotificationIntervalEnum.TwoDays
-                        ).length > 0 && <CheckIcon />}
+                        ).length > 0 && <CheckIcon />} */}
                         <Text>2 days left to vote</Text>
                       </HStack>
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setSetting(
-                          NotificationIntervalEnum.ThreeDays,
-                          notifSettings.filter(
-                            (opt) =>
-                              opt.delay == NotificationIntervalEnum.ThreeDays
-                          ).length > 0
-                            ? "DELETE"
-                            : "PUT"
-                        );
+                        // setSetting(
+                        //   NotificationIntervalEnum.ThreeDays,
+                        //   notifSettings.filter(
+                        //     (opt) =>
+                        //       opt.delay == NotificationIntervalEnum.ThreeDays
+                        //   ).length > 0
+                        //     ? "DELETE"
+                        //     : "PUT"
+                        // );
                       }}
                     >
                       <HStack>
-                        {notifSettings.filter(
+                        {/* {notifSettings.filter(
                           (opt) =>
                             opt.delay == NotificationIntervalEnum.ThreeDays
-                        ).length > 0 && <CheckIcon />}
+                        ).length > 0 && <CheckIcon />} */}
                         <Text>3 days left to vote</Text>
                       </HStack>
                     </MenuItem>

@@ -21,6 +21,7 @@ const LinkItems: Array<LinkItemSPAProps> = [
     icon: 2,
   },
   { name: "Vote tracker", id: PagesEnum.Tracker, icon: 3 },
+  { name: "Settings", id: PagesEnum.Settings, icon: 4 },
 ];
 
 export default function NavBar(props: { page: PagesEnum; setPage: any }) {
