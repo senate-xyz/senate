@@ -132,7 +132,6 @@ export const Settings = () => {
       connector: "#defaultConnector",
     };
 
-    console.log(tmp);
     fetch(
       `/api/settings/general/notificationChannels?userAddress=${session?.user?.name}`,
       {
@@ -150,7 +149,6 @@ export const Settings = () => {
       connector: "#defaultConnector",
     };
 
-    console.log(tmp);
     fetch(
       `/api/settings/general/notificationChannels?userAddress=${session?.user?.name}`,
       {
@@ -167,7 +165,6 @@ export const Settings = () => {
       connector: "#defaultConnector",
     };
 
-    console.log(tmp);
     fetch(
       `/api/settings/general/notificationChannels?userAddress=${session?.user?.name}`,
       {
@@ -184,7 +181,6 @@ export const Settings = () => {
       connector: "#defaultConnector",
     };
 
-    console.log(tmp);
     fetch(
       `/api/settings/general/notificationChannels?userAddress=${session?.user?.name}`,
       {
@@ -201,7 +197,6 @@ export const Settings = () => {
       delay: NotificationIntervalEnum.NewProposal,
     };
 
-    console.log(tmp);
     fetch(
       `/api/settings/general/notificationSettings?userAddress=${session?.user?.name}`,
       {
@@ -218,7 +213,6 @@ export const Settings = () => {
       delay: NotificationIntervalEnum.OneHour,
     };
 
-    console.log(tmp);
     fetch(
       `/api/settings/general/notificationSettings?userAddress=${session?.user?.name}`,
       {
@@ -235,7 +229,6 @@ export const Settings = () => {
       delay: NotificationIntervalEnum.TwoHours,
     };
 
-    console.log(tmp);
     fetch(
       `/api/settings/general/notificationSettings?userAddress=${session?.user?.name}`,
       {
@@ -252,7 +245,6 @@ export const Settings = () => {
       delay: NotificationIntervalEnum.OneHour,
     };
 
-    console.log(tmp);
     fetch(
       `/api/settings/general/notificationSettings?userAddress=${session?.user?.name}`,
       {
@@ -269,7 +261,6 @@ export const Settings = () => {
       delay: NotificationIntervalEnum.SixHours,
     };
 
-    console.log(tmp);
     fetch(
       `/api/settings/general/notificationSettings?userAddress=${session?.user?.name}`,
       {
@@ -286,7 +277,6 @@ export const Settings = () => {
       delay: NotificationIntervalEnum.TwelveHours,
     };
 
-    console.log(tmp);
     fetch(
       `/api/settings/general/notificationSettings?userAddress=${session?.user?.name}`,
       {
@@ -303,7 +293,6 @@ export const Settings = () => {
       delay: NotificationIntervalEnum.OneDay,
     };
 
-    console.log(tmp);
     fetch(
       `/api/settings/general/notificationSettings?userAddress=${session?.user?.name}`,
       {
@@ -320,7 +309,6 @@ export const Settings = () => {
       delay: NotificationIntervalEnum.TwoDays,
     };
 
-    console.log(tmp);
     fetch(
       `/api/settings/general/notificationSettings?userAddress=${session?.user?.name}`,
       {
@@ -337,7 +325,6 @@ export const Settings = () => {
       delay: NotificationIntervalEnum.ThreeDays,
     };
 
-    console.log(tmp);
     fetch(
       `/api/settings/general/notificationSettings?userAddress=${session?.user?.name}`,
       {
