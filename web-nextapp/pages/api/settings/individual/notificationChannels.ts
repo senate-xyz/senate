@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import { NotificationChannelType } from "../../../types";
+import { NotificationChannelType } from "../../../../../types";
 
 const prisma = new PrismaClient();
 export default async function handler(

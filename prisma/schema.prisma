@@ -6,22 +6,24 @@ generator client {
   previewFeatures = ["interactiveTransactions"]
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 // datasource db {
-//   provider = "sqlite"
-//   url      = "file:./dev.db"
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
 // }
 
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
 model User {
-  id             Int             @id @default(autoincrement())
-  address        String          @unique
-  proxyContracts ProxyContract[]
-  subscriptions  Subscription[]
-  userVote       UserVote[]
+  id              Int                          @id @default(autoincrement())
+  address         String                       @unique
+  proxyContracts  ProxyContract[]
+  subscriptions   Subscription[]
+  userVote        UserVote[]
+  generalChannels GeneralNotificationChannel[]
+  generalSettings GeneralNotificationSetting[]
 }
 
 model ProxyContract {
@@ -53,6 +55,20 @@ model Subscription {
   daoId                Int
   notificationChannels NotificationChannel[]
   notificationSettings NotificationSetting[]
+}
+
+model GeneralNotificationChannel {
+  id        Int    @id @default(autoincrement())
+  type      Int
+  connector String
+  user      User[]
+}
+
+model GeneralNotificationSetting {
+  id          Int      @id @default(autoincrement())
+  createdTime DateTime @default(now())
+  delay       Int
+  user        User[]
 }
 
 model NotificationChannel {

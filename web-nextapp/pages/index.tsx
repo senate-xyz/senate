@@ -27,6 +27,13 @@ const DynamicTracker = dynamic(
   }
 );
 
+const DynamicSettings = dynamic(
+  () => import("../components/mainBox/settings/Settings"),
+  {
+    suspense: true,
+  }
+);
+
 const DynamicHeader = dynamic(() => import("../components/header/Header"), {
   suspense: true,
 });
@@ -43,6 +50,7 @@ const Home: NextPage = () => {
           {page == PagesEnum.Dashboard && <DyanmicProposals />}
           {page == PagesEnum.Subscriptions && <DynamicSubscriptions />}
           {page == PagesEnum.Tracker && <DynamicTracker />}
+          {page == PagesEnum.Settings && <DynamicSettings />}
         </Suspense>
       </Flex>
     </Flex>
