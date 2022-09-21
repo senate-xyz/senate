@@ -36,12 +36,12 @@ import { FaSignOutAlt, FaSignInAlt } from "react-icons/fa";
 
 const LinkItems: Array<LinkItemSPAProps> = [
   { name: "Dashboard", id: PagesEnum.Dashboard, icon: 1 },
+  { name: "Vote tracker", id: PagesEnum.Tracker, icon: 3 },
   {
     name: "Watchlist",
     id: PagesEnum.Watchlist,
     icon: 2,
   },
-  { name: "Vote tracker", id: PagesEnum.Tracker, icon: 3 },
   { name: "Settings", id: PagesEnum.Settings, icon: 4 },
 ];
 
