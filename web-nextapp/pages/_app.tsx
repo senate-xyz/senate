@@ -26,6 +26,8 @@ const theme = extendTheme({
   fonts: {
     manrope: "Manrope",
   },
+  initialColorMode: "dark",
+  useSystemColorMode: false,
 });
 const { chains, provider, webSocketProvider } = configureChains(defaultChains, [
   publicProvider(),
