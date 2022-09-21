@@ -25,6 +25,7 @@ import "@fontsource/manrope/800.css";
 const theme = extendTheme({
   fonts: {
     manrope: "Manrope",
+    body: `'Manrope', sans-serif`,
   },
   initialColorMode: "dark",
   useSystemColorMode: false,

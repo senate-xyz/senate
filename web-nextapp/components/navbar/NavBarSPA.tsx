@@ -5,20 +5,23 @@ import { LinkItemSPAProps, PagesEnum } from "../../../types";
 
 interface NavItemProps extends FlexProps {
   item: LinkItemSPAProps;
-  setPage: (name: PagesEnum) => void;
+  setPage?: (name: PagesEnum) => void;
+  onClose?: () => void;
   children?: string;
 }
 
 export const NavItemSPA = ({
   item,
-  setPage,
   children,
+  onClose,
+  setPage,
   ...rest
 }: NavItemProps) => {
   return (
     <Flex
       w="full"
       justify="start"
+      align="center"
       p="4"
       borderRadius="lg"
       role="group"
@@ -28,7 +31,8 @@ export const NavItemSPA = ({
         color: "white",
       }}
       onClick={() => {
-        setPage(item.id);
+        if (setPage) setPage!(item.id);
+        // if (onClose) onClose();
       }}
       {...rest}
     >
