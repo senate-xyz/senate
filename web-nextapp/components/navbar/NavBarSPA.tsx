@@ -17,13 +17,14 @@ export const NavItemSPA = ({
 }: NavItemProps) => {
   return (
     <Flex
-      align="center"
+      w="full"
+      justify="start"
       p="4"
       borderRadius="lg"
       role="group"
       cursor="pointer"
       _hover={{
-        bg: "red.400",
+        bg: "purple.800",
         color: "white",
       }}
       onClick={() => {

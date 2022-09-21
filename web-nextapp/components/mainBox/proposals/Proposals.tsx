@@ -74,8 +74,8 @@ export const Proposals = () => {
 
   return (
     <Flex flexDir="row" w="full">
-      <Grid bg="gray.200" minH="100vh" w="full">
-        <VStack bg="gray.100" m="10" align="start" spacing={5} p="5">
+      <Grid w="full">
+        <VStack m="10" align="start" spacing={5} p="5">
           {!proposals.length && (
             <Alert status="warning">
               <AlertIcon />
@@ -112,13 +112,13 @@ export const Proposals = () => {
           )}
           {proposals.length && (
             <TableContainer w="full">
-              <Table variant="simple">
+              <Table variant="striped" colorScheme="blackAlpha">
                 <Thead>
                   <Tr>
+                    <Th>DAO</Th>
                     <Th>Proposal</Th>
-                    <Th>Description</Th>
                     <Th>Time Left</Th>
-                    <Th>Voted</Th>
+                    <Th>Status</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -128,16 +128,19 @@ export const Proposals = () => {
                         <Td>
                           <HStack>
                             <Avatar src={proposal.dao.picture}></Avatar>
+                            <Text>{proposal.dao.name}</Text>
+                          </HStack>
+                        </Td>
+                        <Td>
+                          <HStack>
                             <Link href={proposal.url} isExternal maxW="20rem">
                               <Text noOfLines={1}>{proposal.title}</Text>
                             </Link>
                             <ExternalLinkIcon mx="2px" />
                           </HStack>
                         </Td>
-                        <Td maxW={"20rem"}>
-                          <Text noOfLines={1}>{proposal.description}</Text>
-                        </Td>
-                        <Td>{moment(proposal.voteEnds).fromNow()}</Td>
+
+                        <Td>{moment(proposal.voteEnds).fromNow(true)}</Td>
 
                         <Td>
                           {moment(proposal.voteEnds).isBefore(new Date()) ? (

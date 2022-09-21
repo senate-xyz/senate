@@ -336,8 +336,8 @@ export const Settings = () => {
 
   return (
     <Flex flexDir="row" w="full">
-      <Grid bg="gray.200" minH="100vh" w="full">
-        <VStack bg="gray.100" m="10" spacing={5} p="5" align="center">
+      <Grid minH="100vh" w="full">
+        <VStack m="10" spacing={5} p="5" align="center">
           <Text>General settings</Text>
           <Divider />
           <HStack align="start" justify="space-evenly" w="full">

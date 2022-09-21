@@ -1,6 +1,6 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import {
   WagmiConfig,
@@ -14,8 +14,19 @@ import { publicProvider } from "wagmi/providers/public";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { SessionProvider } from "next-auth/react";
 
-// Configure chains & p
+import "@fontsource/manrope/200.css";
+import "@fontsource/manrope/300.css";
+import "@fontsource/manrope/400.css";
+import "@fontsource/manrope/500.css";
+import "@fontsource/manrope/600.css";
+import "@fontsource/manrope/700.css";
+import "@fontsource/manrope/800.css";
 
+const theme = extendTheme({
+  fonts: {
+    manrope: "Manrope",
+  },
+});
 const { chains, provider, webSocketProvider } = configureChains(defaultChains, [
   publicProvider(),
 ]);
@@ -40,7 +51,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig client={client}>
       <SessionProvider session={pageProps.session} refetchInterval={0}>
-        <ChakraProvider>
+        <ChakraProvider theme={theme}>
           <Component {...pageProps} />
         </ChakraProvider>
       </SessionProvider>
