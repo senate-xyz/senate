@@ -44,7 +44,7 @@ async function main() {
       onchainHandler: DaoOnChainHandler.Bravo2,
       snapshotSpace: "uniswap",
       picture:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Uniswap_Logo.svg/2051px-Uniswap_Logo.svg.png",
+        "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png",
       latestBlock: 13059157,
       proposalUrl: "https://app.uniswap.org/#/vote/",
       abi: uniswapGovBravo.abi,
@@ -110,6 +110,357 @@ async function main() {
       latestBlock: 15446733,
       proposalUrl: "https://vote.makerdao.com/executive/",
       abi: makerChief.abi,
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Optimism",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "opcollective.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/25244/small/Optimism.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "ENS",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "ens.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/19785/small/acatxTm8_400x400.jpg",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Yearn",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "ybaby.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/11849/small/yfi-192x192.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Gitcoin",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "gitcoindao.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/15810/small/gitcoin.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Curve",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "curve.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/12124/small/Curve.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Element DAO",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "elfi.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/24734/small/new-large.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Friends With Benefits",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "friendswithbenefits.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/14391/small/xRGEXmQN_400x400.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Seed Club",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "club.eth",
+      picture: "https://s2.coinmarketcap.com/static/img/coins/64x64/16802.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Goldfinch",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "goldfinch.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/19081/small/GOLDFINCH.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Gelato",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "gelato.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/15026/small/Gelato_Icon_Logo_1024x1024.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "EPNS",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "epns.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/14769/small/epns_logo.jpg",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "APwine",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "apwine.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/15597/small/ApWine.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "The Graph",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "graphprotocol.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/13397/small/Graph_Token.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Sismo DAO",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "sismo.eth",
+      picture:
+        "https://cdn.stamp.fyi/space/sismo.eth?s=160&cb=1162619a0d16cd16",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Covalent",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "covalenthq.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/14168/small/covalent-cqt.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Unlock Protocol",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "unlock-protocol.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/14545/small/unlock.jpg",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Streamr",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "streamr.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/17869/small/DATA_new_symbol_3x.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Balancer",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "balancer.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/11683/small/Balancer.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "dYdX",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "dydxgov.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/17500/small/hjnIm9bV.jpg",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Sushi",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "sushigov.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/12271/small/512x512_Logo_no_chop.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Hop",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "hop.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/25445/small/BVcNR51u_400x400.jpg",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "GnosisDAO",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "gnosis.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/662/small/logo_square_simple_300px.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
     },
   });
 

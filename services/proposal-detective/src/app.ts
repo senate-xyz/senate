@@ -1,5 +1,5 @@
 import { ProposalType } from "./../../../types/index";
-import { getChainProposals } from "./proposals/chainDetective";
+import { getChainProposals } from "./proposals/chainProposals";
 import { getSnapshotProposals } from "./proposals/snapshotProposals";
 import { getSnapshotVotes } from "./votes/snapshotVotes";
 import { getChainVotes } from "./votes/chainVotes";
