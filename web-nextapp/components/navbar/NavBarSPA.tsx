@@ -1,4 +1,4 @@
-import { Flex, FlexProps, Icon } from "@chakra-ui/react";
+import { Box, Flex, FlexProps, Icon } from "@chakra-ui/react";
 import { FiHome, FiBarChart2, FiSettings, FiStar } from "react-icons/fi";
 
 import { LinkItemSPAProps, PagesEnum } from "../../../types";
@@ -20,8 +20,7 @@ export const NavItemSPA = ({
   return (
     <Flex
       w="full"
-      justify="start"
-      align="center"
+      justify={children ? "start" : "center"}
       p="4"
       borderRadius="lg"
       role="group"
@@ -38,7 +37,7 @@ export const NavItemSPA = ({
     >
       {item.icon == 1 && (
         <Icon
-          mr="4"
+          boxSize="25px"
           fontSize="16"
           _groupHover={{
             color: "white",
@@ -48,7 +47,7 @@ export const NavItemSPA = ({
       )}
       {item.icon == 2 && (
         <Icon
-          mr="4"
+          boxSize="25px"
           fontSize="16"
           _groupHover={{
             color: "white",
@@ -58,7 +57,7 @@ export const NavItemSPA = ({
       )}
       {item.icon == 3 && (
         <Icon
-          mr="4"
+          boxSize="25px"
           fontSize="16"
           _groupHover={{
             color: "white",
@@ -68,7 +67,7 @@ export const NavItemSPA = ({
       )}
       {item.icon == 4 && (
         <Icon
-          mr="4"
+          boxSize="25px"
           fontSize="16"
           _groupHover={{
             color: "white",
@@ -76,7 +75,7 @@ export const NavItemSPA = ({
           as={FiSettings}
         />
       )}
-      {children}
+      <Box ml="4px">{children}</Box>
     </Flex>
   );
 };
