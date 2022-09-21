@@ -64,37 +64,32 @@ const updateSingleSub = async (sub: Subscription) => {
     });
 
   if (votes.length)
-    await prisma
-      .$transaction(
-        votes.map((vote: any) =>
-          prisma.userVote.upsert({
-            where: {
-              snapshotId: vote.id,
+    for (const vote of votes) {
+      prisma.userVote.upsert({
+        where: {
+          snapshotId: vote.id,
+        },
+        update: {
+          voteOption: vote.choice,
+          voteName: vote.proposal.choices[vote.choice - 1],
+        },
+        create: {
+          snapshotId: vote.id,
+          user: {
+            connect: {
+              id: user?.id,
             },
-            update: {
-              voteOption: vote.choice,
-              voteName: vote.proposal.choices[vote.choice - 1],
+          },
+          proposal: {
+            connect: {
+              snapshotId: vote.proposal.id,
             },
-            create: {
-              snapshotId: vote.id,
-              user: {
-                connect: {
-                  id: user?.id,
-                },
-              },
-              proposal: {
-                connect: {
-                  snapshotId: vote.proposal.id,
-                },
-              },
-              voteOption: vote.choice,
-              voteName: vote.proposal.choices[vote.choice - 1],
-            },
-          })
-        )
-      )
-      .then((res) => {
-        if (res) console.log(`upserted ${res.length} snapshot votes`);
-        else console.log(`upserted 0 snapshot votes`);
+          },
+          voteOption: vote.choice,
+          voteName: vote.proposal.choices[vote.choice - 1],
+        },
       });
+    }
+
+  console.log(`upserted ${votes.length} snapshot votes`);
 };

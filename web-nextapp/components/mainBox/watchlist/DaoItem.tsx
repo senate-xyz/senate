@@ -156,7 +156,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
       borderRadius="5px"
       onClick={session ? onOpen : signedOutWarning}
     >
-      <Avatar boxSize="5rem" src={props.dao.picture}></Avatar>
+      <Avatar size="lg" src={props.dao.picture}></Avatar>
       <Text>{props.dao.name}</Text>
       <Spacer />
       <HStack>
@@ -175,7 +175,11 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
             <Center>
               <VStack>
                 <HStack>
-                  <Avatar src={props.dao.picture}></Avatar>
+                  <Avatar
+                    bg="white"
+                    showBorder={true}
+                    src={props.dao.picture}
+                  ></Avatar>
                   <Text>{props.dao.name}</Text>
                   {loading && (
                     <Center>

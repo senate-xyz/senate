@@ -19,13 +19,12 @@ export const getSnapshotProposals = async () => {
 };
 
 const findOngoingProposals = async (daos: Dao[]) => {
-  await Promise.all(
-    daos.map(async (dao) => {
-      let proposals = await axios
-        .get("https://hub.snapshot.org/graphql", {
-          method: "POST",
-          data: JSON.stringify({
-            query: `{
+  for (const dao of daos) {
+    let proposals = await axios
+      .get("https://hub.snapshot.org/graphql", {
+        method: "POST",
+        data: JSON.stringify({
+          query: `{
                 proposals (
                 first:1000,
                   where: {
@@ -43,57 +42,47 @@ const findOngoingProposals = async (daos: Dao[]) => {
                   link
                 }
               }`,
-          }),
-          headers: {
-            "content-type": "application/json",
-          },
-        })
-        .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          return data.data.proposals;
-        })
-        .catch((e) => {
-          proposals = [];
-        });
+        }),
+        headers: {
+          "content-type": "application/json",
+        },
+      })
+      .then((response) => {
+        return response.data;
+      })
+      .then((data) => {
+        return data.data.proposals;
+      })
+      .catch((e) => {
+        proposals = [];
+      });
 
-      if (proposals.length)
-        await prisma
-          .$transaction(
-            proposals.map((proposal: any) =>
-              prisma.proposal.upsert({
-                where: {
-                  snapshotId: proposal.id,
-                },
-                update: {
-                  daoId: dao.id,
-                  title: String(proposal.title),
-                  type: ProposalTypeEnum.Snapshot,
-                  description: String(proposal.body),
-                  created: new Date(proposal.created * 1000),
-                  voteStarts: new Date(proposal.start * 1000),
-                  voteEnds: new Date(proposal.end * 1000),
-                  url: proposal.link,
-                },
-                create: {
-                  snapshotId: proposal.id,
-                  daoId: dao.id,
-                  title: String(proposal.title),
-                  type: ProposalTypeEnum.Snapshot,
-                  description: String(proposal.body),
-                  created: new Date(proposal.created * 1000),
-                  voteStarts: new Date(proposal.start * 1000),
-                  voteEnds: new Date(proposal.end * 1000),
-                  url: proposal.link,
-                },
-              })
-            )
+    if (proposals.length)
+      await prisma
+        .$transaction(
+          proposals.map((proposal: any) =>
+            prisma.proposal.upsert({
+              where: {
+                snapshotId: proposal.id,
+              },
+              update: {},
+              create: {
+                snapshotId: proposal.id,
+                daoId: dao.id,
+                title: String(proposal.title),
+                type: ProposalTypeEnum.Snapshot,
+                description: String(proposal.body),
+                created: new Date(proposal.created * 1000),
+                voteStarts: new Date(proposal.start * 1000),
+                voteEnds: new Date(proposal.end * 1000),
+                url: proposal.link,
+              },
+            })
           )
-          .then((res) => {
-            if (res) console.log(`upserted ${res.length} snapshot proposals`);
-            else console.log(`upserted 0 snapshot proposals`);
-          });
-    })
-  );
+        )
+        .then((res) => {
+          if (res) console.log(`upserted ${res.length} snapshot proposals`);
+          else console.log(`upserted 0 snapshot proposals`);
+        });
+  }
 };
