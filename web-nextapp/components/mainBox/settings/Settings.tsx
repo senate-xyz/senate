@@ -344,6 +344,11 @@ export const Settings = () => {
         <Text fontSize="3xl" fontWeight="800">
           Settings
         </Text>
+        <HStack w="full">
+          <Divider />
+          <Text w="30rem">🚧 under construction 🚧</Text>
+          <Divider />
+        </HStack>
         <Box pb="0.3rem" pt="1rem" />
         <Divider />
         <Box pb="0.3rem" pt="1rem" />
@@ -362,6 +367,7 @@ export const Settings = () => {
                   <Text>On new proposal</Text>
                 </HStack>
                 <Switch
+                  disabled
                   isChecked={onNew}
                   onChange={() => updateOnNew(!onNew)}
                 ></Switch>
@@ -372,6 +378,7 @@ export const Settings = () => {
                 </HStack>
                 <Spacer />
                 <Switch
+                  disabled
                   isChecked={oneHour}
                   onChange={() => updateOneHour(!oneHour)}
                 ></Switch>
@@ -381,6 +388,7 @@ export const Settings = () => {
                   <Text>2 hours left to the deadline</Text>
                 </HStack>
                 <Switch
+                  disabled
                   isChecked={twoHours}
                   onChange={() => updateTwoHours(!twoHours)}
                 ></Switch>
@@ -390,6 +398,7 @@ export const Settings = () => {
                   <Text>3 hours left to the deadline</Text>
                 </HStack>
                 <Switch
+                  disabled
                   isChecked={threeHours}
                   onChange={() => updateThreeHours(!threeHours)}
                 ></Switch>
@@ -399,6 +408,7 @@ export const Settings = () => {
                   <Text>6 hours left to the deadline</Text>
                 </HStack>
                 <Switch
+                  disabled
                   isChecked={sixHours}
                   onChange={() => updateSixHours(!sixHours)}
                 ></Switch>
@@ -408,6 +418,7 @@ export const Settings = () => {
                   <Text>12 hours left to the deadline</Text>
                 </HStack>
                 <Switch
+                  disabled
                   isChecked={twelveHours}
                   onChange={() => updateTwelveHours(!twelveHours)}
                 ></Switch>
@@ -417,6 +428,7 @@ export const Settings = () => {
                   <Text>1 day left to the deadline</Text>
                 </HStack>
                 <Switch
+                  disabled
                   isChecked={oneDay}
                   onChange={() => updateOneDay(!oneDay)}
                 ></Switch>
@@ -426,6 +438,7 @@ export const Settings = () => {
                   <Text>2 days left to the deadline</Text>
                 </HStack>
                 <Switch
+                  disabled
                   isChecked={twoDays}
                   onChange={() => updateTwoDays(!twoDays)}
                 ></Switch>
@@ -435,6 +448,7 @@ export const Settings = () => {
                   <Text>3 days left to the deadline</Text>
                 </HStack>
                 <Switch
+                  disabled
                   isChecked={threeDays}
                   onChange={() => updateThreeDays(!threeDays)}
                 ></Switch>
@@ -452,6 +466,7 @@ export const Settings = () => {
                   <Icon as={FaBell} /> <Text>EPNS</Text>
                 </HStack>
                 <Switch
+                  disabled
                   isChecked={epns}
                   onChange={() => updateEpns(!epns)}
                 ></Switch>
@@ -463,6 +478,7 @@ export const Settings = () => {
                 </HStack>
                 <Spacer />
                 <Switch
+                  disabled
                   isChecked={discord}
                   onChange={() => updateDiscord(!discord)}
                 ></Switch>
@@ -473,6 +489,7 @@ export const Settings = () => {
                   <Text>Slack</Text>
                 </HStack>
                 <Switch
+                  disabled
                   isChecked={slack}
                   onChange={() => updateSlack(!slack)}
                 ></Switch>
@@ -483,6 +500,7 @@ export const Settings = () => {
                   <Text>Telegram</Text>
                 </HStack>
                 <Switch
+                  disabled
                   isChecked={telegram}
                   onChange={() => updateTelegram(!telegram)}
                 ></Switch>
