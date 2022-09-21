@@ -232,15 +232,15 @@ const ClosedContent = ({ onOpen }: MobileProps) => {
     >
       <Flex h="20" w="full" alignItems="center" p="2">
         {colorMode == "light" ? (
-          <Image boxSize="35px" src="/logo_dark.svg" alt="very cool logo" />
+          <Image boxSize="55px" src="/logo_dark.svg" alt="very cool logo" />
         ) : (
-          <Image boxSize="35px" src="/logo.svg" alt="very cool logo" />
+          <Image boxSize="55px" src="/logo.svg" alt="very cool logo" />
         )}
       </Flex>
 
       <Box py="3" />
       <Avatar
-        boxSize="40px"
+        boxSize="45px"
         src={ensAvatar.data!}
         name={ensName.data!}
       ></Avatar>
