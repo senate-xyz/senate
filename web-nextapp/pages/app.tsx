@@ -48,7 +48,7 @@ const Home: NextPage = () => {
   const [page, setPage] = useState(PagesEnum.Dashboard);
   const { colorMode } = useColorMode();
   return (
-    <Flex flexDir="row" h="calc(100vh)">
+    <Flex flexDir="row" minH="calc(100vh)">
       <NavBar page={page} setPage={setPage} />
       <Flex
         w="full"
