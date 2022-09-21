@@ -135,7 +135,7 @@ const OpenContent = ({ onClose, setPage }: SidebarProps) => {
         minH="full"
       />
 
-      <Flex h="20" w="full" alignItems="center" p="2">
+      <Flex h="20" w="full" alignItems="center" justify="center">
         {colorMode == "light" ? (
           <Image boxSize="35px" src="/logo_dark.svg" alt="very cool logo" />
         ) : (
@@ -230,7 +230,7 @@ const ClosedContent = ({ onOpen }: MobileProps) => {
       bgColor={colorMode == "light" ? "blackAlpha.200" : "blackAlpha.400"}
       minH="full"
     >
-      <Flex h="20" w="full" alignItems="center" p="2">
+      <Flex h="20" w="full" alignItems="center" justify="center" p="2">
         {colorMode == "light" ? (
           <Image boxSize="55px" src="/logo_dark.svg" alt="very cool logo" />
         ) : (
@@ -246,6 +246,7 @@ const ClosedContent = ({ onOpen }: MobileProps) => {
       ></Avatar>
 
       <Box py="3" />
+      <Box px="50px" />
 
       {LinkItems.map((link) => (
         <NavItemSPA key={link.name} item={link}></NavItemSPA>
