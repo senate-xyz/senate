@@ -145,8 +145,6 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
       p="1rem"
       border="1px"
       borderRadius="5px"
-      borderColor={subscribe ? "gray.400" : "gray.200"}
-      background={subscribe ? "gray.200" : "gray.100"}
       w="full"
       onClick={session ? onOpen : signedOutWarning}
     >

@@ -26,8 +26,8 @@ const Subscriptions = () => {
 
   return (
     <Flex flexDir="row" w="full">
-      <Grid bg="gray.200" minH="100vh" w="full">
-        <VStack bg="gray.100" m="10" align="start" spacing={2} p="5">
+      <Grid w="full">
+        <VStack m="10" align="start" spacing={2} p="5">
           <Text>DAOs</Text>
           <Divider />
           {loading && (
