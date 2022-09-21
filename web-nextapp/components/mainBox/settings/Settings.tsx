@@ -1,9 +1,9 @@
 import {
+  Box,
   Divider,
-  Flex,
-  Grid,
   HStack,
   Icon,
+  SimpleGrid,
   Spacer,
   Switch,
   Text,
@@ -49,7 +49,7 @@ export const Settings = () => {
         duration: 3000,
         isClosable: true,
       });
-  });
+  }, [session]);
 
   useEffect(() => {
     fetch(
@@ -335,154 +335,163 @@ export const Settings = () => {
   };
 
   return (
-    <Flex flexDir="row" w="full">
-      <Grid minH="100vh" w="full">
-        <VStack m="10" spacing={5} p="5" align="center">
-          <Text>General settings</Text>
-          <Divider />
-          <HStack align="start" justify="space-evenly" w="full">
-            <VStack>
-              <Text>Notification frequency</Text>
-              <Divider />
-              <VStack align="start" w="20rem">
-                <HStack justify="space-between" w="full">
-                  <HStack>
-                    <Text>On new proposal</Text>
-                  </HStack>
-                  <Switch
-                    isChecked={onNew}
-                    onChange={() => updateOnNew(!onNew)}
-                  ></Switch>
+    <Box w="full">
+      <VStack
+        m={{ base: "0", md: "10" }}
+        align="start"
+        p={{ base: "2", md: "5" }}
+      >
+        <Text fontSize="3xl" fontWeight="800">
+          Settings
+        </Text>
+        <Box pb="0.3rem" pt="1rem" />
+        <Divider />
+        <Box pb="0.3rem" pt="1rem" />
+        <SimpleGrid
+          spacing="1rem"
+          w="full"
+          minChildWidth="20rem"
+          justifyItems="center"
+        >
+          <VStack>
+            <Text>Notification frequency</Text>
+            <Divider />
+            <VStack align="start" w={{ base: "15rem", sm: "20rem" }}>
+              <HStack justify="space-between" w="full">
+                <HStack>
+                  <Text>On new proposal</Text>
                 </HStack>
-                <HStack justify="space-between" w="full">
-                  <HStack>
-                    <Text>1 hour left to the deadline</Text>
-                  </HStack>
-                  <Spacer />
-                  <Switch
-                    isChecked={oneHour}
-                    onChange={() => updateOneHour(!oneHour)}
-                  ></Switch>
+                <Switch
+                  isChecked={onNew}
+                  onChange={() => updateOnNew(!onNew)}
+                ></Switch>
+              </HStack>
+              <HStack justify="space-between" w="full">
+                <HStack>
+                  <Text>1 hour left to the deadline</Text>
                 </HStack>
-                <HStack justify="space-between" w="full">
-                  <HStack>
-                    <Text>2 hours left to the deadline</Text>
-                  </HStack>
-                  <Switch
-                    isChecked={twoHours}
-                    onChange={() => updateTwoHours(!twoHours)}
-                  ></Switch>
+                <Spacer />
+                <Switch
+                  isChecked={oneHour}
+                  onChange={() => updateOneHour(!oneHour)}
+                ></Switch>
+              </HStack>
+              <HStack justify="space-between" w="full">
+                <HStack>
+                  <Text>2 hours left to the deadline</Text>
                 </HStack>
-                <HStack justify="space-between" w="full">
-                  <HStack>
-                    <Text>3 hours left to the deadline</Text>
-                  </HStack>
-                  <Switch
-                    isChecked={threeHours}
-                    onChange={() => updateThreeHours(!threeHours)}
-                  ></Switch>
+                <Switch
+                  isChecked={twoHours}
+                  onChange={() => updateTwoHours(!twoHours)}
+                ></Switch>
+              </HStack>
+              <HStack justify="space-between" w="full">
+                <HStack>
+                  <Text>3 hours left to the deadline</Text>
                 </HStack>
-                <HStack justify="space-between" w="full">
-                  <HStack>
-                    <Text>6 hours left to the deadline</Text>
-                  </HStack>
-                  <Switch
-                    isChecked={sixHours}
-                    onChange={() => updateSixHours(!sixHours)}
-                  ></Switch>
+                <Switch
+                  isChecked={threeHours}
+                  onChange={() => updateThreeHours(!threeHours)}
+                ></Switch>
+              </HStack>
+              <HStack justify="space-between" w="full">
+                <HStack>
+                  <Text>6 hours left to the deadline</Text>
                 </HStack>
-                <HStack justify="space-between" w="full">
-                  <HStack>
-                    <Text>12 hours left to the deadline</Text>
-                  </HStack>
-                  <Switch
-                    isChecked={twelveHours}
-                    onChange={() => updateTwelveHours(!twelveHours)}
-                  ></Switch>
+                <Switch
+                  isChecked={sixHours}
+                  onChange={() => updateSixHours(!sixHours)}
+                ></Switch>
+              </HStack>
+              <HStack justify="space-between" w="full">
+                <HStack>
+                  <Text>12 hours left to the deadline</Text>
                 </HStack>
-                <HStack justify="space-between" w="full">
-                  <HStack>
-                    <Text>1 day left to the deadline</Text>
-                  </HStack>
-                  <Switch
-                    isChecked={oneDay}
-                    onChange={() => updateOneDay(!oneDay)}
-                  ></Switch>
+                <Switch
+                  isChecked={twelveHours}
+                  onChange={() => updateTwelveHours(!twelveHours)}
+                ></Switch>
+              </HStack>
+              <HStack justify="space-between" w="full">
+                <HStack>
+                  <Text>1 day left to the deadline</Text>
                 </HStack>
-                <HStack justify="space-between" w="full">
-                  <HStack>
-                    <Text>2 days left to the deadline</Text>
-                  </HStack>
-                  <Switch
-                    isChecked={twoDays}
-                    onChange={() => updateTwoDays(!twoDays)}
-                  ></Switch>
+                <Switch
+                  isChecked={oneDay}
+                  onChange={() => updateOneDay(!oneDay)}
+                ></Switch>
+              </HStack>
+              <HStack justify="space-between" w="full">
+                <HStack>
+                  <Text>2 days left to the deadline</Text>
                 </HStack>
-                <HStack justify="space-between" w="full">
-                  <HStack>
-                    <Text>3 days left to the deadline</Text>
-                  </HStack>
-                  <Switch
-                    isChecked={threeDays}
-                    onChange={() => updateThreeDays(!threeDays)}
-                  ></Switch>
+                <Switch
+                  isChecked={twoDays}
+                  onChange={() => updateTwoDays(!twoDays)}
+                ></Switch>
+              </HStack>
+              <HStack justify="space-between" w="full">
+                <HStack>
+                  <Text>3 days left to the deadline</Text>
                 </HStack>
-              </VStack>
-              <Divider />
+                <Switch
+                  isChecked={threeDays}
+                  onChange={() => updateThreeDays(!threeDays)}
+                ></Switch>
+              </HStack>
             </VStack>
+            <Divider />
+          </VStack>
 
-            <Divider orientation="vertical" />
-
-            <VStack>
-              <Text>Notification channels</Text>
-              <Divider />
-              <VStack align="start" w="10rem">
-                <HStack justify="space-between" w="full">
-                  <HStack>
-                    <Icon as={FaBell} /> <Text>EPNS</Text>
-                  </HStack>
-                  <Switch
-                    isChecked={epns}
-                    onChange={() => updateEpns(!epns)}
-                  ></Switch>
+          <VStack>
+            <Text>Notification channels</Text>
+            <Divider />
+            <VStack align="start" w="10rem">
+              <HStack justify="space-between" w="full">
+                <HStack>
+                  <Icon as={FaBell} /> <Text>EPNS</Text>
                 </HStack>
-                <HStack justify="space-between" w="full">
-                  <HStack>
-                    <Icon as={FaDiscord} />
-                    <Text>Discord</Text>
-                  </HStack>
-                  <Spacer />
-                  <Switch
-                    isChecked={discord}
-                    onChange={() => updateDiscord(!discord)}
-                  ></Switch>
+                <Switch
+                  isChecked={epns}
+                  onChange={() => updateEpns(!epns)}
+                ></Switch>
+              </HStack>
+              <HStack justify="space-between" w="full">
+                <HStack>
+                  <Icon as={FaDiscord} />
+                  <Text>Discord</Text>
                 </HStack>
-                <HStack justify="space-between" w="full">
-                  <HStack>
-                    <Icon as={FaSlack} />
-                    <Text>Slack</Text>
-                  </HStack>
-                  <Switch
-                    isChecked={slack}
-                    onChange={() => updateSlack(!slack)}
-                  ></Switch>
+                <Spacer />
+                <Switch
+                  isChecked={discord}
+                  onChange={() => updateDiscord(!discord)}
+                ></Switch>
+              </HStack>
+              <HStack justify="space-between" w="full">
+                <HStack>
+                  <Icon as={FaSlack} />
+                  <Text>Slack</Text>
                 </HStack>
-                <HStack justify="space-between" w="full">
-                  <HStack>
-                    <Icon as={FaTelegram} />
-                    <Text>Telegram</Text>
-                  </HStack>
-                  <Switch
-                    isChecked={telegram}
-                    onChange={() => updateTelegram(!telegram)}
-                  ></Switch>
+                <Switch
+                  isChecked={slack}
+                  onChange={() => updateSlack(!slack)}
+                ></Switch>
+              </HStack>
+              <HStack justify="space-between" w="full">
+                <HStack>
+                  <Icon as={FaTelegram} />
+                  <Text>Telegram</Text>
                 </HStack>
-              </VStack>
+                <Switch
+                  isChecked={telegram}
+                  onChange={() => updateTelegram(!telegram)}
+                ></Switch>
+              </HStack>
             </VStack>
-          </HStack>
-        </VStack>
-      </Grid>
-    </Flex>
+          </VStack>
+        </SimpleGrid>
+      </VStack>
+    </Box>
   );
 };
 

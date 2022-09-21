@@ -10,12 +10,10 @@ import {
   BoxProps,
   FlexProps,
   useColorMode,
-  Button,
   Spacer,
   VStack,
   Image,
   IconButton,
-  color,
 } from "@chakra-ui/react";
 import { NavItemSPA } from "./NavBarSPA";
 import { LinkItemSPAProps, PagesEnum } from "../../../types";
@@ -24,8 +22,8 @@ import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 const LinkItems: Array<LinkItemSPAProps> = [
   { name: "Dashboard", id: PagesEnum.Dashboard, icon: 1 },
   {
-    name: "Subscriptions",
-    id: PagesEnum.Subscriptions,
+    name: "Watchlist",
+    id: PagesEnum.Watchlist,
     icon: 2,
   },
   { name: "Vote tracker", id: PagesEnum.Tracker, icon: 3 },
@@ -34,22 +32,15 @@ const LinkItems: Array<LinkItemSPAProps> = [
 
 export default function NavBar(props: { page: PagesEnum; setPage: any }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode } = useColorMode();
   return (
     <Box bgColor={colorMode == "light" ? "blackAlpha.200" : "blackAlpha.700"}>
-      <Drawer
-        autoFocus={true}
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        returnFocusOnClose={true}
-        size="xs"
-      >
+      <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="xs">
         <DrawerContent>
           <OpenContent onClose={onClose} setPage={props.setPage} />
         </DrawerContent>
       </Drawer>
-      <ClosedContent onOpen={onOpen} setPage={props.setPage} />
+      <ClosedContent onOpen={onOpen} />
     </Box>
   );
 }
@@ -66,24 +57,37 @@ const OpenContent = ({ onClose, setPage }: SidebarProps) => {
       borderRight="1px"
       borderRightColor={useColorModeValue("gray.200", "gray.700")}
       onMouseLeave={onClose}
-      h="full"
       align="start"
       justify="start"
-      bgImg="/homebg.svg"
       bgColor={colorMode == "light" ? "blackAlpha.200" : "blackAlpha.700"}
+      minH="full"
     >
-      <Flex h="20" alignItems="center" mx="2" justifyContent="space-between">
+      <VStack
+        w="full"
+        bgImg="/homebg.svg"
+        position="absolute"
+        zIndex="-1"
+        opacity="0.2"
+        minH="full"
+      />
+
+      <Flex h="20" w="full" alignItems="center" p="2">
         {colorMode == "light" ? (
-          <Image boxSize="50px" src="/logo_dark.svg" alt="very cool logo" />
+          <Image boxSize="35px" src="/logo_dark.svg" alt="very cool logo" />
         ) : (
-          <Image boxSize="50px" src="/logo.svg" alt="very cool logo" />
+          <Image boxSize="35px" src="/logo.svg" alt="very cool logo" />
         )}
-        <Text fontFamily="manrope" fontWeight="500" fontSize="30px">
+        <Text fontFamily="manrope" fontWeight="500" fontSize="30px" ml="1rem">
           Senate
         </Text>
       </Flex>
       {LinkItems.map((link) => (
-        <NavItemSPA key={link.name} item={link} setPage={setPage}>
+        <NavItemSPA
+          key={link.name}
+          item={link}
+          setPage={setPage}
+          onClose={onClose}
+        >
           {link.name}
         </NavItemSPA>
       ))}
@@ -101,27 +105,26 @@ const OpenContent = ({ onClose, setPage }: SidebarProps) => {
 
 interface MobileProps extends FlexProps {
   onOpen: () => void;
-  setPage: () => void;
 }
-const ClosedContent = ({ onOpen, setPage }: MobileProps) => {
+const ClosedContent = ({ onOpen }: MobileProps) => {
   const { colorMode } = useColorMode();
   return (
     <VStack
       justify="start"
       align="center"
-      onMouseOver={onOpen}
-      h="full"
+      onMouseEnter={onOpen}
       bgColor={colorMode == "light" ? "blackAlpha.200" : "blackAlpha.400"}
+      minH="full"
     >
-      <Flex h="20" alignItems="center" mx="2" justifyContent="space-between">
+      <Flex h="20" w="full" alignItems="center" p="2">
         {colorMode == "light" ? (
-          <Image boxSize="50px" src="/logo_dark.svg" alt="very cool logo" />
+          <Image boxSize="35px" src="/logo_dark.svg" alt="very cool logo" />
         ) : (
-          <Image boxSize="50px" src="/logo.svg" alt="very cool logo" />
+          <Image boxSize="35px" src="/logo.svg" alt="very cool logo" />
         )}
       </Flex>
       {LinkItems.map((link) => (
-        <NavItemSPA key={link.name} item={link} setPage={setPage}></NavItemSPA>
+        <NavItemSPA key={link.name} item={link}></NavItemSPA>
       ))}
     </VStack>
   );

@@ -22,6 +22,8 @@ import {
   TabPanels,
   Tabs,
   useToast,
+  Box,
+  Container,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
@@ -72,36 +74,41 @@ export const Tracker = () => {
   }, [daos]);
 
   return (
-    <Flex flexDir="row" w="full">
-      <Grid w="full">
-        <VStack m="10" align="start" spacing={5} p="5">
-          <HStack w="full">
-            <Text>Vote tracker</Text>
-            <Spacer />
-          </HStack>
-          <Divider></Divider>
-          {loading && (
-            <Center w="full">
-              <Spinner />
-            </Center>
-          )}
+    <Box w="full">
+      <VStack
+        m={{ base: "0", md: "10" }}
+        align="start"
+        p={{ base: "2", md: "5" }}
+      >
+        <Text fontSize="3xl" fontWeight="800">
+          Vote tracker
+        </Text>
+        <Box pb="0.3rem" pt="1rem" />
+        <Divider />
+        <Box pb="0.3rem" pt="1rem" />
+        {loading && (
+          <Center w="full">
+            <Spinner />
+          </Center>
+        )}
 
-          <Tabs w="full">
-            <TabList>
-              {daos.map((dao, index) => {
-                return (
-                  <Tab
-                    key={index}
-                    onClick={() => {
-                      setSelectedDao(dao);
-                    }}
-                  >
-                    {dao}
-                  </Tab>
-                );
-              })}
-            </TabList>
+        <Tabs w="full">
+          <TabList>
+            {daos.map((dao, index) => {
+              return (
+                <Tab
+                  key={index}
+                  onClick={() => {
+                    setSelectedDao(dao);
+                  }}
+                >
+                  {dao}
+                </Tab>
+              );
+            })}
+          </TabList>
 
+          <Container overflow="auto" w="full" maxW="90vw">
             <TabPanels w="full">
               <TableContainer w="full">
                 <Table variant="simple">
@@ -165,10 +172,10 @@ export const Tracker = () => {
                 </Table>
               </TableContainer>
             </TabPanels>
-          </Tabs>
-        </VStack>
-      </Grid>
-    </Flex>
+          </Container>
+        </Tabs>
+      </VStack>
+    </Box>
   );
 };
 

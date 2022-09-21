@@ -63,7 +63,7 @@ export enum NotificationIntervalEnum {
 export enum PagesEnum {
   None = 1,
   Dashboard,
-  Subscriptions,
+  Watchlist,
   Tracker,
   Settings,
 }

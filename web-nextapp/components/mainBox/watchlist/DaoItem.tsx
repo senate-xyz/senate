@@ -24,23 +24,10 @@ import {
   useToast,
   useColorMode,
 } from "@chakra-ui/react";
-import {
-  DaoType,
-  NotificationChannelType,
-  NotificationChannelEnum,
-  NotificationIntervalEnum,
-  NotificationSettingType,
-} from "../../../../types";
-import {
-  FaBell,
-  FaDiscord,
-  FaEthereum,
-  FaSlack,
-  FaTelegram,
-} from "react-icons/fa";
-import { ChevronDownIcon, BellIcon, CheckIcon } from "@chakra-ui/icons";
+import { DaoType } from "../../../../types";
+import { FaBell, FaDiscord, FaSlack, FaTelegram } from "react-icons/fa";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
-import moment from "moment";
 import { useSession } from "next-auth/react";
 
 export const SubscriptionItem = (props: { dao: DaoType }) => {
@@ -147,9 +134,25 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
       w="10rem"
       h="12em"
       p="1rem"
-      border="1px"
-      bgColor={colorMode == "light" ? "blackAlpha.50" : "whiteAlpha.50"}
-      borderColor={colorMode == "light" ? "blackAlpha.200" : "whiteAlpha.200"}
+      border={subscribe ? "2px" : "1px"}
+      bgColor={
+        colorMode == "light"
+          ? subscribe
+            ? "blackAlpha.50"
+            : "blackAlpha.300"
+          : subscribe
+          ? "whiteAlpha.300"
+          : "whiteAlpha.50"
+      }
+      borderColor={
+        colorMode == "light"
+          ? subscribe
+            ? "blackAlpha.300"
+            : "blackAlpha.300"
+          : subscribe
+          ? "whiteAlpha.400"
+          : "whiteAlpha.100"
+      }
       borderRadius="5px"
       onClick={session ? onOpen : signedOutWarning}
     >

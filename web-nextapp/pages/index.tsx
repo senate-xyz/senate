@@ -4,30 +4,46 @@ import {
   HStack,
   VStack,
   Spacer,
-  Grid,
   GridItem,
   Button,
-  Box,
   Image,
   SimpleGrid,
   Link,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 
 const Home: NextPage = () => {
+  const isMobile = useBreakpointValue({
+    base: true,
+    md: false,
+  });
+
   return (
-    <VStack w="full" minH="100vh" bg="gray.800" bgImage="/homebg.svg">
+    <VStack w="full" minH="100vh">
+      <VStack
+        w="full"
+        minH="100vh"
+        bg="gray.800"
+        bgImage="/homebg.svg"
+        bgSize="cover"
+        opacity="0.2"
+        position="absolute"
+        zIndex="-1"
+      />
       <HStack mt="2rem" px="2rem" justify="end" spacing="2rem" w="full">
         <Link href={""}>
           <HStack>
             <Image boxSize="50px" src="/logo.svg" alt="very cool logo" />
-            <Text
-              color="white"
-              fontFamily="manrope"
-              fontWeight="500"
-              fontSize="30px"
-            >
-              Senate
-            </Text>
+            {!isMobile && (
+              <Text
+                color="white"
+                fontFamily="manrope"
+                fontWeight="500"
+                fontSize="30px"
+              >
+                Senate
+              </Text>
+            )}
           </HStack>
         </Link>
         <Spacer />
@@ -90,15 +106,26 @@ const Home: NextPage = () => {
           </VStack>
         </GridItem>
         <GridItem rowSpan={2} colSpan={1}>
-          <HStack align="end" justify="end">
+          <HStack align="end" justify="end" mt="5rem">
             <Image fit="fill" src="/homeart.svg" alt="very cool graphics" />
           </HStack>
         </GridItem>
         <GridItem colSpan={1}>
-          <HStack align="center" justify="center" h="full">
-            <Button mb="5rem" borderRadius="20px">
-              <Link href="/app">Let&rsquo;s start</Link>
-            </Button>
+          <HStack align="start" justify="center" h="full">
+            <Link href="/app">
+              <Button
+                minW={{ base: "80vw", md: "10rem" }}
+                mx={{ base: "1rem", md: "5rem" }}
+                mb="5rem"
+                borderRadius="20px"
+                borderWidth="2px"
+                bg="gray.800"
+                borderColor="gray.700"
+                color="white"
+              >
+                Let&rsquo;s start
+              </Button>
+            </Link>
           </HStack>
         </GridItem>
       </SimpleGrid>
