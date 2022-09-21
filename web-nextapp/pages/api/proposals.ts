@@ -59,7 +59,7 @@ export default async function handler(
         },
       },
       orderBy: {
-        voteEnds: "desc",
+        voteEnds: "asc",
       },
     });
   } else {
