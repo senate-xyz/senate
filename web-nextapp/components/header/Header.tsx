@@ -1,9 +1,10 @@
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Button, Flex, Text, useColorMode } from "@chakra-ui/react";
 import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import { useAccount, useConnect, useNetwork, useSignMessage } from "wagmi";
 
 export const Header = () => {
+  const { colorMode } = useColorMode();
   const { data: session } = useSession();
 
   const { connectors, connectAsync } = useConnect();
@@ -52,6 +53,7 @@ export const Header = () => {
         <Flex flexDir="column" mt="2rem" mr="2rem">
           <Text>Signed in as {session.user?.name}</Text>
           <Button
+            bgColor={colorMode == "light" ? "blackAlpha.100" : "whiteAlpha.100"}
             onClick={() => {
               signOut();
             }}
@@ -63,6 +65,7 @@ export const Header = () => {
         <Button
           mt="2rem"
           mr="2rem"
+          bgColor={colorMode == "light" ? "blackAlpha.100" : "whiteAlpha.100"}
           onClick={() => {
             handleLogin();
           }}

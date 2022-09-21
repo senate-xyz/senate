@@ -22,6 +22,7 @@ import {
   MenuList,
   Spinner,
   useToast,
+  useColorMode,
 } from "@chakra-ui/react";
 import {
   DaoType,
@@ -43,6 +44,7 @@ import moment from "moment";
 import { useSession } from "next-auth/react";
 
 export const SubscriptionItem = (props: { dao: DaoType }) => {
+  const { colorMode } = useColorMode();
   const { data: session } = useSession();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -141,16 +143,25 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
   };
 
   return (
-    <HStack
+    <VStack
+      w="10rem"
+      h="12em"
       p="1rem"
       border="1px"
+      bgColor={colorMode == "light" ? "blackAlpha.50" : "whiteAlpha.50"}
+      borderColor={colorMode == "light" ? "blackAlpha.200" : "whiteAlpha.200"}
       borderRadius="5px"
-      w="full"
       onClick={session ? onOpen : signedOutWarning}
     >
-      <Avatar src={props.dao.picture}></Avatar>
+      <Avatar boxSize="5rem" src={props.dao.picture}></Avatar>
       <Text>{props.dao.name}</Text>
       <Spacer />
+      <HStack>
+        <Icon as={FaBell} />
+        <Icon as={FaDiscord} />
+        <Icon as={FaSlack} />
+        <Icon as={FaTelegram} />
+      </HStack>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay backdropFilter="blur(2px)" />
@@ -164,7 +175,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                   <Avatar src={props.dao.picture}></Avatar>
                   <Text>{props.dao.name}</Text>
                   {loading && (
-                    <Center w="full">
+                    <Center>
                       <Spinner />
                     </Center>
                   )}
@@ -497,6 +508,6 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
           </ModalBody>
         </ModalContent>
       </Modal>
-    </HStack>
+    </VStack>
   );
 };
