@@ -6,6 +6,7 @@ import {
   Flex,
   Spinner,
   Center,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { DaoType } from "../../../../types";
@@ -25,28 +26,24 @@ const Subscriptions = () => {
   }, []);
 
   return (
-    <Flex flexDir="row" w="full">
-      <Grid w="full">
-        <VStack m="10" align="start" spacing={2} p="5">
-          <Text>DAOs</Text>
-          <Divider />
-          {loading && (
-            <Center w="full">
-              <Spinner />
-            </Center>
-          )}
-          <VStack w="full">
-            {subscribed.map((dao: DaoType, index: number) => {
-              return (
-                <Flex key={index} w="full">
-                  <SubscriptionItem dao={dao} />
-                </Flex>
-              );
-            })}
-          </VStack>
-        </VStack>
-      </Grid>
-    </Flex>
+    <VStack m="10" align="start" spacing={2} p="5">
+      <Text>DAOs</Text>
+      <Divider />
+      {loading && (
+        <Center w="full">
+          <Spinner />
+        </Center>
+      )}
+      <SimpleGrid minChildWidth="10rem" spacing="1rem" w="full">
+        {subscribed.map((dao: DaoType, index: number) => {
+          return (
+            <Flex key={index}>
+              <SubscriptionItem dao={dao} />
+            </Flex>
+          );
+        })}
+      </SimpleGrid>
+    </VStack>
   );
 };
 
