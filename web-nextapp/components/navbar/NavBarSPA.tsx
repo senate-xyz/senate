@@ -1,5 +1,5 @@
 import { Flex, FlexProps, Icon } from "@chakra-ui/react";
-import { FiHome, FiList, FiBarChart2, FiSettings } from "react-icons/fi";
+import { FiHome, FiBarChart2, FiSettings, FiStar } from "react-icons/fi";
 
 import { LinkItemSPAProps, PagesEnum } from "../../../types";
 
@@ -53,7 +53,7 @@ export const NavItemSPA = ({
           _groupHover={{
             color: "white",
           }}
-          as={FiList}
+          as={FiStar}
         />
       )}
       {item.icon == 3 && (

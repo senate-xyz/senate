@@ -34,10 +34,6 @@ const DynamicSettings = dynamic(
   }
 );
 
-const DynamicHeader = dynamic(() => import("../components/header/Header"), {
-  suspense: true,
-});
-
 const Home: NextPage = () => {
   const [page, setPage] = useState(PagesEnum.Dashboard);
   const { colorMode } = useColorMode();
@@ -55,7 +51,6 @@ const Home: NextPage = () => {
         flexDir="column"
         bgColor={colorMode == "light" ? "blackAlpha.200" : "blackAlpha.600"}
       >
-        <DynamicHeader />
         <Suspense fallback={`Loading...`}>
           {page == PagesEnum.Dashboard && <DyanmicProposals />}
           {page == PagesEnum.Watchlist && <DynamicWatchlist />}
