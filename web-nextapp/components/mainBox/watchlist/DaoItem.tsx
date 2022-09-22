@@ -22,6 +22,7 @@ import {
   MenuList,
   Spinner,
   useToast,
+  AvatarGroup,
   useColorMode,
 } from "@chakra-ui/react";
 import { DaoType } from "../../../../types";
@@ -156,7 +157,32 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
       borderRadius="5px"
       onClick={session ? onOpen : signedOutWarning}
     >
-      <Avatar size="lg" src={props.dao.picture}></Avatar>
+      <Avatar size="lg" src={props.dao.picture} bg="white" position="relative">
+        <AvatarGroup
+          position="absolute"
+          size="sm"
+          max={2}
+          bottom={{ base: "-0.5", md: "-2.5" }}
+          right={{ base: "-0.5", md: "-2.5" }}
+        >
+          {props.dao.address.length && (
+            <Avatar
+              bg="white"
+              name="eth"
+              src="https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"
+              boxSize={{ base: "25px", md: "30px" }}
+            />
+          )}
+          {props.dao.snapshotSpace.length && (
+            <Avatar
+              bg="white"
+              name="snapshot"
+              src="https://avatars.githubusercontent.com/u/72904068?s=200&v=4"
+              boxSize={{ base: "25px", md: "30px" }}
+            />
+          )}
+        </AvatarGroup>
+      </Avatar>
       <Text>{props.dao.name}</Text>
       <Spacer />
       <HStack>
@@ -180,6 +206,7 @@ export const SubscriptionItem = (props: { dao: DaoType }) => {
                     showBorder={true}
                     src={props.dao.picture}
                   ></Avatar>
+
                   <Text>{props.dao.name}</Text>
                   {loading && (
                     <Center>
