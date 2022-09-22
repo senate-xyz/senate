@@ -170,28 +170,49 @@ export const Proposals = () => {
                         <Td>{moment(proposal.voteEnds).fromNow(true)}</Td>
 
                         <Td>
-                          {moment(proposal.voteEnds).isBefore(new Date()) ? (
-                            //past vote
+                          {moment(proposal.voteEnds).isBefore(new Date()) && (
+                            <div>
+                              {!session && (
+                                <HStack>
+                                  <Text>Not logged in</Text>
+                                </HStack>
+                              )}
 
-                            proposal.userVote[0]?.user.address ==
-                            session?.user?.name ? (
-                              proposal.userVote.length ? (
-                                proposal.userVote[0].voteName
-                              ) : (
-                                "Did not vote"
-                              )
-                            ) : (
-                              "Did not vote"
-                            )
-                          ) : //future vote
-                          proposal.userVote.length ? (
-                            proposal.userVote[0].voteName
-                          ) : (
-                            <HStack>
-                              <WarningTwoIcon color="red.400" />
-                              <Text>Did not vote yet!</Text>
-                              <WarningTwoIcon color="red.400" />
-                            </HStack>
+                              {session && (
+                                <div>
+                                  {proposal.userVote[0]?.user.address ==
+                                  session?.user?.name
+                                    ? proposal.userVote.length
+                                      ? proposal.userVote[0].voteName
+                                      : "Did not vote"
+                                    : "Did not vote"}
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {!moment(proposal.voteEnds).isBefore(new Date()) && (
+                            <div>
+                              {!session && (
+                                <HStack>
+                                  <Text>Voting</Text>
+                                </HStack>
+                              )}
+
+                              {session && (
+                                <div>
+                                  {proposal.userVote.length ? (
+                                    proposal.userVote[0].voteName
+                                  ) : (
+                                    <HStack>
+                                      <WarningTwoIcon color="red.400" />
+                                      <Text>Did not vote yet!</Text>
+                                      <WarningTwoIcon color="red.400" />
+                                    </HStack>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           )}
                         </Td>
                       </Tr>

@@ -20,6 +20,7 @@ export const getSnapshotProposals = async () => {
 
 const findOngoingProposals = async (daos: Dao[]) => {
   for (const dao of daos) {
+    console.log(`get proposals for ${dao.name}`);
     let proposals = await axios
       .get("https://hub.snapshot.org/graphql", {
         method: "POST",
@@ -57,7 +58,12 @@ const findOngoingProposals = async (daos: Dao[]) => {
         console.log(e);
       });
 
-    if (proposals.length)
+    console.log(`got ${proposals.length} proposals for ${dao.name}`);
+
+    if (
+      proposals.length >
+      (await prisma.proposal.count({ where: { daoId: dao.id } }))
+    )
       await prisma
         .$transaction(
           proposals.map((proposal: any) =>
@@ -81,8 +87,11 @@ const findOngoingProposals = async (daos: Dao[]) => {
           )
         )
         .then((res) => {
-          if (res) console.log(`upserted ${res.length} snapshot proposals`);
-          else console.log(`upserted 0 snapshot proposals`);
+          if (res)
+            console.log(
+              `upserted ${res.length} snapshot proposals for ${dao.name}`
+            );
+          else console.log(`upserted 0 snapshot proposals for ${dao.name}`);
         });
   }
 };

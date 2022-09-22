@@ -107,7 +107,7 @@ async function main() {
       snapshotSpace: "",
       picture:
         "https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png",
-      latestBlock: 15446733,
+      latestBlock: 11327777,
       proposalUrl: "https://vote.makerdao.com/executive/",
       abi: makerChief.abi,
     },
