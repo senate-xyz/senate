@@ -54,7 +54,7 @@ const findOngoingProposals = async (daos: Dao[]) => {
         return data.data.proposals;
       })
       .catch((e) => {
-        proposals = [];
+        console.log(e);
       });
 
     if (proposals.length)

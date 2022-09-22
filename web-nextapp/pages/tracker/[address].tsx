@@ -24,6 +24,7 @@ import {
   useToast,
   VStack,
   Text,
+  Box,
 } from "@chakra-ui/react";
 import NavBar from "../../components/navbar/NavBar";
 import { PagesEnum, ProposalType } from "../../../types";
@@ -65,13 +66,25 @@ const Home: NextPage = () => {
   }, [daos]);
 
   return (
-    <Flex flexDir="row" w="100vw">
-      <Flex w="full" flexDir="column" bg="gray.200">
+    <Box w="full">
+      <VStack
+        m={{ base: "0", md: "10" }}
+        align="start"
+        p={{ base: "2", md: "5" }}
+      >
+        <VStack
+          w="full"
+          bgImg="/homebg.svg"
+          position="absolute"
+          zIndex="-1"
+          opacity="0.2"
+          minH="full"
+        />
         <Flex flexDir="row" w="full">
-          <Grid bg="gray.200" minH="100vh" w="full">
-            <VStack bg="gray.100" m="10" align="start" spacing={5} p="5">
+          <Grid minH="100vh" w="full">
+            <VStack m="10" align="start" spacing={5} p="5">
               <HStack w="full">
-                <Text>Vote tracker - {address}</Text>
+                <Text>Vote tracker for {address}</Text>
                 <Spacer />
               </HStack>
               <Divider></Divider>
@@ -168,8 +181,8 @@ const Home: NextPage = () => {
             </VStack>
           </Grid>
         </Flex>
-      </Flex>
-    </Flex>
+      </VStack>
+    </Box>
   );
 };
 
