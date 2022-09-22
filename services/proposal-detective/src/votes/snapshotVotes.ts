@@ -93,7 +93,6 @@ const updateSingleSub = async (sub: Subscription) => {
                   snapshotId: vote.proposal.id,
                 },
                 create: {
-                  snapshotId: vote.proposal.id,
                   daoId: dao?.id!,
                   title: String(vote.proposal.title),
                   type: ProposalTypeEnum.Snapshot,
