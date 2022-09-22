@@ -464,6 +464,22 @@ async function main() {
     },
   });
 
+  await prisma.dao.upsert({
+    where: { id: 0 },
+    update: {},
+    create: {
+      name: "Index Coop",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "index-coop.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/12729/small/index.png",
+      latestBlock: 0,
+      proposalUrl: "",
+      abi: "",
+    },
+  });
+
   const delegate = await prisma.user.upsert({
     where: { address: "0xCdB792c14391F7115Ba77A7Cd27f724fC9eA2091" },
     update: {},

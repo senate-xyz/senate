@@ -1,5 +1,4 @@
 import {
-  Grid,
   Text,
   Table,
   TableContainer,
@@ -10,7 +9,6 @@ import {
   Tr,
   VStack,
   Divider,
-  Flex,
   Avatar,
   Link,
   HStack,
@@ -24,6 +22,15 @@ import {
   useToast,
   Box,
   Container,
+  Button,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Input,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
@@ -80,9 +87,37 @@ export const Tracker = () => {
         align="start"
         p={{ base: "2", md: "5" }}
       >
-        <Text fontSize="3xl" fontWeight="800">
-          Vote tracker
-        </Text>
+        <HStack w="full">
+          <Text fontSize="3xl" fontWeight="800">
+            Vote tracker
+          </Text>
+          <Spacer />
+          <Popover>
+            <PopoverTrigger>
+              <Button>Share</Button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <PopoverArrow />
+              <PopoverHeader>Share your voting stats</PopoverHeader>
+              <PopoverBody>
+                <Input
+                  value={`https://dev-senate-web.onrender.com/tracker/${session?.user?.name}`}
+                />
+                <Button
+                  my="2"
+                  w="full"
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      `https://dev-senate-web.onrender.com/tracker/${session?.user?.name}`
+                    );
+                  }}
+                >
+                  Copy to clipboard
+                </Button>
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
+        </HStack>
         <Box pb="0.3rem" pt="1rem" />
         <Divider />
         <Box pb="0.3rem" pt="1rem" />

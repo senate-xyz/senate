@@ -101,6 +101,7 @@ const findGovernorBravoProposals = async (dao: Dao) => {
     let proposalCreatedTimestamp = (
       await provider.getBlock(proposals[i].txBlock)
     ).timestamp;
+
     let votingStartsTimestamp =
       proposalCreatedTimestamp +
       (proposals[i].eventData.startBlock - proposals[i].txBlock) * 15;
