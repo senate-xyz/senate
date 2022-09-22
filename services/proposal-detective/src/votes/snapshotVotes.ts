@@ -31,12 +31,14 @@ const updateSingleSub = async (sub: Subscription) => {
     },
   });
 
+  if (!dao?.snapshotSpace.length) return;
+
   let votes = await axios
     .get("https://hub.snapshot.org/graphql", {
       method: "POST",
       data: JSON.stringify({
         query: `{
-            votes(first: 1000, where: {voter: "${user?.address}", and: {space:"${dao?.snapshotSpace}"}}) {
+            votes(first: 1000, where: {voter: "${user?.address}", space:"${dao?.snapshotSpace}"}) {
               id
               voter
               choice
