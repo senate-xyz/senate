@@ -17,12 +17,12 @@ export const getMakerVotes = async () => {
     where: {
       Dao: {
         is: {
-          address: "0x0a3f6849f78076aefaDf113F5BED87720274dDC0"
+          address: "0x0a3f6849f78076aefaDf113F5BED87720274dDC0",
         },
       },
     },
   });
-  
+
   await findVotes(subscriptions);
 };
 
@@ -105,27 +105,22 @@ const updateSingleSub = async (sub: Subscription) => {
 
 const getVotes = async (dao: Dao, user: User): Promise<string[]> => {
   const iface = new ethers.utils.Interface(dao.abi);
-  const chiefContract = new ethers.Contract(
-      dao.address,
-      dao.abi,
-      provider
-  );
+  const chiefContract = new ethers.Contract(dao.address, dao.abi, provider);
 
-  if (dao.onchainHandler != DaoOnChainHandler.Maker)
-    return [];
+  if (dao.onchainHandler != DaoOnChainHandler.Maker) return [];
 
   const voteMultipleActionsTopic =
-  "0xed08132900000000000000000000000000000000000000000000000000000000";
+    "0xed08132900000000000000000000000000000000000000000000000000000000";
   const voteSingleActionTopic =
-  "0xa69beaba00000000000000000000000000000000000000000000000000000000";
+    "0xa69beaba00000000000000000000000000000000000000000000000000000000";
   const voterAddressTopic = "0x" + "0".repeat(24) + user.address.substring(2);
 
   const logs = await provider.getLogs({
-    fromBlock: dao.latestBlock,
+    fromBlock: 11327777, //always look at all blocks
     address: dao.address,
     topics: [
       [voteMultipleActionsTopic, voteSingleActionTopic],
-      voterAddressTopic
+      voterAddressTopic,
     ],
   });
 
@@ -138,20 +133,19 @@ const getVotes = async (dao: Dao, user: User): Promise<string[]> => {
       log.topics[0] === voteSingleActionTopic
         ? iface.decodeFunctionData("vote(bytes32)", eventArgs.fax)
         : iface.decodeFunctionData("vote(address[])", eventArgs.fax);
-    
 
-    let spells : string[] =
+    let spells: string[] =
       decodedFunctionData.yays !== undefined
         ? decodedFunctionData.yays
         : await getSlateYays(chiefContract, decodedFunctionData.slate);
 
-    spells.forEach(spell => {
-        spellAddressesSet.add(spell);
-    })
+    spells.forEach((spell) => {
+      spellAddressesSet.add(spell);
+    });
   }
 
   return Array.from(spellAddressesSet);
-}
+};
 
 const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
   let yays = [];

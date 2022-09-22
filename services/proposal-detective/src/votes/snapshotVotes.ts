@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { PrismaClient, Subscription } from "@prisma/client";
 import axios from "axios";
+import { ProposalTypeEnum } from "./../../../../types";
 
 dotenv.config();
 
@@ -12,11 +13,9 @@ export const getSnapshotVotes = async () => {
 };
 
 const findVotes = async (subs: Subscription[]) => {
-  await Promise.all(
-    subs.map(async (sub) => {
-      await updateSingleSub(sub);
-    })
-  );
+  for (const sub of subs) {
+    await updateSingleSub(sub);
+  }
 };
 
 const updateSingleSub = async (sub: Subscription) => {
@@ -44,6 +43,12 @@ const updateSingleSub = async (sub: Subscription) => {
               proposal {
                 id
                 choices
+                title
+                body
+                created
+                start
+                end
+                link
               }
             }
           }
@@ -63,6 +68,7 @@ const updateSingleSub = async (sub: Subscription) => {
       console.log(e);
     });
 
+  //TODO support multiple choice vote
   if (votes.length)
     await prisma.$transaction(
       votes.map((vote: any) =>
@@ -71,7 +77,7 @@ const updateSingleSub = async (sub: Subscription) => {
             snapshotId: vote.id,
           },
           update: {
-            voteOption: vote.choice,
+            voteOption: vote.choice.length > 0 ? vote.choice[0] : vote.choice,
             voteName: vote.proposal.choices[vote.choice - 1],
           },
           create: {
@@ -82,16 +88,31 @@ const updateSingleSub = async (sub: Subscription) => {
               },
             },
             proposal: {
-              connect: {
-                snapshotId: vote.proposal.id,
+              connectOrCreate: {
+                where: {
+                  snapshotId: vote.proposal.id,
+                },
+                create: {
+                  snapshotId: vote.proposal.id,
+                  daoId: dao?.id!,
+                  title: String(vote.proposal.title),
+                  type: ProposalTypeEnum.Snapshot,
+                  description: String(vote.proposal.body),
+                  created: new Date(vote.proposal.created * 1000),
+                  voteStarts: new Date(vote.proposal.start * 1000),
+                  voteEnds: new Date(vote.proposal.end * 1000),
+                  url: vote.proposal.link,
+                },
               },
             },
-            voteOption: vote.choice,
-            voteName: vote.proposal.choices[vote.choice - 1],
+            voteOption: vote.choice.length > 0 ? vote.choice[0] : vote.choice,
+            voteName: vote.proposal.choices[vote.choice - 1] ?? "No name",
           },
         })
       )
     );
 
-  console.log(`upserted ${votes.length} snapshot votes`);
+  console.log(
+    `upserted ${votes.length} snapshot votes for ${user?.address} in ${dao?.name}`
+  );
 };

@@ -68,18 +68,14 @@ const Home: NextPage = () => {
   return (
     <Box w="full">
       <VStack
-        m={{ base: "0", md: "10" }}
-        align="start"
-        p={{ base: "2", md: "5" }}
-      >
-        <VStack
-          w="full"
-          bgImg="/homebg.svg"
-          position="absolute"
-          zIndex="-1"
-          opacity="0.2"
-          minH="full"
-        />
+        w="full"
+        bgImg="/homebg.svg"
+        position="absolute"
+        zIndex="-1"
+        opacity="0.2"
+        minH="full"
+      />
+      <VStack m={{ base: "0", md: "5" }} align="start">
         <Flex flexDir="row" w="full">
           <Grid minH="100vh" w="full">
             <VStack m="10" align="start" spacing={5} p="5">
