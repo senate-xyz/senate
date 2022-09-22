@@ -36,7 +36,7 @@ const updateSingleSub = async (sub: Subscription) => {
       method: "POST",
       data: JSON.stringify({
         query: `{
-            votes(first: 1000, where: {voter: "${user?.address}", space:"${dao?.snapshotSpace}"}) {
+            votes(first: 1000, where: {voter: "${user?.address}", and: {space:"${dao?.snapshotSpace}"}}) {
               id
               voter
               choice
@@ -88,20 +88,8 @@ const updateSingleSub = async (sub: Subscription) => {
               },
             },
             proposal: {
-              connectOrCreate: {
-                where: {
-                  snapshotId: vote.proposal.id,
-                },
-                create: {
-                  daoId: dao?.id!,
-                  title: String(vote.proposal.title),
-                  type: ProposalTypeEnum.Snapshot,
-                  description: String(vote.proposal.body),
-                  created: new Date(vote.proposal.created * 1000),
-                  voteStarts: new Date(vote.proposal.start * 1000),
-                  voteEnds: new Date(vote.proposal.end * 1000),
-                  url: vote.proposal.link,
-                },
+              connect: {
+                snapshotId: vote.proposal.id,
               },
             },
             voteOption: vote.choice.length > 0 ? vote.choice[0] : vote.choice,
