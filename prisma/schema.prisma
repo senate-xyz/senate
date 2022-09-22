@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["interactiveTransactions"]
@@ -10,11 +7,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-// datasource db {
-//   provider = "sqlite"
-//   url      = "file:./dev.db"
-// }
 
 model User {
   id              Int                          @id @default(autoincrement())
@@ -29,30 +21,30 @@ model User {
 model ProxyContract {
   id      Int    @id @default(autoincrement())
   address String
-  User    User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  Int?
+  User    User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Dao {
   id             Int            @id @default(autoincrement())
   name           String         @default("No name")
   picture        String         @default("https://via.placeholder.com/200x200")
-  address        String //contract address used for on chain proposals
-  snapshotSpace  String //snapshot space address used for snapshot proposals
+  address        String
+  snapshotSpace  String
   abi            String
   onchainHandler Int
-  latestBlock    Int //used for chain proposals fetching
+  latestBlock    Int
   proposalUrl    String
-  Subscription   Subscription[]
   Proposal       Proposal[]
+  Subscription   Subscription[]
 }
 
 model Subscription {
   id                   Int                   @id @default(autoincrement())
-  User                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId               Int
-  Dao                  Dao                   @relation(fields: [daoId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   daoId                Int
+  Dao                  Dao                   @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  User                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   notificationChannels NotificationChannel[]
   notificationSettings NotificationSetting[]
 }
@@ -73,28 +65,27 @@ model GeneralNotificationSetting {
 
 model NotificationChannel {
   id             Int          @id @default(autoincrement())
-  Subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
   subscriptionId Int
   type           Int
   connector      String
+  Subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 }
 
 model NotificationSetting {
   id             Int          @id @default(autoincrement())
-  Subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
   subscriptionId Int
   createdTime    DateTime     @default(now())
   delay          Int
+  Subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 }
 
 model Proposal {
   id           Int        @id @default(autoincrement())
-  dao          Dao        @relation(fields: [daoId], references: [id], onDelete: Cascade)
   daoId        Int
   type         Int
-  snapshotId   String     @unique @default(cuid()) //used for snapshot proposal fetching uniqueness
-  txHash       String     @unique @default(cuid()) //used for fetching onchain uniqueness
-  spellAddress String     @unique @default(cuid()) // used for fetching maker uniqueness
+  snapshotId   String     @unique @default(cuid())
+  txHash       String     @unique @default(cuid())
+  spellAddress String     @unique @default(cuid())
   onchainId    Int        @default(-1)
   title        String
   description  String
@@ -102,18 +93,19 @@ model Proposal {
   voteStarts   DateTime
   voteEnds     DateTime
   url          String
+  dao          Dao        @relation(fields: [daoId], references: [id], onDelete: Cascade)
   userVote     UserVote[]
 }
 
 model UserVote {
   id           Int      @id @default(autoincrement())
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       Int
-  proposal     Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
   proposalId   Int
-  snapshotId   String   @unique @default(cuid()) //used for snapshot votes fetching uniqueness
-  txHash       String   @unique @default(cuid()) //used for fetching onchain uniqueness
-  spellAddress String   @unique @default(cuid()) // used for fetching maker uniqueness
+  snapshotId   String   @unique @default(cuid())
+  txHash       String   @unique @default(cuid())
+  spellAddress String   @unique @default(cuid())
   voteOption   Int
   voteName     String
+  proposal     Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
