@@ -21,18 +21,19 @@ import {
   Th,
   Thead,
   Tr,
-  useToast,
   VStack,
   Text,
   Box,
+  Image,
+  useColorMode,
 } from "@chakra-ui/react";
-import NavBar from "../../components/navbar/NavBar";
-import { PagesEnum, ProposalType } from "../../../types";
+import { ProposalType } from "../../../types";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import moment from "moment";
 import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
+  const { colorMode, toggleColorMode } = useColorMode();
   const router = useRouter();
   const { address } = router.query;
   const [votes, setVotes] = useState<ProposalType[]>([]);
@@ -76,6 +77,29 @@ const Home: NextPage = () => {
         minH="full"
       />
       <VStack m={{ base: "0", md: "5" }} align="start">
+        <HStack w="full">
+          <Link href="https://dev-senate-web.onrender.com/">
+            <HStack w="full">
+              {colorMode == "light" ? (
+                <Image
+                  boxSize="35px"
+                  src="/logo_dark.svg"
+                  alt="very cool logo"
+                />
+              ) : (
+                <Image boxSize="35px" src="/logo.svg" alt="very cool logo" />
+              )}
+              <Text
+                fontFamily="manrope"
+                fontWeight="500"
+                fontSize="30px"
+                ml="1rem"
+              >
+                Senate
+              </Text>
+            </HStack>
+          </Link>
+        </HStack>
         <Flex flexDir="row" w="full">
           <Grid minH="100vh" w="full">
             <VStack m="10" align="start" spacing={5} p="5">

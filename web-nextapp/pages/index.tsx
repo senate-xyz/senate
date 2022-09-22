@@ -31,8 +31,8 @@ const Home: NextPage = () => {
         zIndex="-1"
       />
       <HStack mt="2rem" px="2rem" justify="end" spacing="2rem" w="full">
-        <Link href={""}>
-          <HStack>
+        <Link href="https://dev-senate-web.onrender.com/">
+          <HStack mt="1rem">
             <Image boxSize="50px" src="/logo.svg" alt="very cool logo" />
             {!isMobile && (
               <Text
