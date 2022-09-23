@@ -33,11 +33,11 @@ import moment from "moment";
 import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode } = useColorMode();
   const router = useRouter();
   const { address } = router.query;
   const [votes, setVotes] = useState<ProposalType[]>([]);
-  const [daos, setDaos] = useState<string[]>([]);
+  const [daos, setDaos] = useState<any[]>([]);
   const [selectedDao, setSelectedDao] = useState<string>();
   const [loading, setLoading] = useState(true);
 
@@ -54,8 +54,10 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     votes
-      .map((vote) => vote.dao.name)
-      .filter((value, index, self) => self.indexOf(value) === index)
+      .map((vote) => vote.dao)
+      .filter((element, index, array) => {
+        return array.findIndex((a) => a.name == element.name) === index;
+      })
       .map((dao) => {
         setDaos((oldArray) => [...oldArray, dao]);
       });
@@ -63,7 +65,7 @@ const Home: NextPage = () => {
   }, [votes]);
 
   useEffect(() => {
-    setSelectedDao(daos[0]);
+    if (daos[0]) setSelectedDao(daos[0].name);
   }, [daos]);
 
   return (
@@ -114,17 +116,19 @@ const Home: NextPage = () => {
                 </Center>
               )}
 
-              <Tabs w="full">
+              <Tabs w="full" variant="enclosed">
                 <TabList>
                   {daos.map((dao, index) => {
                     return (
                       <Tab
                         key={index}
                         onClick={() => {
-                          setSelectedDao(dao);
+                          setSelectedDao(dao.name);
                         }}
                       >
-                        {dao}
+                        <Avatar src={dao.picture} size="xs"></Avatar>
+                        <Box m="2"></Box>
+                        <Text>{dao.name}</Text>
                       </Tab>
                     );
                   })}
