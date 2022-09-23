@@ -56,41 +56,43 @@ const findOngoingProposals = async (daos: Dao[]) => {
       })
       .catch((e) => {
         console.log(e);
+        return;
       });
+
+    console.log(`got ${proposals.length} proposals for ${dao.name}`);
 
     if (
       proposals.length >
       (await prisma.proposal.count({ where: { daoId: dao.id } }))
     )
-      console.log(`got ${proposals.length} proposals for ${dao.name}`);
-    await prisma
-      .$transaction(
-        proposals.map((proposal: any) =>
-          prisma.proposal.upsert({
-            where: {
-              snapshotId: proposal.id,
-            },
-            update: {},
-            create: {
-              snapshotId: proposal.id,
-              daoId: dao.id,
-              title: String(proposal.title),
-              type: ProposalTypeEnum.Snapshot,
-              description: String(proposal.body),
-              created: new Date(proposal.created * 1000),
-              voteStarts: new Date(proposal.start * 1000),
-              voteEnds: new Date(proposal.end * 1000),
-              url: proposal.link,
-            },
-          })
+      await prisma
+        .$transaction(
+          proposals.map((proposal: any) =>
+            prisma.proposal.upsert({
+              where: {
+                snapshotId: proposal.id,
+              },
+              update: {},
+              create: {
+                snapshotId: proposal.id,
+                daoId: dao.id,
+                title: String(proposal.title),
+                type: ProposalTypeEnum.Snapshot,
+                description: String(proposal.body),
+                created: new Date(proposal.created * 1000),
+                voteStarts: new Date(proposal.start * 1000),
+                voteEnds: new Date(proposal.end * 1000),
+                url: proposal.link,
+              },
+            })
+          )
         )
-      )
-      .then((res) => {
-        if (res)
-          console.log(
-            `upserted ${res.length} snapshot proposals for ${dao.name}`
-          );
-        else console.log(`upserted 0 snapshot proposals for ${dao.name}`);
-      });
+        .then((res) => {
+          if (res)
+            console.log(
+              `upserted ${res.length} snapshot proposals for ${dao.name}`
+            );
+          else console.log(`upserted 0 snapshot proposals for ${dao.name}`);
+        });
   }
 };

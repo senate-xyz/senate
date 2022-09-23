@@ -68,6 +68,7 @@ const updateSingleSub = async (sub: Subscription) => {
     })
     .catch((e) => {
       console.log(e);
+      return;
     });
 
   //TODO support multiple choice vote
