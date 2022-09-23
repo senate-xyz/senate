@@ -117,7 +117,7 @@ export const Proposals = () => {
               <Table
                 size={{ base: "sm", md: "md", lg: "lg" }}
                 variant="striped"
-                colorScheme="blackAlpha"
+                colorScheme="gray"
               >
                 <Thead>
                   <Tr>

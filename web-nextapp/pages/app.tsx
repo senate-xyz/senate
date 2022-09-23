@@ -42,14 +42,14 @@ const Home: NextPage = () => {
       flexDir="row"
       minH={{ base: "100%", sm: "100vh" }}
       w="full"
-      bgColor={colorMode == "light" ? "white.200" : "white.600"}
+      bgColor={colorMode == "light" ? "white.200" : "white.500"}
     >
       <NavBar page={page} setPage={setPage} />
       <Flex
         w="full"
         minH={{ base: "100%", sm: "100vh" }}
         flexDir="column"
-        bgColor={colorMode == "light" ? "blackAlpha.200" : "blackAlpha.600"}
+        bgColor={colorMode == "light" ? "blackAlpha.200" : "blackAlpha.500"}
       >
         <Suspense fallback={`Loading...`}>
           {page == PagesEnum.Dashboard && <DyanmicProposals />}
