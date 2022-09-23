@@ -49,7 +49,7 @@ export default function NavBar(props: { page: PagesEnum; setPage: any }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode } = useColorMode();
   return (
-    <Box bgColor={colorMode == "light" ? "blackAlpha.200" : "blackAlpha.700"}>
+    <Box bgColor={colorMode == "light" ? "blackAlpha.200" : "blackAlpha.600"}>
       <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="xs">
         <DrawerContent>
           <OpenContent onClose={onClose} setPage={props.setPage} />
