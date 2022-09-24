@@ -31,7 +31,7 @@ const Home: NextPage = () => {
         minH="100vh"
         bgImage="/homebg.svg"
         bgSize="cover"
-        opacity="0.2"
+        opacity={colorMode == "light" ? "0.7" : "0.2"}
         position="absolute"
         zIndex="-1"
       />
