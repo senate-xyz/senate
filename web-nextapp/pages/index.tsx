@@ -10,6 +10,7 @@ import {
   SimpleGrid,
   Link,
   useBreakpointValue,
+  useColorMode,
 } from "@chakra-ui/react";
 
 const Home: NextPage = () => {
@@ -17,13 +18,17 @@ const Home: NextPage = () => {
     base: true,
     md: false,
   });
+  const { colorMode } = useColorMode();
 
   return (
-    <VStack w="full" minH="100vh">
+    <VStack
+      w="full"
+      minH="100vh"
+      bgColor={colorMode == "light" ? "blackAlpha.200" : "blackAlpha.500"}
+    >
       <VStack
         w="full"
         minH="100vh"
-        bg="gray.800"
         bgImage="/homebg.svg"
         bgSize="cover"
         opacity="0.2"
@@ -33,14 +38,13 @@ const Home: NextPage = () => {
       <HStack mt="2rem" px="2rem" justify="end" spacing="2rem" w="full">
         <Link href="https://dev-senate-web.onrender.com/">
           <HStack mt="1rem">
-            <Image boxSize="50px" src="/logo.svg" alt="very cool logo" />
+            {colorMode == "light" ? (
+              <Image boxSize="50px" src="/logo_dark.svg" alt="very cool logo" />
+            ) : (
+              <Image boxSize="50px" src="/logo.svg" alt="very cool logo" />
+            )}
             {!isMobile && (
-              <Text
-                color="white"
-                fontFamily="manrope"
-                fontWeight="500"
-                fontSize="30px"
-              >
+              <Text fontFamily="manrope" fontWeight="500" fontSize="30px">
                 Senate
               </Text>
             )}
@@ -48,27 +52,27 @@ const Home: NextPage = () => {
         </Link>
         <Spacer />
         <Link href={"/about"}>
-          <Text color="white" fontFamily="manrope" fontWeight="800">
+          <Text fontFamily="manrope" fontWeight="800">
             About
           </Text>
         </Link>
         <Link href={"/faq"}>
-          <Text color="white" fontFamily="manrope" fontWeight="800">
+          <Text fontFamily="manrope" fontWeight="800">
             FAQ
           </Text>
         </Link>
         <Link href={"/twitter"}>
-          <Text color="white" fontFamily="manrope" fontWeight="800">
+          <Text fontFamily="manrope" fontWeight="800">
             Twitter
           </Text>
         </Link>
         <Link href={"/github"}>
-          <Text color="white" fontFamily="manrope" fontWeight="800">
+          <Text fontFamily="manrope" fontWeight="800">
             Github
           </Text>
         </Link>
         <Link href={"/discord"}>
-          <Text color="white" fontFamily="manrope" fontWeight="800">
+          <Text fontFamily="manrope" fontWeight="800">
             Discord
           </Text>
         </Link>
@@ -76,25 +80,14 @@ const Home: NextPage = () => {
       <SimpleGrid columns={[1, 1, 1, 2]} gap={12} w="full">
         <GridItem rowSpan={1} colSpan={1}>
           <VStack>
-            <Text
-              fontSize="115px"
-              color="white"
-              fontFamily="manrope"
-              fontWeight="800"
-            >
+            <Text fontSize="115px" fontFamily="manrope" fontWeight="800">
               Join
             </Text>
-            <Text
-              fontSize="115px"
-              color="white"
-              fontFamily="manrope"
-              fontWeight="800"
-            >
+            <Text fontSize="115px" fontFamily="manrope" fontWeight="800">
               Senate!
             </Text>
             <Text
               fontSize={20}
-              color="gray.400"
               w="25rem"
               align="center"
               fontFamily="manrope"
