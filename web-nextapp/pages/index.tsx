@@ -62,17 +62,17 @@ const Home: NextPage = () => {
             FAQ
           </Text>
         </Link>
-        <Link href={"/twitter"}>
+        <Link href={"https://twitter.com/SenateLabs"} isExternal>
           <Text fontFamily="manrope" fontWeight="800">
             Twitter
           </Text>
         </Link>
-        <Link href={"/github"}>
+        <Link href={"https://github.com/senate-xyz/senate"} isExternal>
           <Text fontFamily="manrope" fontWeight="800">
             Github
           </Text>
         </Link>
-        <Link href={"/discord"}>
+        <Link href={"https://discord.gg/pX7JNetz"} isExternal>
           <Text fontFamily="manrope" fontWeight="800">
             Discord
           </Text>
