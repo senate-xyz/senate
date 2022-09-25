@@ -179,13 +179,17 @@ const Home: NextPage = () => {
                                   ) ? (
                                     //past vote
                                     proposal.userVote.length ? (
-                                      proposal.userVote[0].voteName
+                                      <Text color="green.400" fontWeight="800">
+                                        {proposal.userVote[0].voteName}
+                                      </Text>
                                     ) : (
                                       "Did not vote"
                                     )
                                   ) : //future vote
                                   proposal.userVote.length ? (
-                                    proposal.userVote[0].voteName
+                                    <Text color="green.400" fontWeight="800">
+                                      {proposal.userVote[0].voteName}
+                                    </Text>
                                   ) : (
                                     <HStack>
                                       <WarningTwoIcon color="red.400" />
