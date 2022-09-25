@@ -11,6 +11,7 @@ import {
   Link,
   useBreakpointValue,
   useColorMode,
+  Box,
 } from "@chakra-ui/react";
 
 const Home: NextPage = () => {
@@ -79,13 +80,20 @@ const Home: NextPage = () => {
       </HStack>
       <SimpleGrid columns={[1, 1, 1, 2]} gap={12} w="full">
         <GridItem rowSpan={1} colSpan={1}>
-          <VStack>
-            <Text fontSize="115px" fontFamily="manrope" fontWeight="800">
+          <VStack justify="end" h="full">
+            <Text
+              mt={{ base: "4rem", md: "0rem" }}
+              lineHeight="20%"
+              fontSize="115px"
+              fontFamily="manrope"
+              fontWeight="800"
+            >
               Join
             </Text>
             <Text fontSize="115px" fontFamily="manrope" fontWeight="800">
               Senate!
             </Text>
+
             <Text
               fontSize={20}
               w="25rem"
@@ -99,24 +107,30 @@ const Home: NextPage = () => {
           </VStack>
         </GridItem>
         <GridItem rowSpan={2} colSpan={1}>
-          <HStack align="end" justify="end" mt="5rem">
-            <Image fit="fill" src="/homeart.svg" alt="very cool graphics" />
+          <HStack align="end" justify="end">
+            <Image
+              mx={{ base: "0rem", md: "10rem" }}
+              fit="fill"
+              src="/homeart.svg"
+              alt="very cool graphics"
+            />
           </HStack>
         </GridItem>
         <GridItem colSpan={1}>
           <HStack align="start" justify="center" h="full">
             <Link href="/app">
               <Button
-                minW={{ base: "80vw", md: "10rem" }}
+                minW={{ base: "80vw", md: "15rem" }}
+                minH="3rem"
                 mx={{ base: "1rem", md: "5rem" }}
                 mb="5rem"
-                borderRadius="20px"
+                borderRadius="25px"
                 borderWidth="2px"
                 bg="gray.800"
                 borderColor="gray.700"
                 color="white"
               >
-                Let&rsquo;s start
+                <Text fontWeight="800">Launch App</Text>
               </Button>
             </Link>
           </HStack>
