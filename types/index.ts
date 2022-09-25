@@ -73,3 +73,7 @@ export interface LinkItemSPAProps {
   id: PagesEnum;
   icon: number;
 }
+
+export interface TypedRequestBody<T> extends Express.Request {
+  body: T;
+}
