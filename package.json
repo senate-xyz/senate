@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "dev": "yarn workspaces foreach -ip -t -j unlimited run dev",
-    "web": "yarn workspace web-nextapp dev",
+    "web": "yarn workspace webapp dev",
     "build": "yarn workspaces foreach -ip -j unlimited run build",
     "start": "yarn workspaces foreach -ip -j unlimited run start"
   },
@@ -15,7 +15,7 @@
     "schema": "./prisma/schema.prisma"
   },
   "workspaces": [
-    "web-nextapp",
+    "webapp",
     "services/proposal-detective",
     "services/notifications-orchestrator",
     "services/bot-discord",
