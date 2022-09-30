@@ -4,6 +4,7 @@ import { SiweMessage } from "siwe";
 import { getCsrfToken } from "next-auth/react";
 import { NextApiRequest, NextApiResponse } from "next";
 import { IncomingMessage } from "http";
+import { prisma } from "@senate/database";
 
 export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
   const providers = [
@@ -33,6 +34,18 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
           }
 
           await siwe.validate(credentials?.signature || "");
+
+          await prisma.user.upsert({
+            where: {
+              address: siwe.address,
+            },
+            create: {
+              address: siwe.address,
+            },
+            update: {
+              address: siwe.address,
+            },
+          });
           return {
             id: siwe.address,
           };

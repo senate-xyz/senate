@@ -3,7 +3,7 @@ import uniswapGovBravo from "./abis/uniswapGovBravo.json";
 import compoundGovBravo from "./abis/compountGovBravo.json";
 import makerChief from "./abis/makerChief.json";
 import { prisma } from "./client";
-import { DaoOnChainHandler } from "common-types";
+import { DaoOnChainHandler } from "@senate/common-types";
 
 async function main() {
   // await prisma.userVote.deleteMany();
@@ -474,7 +474,7 @@ async function main() {
     },
   });
 
-  const delegate = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { address: "0xCdB792c14391F7115Ba77A7Cd27f724fC9eA2091" },
     update: {},
     create: {
