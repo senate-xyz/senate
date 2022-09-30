@@ -19,7 +19,7 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { NavItemSPA } from "./NavBarSPA";
-import { LinkItemSPAProps, PagesEnum } from "common-types";
+import { LinkItemSPAProps, PagesEnum } from "@senate/common-types";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { useSession, getCsrfToken, signIn, signOut } from "next-auth/react";
 import { SiweMessage } from "siwe";

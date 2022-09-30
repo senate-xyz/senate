@@ -1,4 +1,4 @@
-import { prisma } from "database";
+import { prisma } from "@senate/database";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(

@@ -1,10 +1,9 @@
-import dotenv from "dotenv";
 import { Dao } from "@prisma/client";
 import axios from "axios";
-import { ProposalTypeEnum } from "common-types";
-import { prisma } from "database";
-
-dotenv.config();
+import { ProposalTypeEnum } from "@senate/common-types";
+import { prisma } from "@senate/database";
+import { config } from "dotenv";
+config();
 
 export const getSnapshotProposals = async () => {
   const daos = await prisma.dao.findMany({

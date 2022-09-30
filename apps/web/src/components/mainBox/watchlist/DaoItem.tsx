@@ -21,7 +21,7 @@ import {
   Box,
   createIcon,
 } from "@chakra-ui/react";
-import { DaoType } from "common-types";
+import { DaoType } from "@senate/common-types";
 import { FaDiscord, FaSlack, FaTelegram } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";

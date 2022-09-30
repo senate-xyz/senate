@@ -1,10 +1,9 @@
-import dotenv from "dotenv";
 import { Dao, Subscription, User } from "@prisma/client";
 import { ethers } from "ethers";
-import { DaoOnChainHandler } from "common-types";
-import { prisma } from "database";
-
-dotenv.config();
+import { DaoOnChainHandler } from "@senate/common-types";
+import { prisma } from "@senate/database";
+import { config } from "dotenv";
+config();
 
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),

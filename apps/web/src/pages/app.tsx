@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { useState } from "react";
 import { Flex, useColorMode } from "@chakra-ui/react";
 import NavBar from "../components/navbar/NavBar";
-import { PagesEnum } from "common-types";
+import { PagesEnum } from "@senate/common-types";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 

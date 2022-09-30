@@ -1,5 +1,5 @@
 {
-  "extends": "tsconfig/node16.json",
+  "extends": "@senate/tsconfig/node16.json",
   "compilerOptions": {
     "declaration": true
   },

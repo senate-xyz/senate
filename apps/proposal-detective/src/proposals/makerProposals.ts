@@ -1,11 +1,10 @@
-import dotenv from "dotenv";
 import { Dao } from "@prisma/client";
 import { ethers } from "ethers";
 import axios from "axios";
-import { ProposalTypeEnum } from "common-types";
-import { prisma } from "database";
-
-dotenv.config();
+import { ProposalTypeEnum } from "@senate/common-types";
+import { prisma } from "@senate/database";
+import { config } from "dotenv";
+config();
 
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),

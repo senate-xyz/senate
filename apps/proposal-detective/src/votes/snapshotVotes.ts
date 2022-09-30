@@ -1,9 +1,8 @@
-import dotenv from "dotenv";
 import { Subscription } from "@prisma/client";
 import axios from "axios";
-import { prisma } from "database";
-
-dotenv.config();
+import { prisma } from "@senate/database";
+import { config } from "dotenv";
+config();
 
 export const getSnapshotVotes = async () => {
   const subscriptions = await prisma.subscription.findMany();

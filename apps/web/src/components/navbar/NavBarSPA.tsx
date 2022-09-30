@@ -1,7 +1,7 @@
 import { Box, Flex, FlexProps, Icon } from "@chakra-ui/react";
 import { FiHome, FiBarChart2, FiSettings, FiStar } from "react-icons/fi";
 
-import { LinkItemSPAProps, PagesEnum } from "common-types";
+import { LinkItemSPAProps, PagesEnum } from "@senate/common-types";
 
 interface NavItemProps extends FlexProps {
   item: LinkItemSPAProps;

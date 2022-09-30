@@ -27,7 +27,7 @@ import {
   Image,
   useColorMode,
 } from "@chakra-ui/react";
-import { ProposalType } from "common-types";
+import { ProposalType } from "@senate/common-types";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import moment from "moment";
 import { useRouter } from "next/router";

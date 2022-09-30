@@ -9,7 +9,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { DaoType } from "common-types";
+import { DaoType } from "@senate/common-types";
 import { SubscriptionItem } from "./DaoItem";
 
 const Subscriptions = () => {

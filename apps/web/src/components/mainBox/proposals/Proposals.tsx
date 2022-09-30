@@ -22,7 +22,7 @@ import {
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
-import { ProposalType, ProposalTypeEnum } from "common-types";
+import { ProposalType, ProposalTypeEnum } from "@senate/common-types";
 import moment from "moment";
 import { useSession } from "next-auth/react";
 
