@@ -21,6 +21,14 @@
       "dependsOn": ["^generate"]
     },
     "lint": {
+      "dependsOn": [
+        "$NODE_ENV",
+        "$NEXTAUTH_SECRET",
+        "$NEXTAUTH_URL",
+        "$VERCEL_URL",
+        "$PROVIDER_URL",
+        "$PORT"
+      ],
       "outputs": []
     }
   }
