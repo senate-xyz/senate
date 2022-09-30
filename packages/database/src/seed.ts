@@ -2,7 +2,7 @@ import aaveGovBravo from "./abis/aaveGovBravo.json";
 import uniswapGovBravo from "./abis/uniswapGovBravo.json";
 import compoundGovBravo from "./abis/compountGovBravo.json";
 import makerChief from "./abis/makerChief.json";
-import { prisma } from "./index";
+import { prisma } from "./client";
 import { DaoOnChainHandler } from "common-types";
 
 async function main() {
