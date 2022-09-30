@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { prisma } from "database";
+import { prisma } from "@senate/database";
 
 export default async function handler(
   req: NextApiRequest,

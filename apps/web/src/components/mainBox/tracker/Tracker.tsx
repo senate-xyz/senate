@@ -34,7 +34,7 @@ import {
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
-import { ProposalType } from "common-types";
+import { ProposalType } from "@senate/common-types";
 import moment from "moment";
 import { useSession } from "next-auth/react";
 
@@ -64,7 +64,7 @@ export const Tracker = () => {
         setLoading(false);
         setVotes(data);
       });
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     votes

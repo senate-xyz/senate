@@ -19,7 +19,7 @@ import {
   NotificationChannelType,
   NotificationIntervalEnum,
   NotificationSettingType,
-} from "common-types";
+} from "@senate/common-types";
 
 export const Settings = () => {
   const { data: session } = useSession();
@@ -49,7 +49,7 @@ export const Settings = () => {
         duration: 3000,
         isClosable: true,
       });
-  }, [session]);
+  }, [session]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetch(

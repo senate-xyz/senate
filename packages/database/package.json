@@ -1,5 +1,5 @@
 {
-  "name": "database",
+  "name": "@senate/database",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -26,9 +26,9 @@
     "@prisma/client": "^4.4.0"
   },
   "devDependencies": {
-    "config": "*",
-    "tsconfig": "*",
-    "common-types": "*",
+    "@senate/config": "*",
+    "@senate/tsconfig": "*",
+    "@senate/common-types": "*",
     "eslint": "^8.24.0",
     "prisma": "^4.4.0",
     "rimraf": "^3.0.2",
