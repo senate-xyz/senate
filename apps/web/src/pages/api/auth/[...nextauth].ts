@@ -3,7 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { SiweMessage } from "siwe";
 import { getCsrfToken } from "next-auth/react";
 import { NextApiRequest, NextApiResponse } from "next";
-import { env } from "../../../env/server.mjs";
 import { IncomingMessage } from "http";
 
 export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
@@ -69,7 +68,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     },
     // https://next-auth.js.org/configuration/providers/oauth
     providers,
-    secret: env.NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET,
     session: {
       strategy: "jwt",
     },
