@@ -61,7 +61,7 @@ const parseDescription = async (text: string) => {
 const getProposalTitleAndDescription = async (
   daoAddress: string,
   text: string
-): Promise<any> => {
+): Promise<{ title: string; description: string }> => {
   if (daoAddress === "0xEC568fffba86c094cf06b22134B23074DFE2252c") {
     // Aave
     return await fetchProposalInfoFromIPFS(text);
@@ -90,9 +90,9 @@ const findGovernorBravoProposals = async (dao: Dao) => {
   }));
 
   const latestBlockMined = await provider.getBlockNumber();
-  const ongoingProposals = proposals.filter(
-    (proposal) => proposal.eventData.endBlock > latestBlockMined
-  );
+  // const ongoingProposals = proposals.filter(
+  //   (proposal) => proposal.eventData.endBlock > latestBlockMined
+  // );
 
   //TODO: Update dao.latestBlock to ongoingProposals[ongoingProposals.length-1].txBlock
 

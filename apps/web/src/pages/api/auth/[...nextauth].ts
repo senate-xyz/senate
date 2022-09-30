@@ -60,9 +60,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     callbacks: {
       async session({ session, token }) {
         session.address = token.sub;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         session.user!.name = token.sub;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return session;
       },
     },

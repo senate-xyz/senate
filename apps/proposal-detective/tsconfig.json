@@ -1,5 +1,11 @@
 {
   "extends": "tsconfig/node16.json",
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "tsup.config.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "tsup.config.ts",
+    "*.prisma"
+  ],
   "exclude": ["node_modules"]
 }
