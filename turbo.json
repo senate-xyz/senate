@@ -6,21 +6,17 @@
       "outputs": ["dist/**", ".next/**"]
     },
     "db:migrate:deploy": {
-      "outputs": [],
-      "env": ["DATABASE_URL"]
+      "outputs": []
     },
     "db:push": {
-      "outputs": [],
-      "env": ["DATABASE_URL"]
+      "outputs": []
     },
     "db:seed": {
-      "outputs": [],
-      "env": ["DATABASE_URL"]
+      "outputs": []
     },
     "dev": {
       "cache": false,
       "env": [
-        "DATABASE_URL",
         "NODE_ENV",
         "NEXTAUTH_SECRET",
         "NEXTAUTH_URL",
@@ -35,7 +31,6 @@
     "lint": {
       "outputs": [],
       "env": [
-        "DATABASE_URL",
         "NODE_ENV",
         "NEXTAUTH_SECRET",
         "NEXTAUTH_URL",
