@@ -6,30 +6,43 @@
       "outputs": ["dist/**", ".next/**"]
     },
     "db:migrate:deploy": {
-      "outputs": []
+      "outputs": [],
+      "env": ["DATABASE_URL"]
     },
     "db:push": {
-      "outputs": []
+      "outputs": [],
+      "env": ["DATABASE_URL"]
     },
     "db:seed": {
-      "outputs": []
+      "outputs": [],
+      "env": ["DATABASE_URL"]
     },
     "dev": {
-      "cache": false
+      "cache": false,
+      "env": [
+        "DATABASE_URL",
+        "NODE_ENV",
+        "NEXTAUTH_SECRET",
+        "NEXTAUTH_URL",
+        "VERCEL_URL",
+        "PROVIDER_URL",
+        "PORT"
+      ]
     },
     "generate": {
       "dependsOn": ["^generate"]
     },
     "lint": {
-      "dependsOn": [
-        "$NODE_ENV",
-        "$NEXTAUTH_SECRET",
-        "$NEXTAUTH_URL",
-        "$VERCEL_URL",
-        "$PROVIDER_URL",
-        "$PORT"
-      ],
-      "outputs": []
+      "outputs": [],
+      "env": [
+        "DATABASE_URL",
+        "NODE_ENV",
+        "NEXTAUTH_SECRET",
+        "NEXTAUTH_URL",
+        "VERCEL_URL",
+        "PROVIDER_URL",
+        "PORT"
+      ]
     }
   }
 }

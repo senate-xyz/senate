@@ -129,3 +129,4 @@ dist
 package-lock.json
 web-nextapp/prisma/migrations
 prisma/dev.db
+packages/database/prisma/db.sqlite
