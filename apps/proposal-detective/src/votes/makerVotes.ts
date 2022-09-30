@@ -53,49 +53,32 @@ const updateSingleSub = async (sub: Subscription) => {
   });
 
   if (votedSpells) {
-    await prisma.$transaction(
-      votedSpells.map((votedSpellAddress: string) =>
-        prisma.userVote.upsert({
-          where: {
-            spellAddress: votedSpellAddress,
-          },
-          update: {
-            spellAddress: votedSpellAddress,
-            user: {
-              connect: {
-                id: user?.id,
-              },
-            },
-            proposal: {
-              connect: {
-                id: proposals.find(
-                  (proposal) => proposal.spellAddress === votedSpellAddress
-                )?.id,
-              },
-            },
-            voteOption: 1,
-            voteName: "Yes",
-          },
-          create: {
-            spellAddress: votedSpellAddress,
-            user: {
-              connect: {
-                id: user?.id,
-              },
-            },
-            proposal: {
-              connect: {
-                id: proposals.find(
-                  (proposal) => proposal.spellAddress == votedSpellAddress
-                )?.id,
-              },
-            },
-            voteOption: 1,
-            voteName: "Yes",
-          },
-        })
-      )
-    );
+    for (const vote of votedSpells) {
+      prisma.userVote.upsert({
+        where: {
+          spellAddress: vote,
+        },
+        update: {
+          spellAddress: vote,
+          userId: user?.id,
+          proposalId: proposals.find(
+            (proposal) => proposal.spellAddress === vote
+          )?.id,
+          voteOption: 1,
+          voteName: "Yes",
+        },
+        create: {
+          spellAddress: vote,
+          userId: user?.id,
+          proposalId: proposals.find(
+            (proposal) => proposal.spellAddress == vote
+          )?.id!,
+          voteOption: 1,
+          voteName: "Yes",
+        },
+      });
+    }
+
     console.log(`upserted ${votedSpells.length} chain votes`);
   }
 };
