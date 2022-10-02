@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build": "turbo run build",
+    "pd:start": "turbo run pd:start",
     "db:migrate:deploy": "turbo run db:migrate:deploy",
     "db:push": "turbo run db:push",
     "db:seed": "turbo run db:seed",

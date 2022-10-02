@@ -15,7 +15,7 @@ async function main() {
   // await prisma.user.deleteMany();
 
   const aave = await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Aave" },
     update: {},
     create: {
       name: "Aave",
@@ -30,7 +30,7 @@ async function main() {
   });
 
   const uniswap = await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Uniswap" },
     update: {},
     create: {
       name: "Uniswap",
@@ -46,7 +46,7 @@ async function main() {
   });
 
   const compound = await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Compound" },
     update: {},
     create: {
       name: "Compound",
@@ -61,7 +61,7 @@ async function main() {
   });
 
   const dd = await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "DeveloperDAO" },
     update: {},
     create: {
       name: "DeveloperDAO",
@@ -76,7 +76,7 @@ async function main() {
   });
 
   const stakeborg = await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "StakeborgDAO" },
     update: {},
     create: {
       name: "StakeborgDAO",
@@ -92,7 +92,7 @@ async function main() {
   });
 
   const maker = await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "MakerDAO" },
     update: {},
     create: {
       name: "MakerDAO",
@@ -108,7 +108,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Optimism" },
     update: {},
     create: {
       name: "Optimism",
@@ -124,7 +124,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "ENS" },
     update: {},
     create: {
       name: "ENS",
@@ -140,7 +140,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Yearn" },
     update: {},
     create: {
       name: "Yearn",
@@ -156,7 +156,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Gitcoin" },
     update: {},
     create: {
       name: "Gitcoin",
@@ -172,7 +172,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Curve" },
     update: {},
     create: {
       name: "Curve",
@@ -188,7 +188,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Element DAO" },
     update: {},
     create: {
       name: "Element DAO",
@@ -204,7 +204,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Friends With Benefits" },
     update: {},
     create: {
       name: "Friends With Benefits",
@@ -220,7 +220,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Seed Club" },
     update: {},
     create: {
       name: "Seed Club",
@@ -235,7 +235,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Goldfinch" },
     update: {},
     create: {
       name: "Goldfinch",
@@ -251,7 +251,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Gelato" },
     update: {},
     create: {
       name: "Gelato",
@@ -267,7 +267,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "EPNS" },
     update: {},
     create: {
       name: "EPNS",
@@ -283,7 +283,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "APwine" },
     update: {},
     create: {
       name: "APwine",
@@ -299,7 +299,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "The Graph" },
     update: {},
     create: {
       name: "The Graph",
@@ -315,7 +315,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Sismo DAO" },
     update: {},
     create: {
       name: "Sismo DAO",
@@ -331,7 +331,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Covalent" },
     update: {},
     create: {
       name: "Covalent",
@@ -347,7 +347,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Unlock Protocol" },
     update: {},
     create: {
       name: "Unlock Protocol",
@@ -363,7 +363,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Streamr" },
     update: {},
     create: {
       name: "Streamr",
@@ -379,7 +379,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Balancer" },
     update: {},
     create: {
       name: "Balancer",
@@ -395,7 +395,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "dYdX" },
     update: {},
     create: {
       name: "dYdX",
@@ -411,7 +411,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Sushi" },
     update: {},
     create: {
       name: "Sushi",
@@ -427,7 +427,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Hop" },
     update: {},
     create: {
       name: "Hop",
@@ -443,7 +443,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "GnosisDAO" },
     update: {},
     create: {
       name: "GnosisDAO",
@@ -459,7 +459,7 @@ async function main() {
   });
 
   await prisma.dao.upsert({
-    where: { id: 0 },
+    where: { name: "Index Coop" },
     update: {},
     create: {
       name: "Index Coop",
@@ -507,8 +507,14 @@ async function main() {
     },
   });
 
-  await prisma.user.create({
-    data: {
+  await prisma.user.upsert({
+    where: {
+      address: "0x1dd7c29dba3cfc8cd64220f7331e214a791a5989",
+    },
+    update: {
+      address: "0x1dd7c29dba3cfc8cd64220f7331e214a791a5989",
+    },
+    create: {
       address: "0x1dd7c29dba3cfc8cd64220f7331e214a791a5989",
     },
   });

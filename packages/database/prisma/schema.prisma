@@ -8,13 +8,14 @@ generator client {
 
 datasource db {
     provider = "sqlite"
+    //provider = "postgresql"
     // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.text annotations in model Account below
     // Further reading: 
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
 
     url = env("DATABASE_URL_LOCAL")
-    //url      = env("DATABASE_URL_REMOTE")
+    //url = env("DATABASE_URL_REMOTE")
 }
 
 model User {
@@ -36,7 +37,7 @@ model ProxyContract {
 
 model Dao {
     id             Int            @id @default(autoincrement())
-    name           String         @default("No name")
+    name           String         @unique @default("No name")
     picture        String         @default("https://via.placeholder.com/200x200")
     address        String
     snapshotSpace  String

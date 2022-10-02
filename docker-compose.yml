@@ -1,42 +1,66 @@
-version: '3'
+version: "3.9"
 services:
-  web:
-#    env_file:
-#      - .env
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    hostname: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: senate
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    depends_on:
+      - postgres
+    ports:
+      - "5555:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    restart: unless-stopped
+
+  proposal-detective:
+    platform: linux/amd64
+    stdin_open: true
     build:
       context: .
-      dockerfile: ./web-nextapp/Dockerfile
+      dockerfile: apps/proposal-detective/Dockerfile
+      args:
+        - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/senate?schema=public
+    container_name: proposal-detective
+    environment:
+      - PROVIDER_URL=${PROVIDER_URL}
+    depends_on:
+      - postgres
+
+  web:
+    platform: linux/amd64
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/senate?schema=public
+    container_name: web
+    environment:
+      - PROVIDER_URL=${PROVIDER_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+    depends_on:
+      - postgres
     ports:
       - "3000:3000"
-  notification-orchestrator:
-#    env_file:
-#      - .env
-    build:
-      context: .
-      dockerfile: ./services/notifications-orchestrator/Dockerfile
-    ports:
-      - "3002:3002"
-  proposal-detective:
-#    env_file:
-#      - .env
-    build:
-      context: .
-      dockerfile: ./services/proposal-detective/Dockerfile
-    ports:
-      - "3001:3001"
-  bot-discord:
-#    env_file:
-#      - .env
-    build:
-      context: .
-      dockerfile: ./services/bot-discord/Dockerfile
-    ports:
-      - "3010:3010"
-  bot-slack:
-#    env_file:
-#      - .env
-    build:
-      context: .
-      dockerfile: ./services/bot-slack/Dockerfile
-    ports:
-      - "3011:3011"
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  pgadmin-data:

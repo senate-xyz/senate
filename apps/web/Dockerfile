@@ -19,6 +19,8 @@ RUN yarn install --frozen-lockfile
 
 
 FROM node:16-slim AS sourcer
+ARG DATABASE_URL
+ENV DATABASE_URL_REMOTE=$DATABASE_URL
 RUN apt update
 RUN apt-get install -y openssl
 WORKDIR /app
@@ -29,6 +31,10 @@ RUN yarn generate
 RUN yarn turbo run build --scope=web --include-dependencies --no-deps
 
 FROM node:16-slim as runner
+ARG DATABASE_URL
+ENV DATABASE_URL_REMOTE=$DATABASE_URL
+RUN apt update
+RUN apt-get install -y openssl
 WORKDIR /app
 COPY --from=sourcer /app/ .
 WORKDIR /app/apps/web/
