@@ -181,11 +181,15 @@ export const Proposals = () => {
                               {session && (
                                 <div>
                                   {proposal.userVote[0]?.user.address ==
-                                  session?.user?.name
-                                    ? proposal.userVote.length
-                                      ? proposal.userVote[0].voteName
-                                      : "Did not vote"
-                                    : "Did not vote"}
+                                  session?.user?.name ? (
+                                    proposal.userVote.length ? (
+                                      proposal.userVote[0].voteName
+                                    ) : (
+                                      <Text color="red.300">Did not vote</Text>
+                                    )
+                                  ) : (
+                                    <Text color="red.300">Did not vote</Text>
+                                  )}
                                 </div>
                               )}
                             </div>
@@ -202,12 +206,16 @@ export const Proposals = () => {
                               {session && (
                                 <div>
                                   {proposal.userVote.length ? (
-                                    proposal.userVote[0].voteName
+                                    <HStack>
+                                      <Text color="green.400" fontWeight="800">
+                                        VOTED
+                                      </Text>
+                                    </HStack>
                                   ) : (
                                     <HStack>
-                                      <WarningTwoIcon color="red.400" />
-                                      <Text>Did not vote yet!</Text>
-                                      <WarningTwoIcon color="red.400" />
+                                      <Text color="red.400" fontWeight="800">
+                                        NOT VOTED
+                                      </Text>
                                     </HStack>
                                   )}
                                 </div>

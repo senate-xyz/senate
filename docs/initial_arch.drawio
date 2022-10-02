@@ -1,0 +1,195 @@
+<mxfile host="65bd71144e">
+    <diagram id="X_OzCpA1CJfZ7Nduicpq" name="Page-1">
+        <mxGraphModel dx="2529" dy="1549" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="4681" pageHeight="3300" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="3" value="frontend" style="swimlane;" vertex="1" parent="1">
+                    <mxGeometry x="160" y="120" width="440" height="860" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="subscribe page" style="swimlane;dashed=1;fillColor=none;" vertex="1" parent="3">
+                    <mxGeometry x="20" y="50" width="400" height="210" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="/list_supported_daos" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="16">
+                    <mxGeometry x="20" y="30" width="370" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="Supported DAOs List" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=none;" vertex="1" parent="16">
+                    <mxGeometry x="20" y="70" width="370" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="Item 1                                                                Subscription options" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="19">
+                    <mxGeometry y="30" width="370" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="Item 2                                                                Subscription options" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="19">
+                    <mxGeometry y="60" width="370" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="Item 3                                                                Subscription options" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="19">
+                    <mxGeometry y="90" width="370" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="user home page" style="swimlane;fillColor=none;" vertex="1" parent="3">
+                    <mxGeometry x="20" y="380" width="400" height="450" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="Internal State" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=none;size=0.25;" vertex="1" parent="25">
+                    <mxGeometry x="20" y="140" width="360" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="27" value="Open Proposals List" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=none;" vertex="1" parent="25">
+                    <mxGeometry x="20" y="290" width="360" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="Item 1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="27">
+                    <mxGeometry y="30" width="360" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="29" value="Item 2" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="27">
+                    <mxGeometry y="60" width="360" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" value="Item 3" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="27">
+                    <mxGeometry y="90" width="360" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="36" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="25">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="250" as="sourcePoint"/>
+                        <mxPoint x="200" y="290" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="37" value="/&lt;span style=&quot;font-weight: 700&quot;&gt;get_subscribed_daos&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="25">
+                    <mxGeometry x="20" y="30" width="360" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="40" value="/&lt;span style=&quot;font-weight: 700&quot;&gt;get_open_proposal&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="25">
+                    <mxGeometry x="20" y="65" width="360" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="backend" style="swimlane;" vertex="1" parent="1">
+                    <mxGeometry x="720" y="120" width="440" height="710" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="/list_supported_daos" style="swimlane;dashed=1;dashPattern=1 1;startSize=23;" vertex="1" parent="4">
+                    <mxGeometry x="20" y="40" width="400" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="- no paramters&lt;br&gt;returns a list of all supported daos" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;" vertex="1" parent="6">
+                    <mxGeometry x="20" y="35" width="360" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="get_subscribed_daos" style="swimlane;dashed=1;dashPattern=1 1;startSize=23;" vertex="1" parent="4">
+                    <mxGeometry x="20" y="470" width="400" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="paramters:&lt;br&gt;&lt;b&gt;?user=user_address&lt;/b&gt;&lt;br&gt;&lt;br&gt;returns a list of [{dao, subscription_type}]" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;" vertex="1" parent="11">
+                    <mxGeometry x="20" y="35" width="360" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="get_open_proposal" style="swimlane;dashed=1;dashPattern=1 1;startSize=23;" vertex="1" parent="4">
+                    <mxGeometry x="20" y="590" width="400" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="paramters:&lt;br&gt;&lt;b&gt;?dao=dao_name&lt;/b&gt;&lt;br&gt;&lt;br&gt;returns a list of open proposals [{dao, proposalId, proposalTitle, timeRemaining}]" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;" vertex="1" parent="13">
+                    <mxGeometry x="20" y="35" width="360" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="49" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="8" target="47">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="/subscribe" style="swimlane;dashed=1;dashPattern=1 1;startSize=23;" vertex="1" parent="1">
+                    <mxGeometry x="740" y="270" width="400" height="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="paramters:&lt;br&gt;&lt;span style=&quot;font-weight: 700&quot;&gt;?dao=dao_name&lt;/span&gt;&lt;br style=&quot;padding: 0px ; margin: 0px ; font-weight: 700&quot;&gt;&lt;span style=&quot;font-weight: 700&quot;&gt;?user=user_address&lt;/span&gt;&lt;br style=&quot;padding: 0px ; margin: 0px ; font-weight: 700&quot;&gt;&lt;span style=&quot;font-weight: 700&quot;&gt;?proof=signed_message&lt;/span&gt;&lt;br style=&quot;padding: 0px ; margin: 0px ; font-weight: 700&quot;&gt;&lt;span style=&quot;font-weight: 700&quot;&gt;?type=notification_type&lt;br&gt;&lt;/span&gt;&lt;br&gt;notification_type is bit masking for multiple notification types&lt;br&gt;&lt;br&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span&gt;const EPNS &lt;span style=&quot;white-space: pre&quot;&gt;&#9;&lt;/span&gt;= &lt;/span&gt;&lt;span&gt;0x000001&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span&gt;const Email &lt;span style=&quot;white-space: pre&quot;&gt;&#9;&lt;/span&gt;= &lt;/span&gt;&lt;span&gt;0x000010&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span&gt;const SMS&amp;nbsp;&lt;span style=&quot;white-space: pre&quot;&gt;&#9;&lt;/span&gt;= 0x000100&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span&gt;const Discord&lt;span style=&quot;white-space: pre&quot;&gt;&#9;&lt;/span&gt;= 0x001000&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span&gt;const Telegram= 0x010000&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span&gt;const Slack&lt;span style=&quot;white-space: pre&quot;&gt;&#9;&lt;/span&gt;= 0x100000&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;Enables/disables notification type for user&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;returns OK&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;" vertex="1" parent="8">
+                    <mxGeometry x="20" y="20" width="360" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.002;entryY=0.12;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="17" target="6">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1.003;entryY=0.108;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="6" target="19">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.005;entryY=0.043;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="21" target="8">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.001;entryY=0.153;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="37" target="11">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="710" y="540"/>
+                            <mxPoint x="710" y="605"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="41" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="11" target="40">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="690" y="665"/>
+                            <mxPoint x="690" y="620"/>
+                            <mxPoint x="190" y="620"/>
+                            <mxPoint x="190" y="584"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="42" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.001;entryY=0.134;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="40" target="13">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="43" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="13" target="31">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="620" y="785"/>
+                            <mxPoint x="620" y="670"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="44" value="Notification service" style="swimlane;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1280" y="123" width="920" height="707" as="geometry"/>
+                </mxCell>
+                <mxCell id="45" value="&lt;span style=&quot;font-weight: 700&quot;&gt;/list_supported_daos&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="44">
+                    <mxGeometry x="20" y="47" width="370" height="23" as="geometry"/>
+                </mxCell>
+                <mxCell id="47" value="Internal State" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=none;" vertex="1" parent="44">
+                    <mxGeometry x="40" y="122" width="340" height="118" as="geometry"/>
+                </mxCell>
+                <mxCell id="63" value="- get all users&lt;br&gt;- get all subscribed DAOs for all users -&amp;gt; user.daos&lt;br&gt;- get all open proposals for all subscribed DAOs -&amp;gt; user.proposals&lt;br&gt;If proposal user.daos.notification_type &amp;gt; 0&lt;br&gt;Push to notification queue&lt;br&gt;{user, notificationType, dao, proposalId}&amp;nbsp;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="44">
+                    <mxGeometry x="50" y="262" width="370" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="84" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="44" source="65" target="68">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="85" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="44" source="65" target="69">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="86" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="44" source="65" target="70">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="87" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="44" source="65" target="81">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="88" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="44" source="65" target="82">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="89" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="44" source="65" target="83">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="65" value="notification queue" style="swimlane;fillColor=none;" vertex="1" parent="44">
+                    <mxGeometry x="40" y="377" width="360" height="283" as="geometry"/>
+                </mxCell>
+                <mxCell id="67" value="create cron job for each entry (single or repeating)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="65">
+                    <mxGeometry x="20" y="60" width="280" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="66" value="" style="endArrow=classic;html=1;exitX=0.161;exitY=1.03;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.197;entryY=0.001;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="44" source="63" target="65">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint y="307" as="sourcePoint"/>
+                        <mxPoint x="50" y="257" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="68" value="send epns" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="44">
+                    <mxGeometry x="480" y="377" width="400" height="23" as="geometry"/>
+                </mxCell>
+                <mxCell id="69" value="send email" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="44">
+                    <mxGeometry x="480" y="417" width="400" height="23" as="geometry"/>
+                </mxCell>
+                <mxCell id="70" value="send sms" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="44">
+                    <mxGeometry x="480" y="457" width="400" height="23" as="geometry"/>
+                </mxCell>
+                <mxCell id="81" value="send discord msg" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="44">
+                    <mxGeometry x="480" y="497" width="400" height="23" as="geometry"/>
+                </mxCell>
+                <mxCell id="82" value="send telegram message" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="44">
+                    <mxGeometry x="480" y="537" width="400" height="23" as="geometry"/>
+                </mxCell>
+                <mxCell id="83" value="send slack message" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="44">
+                    <mxGeometry x="480" y="577" width="400" height="23" as="geometry"/>
+                </mxCell>
+                <mxCell id="46" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1.003;entryY=0.117;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="45" target="6">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="48" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="6" target="47">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
