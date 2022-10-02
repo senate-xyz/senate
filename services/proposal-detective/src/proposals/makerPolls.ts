@@ -112,7 +112,7 @@ const findMakerPolls = async (dao: Dao) => {
         txHash: proposalHash,
         daoId: dao.id,
         title: String(title),
-        type: ProposalTypeEnum.Chain,
+        type: ProposalTypeEnum.MakerPoll,
         onchainId: Number(proposals[i].eventData.pollId),
         description: String(description),
         created: new Date(proposalCreatedTimestamp * 1000),

@@ -7,6 +7,7 @@ import { getMakerVotes } from "./votes/makerVotes";
 import { getMakerProposals } from "./proposals/makerProposals";
 import { getMakerProposalsWithTheGraph } from "./proposals/makerProposalsTheGraph";
 import { getMakerPolls } from "./proposals/makerPolls";
+import { getMakerPollsVotes } from "./votes/makerPollsVotes";
 let integrationTestType: ProposalType;
 
 const main = async () => {
@@ -35,6 +36,9 @@ const main = async () => {
 
   console.log("getMakerPolls");
   await getMakerPolls();
+
+  console.log("getMakerPollsVotes");
+  await getMakerPollsVotes();
 };
 
 main();
