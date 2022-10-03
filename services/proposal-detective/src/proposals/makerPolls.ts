@@ -12,7 +12,6 @@ const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
 });
 
-
 const formatTitle = (text: String): String => {
   let temp = text.split("summary:")[0].split("title: ")[1];
 
@@ -22,34 +21,31 @@ const formatTitle = (text: String): String => {
 // Some DAOs store onchain the proposal title and full description in the same variable.
 // This function parses that entire text and returns the title and the description
 const formatDescription = (text: String) => {
-  return text; 
+  return text;
 };
 
-const getProposalTitleAndDescription = async (
-  url: string
-): Promise<any> => {
-    let title, description;
-    try {
-      const response = await axios.get(url);
-      title = formatTitle(response.data);
-      description = formatDescription(response.data.description);
-    } catch (error) {
-      title = "Unknown";
-      description = "Unknown";
-    }
-  
-    return {
-      title: title,
-      description: description,
-    };
+const getProposalTitleAndDescription = async (url: string): Promise<any> => {
+  let title, description;
+  try {
+    const response = await axios.get(url);
+    title = formatTitle(response.data);
+    description = formatDescription(response.data.description);
+  } catch (error) {
+    title = "Unknown";
+    description = "Unknown";
+  }
+
+  return {
+    title: title,
+    description: description,
+  };
 };
 
 const findMakerPolls = async (dao: Dao) => {
   const pollingContractIface = new ethers.utils.Interface(dao.abi);
 
-//   const pollingContract = new ethers.Contract(dao.address, dao.abi, provider);
-//   console.log(await pollingContract.queryFilter("PollCreated", 13053839, 15653839));
-  
+  //   const pollingContract = new ethers.Contract(dao.address, dao.abi, provider);
+  //   console.log(await pollingContract.queryFilter("PollCreated", 13053839, 15653839));
 
   const logs = await provider.getLogs({
     fromBlock: dao.latestBlock,
@@ -76,12 +72,15 @@ const findMakerPolls = async (dao: Dao) => {
   );
 
   for (let i = 0; i < proposals.length; i++) {
-    let proposalCreatedTimestamp = Number(proposals[i].eventData.blockCreated)
+    let proposalCreatedTimestamp = Number(proposals[i].eventData.blockCreated);
 
-    let votingStartsTimestamp = Number(proposals[i].eventData.startDate)
-    let votingEndsTimestamp = Number(proposals[i].eventData.endDate)
-    let { title, description } = await getProposalTitleAndDescription(proposals[i].eventData.url);
-    let proposalUrl = dao.proposalUrl + proposals[i].eventData.multiHash.substring(0,7);
+    let votingStartsTimestamp = Number(proposals[i].eventData.startDate);
+    let votingEndsTimestamp = Number(proposals[i].eventData.endDate);
+    let { title, description } = await getProposalTitleAndDescription(
+      proposals[i].eventData.url
+    );
+    let proposalUrl =
+      dao.proposalUrl + proposals[i].eventData.multiHash.substring(0, 7);
     let proposalHash = proposals[i].txHash;
 
     console.log(title);
@@ -130,18 +129,14 @@ const findMakerPolls = async (dao: Dao) => {
   console.log("======================================================\n\n");
 };
 
-
 export const getMakerPolls = async () => {
   let makerPolls = await prisma.dao.findFirst({
     where: {
-        address: "0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d",
+      name: "MakerDAO Polls",
     },
   });
 
   if (makerPolls !== null) {
     await findMakerPolls(makerPolls);
   }
-
 };
-
-

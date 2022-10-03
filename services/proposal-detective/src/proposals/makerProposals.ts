@@ -15,7 +15,7 @@ const provider = new ethers.providers.JsonRpcProvider({
 export const getMakerProposals = async () => {
   let maker = await prisma.dao.findFirst({
     where: {
-      address: "0x0a3f6849f78076aefaDf113F5BED87720274dDC0",
+      name: "MakerDAO",
     },
   });
 

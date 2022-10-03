@@ -4,7 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -27,7 +27,7 @@ model ProxyContract {
 
 model Dao {
   id             Int            @id @default(autoincrement())
-  name           String         @default("No name")
+  name           String         @unique @default("No name")
   picture        String         @default("https://via.placeholder.com/200x200")
   address        String
   snapshotSpace  String

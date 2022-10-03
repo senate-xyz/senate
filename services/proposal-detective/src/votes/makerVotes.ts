@@ -17,7 +17,7 @@ export const getMakerVotes = async () => {
     where: {
       Dao: {
         is: {
-          address: "0x0a3f6849f78076aefaDf113F5BED87720274dDC0",
+          name: "MakerDAO",
         },
       },
     },
@@ -56,49 +56,47 @@ const updateSingleSub = async (sub: Subscription) => {
   });
 
   if (votedSpells) {
-    await prisma.$transaction(
-      votedSpells.map((votedSpellAddress: string) =>
-        prisma.userVote.upsert({
-          where: {
-            spellAddress: votedSpellAddress,
+    for (const votedSpellAddress of votedSpells)
+      prisma.userVote.upsert({
+        where: {
+          spellAddress: votedSpellAddress,
+        },
+        update: {
+          spellAddress: votedSpellAddress,
+          user: {
+            connect: {
+              id: user?.id,
+            },
           },
-          update: {
-            spellAddress: votedSpellAddress,
-            user: {
-              connect: {
-                id: user?.id,
-              },
+          proposal: {
+            connect: {
+              id: proposals.find(
+                (proposal) => proposal.spellAddress === votedSpellAddress
+              )?.id,
             },
-            proposal: {
-              connect: {
-                id: proposals.find(
-                  (proposal) => proposal.spellAddress === votedSpellAddress
-                )?.id,
-              },
-            },
-            voteOption: 1,
-            voteName: "Yes",
           },
-          create: {
-            spellAddress: votedSpellAddress,
-            user: {
-              connect: {
-                id: user?.id,
-              },
+          voteOption: 1,
+          voteName: "Yes",
+        },
+        create: {
+          spellAddress: votedSpellAddress,
+          user: {
+            connect: {
+              id: user?.id,
             },
-            proposal: {
-              connect: {
-                id: proposals.find(
-                  (proposal) => proposal.spellAddress == votedSpellAddress
-                )?.id,
-              },
-            },
-            voteOption: 1,
-            voteName: "Yes",
           },
-        })
-      )
-    );
+          proposal: {
+            connect: {
+              id: proposals.find(
+                (proposal) => proposal.spellAddress == votedSpellAddress
+              )?.id,
+            },
+          },
+          voteOption: 1,
+          voteName: "Yes",
+        },
+      });
+
     console.log(`upserted ${votedSpells.length} chain votes`);
   }
 };
