@@ -24,11 +24,7 @@ export const getChainVotes = async () => {
 };
 
 const findVotes = async (subs: Subscription[]) => {
-  await Promise.all(
-    subs.map(async (sub) => {
-      await updateSingleSub(sub);
-    })
-  );
+  for (const sub of subs) await updateSingleSub(sub);
 };
 
 type Vote = {
