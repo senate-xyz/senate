@@ -1,12 +1,10 @@
-import { Dao } from "@prisma/client";
+import { Dao, PrismaClient } from "@prisma/client";
 import axios from "axios";
 import { ProposalTypeEnum } from "@senate/common-types";
 import { prisma } from "@senate/database";
-import { config } from "dotenv";
-config();
 
 export const getSnapshotProposals = async () => {
-  const daos = await prisma.dao.findMany({
+  let daos = await prisma.dao.findMany({
     where: {
       snapshotSpace: {
         not: "",
@@ -19,7 +17,7 @@ export const getSnapshotProposals = async () => {
 const findOngoingProposals = async (daos: Dao[]) => {
   for (const dao of daos) {
     console.log(`get proposals for ${dao.name}`);
-    const proposals = await axios
+    let proposals = await axios
       .get("https://hub.snapshot.org/graphql", {
         method: "POST",
         data: JSON.stringify({

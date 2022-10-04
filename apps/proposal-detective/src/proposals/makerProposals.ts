@@ -3,17 +3,15 @@ import { ethers } from "ethers";
 import axios from "axios";
 import { ProposalTypeEnum } from "@senate/common-types";
 import { prisma } from "@senate/database";
-import { config } from "dotenv";
-config();
 
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
 });
 
 export const getMakerProposals = async () => {
-  const maker = await prisma.dao.findFirst({
+  let maker = await prisma.dao.findFirst({
     where: {
-      address: "0x0a3f6849f78076aefaDf113F5BED87720274dDC0",
+      name: "MakerDAO",
     },
   });
 
@@ -41,15 +39,15 @@ const findMakerProposals = async (dao: Dao) => {
   for (let i = 0; i < logs.length; i++) {
     console.log(`maker event ${i} out of ${logs.length}`);
 
-    const log = logs[i];
-    const eventArgs = iface.decodeEventLog("LogNote", log.data);
+    let log = logs[i];
+    let eventArgs = iface.decodeEventLog("LogNote", log.data);
 
-    const decodedFunctionData =
+    let decodedFunctionData =
       log.topics[0] === voteSingleActionTopic
         ? iface.decodeFunctionData("vote(bytes32)", eventArgs.fax)
         : iface.decodeFunctionData("vote(address[])", eventArgs.fax);
 
-    const spells: string[] =
+    let spells: string[] =
       decodedFunctionData.yays !== undefined
         ? decodedFunctionData.yays
         : await getSlateYays(chiefContract, decodedFunctionData.slate);
@@ -59,7 +57,7 @@ const findMakerProposals = async (dao: Dao) => {
     });
   }
 
-  const spellAddresses = Array.from(spellAddressesSet);
+  let spellAddresses = Array.from(spellAddressesSet);
 
   for (let i = 0; i < spellAddresses.length; i++) {
     console.log(`inserted ${spellAddresses[i]} spell address`);
@@ -104,7 +102,7 @@ const findMakerProposals = async (dao: Dao) => {
     }
   }
 
-  const latestBlock = await provider.getBlockNumber();
+  let latestBlock = await provider.getBlockNumber();
 
   await prisma.dao.update({
     where: {
@@ -129,10 +127,9 @@ const calculateVotingPeriodEndDate = (spellData: any) => {
 };
 
 const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
-  const yays = [];
+  let yays = [];
   let count = 0;
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     let spellAddress;
     try {

@@ -1,8 +1,8 @@
 {
   "name": "@senate/config",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
+  "main": "index.js",
   "files": [
     "eslint-preset.js"
   ],

@@ -3,15 +3,15 @@ import { BigNumber, ethers } from "ethers";
 import { DaoOnChainHandler } from "@senate/common-types";
 import { hexZeroPad } from "ethers/lib/utils";
 import { prisma } from "@senate/database";
-import { config } from "dotenv";
-config();
+
+const prisma = new PrismaClient();
 
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
 });
 
 export const getChainVotes = async () => {
-  const subscriptions = await prisma.subscription.findMany({
+  let subscriptions = await prisma.subscription.findMany({
     where: {
       Dao: {
         is: {
@@ -41,13 +41,13 @@ type Vote = {
 };
 
 const updateSingleSub = async (sub: Subscription) => {
-  const user = await prisma.user.findFirst({
+  let user = await prisma.user.findFirst({
     where: {
       id: sub.userId,
     },
   });
 
-  const dao = await prisma.dao.findFirst({
+  let dao = await prisma.dao.findFirst({
     where: {
       id: sub.daoId,
     },
@@ -55,9 +55,9 @@ const updateSingleSub = async (sub: Subscription) => {
 
   if (user == null || dao == null) return;
 
-  const votes = await getVotes(dao, user);
+  let votes = await getVotes(dao, user);
 
-  const proposals = await prisma.proposal.findMany({
+  let proposals = await prisma.proposal.findMany({
     where: { daoId: dao.id },
   });
 
@@ -130,7 +130,7 @@ const getVotes = async (dao: Dao, user: User): Promise<Vote[]> => {
   }
 
   const votes = logs.map((log) => {
-    const eventData = govBravoIface.parseLog({
+    let eventData = govBravoIface.parseLog({
       topics: log.topics,
       data: log.data,
     }).args;

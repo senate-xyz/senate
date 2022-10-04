@@ -4,6 +4,10 @@ import { getSnapshotVotes } from "./votes/snapshotVotes";
 import { getChainVotes } from "./votes/chainVotes";
 import { getMakerVotes } from "./votes/makerVotes";
 import { getMakerProposals } from "./proposals/makerProposals";
+import { getMakerPolls } from "./proposals/makerPolls";
+import { getMakerPollsVotes } from "./votes/makerPollsVotes";
+import { config } from "dotenv";
+config();
 
 const main = async () => {
   console.log(`proposalDetective start`);
@@ -25,6 +29,15 @@ const main = async () => {
 
   console.log("getMakerVotes");
   await getMakerVotes();
+
+  // console.log("getMakerProposalsWithTheGraph");
+  // await getMakerProposalsWithTheGraph();
+
+  console.log("getMakerPolls");
+  await getMakerPolls();
+
+  console.log("getMakerPollsVotes");
+  await getMakerPollsVotes();
 };
 
 main();
