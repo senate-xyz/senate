@@ -46,14 +46,11 @@ async function main() {
 
   const testProposal = await prisma.proposal.upsert({
     where: {
-      name_description_daoId: {
-        name: "Test name",
-        description: "Test description",
-        daoId: aave.id,
-      },
+      externalId: "1",
     },
     update: {},
     create: {
+      externalId: "1",
       name: "Test name",
       description: "Test description",
       daoId: aave.id,
