@@ -33,6 +33,7 @@ Table DAOHandler {
 
 Table Proposal {
   id String [unique, not null]
+  externalId String [unique, not null]
   name String [not null]
   description String [not null]
   dao DAO [not null]
@@ -41,7 +42,7 @@ Table Proposal {
   votes Vote [not null]
 
   indexes {
-    (name, description, daoId) [pk]
+    (externalId, daoId) [pk]
   }
 }
 
@@ -62,6 +63,7 @@ Table Vote {
 }
 
 Table VoteOption {
+  id String [unique, not null]
   option String [not null]
   optionName String [not null]
   vote Vote [not null]
@@ -75,6 +77,7 @@ Table VoteOption {
 }
 
 Table Subscription {
+  id String [unique, not null]
   user User [not null]
   dao DAO [not null]
   userId String [not null]

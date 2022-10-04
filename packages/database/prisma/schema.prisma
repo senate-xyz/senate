@@ -51,6 +51,7 @@ enum DAOHandlerType {
 
 model Proposal {
     id           String @unique @default(cuid())
+    externalId   String @unique
     name         String
     description  String
     dao          DAO    @relation(fields: [daoId], references: [id], onDelete: Cascade)
@@ -58,7 +59,7 @@ model Proposal {
     daoHandlerId String
     votes        Vote[]
 
-    @@id([name, description, daoId])
+    @@id([externalId, daoId])
 }
 
 model Vote {
@@ -76,6 +77,7 @@ model Vote {
 }
 
 model VoteOption {
+    id         String @unique @default(cuid())
     option     String
     optionName String
 
@@ -88,6 +90,8 @@ model VoteOption {
 }
 
 model Subscription {
+    id String @unique @default(cuid())
+
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
     dao  DAO  @relation(fields: [daoId], references: [id], onDelete: Cascade)
 
