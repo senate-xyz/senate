@@ -15,14 +15,14 @@ datasource db {
 }
 
 model User {
-    id            String         @id @default(cuid())
+    id            String         @id @unique @default(cuid())
     address       String         @unique
     subscriptions Subscription[]
     votes         Vote[]
 }
 
 model DAO {
-    id            String         @id @default(cuid())
+    id            String         @id @unique @default(cuid())
     name          String         @unique
     picture       String
     handlers      DAOHandler[]
@@ -32,11 +32,13 @@ model DAO {
 }
 
 model DAOHandler {
-    id      String         @id @default(cuid())
+    id      String         @unique @default(cuid())
     type    DAOHandlerType
     decoder Json
     dao     DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
     daoId   String
+
+    @@id([daoId, type])
 }
 
 enum DAOHandlerType {
@@ -48,17 +50,19 @@ enum DAOHandlerType {
 }
 
 model Proposal {
-    id           String @id @default(cuid())
+    id           String @unique @default(cuid())
     name         String
     description  String
     dao          DAO    @relation(fields: [daoId], references: [id], onDelete: Cascade)
     daoId        String
     daoHandlerId String
     votes        Vote[]
+
+    @@id([name, description, daoId])
 }
 
 model Vote {
-    id           String       @id @default(cuid())
+    id           String       @unique @default(cuid())
     options      VoteOption[]
     user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId       String
@@ -67,22 +71,28 @@ model Vote {
     dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
     daoId        String
     daoHandlerId String
+
+    @@id([userId, daoId, proposalId])
 }
 
 model VoteOption {
     option     String
     optionName String
-    Vote       Vote   @relation(fields: [voteId], references: [id], onDelete: Cascade)
-    voteId     String
 
-    @@id([option, optionName, voteId])
+    vote           Vote   @relation(fields: [voteUserId, voteDaoId, voteProposalId], references: [userId, daoId, proposalId], onDelete: Cascade)
+    voteUserId     String
+    voteDaoId      String
+    voteProposalId String
+
+    @@id([voteProposalId, option])
 }
 
 model Subscription {
-    id   String @id @default(cuid())
-    user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    dao  DAO    @relation(fields: [daoId], references: [id], onDelete: Cascade)
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    dao  DAO  @relation(fields: [daoId], references: [id], onDelete: Cascade)
 
     userId String
     daoId  String
+
+    @@id([userId, daoId])
 }

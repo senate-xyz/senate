@@ -1,10 +1,18 @@
 import aaveGovBravo from "./abis/aaveGovBravo.json";
-import uniswapGovBravo from "./abis/uniswapGovBravo.json";
 import { prisma } from "./client";
 import { DAOHandlerType } from "@prisma/client";
-import { DAOHandler_Snapshot } from "@senate/common-types";
 
 async function main() {
+  const testUser = await prisma.user.upsert({
+    where: {
+      address: "0xCdB792c14391F7115Ba77A7Cd27f724fC9eA2091",
+    },
+    update: {},
+    create: {
+      address: "0xCdB792c14391F7115Ba77A7Cd27f724fC9eA2091",
+    },
+  });
+
   const aave = await prisma.dAO.upsert({
     where: { name: "Aave" },
     update: {},
@@ -31,50 +39,65 @@ async function main() {
         ],
       },
     },
+    include: {
+      handlers: true,
+    },
   });
 
-  const uniswap = await prisma.dAO.upsert({
-    where: { name: "Uniswap" },
-    update: {},
-    create: {
-      name: "Uniswap",
-      picture:
-        "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png",
-      handlers: {
-        create: [
-          {
-            type: DAOHandlerType.BRAVO2,
-            decoder: {
-              address: "0x408ED6354d4973f66138C91495F2f2FCbd8724C3",
-              abi: uniswapGovBravo.abi,
-              latestBlock: 0,
-            },
-          },
-          {
-            type: DAOHandlerType.SNAPSHOT,
-            decoder: {
-              space: "uniswap",
-              proposalsCount: 0,
-            },
-          },
-        ],
+  const daoBravoHandlers = await prisma.dAOHandler.findMany({
+    where: {
+      AND: {
+        daoId: aave.id,
+        type: DAOHandlerType.BRAVO1,
       },
     },
   });
 
-  await prisma.user.update({
-    where: { address: "0xCdB792c14391F7115Ba77A7Cd27f724fC9eA2091" },
-    data: {
-      subscriptions: {
-        create: [
-          {
-            daoId: aave.id,
-          },
-          {
-            daoId: uniswap.id,
-          },
-        ],
+  const testProposal = await prisma.proposal.upsert({
+    where: {},
+    update: {},
+    create: {
+      name: "Test name",
+      description: "Test description",
+      daoId: aave.id,
+      daoHandlerId: daoBravoHandlers[0].id,
+    },
+  });
+
+  await prisma.vote.upsert({
+    where: {
+      userId_daoId_proposalId: {
+        userId: testUser.id,
+        daoId: aave.id,
+        proposalId: testProposal.id,
       },
+    },
+    update: {},
+    create: {
+      userId: testUser.id,
+      daoId: aave.id,
+      proposalId: testProposal.id,
+      daoHandlerId: daoBravoHandlers[0].id,
+      options: {
+        create: {
+          option: "1",
+          optionName: "Yes",
+        },
+      },
+    },
+  });
+
+  await prisma.subscription.upsert({
+    where: {
+      userId_daoId: {
+        userId: testUser.id,
+        daoId: aave.id,
+      },
+    },
+    update: {},
+    create: {
+      userId: testUser.id,
+      daoId: aave.id,
     },
   });
 }

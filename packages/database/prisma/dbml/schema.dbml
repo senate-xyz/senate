@@ -3,14 +3,14 @@
 //// ------------------------------------------------------
 
 Table User {
-  id String [pk]
+  id String [pk, unique]
   address String [unique, not null]
   subscriptions Subscription [not null]
   votes Vote [not null]
 }
 
 Table DAO {
-  id String [pk]
+  id String [pk, unique]
   name String [unique, not null]
   picture String [not null]
   handlers DAOHandler [not null]
@@ -20,25 +20,33 @@ Table DAO {
 }
 
 Table DAOHandler {
-  id String [pk]
+  id String [unique, not null]
   type DAOHandlerType [not null]
   decoder Json [not null]
   dao DAO [not null]
   daoId String [not null]
+
+  indexes {
+    (daoId, type) [pk]
+  }
 }
 
 Table Proposal {
-  id String [pk]
+  id String [unique, not null]
   name String [not null]
   description String [not null]
   dao DAO [not null]
   daoId String [not null]
   daoHandlerId String [not null]
   votes Vote [not null]
+
+  indexes {
+    (name, description, daoId) [pk]
+  }
 }
 
 Table Vote {
-  id String [pk]
+  id String [unique, not null]
   options VoteOption [not null]
   user User [not null]
   userId String [not null]
@@ -47,25 +55,34 @@ Table Vote {
   dao DAO [not null]
   daoId String [not null]
   daoHandlerId String [not null]
+
+  indexes {
+    (userId, daoId, proposalId) [pk]
+  }
 }
 
 Table VoteOption {
   option String [not null]
   optionName String [not null]
-  Vote Vote [not null]
-  voteId String [not null]
+  vote Vote [not null]
+  voteUserId String [not null]
+  voteDaoId String [not null]
+  voteProposalId String [not null]
 
   indexes {
-    (option, optionName, voteId) [pk]
+    (voteProposalId, option) [pk]
   }
 }
 
 Table Subscription {
-  id String [pk]
   user User [not null]
   dao DAO [not null]
   userId String [not null]
   daoId String [not null]
+
+  indexes {
+    (userId, daoId) [pk]
+  }
 }
 
 Enum DAOHandlerType {
@@ -86,7 +103,7 @@ Ref: Vote.proposalId > Proposal.id [delete: Cascade]
 
 Ref: Vote.daoId > DAO.id [delete: Cascade]
 
-Ref: VoteOption.voteId > Vote.id [delete: Cascade]
+Ref: VoteOption.(voteUserId, voteDaoId, voteProposalId) > Vote.(userId, daoId, proposalId) [delete: Cascade]
 
 Ref: Subscription.userId > User.id [delete: Cascade]
 
