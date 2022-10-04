@@ -27,11 +27,12 @@
     "@prisma/client": "^4.4.0"
   },
   "devDependencies": {
+    "@senate/common-types": "*",
     "@senate/config": "*",
     "@senate/tsconfig": "*",
-    "@senate/common-types": "*",
     "eslint": "^8.24.0",
     "prisma": "^4.4.0",
+    "prisma-dbml-generator": "^0.9.1",
     "rimraf": "^3.0.2",
     "tsup": "^6.2.3",
     "tsx": "^3.9.0",

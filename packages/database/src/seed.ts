@@ -2,6 +2,7 @@ import aaveGovBravo from "./abis/aaveGovBravo.json";
 import uniswapGovBravo from "./abis/uniswapGovBravo.json";
 import { prisma } from "./client";
 import { DAOHandlerType } from "@prisma/client";
+import { DAOHandler_Snapshot } from "@senate/common-types";
 
 async function main() {
   const aave = await prisma.dAO.upsert({
@@ -24,6 +25,7 @@ async function main() {
             type: DAOHandlerType.SNAPSHOT,
             decoder: {
               space: "aave.eth",
+              proposalsCount: 0,
             },
           },
         ],
@@ -52,6 +54,7 @@ async function main() {
             type: DAOHandlerType.SNAPSHOT,
             decoder: {
               space: "uniswap",
+              proposalsCount: 0,
             },
           },
         ],
