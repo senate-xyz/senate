@@ -1,11 +1,10 @@
 import { Subscription } from "@prisma/client";
 import axios from "axios";
+import { ProposalTypeEnum } from "@senate/common-types";
 import { prisma } from "@senate/database";
-import { config } from "dotenv";
-config();
 
 export const getSnapshotVotes = async () => {
-  const subscriptions = await prisma.subscription.findMany();
+  let subscriptions = await prisma.subscription.findMany();
   await findVotes(subscriptions);
 };
 
@@ -16,13 +15,13 @@ const findVotes = async (subs: Subscription[]) => {
 };
 
 const updateSingleSub = async (sub: Subscription) => {
-  const user = await prisma.user.findFirst({
+  let user = await prisma.user.findFirst({
     where: {
       id: sub.userId,
     },
   });
 
-  const dao = await prisma.dao.findFirst({
+  let dao = await prisma.dao.findFirst({
     where: {
       id: sub.daoId,
     },
@@ -30,7 +29,7 @@ const updateSingleSub = async (sub: Subscription) => {
 
   if (!dao?.snapshotSpace.length) return;
 
-  const votes = await axios
+  let votes = await axios
     .get("https://hub.snapshot.org/graphql", {
       method: "POST",
       data: JSON.stringify({
@@ -70,34 +69,31 @@ const updateSingleSub = async (sub: Subscription) => {
 
   //TODO support multiple choice vote
   if (votes.length)
-    await prisma.$transaction(
-      votes.map((vote: any) =>
-        prisma.userVote.upsert({
-          where: {
-            snapshotId: vote.id,
-          },
-          update: {
-            voteOption: vote.choice.length > 0 ? vote.choice[0] : vote.choice,
-            voteName: vote.proposal.choices[vote.choice - 1],
-          },
-          create: {
-            snapshotId: vote.id,
-            user: {
-              connect: {
-                id: user?.id,
-              },
+    for (const vote of votes)
+      prisma.userVote.upsert({
+        where: {
+          snapshotId: vote.id,
+        },
+        update: {
+          voteOption: vote.choice.length > 0 ? vote.choice[0] : vote.choice,
+          voteName: vote.proposal.choices[vote.choice - 1],
+        },
+        create: {
+          snapshotId: vote.id,
+          user: {
+            connect: {
+              id: user?.id,
             },
-            proposal: {
-              connect: {
-                snapshotId: vote.proposal.id,
-              },
-            },
-            voteOption: vote.choice.length > 0 ? vote.choice[0] : vote.choice,
-            voteName: vote.proposal.choices[vote.choice - 1] ?? "No name",
           },
-        })
-      )
-    );
+          proposal: {
+            connect: {
+              snapshotId: vote.proposal.id,
+            },
+          },
+          voteOption: vote.choice.length > 0 ? vote.choice[0] : vote.choice,
+          voteName: vote.proposal.choices[vote.choice - 1] ?? "No name",
+        },
+      });
 
   console.log(
     `upserted ${votes.length} snapshot votes for ${user?.address} in ${dao?.name}`

@@ -1,20 +1,19 @@
 import { Dao, Subscription, User } from "@prisma/client";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { DaoOnChainHandler } from "@senate/common-types";
+import { hexZeroPad } from "ethers/lib/utils";
 import { prisma } from "@senate/database";
-import { config } from "dotenv";
-config();
 
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
 });
 
 export const getMakerVotes = async () => {
-  const subscriptions = await prisma.subscription.findMany({
+  let subscriptions = await prisma.subscription.findMany({
     where: {
       Dao: {
         is: {
-          address: "0x0a3f6849f78076aefaDf113F5BED87720274dDC0",
+          name: "MakerDAO",
         },
       },
     },
@@ -32,13 +31,13 @@ const findVotes = async (subs: Subscription[]) => {
 };
 
 const updateSingleSub = async (sub: Subscription) => {
-  const user = await prisma.user.findFirst({
+  let user = await prisma.user.findFirst({
     where: {
       id: sub.userId,
     },
   });
 
-  const dao = await prisma.dao.findFirst({
+  let dao = await prisma.dao.findFirst({
     where: {
       id: sub.daoId,
     },
@@ -46,38 +45,53 @@ const updateSingleSub = async (sub: Subscription) => {
 
   if (user == null || dao == null) return;
 
-  const votedSpells = await getVotes(dao, user);
+  let votedSpells = await getVotes(dao, user);
 
-  const proposals = await prisma.proposal.findMany({
+  let proposals = await prisma.proposal.findMany({
     where: { daoId: dao.id },
   });
 
   if (votedSpells) {
-    for (const vote of votedSpells) {
+    for (const votedSpellAddress of votedSpells)
       prisma.userVote.upsert({
         where: {
-          spellAddress: vote,
+          spellAddress: votedSpellAddress,
         },
         update: {
-          spellAddress: vote,
-          userId: user?.id,
-          proposalId: proposals.find(
-            (proposal) => proposal.spellAddress === vote
-          )?.id,
+          spellAddress: votedSpellAddress,
+          user: {
+            connect: {
+              id: user?.id,
+            },
+          },
+          proposal: {
+            connect: {
+              id: proposals.find(
+                (proposal) => proposal.spellAddress === votedSpellAddress
+              )?.id,
+            },
+          },
           voteOption: 1,
           voteName: "Yes",
         },
         create: {
-          spellAddress: vote,
-          userId: user?.id,
-          proposalId: proposals.find(
-            (proposal) => proposal.spellAddress == vote
-          )?.id!,
+          spellAddress: votedSpellAddress,
+          user: {
+            connect: {
+              id: user?.id,
+            },
+          },
+          proposal: {
+            connect: {
+              id: proposals.find(
+                (proposal) => proposal.spellAddress == votedSpellAddress
+              )?.id,
+            },
+          },
           voteOption: 1,
           voteName: "Yes",
         },
       });
-    }
 
     console.log(`upserted ${votedSpells.length} chain votes`);
   }
@@ -106,15 +120,15 @@ const getVotes = async (dao: Dao, user: User): Promise<string[]> => {
 
   const spellAddressesSet = new Set<string>();
   for (let i = 0; i < logs.length; i++) {
-    const log = logs[i];
-    const eventArgs = iface.decodeEventLog("LogNote", log.data);
+    let log = logs[i];
+    let eventArgs = iface.decodeEventLog("LogNote", log.data);
 
-    const decodedFunctionData =
+    let decodedFunctionData =
       log.topics[0] === voteSingleActionTopic
         ? iface.decodeFunctionData("vote(bytes32)", eventArgs.fax)
         : iface.decodeFunctionData("vote(address[])", eventArgs.fax);
 
-    const spells: string[] =
+    let spells: string[] =
       decodedFunctionData.yays !== undefined
         ? decodedFunctionData.yays
         : await getSlateYays(chiefContract, decodedFunctionData.slate);
@@ -128,10 +142,9 @@ const getVotes = async (dao: Dao, user: User): Promise<string[]> => {
 };
 
 const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
-  const yays = [];
+  let yays = [];
   let count = 0;
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     let spellAddress;
     try {
