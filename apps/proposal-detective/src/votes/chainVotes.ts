@@ -4,8 +4,6 @@ import { DaoOnChainHandler } from "@senate/common-types";
 import { hexZeroPad } from "ethers/lib/utils";
 import { prisma } from "@senate/database";
 
-const prisma = new PrismaClient();
-
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
 });
