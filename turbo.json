@@ -9,12 +9,15 @@
       "outputs": []
     },
     "db:migrate:deploy": {
+      "cache": false,
       "outputs": []
     },
     "db:push": {
+      "cache": false,
       "outputs": []
     },
     "db:seed": {
+      "cache": false,
       "outputs": []
     },
     "dev": {
