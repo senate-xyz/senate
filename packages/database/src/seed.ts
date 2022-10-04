@@ -44,23 +44,20 @@ async function main() {
     },
   });
 
-  const daoBravoHandlers = await prisma.dAOHandler.findMany({
+  const testProposal = await prisma.proposal.upsert({
     where: {
-      AND: {
+      name_description_daoId: {
+        name: "Test name",
+        description: "Test description",
         daoId: aave.id,
-        type: DAOHandlerType.BRAVO1,
       },
     },
-  });
-
-  const testProposal = await prisma.proposal.upsert({
-    where: {},
     update: {},
     create: {
       name: "Test name",
       description: "Test description",
       daoId: aave.id,
-      daoHandlerId: daoBravoHandlers[0].id,
+      daoHandlerId: aave.handlers[0].id,
     },
   });
 
@@ -77,7 +74,7 @@ async function main() {
       userId: testUser.id,
       daoId: aave.id,
       proposalId: testProposal.id,
-      daoHandlerId: daoBravoHandlers[0].id,
+      daoHandlerId: aave.handlers[0].id,
       options: {
         create: {
           option: "1",
