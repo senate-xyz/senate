@@ -2,6 +2,7 @@ import aaveGovBravo from "./abis/aaveGovBravo.json";
 import uniswapGovBravo from "./abis/uniswapGovBravo.json";
 import compoundGovBravo from "./abis/compountGovBravo.json";
 import makerChief from "./abis/makerChief.json";
+import makerPolling from "./abis/makerPolling.json";
 import { prisma } from "./client";
 import { DaoOnChainHandler } from "@senate/common-types";
 
@@ -75,22 +76,6 @@ async function main() {
     },
   });
 
-  const stakeborg = await prisma.dao.upsert({
-    where: { name: "StakeborgDAO" },
-    update: {},
-    create: {
-      name: "StakeborgDAO",
-      address: "",
-      onchainHandler: DaoOnChainHandler.None,
-      snapshotSpace: "stakeborgdao.eth",
-      picture:
-        "https://assets.coingecko.com/coins/images/20119/small/stquY-WB_400x400.jpg?1636522705",
-      latestBlock: 10000000,
-      proposalUrl: "https://github.com/Stakeborg-Community",
-      abi: "none",
-    },
-  });
-
   const maker = await prisma.dao.upsert({
     where: { name: "MakerDAO" },
     update: {},
@@ -104,6 +89,22 @@ async function main() {
       latestBlock: 10000000,
       proposalUrl: "https://vote.makerdao.com/executive/",
       abi: makerChief.abi,
+    },
+  });
+
+  const makerPolls = await prisma.dao.upsert({
+    where: { name: "MakerDAO Polls" },
+    update: {},
+    create: {
+      name: "MakerDAO Polls",
+      address: "0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d",
+      onchainHandler: DaoOnChainHandler.MakerPolling,
+      snapshotSpace: "",
+      picture:
+        "https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png",
+      latestBlock: 10000000,
+      proposalUrl: "https://vote.makerdao.com/polling/",
+      abi: makerPolling.abi,
     },
   });
 
@@ -474,7 +475,23 @@ async function main() {
     },
   });
 
-  await prisma.user.upsert({
+  const stakeborg = await prisma.dao.upsert({
+    where: { name: "StakeborgDAO" },
+    update: {},
+    create: {
+      name: "StakeborgDAO",
+      address: "",
+      onchainHandler: DaoOnChainHandler.None,
+      snapshotSpace: "stakeborgdao.eth",
+      picture:
+        "https://assets.coingecko.com/coins/images/20119/small/stquY-WB_400x400.jpg?1636522705",
+      latestBlock: 10000000,
+      proposalUrl: "https://github.com/Stakeborg-Community",
+      abi: "none",
+    },
+  });
+
+  const delegate = await prisma.user.upsert({
     where: { address: "0xCdB792c14391F7115Ba77A7Cd27f724fC9eA2091" },
     update: {},
     create: {
@@ -488,46 +505,15 @@ async function main() {
       subscriptions: {
         create: [
           {
-            daoId: maker.id,
-          },
-          {
-            daoId: compound.id,
-          },
-          {
-            daoId: uniswap.id,
-          },
-          {
-            daoId: dd.id,
-          },
-          {
-            daoId: stakeborg.id,
-          },
-        ],
-      },
-    },
-  });
-
-  await prisma.user.upsert({
-    where: {
-      address: "0x1dd7c29dba3cfc8cd64220f7331e214a791a5989",
-    },
-    update: {
-      address: "0x1dd7c29dba3cfc8cd64220f7331e214a791a5989",
-    },
-    create: {
-      address: "0x1dd7c29dba3cfc8cd64220f7331e214a791a5989",
-    },
-  });
-
-  await prisma.user.update({
-    where: { address: "0x1dd7c29dba3cfc8cd64220f7331e214a791a5989" },
-    data: {
-      subscriptions: {
-        create: [
-          {
             daoId: aave.id,
           },
           {
+            daoId: maker.id,
+          },
+          {
+            daoId: makerPolls.id,
+          },
+          {
             daoId: compound.id,
           },
           {
@@ -535,9 +521,6 @@ async function main() {
           },
           {
             daoId: dd.id,
-          },
-          {
-            daoId: stakeborg.id,
           },
         ],
       },

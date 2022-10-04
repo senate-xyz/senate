@@ -7,6 +7,7 @@ export enum DaoOnChainHandler {
   Bravo1,
   Bravo2,
   Maker,
+  MakerPolling,
 }
 
 export type ProposalType = Prisma.ProposalGetPayload<{
@@ -23,6 +24,7 @@ export type ProposalType = Prisma.ProposalGetPayload<{
 export enum ProposalTypeEnum {
   Snapshot = 0,
   Chain,
+  MakerPoll,
 }
 
 export type NotificationSettingType = Prisma.NotificationSettingGetPayload<{

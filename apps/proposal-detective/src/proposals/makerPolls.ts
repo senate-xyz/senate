@@ -62,11 +62,6 @@ const findMakerPolls = async (dao: Dao) => {
 
   console.log(proposals);
 
-  const latestBlockMined = await provider.getBlockNumber();
-  const ongoingProposals = proposals.filter(
-    (proposal) => proposal.eventData.endBlock > latestBlockMined
-  );
-
   for (let i = 0; i < proposals.length; i++) {
     let proposalCreatedTimestamp = Number(proposals[i].eventData.blockCreated);
 

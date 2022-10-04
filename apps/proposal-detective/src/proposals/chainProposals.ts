@@ -161,9 +161,7 @@ const findGovernorBravoProposals = async (dao: Dao) => {
 };
 
 const findOngoingProposals = async (daos: Dao[]) => {
-  for (let i = 0; i < daos.length; i++) {
-    await findGovernorBravoProposals(daos[i]);
-  }
+  for (const dao of daos) await findGovernorBravoProposals(dao);
 };
 
 export const getChainProposals = async () => {
