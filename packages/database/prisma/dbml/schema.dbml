@@ -1,0 +1,93 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  address String [unique, not null]
+  subscriptions Subscription [not null]
+  votes Vote [not null]
+}
+
+Table DAO {
+  id String [pk]
+  name String [unique, not null]
+  picture String [not null]
+  handlers DAOHandler [not null]
+  subscriptions Subscription [not null]
+  proposals Proposal [not null]
+  votes Vote [not null]
+}
+
+Table DAOHandler {
+  id String [pk]
+  type DAOHandlerType [not null]
+  decoder Json [not null]
+  dao DAO [not null]
+  daoId String [not null]
+}
+
+Table Proposal {
+  id String [pk]
+  name String [not null]
+  description String [not null]
+  dao DAO [not null]
+  daoId String [not null]
+  daoHandlerId String [not null]
+  votes Vote [not null]
+}
+
+Table Vote {
+  id String [pk]
+  options VoteOption [not null]
+  user User [not null]
+  userId String [not null]
+  proposal Proposal [not null]
+  proposalId String [not null]
+  dao DAO [not null]
+  daoId String [not null]
+  daoHandlerId String [not null]
+}
+
+Table VoteOption {
+  option String [not null]
+  optionName String [not null]
+  Vote Vote [not null]
+  voteId String [not null]
+
+  indexes {
+    (option, optionName, voteId) [pk]
+  }
+}
+
+Table Subscription {
+  id String [pk]
+  user User [not null]
+  dao DAO [not null]
+  userId String [not null]
+  daoId String [not null]
+}
+
+Enum DAOHandlerType {
+  BRAVO1
+  BRAVO2
+  MAKER_PROPOSAL
+  MAKER_POLL
+  SNAPSHOT
+}
+
+Ref: DAOHandler.daoId > DAO.id [delete: Cascade]
+
+Ref: Proposal.daoId > DAO.id [delete: Cascade]
+
+Ref: Vote.userId > User.id [delete: Cascade]
+
+Ref: Vote.proposalId > Proposal.id [delete: Cascade]
+
+Ref: Vote.daoId > DAO.id [delete: Cascade]
+
+Ref: VoteOption.voteId > Vote.id [delete: Cascade]
+
+Ref: Subscription.userId > User.id [delete: Cascade]
+
+Ref: Subscription.daoId > DAO.id [delete: Cascade]

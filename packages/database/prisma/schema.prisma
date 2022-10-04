@@ -2,8 +2,11 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["interactiveTransactions"]
+    provider = "prisma-client-js"
+}
+
+generator dbml {
+    provider = "prisma-dbml-generator"
 }
 
 datasource db {
@@ -32,7 +35,7 @@ model DAOHandler {
     id      String         @id @default(cuid())
     type    DAOHandlerType
     decoder Json
-    dao     DAO            @relation(fields: [daoId], references: [id])
+    dao     DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
     daoId   String
 }
 
@@ -48,7 +51,7 @@ model Proposal {
     id           String @id @default(cuid())
     name         String
     description  String
-    dao          DAO    @relation(fields: [daoId], references: [id])
+    dao          DAO    @relation(fields: [daoId], references: [id], onDelete: Cascade)
     daoId        String
     daoHandlerId String
     votes        Vote[]
@@ -57,11 +60,11 @@ model Proposal {
 model Vote {
     id           String       @id @default(cuid())
     options      VoteOption[]
-    user         User         @relation(fields: [userId], references: [id])
+    user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId       String
-    proposal     Proposal     @relation(fields: [proposalId], references: [id])
+    proposal     Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
     proposalId   String
-    dao          DAO          @relation(fields: [daoId], references: [id])
+    dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
     daoId        String
     daoHandlerId String
 }
@@ -69,7 +72,7 @@ model Vote {
 model VoteOption {
     option     String
     optionName String
-    Vote       Vote   @relation(fields: [voteId], references: [id])
+    Vote       Vote   @relation(fields: [voteId], references: [id], onDelete: Cascade)
     voteId     String
 
     @@id([option, optionName, voteId])
@@ -77,8 +80,8 @@ model VoteOption {
 
 model Subscription {
     id   String @id @default(cuid())
-    user User   @relation(fields: [userId], references: [id])
-    dao  DAO    @relation(fields: [daoId], references: [id])
+    user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    dao  DAO    @relation(fields: [daoId], references: [id], onDelete: Cascade)
 
     userId String
     daoId  String
