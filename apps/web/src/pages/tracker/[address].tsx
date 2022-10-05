@@ -27,7 +27,7 @@ import {
   Image,
   useColorMode,
 } from "@chakra-ui/react";
-import { ProposalType } from "@senate/common-types";
+import { Proposal } from "@senate/common-types";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import moment from "moment";
 import { useRouter } from "next/router";
@@ -36,7 +36,7 @@ const Home: NextPage = () => {
   const { colorMode } = useColorMode();
   const router = useRouter();
   const { address } = router.query;
-  const [votes, setVotes] = useState<ProposalType[]>([]);
+  const [votes, setVotes] = useState<Proposal[]>([]);
   const [daos, setDaos] = useState<any[]>([]);
   const [selectedDao, setSelectedDao] = useState<string>();
   const [loading, setLoading] = useState(true);
@@ -45,7 +45,7 @@ const Home: NextPage = () => {
     setLoading(true);
     setDaos([]);
     setSelectedDao("");
-    fetch(`/api/tracker/?userInputAddress=${address}`)
+    fetch(`/api/unrestricted/tracker/?userInputAddress=${address}`)
       .then((response) => response.json())
       .then(async (data) => {
         setVotes(data);
@@ -148,20 +148,18 @@ const Home: NextPage = () => {
                       <Tbody>
                         {votes
                           .filter((vote) => vote.dao.name === selectedDao)
-                          .map((proposal: ProposalType) => {
+                          .map((proposal: Proposal) => {
                             return (
                               <Tr key={proposal.id}>
                                 <Td>
                                   <HStack>
                                     <Avatar src={proposal.dao.picture}></Avatar>
                                     <Link
-                                      href={proposal.url}
+                                      href={proposal.data["url"]}
                                       isExternal
                                       maxW="20rem"
                                     >
-                                      <Text noOfLines={1}>
-                                        {proposal.title}
-                                      </Text>
+                                      <Text noOfLines={1}>{proposal.name}</Text>
                                     </Link>
                                     <ExternalLinkIcon mx="2px" />
                                   </HStack>
@@ -171,33 +169,11 @@ const Home: NextPage = () => {
                                     {proposal.description}
                                   </Text>
                                 </Td>
-                                <Td>{moment(proposal.voteEnds).fromNow()}</Td>
-
                                 <Td>
-                                  {moment(proposal.voteEnds).isBefore(
-                                    new Date()
-                                  ) ? (
-                                    //past vote
-                                    proposal.userVote.length ? (
-                                      <Text color="green.400" fontWeight="800">
-                                        {proposal.userVote[0].voteName}
-                                      </Text>
-                                    ) : (
-                                      "Did not vote"
-                                    )
-                                  ) : //future vote
-                                  proposal.userVote.length ? (
-                                    <Text color="green.400" fontWeight="800">
-                                      {proposal.userVote[0].voteName}
-                                    </Text>
-                                  ) : (
-                                    <HStack>
-                                      <WarningTwoIcon color="red.400" />
-                                      <Text>Did not vote yet!</Text>
-                                      <WarningTwoIcon color="red.400" />
-                                    </HStack>
-                                  )}
+                                  {moment(proposal.data["timeEnd"]).fromNow()}
                                 </Td>
+
+                                <Td>idk</Td>
                               </Tr>
                             );
                           })}

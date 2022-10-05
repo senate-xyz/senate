@@ -1,2 +1,2 @@
 export * from "./web";
-export * from "./daoHandlers";
+export * from "./dbTypes";

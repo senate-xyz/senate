@@ -9,18 +9,28 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { DaoType } from "@senate/common-types";
-import { SubscriptionItem } from "./DaoItem";
+import { DAOType } from "@senate/common-types";
+import { DaoItem } from "./DaoItem";
+import { useSession } from "next-auth/react";
 
 const Subscriptions = () => {
-  const [subscribed, setSubscribed] = useState<DaoType[]>([]);
+  const [DAOs, setDAOs] = useState<DAOType[]>([]);
   const [loading, setLoading] = useState(true);
+  const { data: session } = useSession();
 
   useEffect(() => {
-    fetch(`/api/daos`, { method: "GET" })
+    let fetchUrl;
+    if (session)
+      fetchUrl = `/api/user/daos??userInputAddress=${session?.user?.name}`;
+    else
+      fetchUrl = `/api/unrestricted/daos??userInputAddress=${session?.user?.name}`;
+
+    fetch(fetchUrl, {
+      method: "GET",
+    })
       .then((response) => response.json())
       .then(async (data) => {
-        setSubscribed(data);
+        setDAOs(data);
         setLoading(false);
       });
   }, []);
@@ -49,10 +59,10 @@ const Subscriptions = () => {
           w="full"
           justifyItems="center"
         >
-          {subscribed.map((dao: DaoType, index: number) => {
+          {DAOs.map((dao: DAOType, index: number) => {
             return (
               <Flex key={index}>
-                <SubscriptionItem dao={dao} />
+                <DaoItem dao={dao} />
               </Flex>
             );
           })}

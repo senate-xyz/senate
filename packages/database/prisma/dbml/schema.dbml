@@ -47,7 +47,9 @@ Table Proposal {
   dao DAO [not null]
   daoId String [not null]
   daoHandlerId String [not null]
+  proposalType ProposalType [not null]
   votes Vote [not null]
+  data Json [not null]
 
   indexes {
     (externalId, daoId) [pk]
@@ -97,6 +99,14 @@ Table Subscription {
 }
 
 Enum DAOHandlerType {
+  BRAVO1
+  BRAVO2
+  MAKER_PROPOSAL
+  MAKER_POLL
+  SNAPSHOT
+}
+
+Enum ProposalType {
   BRAVO1
   BRAVO2
   MAKER_PROPOSAL

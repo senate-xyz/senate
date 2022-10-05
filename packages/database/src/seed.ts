@@ -1,6 +1,6 @@
 import aaveGovBravo from "./abis/aaveGovBravo.json";
 import { prisma } from "./client";
-import { DAOHandlerType } from "@prisma/client";
+import { DAOHandlerType, ProposalType } from "@prisma/client";
 
 async function main() {
   const testUser = await prisma.user.upsert({
@@ -67,6 +67,33 @@ async function main() {
       description: "Test description",
       daoId: testDAO!.id,
       daoHandlerId: testDAO!.handlers[0].id,
+      proposalType: ProposalType.SNAPSHOT,
+      data: {
+        timeStart: 1664975385,
+        timeEnd: 1665975385,
+      },
+    },
+  });
+
+  const testProposal2 = await prisma.proposal.upsert({
+    where: {
+      externalId_daoId: {
+        daoId: testDAO!.id,
+        externalId: "2",
+      },
+    },
+    update: {},
+    create: {
+      externalId: "2",
+      name: "Test name 2",
+      description: "Test description 2",
+      daoId: testDAO!.id,
+      daoHandlerId: testDAO!.handlers[0].id,
+      proposalType: ProposalType.BRAVO1,
+      data: {
+        timeStart: 1664975385,
+        timeEnd: 1665975385,
+      },
     },
   });
 
@@ -88,6 +115,29 @@ async function main() {
         create: {
           option: "1",
           optionName: "Yes",
+        },
+      },
+    },
+  });
+
+  await prisma.vote.upsert({
+    where: {
+      userId_daoId_proposalId: {
+        userId: testUser.id,
+        daoId: testDAO!.id,
+        proposalId: testProposal2.id,
+      },
+    },
+    update: {},
+    create: {
+      userId: testUser.id,
+      daoId: testDAO!.id,
+      proposalId: testProposal2.id,
+      daoHandlerId: testDAO!.handlers[0].id,
+      options: {
+        create: {
+          option: "0",
+          optionName: "No",
         },
       },
     },

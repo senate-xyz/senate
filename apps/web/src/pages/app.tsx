@@ -27,13 +27,6 @@ const DynamicTracker = dynamic(
   }
 );
 
-const DynamicSettings = dynamic(
-  () => import("../components/mainBox/settings/Settings"),
-  {
-    suspense: true,
-  }
-);
-
 const Home: NextPage = () => {
   const [page, setPage] = useState(PagesEnum.Dashboard);
   const { colorMode } = useColorMode();
@@ -55,7 +48,6 @@ const Home: NextPage = () => {
           {page == PagesEnum.Dashboard && <DyanmicProposals />}
           {page == PagesEnum.Watchlist && <DynamicWatchlist />}
           {page == PagesEnum.Tracker && <DynamicTracker />}
-          {page == PagesEnum.Settings && <DynamicSettings />}
         </Suspense>
       </Flex>
     </Flex>

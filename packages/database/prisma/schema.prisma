@@ -42,7 +42,7 @@ model DAO {
 model DAOHandler {
     id      String         @unique @default(cuid())
     type    DAOHandlerType
-    decoder Json
+    decoder Json //depends on type
     dao     DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
     daoId   String
 
@@ -58,16 +58,26 @@ enum DAOHandlerType {
 }
 
 model Proposal {
-    id           String @unique @default(cuid())
-    externalId   String @unique
+    id           String       @unique @default(cuid())
+    externalId   String       @unique
     name         String
     description  String
-    dao          DAO    @relation(fields: [daoId], references: [id], onDelete: Cascade)
+    dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
     daoId        String
     daoHandlerId String
+    proposalType ProposalType
     votes        Vote[]
+    data         Json // depends on daoHandlerId.type
 
     @@id([externalId, daoId])
+}
+
+enum ProposalType {
+    BRAVO1
+    BRAVO2
+    MAKER_PROPOSAL
+    MAKER_POLL
+    SNAPSHOT
 }
 
 model Vote {

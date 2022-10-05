@@ -34,14 +34,14 @@ import {
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
-import { ProposalType } from "@senate/common-types";
+import { Proposal } from "@senate/common-types";
 import moment from "moment";
 import { useSession } from "next-auth/react";
 
 export const Tracker = () => {
   const { data: session } = useSession();
   const toast = useToast();
-  const [votes, setVotes] = useState<ProposalType[]>([]);
+  const [votes, setVotes] = useState<Proposal[]>([]);
   const [daos, setDaos] = useState<any[]>([]);
   const [selectedDao, setSelectedDao] = useState<string>();
   const [loading, setLoading] = useState(true);
@@ -58,7 +58,14 @@ export const Tracker = () => {
 
     setDaos([]);
     setSelectedDao("");
-    fetch(`/api/tracker/?userInputAddress=${session?.user?.name}`)
+
+    let fetchUrl;
+    if (session)
+      fetchUrl = `/api/user/tracker/?userInputAddress=${session?.user?.name}`;
+    else
+      fetchUrl = `/api/unrestricted/tracker/?userInputAddress=${session?.user?.name}`;
+
+    fetch(fetchUrl)
       .then((response) => response.json())
       .then(async (data) => {
         setLoading(false);
@@ -161,18 +168,18 @@ export const Tracker = () => {
                   <Tbody>
                     {votes
                       .filter((vote) => vote.dao.name === selectedDao)
-                      .map((proposal: ProposalType) => {
+                      .map((proposal: Proposal) => {
                         return (
                           <Tr key={proposal.id}>
                             <Td>
                               <HStack>
                                 <Avatar src={proposal.dao.picture}></Avatar>
                                 <Link
-                                  href={proposal.url}
+                                  href={proposal.data["url"]}
                                   isExternal
                                   maxW="20rem"
                                 >
-                                  <Text noOfLines={1}>{proposal.title}</Text>
+                                  <Text noOfLines={1}>{proposal.name}</Text>
                                 </Link>
                                 <ExternalLinkIcon mx="2px" />
                               </HStack>
@@ -180,29 +187,10 @@ export const Tracker = () => {
                             <Td maxW={"20rem"}>
                               <Text noOfLines={1}>{proposal.description}</Text>
                             </Td>
-                            <Td>{moment(proposal.voteEnds).fromNow()}</Td>
-
                             <Td>
-                              {moment(proposal.voteEnds).isBefore(
-                                new Date()
-                              ) ? (
-                                //past vote
-                                proposal.userVote.length ? (
-                                  proposal.userVote[0]?.voteName
-                                ) : (
-                                  "Did not vote"
-                                )
-                              ) : //future vote
-                              proposal.userVote.length ? (
-                                proposal.userVote[0]?.voteName
-                              ) : (
-                                <HStack>
-                                  <WarningTwoIcon color="red.400" />
-                                  <Text>Did not vote yet!</Text>
-                                  <WarningTwoIcon color="red.400" />
-                                </HStack>
-                              )}
+                              {moment(proposal.data["timeEnd"]).fromNow()}
                             </Td>
+                            <Td>idk</Td>
                           </Tr>
                         );
                       })}

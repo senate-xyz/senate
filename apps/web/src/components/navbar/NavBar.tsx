@@ -14,14 +14,12 @@ import {
   VStack,
   Image,
   IconButton,
-  Button,
   Avatar,
-  HStack,
 } from "@chakra-ui/react";
 import { NavItemSPA } from "./NavBarSPA";
 import { LinkItemSPAProps, PagesEnum } from "@senate/common-types";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
-import { useSession, getCsrfToken, signIn, signOut } from "next-auth/react";
+import { useSession, getCsrfToken, signIn } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import {
   useConnect,
@@ -32,7 +30,6 @@ import {
   useEnsAvatar,
 } from "wagmi";
 
-import { FaSignOutAlt, FaSignInAlt } from "react-icons/fa";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const LinkItems: Array<LinkItemSPAProps> = [
@@ -43,7 +40,6 @@ const LinkItems: Array<LinkItemSPAProps> = [
     id: PagesEnum.Watchlist,
     icon: 2,
   },
-  { name: "Settings", id: PagesEnum.Settings, icon: 4 },
 ];
 
 export default function NavBar(props: { page: PagesEnum; setPage: any }) {
@@ -68,54 +64,6 @@ interface SidebarProps extends BoxProps {
 
 const OpenContent = ({ onClose, setPage }: SidebarProps) => {
   const { colorMode, toggleColorMode } = useColorMode();
-
-  const { data: session } = useSession();
-
-  const { connectors, connectAsync } = useConnect();
-  const { address, isConnected } = useAccount();
-  const ensName = useEnsName({
-    address: session?.user?.name as string,
-  });
-  const ensAvatar = useEnsAvatar({
-    addressOrName: session?.user?.name as string,
-  });
-  const { chain } = useNetwork();
-  const { signMessageAsync } = useSignMessage({});
-
-  const handleLogin = async () => {
-    try {
-      if (!isConnected)
-        Promise.all(
-          connectors.map(async (connector) => {
-            await connectAsync({ connector });
-          })
-        );
-
-      if (isConnected) {
-        const message = new SiweMessage({
-          domain: window.location.host,
-          address: address,
-          statement: "Sign in with Ethereum to the app.",
-          uri: window.location.origin,
-          version: "1",
-          chainId: chain?.id,
-          nonce: await getCsrfToken(),
-        });
-        const signature = await signMessageAsync({
-          message: message.prepareMessage(),
-        });
-
-        signIn("credentials", {
-          message: JSON.stringify(message),
-          signature,
-          redirect: false,
-          callbackUrl: message.uri,
-        });
-      }
-    } catch (error) {
-      window.alert(error);
-    }
-  };
 
   return (
     <VStack
