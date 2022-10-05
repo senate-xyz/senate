@@ -65,16 +65,7 @@ export const NavItemSPA = ({
           as={FiBarChart2}
         />
       )}
-      {item.icon == 4 && (
-        <Icon
-          boxSize="25px"
-          fontSize="16"
-          _groupHover={{
-            color: "white",
-          }}
-          as={FiSettings}
-        />
-      )}
+
       <Box ml="4px">{children}</Box>
     </Flex>
   );
