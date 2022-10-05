@@ -46,7 +46,7 @@ async function main() {
 
   const testDAO = await prisma.dAO.findFirst({
     where: {
-      name: "Aave",
+      name: "TestDAO",
     },
     include: {
       handlers: true,
