@@ -17,8 +17,16 @@ datasource db {
 model User {
     id            String         @id @unique @default(cuid())
     address       String         @unique
+    proxies       UserProxy[]
     subscriptions Subscription[]
     votes         Vote[]
+}
+
+model UserProxy {
+    id      String @id @unique @default(cuid())
+    address String
+    user    User   @relation(fields: [userId], references: [id])
+    userId  String
 }
 
 model DAO {
