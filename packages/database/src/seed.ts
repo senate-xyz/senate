@@ -13,11 +13,11 @@ async function main() {
     },
   });
 
-  const aave = await prisma.dAO.upsert({
-    where: { name: "Aave" },
+  await prisma.dAO.upsert({
+    where: { name: "TestDAO" },
     update: {},
     create: {
-      name: "Aave",
+      name: "TestDAO",
       picture: "https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png",
       handlers: {
         create: [
@@ -44,17 +44,29 @@ async function main() {
     },
   });
 
+  const testDAO = await prisma.dAO.findFirst({
+    where: {
+      name: "Aave",
+    },
+    include: {
+      handlers: true,
+    },
+  });
+
   const testProposal = await prisma.proposal.upsert({
     where: {
-      externalId: "1",
+      externalId_daoId: {
+        daoId: testDAO!.id,
+        externalId: "1",
+      },
     },
     update: {},
     create: {
       externalId: "1",
       name: "Test name",
       description: "Test description",
-      daoId: aave.id,
-      daoHandlerId: aave.handlers[0].id,
+      daoId: testDAO!.id,
+      daoHandlerId: testDAO!.handlers[0].id,
     },
   });
 
@@ -62,16 +74,16 @@ async function main() {
     where: {
       userId_daoId_proposalId: {
         userId: testUser.id,
-        daoId: aave.id,
+        daoId: testDAO!.id,
         proposalId: testProposal.id,
       },
     },
     update: {},
     create: {
       userId: testUser.id,
-      daoId: aave.id,
+      daoId: testDAO!.id,
       proposalId: testProposal.id,
-      daoHandlerId: aave.handlers[0].id,
+      daoHandlerId: testDAO!.handlers[0].id,
       options: {
         create: {
           option: "1",
@@ -85,13 +97,13 @@ async function main() {
     where: {
       userId_daoId: {
         userId: testUser.id,
-        daoId: aave.id,
+        daoId: testDAO!.id,
       },
     },
     update: {},
     create: {
       userId: testUser.id,
-      daoId: aave.id,
+      daoId: testDAO!.id,
     },
   });
 }

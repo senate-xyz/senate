@@ -5,8 +5,16 @@
 Table User {
   id String [pk, unique]
   address String [unique, not null]
+  proxies UserProxy [not null]
   subscriptions Subscription [not null]
   votes Vote [not null]
+}
+
+Table UserProxy {
+  id String [pk, unique]
+  address String [not null]
+  user User [not null]
+  userId String [not null]
 }
 
 Table DAO {
@@ -95,6 +103,8 @@ Enum DAOHandlerType {
   MAKER_POLL
   SNAPSHOT
 }
+
+Ref: UserProxy.userId > User.id
 
 Ref: DAOHandler.daoId > DAO.id [delete: Cascade]
 
