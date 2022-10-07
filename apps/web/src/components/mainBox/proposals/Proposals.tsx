@@ -23,6 +23,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import moment from "moment";
 import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
+import { TrackerProposalType } from "@senate/common-types";
 
 export const Proposals = () => {
   const isMobile = useBreakpointValue({
@@ -72,51 +73,57 @@ export const Proposals = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {proposals.data.map((proposal) => {
+                  {proposals.data.map((proposal: TrackerProposalType) => {
                     return (
-                      <Tr key={proposal.id}>
-                        <Td>
-                          <HStack>
-                            <Avatar
-                              boxSize={{ base: "35px", md: "40px" }}
-                              src={proposal.dao.picture}
-                              position="relative"
-                            >
+                      proposal.data && (
+                        <Tr key={proposal.id}>
+                          <Td>
+                            <HStack>
                               <Avatar
-                                bottom={{ base: "-0.5", md: "-2" }}
-                                right={{ base: "-0.5", md: "-2" }}
-                                bg="white"
-                                boxSize={{ base: "15px", md: "20px" }}
-                                src={
-                                  proposal.proposalType == "SNAPSHOT"
-                                    ? "https://avatars.githubusercontent.com/u/72904068?s=200&v=4"
-                                    : "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"
-                                }
-                                position="absolute"
-                              ></Avatar>
-                            </Avatar>
-                            {!isMobile && <Text>{proposal.dao.name}</Text>}
-                          </HStack>
-                        </Td>
-                        <Td>
-                          <HStack>
-                            <Link
-                              href={proposal.data["url"]}
-                              isExternal
-                              maxW={{ base: "10rem", md: "20rem" }}
-                            >
-                              <Text noOfLines={1}>{proposal.name}</Text>
-                            </Link>
-                            <ExternalLinkIcon mx="2px" />
-                          </HStack>
-                        </Td>
+                                boxSize={{ base: "35px", md: "40px" }}
+                                src={proposal.dao.picture}
+                                position="relative"
+                              >
+                                <Avatar
+                                  bottom={{ base: "-0.5", md: "-2" }}
+                                  right={{ base: "-0.5", md: "-2" }}
+                                  bg="white"
+                                  boxSize={{ base: "15px", md: "20px" }}
+                                  src={
+                                    proposal.proposalType == "SNAPSHOT"
+                                      ? "https://avatars.githubusercontent.com/u/72904068?s=200&v=4"
+                                      : "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"
+                                  }
+                                  position="absolute"
+                                ></Avatar>
+                              </Avatar>
+                              {!isMobile && <Text>{proposal.dao.name}</Text>}
+                            </HStack>
+                          </Td>
+                          <Td>
+                            <HStack>
+                              <Link
+                                // @ts-ignore
+                                href={proposal.data["url"]}
+                                isExternal
+                                maxW={{ base: "10rem", md: "20rem" }}
+                              >
+                                <Text noOfLines={1}>{proposal.name}</Text>
+                              </Link>
+                              <ExternalLinkIcon mx="2px" />
+                            </HStack>
+                          </Td>
 
-                        <Td>
-                          {moment(proposal.data["timeEnd"]).fromNow(true)}
-                        </Td>
+                          <Td>
+                            {
+                              // @ts-ignore
+                              moment(proposal.data["timeEnd"]).fromNow(true)
+                            }
+                          </Td>
 
-                        <Td>idk</Td>
-                      </Tr>
+                          <Td>idk</Td>
+                        </Tr>
+                      )
                     );
                   })}
                 </Tbody>

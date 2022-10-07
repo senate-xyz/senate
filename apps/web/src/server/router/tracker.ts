@@ -2,17 +2,15 @@ import { createRouter } from "./context";
 import { prisma } from "@senate/database";
 import { z } from "zod";
 
-export const trackeRouter = createRouter().query("tracker", {
-  input: z
-    .object({
-      text: z.string().nullish(),
-    })
-    .nullish(),
+export const trackerRouter = createRouter().query("track", {
+  input: z.object({
+    address: z.string(),
+  }),
   async resolve({ input }) {
     const user = await prisma.user
       .findFirstOrThrow({
         where: {
-          address: input.text,
+          address: input.address,
         },
         select: {
           id: true,

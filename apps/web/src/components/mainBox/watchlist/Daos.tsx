@@ -8,11 +8,10 @@ import {
   SimpleGrid,
   Box,
 } from "@chakra-ui/react";
-import { DAOType } from "@senate/common-types";
 import { DaoItem } from "./DaoItem";
 import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
-import { useEffect } from "react";
+import { DAOType } from "@senate/common-types";
 
 const Subscriptions = () => {
   const { data: session } = useSession();
@@ -44,7 +43,7 @@ const Subscriptions = () => {
             w="full"
             justifyItems="center"
           >
-            {DAOs.data.map((dao, index: number) => {
+            {DAOs.data.map((dao: DAOType, index: number) => {
               return (
                 <Flex key={index}>
                   <DaoItem dao={dao} key={index} />
