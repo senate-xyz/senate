@@ -8,32 +8,16 @@ import {
   SimpleGrid,
   Box,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 import { DAOType } from "@senate/common-types";
 import { DaoItem } from "./DaoItem";
 import { useSession } from "next-auth/react";
+import { trpc } from "../../../utils/trpc";
+import { useEffect } from "react";
 
 const Subscriptions = () => {
-  const [DAOs, setDAOs] = useState<DAOType[]>([]);
-  const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
 
-  useEffect(() => {
-    let fetchUrl;
-    if (session)
-      fetchUrl = `/api/user/daos??userInputAddress=${session?.user?.name}`;
-    else
-      fetchUrl = `/api/unrestricted/daos??userInputAddress=${session?.user?.name}`;
-
-    fetch(fetchUrl, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then(async (data) => {
-        setDAOs(data);
-        setLoading(false);
-      });
-  }, []);
+  const DAOs = trpc.useQuery([session ? "user.daos" : "unrestricted.daos"]);
 
   return (
     <Box w="full">
@@ -48,25 +32,27 @@ const Subscriptions = () => {
         <Box pb="0.3rem" pt="1rem" />
         <Divider />
         <Box pb="0.3rem" pt="1rem" />
-        {loading && (
+        {DAOs.isLoading && (
           <Center w="full">
             <Spinner />
           </Center>
         )}
-        <SimpleGrid
-          minChildWidth="10rem"
-          spacing="1rem"
-          w="full"
-          justifyItems="center"
-        >
-          {DAOs.map((dao: DAOType, index: number) => {
-            return (
-              <Flex key={index}>
-                <DaoItem dao={dao} />
-              </Flex>
-            );
-          })}
-        </SimpleGrid>
+        {DAOs.data && (
+          <SimpleGrid
+            minChildWidth="10rem"
+            spacing="1rem"
+            w="full"
+            justifyItems="center"
+          >
+            {DAOs.data.map((dao, index: number) => {
+              return (
+                <Flex key={index}>
+                  <DaoItem dao={dao} key={index} />
+                </Flex>
+              );
+            })}
+          </SimpleGrid>
+        )}
       </VStack>
     </Box>
   );
