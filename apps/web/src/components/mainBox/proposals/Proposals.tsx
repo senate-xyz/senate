@@ -12,7 +12,6 @@ import {
   Avatar,
   Link,
   HStack,
-  Select,
   Alert,
   AlertIcon,
   Box,
@@ -21,10 +20,9 @@ import {
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
-import { useEffect, useState } from "react";
-import { Proposal } from "@senate/common-types";
 import moment from "moment";
 import { useSession } from "next-auth/react";
+import { trpc } from "../../../utils/trpc";
 
 export const Proposals = () => {
   const isMobile = useBreakpointValue({
@@ -32,25 +30,10 @@ export const Proposals = () => {
     md: false,
   });
   const { data: session } = useSession();
-  const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let fetchUrl;
-    if (session)
-      fetchUrl = `/api/user/proposals/?userInputAddress=${session?.user?.name}&includePastDays=0`;
-    else
-      fetchUrl = `/api/unrestrcited/proposals/?userInputAddress=${session?.user?.name}&includePastDays=0`;
-
-    fetch(fetchUrl)
-      .then((response) => response.json())
-      .then(async (data) => {
-        setLoading(false);
-        setProposals(data);
-
-        console.log(data[0]);
-      });
-  }, [session]);
+  const proposals = trpc.useQuery([
+    session ? "user.proposals" : "unrestricted.proposals",
+  ]);
 
   return (
     <Box w="full">
@@ -59,7 +42,7 @@ export const Proposals = () => {
         align="start"
         p={{ base: "2", md: "5" }}
       >
-        {!proposals.length && (
+        {!proposals.data && (
           <Alert status="warning">
             <AlertIcon />
             No data. New accounts require up to 10 minutes to fetch new data...
@@ -72,7 +55,7 @@ export const Proposals = () => {
         <Box pb="0.3rem" pt="1rem" />
         <Divider />
         <Box pb="0.3rem" pt="1rem" />
-        {proposals.length && (
+        {proposals.data && (
           <Container overflow="auto" maxW="90vw">
             <TableContainer>
               <Table
@@ -89,7 +72,7 @@ export const Proposals = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {proposals.map((proposal: Proposal) => {
+                  {proposals.data.map((proposal) => {
                     return (
                       <Tr key={proposal.id}>
                         <Td>

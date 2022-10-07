@@ -14,7 +14,6 @@ import {
   useDisclosure,
   Center,
   VStack,
-  Spinner,
   useToast,
   AvatarGroup,
   useColorMode,
@@ -22,7 +21,6 @@ import {
 } from "@chakra-ui/react";
 import { DAOType } from "@senate/common-types";
 import { FaDiscord, FaSlack, FaTelegram, FaBell } from "react-icons/fa";
-import { useState } from "react";
 import { useSession } from "next-auth/react";
 
 export const DaoItem = (props: { dao: DAOType }) => {
@@ -48,22 +46,22 @@ export const DaoItem = (props: { dao: DAOType }) => {
       w="10rem"
       h="12em"
       p="1rem"
-      border={props.dao.subscriptions.length ? "2px" : "1px"}
+      border={props.dao.subscriptions ? "2px" : "1px"}
       bgColor={
         colorMode == "light"
-          ? props.dao.subscriptions.length
+          ? props.dao.subscriptions
             ? "blackAlpha.50"
             : "blackAlpha.300"
-          : props.dao.subscriptions.length
+          : props.dao.subscriptions
           ? "whiteAlpha.300"
           : "whiteAlpha.50"
       }
       borderColor={
         colorMode == "light"
-          ? props.dao.subscriptions.length
+          ? props.dao.subscriptions
             ? "blackAlpha.300"
             : "blackAlpha.300"
-          : props.dao.subscriptions.length
+          : props.dao.subscriptions
           ? "whiteAlpha.400"
           : "whiteAlpha.100"
       }
@@ -78,7 +76,7 @@ export const DaoItem = (props: { dao: DAOType }) => {
           bottom={{ base: "-0.5", md: "-2.5" }}
           right={{ base: "-0.5", md: "-2.5" }}
         >
-          {props.dao.handlers.map((handler) => {
+          {props.dao.handlers.map((handler, index) => {
             switch (handler.type) {
               case "BRAVO1":
               case "BRAVO2":
@@ -86,6 +84,7 @@ export const DaoItem = (props: { dao: DAOType }) => {
               case "MAKER_PROPOSAL":
                 return (
                   <Avatar
+                    key={index}
                     bg="white"
                     name="eth"
                     src="https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"
@@ -96,6 +95,7 @@ export const DaoItem = (props: { dao: DAOType }) => {
               case "SNAPSHOT":
                 return (
                   <Avatar
+                    key={index}
                     bg="white"
                     name="snapshot"
                     src="https://avatars.githubusercontent.com/u/72904068?s=200&v=4"
