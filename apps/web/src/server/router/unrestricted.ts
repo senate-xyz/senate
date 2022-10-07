@@ -42,6 +42,9 @@ export const unrestrictedRouter = createRouter()
         distinct: "id",
         include: {
           handlers: true,
+          subscriptions: {
+            take: 0, //needed in order to maintain type safety
+          },
         },
       });
       return daosList;

@@ -1,0 +1,4 @@
+{
+  "extends": "@senate/tsconfig/nest.json",
+  "compilerOptions": { "outDir": "./dist" }
+}

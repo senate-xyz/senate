@@ -27,41 +27,32 @@ import {
   Image,
   useColorMode,
 } from "@chakra-ui/react";
-import { Proposal } from "@senate/common-types";
-import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
+
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import moment from "moment";
 import { useRouter } from "next/router";
+import { trpc } from "../../utils/trpc";
 
 const Home: NextPage = () => {
   const { colorMode } = useColorMode();
   const router = useRouter();
   const { address } = router.query;
-  const [votes, setVotes] = useState<Proposal[]>([]);
+
   const [daos, setDaos] = useState<any[]>([]);
   const [selectedDao, setSelectedDao] = useState<string>();
-  const [loading, setLoading] = useState(true);
+
+  const votes = trpc.useQuery(["tracker.track", { address: String(address) }]);
 
   useEffect(() => {
-    setLoading(true);
-    setDaos([]);
-    setSelectedDao("");
-    fetch(`/api/unrestricted/tracker/?userInputAddress=${address}`)
-      .then((response) => response.json())
-      .then(async (data) => {
-        setVotes(data);
-      });
-  }, [address]);
-
-  useEffect(() => {
-    votes
-      .map((vote) => vote.dao)
-      .filter((element, index, array) => {
-        return array.findIndex((a) => a.name == element.name) === index;
-      })
-      .map((dao) => {
-        setDaos((oldArray) => [...oldArray, dao]);
-      });
-    setLoading(false);
+    if (votes.data) {
+      setDaos(
+        votes.data
+          .map((vote) => vote.dao)
+          .filter((element, index, array) => {
+            return array.findIndex((a) => a.name == element.name) === index;
+          })
+      );
+    }
   }, [votes]);
 
   useEffect(() => {
@@ -110,78 +101,89 @@ const Home: NextPage = () => {
                 <Spacer />
               </HStack>
               <Divider></Divider>
-              {loading && (
+              {votes.isLoading && (
                 <Center w="full">
                   <Spinner />
                 </Center>
               )}
+              {daos && (
+                <Tabs w="full" variant="enclosed">
+                  <TabList>
+                    {daos.map((dao, index) => {
+                      return (
+                        <Tab
+                          key={index}
+                          onClick={() => {
+                            setSelectedDao(dao.name);
+                          }}
+                        >
+                          <Avatar src={dao.picture} size="xs"></Avatar>
+                          <Box m="2"></Box>
+                          <Text>{dao.name}</Text>
+                        </Tab>
+                      );
+                    })}
+                  </TabList>
 
-              <Tabs w="full" variant="enclosed">
-                <TabList>
-                  {daos.map((dao, index) => {
-                    return (
-                      <Tab
-                        key={index}
-                        onClick={() => {
-                          setSelectedDao(dao.name);
-                        }}
-                      >
-                        <Avatar src={dao.picture} size="xs"></Avatar>
-                        <Box m="2"></Box>
-                        <Text>{dao.name}</Text>
-                      </Tab>
-                    );
-                  })}
-                </TabList>
+                  <TabPanels w="full">
+                    <TableContainer w="full">
+                      <Table variant="simple">
+                        <Thead>
+                          <Tr>
+                            <Th>Proposal</Th>
+                            <Th>Description</Th>
+                            <Th>Time Ago</Th>
+                            <Th>Voted</Th>
+                          </Tr>
+                        </Thead>
+                        {votes.data && (
+                          <Tbody>
+                            {votes.data
+                              .filter((vote) => vote.dao.name === selectedDao)
+                              .map((proposal) => {
+                                return (
+                                  <Tr key={proposal.id}>
+                                    <Td>
+                                      <HStack>
+                                        <Avatar
+                                          src={proposal.dao.picture}
+                                        ></Avatar>
+                                        <Link
+                                          // @ts-ignore
+                                          href={proposal.data["url"]}
+                                          isExternal
+                                          maxW="20rem"
+                                        >
+                                          <Text noOfLines={1}>
+                                            {proposal.name}
+                                          </Text>
+                                        </Link>
+                                        <ExternalLinkIcon mx="2px" />
+                                      </HStack>
+                                    </Td>
+                                    <Td maxW={"20rem"}>
+                                      <Text noOfLines={1}>
+                                        {proposal.description}
+                                      </Text>
+                                    </Td>
+                                    <Td>
+                                      {moment(
+                                        // @ts-ignore
+                                        proposal.data["timeEnd"]
+                                      ).fromNow()}
+                                    </Td>
 
-                <TabPanels w="full">
-                  <TableContainer w="full">
-                    <Table variant="simple">
-                      <Thead>
-                        <Tr>
-                          <Th>Proposal</Th>
-                          <Th>Description</Th>
-                          <Th>Time Ago</Th>
-                          <Th>Voted</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody>
-                        {votes
-                          .filter((vote) => vote.dao.name === selectedDao)
-                          .map((proposal: Proposal) => {
-                            return (
-                              <Tr key={proposal.id}>
-                                <Td>
-                                  <HStack>
-                                    <Avatar src={proposal.dao.picture}></Avatar>
-                                    <Link
-                                      href={proposal.data["url"]}
-                                      isExternal
-                                      maxW="20rem"
-                                    >
-                                      <Text noOfLines={1}>{proposal.name}</Text>
-                                    </Link>
-                                    <ExternalLinkIcon mx="2px" />
-                                  </HStack>
-                                </Td>
-                                <Td maxW={"20rem"}>
-                                  <Text noOfLines={1}>
-                                    {proposal.description}
-                                  </Text>
-                                </Td>
-                                <Td>
-                                  {moment(proposal.data["timeEnd"]).fromNow()}
-                                </Td>
-
-                                <Td>idk</Td>
-                              </Tr>
-                            );
-                          })}
-                      </Tbody>
-                    </Table>
-                  </TableContainer>
-                </TabPanels>
-              </Tabs>
+                                    <Td>idk</Td>
+                                  </Tr>
+                                );
+                              })}
+                          </Tbody>
+                        )}
+                      </Table>
+                    </TableContainer>
+                  </TabPanels>
+                </Tabs>
+              )}
             </VStack>
           </Grid>
         </Flex>

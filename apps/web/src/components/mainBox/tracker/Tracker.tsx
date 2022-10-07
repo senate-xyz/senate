@@ -19,7 +19,6 @@ import {
   TabList,
   TabPanels,
   Tabs,
-  useToast,
   Box,
   Container,
   Button,
@@ -31,57 +30,42 @@ import {
   PopoverTrigger,
   Input,
 } from "@chakra-ui/react";
-import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 import { useEffect, useState } from "react";
-import { Proposal } from "@senate/common-types";
+
 import moment from "moment";
 import { useSession } from "next-auth/react";
+import { trpc } from "../../../utils/trpc";
+import { TrackerProposalType } from "@senate/common-types";
 
 export const Tracker = () => {
-  const { data: session } = useSession();
-  const toast = useToast();
-  const [votes, setVotes] = useState<Proposal[]>([]);
   const [daos, setDaos] = useState<any[]>([]);
   const [selectedDao, setSelectedDao] = useState<string>();
-  const [loading, setLoading] = useState(true);
+
+  const { data: session } = useSession();
+
+  const votes = trpc.useQuery([
+    "tracker.track",
+    {
+      address:
+        session?.user?.id ?? "0x000000000000000000000000000000000000dEaD",
+    },
+  ]);
 
   useEffect(() => {
-    if (!session)
-      toast({
-        title: "Not signed in",
-        description: "Vote tracker requires you to sign in first",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-      });
-
-    setDaos([]);
-    setSelectedDao("");
-
-    let fetchUrl;
-    if (session)
-      fetchUrl = `/api/user/tracker/?userInputAddress=${session?.user?.name}`;
-    else
-      fetchUrl = `/api/unrestricted/tracker/?userInputAddress=${session?.user?.name}`;
-
-    fetch(fetchUrl)
-      .then((response) => response.json())
-      .then(async (data) => {
-        setLoading(false);
-        setVotes(data);
-      });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    votes
-      .map((vote) => vote.dao)
-      .filter((element, index, array) => {
-        return array.findIndex((a) => a.name == element.name) === index;
-      })
-      .map((dao) => {
-        setDaos((oldArray) => [...oldArray, dao]);
-      });
+    if (votes.data)
+      votes.data
+        .map((vote: { dao: any }) => vote.dao)
+        .filter((element: { name: any }, index: any, array: any[]) => {
+          return (
+            array.findIndex((a: { name: any }) => a.name == element.name) ===
+            index
+          );
+        })
+        .map((dao: any) => {
+          setDaos((oldArray) => [...oldArray, dao]);
+        });
   }, [votes]);
 
   useEffect(() => {
@@ -129,7 +113,7 @@ export const Tracker = () => {
         <Box pb="0.3rem" pt="1rem" />
         <Divider />
         <Box pb="0.3rem" pt="1rem" />
-        {loading && (
+        {votes.isLoading && (
           <Center w="full">
             <Spinner />
           </Center>
@@ -165,36 +149,45 @@ export const Tracker = () => {
                       <Th>Voted</Th>
                     </Tr>
                   </Thead>
-                  <Tbody>
-                    {votes
-                      .filter((vote) => vote.dao.name === selectedDao)
-                      .map((proposal: Proposal) => {
-                        return (
-                          <Tr key={proposal.id}>
-                            <Td>
-                              <HStack>
-                                <Avatar src={proposal.dao.picture}></Avatar>
-                                <Link
-                                  href={proposal.data["url"]}
-                                  isExternal
-                                  maxW="20rem"
-                                >
-                                  <Text noOfLines={1}>{proposal.name}</Text>
-                                </Link>
-                                <ExternalLinkIcon mx="2px" />
-                              </HStack>
-                            </Td>
-                            <Td maxW={"20rem"}>
-                              <Text noOfLines={1}>{proposal.description}</Text>
-                            </Td>
-                            <Td>
-                              {moment(proposal.data["timeEnd"]).fromNow()}
-                            </Td>
-                            <Td>idk</Td>
-                          </Tr>
-                        );
-                      })}
-                  </Tbody>
+
+                  {votes.data && (
+                    <Tbody>
+                      {votes.data
+                        .filter((vote) => vote.dao.name === selectedDao)
+                        .map((proposal: TrackerProposalType) => {
+                          return (
+                            <Tr key={proposal.id}>
+                              <Td>
+                                <HStack>
+                                  <Avatar src={proposal.dao.picture}></Avatar>
+                                  <Link
+                                    // @ts-ignore
+                                    href={proposal.data["url"]}
+                                    isExternal
+                                    maxW="20rem"
+                                  >
+                                    <Text noOfLines={1}>{proposal.name}</Text>
+                                  </Link>
+                                  <ExternalLinkIcon mx="2px" />
+                                </HStack>
+                              </Td>
+                              <Td maxW={"20rem"}>
+                                <Text noOfLines={1}>
+                                  {proposal.description}
+                                </Text>
+                              </Td>
+                              <Td>
+                                {
+                                  // @ts-ignore
+                                  moment(proposal.data["timeEnd"]).fromNow()
+                                }
+                              </Td>
+                              <Td>idk</Td>
+                            </Tr>
+                          );
+                        })}
+                    </Tbody>
+                  )}
                 </Table>
               </TableContainer>
             </TabPanels>
