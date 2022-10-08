@@ -1,13 +1,3 @@
-import {
-  Text,
-  VStack,
-  Divider,
-  Flex,
-  Spinner,
-  Center,
-  SimpleGrid,
-  Box,
-} from "@chakra-ui/react";
 import { DaoItem } from "./DaoItem";
 import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
@@ -19,8 +9,9 @@ const Subscriptions = () => {
   const DAOs = trpc.useQuery([session ? "user.daos" : "unrestricted.daos"]);
 
   return (
-    <Box w="full">
-      <VStack
+    <div>
+      <p>Watchlist</p>
+      {/* <VStack
         m={{ base: "0", md: "10" }}
         align="start"
         p={{ base: "2", md: "5" }}
@@ -52,8 +43,8 @@ const Subscriptions = () => {
             })}
           </SimpleGrid>
         )}
-      </VStack>
-    </Box>
+      </VStack> */}
+    </div>
   );
 };
 
