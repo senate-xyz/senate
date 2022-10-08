@@ -16,40 +16,40 @@ import {
   IconButton,
   Avatar,
 } from "@chakra-ui/react";
-import { NavItemSPA } from "./NavBarSPA";
-import { LinkItemSPAProps, PagesEnum } from "@senate/common-types";
+import { LinkItemSPAProps, NavItem } from "./NavItem";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
-import { useSession, getCsrfToken, signIn } from "next-auth/react";
-import { SiweMessage } from "siwe";
-import {
-  useConnect,
-  useAccount,
-  useNetwork,
-  useSignMessage,
-  useEnsName,
-  useEnsAvatar,
-} from "wagmi";
+import { useSession } from "next-auth/react";
+import { useEnsName, useEnsAvatar } from "wagmi";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { FiBarChart2, FiHome, FiStar } from "react-icons/fi";
+
+export enum ViewsEnum {
+  None = 1,
+  Dashboard = 2,
+  Watchlist = 3,
+  Tracker = 4,
+  Settings = 5,
+}
 
 const LinkItems: Array<LinkItemSPAProps> = [
-  { name: "Dashboard", id: PagesEnum.Dashboard, icon: 1 },
-  { name: "Vote tracker", id: PagesEnum.Tracker, icon: 3 },
+  { name: "Dashboard", id: ViewsEnum.Dashboard, icon: FiHome },
   {
     name: "Watchlist",
-    id: PagesEnum.Watchlist,
-    icon: 2,
+    id: ViewsEnum.Watchlist,
+    icon: FiBarChart2,
   },
+  { name: "Vote tracker", id: ViewsEnum.Tracker, icon: FiStar },
 ];
 
-export default function NavBar(props: { page: PagesEnum; setPage: any }) {
+export default function NavBar(props: { page: ViewsEnum; setView: any }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode } = useColorMode();
   return (
     <Box bgColor={colorMode == "light" ? "blackAlpha.200" : "blackAlpha.600"}>
       <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="xs">
         <DrawerContent>
-          <OpenContent onClose={onClose} setPage={props.setPage} />
+          <OpenContent onClose={onClose} setView={props.setView} />
         </DrawerContent>
       </Drawer>
       <ClosedContent onOpen={onOpen} />
@@ -57,12 +57,12 @@ export default function NavBar(props: { page: PagesEnum; setPage: any }) {
   );
 }
 
-interface SidebarProps extends BoxProps {
+interface OpenProps extends BoxProps {
   onClose: () => void;
-  setPage: () => void;
+  setView: () => void;
 }
 
-const OpenContent = ({ onClose, setPage }: SidebarProps) => {
+const OpenContent = ({ onClose, setView }: OpenProps) => {
   const { colorMode, toggleColorMode } = useColorMode();
 
   return (
@@ -99,15 +99,15 @@ const OpenContent = ({ onClose, setPage }: SidebarProps) => {
       <ConnectButton accountStatus="avatar" showBalance={false} />
 
       <Box py="3" />
-      {LinkItems.map((link) => (
-        <NavItemSPA
-          key={link.name}
-          item={link}
-          setPage={setPage}
+      {LinkItems.map((view) => (
+        <NavItem
+          key={view.name}
+          item={view}
+          setView={setView}
           onClose={onClose}
         >
-          {link.name}
-        </NavItemSPA>
+          {view.name}
+        </NavItem>
       ))}
       <Spacer />
       <Box p="4">
@@ -121,10 +121,10 @@ const OpenContent = ({ onClose, setPage }: SidebarProps) => {
   );
 };
 
-interface MobileProps extends FlexProps {
+interface ClosedProps extends FlexProps {
   onOpen: () => void;
 }
-const ClosedContent = ({ onOpen }: MobileProps) => {
+const ClosedContent = ({ onOpen }: ClosedProps) => {
   const { colorMode } = useColorMode();
 
   const { data: session } = useSession();
@@ -158,11 +158,10 @@ const ClosedContent = ({ onOpen }: MobileProps) => {
         name={ensName.data!}
       ></Avatar>
 
-      <Box py="3" />
-      <Box px="50px" />
+      <Box py="3" px="50px" />
 
-      {LinkItems.map((link) => (
-        <NavItemSPA key={link.name} item={link}></NavItemSPA>
+      {LinkItems.map((view) => (
+        <NavItem key={view.name} item={view}></NavItem>
       ))}
     </VStack>
   );

@@ -15,6 +15,16 @@ import "@fontsource/manrope/500.css";
 import "@fontsource/manrope/600.css";
 import "@fontsource/manrope/700.css";
 import "@fontsource/manrope/800.css";
+import "@rainbow-me/rainbowkit/styles.css";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import {
+  GetSiweMessageOptions,
+  RainbowKitSiweNextAuthProvider,
+} from "@rainbow-me/rainbowkit-siwe-next-auth";
+import { configureChains, chain, createClient, WagmiConfig } from "wagmi";
+import { infuraProvider } from "wagmi/providers/infura";
+import { publicProvider } from "wagmi/providers/public";
 
 const theme = extendTheme({
   fonts: {
@@ -24,18 +34,6 @@ const theme = extendTheme({
   initialColorMode: "dark",
   useSystemColorMode: false,
 });
-
-import "@rainbow-me/rainbowkit/styles.css";
-import {
-  GetSiweMessageOptions,
-  RainbowKitSiweNextAuthProvider,
-} from "@rainbow-me/rainbowkit-siwe-next-auth";
-
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
-import { infuraProvider } from "wagmi/providers/infura";
-import { publicProvider } from "wagmi/providers/public";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 const { chains, provider } = configureChains(
   [chain.mainnet],
@@ -62,19 +60,19 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <ChakraProvider theme={theme}>
+    <SessionProvider refetchInterval={0} session={session}>
       <WagmiConfig client={wagmiClient}>
-        <SessionProvider refetchInterval={0} session={session}>
-          <RainbowKitSiweNextAuthProvider
-            getSiweMessageOptions={getSiweMessageOptions}
-          >
-            <RainbowKitProvider chains={chains}>
+        <RainbowKitSiweNextAuthProvider
+          getSiweMessageOptions={getSiweMessageOptions}
+        >
+          <RainbowKitProvider chains={chains}>
+            <ChakraProvider theme={theme}>
               <Component {...pageProps} />
-            </RainbowKitProvider>
-          </RainbowKitSiweNextAuthProvider>
-        </SessionProvider>
+            </ChakraProvider>
+          </RainbowKitProvider>
+        </RainbowKitSiweNextAuthProvider>
       </WagmiConfig>
-    </ChakraProvider>
+    </SessionProvider>
   );
 };
 

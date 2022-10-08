@@ -19,7 +19,7 @@ import {
   useColorMode,
   Box,
 } from "@chakra-ui/react";
-import { DAOType } from "@senate/common-types";
+import { DAOType, DAOHandlerType } from "@senate/common-types";
 import { FaDiscord, FaSlack, FaTelegram, FaBell } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 
@@ -76,7 +76,7 @@ export const DaoItem = (props: { dao: DAOType }) => {
           bottom={{ base: "-0.5", md: "-2.5" }}
           right={{ base: "-0.5", md: "-2.5" }}
         >
-          {props.dao.handlers.map((handler, index) => {
+          {props.dao.handlers.map((handler: DAOHandlerType, index: number) => {
             switch (handler.type) {
               case "BRAVO1":
               case "BRAVO2":
