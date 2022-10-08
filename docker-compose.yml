@@ -1,46 +1,34 @@
 version: "3.9"
 services:
-  postgres:
-    image: postgres:latest
-    container_name: postgres
-    hostname: postgres
+
+  db:
+    image: mysql:latest
+    container_name: mysql
+    hostname: mysql
     ports:
-      - 5432:5432
+      - '3306:3306'
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: senate
+      MYSQL_USER: senate
+      MYSQL_PASSWORD: senatesecret
+      MYSQL_ROOT_PASSWORD: senatesecret
+      MYSQL_DATABASE: senate
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - db-data:/var/lib/mysql
     restart: unless-stopped
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    depends_on:
-      - postgres
-    ports:
-      - "5555:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    restart: unless-stopped
-
-  proposal-detective:
+  detective:
     platform: linux/amd64
     stdin_open: true
     build:
       context: .
-      dockerfile: apps/proposal-detective/Dockerfile
+      dockerfile: apps/detective-api/Dockerfile
       args:
-        - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/senate?schema=public
-    container_name: proposal-detective
+        - DATABASE_URL=mysql://senate:senatesecret@mysql:3306/senate?schema=public
+    container_name: detective-api
     environment:
       - PROVIDER_URL=${PROVIDER_URL}
     depends_on:
-      - postgres
+      - db
 
   web:
     platform: linux/amd64
@@ -49,18 +37,17 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
       args:
-        - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/senate?schema=public
+        - DATABASE_URL=mysql://senate:senatesecret@mysql:3306/senate?schema=public
     container_name: web
     environment:
       - PROVIDER_URL=${PROVIDER_URL}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - NEXTAUTH_URL=${NEXTAUTH_URL}
     depends_on:
-      - postgres
+      - db
     ports:
       - "3000:3000"
     restart: unless-stopped
 
 volumes:
-  postgres-data:
-  pgadmin-data:
+  db-data:
