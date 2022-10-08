@@ -76,7 +76,7 @@ export const DaoItem = (props: { dao: DAOType }) => {
           bottom={{ base: "-0.5", md: "-2.5" }}
           right={{ base: "-0.5", md: "-2.5" }}
         >
-          {props.dao.handlers.map((handler: DAOHandlerType, index: number) => {
+          {props.dao.handlers.map((handler: any, index: number) => {
             switch (handler.type) {
               case "BRAVO1":
               case "BRAVO2":
