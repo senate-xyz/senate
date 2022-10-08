@@ -8,23 +8,6 @@ import type { AppType } from "next/app";
 import type { AppRouter } from "../server/router";
 import type { Session } from "next-auth";
 import "../styles/globals.css";
-import "@fontsource/manrope/200.css";
-import "@fontsource/manrope/300.css";
-import "@fontsource/manrope/400.css";
-import "@fontsource/manrope/500.css";
-import "@fontsource/manrope/600.css";
-import "@fontsource/manrope/700.css";
-import "@fontsource/manrope/800.css";
-
-const theme = extendTheme({
-  fonts: {
-    manrope: "Manrope",
-    body: `'Manrope', sans-serif`,
-  },
-  initialColorMode: "dark",
-  useSystemColorMode: false,
-});
-
 import "@rainbow-me/rainbowkit/styles.css";
 import {
   GetSiweMessageOptions,
@@ -35,7 +18,6 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 const { chains, provider } = configureChains(
   [chain.mainnet],
@@ -62,19 +44,17 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <ChakraProvider theme={theme}>
-      <WagmiConfig client={wagmiClient}>
-        <SessionProvider refetchInterval={0} session={session}>
-          <RainbowKitSiweNextAuthProvider
-            getSiweMessageOptions={getSiweMessageOptions}
-          >
-            <RainbowKitProvider chains={chains}>
-              <Component {...pageProps} />
-            </RainbowKitProvider>
-          </RainbowKitSiweNextAuthProvider>
-        </SessionProvider>
-      </WagmiConfig>
-    </ChakraProvider>
+    <WagmiConfig client={wagmiClient}>
+      <SessionProvider refetchInterval={0} session={session}>
+        <RainbowKitSiweNextAuthProvider
+          getSiweMessageOptions={getSiweMessageOptions}
+        >
+          <RainbowKitProvider chains={chains}>
+            <Component {...pageProps} />
+          </RainbowKitProvider>
+        </RainbowKitSiweNextAuthProvider>
+      </SessionProvider>
+    </WagmiConfig>
   );
 };
 

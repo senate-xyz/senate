@@ -1,37 +1,3 @@
-import {
-  Text,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  VStack,
-  Divider,
-  Avatar,
-  Link,
-  HStack,
-  Center,
-  Spinner,
-  Spacer,
-  Tab,
-  TabList,
-  TabPanels,
-  Tabs,
-  Box,
-  Container,
-  Button,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
-  Input,
-} from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-
 import { useEffect, useState } from "react";
 
 import moment from "moment";
@@ -73,8 +39,9 @@ export const Tracker = () => {
   }, [daos]);
 
   return (
-    <Box w="full">
-      <VStack
+    <div>
+      <p>Tracker</p>
+      {/* <VStack
         m={{ base: "0", md: "10" }}
         align="start"
         p={{ base: "2", md: "5" }}
@@ -193,8 +160,8 @@ export const Tracker = () => {
             </TabPanels>
           </Container>
         </Tabs>
-      </VStack>
-    </Box>
+      </VStack> */}
+    </div>
   );
 };
 
