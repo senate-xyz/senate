@@ -13,7 +13,7 @@ import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
 import { DAOType } from "@senate/common-types";
 
-const Subscriptions = () => {
+const Watchlist = () => {
   const { data: session } = useSession();
 
   const DAOs = trpc.useQuery([session ? "user.daos" : "unrestricted.daos"]);
@@ -57,4 +57,4 @@ const Subscriptions = () => {
   );
 };
 
-export default Subscriptions;
+export default Watchlist;
