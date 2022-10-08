@@ -21,9 +21,13 @@ import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
 import TrackerTable from "./table/TrackerTable";
 import SharePopover from "./SharePopover";
+import { DAOType } from "@senate/common-types";
 
-export const TrackerView = (props: { address?: any; shareButton: boolean }) => {
-  const [daos, setDaos] = useState<any[]>([]);
+export const TrackerView = (props: {
+  address?: string;
+  shareButton: boolean;
+}) => {
+  const [daos, setDaos] = useState<DAOType[]>([]);
   const [selectedDao, setSelectedDao] = useState<string>();
 
   const { data: session } = useSession();

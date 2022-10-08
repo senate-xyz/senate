@@ -14,7 +14,7 @@ import {
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import moment from "moment";
 
-import { TrackerProposalType } from "@senate/common-types";
+import { PrismaJsonObject, TrackerProposalType } from "@senate/common-types";
 
 const tableHeader = ["Proposal", "Description", "Time Ag", "Voted"];
 
@@ -24,8 +24,8 @@ export const TrackerTable = (props: { votes: any; selectedDao: any }) => {
       <Table variant="simple">
         <Thead>
           <Tr>
-            {tableHeader.map((column) => {
-              return <Th>{column}</Th>;
+            {tableHeader.map((column, index) => {
+              return <Th key={index}>{column}</Th>;
             })}
           </Tr>
         </Thead>
@@ -41,8 +41,9 @@ export const TrackerTable = (props: { votes: any; selectedDao: any }) => {
                       <HStack>
                         <Avatar src={proposal.dao.picture}></Avatar>
                         <Link
-                          // @ts-ignore
-                          href={proposal.data["url"]}
+                          href={(proposal.data as PrismaJsonObject)[
+                            "url"
+                          ]?.toString()}
                           isExternal
                           maxW="20rem"
                         >
@@ -55,10 +56,11 @@ export const TrackerTable = (props: { votes: any; selectedDao: any }) => {
                       <Text noOfLines={1}>{proposal.description}</Text>
                     </Td>
                     <Td>
-                      {
-                        // @ts-ignore
-                        moment(proposal.data["timeEnd"]).fromNow()
-                      }
+                      {moment(
+                        (proposal.data as PrismaJsonObject)[
+                          "timeEnd"
+                        ]?.toString()
+                      ).fromNow()}
                     </Td>
                     <Td>idk</Td>
                   </Tr>

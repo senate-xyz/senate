@@ -44,7 +44,6 @@ export const DashboardRow = (props: { proposal: any }) => {
       <Td>
         <HStack>
           <Link
-            // @ts-ignore
             href={props.proposal.data["url"]}
             isExternal
             maxW={{ base: "10rem", md: "20rem" }}
@@ -55,12 +54,7 @@ export const DashboardRow = (props: { proposal: any }) => {
         </HStack>
       </Td>
 
-      <Td>
-        {
-          // @ts-ignore
-          moment(props.proposal.data["timeEnd"]).fromNow(true)
-        }
-      </Td>
+      <Td>{moment(props.proposal.data["timeEnd"]).fromNow(true)}</Td>
 
       <Td>idk</Td>
     </Tr>

@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { VStack, Box, useColorMode } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 
 import { useRouter } from "next/router";
 import TrackerView from "../../components/views/tracker/Tracker";
@@ -10,7 +10,7 @@ const Home: NextPage = () => {
 
   return (
     <Box w="full">
-      <TrackerView address={address} shareButton={false} />
+      <TrackerView address={String(address)} shareButton={false} />
     </Box>
   );
 };
