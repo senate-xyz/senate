@@ -10,7 +10,7 @@ import {
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import moment from "moment";
 
-export const DashboardRow = (props: { proposal: any }) => {
+export const DashboardRow = (props: { proposal }) => {
   const isMobile = useBreakpointValue({
     base: true,
     md: false,

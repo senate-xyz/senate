@@ -7,8 +7,6 @@ import {
   DrawerContent,
   Text,
   useDisclosure,
-  BoxProps,
-  FlexProps,
   useColorMode,
   Spacer,
   VStack,
@@ -16,13 +14,12 @@ import {
   IconButton,
   Avatar,
 } from "@chakra-ui/react";
-import { LinkItemSPAProps, NavItem } from "./NavItem";
-import { MoonIcon, SunIcon } from "@chakra-ui/icons";
+import { NavItemProps, NavItem } from "./NavItem";
 import { useSession } from "next-auth/react";
 import { useEnsName, useEnsAvatar } from "wagmi";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { FiBarChart2, FiHome, FiStar } from "react-icons/fi";
+import { FiBarChart2, FiHome, FiStar, FiSun, FiMoon } from "react-icons/fi";
 
 export enum ViewsEnum {
   None = 1,
@@ -32,7 +29,7 @@ export enum ViewsEnum {
   Settings = 5,
 }
 
-const LinkItems: Array<LinkItemSPAProps> = [
+const LinkItems: Array<NavItemProps> = [
   { name: "Dashboard", id: ViewsEnum.Dashboard, icon: FiHome },
   {
     name: "Watchlist",
@@ -42,7 +39,7 @@ const LinkItems: Array<LinkItemSPAProps> = [
   { name: "Vote tracker", id: ViewsEnum.Tracker, icon: FiStar },
 ];
 
-export default function NavBar(props: { page: ViewsEnum; setView: any }) {
+export default function NavBar(props: { page: ViewsEnum; setView }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode } = useColorMode();
   return (
@@ -57,12 +54,13 @@ export default function NavBar(props: { page: ViewsEnum; setView: any }) {
   );
 }
 
-interface OpenProps extends BoxProps {
+const OpenContent = ({
+  onClose,
+  setView,
+}: {
   onClose: () => void;
   setView: () => void;
-}
-
-const OpenContent = ({ onClose, setView }: OpenProps) => {
+}) => {
   const { colorMode, toggleColorMode } = useColorMode();
 
   return (
@@ -109,17 +107,14 @@ const OpenContent = ({ onClose, setView }: OpenProps) => {
         <IconButton
           onClick={toggleColorMode}
           aria-label={"theme"}
-          icon={colorMode == "light" ? <MoonIcon /> : <SunIcon />}
+          icon={colorMode == "light" ? <FiMoon /> : <FiSun />}
         ></IconButton>
       </Box>
     </VStack>
   );
 };
 
-interface ClosedProps extends FlexProps {
-  onOpen: () => void;
-}
-const ClosedContent = ({ onOpen }: ClosedProps) => {
+const ClosedContent = ({ onOpen }: { onOpen: () => void }) => {
   const { colorMode } = useColorMode();
 
   const { data: session } = useSession();
@@ -149,8 +144,8 @@ const ClosedContent = ({ onOpen }: ClosedProps) => {
       <Box py="3" />
       <Avatar
         boxSize="45px"
-        src={ensAvatar.data!}
-        name={ensName.data!}
+        src={String(ensAvatar?.data)}
+        name={String(ensName?.data)}
       ></Avatar>
 
       <Box py="3" px="50px" />
