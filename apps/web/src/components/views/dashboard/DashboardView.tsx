@@ -16,7 +16,7 @@ export const DashboardView = () => {
   const { data: session } = useSession();
 
   const proposals = trpc.useQuery([
-    session ? "user.proposals" : "unrestricted.proposals",
+    session ? "user.proposals" : "public.proposals",
   ]);
 
   return (

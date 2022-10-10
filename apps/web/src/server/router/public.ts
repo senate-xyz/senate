@@ -1,7 +1,7 @@
 import { createRouter } from "./context";
 import { prisma } from "@senate/database";
 
-export const unrestrictedRouter = createRouter()
+export const publicRouter = createRouter()
   .query("proposals", {
     async resolve() {
       const userProposals = await prisma.proposal.findMany({

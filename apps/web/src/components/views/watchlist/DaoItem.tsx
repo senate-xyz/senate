@@ -17,18 +17,26 @@ import {
   useToast,
   AvatarGroup,
   useColorMode,
-  Box,
 } from "@chakra-ui/react";
-import { DAOType, DAOHandlerType } from "@senate/common-types";
+import { DAOType } from "@senate/common-types";
 import { FaDiscord, FaSlack, FaTelegram, FaBell } from "react-icons/fa";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 
-export const DaoItem = (props: { dao: DAOType }) => {
+export const DaoItem = (props: {
+  dao: DAOType;
+  handleSubscribe: any;
+  handleUnsubscribe: any;
+}) => {
   const { colorMode } = useColorMode();
   const { data: session } = useSession();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+
+  const [subscribed, setSubscribed] = useState(
+    props.dao.subscriptions.length > 0 ? true : false
+  );
 
   const signedOutWarning = () => {
     toast({
@@ -46,22 +54,22 @@ export const DaoItem = (props: { dao: DAOType }) => {
       w="10rem"
       h="12em"
       p="1rem"
-      border={props.dao.subscriptions ? "2px" : "1px"}
+      border={subscribed ? "2px" : "1px"}
       bgColor={
         colorMode == "light"
-          ? props.dao.subscriptions
+          ? subscribed
             ? "blackAlpha.50"
             : "blackAlpha.300"
-          : props.dao.subscriptions
+          : subscribed
           ? "whiteAlpha.300"
           : "whiteAlpha.50"
       }
       borderColor={
         colorMode == "light"
-          ? props.dao.subscriptions
+          ? subscribed
             ? "blackAlpha.300"
             : "blackAlpha.300"
-          : props.dao.subscriptions
+          : subscribed
           ? "whiteAlpha.400"
           : "whiteAlpha.100"
       }
@@ -109,10 +117,10 @@ export const DaoItem = (props: { dao: DAOType }) => {
       <Text>{props.dao.name}</Text>
       <Spacer />
       <HStack>
-        <Icon as={FaDiscord} />
+        <Icon as={FaDiscord} color="gray.500" />
         <Icon as={FaSlack} />
-        <Icon as={FaTelegram} />
-        <Icon as={FaBell} />
+        <Icon as={FaTelegram} color="gray.500" />
+        <Icon as={FaBell} color="gray.500" />
       </HStack>
 
       <Modal isOpen={isOpen} onClose={onClose} size="xs" isCentered>
@@ -135,45 +143,20 @@ export const DaoItem = (props: { dao: DAOType }) => {
                 <HStack>
                   <Text>Subscribed</Text>
                   <Switch
-                  // isChecked={subscribe}
-                  // onChange={() => {
-                  //   // storeSubscribe(!subscribe);
-                  //   // setSubscribe(!subscribe);
-                  // }}
+                    isChecked={subscribed}
+                    onChange={() => {
+                      if (subscribed) {
+                        props.handleUnsubscribe(props.dao.id);
+                        setSubscribed(false);
+                      } else {
+                        props.handleSubscribe(props.dao.id);
+                        setSubscribed(true);
+                      }
+                    }}
                   ></Switch>
                 </HStack>
 
                 <Divider />
-                <VStack>
-                  <Text fontWeight="600">Notifications</Text>
-
-                  <HStack>
-                    <VStack>
-                      <HStack>
-                        <Icon as={FaBell} boxSize="8" />
-
-                        <Switch size="md" disabled isChecked={true}></Switch>
-                      </HStack>
-                      <HStack>
-                        <Icon as={FaDiscord} boxSize="8" />
-                        <Switch size="md" disabled></Switch>
-                      </HStack>
-                    </VStack>
-
-                    <Box w="1rem" />
-
-                    <VStack>
-                      <HStack>
-                        <Icon as={FaSlack} boxSize="8" />
-                        <Switch size="md" disabled></Switch>
-                      </HStack>
-                      <HStack>
-                        <Icon as={FaTelegram} boxSize="8" />
-                        <Switch size="md" disabled></Switch>
-                      </HStack>
-                    </VStack>
-                  </HStack>
-                </VStack>
               </VStack>
             </Center>
           </ModalBody>

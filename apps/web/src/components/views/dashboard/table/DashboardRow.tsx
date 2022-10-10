@@ -17,7 +17,7 @@ export const DashboardRow = (props: { proposal: any }) => {
   });
 
   return (
-    <Tr key={props.proposal.id}>
+    <Tr>
       <Td>
         <HStack>
           <Avatar
