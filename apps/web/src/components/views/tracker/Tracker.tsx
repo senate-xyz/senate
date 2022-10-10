@@ -45,11 +45,10 @@ export const TrackerView = (props: {
     if (!votes.data) return;
 
     const daosTabs = votes.data
-      .map((vote: { dao: any }) => vote.dao)
-      .filter((element: { name: any }, index: any, array: any[]) => {
+      .map((vote: { dao }) => vote.dao)
+      .filter((element: { name }, index, array) => {
         return (
-          array.findIndex((a: { name: any }) => a.name == element.name) ===
-          index
+          array.findIndex((a: { name }) => a.name == element.name) === index
         );
       });
     setDaos(daosTabs);

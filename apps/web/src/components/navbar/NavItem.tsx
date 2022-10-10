@@ -1,8 +1,8 @@
-import { Box, Flex, FlexProps, Icon } from "@chakra-ui/react";
+import { Box, Flex, Icon } from "@chakra-ui/react";
 import { IconType } from "react-icons";
 import { ViewsEnum } from "./NavBar";
 
-export interface LinkItemSPAProps {
+export interface NavItemProps {
   name: string;
   id: ViewsEnum;
   icon: IconType;
@@ -14,7 +14,7 @@ export const NavItem = ({
   setView,
   ...rest
 }: {
-  item: LinkItemSPAProps;
+  item: NavItemProps;
   setView?: (name: number) => void;
   children?: string;
 }) => {
@@ -31,7 +31,7 @@ export const NavItem = ({
         color: "white",
       }}
       onClick={() => {
-        if (setView) setView!(item.id);
+        if (setView) setView(item.id);
       }}
       {...rest}
     >

@@ -38,7 +38,7 @@ export const userRouter = createProtectedRouter()
       const userProposals = await prisma.proposal.findMany({
         where: {
           daoId: {
-            in: userSubscriptions.map((sub: any) => sub.daoId),
+            in: userSubscriptions.map((sub) => sub.daoId),
           },
         },
         include: {

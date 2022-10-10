@@ -25,8 +25,8 @@ import { useState } from "react";
 
 export const DaoItem = (props: {
   dao: DAOType;
-  handleSubscribe: any;
-  handleUnsubscribe: any;
+  handleSubscribe;
+  handleUnsubscribe;
 }) => {
   const { colorMode } = useColorMode();
   const { data: session } = useSession();
@@ -84,7 +84,7 @@ export const DaoItem = (props: {
           bottom={{ base: "-0.5", md: "-2.5" }}
           right={{ base: "-0.5", md: "-2.5" }}
         >
-          {props.dao.handlers.map((handler: any, index: number) => {
+          {props.dao.handlers.map((handler, index: number) => {
             switch (handler.type) {
               case "BRAVO1":
               case "BRAVO2":

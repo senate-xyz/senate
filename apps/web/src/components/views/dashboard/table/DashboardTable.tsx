@@ -1,10 +1,9 @@
 import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
-import { TrackerProposalType } from "@senate/common-types";
 import DashboardRow from "./DashboardRow";
 
 const tableHeader = ["DAO", "Proposal", "Time left", "Status"];
 
-export const DashboardTable = (props: { proposals: any }) => {
+export const DashboardTable = (props: { proposals }) => {
   return (
     <TableContainer>
       <Table
@@ -20,10 +19,8 @@ export const DashboardTable = (props: { proposals: any }) => {
           </Tr>
         </Thead>
         <Tbody>
-          {props.proposals.data.map((proposal: TrackerProposalType, index) => {
-            return (
-              proposal.data && <DashboardRow key={index} proposal={proposal} />
-            );
+          {props.proposals.data.map((proposal, index) => {
+            return <DashboardRow key={index} proposal={proposal} />;
           })}
         </Tbody>
       </Table>
