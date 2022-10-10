@@ -100,12 +100,7 @@ const OpenContent = ({ onClose, setView }: OpenProps) => {
 
       <Box py="3" />
       {LinkItems.map((view) => (
-        <NavItem
-          key={view.name}
-          item={view}
-          setView={setView}
-          onClose={onClose}
-        >
+        <NavItem key={view.name} item={view} setView={setView}>
           {view.name}
         </NavItem>
       ))}

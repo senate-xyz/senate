@@ -11,13 +11,11 @@ export interface LinkItemSPAProps {
 export const NavItem = ({
   item,
   children,
-  onClose,
   setView,
   ...rest
 }: {
   item: LinkItemSPAProps;
   setView?: (name: number) => void;
-  onClose?: () => void;
   children?: string;
 }) => {
   return (

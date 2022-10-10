@@ -25,6 +25,9 @@ export const SharePopover = () => {
         <PopoverBody>
           <Input
             value={`https://dev-senate-web.onrender.com/tracker/${session?.user?.name}`}
+            onChange={() => {
+              return;
+            }}
           />
           <Button
             my="2"

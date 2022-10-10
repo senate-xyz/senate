@@ -14,14 +14,16 @@ export const DashboardTable = (props: { proposals: any }) => {
       >
         <Thead>
           <Tr>
-            {tableHeader.map((column) => {
-              return <Th>{column}</Th>;
+            {tableHeader.map((column, index) => {
+              return <Th key={index}>{column}</Th>;
             })}
           </Tr>
         </Thead>
         <Tbody>
-          {props.proposals.data.map((proposal: TrackerProposalType) => {
-            return proposal.data && <DashboardRow proposal={proposal} />;
+          {props.proposals.data.map((proposal: TrackerProposalType, index) => {
+            return (
+              proposal.data && <DashboardRow key={index} proposal={proposal} />
+            );
           })}
         </Tbody>
       </Table>
