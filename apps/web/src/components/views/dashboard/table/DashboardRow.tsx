@@ -8,7 +8,10 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import moment from "moment";
+import relativeTime from "dayjs/plugin/relativeTime";
+import dayjs from "dayjs";
+
+dayjs.extend(relativeTime);
 
 export const DashboardRow = (props: { proposal }) => {
   const isMobile = useBreakpointValue({
@@ -54,7 +57,7 @@ export const DashboardRow = (props: { proposal }) => {
         </HStack>
       </Td>
 
-      <Td>{moment(props.proposal.data["timeEnd"]).fromNow(true)}</Td>
+      <Td>{dayjs(props.proposal.data["timeEnd"]).fromNow(true)}</Td>
 
       <Td>idk</Td>
     </Tr>

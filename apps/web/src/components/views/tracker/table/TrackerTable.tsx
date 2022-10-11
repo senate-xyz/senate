@@ -12,7 +12,10 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import moment from "moment";
+import relativeTime from "dayjs/plugin/relativeTime";
+import dayjs from "dayjs";
+
+dayjs.extend(relativeTime);
 
 import { PrismaJsonObject, TrackerProposalType } from "@senate/common-types";
 
@@ -56,7 +59,7 @@ export const TrackerTable = (props: { votes; selectedDao }) => {
                       <Text noOfLines={1}>{proposal.description}</Text>
                     </Td>
                     <Td>
-                      {moment(
+                      {dayjs(
                         (proposal.data as PrismaJsonObject)[
                           "timeEnd"
                         ]?.toString()
