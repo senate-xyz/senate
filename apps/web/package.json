@@ -23,9 +23,9 @@
     "@trpc/next": "^9.27.4",
     "@trpc/react": "^9.27.4",
     "@trpc/server": "^9.27.4",
+    "dayjs": "^1.11.5",
     "ethers": "^5.7.1",
     "framer-motion": "^7.5.2",
-    "moment": "^2.29.4",
     "next": "12.3.1",
     "next-auth": "^4.12.2",
     "react": "18.2.0",
@@ -38,10 +38,10 @@
     "zod": "^3.19.1"
   },
   "devDependencies": {
+    "@senate/common-types": "*",
     "@senate/config": "*",
     "@senate/database": "*",
     "@senate/tsconfig": "*",
-    "@senate/common-types": "*",
     "@types/node": "18.8.2",
     "@types/react": "18.0.21",
     "@types/react-dom": "18.0.6",
