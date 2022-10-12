@@ -46,7 +46,6 @@ export const TrackerView = (props: {
       <div>
         <div>
           <p>Vote tracker</p>
-
           {props.shareButton && <SharePopover />}
         </div>
 
@@ -63,7 +62,6 @@ export const TrackerView = (props: {
                   }}
                 >
                   <img src={dao.picture} />
-
                   <p>{dao.name}</p>
                 </div>
               );

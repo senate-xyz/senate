@@ -21,8 +21,7 @@ export const DashboardView = () => {
   return (
     <div>
       <div>
-        <p>Proposals</p>
-
+        <p>Dashboard</p>
         <div>
           <DashboardTable proposals={proposals} />
         </div>

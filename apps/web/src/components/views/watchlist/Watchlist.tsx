@@ -37,8 +37,6 @@ const Watchlist = () => {
     <div>
       <p>Watchlist</p>
       <div>
-        <p>Watchlist</p>
-
         {DAOs.isLoading && <p>Loading</p>}
         {DAOs.data && (
           <div>
