@@ -28,12 +28,16 @@ export default function NavBar(props: { page: ViewsEnum; setPage: any }) {
             {linkItems.map((item) => {
               return (
                 <li>
-                  {
+                  <button
+                    onClick={() => {
+                      props.setPage(item.id);
+                    }}
+                  >
                     <div className="flex">
-                      <item.icon size="1.5rem" />
-                      {item.name}
+                      {<item.icon size="1.5rem" />}
+                      <p>{item.name}</p>
                     </div>
-                  }
+                  </button>
                 </li>
               );
             })}
