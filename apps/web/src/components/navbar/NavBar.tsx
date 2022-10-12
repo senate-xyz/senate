@@ -9,7 +9,7 @@ export enum ViewsEnum {
   Settings = 5,
 }
 
-const LinkItems: Array<NavItemProps> = [
+const linkItems: Array<NavItemProps> = [
   { name: "Dashboard", id: ViewsEnum.Dashboard, icon: FiHome },
   {
     name: "Watchlist",
@@ -21,26 +21,32 @@ const LinkItems: Array<NavItemProps> = [
 
 export default function NavBar(props: { page: ViewsEnum; setPage: any }) {
   return (
-    <aside className="w-64" aria-label="Sidebar">
-      navbar.tsx - page:{props.page}
-      <div>
-        <ul className="space-y-2">
-          {LinkItems.map((view) => {
-            return (
-              <li>
-                <a
-                  onClick={() => {
-                    props.setPage(view.id);
-                  }}
-                  href="#"
-                >
-                  <span className="ml-3">{view.name}</span>
-                </a>
-              </li>
-            );
+    <main className="w-16 h-screen place-items-center group">
+      <section className="border bg-red-200 absolute transition-all duration-500 -left-36 group-hover:left-0">
+        <div className="h-screen grid place-items-start w-36">
+          <ul className="mt-12 p-2 space-y-4">
+            {linkItems.map((item) => {
+              return (
+                <li>
+                  {
+                    <div className="flex">
+                      <item.icon size="1.5rem" />
+                      {item.name}
+                    </div>
+                  }
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+      <section className="h-screen grid place-items-start w-12 bg-red-100">
+        <ul className="mt-12 p-2 space-y-4">
+          {linkItems.map((item) => {
+            return <li>{<item.icon size="1.5rem" />}</li>;
           })}
         </ul>
-      </div>
-    </aside>
+      </section>
+    </main>
   );
 }
