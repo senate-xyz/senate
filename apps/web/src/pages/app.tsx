@@ -31,7 +31,7 @@ const Home: NextPage = () => {
   return (
     <div className="flex flex-row">
       <NavBar page={page} setPage={setPage} />
-      <div>
+      <div className="w-full">
         <Suspense fallback={`Loading...`}>
           {page == ViewsEnum.Dashboard && <DynamicDashboard />}
           {page == ViewsEnum.Watchlist && <DynamicWatchlist />}

@@ -4,8 +4,8 @@ const tableHeader = ["DAO", "Proposal", "Time left", "Status"];
 
 export const DashboardTable = (props: { proposals }) => {
   return (
-    <div>
-      <table>
+    <div className="w-full">
+      <table className="w-full">
         <thead>
           <tr>
             {tableHeader.map((column, index) => {

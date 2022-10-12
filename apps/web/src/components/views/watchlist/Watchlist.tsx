@@ -33,27 +33,28 @@ const Watchlist = () => {
     );
   };
 
+  if (DAOs.isLoading) return <div>loading</div>;
+
+  if (!DAOs.isLoading && !DAOs.data) return <div>no data</div>;
+
   return (
-    <div>
+    <div className="w-full">
       <p>Watchlist</p>
-      <div>
-        {DAOs.isLoading && <p>Loading</p>}
-        {DAOs.data && (
-          <div>
-            {DAOs.data.map((dao: DAOType, index: number) => {
-              return (
-                <div key={index}>
-                  <DaoItem
-                    dao={dao}
-                    key={index}
-                    handleSubscribe={handleSubscribe}
-                    handleUnsubscribe={handleUnsubscribe}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        )}
+      <div className="w-full">
+        <div className="grid grid-cols-4 gap-4">
+          {DAOs.data.map((dao: DAOType, index: number) => {
+            return (
+              <div key={index}>
+                <DaoItem
+                  dao={dao}
+                  key={index}
+                  handleSubscribe={handleSubscribe}
+                  handleUnsubscribe={handleUnsubscribe}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
