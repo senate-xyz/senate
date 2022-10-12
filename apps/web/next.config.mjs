@@ -18,4 +18,12 @@ export default defineNextConfig({
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: [
+      "s2.coinmarketcap.com",
+      "avatars.githubusercontent.com",
+      "assets.coingecko.com",
+      "cdn.stamp.fyi",
+    ],
+  },
 });
