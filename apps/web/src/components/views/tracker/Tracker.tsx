@@ -1,20 +1,3 @@
-import {
-  Text,
-  VStack,
-  Divider,
-  Avatar,
-  HStack,
-  Center,
-  Spinner,
-  Spacer,
-  Tab,
-  TabList,
-  TabPanels,
-  Tabs,
-  Box,
-  Container,
-} from "@chakra-ui/react";
-
 import { useEffect, useState } from "react";
 
 import { useSession } from "next-auth/react";
@@ -59,55 +42,42 @@ export const TrackerView = (props: {
   }, [daos]);
 
   return (
-    <Box w="full">
-      <VStack
-        m={{ base: "0", md: "10" }}
-        align="start"
-        p={{ base: "2", md: "5" }}
-      >
-        <HStack w="full">
-          <Text fontSize="3xl" fontWeight="800">
-            Vote tracker
-          </Text>
-          <Spacer />
+    <div>
+      <div>
+        <div>
+          <p>Vote tracker</p>
 
           {props.shareButton && <SharePopover />}
-        </HStack>
-        <Box pb="0.3rem" pt="1rem" />
-        <Divider />
-        <Box pb="0.3rem" pt="1rem" />
-        {votes.isLoading && (
-          <Center w="full">
-            <Spinner />
-          </Center>
-        )}
+        </div>
 
-        <Tabs w="full" variant="enclosed">
-          <TabList>
+        {votes.isLoading && <div>Loading</div>}
+
+        <div>
+          <div>
             {daos.map((dao, index) => {
               return (
-                <Tab
+                <div
                   key={index}
                   onClick={() => {
                     setSelectedDao(dao.name);
                   }}
                 >
-                  <Avatar src={dao.picture} size="xs"></Avatar>
-                  <Box m="2"></Box>
-                  <Text>{dao.name}</Text>
-                </Tab>
+                  <img src={dao.picture} />
+
+                  <p>{dao.name}</p>
+                </div>
               );
             })}
-          </TabList>
+          </div>
 
-          <Container overflow="auto" w="full" maxW="90vw">
-            <TabPanels w="full">
+          <div>
+            <div>
               <TrackerTable votes={votes} selectedDao={selectedDao} />
-            </TabPanels>
-          </Container>
-        </Tabs>
-      </VStack>
-    </Box>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
