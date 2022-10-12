@@ -29,8 +29,7 @@ const Home: NextPage = () => {
   const [page, setPage] = useState(ViewsEnum.Dashboard);
 
   return (
-    <div>
-      app.tsx
+    <div className="flex flex-row">
       <NavBar page={page} setPage={setPage} />
       <div>
         <Suspense fallback={`Loading...`}>
