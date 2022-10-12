@@ -3,10 +3,35 @@ import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
 import { DAOType } from "@senate/common-types";
 
-const Subscriptions = () => {
+const Watchlist = () => {
   const { data: session } = useSession();
 
-  const DAOs = trpc.useQuery([session ? "user.daos" : "unrestricted.daos"]);
+  const DAOs = trpc.useQuery([session ? "user.daos" : "public.daos"]);
+  const subscribe = trpc.useMutation("user.subscribe");
+  const unsubscribe = trpc.useMutation("user.unsubscribe");
+  const utils = trpc.useContext();
+
+  const handleSubscribe = async (daoId: string) => {
+    subscribe.mutate(
+      { daoId: daoId },
+      {
+        onSuccess() {
+          utils.invalidateQueries();
+        },
+      }
+    );
+  };
+
+  const handleUnsubscribe = async (daoId: string) => {
+    unsubscribe.mutate(
+      { daoId: daoId },
+      {
+        onSuccess() {
+          utils.invalidateQueries();
+        },
+      }
+    );
+  };
 
   return (
     <div>
@@ -37,7 +62,12 @@ const Subscriptions = () => {
             {DAOs.data.map((dao: DAOType, index: number) => {
               return (
                 <Flex key={index}>
-                  <DaoItem dao={dao} key={index} />
+                  <DaoItem
+                    dao={dao}
+                    key={index}
+                    handleSubscribe={handleSubscribe}
+                    handleUnsubscribe={handleUnsubscribe}
+                  />
                 </Flex>
               );
             })}
@@ -48,4 +78,4 @@ const Subscriptions = () => {
   );
 };
 
-export default Subscriptions;
+export default Watchlist;
