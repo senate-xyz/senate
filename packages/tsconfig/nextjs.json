@@ -11,11 +11,13 @@
     "noEmit": true,
     "incremental": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "module": "esnext",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "strict": true
+    "strict": false,
+    "strictNullChecks": true
   },
   "include": ["src", "next-env.d.ts"],
   "exclude": ["node_modules"]

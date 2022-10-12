@@ -20,3 +20,5 @@ export type TrackerProposalType = Prisma.ProposalGetPayload<{
     votes: true;
   };
 }>;
+
+export type PrismaJsonObject = Prisma.JsonObject;

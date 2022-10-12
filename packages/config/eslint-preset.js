@@ -1,5 +1,11 @@
 module.exports = {
-  extends: ["next", "turbo", "prettier"],
+  extends: [
+    "next",
+    "turbo",
+    "prettier",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+  ],
   settings: {
     next: {
       rootDir: ["apps/*/", "packages/*/"],

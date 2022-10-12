@@ -35,7 +35,7 @@ export const trackerRouter = createRouter().query("track", {
       where: {
         AND: {
           daoId: {
-            in: subscriptions.map((dao: any) => dao.daoId),
+            in: subscriptions.map((dao) => dao.daoId),
           },
           data: {
             path: "$.timeStart",
