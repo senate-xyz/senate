@@ -1,66 +1,36 @@
-import {
-  Text,
-  Td,
-  Tr,
-  Avatar,
-  Link,
-  HStack,
-  useBreakpointValue,
-} from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
-
 dayjs.extend(relativeTime);
 
 export const DashboardRow = (props: { proposal }) => {
-  const isMobile = useBreakpointValue({
-    base: true,
-    md: false,
-  });
-
   return (
-    <Tr>
-      <Td>
-        <HStack>
-          <Avatar
-            boxSize={{ base: "35px", md: "40px" }}
-            src={props.proposal.dao.picture}
-            position="relative"
-          >
-            <Avatar
-              bottom={{ base: "-0.5", md: "-2" }}
-              right={{ base: "-0.5", md: "-2" }}
-              bg="white"
-              boxSize={{ base: "15px", md: "20px" }}
+    <tr>
+      <td>
+        <div>
+          <img src={props.proposal.dao.picture}>
+            <img
               src={
                 props.proposal.proposalType == "SNAPSHOT"
                   ? "https://avatars.githubusercontent.com/u/72904068?s=200&v=4"
                   : "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"
               }
-              position="absolute"
-            ></Avatar>
-          </Avatar>
-          {!isMobile && <Text>{props.proposal.dao.name}</Text>}
-        </HStack>
-      </Td>
-      <Td>
-        <HStack>
-          <Link
-            href={props.proposal.data["url"]}
-            isExternal
-            maxW={{ base: "10rem", md: "20rem" }}
-          >
-            <Text noOfLines={1}>{props.proposal.name}</Text>
-          </Link>
-          <ExternalLinkIcon mx="2px" />
-        </HStack>
-      </Td>
+            ></img>
+          </img>
+          {/* {!isMobile && <Text>{props.proposal.dao.name}</Text>} */}
+        </div>
+      </td>
+      <td>
+        <div>
+          <a href={props.proposal.data["url"]}>
+            <p>{props.proposal.name}</p>
+          </a>
+        </div>
+      </td>
 
-      <Td>{dayjs(props.proposal.data["timeEnd"]).fromNow(true)}</Td>
+      <td>{dayjs(props.proposal.data["timeEnd"]).fromNow(true)}</td>
 
-      <Td>idk</Td>
-    </Tr>
+      <td>idk</td>
+    </tr>
   );
 };
 

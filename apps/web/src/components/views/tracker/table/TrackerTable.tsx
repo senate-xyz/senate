@@ -1,17 +1,3 @@
-import {
-  Text,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Avatar,
-  Link,
-  HStack,
-} from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 
@@ -23,56 +9,53 @@ const tableHeader = ["Proposal", "Description", "Time Ag", "Voted"];
 
 export const TrackerTable = (props: { votes; selectedDao }) => {
   return (
-    <TableContainer w="full">
-      <Table variant="simple">
-        <Thead>
-          <Tr>
+    <div>
+      <table>
+        <thead>
+          <tr>
             {tableHeader.map((column, index) => {
-              return <Th key={index}>{column}</Th>;
+              return <th key={index}>{column}</th>;
             })}
-          </Tr>
-        </Thead>
+          </tr>
+        </thead>
 
         {props.votes.data && (
-          <Tbody>
+          <tbody>
             {props.votes.data
               .filter((vote) => vote.dao.name === props.selectedDao)
               .map((proposal: TrackerProposalType) => {
                 return (
-                  <Tr key={proposal.id}>
-                    <Td>
-                      <HStack>
-                        <Avatar src={proposal.dao.picture}></Avatar>
-                        <Link
+                  <tr key={proposal.id}>
+                    <td>
+                      <div>
+                        <img src={proposal.dao.picture} />
+                        <a
                           href={(proposal.data as PrismaJsonObject)[
                             "url"
                           ]?.toString()}
-                          isExternal
-                          maxW="20rem"
                         >
-                          <Text noOfLines={1}>{proposal.name}</Text>
-                        </Link>
-                        <ExternalLinkIcon mx="2px" />
-                      </HStack>
-                    </Td>
-                    <Td maxW={"20rem"}>
-                      <Text noOfLines={1}>{proposal.description}</Text>
-                    </Td>
-                    <Td>
+                          <p>{proposal.name}</p>
+                        </a>
+                      </div>
+                    </td>
+                    <td>
+                      <p>{proposal.description}</p>
+                    </td>
+                    <td>
                       {dayjs(
                         (proposal.data as PrismaJsonObject)[
                           "timeEnd"
                         ]?.toString()
                       ).fromNow()}
-                    </Td>
-                    <Td>idk</Td>
-                  </Tr>
+                    </td>
+                    <td>idk</td>
+                  </tr>
                 );
               })}
-          </Tbody>
+          </tbody>
         )}
-      </Table>
-    </TableContainer>
+      </table>
+    </div>
   );
 };
 

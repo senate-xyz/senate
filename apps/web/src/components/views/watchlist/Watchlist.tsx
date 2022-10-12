@@ -36,44 +36,27 @@ const Watchlist = () => {
   return (
     <div>
       <p>Watchlist</p>
-      {/* <VStack
-        m={{ base: "0", md: "10" }}
-        align="start"
-        p={{ base: "2", md: "5" }}
-      >
-        <Text fontSize="3xl" fontWeight="800">
-          Watchlist
-        </Text>
-        <Box pb="0.3rem" pt="1rem" />
-        <Divider />
-        <Box pb="0.3rem" pt="1rem" />
-        {DAOs.isLoading && (
-          <Center w="full">
-            <Spinner />
-          </Center>
-        )}
+      <div>
+        <p>Watchlist</p>
+
+        {DAOs.isLoading && <p>Loading</p>}
         {DAOs.data && (
-          <SimpleGrid
-            minChildWidth="10rem"
-            spacing="1rem"
-            w="full"
-            justifyItems="center"
-          >
+          <div>
             {DAOs.data.map((dao: DAOType, index: number) => {
               return (
-                <Flex key={index}>
+                <div key={index}>
                   <DaoItem
                     dao={dao}
                     key={index}
                     handleSubscribe={handleSubscribe}
                     handleUnsubscribe={handleUnsubscribe}
                   />
-                </Flex>
+                </div>
               );
             })}
-          </SimpleGrid>
+          </div>
         )}
-      </VStack> */}
+      </div>
     </div>
   );
 };

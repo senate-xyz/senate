@@ -1,33 +1,32 @@
 import type { NextPage } from "next";
 import { useState } from "react";
-import NavBar from "../components/navbar/NavBar";
-import { PagesEnum } from "@senate/common-types";
+import NavBar, { ViewsEnum } from "../components/navbar/NavBar";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
-const DyanmicProposals = dynamic(
-  () => import("../components/mainBox/proposals/Proposals"),
+const DynamicDashboard = dynamic(
+  () => import("../components/views/dashboard/DashboardView"),
   {
     suspense: true,
   }
 );
 
 const DynamicWatchlist = dynamic(
-  () => import("../components/mainBox/watchlist/Daos"),
+  () => import("../components/views/watchlist/Watchlist"),
   {
     suspense: true,
   }
 );
 
 const DynamicTracker = dynamic(
-  () => import("../components/mainBox/tracker/Tracker"),
+  () => import("../components/views/tracker/Tracker"),
   {
     suspense: true,
   }
 );
 
 const Home: NextPage = () => {
-  const [page, setPage] = useState(PagesEnum.Dashboard);
+  const [page, setPage] = useState(ViewsEnum.Dashboard);
 
   return (
     <div>
@@ -35,9 +34,9 @@ const Home: NextPage = () => {
       <NavBar page={page} setPage={setPage} />
       <div>
         <Suspense fallback={`Loading...`}>
-          {page == PagesEnum.Dashboard && <DyanmicProposals />}
-          {page == PagesEnum.Watchlist && <DynamicWatchlist />}
-          {page == PagesEnum.Tracker && <DynamicTracker />}
+          {page == ViewsEnum.Dashboard && <DynamicDashboard />}
+          {page == ViewsEnum.Watchlist && <DynamicWatchlist />}
+          {page == ViewsEnum.Tracker && <DynamicTracker shareButton={true} />}
         </Suspense>
       </div>
     </div>
