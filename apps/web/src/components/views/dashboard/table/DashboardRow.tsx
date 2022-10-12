@@ -7,16 +7,18 @@ export const DashboardRow = (props: { proposal }) => {
   return (
     <tr>
       <td>
-        <div>
+        <div className="relative">
           <Image
+            className="absolute bottom-0 left-0"
             src={props.proposal.dao.picture}
-            width="10"
-            height="10"
+            width="40"
+            height="40"
             alt="dao image"
           />
           <Image
-            width="10"
-            height="10"
+            className="absolute bottom-0 left-0"
+            width="20"
+            height="20"
             alt="proposal type"
             src={
               props.proposal.proposalType == "SNAPSHOT"
@@ -35,9 +37,11 @@ export const DashboardRow = (props: { proposal }) => {
         </div>
       </td>
 
-      <td>{dayjs(props.proposal.data["timeEnd"]).fromNow(true)}</td>
+      <td className="text-center">
+        {dayjs(props.proposal.data["timeEnd"]).fromNow(true)}
+      </td>
 
-      <td>idk</td>
+      <td className="text-center">idk</td>
     </tr>
   );
 };

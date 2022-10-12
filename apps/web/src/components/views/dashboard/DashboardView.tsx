@@ -19,12 +19,10 @@ export const DashboardView = () => {
     );
 
   return (
-    <div>
-      <div>
-        <p>Dashboard</p>
-        <div>
-          <DashboardTable proposals={proposals} />
-        </div>
+    <div className="w-full">
+      <p>Dashboard</p>
+      <div className="w-full">
+        <DashboardTable proposals={proposals} />
       </div>
     </div>
   );
