@@ -73,7 +73,6 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     callbacks: {
       async session({ session, token }) {
         if (session.user) {
-          session.address = token.sub;
           session.user.name = token.sub;
         }
         return session;
