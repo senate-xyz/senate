@@ -5,6 +5,51 @@ import { trpc } from "../../../utils/trpc";
 import TrackerTable from "./table/TrackerTable";
 import SharePopover from "./SharePopover";
 import Image from "next/image";
+import { string } from "zod";
+
+export const TrackerHeader = (props: { shareButton: boolean }) => (
+  <div>
+    <p>Vote tracker</p>
+    {props.shareButton && <SharePopover />}
+  </div>
+);
+
+export const TrackerTab = (props: {
+  daoName: string;
+  daoPicture: string;
+  setSelectedDao: any;
+}) => (
+  <button
+    className="flex m-4 p-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
+    onClick={() => {
+      props.setSelectedDao(props.daoName);
+    }}
+  >
+    <Image
+      className="absolute bottom-0 left-0"
+      src={props.daoPicture}
+      width="25"
+      height="25"
+      alt="dao image"
+    />
+
+    <p>{props.daoName}</p>
+  </button>
+);
+
+export const TrackerTabList = (props: { daosTabs; setSelectedDao }) => (
+  <div className="flex">
+    {props.daosTabs?.map((dao) => {
+      return (
+        <TrackerTab
+          daoName={dao.name}
+          daoPicture={dao.picture}
+          setSelectedDao={props.setSelectedDao}
+        />
+      );
+    })}
+  </div>
+);
 
 export const TrackerView = (props: {
   address?: string;
@@ -35,46 +80,9 @@ export const TrackerView = (props: {
 
   return (
     <div>
-      <div>
-        <div>
-          <p>Vote tracker</p>
-          {props.shareButton && <SharePopover />}
-        </div>
-
-        {votes.isLoading && <div>Loading</div>}
-
-        <div>
-          <div className="flex">
-            {daosTabs?.map((dao, index) => {
-              return (
-                <button
-                  className="flex m-4 p-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
-                  key={index}
-                  onClick={() => {
-                    setSelectedDao(dao.name);
-                  }}
-                >
-                  <Image
-                    className="absolute bottom-0 left-0"
-                    src={dao.picture}
-                    width="25"
-                    height="25"
-                    alt="dao image"
-                  />
-
-                  <p>{dao.name}</p>
-                </button>
-              );
-            })}
-          </div>
-
-          <div>
-            <div>
-              <TrackerTable votes={votes} selectedDao={selectedDao} />
-            </div>
-          </div>
-        </div>
-      </div>
+      <TrackerHeader shareButton={props.shareButton} />
+      <TrackerTabList daosTabs={daosTabs} setSelectedDao={setSelectedDao} />
+      <TrackerTable votes={votes} selectedDao={selectedDao} />
     </div>
   );
 };
