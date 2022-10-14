@@ -2,7 +2,16 @@ import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
 import DashboardTable from "./table/DashboardTable";
 
-export const DashboardView = () => {
+export const DashboardView = (props: { proposals }) => (
+  <div className="w-full">
+    <p>Dashboard</p>
+    <div className="w-full">
+      <DashboardTable proposals={props.proposals} />
+    </div>
+  </div>
+);
+
+export const Dashboard = () => {
   const { data: session } = useSession();
 
   const proposals = trpc.useQuery([
@@ -18,14 +27,7 @@ export const DashboardView = () => {
       </div>
     );
 
-  return (
-    <div className="w-full">
-      <p>Dashboard</p>
-      <div className="w-full">
-        <DashboardTable proposals={proposals} />
-      </div>
-    </div>
-  );
+  return <DashboardView proposals={proposals} />;
 };
 
-export default DashboardView;
+export default Dashboard;

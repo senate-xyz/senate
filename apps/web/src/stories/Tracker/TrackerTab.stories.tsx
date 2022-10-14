@@ -1,8 +1,8 @@
-// YourComponent.stories.js|jsx
-
+import "../../styles/globals.css";
 import { TrackerTab } from "../../components/views/tracker/Tracker";
+
 export default {
-  title: "TrackerTab",
+  title: "Tracker/TrackerTab",
   component: TrackerTab,
 };
 
@@ -10,7 +10,6 @@ const Template = (args) => <TrackerTab {...args} />;
 
 export const Primary = Template.bind({});
 Primary.args = {
-  daoName: "Dao Name",
-  daoPicture:
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Ethereum_logo_2014.svg/1257px-Ethereum_logo_2014.svg.png",
+  daoName: "Aave",
+  daoPicture: "https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png",
 };

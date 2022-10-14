@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 
 import { useRouter } from "next/router";
-import TrackerView from "../../components/views/tracker/Tracker";
+import Tracker from "../../components/views/tracker/Tracker";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -9,7 +9,7 @@ const Home: NextPage = () => {
 
   return (
     <div>
-      <TrackerView address={String(address)} shareButton={false} />
+      <Tracker address={String(address)} shareButton={false} />
     </div>
   );
 };

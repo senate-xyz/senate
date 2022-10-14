@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
 const DynamicDashboard = dynamic(
-  () => import("../components/views/dashboard/DashboardView"),
+  () => import("../components/views/dashboard/Dashboard"),
   {
     suspense: true,
   }
