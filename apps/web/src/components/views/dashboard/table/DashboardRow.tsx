@@ -5,8 +5,8 @@ dayjs.extend(relativeTime);
 
 export const DashboardRow = (props: { proposal }) => {
   return (
-    <tr>
-      <td>
+    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+      <td className="py-4 px-6">
         <div className="relative">
           <Image
             className="absolute bottom-0 left-0"
@@ -26,10 +26,9 @@ export const DashboardRow = (props: { proposal }) => {
                 : "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"
             }
           />
-          {/* {!isMobile && <Text>{props.proposal.dao.name}</Text>} */}
         </div>
       </td>
-      <td>
+      <td className="py-4 px-6">
         <div>
           <a href={props.proposal.data["url"]}>
             <p>{props.proposal.name}</p>
@@ -37,7 +36,7 @@ export const DashboardRow = (props: { proposal }) => {
         </div>
       </td>
 
-      <td className="text-center">
+      <td className="py-4 px-6">
         {dayjs(props.proposal.data["timeEnd"]).fromNow(true)}
       </td>
 
