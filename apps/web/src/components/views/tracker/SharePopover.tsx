@@ -1,8 +1,6 @@
 import { useSession } from "next-auth/react";
 
 export const SharePopover = () => {
-  const { data: session } = useSession();
-
   return (
     <div>
       <p>popover</p>
