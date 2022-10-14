@@ -4,13 +4,12 @@ import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
 import TrackerTable from "./table/TrackerTable";
 import SharePopover from "./SharePopover";
-import { DAOType } from "@senate/common-types";
+import Image from "next/image";
 
 export const TrackerView = (props: {
   address?: string;
   shareButton: boolean;
 }) => {
-  const [daos, setDaos] = useState<DAOType[]>([]);
   const [selectedDao, setSelectedDao] = useState<string>();
 
   const { data: session } = useSession();
@@ -24,22 +23,15 @@ export const TrackerView = (props: {
     },
   ]);
 
-  useEffect(() => {
-    if (!votes.data) return;
-
-    const daosTabs = votes.data
-      .map((vote: { dao }) => vote.dao)
-      .filter((element: { name }, index, array) => {
-        return (
-          array.findIndex((a: { name }) => a.name == element.name) === index
-        );
-      });
-    setDaos(daosTabs);
-  }, [votes]);
+  const daosTabs = votes.data
+    ?.map((vote: { dao }) => vote.dao)
+    .filter((element: { name }, index, array) => {
+      return array.findIndex((a: { name }) => a.name == element.name) === index;
+    });
 
   useEffect(() => {
-    if (daos[0]) setSelectedDao(daos[0].name);
-  }, [daos]);
+    if (daosTabs) if (daosTabs[0]) setSelectedDao(daosTabs[0].name);
+  }, []);
 
   return (
     <div>
@@ -52,18 +44,26 @@ export const TrackerView = (props: {
         {votes.isLoading && <div>Loading</div>}
 
         <div>
-          <div>
-            {daos.map((dao, index) => {
+          <div className="flex">
+            {daosTabs?.map((dao, index) => {
               return (
-                <div
+                <button
+                  className="flex m-4 p-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
                   key={index}
                   onClick={() => {
                     setSelectedDao(dao.name);
                   }}
                 >
-                  <img src={dao.picture} />
+                  <Image
+                    className="absolute bottom-0 left-0"
+                    src={dao.picture}
+                    width="25"
+                    height="25"
+                    alt="dao image"
+                  />
+
                   <p>{dao.name}</p>
-                </div>
+                </button>
               );
             })}
           </div>
