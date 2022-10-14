@@ -28,7 +28,7 @@ const linkItems: Array<NavItemProps> = [
 export default function NavBar(props: { page: ViewsEnum; setPage: any }) {
   return (
     <main className="w-16 h-screen place-items-center group">
-      <section className="border bg-red-200 absolute transition-all duration-500 -left-36 group-hover:left-0 z-10">
+      <section className="border bg-red-300 absolute transition-all duration-500 -left-36 group-hover:left-0 z-10">
         <div className="h-screen grid place-items-start w-36">
           <ul className="mt-12 p-2 space-y-4">
             {linkItems.map((item) => {
@@ -50,7 +50,7 @@ export default function NavBar(props: { page: ViewsEnum; setPage: any }) {
           </ul>
         </div>
       </section>
-      <section className="h-screen grid place-items-start w-12 bg-red-100">
+      <section className="h-screen grid place-items-start w-12 bg-red-200">
         <ul className="mt-12 p-2 space-y-4">
           {linkItems.map((item) => {
             return <li>{<item.icon size="1.5rem" />}</li>;

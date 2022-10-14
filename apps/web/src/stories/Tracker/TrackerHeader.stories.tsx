@@ -1,8 +1,8 @@
-// YourComponent.stories.js|jsx
-
+import "../../styles/globals.css";
 import { TrackerHeader } from "../../components/views/tracker/Tracker";
+
 export default {
-  title: "TrackerHeader",
+  title: "Tracker/TrackerHeader",
   component: TrackerHeader,
 };
 

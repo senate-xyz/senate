@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
 import TrackerTable from "./table/TrackerTable";
 import SharePopover from "./SharePopover";
 import Image from "next/image";
-import { string } from "zod";
 
 export const TrackerHeader = (props: { shareButton: boolean }) => (
   <div>
@@ -42,6 +41,7 @@ export const TrackerTabList = (props: { daosTabs; setSelectedDao }) => (
     {props.daosTabs?.map((dao) => {
       return (
         <TrackerTab
+          key={dao.name}
           daoName={dao.name}
           daoPicture={dao.picture}
           setSelectedDao={props.setSelectedDao}
@@ -52,9 +52,23 @@ export const TrackerTabList = (props: { daosTabs; setSelectedDao }) => (
 );
 
 export const TrackerView = (props: {
-  address?: string;
-  shareButton: boolean;
-}) => {
+  votes;
+  daosTabs;
+  shareButton;
+  setSelectedDao;
+  selectedDao;
+}) => (
+  <div>
+    <TrackerHeader shareButton={props.shareButton} />
+    <TrackerTabList
+      daosTabs={props.daosTabs}
+      setSelectedDao={props.setSelectedDao}
+    />
+    <TrackerTable votes={props.votes} selectedDao={props.selectedDao} />
+  </div>
+);
+
+export const Tracker = (props: { address?: string; shareButton: boolean }) => {
   const [selectedDao, setSelectedDao] = useState<string>();
 
   const { data: session } = useSession();
@@ -74,17 +88,15 @@ export const TrackerView = (props: {
       return array.findIndex((a: { name }) => a.name == element.name) === index;
     });
 
-  useEffect(() => {
-    if (daosTabs) if (daosTabs[0]) setSelectedDao(daosTabs[0].name);
-  }, []);
-
   return (
-    <div>
-      <TrackerHeader shareButton={props.shareButton} />
-      <TrackerTabList daosTabs={daosTabs} setSelectedDao={setSelectedDao} />
-      <TrackerTable votes={votes} selectedDao={selectedDao} />
-    </div>
+    <TrackerView
+      shareButton={props.shareButton}
+      daosTabs={daosTabs}
+      votes={votes}
+      selectedDao={selectedDao}
+      setSelectedDao={setSelectedDao}
+    />
   );
 };
 
-export default TrackerView;
+export default Tracker;

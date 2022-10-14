@@ -1,8 +1,8 @@
-// YourComponent.stories.js|jsx
-
+import "../../styles/globals.css";
 import { TrackerTabList } from "../../components/views/tracker/Tracker";
+
 export default {
-  title: "TrackerTabList",
+  title: "Tracker/TrackerTabList",
   component: TrackerTabList,
 };
 
@@ -12,14 +12,14 @@ export const Primary = Template.bind({});
 Primary.args = {
   daosTabs: [
     {
-      name: "test",
-      picture:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Ethereum_logo_2014.svg/1257px-Ethereum_logo_2014.svg.png",
+      id: "cl95izuyi0002aqdvdgb721xj",
+      name: "Aave",
+      picture: "https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png",
     },
     {
-      name: "another test",
-      picture:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Ethereum_logo_2014.svg/1257px-Ethereum_logo_2014.svg.png",
+      id: "cl95izuys000caqdv0c4y2fht",
+      name: "ENS",
+      picture: "https://cdn.stamp.fyi/space/ens.eth?s=160&cb=bc8a2856691e05ab",
     },
   ],
 };

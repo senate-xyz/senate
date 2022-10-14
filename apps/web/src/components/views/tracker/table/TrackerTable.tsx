@@ -9,7 +9,6 @@ import { PrismaJsonObject, TrackerProposalType } from "@senate/common-types";
 const tableHeader = ["Proposal", "Description", "Time Ag", "Voted"];
 
 export const TrackerTable = (props: { votes; selectedDao }) => {
-  console.log(props);
   return (
     <div>
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -30,7 +29,6 @@ export const TrackerTable = (props: { votes; selectedDao }) => {
             {props.votes.data
               .filter((vote) => vote.dao.name === props.selectedDao)
               .map((proposal: TrackerProposalType) => {
-                console.log(proposal.description);
                 return (
                   <tr
                     key={proposal.id}
