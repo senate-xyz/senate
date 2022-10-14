@@ -88,6 +88,8 @@ export const Tracker = (props: { address?: string; shareButton: boolean }) => {
       return array.findIndex((a: { name }) => a.name == element.name) === index;
     });
 
+  if (!votes.data) return <div>Loading</div>;
+
   return (
     <TrackerView
       shareButton={props.shareButton}

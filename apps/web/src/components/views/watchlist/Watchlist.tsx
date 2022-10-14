@@ -33,9 +33,7 @@ const Watchlist = () => {
     );
   };
 
-  if (DAOs.isLoading) return <div>loading</div>;
-
-  if (!DAOs.isLoading && !DAOs.data) return <div>no data</div>;
+  if (!DAOs.data) return <div>Loading</div>;
 
   return (
     <div className="w-full">
