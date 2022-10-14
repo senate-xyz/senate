@@ -18,14 +18,7 @@ export const Dashboard = () => {
     session ? "user.proposals" : "public.proposals",
   ]);
 
-  if (proposals.isLoading) return <div>Loading</div>;
-
-  if (!proposals.isLoading && !proposals.data)
-    return (
-      <div>
-        No data. New accounts require up to 10 minutes to fetch new data...
-      </div>
-    );
+  if (!proposals.data) return <div>Loading</div>;
 
   return <DashboardView proposals={proposals} />;
 };
