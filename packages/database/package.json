@@ -3,7 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "license": "MIT",
-  "main": "./dist/index.js",
+  "main": "./dist/index",
+  "typings": "./dist/index",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
