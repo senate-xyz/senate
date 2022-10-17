@@ -78,6 +78,7 @@
     },
     "storybook": {},
     "build-storybook": {},
-    "clean": {}
+    "clean": {},
+    "chromatic": {}
   }
 }
