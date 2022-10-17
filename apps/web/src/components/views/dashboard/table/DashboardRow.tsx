@@ -5,7 +5,7 @@ dayjs.extend(relativeTime);
 
 export const DashboardRow = (props: { proposal }) => {
   return (
-    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+    <tr className="border-b">
       <td className="py-4 px-6">
         <div className="relative">
           <Image
@@ -40,7 +40,7 @@ export const DashboardRow = (props: { proposal }) => {
         {dayjs(props.proposal.data["timeEnd"]).fromNow(true)}
       </td>
 
-      <td className="text-center">idk</td>
+      <td className="py-4 px-6">idk</td>
     </tr>
   );
 };

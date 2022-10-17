@@ -1,3 +1,4 @@
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import React from "react";
 import { IconType } from "react-icons";
 import { FiBarChart2, FiHome, FiStar } from "react-icons/fi";
@@ -28,9 +29,10 @@ const linkItems: Array<NavItemProps> = [
 export default function NavBar(props: { page: ViewsEnum; setPage: any }) {
   return (
     <main className="w-16 h-screen place-items-center group">
-      <section className="border bg-red-300 absolute transition-all duration-500 -left-36 group-hover:left-0 z-10">
-        <div className="h-screen grid place-items-start w-36">
+      <section className="border bg-red-300 absolute transition-all duration-500 -left-96 group-hover:left-0 z-10">
+        <div className="h-screen grid place-items-start w-48">
           <ul className="mt-12 p-2 space-y-4">
+            <ConnectButton showBalance={false} />
             {linkItems.map((item) => {
               return (
                 <li>
