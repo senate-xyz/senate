@@ -1,66 +1,47 @@
-import {
-  Text,
-  Td,
-  Tr,
-  Avatar,
-  Link,
-  HStack,
-  useBreakpointValue,
-} from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
-
+import Image from "next/image";
 dayjs.extend(relativeTime);
 
 export const DashboardRow = (props: { proposal }) => {
-  const isMobile = useBreakpointValue({
-    base: true,
-    md: false,
-  });
-
   return (
-    <Tr>
-      <Td>
-        <HStack>
-          <Avatar
-            boxSize={{ base: "35px", md: "40px" }}
+    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+      <td className="py-4 px-6">
+        <div className="relative">
+          <Image
+            className="absolute bottom-0 left-0"
             src={props.proposal.dao.picture}
-            position="relative"
-          >
-            <Avatar
-              bottom={{ base: "-0.5", md: "-2" }}
-              right={{ base: "-0.5", md: "-2" }}
-              bg="white"
-              boxSize={{ base: "15px", md: "20px" }}
-              src={
-                props.proposal.proposalType == "SNAPSHOT"
-                  ? "https://avatars.githubusercontent.com/u/72904068?s=200&v=4"
-                  : "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"
-              }
-              position="absolute"
-            ></Avatar>
-          </Avatar>
-          {!isMobile && <Text>{props.proposal.dao.name}</Text>}
-        </HStack>
-      </Td>
-      <Td>
-        <HStack>
-          <Link
-            href={props.proposal.data["url"]}
-            isExternal
-            maxW={{ base: "10rem", md: "20rem" }}
-          >
-            <Text noOfLines={1}>{props.proposal.name}</Text>
-          </Link>
-          <ExternalLinkIcon mx="2px" />
-        </HStack>
-      </Td>
+            width="40"
+            height="40"
+            alt="dao image"
+          />
+          <Image
+            className="absolute bottom-0 left-0"
+            width="20"
+            height="20"
+            alt="proposal type"
+            src={
+              props.proposal.proposalType == "SNAPSHOT"
+                ? "https://avatars.githubusercontent.com/u/72904068?s=200&v=4"
+                : "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"
+            }
+          />
+        </div>
+      </td>
+      <td className="py-4 px-6">
+        <div>
+          <a href={props.proposal.data["url"]}>
+            <p>{props.proposal.name}</p>
+          </a>
+        </div>
+      </td>
 
-      <Td>{dayjs(props.proposal.data["timeEnd"]).fromNow(true)}</Td>
+      <td className="py-4 px-6">
+        {dayjs(props.proposal.data["timeEnd"]).fromNow(true)}
+      </td>
 
-      <Td>idk</Td>
-    </Tr>
+      <td className="text-center">idk</td>
+    </tr>
   );
 };
 

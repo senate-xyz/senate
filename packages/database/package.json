@@ -1,5 +1,6 @@
 {
   "name": "@senate/database",
+  "private": true,
   "version": "1.0.0",
   "license": "MIT",
   "main": "./dist/index",
@@ -31,12 +32,12 @@
     "@senate/common-types": "*",
     "@senate/config": "*",
     "@senate/tsconfig": "*",
-    "eslint": "^8.24.0",
+    "eslint": "^8.25.0",
     "prisma": "^4.4.0",
     "prisma-dbml-generator": "^0.9.1",
     "rimraf": "^3.0.2",
     "tsup": "^6.2.3",
-    "tsx": "^3.9.0",
+    "tsx": "^3.10.1",
     "typescript": "^4.8.4"
   },
   "packageManager": "yarn@1.22.19"
