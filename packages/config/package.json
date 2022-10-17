@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "index.js",
   "files": [
-    "eslint-preset.js"
+    "eslint.js"
   ],
   "dependencies": {
     "eslint-config-next": "^12.3.1",

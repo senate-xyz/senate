@@ -25,7 +25,7 @@ export const TrackerThead = () => (
 export const TrackerTable = (props: { votes; selectedDao }) => {
   return (
     <div>
-      <table className="w-full text-sm text-left">
+      <table className="w-full text-left text-sm">
         <TrackerThead />
         {props.votes.data && (
           <tbody>

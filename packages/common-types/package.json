@@ -14,7 +14,8 @@
     "build": "tsup",
     "clean": "rimraf .turbo node_modules dist",
     "dev": "tsup --watch",
-    "lint": "eslint ./src --fix"
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
   },
   "devDependencies": {
     "@senate/config": "*",

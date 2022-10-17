@@ -19,7 +19,7 @@ export const TrackerTab = (props: {
   setSelectedDao: any;
 }) => (
   <button
-    className="flex m-4 p-2 border-gray-400 border rounded"
+    className="m-4 flex rounded border border-gray-400 p-2"
     onClick={() => {
       props.setSelectedDao(props.daoName);
     }}
@@ -37,7 +37,7 @@ export const TrackerTab = (props: {
 );
 
 export const TrackerTabList = (props: { daosTabs; setSelectedDao }) => (
-  <div className="flex border-gray-300 border rounded">
+  <div className="flex rounded border border-gray-300">
     {props.daosTabs?.map((dao) => {
       return (
         <TrackerTab

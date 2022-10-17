@@ -18,9 +18,9 @@
     "db:push": "prisma db push",
     "db:seed": "tsx src/seed.ts",
     "dev": "tsup --watch",
-    "format": "prisma format",
     "generate": "prisma generate",
-    "lint": "eslint ./src --fix",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "prebuild": "npm run generate",
     "predev": "npm run generate",
     "studio": "prisma studio"
