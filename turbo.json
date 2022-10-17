@@ -76,6 +76,7 @@
         "PORT"
       ]
     },
-    "storybook": {}
+    "storybook": {},
+    "clean": {}
   }
 }
