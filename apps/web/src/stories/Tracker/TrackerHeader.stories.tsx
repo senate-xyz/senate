@@ -1,19 +1,19 @@
-import "../../styles/globals.css";
-import { TrackerHeader } from "../../components/views/tracker/Tracker";
+import '../../styles/globals.css'
+import { TrackerHeader } from '../../components/views/tracker/Tracker'
 
 export default {
-  title: "Tracker/TrackerHeader",
-  component: TrackerHeader,
-};
+    title: 'Tracker/TrackerHeader',
+    component: TrackerHeader,
+}
 
-const Template = (args) => <TrackerHeader {...args} />;
+const Template = (args) => <TrackerHeader {...args} />
 
-export const withShare = Template.bind({});
+export const withShare = Template.bind({})
 withShare.args = {
-  shareButton: true,
-};
+    shareButton: true,
+}
 
-export const withoutShare = Template.bind({});
+export const withoutShare = Template.bind({})
 withoutShare.args = {
-  shareButton: false,
-};
+    shareButton: false,
+}

@@ -1,44 +1,46 @@
 {
-  "name": "@senate/database",
-  "private": true,
-  "version": "1.0.0",
-  "license": "MIT",
-  "main": "./dist/index",
-  "typings": "./dist/index",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist/**"
-  ],
-  "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "db:migrate:deploy": "prisma migrate deploy",
-    "db:migrate:dev": "prisma migrate dev",
-    "db:push": "prisma db push",
-    "db:seed": "tsx src/seed.ts",
-    "generate": "prisma generate",
-    "prebuild": "npm run generate",
-    "predev": "npm run generate",
-    "studio": "prisma studio",
-    "clean": "rimraf .turbo node_modules dist",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
-  },
-  "dependencies": {
-    "@prisma/client": "^4.4.0"
-  },
-  "devDependencies": {
-    "@senate/common-types": "*",
-    "@senate/config": "*",
-    "@senate/tsconfig": "*",
-    "eslint": "^8.25.0",
-    "prisma": "^4.4.0",
-    "prisma-dbml-generator": "^0.9.1",
-    "rimraf": "^3.0.2",
-    "tsup": "^6.2.3",
-    "tsx": "^3.10.1",
-    "typescript": "^4.8.4"
-  },
-  "packageManager": "yarn@1.22.19"
+    "name": "@senate/database",
+    "private": true,
+    "version": "1.0.0",
+    "license": "MIT",
+    "main": "./dist/index",
+    "typings": "./dist/index",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist/**"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "db:migrate:deploy": "prisma migrate deploy",
+        "db:migrate:dev": "prisma migrate dev",
+        "db:push": "prisma db push",
+        "db:seed": "tsx src/seed.ts",
+        "generate": "prisma generate",
+        "prebuild": "npm run generate",
+        "predev": "npm run generate",
+        "studio": "prisma studio",
+        "clean": "rimraf .turbo node_modules dist",
+        "lint": "eslint src",
+        "lint:fix": "eslint src --fix",
+        "prettier": "prettier src --check",
+        "prettier:fix": "prettier src --write"
+    },
+    "dependencies": {
+        "@prisma/client": "^4.4.0"
+    },
+    "devDependencies": {
+        "@senate/common-types": "*",
+        "@senate/config": "*",
+        "@senate/tsconfig": "*",
+        "eslint": "^8.25.0",
+        "prisma": "^4.4.0",
+        "prisma-dbml-generator": "^0.9.1",
+        "rimraf": "^3.0.2",
+        "tsup": "^6.2.3",
+        "tsx": "^3.10.1",
+        "typescript": "^4.8.4"
+    },
+    "packageManager": "yarn@1.22.19"
 }

@@ -2,15 +2,25 @@ module.exports = {
   extends: [
     "next",
     "turbo",
+    "plugin:import/recommended",
     "plugin:tailwindcss/recommended",
     "plugin:promise/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/recommended",
-    "plugin:prettier/recommended",
+    "prettier",
   ],
+
   settings: {
     next: {
       rootDir: ["apps/*/", "packages/*/"],
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"],
+    },
+    "import/resolver": {
+      typescript: {
+        alwaysTryTypes: true,
+      },
     },
   },
   rules: {
