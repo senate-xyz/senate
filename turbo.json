@@ -7,6 +7,9 @@
     "start:web": {
       "cache": true
     },
+    "start:detective": {
+      "cache": true
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"]
