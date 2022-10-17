@@ -8,22 +8,25 @@ import { PrismaJsonObject, TrackerProposalType } from "@senate/common-types";
 
 const tableHeader = ["Proposal", "Description", "Time Ag", "Voted"];
 
+export const TrackerThead = () => (
+  <thead className="text-xs uppercase">
+    <tr>
+      {tableHeader.map((column, index) => {
+        return (
+          <th scope="col" className="py-3 px-6" key={index}>
+            {column}
+          </th>
+        );
+      })}
+    </tr>
+  </thead>
+);
+
 export const TrackerTable = (props: { votes; selectedDao }) => {
   return (
     <div>
       <table className="w-full text-sm text-left">
-        <thead className="text-xs uppercase">
-          <tr>
-            {tableHeader.map((column, index) => {
-              return (
-                <th scope="col" className="py-3 px-6" key={index}>
-                  {column}
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
-
+        <TrackerThead />
         {props.votes.data && (
           <tbody>
             {props.votes.data
