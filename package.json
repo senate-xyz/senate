@@ -25,7 +25,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "generate": "turbo run generate",
     "lint": "turbo run lint",
-    "storybook": "turbo run storybook"
+    "storybook": "turbo run storybook",
+    "clean": "turbo run clean"
   },
   "devDependencies": {
     "prettier": "^2.7.1",
