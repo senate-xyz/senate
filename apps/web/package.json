@@ -13,7 +13,8 @@
     "start:web": "next start",
     "storybook": "start-storybook",
     "build-storybook": "yarn && build-storybook",
-    "clean": "rimraf .next .turbo node_modules dist storybook-static"
+    "clean": "rimraf .next .turbo node_modules dist storybook-static",
+    "chromatic": "npx chromatic"
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^0.7.1",
@@ -22,6 +23,7 @@
     "@trpc/next": "^9.27.4",
     "@trpc/react": "^9.27.4",
     "@trpc/server": "^9.27.4",
+    "core-js": "^3.25.5",
     "dayjs": "^1.11.5",
     "ethers": "^5.7.1",
     "framer-motion": "^7.5.3",
@@ -34,8 +36,7 @@
     "siwe": "^1.1.6",
     "superjson": "^1.10.1",
     "wagmi": "^0.7.4",
-    "zod": "^3.19.1",
-    "core-js": "^3.25.5"
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
@@ -59,6 +60,7 @@
     "@typescript-eslint/parser": "^5.40.0",
     "autoprefixer": "^10.4.12",
     "babel-loader": "^8.2.5",
+    "chromatic": "^6.10.2",
     "core-js": "^3.25.5",
     "eslint": "8.25.0",
     "eslint-config-next": "12.3.1",
@@ -70,5 +72,7 @@
   },
   "ct3aMetadata": {
     "initVersion": "5.13.1"
-  }
+  },
+  "readme": "ERROR: No README data found!",
+  "_id": "@senate/web@0.1.0"
 }

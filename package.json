@@ -27,7 +27,8 @@
     "lint": "turbo run lint",
     "storybook": "turbo run storybook",
     "build-storybook": "turbo run build-storybook",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "chromatic": "turbo run chromatic"
   },
   "devDependencies": {
     "prettier": "^2.7.1",
