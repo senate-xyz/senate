@@ -2,6 +2,8 @@ import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
 import DashboardTable from "./table/DashboardTable";
 
+export const DashboardHeader = () => <p>Dashboard</p>;
+
 export const DashboardView = (props: { proposals }) => (
   <div className="w-full">
     <p>Dashboard</p>
