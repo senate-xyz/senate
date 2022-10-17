@@ -13,6 +13,7 @@
     "start:detective": "nest start",
     "pd:start": "nest start",
     "dev": "nest start --watch",
+    "dev:detective": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
