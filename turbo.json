@@ -40,6 +40,28 @@
         "PORT"
       ]
     },
+    "dev:web": {
+      "cache": false,
+      "env": [
+        "NODE_ENV",
+        "NEXTAUTH_SECRET",
+        "NEXTAUTH_URL",
+        "VERCEL_URL",
+        "PROVIDER_URL",
+        "PORT"
+      ]
+    },
+    "dev:detective": {
+      "cache": false,
+      "env": [
+        "NODE_ENV",
+        "NEXTAUTH_SECRET",
+        "NEXTAUTH_URL",
+        "VERCEL_URL",
+        "PROVIDER_URL",
+        "PORT"
+      ]
+    },
     "generate": {
       "dependsOn": ["^generate"]
     },
