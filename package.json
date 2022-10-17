@@ -26,6 +26,7 @@
     "generate": "turbo run generate",
     "lint": "turbo run lint",
     "storybook": "turbo run storybook",
+    "build-storybook": "turbo run build-storybook",
     "clean": "turbo run clean"
   },
   "devDependencies": {
