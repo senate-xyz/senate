@@ -33,9 +33,9 @@ export default function NavBar(props: { page: ViewsEnum; setPage: any }) {
         <div className="h-screen grid place-items-start w-48">
           <ul className="mt-12 p-2 space-y-4">
             <ConnectButton showBalance={false} />
-            {linkItems.map((item) => {
+            {linkItems.map((item, index) => {
               return (
-                <li>
+                <li key={index}>
                   <button
                     onClick={() => {
                       props.setPage(item.id);
@@ -54,8 +54,8 @@ export default function NavBar(props: { page: ViewsEnum; setPage: any }) {
       </section>
       <section className="h-screen grid place-items-start w-12 bg-red-200">
         <ul className="mt-12 p-2 space-y-4">
-          {linkItems.map((item) => {
-            return <li>{<item.icon size="1.5rem" />}</li>;
+          {linkItems.map((item, index) => {
+            return <li key={index}>{<item.icon size="1.5rem" />}</li>;
           })}
         </ul>
       </section>

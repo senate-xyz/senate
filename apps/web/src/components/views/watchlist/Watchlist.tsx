@@ -42,14 +42,12 @@ const Watchlist = () => {
         <div className="grid grid-cols-4 gap-4">
           {DAOs.data.map((dao: DAOType, index: number) => {
             return (
-              <div key={index}>
-                <DaoItem
-                  dao={dao}
-                  key={index}
-                  handleSubscribe={handleSubscribe}
-                  handleUnsubscribe={handleUnsubscribe}
-                />
-              </div>
+              <DaoItem
+                dao={dao}
+                key={index}
+                handleSubscribe={handleSubscribe}
+                handleUnsubscribe={handleUnsubscribe}
+              />
             );
           })}
         </div>
