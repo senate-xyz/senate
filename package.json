@@ -13,6 +13,7 @@
   "scripts": {
     "start": "turbo run start",
     "start:web": "turbo run start:web",
+    "start:detective": "turbo run start:detective",
     "build": "turbo run build",
     "pd:start": "turbo run pd:start",
     "db:migrate:deploy": "turbo run db:migrate:deploy",
