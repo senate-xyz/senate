@@ -2,8 +2,8 @@ import { useState } from "react";
 
 import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
-import TrackerTable from "./table/TrackerTable";
-import SharePopover from "./SharePopover";
+import { TrackerTable } from "./table/TrackerTable";
+import { SharePopover } from "./SharePopover";
 import Image from "next/image";
 
 export const TrackerHeader = (props: { shareButton: boolean }) => (

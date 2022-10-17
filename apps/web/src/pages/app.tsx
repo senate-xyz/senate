@@ -1,8 +1,7 @@
 import type { NextPage } from "next";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import NavBar, { ViewsEnum } from "../components/navbar/NavBar";
 import dynamic from "next/dynamic";
-import { Suspense } from "react";
 
 const DynamicDashboard = dynamic(
   () => import("../components/views/dashboard/Dashboard"),

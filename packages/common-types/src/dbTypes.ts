@@ -1,5 +1,5 @@
-import { Prisma } from "@prisma/client";
 import {
+  Prisma,
   ProposalType as ProposalTypePrisma,
   DAOHandlerType as DAOHandlerTypePrisma,
 } from "@prisma/client";
