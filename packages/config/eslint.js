@@ -2,8 +2,10 @@ module.exports = {
   extends: [
     "next",
     "turbo",
-    "prettier",
+    "plugin:tailwindcss/recommended",
+    "plugin:promise/recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
     "plugin:prettier/recommended",
   ],
   settings: {

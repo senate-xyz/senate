@@ -73,5 +73,3 @@ export const TrackerTable = (props: { votes; selectedDao }) => {
     </div>
   );
 };
-
-export default TrackerTable;

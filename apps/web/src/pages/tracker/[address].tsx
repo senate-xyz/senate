@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 
 import { useRouter } from "next/router";
-import Tracker from "../../components/views/tracker/Tracker";
+import { Tracker } from "../../components/views/tracker/Tracker";
 
 const Home: NextPage = () => {
   const router = useRouter();

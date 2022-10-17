@@ -1,4 +1,3 @@
-// src/pages/_app.tsx
 import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
 import { loggerLink } from "@trpc/client/links/loggerLink";
 import { withTRPC } from "@trpc/next";
@@ -9,10 +8,8 @@ import type { AppRouter } from "../server/router";
 import type { Session } from "next-auth";
 import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
-import {
-  GetSiweMessageOptions,
-  RainbowKitSiweNextAuthProvider,
-} from "@rainbow-me/rainbowkit-siwe-next-auth";
+import type { GetSiweMessageOptions } from "@rainbow-me/rainbowkit-siwe-next-auth";
+import { RainbowKitSiweNextAuthProvider } from "@rainbow-me/rainbowkit-siwe-next-auth";
 
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { chain, configureChains, createClient, WagmiConfig } from "wagmi";

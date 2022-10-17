@@ -44,5 +44,3 @@ export const DashboardRow = (props: { proposal }) => {
     </tr>
   );
 };
-
-export default DashboardRow;

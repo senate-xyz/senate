@@ -1,4 +1,4 @@
-import DashboardRow from "./DashboardRow";
+import { DashboardRow } from "./DashboardRow";
 
 const tableHeader = ["DAO", "Proposal", "Time left", "Status"];
 
@@ -30,5 +30,3 @@ export const DashboardTable = (props: { proposals }) => {
     </div>
   );
 };
-
-export default DashboardTable;

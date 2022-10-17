@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
-import DashboardTable from "./table/DashboardTable";
+import { DashboardTable } from "./table/DashboardTable";
 
 export const DashboardHeader = () => <p>Dashboard</p>;
 

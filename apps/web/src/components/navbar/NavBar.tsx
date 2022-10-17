@@ -1,6 +1,5 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import React from "react";
-import { IconType } from "react-icons";
+import type { IconType } from "react-icons";
 import { FiBarChart2, FiHome, FiStar } from "react-icons/fi";
 
 export enum ViewsEnum {

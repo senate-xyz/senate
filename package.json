@@ -11,24 +11,23 @@
     "seed": "tsx packages/database/src/seed.ts"
   },
   "scripts": {
+    "build": "turbo run build",
     "start": "turbo run start",
     "start:web": "turbo run start:web",
     "start:detective": "turbo run start:detective",
-    "build": "turbo run build",
-    "pd:start": "turbo run pd:start",
-    "db:migrate:deploy": "turbo run db:migrate:deploy",
-    "db:push": "turbo run db:push",
-    "db:seed": "turbo run db:seed",
     "dev": "turbo run dev --parallel",
     "dev:web": "turbo run dev:web",
     "dev:detective": "turbo run dev:detective",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:migrate:deploy": "turbo run db:migrate:deploy",
+    "db:push": "turbo run db:push",
+    "db:seed": "turbo run db:seed",
     "generate": "turbo run generate",
-    "lint": "turbo run lint",
     "storybook": "turbo run storybook",
     "build-storybook": "turbo run build-storybook",
+    "chromatic": "turbo run chromatic",
     "clean": "turbo run clean",
-    "chromatic": "turbo run chromatic"
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "turbo run lint"
   },
   "devDependencies": {
     "prettier": "^2.7.1",

@@ -1,36 +1,11 @@
 {
   "$schema": "https://turborepo.org/schema.json",
   "pipeline": {
-    "start": {
-      "cache": true
-    },
-    "start:web": {
-      "cache": true
-    },
-    "start:detective": {
-      "cache": true
-    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"]
     },
-    "pd:start": {
-      "outputs": []
-    },
-    "db:migrate:deploy": {
-      "cache": false,
-      "outputs": []
-    },
-    "db:push": {
-      "cache": false,
-      "outputs": []
-    },
-    "db:seed": {
-      "cache": false,
-      "outputs": []
-    },
-    "dev": {
-      "cache": false,
+    "*": {
       "env": [
         "NODE_ENV",
         "NEXTAUTH_SECRET",
@@ -40,42 +15,17 @@
         "PORT"
       ]
     },
-    "dev:web": {
-      "cache": false,
-      "env": [
-        "NODE_ENV",
-        "NEXTAUTH_SECRET",
-        "NEXTAUTH_URL",
-        "VERCEL_URL",
-        "PROVIDER_URL",
-        "PORT"
-      ]
-    },
-    "dev:detective": {
-      "cache": false,
-      "env": [
-        "NODE_ENV",
-        "NEXTAUTH_SECRET",
-        "NEXTAUTH_URL",
-        "VERCEL_URL",
-        "PROVIDER_URL",
-        "PORT"
-      ]
-    },
-    "generate": {
-      "dependsOn": ["^generate"]
-    },
-    "lint": {
-      "outputs": [],
-      "env": [
-        "NODE_ENV",
-        "NEXTAUTH_SECRET",
-        "NEXTAUTH_URL",
-        "VERCEL_URL",
-        "PROVIDER_URL",
-        "PORT"
-      ]
-    },
+    "start": {},
+    "start:web": {},
+    "start:detective": {},
+    "dev": {},
+    "dev:web": {},
+    "dev:detective": {},
+    "db:migrate:deploy": {},
+    "db:push": {},
+    "db:seed": {},
+    "generate": {},
+    "lint": {},
     "storybook": {},
     "build-storybook": {},
     "clean": {},
