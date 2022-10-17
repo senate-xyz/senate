@@ -28,10 +28,10 @@ const linkItems: Array<NavItemProps> = [
 
 export default function NavBar(props: { page: ViewsEnum; setPage: any }) {
   return (
-    <main className="w-16 h-screen place-items-center group">
-      <section className="border bg-red-300 absolute transition-all duration-500 -left-96 group-hover:left-0 z-10">
-        <div className="h-screen grid place-items-start w-48">
-          <ul className="mt-12 p-2 space-y-4">
+    <main className="group h-screen w-16 place-items-center">
+      <section className="absolute -left-96 z-10 border bg-red-300 transition-all duration-500 group-hover:left-0">
+        <div className="grid h-screen w-48 place-items-start">
+          <ul className="mt-12 space-y-4 p-2">
             <ConnectButton showBalance={false} />
             {linkItems.map((item, index) => {
               return (
@@ -52,8 +52,8 @@ export default function NavBar(props: { page: ViewsEnum; setPage: any }) {
           </ul>
         </div>
       </section>
-      <section className="h-screen grid place-items-start w-12 bg-red-200">
-        <ul className="mt-12 p-2 space-y-4">
+      <section className="grid h-screen w-12 place-items-start bg-red-200">
+        <ul className="mt-12 space-y-4 p-2">
           {linkItems.map((item, index) => {
             return <li key={index}>{<item.icon size="1.5rem" />}</li>;
           })}

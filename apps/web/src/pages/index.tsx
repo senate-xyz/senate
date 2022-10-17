@@ -6,7 +6,7 @@ const Header = () => {
     <div className="flex max-w-full justify-between">
       <div className="m-2">
         <a href="https://dev-senate-web.onrender.com/">
-          <div className="flex justify-start items-center">
+          <div className="flex items-center justify-start">
             <Image
               width="50px"
               height="50px"
@@ -17,7 +17,7 @@ const Header = () => {
           </div>
         </a>
       </div>
-      <div className="flex gap-3 m-3">
+      <div className="m-3 flex gap-3">
         <a href="/about">
           <p>About</p>
         </a>
@@ -40,19 +40,19 @@ const Header = () => {
 
 const Mid = () => {
   return (
-    <div className="flex gap-4 justify-between">
-      <div className="flex flex-col w-full items-center">
+    <div className="flex justify-between gap-4">
+      <div className="flex w-full flex-col items-center">
         <div className="flex flex-col">
           <p>Join</p>
           <p>Senate!</p>
         </div>
-        <p className="w-96 m-4">
+        <p className="m-4 w-96">
           Start receiving notifications from your DAOs every time a new proposal
           is made!
         </p>
 
-        <div className="justify-center content-center">
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <div className="content-center justify-center">
+          <button className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700">
             <a href="/app">
               <p>Launch App</p>
             </a>

@@ -19,7 +19,7 @@ export const DashboardThead = () => (
 export const DashboardTable = (props: { proposals }) => {
   return (
     <div className="w-full">
-      <table className="w-full text-sm text-left">
+      <table className="w-full text-left text-sm">
         <DashboardThead />
         <tbody>
           {props.proposals.data.map((proposal, index) => {
