@@ -26,8 +26,10 @@
     "build-storybook": "turbo run build-storybook",
     "chromatic": "turbo run chromatic",
     "clean": "turbo run clean",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "lint": "turbo run lint"
+    "prettier": "turbo run prettier",
+    "prettier:fix": "turbo run prettier:fix",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix"
   },
   "devDependencies": {
     "prettier": "^2.7.1",

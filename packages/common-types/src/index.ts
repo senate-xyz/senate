@@ -1,1 +1,1 @@
-export * from "./dbTypes";
+export * from './dbTypes'

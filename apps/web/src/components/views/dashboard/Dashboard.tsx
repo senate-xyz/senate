@@ -1,28 +1,29 @@
-import { useSession } from "next-auth/react";
-import { trpc } from "../../../utils/trpc";
-import { DashboardTable } from "./table/DashboardTable";
+import { useSession } from 'next-auth/react'
 
-export const DashboardHeader = () => <p>Dashboard</p>;
+import { trpc } from '../../../utils/trpc'
+import { DashboardTable } from './table/DashboardTable'
+
+export const DashboardHeader = () => <p>Dashboard</p>
 
 export const DashboardView = (props: { proposals }) => (
-  <div className="w-full">
-    <p>Dashboard</p>
     <div className="w-full">
-      <DashboardTable proposals={props.proposals} />
+        <p>Dashboard</p>
+        <div className="w-full">
+            <DashboardTable proposals={props.proposals} />
+        </div>
     </div>
-  </div>
-);
+)
 
 export const Dashboard = () => {
-  const { data: session } = useSession();
+    const { data: session } = useSession()
 
-  const proposals = trpc.useQuery([
-    session ? "user.proposals" : "public.proposals",
-  ]);
+    const proposals = trpc.useQuery([
+        session ? 'user.proposals' : 'public.proposals',
+    ])
 
-  if (!proposals.data) return <div>Loading</div>;
+    if (!proposals.data) return <div>Loading</div>
 
-  return <DashboardView proposals={proposals} />;
-};
+    return <DashboardView proposals={proposals} />
+}
 
-export default Dashboard;
+export default Dashboard

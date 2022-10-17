@@ -1,11 +1,11 @@
-import "../../styles/globals.css";
-import { DashboardThead } from "../../components/views/dashboard/table/DashboardTable";
+import '../../styles/globals.css'
+import { DashboardThead } from '../../components/views/dashboard/table/DashboardTable'
 
 export default {
-  title: "Dashboard/DashboardThead",
-  component: DashboardThead,
-};
+    title: 'Dashboard/DashboardThead',
+    component: DashboardThead,
+}
 
-const Template = (args) => <DashboardThead {...args} />;
+const Template = (args) => <DashboardThead {...args} />
 
-export const Primary = Template.bind({});
+export const Primary = Template.bind({})

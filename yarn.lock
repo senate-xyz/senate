@@ -7870,7 +7870,7 @@ eslint-plugin-storybook@^0.6.6:
 
 eslint-plugin-tailwindcss@^3.6.2:
   version "3.6.2"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-3.6.2.tgz#56ce5722b2972ed45cb4c0bc7062d37b0cfd4995"
+  resolved "https://registry.npmjs.org/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-3.6.2.tgz"
   integrity sha512-C9Ka3w6W9F5l/3ZDLnkdbqmeujc1vE+p5drjP1Z1UyxgoE1Nh4/f8oQ4XC45PrZsS0Nyv0YKXNH8/dn/FJZKsQ==
   dependencies:
     fast-glob "^3.2.5"
@@ -14956,7 +14956,7 @@ turbo-windows-arm64@1.5.6:
 
 turbo@latest:
   version "1.5.6"
-  resolved "https://registry.npmjs.org/turbo/-/turbo-1.5.6.tgz"
+  resolved "https://registry.yarnpkg.com/turbo/-/turbo-1.5.6.tgz#7dac8db14b2452afa45c57c050ff19989d4ab074"
   integrity sha512-xJO/fhiMo4lI62iGR9OgUfJTC9tnnuoMwNC52IfvvBDEPlA8RWGMS8SFpDVG9bNCXvVRrtUTNJXMe6pJWBiOTA==
   optionalDependencies:
     turbo-darwin-64 "1.5.6"
