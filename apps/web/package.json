@@ -12,7 +12,7 @@
     "start": "next start",
     "start:web": "next start",
     "storybook": "start-storybook",
-    "build-storybook": "build-storybook",
+    "build-storybook": "yarn && build-storybook",
     "clean": "rimraf .next .turbo node_modules dist storybook-static"
   },
   "dependencies": {
