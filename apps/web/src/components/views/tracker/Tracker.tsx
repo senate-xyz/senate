@@ -1,33 +1,74 @@
-import {
-  Text,
-  VStack,
-  Divider,
-  Avatar,
-  HStack,
-  Center,
-  Spinner,
-  Spacer,
-  Tab,
-  TabList,
-  TabPanels,
-  Tabs,
-  Box,
-  Container,
-} from "@chakra-ui/react";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
 import TrackerTable from "./table/TrackerTable";
 import SharePopover from "./SharePopover";
-import { DAOType } from "@senate/common-types";
+import Image from "next/image";
+
+export const TrackerHeader = (props: { shareButton: boolean }) => (
+  <div>
+    <p>Vote tracker</p>
+    {props.shareButton && <SharePopover />}
+  </div>
+);
+
+export const TrackerTab = (props: {
+  daoName: string;
+  daoPicture: string;
+  setSelectedDao: any;
+}) => (
+  <button
+    className="flex m-4 p-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
+    onClick={() => {
+      props.setSelectedDao(props.daoName);
+    }}
+  >
+    <Image
+      className="absolute bottom-0 left-0"
+      src={props.daoPicture}
+      width="25"
+      height="25"
+      alt="dao image"
+    />
+
+    <p>{props.daoName}</p>
+  </button>
+);
+
+export const TrackerTabList = (props: { daosTabs; setSelectedDao }) => (
+  <div className="flex">
+    {props.daosTabs?.map((dao) => {
+      return (
+        <TrackerTab
+          key={dao.name}
+          daoName={dao.name}
+          daoPicture={dao.picture}
+          setSelectedDao={props.setSelectedDao}
+        />
+      );
+    })}
+  </div>
+);
 
 export const TrackerView = (props: {
-  address?: string;
-  shareButton: boolean;
-}) => {
-  const [daos, setDaos] = useState<DAOType[]>([]);
+  votes;
+  daosTabs;
+  shareButton;
+  setSelectedDao;
+  selectedDao;
+}) => (
+  <div>
+    <TrackerHeader shareButton={props.shareButton} />
+    <TrackerTabList
+      daosTabs={props.daosTabs}
+      setSelectedDao={props.setSelectedDao}
+    />
+    <TrackerTable votes={props.votes} selectedDao={props.selectedDao} />
+  </div>
+);
+
+export const Tracker = (props: { address?: string; shareButton: boolean }) => {
   const [selectedDao, setSelectedDao] = useState<string>();
 
   const { data: session } = useSession();
@@ -41,74 +82,23 @@ export const TrackerView = (props: {
     },
   ]);
 
-  useEffect(() => {
-    if (!votes.data) return;
+  const daosTabs = votes.data
+    ?.map((vote: { dao }) => vote.dao)
+    .filter((element: { name }, index, array) => {
+      return array.findIndex((a: { name }) => a.name == element.name) === index;
+    });
 
-    const daosTabs = votes.data
-      .map((vote: { dao }) => vote.dao)
-      .filter((element: { name }, index, array) => {
-        return (
-          array.findIndex((a: { name }) => a.name == element.name) === index
-        );
-      });
-    setDaos(daosTabs);
-  }, [votes]);
-
-  useEffect(() => {
-    if (daos[0]) setSelectedDao(daos[0].name);
-  }, [daos]);
+  if (!votes.data) return <div>Loading</div>;
 
   return (
-    <Box w="full">
-      <VStack
-        m={{ base: "0", md: "10" }}
-        align="start"
-        p={{ base: "2", md: "5" }}
-      >
-        <HStack w="full">
-          <Text fontSize="3xl" fontWeight="800">
-            Vote tracker
-          </Text>
-          <Spacer />
-
-          {props.shareButton && <SharePopover />}
-        </HStack>
-        <Box pb="0.3rem" pt="1rem" />
-        <Divider />
-        <Box pb="0.3rem" pt="1rem" />
-        {votes.isLoading && (
-          <Center w="full">
-            <Spinner />
-          </Center>
-        )}
-
-        <Tabs w="full" variant="enclosed">
-          <TabList>
-            {daos.map((dao, index) => {
-              return (
-                <Tab
-                  key={index}
-                  onClick={() => {
-                    setSelectedDao(dao.name);
-                  }}
-                >
-                  <Avatar src={dao.picture} size="xs"></Avatar>
-                  <Box m="2"></Box>
-                  <Text>{dao.name}</Text>
-                </Tab>
-              );
-            })}
-          </TabList>
-
-          <Container overflow="auto" w="full" maxW="90vw">
-            <TabPanels w="full">
-              <TrackerTable votes={votes} selectedDao={selectedDao} />
-            </TabPanels>
-          </Container>
-        </Tabs>
-      </VStack>
-    </Box>
+    <TrackerView
+      shareButton={props.shareButton}
+      daosTabs={daosTabs}
+      votes={votes}
+      selectedDao={selectedDao}
+      setSelectedDao={setSelectedDao}
+    />
   );
 };
 
-export default TrackerView;
+export default Tracker;

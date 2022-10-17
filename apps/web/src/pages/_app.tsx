@@ -8,32 +8,16 @@ import type { AppType } from "next/app";
 import type { AppRouter } from "../server/router";
 import type { Session } from "next-auth";
 import "../styles/globals.css";
-import "@fontsource/manrope/200.css";
-import "@fontsource/manrope/300.css";
-import "@fontsource/manrope/400.css";
-import "@fontsource/manrope/500.css";
-import "@fontsource/manrope/600.css";
-import "@fontsource/manrope/700.css";
-import "@fontsource/manrope/800.css";
 import "@rainbow-me/rainbowkit/styles.css";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import {
   GetSiweMessageOptions,
   RainbowKitSiweNextAuthProvider,
 } from "@rainbow-me/rainbowkit-siwe-next-auth";
-import { configureChains, chain, createClient, WagmiConfig } from "wagmi";
+
+import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
-
-const theme = extendTheme({
-  fonts: {
-    manrope: "Manrope",
-    body: `'Manrope', sans-serif`,
-  },
-  initialColorMode: "dark",
-  useSystemColorMode: false,
-});
 
 const { chains, provider } = configureChains(
   [chain.mainnet],
@@ -60,19 +44,17 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <SessionProvider refetchInterval={0} session={session}>
-      <WagmiConfig client={wagmiClient}>
+    <WagmiConfig client={wagmiClient}>
+      <SessionProvider refetchInterval={0} session={session}>
         <RainbowKitSiweNextAuthProvider
           getSiweMessageOptions={getSiweMessageOptions}
         >
           <RainbowKitProvider chains={chains}>
-            <ChakraProvider theme={theme}>
-              <Component {...pageProps} />
-            </ChakraProvider>
+            <Component {...pageProps} />
           </RainbowKitProvider>
         </RainbowKitSiweNextAuthProvider>
-      </WagmiConfig>
-    </SessionProvider>
+      </SessionProvider>
+    </WagmiConfig>
   );
 };
 
@@ -104,20 +86,20 @@ export default withTRPC<AppRouter>({
       /**
        * @link https://react-query.tanstack.com/reference/QueryClient
        */
-      queryClientConfig: { defaultOptions: { queries: { staleTime: 60 } } },
+      // queryClientConfig: { defaultOptions: { queries: { staleTime: 60 } } },
 
       // To use SSR properly you need to forward the client's headers to the server
-      headers: () => {
-        if (ctx?.req) {
-          const headers = ctx?.req?.headers;
-          delete headers?.connection;
-          return {
-            ...headers,
-            "x-ssr": "1",
-          };
-        }
-        return {};
-      },
+      // headers: () => {
+      //   if (ctx?.req) {
+      //     const headers = ctx?.req?.headers;
+      //     delete headers?.connection;
+      //     return {
+      //       ...headers,
+      //       "x-ssr": "1",
+      //     };
+      //   }
+      //   return {};
+      // }
     };
   },
   /**

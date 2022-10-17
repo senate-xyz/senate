@@ -1,19 +1,6 @@
-import {
-  Text,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Avatar,
-  Link,
-  HStack,
-} from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
+import Image from "next/image";
 
 dayjs.extend(relativeTime);
 
@@ -23,56 +10,67 @@ const tableHeader = ["Proposal", "Description", "Time Ag", "Voted"];
 
 export const TrackerTable = (props: { votes; selectedDao }) => {
   return (
-    <TableContainer w="full">
-      <Table variant="simple">
-        <Thead>
-          <Tr>
+    <div>
+      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <tr>
             {tableHeader.map((column, index) => {
-              return <Th key={index}>{column}</Th>;
+              return (
+                <th scope="col" className="py-3 px-6" key={index}>
+                  {column}
+                </th>
+              );
             })}
-          </Tr>
-        </Thead>
+          </tr>
+        </thead>
 
         {props.votes.data && (
-          <Tbody>
+          <tbody>
             {props.votes.data
               .filter((vote) => vote.dao.name === props.selectedDao)
               .map((proposal: TrackerProposalType) => {
                 return (
-                  <Tr key={proposal.id}>
-                    <Td>
-                      <HStack>
-                        <Avatar src={proposal.dao.picture}></Avatar>
-                        <Link
+                  <tr
+                    key={proposal.id}
+                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                  >
+                    <td className="py-4 px-6">
+                      <div className="flex items-center">
+                        <Image
+                          className="absolute bottom-0 left-0"
+                          src={proposal.dao.picture}
+                          width="40"
+                          height="40"
+                          alt="dao image"
+                        />
+
+                        <a
                           href={(proposal.data as PrismaJsonObject)[
                             "url"
                           ]?.toString()}
-                          isExternal
-                          maxW="20rem"
                         >
-                          <Text noOfLines={1}>{proposal.name}</Text>
-                        </Link>
-                        <ExternalLinkIcon mx="2px" />
-                      </HStack>
-                    </Td>
-                    <Td maxW={"20rem"}>
-                      <Text noOfLines={1}>{proposal.description}</Text>
-                    </Td>
-                    <Td>
+                          <p>{proposal.name}</p>
+                        </a>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <p>{proposal.description}</p>
+                    </td>
+                    <td className="py-4 px-6">
                       {dayjs(
                         (proposal.data as PrismaJsonObject)[
                           "timeEnd"
                         ]?.toString()
                       ).fromNow()}
-                    </Td>
-                    <Td>idk</Td>
-                  </Tr>
+                    </td>
+                    <td className="py-4 px-6">idk</td>
+                  </tr>
                 );
               })}
-          </Tbody>
+          </tbody>
         )}
-      </Table>
-    </TableContainer>
+      </table>
+    </div>
   );
 };
 
