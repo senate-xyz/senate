@@ -9,6 +9,7 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
+    "start:web": "next start",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },

@@ -11,6 +11,8 @@
     "seed": "tsx packages/database/src/seed.ts"
   },
   "scripts": {
+    "start": "turbo run start",
+    "start:web": "turbo run start:web",
     "build": "turbo run build",
     "pd:start": "turbo run pd:start",
     "db:migrate:deploy": "turbo run db:migrate:deploy",
