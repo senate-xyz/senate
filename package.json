@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "prettier": "^2.7.1",
-    "tsx": "^3.9.0",
+    "tsx": "^3.10.1",
     "turbo": "latest"
   },
   "packageManager": "yarn@1.22.19"
