@@ -1,6 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import type { IconType } from 'react-icons'
-import { FiBarChart2, FiHome, FiStar } from 'react-icons/fi'
+import { FiBarChart2, FiHome, FiStar, FiSettings } from 'react-icons/fi'
 
 export enum ViewsEnum {
     None = 1,
@@ -23,6 +23,7 @@ const linkItems: Array<NavItemProps> = [
         icon: FiBarChart2,
     },
     { name: 'Vote tracker', id: ViewsEnum.Tracker, icon: FiStar },
+    { name: 'Settings', id: ViewsEnum.Settings, icon: FiSettings },
 ]
 
 export default function NavBar(props: { page: ViewsEnum; setPage: any }) {

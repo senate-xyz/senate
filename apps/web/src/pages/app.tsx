@@ -24,6 +24,13 @@ const DynamicTracker = dynamic(
     }
 )
 
+const DynamicSettings = dynamic(
+    () => import('../components/views/settings/Settings'),
+    {
+        suspense: true,
+    }
+)
+
 const Home: NextPage = () => {
     const [page, setPage] = useState(ViewsEnum.Dashboard)
 
@@ -37,6 +44,7 @@ const Home: NextPage = () => {
                     {page == ViewsEnum.Tracker && (
                         <DynamicTracker shareButton={true} />
                     )}
+                    {page == ViewsEnum.Settings && <DynamicSettings />}
                 </Suspense>
             </div>
         </div>
