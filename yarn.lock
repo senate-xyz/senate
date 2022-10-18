@@ -3927,10 +3927,10 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/jest@29.1.2":
-  version "29.1.2"
-  resolved "https://registry.npmjs.org/@types/jest/-/jest-29.1.2.tgz"
-  integrity sha512-y+nlX0h87U0R+wsGn6EBuoRWYyv3KFtwRNP3QWp9+k2tJ2/bqcGS3UxD7jgT+tiwJWWq3UsyV4Y+T6rsMT4XMg==
+"@types/jest@29.2.0":
+  version "29.2.0"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.2.0.tgz#fa98e08b46ab119f1a74a9552c48c589f5378a96"
+  integrity sha512-KO7bPV21d65PKwv3LLsD8Jn3E05pjNjRZvkm+YTacWhVmykAb07wW6IkZUmQAltwQafNcDUEUrMO2h3jeBSisg==
   dependencies:
     expect "^29.0.0"
     pretty-format "^29.0.0"
@@ -4194,7 +4194,7 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@typescript-eslint/eslint-plugin@^5.40.0", "@typescript-eslint/eslint-plugin@^5.40.1":
+"@typescript-eslint/eslint-plugin@^5.40.1":
   version "5.40.1"
   resolved "https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.40.1.tgz"
   integrity sha512-FsWboKkWdytGiXT5O1/R9j37YgcjO8MKHSUmWnIEjVaz0krHkplPnYi7mwdb+5+cs0toFNQb0HIrN7zONdIEWg==
@@ -4215,7 +4215,7 @@
   dependencies:
     "@typescript-eslint/utils" "5.40.0"
 
-"@typescript-eslint/parser@^5.21.0", "@typescript-eslint/parser@^5.40.0", "@typescript-eslint/parser@^5.40.1":
+"@typescript-eslint/parser@^5.21.0", "@typescript-eslint/parser@^5.40.1":
   version "5.40.1"
   resolved "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-5.40.1.tgz"
   integrity sha512-IK6x55va5w4YvXd4b3VrXQPldV9vQTxi5ov+g4pMANsXPTXOcfjx08CRR1Dfrcc51syPtXHF5bgLlMHYFrvQtg==
@@ -4364,12 +4364,12 @@
   resolved "https://registry.npmjs.org/@vanilla-extract/sprinkles/-/sprinkles-1.5.0.tgz"
   integrity sha512-W58f2Rzz5lLmk0jbhgStVlZl5wEiPB1Ur3fRvUaBM+MrifZ3qskmFq/CiH//fEYeG5Dh9vF1qRviMMH46cX9Nw==
 
-"@wagmi/core@^0.6.3":
-  version "0.6.3"
-  resolved "https://registry.npmjs.org/@wagmi/core/-/core-0.6.3.tgz"
-  integrity sha512-tvhYsGR4/Sgo4/E9iIuNJosPy/UZnjcylNdwk2CdXxjpf8vVbeQDsYa4Ue/We2RZlpFMt7CpPLVCVU8BKduOug==
+"@wagmi/core@^0.6.4":
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-0.6.4.tgz#ff2059a8a1ad2a9a9e6b4324a70af8e8aeb3f3c1"
+  integrity sha512-ihb/U5B69FO4YtPgAuCgTonniCVysLjr8mzNNOWoLjwUOhNEpCdntA8S9Qii4Tj/XcwIKOApOMw9jgc52L5k3A==
   dependencies:
-    abitype "^0.1.6"
+    abitype "^0.1.7"
     eventemitter3 "^4.0.7"
     zustand "^4.1.1"
 
@@ -4848,10 +4848,10 @@ JSONStream@^1.3.5:
     jsonparse "^1.2.0"
     through ">=2.2.7 <3"
 
-abitype@^0.1.6:
-  version "0.1.6"
-  resolved "https://registry.npmjs.org/abitype/-/abitype-0.1.6.tgz"
-  integrity sha512-cdOzP4mi5pH/N3o5ly8wlw7HIqdFJVkS0RSw5p7BTvwB1gFXOqPlQJ/ZKTSCsGqd8EITJcpNuZ2h7hPX2mKECA==
+abitype@^0.1.7:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/abitype/-/abitype-0.1.7.tgz#8a42b1845629abed715bd4975532aca43e291eda"
+  integrity sha512-mNBIrA8xbkR0PrxXSO/7p3irNhyLKO6S4VfU3YrR37cqpJIq1D63Yg8KlovOZkCVAaQ+lJkGDkOhSpv1QmMXIg==
 
 accepts@~1.3.5, accepts@~1.3.8:
   version "1.3.8"
@@ -8766,10 +8766,10 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-framer-motion@^7.5.3:
-  version "7.5.3"
-  resolved "https://registry.npmjs.org/framer-motion/-/framer-motion-7.5.3.tgz"
-  integrity sha512-VvANga9Z7bYtKMAsM/je81FwJDHfThOYywN04xVQ4OGdMVY09Bowx/q7nZd6XtytLuv6byc6GT1mYwag+SQ/nw==
+framer-motion@^7.5.4:
+  version "7.5.4"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-7.5.4.tgz#6efa9e172d8671acb7beb26272b64d3cc429da8c"
+  integrity sha512-0CeaIWsEVIuQ45Pl1SL+uwFE6b6Qgfoyqxg8aLPs93qWA/1T5UO0cOLXwhHJ+Hc5f/a1xqLEgbSOjz6fLcWsIQ==
   dependencies:
     "@motionone/dom" "10.13.1"
     framesync "6.1.2"
@@ -14881,10 +14881,10 @@ tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tsup@^6.2.3:
-  version "6.2.3"
-  resolved "https://registry.npmjs.org/tsup/-/tsup-6.2.3.tgz"
-  integrity sha512-J5Pu2Dx0E1wlpIEsVFv9ryzP1pZ1OYsJ2cBHZ7GrKteytNdzaSz5hmLX7/nAxtypq+jVkVvA79d7S83ETgHQ5w==
+tsup@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/tsup/-/tsup-6.3.0.tgz#aa270a788e54248d4a5541f722c8763bca778e3c"
+  integrity sha512-IaNQO/o1rFgadLhNonVKNCT2cks+vvnWX3DnL8sB87lBDqRvJXHENr5lSPJlqwplUlDxSwZK8dSg87rgBu6Emw==
   dependencies:
     bundle-require "^3.1.0"
     cac "^6.7.12"
@@ -14912,6 +14912,17 @@ tsx@^3.10.1:
   version "3.10.1"
   resolved "https://registry.npmjs.org/tsx/-/tsx-3.10.1.tgz"
   integrity sha512-Gh6xoW4xrdnLs6hYZydVHIQtrgmbZ/DbnJoLsYoI8MxhKAIyu8R7RyF0D5qg9UKi74Nmr4iSlijdz7Q43IGLyQ==
+  dependencies:
+    "@esbuild-kit/cjs-loader" "^2.4.0"
+    "@esbuild-kit/core-utils" "^3.0.0"
+    "@esbuild-kit/esm-loader" "^2.5.0"
+  optionalDependencies:
+    fsevents "~2.3.2"
+
+tsx@^3.10.3:
+  version "3.10.3"
+  resolved "https://registry.yarnpkg.com/tsx/-/tsx-3.10.3.tgz#33e5324dcde3b40fd2ab37b8dd1be820ad38f04b"
+  integrity sha512-yni2/n09VMOihGw6fCTKAowvQZ7BOWRVlpW9RnJPDakoHqHIlpxWieUUr5fnQa3zWoR1Jb902Un4Bv/JsKQ4RQ==
   dependencies:
     "@esbuild-kit/cjs-loader" "^2.4.0"
     "@esbuild-kit/core-utils" "^3.0.0"
@@ -15432,18 +15443,18 @@ vm-browserify@^1.0.1:
   resolved "https://registry.npmjs.org/vm-browserify/-/vm-browserify-1.1.2.tgz"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-wagmi@^0.7.4:
-  version "0.7.4"
-  resolved "https://registry.npmjs.org/wagmi/-/wagmi-0.7.4.tgz"
-  integrity sha512-EeseLNIdOhiX6N9M+zbqgC3bOWfpUYvVAphXKZeIxY0kkkGWr8xfKbpOAF/CQzV7Qk2txK8yCTOyIePgikUgxA==
+wagmi@^0.7.5:
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-0.7.5.tgz#b38ce836957c68449a55ae0f5e32f0410769a618"
+  integrity sha512-/HRzvunyd68Dt7QKiAsmbf7rO3rOmvr81/yNpig1pkUyadAgOhFop+4PMr6QoxgN0eJRSNOhpM4GgQxr0FTG/Q==
   dependencies:
     "@coinbase/wallet-sdk" "^3.5.3"
     "@tanstack/query-sync-storage-persister" "^4.10.1"
     "@tanstack/react-query" "^4.10.1"
     "@tanstack/react-query-persist-client" "^4.10.1"
-    "@wagmi/core" "^0.6.3"
+    "@wagmi/core" "^0.6.4"
     "@walletconnect/ethereum-provider" "^1.8.0"
-    abitype "^0.1.6"
+    abitype "^0.1.7"
     use-sync-external-store "^1.2.0"
 
 walker@^1.0.7, walker@^1.0.8, walker@~1.0.5:
