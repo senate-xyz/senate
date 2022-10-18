@@ -26,6 +26,66 @@ const queryUserProxyAddreses = {
     },
 }
 
+const mutationUserAddProxy = {
+    input: z.object({
+        address: z.string(),
+    }),
+    async resolve({ ctx, input }) {
+        const user = await prisma.user
+            .findFirstOrThrow({
+                where: {
+                    address: { equals: String(ctx.session.user.name) },
+                },
+                select: {
+                    id: true,
+                },
+            })
+            .catch(() => {
+                return { id: '0' }
+            })
+
+        await prisma.userProxy.upsert({
+            where: {
+                id: 'id',
+            },
+            update: {
+                address: input.address,
+                userId: user.id,
+            },
+            create: {
+                userId: user.id,
+                address: input.address,
+            },
+        })
+    },
+}
+
+const mutationUserRemoveProxy = {
+    input: z.object({
+        address: z.string(),
+    }),
+    async resolve({ ctx, input }) {
+        const user = await prisma.user
+            .findFirstOrThrow({
+                where: {
+                    address: { equals: String(ctx.session.user.name) },
+                },
+                select: {
+                    id: true,
+                },
+            })
+            .catch(() => {
+                return { id: '0' }
+            })
+        await prisma.userProxy.deleteMany({
+            where: {
+                userId: user.id,
+                address: input.address,
+            },
+        })
+    },
+}
+
 const queryUserProposals = {
     async resolve({ ctx }) {
         const user = await prisma.user
@@ -195,3 +255,5 @@ export const userRouter = createProtectedRouter()
     .mutation('subscribe', mutationUserSubscribe)
     .mutation('unsubscribe', mutationUserUnsubscribe)
     .query('proxyAddresses', queryUserProxyAddreses)
+    .mutation('addProxy', mutationUserAddProxy)
+    .mutation('removeProxy', mutationUserRemoveProxy)
