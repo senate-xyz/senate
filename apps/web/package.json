@@ -29,7 +29,7 @@
         "core-js": "^3.25.5",
         "dayjs": "^1.11.5",
         "ethers": "^5.7.1",
-        "framer-motion": "^7.5.3",
+        "framer-motion": "^7.5.4",
         "next": "12.3.1",
         "next-auth": "^4.14.0",
         "react": "18.2.0",
@@ -38,7 +38,7 @@
         "react-query": "^3.39.2",
         "siwe": "^1.1.6",
         "superjson": "^1.10.1",
-        "wagmi": "^0.7.4",
+        "wagmi": "^0.7.5",
         "zod": "^3.19.1"
     },
     "devDependencies": {
@@ -59,8 +59,8 @@
         "@types/node": "18.11.0",
         "@types/react": "18.0.21",
         "@types/react-dom": "18.0.6",
-        "@typescript-eslint/eslint-plugin": "^5.40.0",
-        "@typescript-eslint/parser": "^5.40.0",
+        "@typescript-eslint/eslint-plugin": "^5.40.1",
+        "@typescript-eslint/parser": "^5.40.1",
         "autoprefixer": "^10.4.12",
         "babel-loader": "^8.2.5",
         "chromatic": "^6.10.2",
