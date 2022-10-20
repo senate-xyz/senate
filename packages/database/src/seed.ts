@@ -27,6 +27,7 @@ async function main() {
               address: "0xEC568fffba86c094cf06b22134B23074DFE2252c",
               abi: aaveGovBravo.abi,
               latestBlock: 0,
+              proposalUrl: 'https://app.aave.com/governance/proposal/?proposalId='
             },
           },
           {
@@ -72,6 +73,7 @@ async function main() {
         timeStart: 1664975385,
         timeEnd: 1665975385,
       },
+      url: "",
     },
   });
 
@@ -94,6 +96,7 @@ async function main() {
         timeStart: 1664975385,
         timeEnd: 1665975385,
       },
+      url: "",
     },
   });
 

@@ -81,7 +81,7 @@ export const DaoItem = (props: { dao: DAOType }) => {
               case "BRAVO1":
               case "BRAVO2":
               case "MAKER_POLL":
-              case "MAKER_PROPOSAL":
+              case "MAKER_EXECUTIVE":
                 return (
                   <Avatar
                     key={index}

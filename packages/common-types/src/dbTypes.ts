@@ -2,10 +2,24 @@ import { Prisma } from "@prisma/client";
 import {
   ProposalType as ProposalTypePrisma,
   DAOHandlerType as DAOHandlerTypePrisma,
+  Subscription as SubscriptionModelPrisma,
+  DAO as DAOModelPrisma,
+  Proposal as ProposalModelPrisma,
+  Vote as VoteModelPrisma,
+  User as UserModelPrisma,
+  DAOHandler as DAOHandlerModelPrisma,
+  VoteOption as VoteOptionModelPrisma,
 } from "@prisma/client";
 
 export type ProposalType = ProposalTypePrisma;
 export type DAOHandlerType = DAOHandlerTypePrisma;
+export type DAO = DAOModelPrisma;
+export type Subscription = SubscriptionModelPrisma;
+export type Vote = VoteModelPrisma;
+export type Proposal = ProposalModelPrisma;
+export type User = UserModelPrisma;
+export type DAOHandler = DAOHandlerModelPrisma;
+export type VoteOption = VoteOptionModelPrisma;
 
 export type DAOType = Prisma.DAOGetPayload<{
   include: {

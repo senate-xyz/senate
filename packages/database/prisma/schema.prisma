@@ -15,7 +15,7 @@ datasource db {
 }
 
 model User {
-    id            String         @id @unique @default(cuid())
+    id            String         @id @default(cuid())
     address       String         @unique
     proxies       UserProxy[]
     subscriptions Subscription[]
@@ -23,14 +23,14 @@ model User {
 }
 
 model UserProxy {
-    id      String @id @unique @default(cuid())
+    id      String @id @default(cuid())
     address String
     user    User   @relation(fields: [userId], references: [id])
     userId  String
 }
 
 model DAO {
-    id            String         @id @unique @default(cuid())
+    id            String         @id @default(cuid())
     name          String         @unique
     picture       String
     handlers      DAOHandler[]
@@ -40,25 +40,33 @@ model DAO {
 }
 
 model DAOHandler {
-    id      String         @unique @default(cuid())
+    id      String         @id @default(cuid())
     type    DAOHandlerType
     decoder Json //depends on type
     dao     DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
     daoId   String
 
-    @@id([daoId, type])
+    @@unique([daoId, type])
 }
 
 enum DAOHandlerType {
     BRAVO1
     BRAVO2
-    MAKER_PROPOSAL
+    MAKER_EXECUTIVE
+    MAKER_POLL
+    SNAPSHOT
+}
+
+enum ProposalType {
+    BRAVO1
+    BRAVO2
+    MAKER_EXECUTIVE
     MAKER_POLL
     SNAPSHOT
 }
 
 model Proposal {
-    id           String       @unique @default(cuid())
+    id           String       @id @default(cuid())
     externalId   String       @unique
     name         String
     description  String
@@ -68,20 +76,13 @@ model Proposal {
     proposalType ProposalType
     votes        Vote[]
     data         Json // depends on daoHandlerId.type
+    url          String
 
-    @@id([externalId, daoId])
-}
-
-enum ProposalType {
-    BRAVO1
-    BRAVO2
-    MAKER_PROPOSAL
-    MAKER_POLL
-    SNAPSHOT
+    @@unique ([externalId, daoId])
 }
 
 model Vote {
-    id           String       @unique @default(cuid())
+    id           String       @id @default(cuid())
     options      VoteOption[]
     user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId       String
@@ -91,11 +92,11 @@ model Vote {
     daoId        String
     daoHandlerId String
 
-    @@id([userId, daoId, proposalId])
+    @@unique ([userId, daoId, proposalId])
 }
 
 model VoteOption {
-    id         String @unique @default(cuid())
+    id         String @id @default(cuid())
     option     String
     optionName String
 
@@ -104,11 +105,11 @@ model VoteOption {
     voteDaoId      String
     voteProposalId String
 
-    @@id([voteProposalId, option])
+    @@unique([voteProposalId, option])
 }
 
 model Subscription {
-    id String @unique @default(cuid())
+    id String @id @default(cuid())
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
     dao  DAO  @relation(fields: [daoId], references: [id], onDelete: Cascade)
@@ -116,5 +117,5 @@ model Subscription {
     userId String
     daoId  String
 
-    @@id([userId, daoId])
+    @@unique([userId, daoId])
 }
