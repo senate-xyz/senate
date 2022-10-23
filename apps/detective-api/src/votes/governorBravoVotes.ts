@@ -3,6 +3,7 @@ import { BigNumber, ethers } from "ethers";
 import { hexZeroPad } from "ethers/lib/utils";
 import { prisma } from "@senate/database";
 import { Proposal, DAOHandler, User } from "@senate/common-types"
+import { DAOHandlerType, ProposalType } from "@prisma/client";
 
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
@@ -73,14 +74,14 @@ export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: Use
 const getVotes = async (daoHandler: DAOHandler, user: User): Promise<Vote[]> => {
   const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi']);
 
-  if (daoHandler.type !== "BRAVO1" && daoHandler.type !== "BRAVO2")
+  if (daoHandler.type !== DAOHandlerType.BRAVO1 && daoHandler.type !== DAOHandlerType.BRAVO2)
     return [];
 
   let logs: any[] = [];
   switch (daoHandler.type) {
-    case "BRAVO1":
+    case DAOHandlerType.BRAVO1:
       logs = await provider.getLogs({
-        fromBlock: daoHandler.decoder["fromBlock"],
+        fromBlock: daoHandler.decoder["latestVoteBlock"],
         address: daoHandler.decoder['address'],
         topics: [
           govBravoIface.getEventTopic("VoteEmitted"),
@@ -89,9 +90,9 @@ const getVotes = async (daoHandler: DAOHandler, user: User): Promise<Vote[]> => 
         ],
       });
       break;
-    case "BRAVO2":
+    case DAOHandlerType.BRAVO2:
       logs = await provider.getLogs({
-        fromBlock: daoHandler.decoder["fromBlock"],
+        fromBlock: daoHandler.decoder["latestVoteBlock"],
         address: daoHandler.decoder['address'],
         topics: [
           govBravoIface.getEventTopic("VoteCast"),

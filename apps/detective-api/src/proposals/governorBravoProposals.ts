@@ -3,6 +3,7 @@ import axios from "axios";
 
 import { prisma } from "@senate/database";
 import { DAOHandler } from "@senate/common-types";
+import { DAOHandlerType, ProposalType } from "@prisma/client";
 
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
@@ -13,7 +14,7 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
   const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi']);
 
   const logs = await provider.getLogs({
-    fromBlock: daoHandler.decoder['latestBlock'],
+    fromBlock: daoHandler.decoder['latestProposalBlock'],
     address: daoHandler.decoder['address'],
     topics: [govBravoIface.getEventTopic("ProposalCreated")],
   });
@@ -54,7 +55,7 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
 
     // Update latest block
     let decoder = daoHandler.decoder;
-    decoder['latestBlock'] = proposals[i].txBlock + 1;
+    decoder['latestProposalBlock'] = proposals[i].txBlock + 1;
 
     await prisma.dAOHandler.update({
       where: {
@@ -77,10 +78,10 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
       create: {
         externalId: proposalOnChainId,
         name: String(title),
-        description: String(description),
+        description: "",
         daoId: daoHandler.daoId,
         daoHandlerId: daoHandler.id,
-        proposalType: daoHandler.type,
+        proposalType: ProposalType.MAKER_EXECUTIVE,
         data: {
             timeEnd: votingEndsTimestamp * 1000,
             timeStart: votingStartsTimestamp * 1000,
@@ -89,8 +90,6 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
         url: proposalUrl,
       },
     });
-
-    console.log(proposal);
   }
 
   console.log("\n\n");

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { prisma } from "@senate/database";
 import { DAOHandler } from "@senate/common-types";
-
+import { DAOHandlerType, ProposalType } from "@prisma/client";
 
 export const updateSnapshotProposals = async (daoName: string, daoHandler : DAOHandler) => {
 
@@ -55,16 +55,19 @@ export const updateSnapshotProposals = async (daoName: string, daoHandler : DAOH
           proposals.map((proposal: any) =>
             prisma.proposal.upsert({
               where: {
-                externalId: proposal.id,
+                externalId_daoId: {
+                  daoId: daoHandler.daoId,
+                  externalId: proposal.id,
+                },
               },
               update: {},
               create: {
                 externalId: proposal.id,
                 name: String(proposal.title),
-                description: String(proposal.body),
+                description: "" /*String(proposal.body)*/,
                 daoId: daoHandler.daoId,
                 daoHandlerId: daoHandler.id,
-                proposalType: "SNAPSHOT",
+                proposalType: ProposalType.SNAPSHOT,
                 data: {
                   timeEnd: proposal.end * 1000,
                   timeStart: proposal.start * 1000,
