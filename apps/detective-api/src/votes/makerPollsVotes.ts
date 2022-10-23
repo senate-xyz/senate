@@ -69,7 +69,7 @@ const getVotes = async (daoHandler: DAOHandler, user: User): Promise<any> => {
   const iface = new ethers.utils.Interface(JSON.parse(daoHandler.decoder["abi"]));
 
   const logs = await provider.getLogs({
-    fromBlock: daoHandler.decoder['fromBlock'],
+    fromBlock: daoHandler.decoder['latestVoteBlock'],
     address: daoHandler.decoder['address'],
     topics: [iface.getEventTopic("Voted"), hexZeroPad(user.address, 32)],
   });

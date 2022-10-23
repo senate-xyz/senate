@@ -8,6 +8,7 @@ import { updateSnapshotVotes } from "./votes/snapshotVotes";
 import { updateGovernorBravoVotes } from "./votes/governorBravoVotes";
 import { updateMakerVotes } from "./votes/makerVotes";
 import { updateMakerPollsVotes } from "./votes/makerPollsVotes";
+import { DAOHandlerType, ProposalType } from "@prisma/client";
 
 import { DAOType as Dao, DAOHandlerType as DAOHandler, User } from "@senate/common-types";
 import { prisma } from "@senate/database";
@@ -35,20 +36,21 @@ export class AppService {
     })
 
     dao.handlers.forEach(async handler => {
+      console.log(`Fetching proposals for ${dao.name}, handler: ${handler.type}`)
       switch(handler.type) {
-        case "SNAPSHOT": 
+        case DAOHandlerType.SNAPSHOT: 
           await updateSnapshotProposals(dao.name, handler);
           break;
         
-        case "BRAVO1" || "BRAVO2":
+        case DAOHandlerType.BRAVO1 || DAOHandlerType.BRAVO2:
           await updateGovernorBravoProposals(handler);
           break;
   
-        case "MAKER_EXECUTIVE":
+        case DAOHandlerType.MAKER_EXECUTIVE:
           await updateMakerProposals(handler);
           break;
   
-        case "MAKER_POLL":
+        case DAOHandlerType.MAKER_POLL_CREATE:
           await updateMakerPolls(handler);
           break;
   
@@ -80,20 +82,21 @@ export class AppService {
     })
 
     dao.handlers.forEach(async handler => {
+      console.log(`Fetching votes for ${dao.name}, user ${user.address}, handler: ${handler.type}`)
       switch(handler.type) {
-        case "SNAPSHOT": 
+        case DAOHandlerType.SNAPSHOT: 
           await updateSnapshotVotes(handler, user, dao.name);
           break;
         
-        case "BRAVO1" || "BRAVO2":
+        case DAOHandlerType.BRAVO1 || DAOHandlerType.BRAVO2:
           await updateGovernorBravoVotes(handler, user, dao.name);
           break;
 
-        case "MAKER_EXECUTIVE":
+        case DAOHandlerType.MAKER_EXECUTIVE:
           await updateMakerVotes(handler, user, dao.name);
           break;
 
-        case "MAKER_POLL":
+        case DAOHandlerType.MAKER_POLL_VOTE:
           await updateMakerPollsVotes(handler, user, dao.name);
           break;
 

@@ -67,7 +67,7 @@ const getVotes = async (daoHandler: DAOHandler, user: User): Promise<string[]> =
   const voterAddressTopic = "0x" + "0".repeat(24) + user.address.substring(2);
 
   const logs = await provider.getLogs({
-    fromBlock: daoHandler.decoder['latestBlock'], //always look at all blocks
+    fromBlock: daoHandler.decoder['latestVoteBlock'],
     address: daoHandler.decoder['address'],
     topics: [
       [voteMultipleActionsTopic, voteSingleActionTopic],

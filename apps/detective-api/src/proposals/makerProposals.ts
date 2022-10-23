@@ -3,6 +3,7 @@ import axios from "axios";
 
 import { prisma } from "@senate/database";
 import { DAOHandler } from "@senate/common-types";
+import { DAOHandlerType, ProposalType } from "@prisma/client";
 
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
@@ -19,7 +20,7 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
     "0xa69beaba00000000000000000000000000000000000000000000000000000000";
 
   const logs = await provider.getLogs({
-    fromBlock: daoHandler.decoder['latestBlock'],
+    fromBlock: daoHandler.decoder['latestProposalBlock'],
     address: daoHandler.decoder['address'],
     topics: [[voteMultipleActionsTopic, voteSingleActionTopic]],
   });
@@ -55,6 +56,12 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
         "https://vote.makerdao.com/api/executive/" + spellAddresses[i]
       );
 
+      if (!response.data) {
+        continue;
+      }
+
+      // if this didn't go through -> do not add proposal to db
+
       await prisma.proposal.upsert({
         where: {
             externalId_daoId: {
@@ -66,10 +73,10 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
         create: {
           externalId: spellAddresses[i],
           name: response.data.title,
-          description: response.data.content,
+          description: "" /*response.data.content*/,
           daoId: daoHandler.daoId,
           daoHandlerId: daoHandler.id,
-          proposalType: daoHandler.type,
+          proposalType: ProposalType.MAKER_EXECUTIVE,
           data: {
             timeEnd: calculateVotingPeriodEndDate(response.data.spellData),
             timeStart: response.data.date,
@@ -85,7 +92,7 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
 
   let latestBlock = await provider.getBlockNumber();
   let decoder = daoHandler.decoder;
-    decoder['latestBlock'] = latestBlock + 1;
+    decoder['latestProposalBlock'] = latestBlock - 50;
 
   await prisma.dAOHandler.update({
     where: {

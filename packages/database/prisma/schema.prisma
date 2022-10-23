@@ -53,13 +53,13 @@ enum DAOHandlerType {
     BRAVO1
     BRAVO2
     MAKER_EXECUTIVE
-    MAKER_POLL
+    MAKER_POLL_CREATE
+    MAKER_POLL_VOTE
     SNAPSHOT
 }
 
 enum ProposalType {
-    BRAVO1
-    BRAVO2
+    BRAVO
     MAKER_EXECUTIVE
     MAKER_POLL
     SNAPSHOT
