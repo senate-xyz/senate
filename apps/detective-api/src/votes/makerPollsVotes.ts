@@ -9,6 +9,8 @@ const provider = new ethers.providers.JsonRpcProvider({
 });
 
 export const updateMakerPollsVotes = async (daoHandler: DAOHandler, user: User, daoName: string) => {
+    console.log("Updating maker poll votes");
+    
     if (user == null || daoHandler == null) return;
 
     let votes = await getVotes(daoHandler, user);
@@ -22,6 +24,12 @@ export const updateMakerPollsVotes = async (daoHandler: DAOHandler, user: User, 
                 daoHandlerId: daoHandler.id,
             },
         })
+
+        if (!proposal) {
+          console.log(`Poll with externalId ${vote.proposalOnChainId} does not exist in DB`);
+          console.log(`daoId: ${daoHandler.daoId} \n daoHandlerId: ${daoHandler.id}`);
+          continue;
+        }
 
         await prisma.vote.upsert({
             where: {
@@ -62,7 +70,7 @@ export const updateMakerPollsVotes = async (daoHandler: DAOHandler, user: User, 
         });
     }
 
-    console.log(`upserted ${votes.length} chain votes`);
+    console.log(`updated ${votes.length} maker poll votes`);
 }
 
 const getVotes = async (daoHandler: DAOHandler, user: User): Promise<any> => {

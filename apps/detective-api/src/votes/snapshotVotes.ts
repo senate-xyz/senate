@@ -3,6 +3,8 @@ import { prisma } from "@senate/database";
 import { DAOHandler, User, VoteOption } from "@senate/common-types";
 
 export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, daoName: string) => {
+  console.log(`Updating snapshot votes for ${daoName}`)
+
   if (!daoHandler.decoder["space"]) return;
 
   let votes = await axios
@@ -71,7 +73,7 @@ export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, da
                   where: {
                     voteProposalId_option: {
                       voteProposalId: proposal.id,
-                      option: votedOption.option,
+                      option: String(votedOption.option),
                     }
                   },
                   update: {},
@@ -86,7 +88,7 @@ export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, da
               daoHandlerId: daoHandler.id,
               options: {
                 create: {
-                  option: vote.choice.length > 0 ? vote.choice[0] : vote.choice,
+                  option: vote.choice.length > 0 ? String(vote.choice[0]) : String(vote.choice),
                   optionName: vote.proposal.choices[vote.choice - 1] ?? "No name",
                 }
               }
@@ -98,7 +100,7 @@ export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, da
       
 
   console.log(
-    `upserted ${votes.length} snapshot votes for ${user?.address} in ${daoName}`
+    `updated ${votes.length} snapshot votes for ${user?.address} in ${daoName}`
   );
 
 };
@@ -111,7 +113,7 @@ const getVotedOptions = (choices: any, proposalChoices: any, userId: string, dao
   if (choices.length > 0) {
     for (let i=0; i<choices.length; i++) {
       options.push({
-        option: choices[i],
+        option: String(choices[i]),
         optionName: proposalChoices[choices[i]-1] ?? "No name",
         voteUserId: userId,
         voteDaoId: daoId,
@@ -120,7 +122,7 @@ const getVotedOptions = (choices: any, proposalChoices: any, userId: string, dao
     }
   } else {
     options.push({
-      option: choices,
+      option: String(choices),
       optionName: proposalChoices[choices-1] ?? "No name"
     })
   }

@@ -82,7 +82,9 @@ export class AppService {
     })
 
     dao.handlers.forEach(async handler => {
+
       console.log(`Fetching votes for ${dao.name}, user ${user.address}, handler: ${handler.type}`)
+      
       switch(handler.type) {
         case DAOHandlerType.SNAPSHOT: 
           await updateSnapshotVotes(handler, user, dao.name);

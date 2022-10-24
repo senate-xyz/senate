@@ -10,6 +10,8 @@ const provider = new ethers.providers.JsonRpcProvider({
 });
 
 export const updateMakerProposals = async (daoHandler: DAOHandler) => {
+
+  console.log(`Searching executive proposals from block ${daoHandler.decoder['latestProposalBlock']} ...`)
   
   const iface = new ethers.utils.Interface(daoHandler.decoder['abi']);
   const chiefContract = new ethers.Contract(daoHandler.decoder['address'], daoHandler.decoder['abi'], provider);
@@ -57,6 +59,7 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
       );
 
       if (!response.data) {
+        console.log(`Maker API did not return any data for spell ${spellAddresses[i]}`)
         continue;
       }
 
@@ -82,7 +85,7 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
             timeStart: response.data.date,
             timeCreated: response.data.date,
           },
-          url: daoHandler.decoder['proposalUrl'] + response.data.key,
+          url: daoHandler.decoder['proposalUrl'] + spellAddresses[i],
         },
       });
     } catch (error) {
@@ -104,7 +107,7 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
   });
 
   console.log("\n\n");
-  console.log(`inserted ${spellAddresses.length} chain proposals`);
+  console.log(`inserted ${spellAddresses.length} maker executive proposals`);
   console.log("======================================================\n\n");
   
 };

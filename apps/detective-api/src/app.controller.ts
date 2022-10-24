@@ -22,7 +22,6 @@ export class AppController {
     @Query('daoId') daoId : string,
     @Query('userId') userId : string,
   ): Promise<String> {
-
     return await this.appService.updateVotes(daoId, userId);
   }
 }

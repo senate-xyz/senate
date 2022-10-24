@@ -23,6 +23,11 @@ export const updateMakerVotes = async (daoHandler: DAOHandler, user: User, daoNa
         },
     })
 
+    if (!proposal) {
+      console.log(`MKR Executive proposal with externalId ${votedSpellAddress} does not exist in DB`);
+      continue;
+    }
+
     await prisma.vote.upsert({
         where: {
           userId_daoId_proposalId: {
@@ -47,10 +52,7 @@ export const updateMakerVotes = async (daoHandler: DAOHandler, user: User, daoNa
       });
   }
       
-
- 
-
-  console.log(`upserted ${votedSpells.length} chain votes for ${daoName}`);
+  console.log(`updated ${votedSpells.length} maker executive votes`);
   
 };
 
