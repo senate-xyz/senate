@@ -41,7 +41,6 @@ async function main() {
               address: "0xEC568fffba86c094cf06b22134B23074DFE2252c",
               abi: aaveGovBravo.abi,
               latestProposalBlock: 10000000,
-              latestVoteBlock: 10000000,
               proposalUrl: 'https://app.aave.com/governance/proposal/?proposalId='
             },
           },
@@ -74,7 +73,6 @@ async function main() {
               address: "0x0a3f6849f78076aefaDf113F5BED87720274dDC0",
               abi: makerChief.abi,
               latestProposalBlock: 	15276296,
-              latestVoteBlock: 	15276296,
               proposalUrl: "https://vote.makerdao.com/executive/"
             },
           },
@@ -92,7 +90,6 @@ async function main() {
             decoder: {
               address: "0xD3A9FE267852281a1e6307a1C37CDfD76d39b133",
               abi: makerPollVote.abi,
-              latestVoteBlock: 	15276296,
             },
           },
         ],
