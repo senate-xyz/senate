@@ -21,6 +21,8 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
   const voteSingleActionTopic =
     "0xa69beaba00000000000000000000000000000000000000000000000000000000";
 
+  let latestBlock = await provider.getBlockNumber();
+
   const logs = await provider.getLogs({
     fromBlock: daoHandler.decoder['latestProposalBlock'],
     address: daoHandler.decoder['address'],
@@ -93,9 +95,8 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
     }
   }
 
-  let latestBlock = await provider.getBlockNumber();
   let decoder = daoHandler.decoder;
-    decoder['latestProposalBlock'] = latestBlock - 50;
+    decoder['latestProposalBlock'] = latestBlock;
 
   await prisma.dAOHandler.update({
     where: {
