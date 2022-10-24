@@ -15,6 +15,8 @@ type Vote = {
 };
 
 export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: User, daoName: string) => {
+    console.log(`Updating Governor Bravo votes for ${daoName}`);
+    
     if (user == null || daoHandler == null) return;
 
     let votes = await getVotes(daoHandler, user);
@@ -66,9 +68,9 @@ export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: Use
             }
           },
         });
-  
-      console.log(`upserted ${votes.length} chain votes for ${daoName}`);
     }
+
+    console.log(`Updated ${votes.length} Governor Bravo votes for ${daoName}`);
 }
 
 const getVotes = async (daoHandler: DAOHandler, user: User): Promise<Vote[]> => {
@@ -81,7 +83,7 @@ const getVotes = async (daoHandler: DAOHandler, user: User): Promise<Vote[]> => 
   switch (daoHandler.type) {
     case DAOHandlerType.BRAVO1:
       logs = await provider.getLogs({
-        fromBlock: daoHandler.decoder["latestVoteBlock"],
+        fromBlock: 0/*daoHandler.decoder["latestVoteBlock"]*/,
         address: daoHandler.decoder['address'],
         topics: [
           govBravoIface.getEventTopic("VoteEmitted"),
@@ -92,7 +94,7 @@ const getVotes = async (daoHandler: DAOHandler, user: User): Promise<Vote[]> => 
       break;
     case DAOHandlerType.BRAVO2:
       logs = await provider.getLogs({
-        fromBlock: daoHandler.decoder["latestVoteBlock"],
+        fromBlock: 0 /*daoHandler.decoder["latestVoteBlock"]*/,
         address: daoHandler.decoder['address'],
         topics: [
           govBravoIface.getEventTopic("VoteCast"),

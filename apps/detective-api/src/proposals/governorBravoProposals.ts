@@ -11,6 +11,8 @@ const provider = new ethers.providers.JsonRpcProvider({
 
 export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
   
+  console.log(`Searching from block ${daoHandler.decoder['latestProposalBlock']} ...`)
+
   const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi']);
 
   const logs = await provider.getLogs({

@@ -195,19 +195,19 @@ async function main() {
   //   },
   // });
 
-  // await prisma.subscription.upsert({
-  //   where: {
-  //     userId_daoId: {
-  //       userId: testUserMaker.id,
-  //       daoId: aave.id,
-  //     },
-  //   },
-  //   update: {},
-  //   create: {
-  //     userId: testUserMaker.id,
-  //     daoId: aave.id,
-  //   },
-  // });
+  await prisma.subscription.upsert({
+    where: {
+      userId_daoId: {
+        userId: testUserMaker.id,
+        daoId: aave.id,
+      },
+    },
+    update: {},
+    create: {
+      userId: testUserMaker.id,
+      daoId: aave.id,
+    },
+  });
 
   await prisma.user.update({
     where: { address: "0xCdB792c14391F7115Ba77A7Cd27f724fC9eA2091" },

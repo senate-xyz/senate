@@ -10,6 +10,16 @@ const provider = new ethers.providers.JsonRpcProvider({
 });
 
 export const updateMakerPolls = async (daoHandler: DAOHandler) => {
+
+  console.log(`Searching polls from block ${daoHandler.decoder['latestProposalBlock']} ...`)
+
+  let mkrPollVoteHandler = await prisma.dAOHandler.findFirst({
+    where: {
+        daoId: daoHandler.daoId,
+        type: DAOHandlerType.MAKER_POLL_VOTE
+    }
+  })
+
   const pollingContractIface = new ethers.utils.Interface(daoHandler.decoder['abi']);
 
   const logs = await provider.getLogs({
@@ -26,8 +36,6 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
       data: log.data,
     }).args,
   }));
-
-  console.log(proposals);
 
   for (let i = 0; i < proposals.length; i++) {
     let proposalCreatedTimestamp = Number(proposals[i].eventData.blockCreated);
@@ -53,7 +61,7 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
       },
     });
 
-    let proposal = await prisma.proposal.upsert({
+     await prisma.proposal.upsert({
         where: {
             externalId_daoId: {
                 daoId: daoHandler.daoId,
@@ -66,7 +74,7 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
         name: String(title),
         description: "",
         daoId: daoHandler.daoId,
-        daoHandlerId: daoHandler.id,
+        daoHandlerId: mkrPollVoteHandler.id,
         proposalType: ProposalType.MAKER_POLL,
         data: {
             timeEnd: votingEndsTimestamp * 1000,
@@ -76,12 +84,10 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
         url: proposalUrl,
       },
     });
-
-    console.log(proposal);
   }
 
   console.log("\n\n");
-  console.log(`inserted ${proposals.length} chain proposals`);
+  console.log(`upsered ${proposals.length} maker polls`);
   console.log("======================================================\n\n");
 };
 
