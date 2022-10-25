@@ -1,55 +1,64 @@
-import { BigNumber, ethers } from "ethers";
-import { hexZeroPad } from "ethers/lib/utils";
-
+import { ethers } from "ethers";
+import { Logger, InternalServerErrorException } from "@nestjs/common";
 import { prisma } from "@senate/database";
-import { Proposal, DAOHandler, User, DAO } from "@senate/common-types"
+import { Proposal, DAOHandler, User } from "@senate/common-types"
 
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
 });
 
+const logger = new Logger("MakerVotes");
+
 export const updateMakerVotes = async (daoHandler: DAOHandler, user: User, daoName: string) => {
-  if (user == null || daoHandler == null) return;
+  logger.log("Updating Maker executive votes");
+  let votedSpells;
 
-  let votedSpells = await getVotes(daoHandler, user);
-  if (!votedSpells) return; 
+  try {
 
-  for (const votedSpellAddress of votedSpells) {
-    let proposal : Proposal = await prisma.proposal.findFirst({
-        where: {
-            externalId: votedSpellAddress,
-            daoId: daoHandler.daoId,
-            daoHandlerId: daoHandler.id,
-        },
-    })
+    votedSpells = await getVotes(daoHandler, user);
+    if (!votedSpells) return; 
 
-    if (!proposal) {
-      console.log(`MKR Executive proposal with externalId ${votedSpellAddress} does not exist in DB`);
-      continue;
-    }
+    for (const votedSpellAddress of votedSpells) {
+      let proposal : Proposal = await prisma.proposal.findFirst({
+          where: {
+              externalId: votedSpellAddress,
+              daoId: daoHandler.daoId,
+              daoHandlerId: daoHandler.id,
+          },
+      })
 
-    await prisma.vote.upsert({
-        where: {
-          userId_daoId_proposalId: {
+      if (!proposal) {
+        console.log(`MKR Executive proposal with externalId ${votedSpellAddress} does not exist in DB`);
+        continue;
+      }
+
+      await prisma.vote.upsert({
+          where: {
+            userId_daoId_proposalId: {
+              userId: user.id,
+              daoId: daoHandler.daoId,
+              proposalId: proposal.id
+            }
+          },
+          update: {},
+          create: {
             userId: user.id,
             daoId: daoHandler.daoId,
-            proposalId: proposal.id
-          }
-        },
-        update: {},
-        create: {
-          userId: user.id,
-          daoId: daoHandler.daoId,
-          proposalId: proposal.id,
-          daoHandlerId: daoHandler.id,
-          options: {
-            create: {
-              option: "1",
-              optionName: "Yes"
+            proposalId: proposal.id,
+            daoHandlerId: daoHandler.id,
+            options: {
+              create: {
+                option: "1",
+                optionName: "Yes"
+              }
             }
-          }
-        },
-      });
+          },
+        });
+    }
+
+  } catch (err) {
+    logger.error("Error while updating maker executive proposals", err);
+    throw new InternalServerErrorException();
   }
       
   console.log(`updated ${votedSpells.length} maker executive votes`);

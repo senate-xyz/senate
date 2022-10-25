@@ -1,12 +1,19 @@
-import axios from "axios";
-import { prisma } from "@senate/database";
+import { InternalServerErrorException, Logger } from "@nestjs/common";
+import { ProposalType } from "@prisma/client";
 import { DAOHandler } from "@senate/common-types";
-import { DAOHandlerType, ProposalType } from "@prisma/client";
+import { prisma } from "@senate/database";
+import axios from "axios";
+
+const logger = new Logger("SnapshotProposals");
+
 
 export const updateSnapshotProposals = async (daoName: string, daoHandler : DAOHandler) => {
 
-  console.log(`get proposals for ${daoName}`);
-    let proposals = await axios
+  logger.log(`Searching snapshot proposals for ${daoName}`);
+  let proposals;
+
+  try {
+    proposals = await axios
       .get("https://hub.snapshot.org/graphql", {
         method: "POST",
         data: JSON.stringify({
@@ -38,13 +45,9 @@ export const updateSnapshotProposals = async (daoName: string, daoHandler : DAOH
       })
       .then((data) => {
         return data.data.proposals;
-      })
-      .catch((e) => {
-        console.log(e);
-        return;
       });
 
-    console.log(`got ${proposals.length} proposals for ${daoName}`);
+      logger.log(`got ${proposals.length} proposals for ${daoName}`);
 
     if (
       proposals.length >
@@ -80,9 +83,13 @@ export const updateSnapshotProposals = async (daoName: string, daoHandler : DAOH
         )
         .then((res) => {
           if (res)
-            console.log(
-              `upserted ${res.length} snapshot proposals for ${daoName}`
-            );
-          else console.log(`upserted 0 snapshot proposals for ${daoName}`);
+            logger.log(`upserted ${res.length} snapshot proposals for ${daoName}`);
+          else logger.log(`upserted 0 snapshot proposals for ${daoName}`);
         });
+
+  } catch (err) {
+    logger.error("Error while updating snapshot proposals", err);
+    throw new InternalServerErrorException();
+  }
+    
 };

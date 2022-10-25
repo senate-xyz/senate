@@ -1,13 +1,16 @@
 import axios from "axios";
 import { prisma } from "@senate/database";
 import { DAOHandler, User, VoteOption } from "@senate/common-types";
+import { Logger, InternalServerErrorException } from "@nestjs/common";
+
+const logger = new Logger("MakerExecutiveProposals");
 
 export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, daoName: string) => {
-  console.log(`Updating snapshot votes for ${daoName}`)
+  logger.log(`Updating snapshot votes for ${daoName}`)
+  let votes;
 
-  if (!daoHandler.decoder["space"]) return;
-
-  let votes = await axios
+  try {
+    votes = await axios
     .get("https://hub.snapshot.org/graphql", {
       method: "POST",
       data: JSON.stringify({
@@ -97,6 +100,10 @@ export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, da
         }
         
     }
+  } catch (err) {
+    logger.error("Error while updating maker executive proposals", err);
+    throw new InternalServerErrorException();
+  }
       
 
   console.log(
@@ -104,7 +111,6 @@ export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, da
   );
 
 };
-
 
 
 const getVotedOptions = (choices: any, proposalChoices: any, userId: string, daoId: string, proposalId: string) => {

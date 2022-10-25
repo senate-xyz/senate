@@ -1,42 +1,46 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 
+import { DAOHandlerType } from "@prisma/client";
 import { updateGovernorBravoProposals } from "./proposals/governorBravoProposals";
-import { updateSnapshotProposals } from "./proposals/snapshotProposals";
-import { updateMakerProposals } from "./proposals/makerProposals";
 import { updateMakerPolls } from "./proposals/makerPolls";
-import { updateSnapshotVotes } from "./votes/snapshotVotes";
+import { updateMakerProposals } from "./proposals/makerProposals";
+import { updateSnapshotProposals } from "./proposals/snapshotProposals";
 import { updateGovernorBravoVotes } from "./votes/governorBravoVotes";
-import { updateMakerVotes } from "./votes/makerVotes";
 import { updateMakerPollsVotes } from "./votes/makerPollsVotes";
-import { DAOHandlerType, ProposalType } from "@prisma/client";
+import { updateMakerVotes } from "./votes/makerVotes";
+import { updateSnapshotVotes } from "./votes/snapshotVotes";
 
-import { DAOType as Dao, DAOHandlerType as DAOHandler, User } from "@senate/common-types";
+import { DAOType as Dao, User } from "@senate/common-types";
 import { prisma } from "@senate/database";
 
 @Injectable()
 export class AppService {
+  private readonly logger = new Logger(AppService.name)
 
-  private readonly logger = new Logger(AppService.name);
+  async updateProposals(daoId : string) {
 
-  getHello(): string {
-    return 'Hello World!';
-  }
+    let dao : Dao;
 
-  async updateProposals(daoId : string): Promise<string> {
+    try {
+      dao = await prisma.dAO.findFirst({
+        where: {
+          id: daoId
+        }
+      })
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException();
+    }
 
-    this.logger.log(daoId);
-    let dao : Dao = await prisma.dAO.findFirst({
-      where: {
-        id: daoId
-      },
-      include: {
-        handlers: true,
-        subscriptions: true,
-      }
-    })
+    if (!dao) {
+      throw new NotFoundException("DAO not found");
+    }
+
+    this.logger.log(`Updating proposals for ${dao.name}`)
 
     dao.handlers.forEach(async handler => {
-      console.log(`Fetching proposals for ${dao.name}, handler: ${handler.type}`)
+      this.logger.log(`Fetching proposals for ${dao.name}, handler: ${handler.type}`)
+
       switch(handler.type) {
         case DAOHandlerType.SNAPSHOT: 
           await updateSnapshotProposals(dao.name, handler);
@@ -58,32 +62,42 @@ export class AppService {
           break;    
       }
     })
-
-    
-    return 'Hello!';
   }
 
-  async updateVotes(daoId : string, userId: string): Promise<string> {
+  async updateVotes(daoId : string, userId: string) {
     
-    let dao : Dao = await prisma.dAO.findFirst({
-      where: {
-        id: daoId
-      },
-      include: {
-        handlers: true,
-        subscriptions: true,
-      }
-    })
+    let dao: Dao, user: User;
 
-    let user : User = await prisma.user.findFirst({
-      where: {
-        id: userId
-      }
-    })
+    try {
+      dao = await prisma.dAO.findFirst({
+        where: {
+          id: daoId
+        }
+      });
+  
+      user = await prisma.user.findFirst({
+        where: {
+          id: userId
+        }
+      }); 
+
+    } catch (err) {
+      console.log(err)
+      throw new InternalServerErrorException();
+    }
+    
+    if (!dao) {
+      throw new NotFoundException("DAO not found");
+    }
+
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    this.logger.log(`Updating votes for user ${user.address} in ${dao.name}`)
 
     dao.handlers.forEach(async handler => {
-
-      console.log(`Fetching votes for ${dao.name}, user ${user.address}, handler: ${handler.type}`)
+      this.logger.log(`Fetching votes for ${dao.name}, user ${user.address}, handler: ${handler.type}`)
       
       switch(handler.type) {
         case DAOHandlerType.SNAPSHOT: 
@@ -107,7 +121,5 @@ export class AppService {
         
       }
     })
-
-    return 'Hello World!';
   }
 }
