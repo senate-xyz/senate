@@ -1,61 +1,65 @@
-import { ethers } from "ethers";
-import axios from "axios";
-
-import { prisma } from "@senate/database";
+import { InternalServerErrorException, Logger } from "@nestjs/common";
+import { ProposalType } from "@prisma/client";
 import { DAOHandler } from "@senate/common-types";
-import { DAOHandlerType, ProposalType } from "@prisma/client";
+import { prisma } from "@senate/database";
+import axios from "axios";
+import { ethers } from "ethers";
 
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
 });
 
+const logger = new Logger("MakerExecutiveProposals");
+
 export const updateMakerProposals = async (daoHandler: DAOHandler) => {
 
-  console.log(`Searching executive proposals from block ${daoHandler.decoder['latestProposalBlock']} ...`)
+  logger.log(`Searching executive proposals from block ${daoHandler.decoder['latestProposalBlock']} ...`)
+  let spellAddresses;
   
-  const iface = new ethers.utils.Interface(daoHandler.decoder['abi']);
-  const chiefContract = new ethers.Contract(daoHandler.decoder['address'], daoHandler.decoder['abi'], provider);
+  try {
+    const iface = new ethers.utils.Interface(daoHandler.decoder['abi']);
+    const chiefContract = new ethers.Contract(daoHandler.decoder['address'], daoHandler.decoder['abi'], provider);
 
-  const voteMultipleActionsTopic =
-    "0xed08132900000000000000000000000000000000000000000000000000000000";
-  const voteSingleActionTopic =
-    "0xa69beaba00000000000000000000000000000000000000000000000000000000";
+    const voteMultipleActionsTopic =
+      "0xed08132900000000000000000000000000000000000000000000000000000000";
+    const voteSingleActionTopic =
+      "0xa69beaba00000000000000000000000000000000000000000000000000000000";
 
-  let latestBlock = await provider.getBlockNumber();
+    let latestBlock = await provider.getBlockNumber();
 
-  const logs = await provider.getLogs({
-    fromBlock: daoHandler.decoder['latestProposalBlock'],
-    address: daoHandler.decoder['address'],
-    topics: [[voteMultipleActionsTopic, voteSingleActionTopic]],
-  });
-
-  const spellAddressesSet = new Set<string>();
-  for (let i = 0; i < logs.length; i++) {
-    console.log(`maker event ${i} out of ${logs.length}`);
-
-    let log = logs[i];
-    let eventArgs = iface.decodeEventLog("LogNote", log.data);
-
-    let decodedFunctionData =
-      log.topics[0] === voteSingleActionTopic
-        ? iface.decodeFunctionData("vote(bytes32)", eventArgs.fax)
-        : iface.decodeFunctionData("vote(address[])", eventArgs.fax);
-
-    let spells: string[] =
-      decodedFunctionData.yays !== undefined
-        ? decodedFunctionData.yays
-        : await getSlateYays(chiefContract, decodedFunctionData.slate);
-
-    spells.forEach((spell) => {
-      spellAddressesSet.add(spell);
+    const logs = await provider.getLogs({
+      fromBlock: daoHandler.decoder['latestProposalBlock'],
+      address: daoHandler.decoder['address'],
+      topics: [[voteMultipleActionsTopic, voteSingleActionTopic]],
     });
-  }
 
-  let spellAddresses = Array.from(spellAddressesSet);
+    const spellAddressesSet = new Set<string>();
+    for (let i = 0; i < logs.length; i++) {
+      console.log(`maker event ${i} out of ${logs.length}`);
 
-  for (let i = 0; i < spellAddresses.length; i++) {
-    console.log(`inserted ${spellAddresses[i]} spell address`);
-    try {
+      let log = logs[i];
+      let eventArgs = iface.decodeEventLog("LogNote", log.data);
+
+      let decodedFunctionData =
+        log.topics[0] === voteSingleActionTopic
+          ? iface.decodeFunctionData("vote(bytes32)", eventArgs.fax)
+          : iface.decodeFunctionData("vote(address[])", eventArgs.fax);
+
+      let spells: string[] =
+        decodedFunctionData.yays !== undefined
+          ? decodedFunctionData.yays
+          : await getSlateYays(chiefContract, decodedFunctionData.slate);
+
+      spells.forEach((spell) => {
+        spellAddressesSet.add(spell);
+      });
+    }
+
+    spellAddresses = Array.from(spellAddressesSet);
+
+    for (let i = 0; i < spellAddresses.length; i++) {
+      console.log(`inserted ${spellAddresses[i]} spell address`);
+
       const response = await axios.get(
         "https://vote.makerdao.com/api/executive/" + spellAddresses[i]
       );
@@ -64,8 +68,6 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
         console.log(`Maker API did not return any data for spell ${spellAddresses[i]}`)
         continue;
       }
-
-      // if this didn't go through -> do not add proposal to db
 
       await prisma.proposal.upsert({
         where: {
@@ -90,26 +92,28 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
           url: daoHandler.decoder['proposalUrl'] + spellAddresses[i],
         },
       });
-    } catch (error) {
-      console.error(error);
     }
+
+    let decoder = daoHandler.decoder;
+      decoder['latestProposalBlock'] = latestBlock;
+
+    await prisma.dAOHandler.update({
+      where: {
+        id: daoHandler.id,
+      },
+      data: {
+        decoder: decoder,
+      },
+    });
+
+  } catch (err) {
+    logger.error("Error while updating maker executive proposals", err);
+    throw new InternalServerErrorException();
   }
 
-  let decoder = daoHandler.decoder;
-    decoder['latestProposalBlock'] = latestBlock;
-
-  await prisma.dAOHandler.update({
-    where: {
-      id: daoHandler.id,
-    },
-    data: {
-      decoder: decoder,
-    },
-  });
-
-  console.log("\n\n");
-  console.log(`inserted ${spellAddresses.length} maker executive proposals`);
-  console.log("======================================================\n\n");
+  logger.log("\n\n");
+  logger.log(`inserted ${spellAddresses.length} maker executive proposals`);
+  logger.log("======================================================\n\n");
   
 };
 

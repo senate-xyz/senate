@@ -1,27 +1,29 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller, HttpStatus, Logger, Post, Query, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { AppService } from './app.service';
 
 @Controller('api')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  private readonly logger = new Logger(AppController.name);
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+  constructor(private readonly appService: AppService) {}
 
   @Post('updateProposals')
   async updateProposals(
-    @Query('daoId') daoId : string
-  ): Promise<String> {
-    return await this.appService.updateProposals(daoId);
+    @Query('daoId') daoId : string,
+    @Res() res: Response
+  ) {
+    await this.appService.updateProposals(daoId);
+    res.status(HttpStatus.OK).send();
   }
 
   @Post('updateVotes')
   async updateVotes(
     @Query('daoId') daoId : string,
     @Query('userId') userId : string,
-  ): Promise<String> {
-    return await this.appService.updateVotes(daoId, userId);
+    @Res() res: Response
+  ) {
+    await this.appService.updateVotes(daoId, userId);
+    res.status(HttpStatus.OK).send();
   }
 }

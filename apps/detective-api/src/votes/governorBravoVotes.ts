@@ -1,9 +1,9 @@
-import { BigNumber, ethers } from "ethers";
-
-import { hexZeroPad } from "ethers/lib/utils";
+import { InternalServerErrorException, Logger } from "@nestjs/common";
+import { DAOHandlerType } from "@prisma/client";
+import { DAOHandler, Proposal, User } from "@senate/common-types";
 import { prisma } from "@senate/database";
-import { Proposal, DAOHandler, User } from "@senate/common-types"
-import { DAOHandlerType, ProposalType } from "@prisma/client";
+import { BigNumber, ethers } from "ethers";
+import { hexZeroPad } from "ethers/lib/utils";
 
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
@@ -14,63 +14,70 @@ type Vote = {
     support: string
 };
 
-export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: User, daoName: string) => {
-    console.log(`Updating Governor Bravo votes for ${daoName}`);
-    
-    if (user == null || daoHandler == null) return;
+const logger = new Logger("MakerExecutiveProposals");
 
-    let votes = await getVotes(daoHandler, user);
-    if (!votes) return;
-  
-    for (const vote of votes) {
-      let proposal : Proposal = await prisma.proposal.findFirst({
-          where: {
-              externalId: vote.proposalOnChainId,
-              daoId: daoHandler.daoId,
-              daoHandlerId: daoHandler.id,
-          },
-      })
-  
-      await prisma.vote.upsert({
-          where: {
-            userId_daoId_proposalId: {
+export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: User, daoName: string) => {
+    logger.log(`Updating Governor Bravo votes for ${daoName}`);
+    let votes;
+
+    try {
+      votes = await getVotes(daoHandler, user);
+      if (!votes) return;
+    
+      for (const vote of votes) {
+        let proposal : Proposal = await prisma.proposal.findFirst({
+            where: {
+                externalId: vote.proposalOnChainId,
+                daoId: daoHandler.daoId,
+                daoHandlerId: daoHandler.id,
+            },
+        })
+    
+        await prisma.vote.upsert({
+            where: {
+              userId_daoId_proposalId: {
+                userId: user.id,
+                daoId: daoHandler.daoId,
+                proposalId: proposal.id
+              }
+            },
+            update: {
+              options: {
+                update: {
+                  where: {
+                    voteProposalId_option: {
+                      voteProposalId: proposal.id,
+                      option: vote.support,
+                    }
+                  },
+                  data: {
+                    option: vote.support,
+                    optionName: vote.support ? "Yes" : "No"
+                  },
+                } 
+              }
+            },
+            create: {
               userId: user.id,
               daoId: daoHandler.daoId,
-              proposalId: proposal.id
-            }
-          },
-          update: {
-            options: {
-              update: {
-                where: {
-                  voteProposalId_option: {
-                    voteProposalId: proposal.id,
-                    option: vote.support,
-                  }
-                },
-                data: {
+              proposalId: proposal.id,
+              daoHandlerId: daoHandler.id,
+              options: {
+                create: {
                   option: vote.support,
-                  optionName: vote.support ? "Yes" : "No"
-                },
-              } 
-            }
-          },
-          create: {
-            userId: user.id,
-            daoId: daoHandler.daoId,
-            proposalId: proposal.id,
-            daoHandlerId: daoHandler.id,
-            options: {
-              create: {
-                option: vote.support,
-                optionName: vote.support ? "Yes" : "No",
+                  optionName: vote.support ? "Yes" : "No",
+                }
               }
-            }
-          },
-        });
+            },
+          });
+      }
+
+    } catch (err) {
+      logger.error("Error while updating governor bravo votes", err);
+      throw new InternalServerErrorException();
     }
 
-    console.log(`Updated ${votes.length} Governor Bravo votes for ${daoName}`);
+    logger.log(`Updated ${votes.length} Governor Bravo votes for ${daoName}`);
 }
 
 const getVotes = async (daoHandler: DAOHandler, user: User): Promise<Vote[]> => {

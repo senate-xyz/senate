@@ -1,102 +1,111 @@
-import { ethers } from "ethers";
-import axios from "axios";
-
-import { prisma } from "@senate/database";
+import { InternalServerErrorException, Logger } from "@nestjs/common";
+import { ProposalType } from "@prisma/client";
 import { DAOHandler } from "@senate/common-types";
-import { DAOHandlerType, ProposalType } from "@prisma/client";
+import { prisma } from "@senate/database";
+import axios from "axios";
+import { ethers } from "ethers";
 
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
 });
 
+const logger = new Logger("UpdateGovernorBravoProposals")
+
 export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
   
-  console.log(`Searching from block ${daoHandler.decoder['latestProposalBlock']} ...`)
+  logger.log(`Searching from block ${daoHandler.decoder['latestProposalBlock']} ...`)
+  let proposals;
 
-  const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi']);
+  try {
+    const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi']);
 
-  const logs = await provider.getLogs({
-    fromBlock: daoHandler.decoder['latestProposalBlock'],
-    address: daoHandler.decoder['address'],
-    topics: [govBravoIface.getEventTopic("ProposalCreated")],
-  });
-
-  const proposals = logs.map((log) => ({
-    txBlock: log.blockNumber,
-    txHash: log.transactionHash,
-    eventData: govBravoIface.parseLog({
-      topics: log.topics,
-      data: log.data,
-    }).args,
-  }));
-
-//   const latestBlockMined = await provider.getBlockNumber();
-//   const ongoingProposals = proposals.filter(
-//     (proposal) => proposal.eventData.endBlock > latestBlockMined
-//   );
-
-  for (let i = 0; i < proposals.length; i++) {
-    let proposalCreatedTimestamp = (
-      await provider.getBlock(proposals[i].txBlock)
-    ).timestamp;
-
-    let votingStartsTimestamp =
-      proposalCreatedTimestamp +
-      (proposals[i].eventData.startBlock - proposals[i].txBlock) * 12;
-    let votingEndsTimestamp =
-      proposalCreatedTimestamp +
-      (proposals[i].eventData.endBlock - proposals[i].txBlock) * 12;
-    let { title, description } = await getProposalTitleAndDescription(
-        daoHandler.decoder['address'],
-      proposals[i].eventData.ipfsHash
-        ? proposals[i].eventData.ipfsHash
-        : proposals[i].eventData.description
-    );
-    let proposalUrl = daoHandler.decoder['proposalUrl'] + proposals[i].eventData.id;
-    let proposalOnChainId = Number(proposals[i].eventData.id).toString();
-
-    // Update latest block
-    let decoder = daoHandler.decoder;
-    decoder['latestProposalBlock'] = proposals[i].txBlock + 1;
-
-    await prisma.dAOHandler.update({
-      where: {
-        id: daoHandler.id,
-      },
-      data: {
-        decoder: decoder,
-      },
+    const logs = await provider.getLogs({
+      fromBlock: daoHandler.decoder['latestProposalBlock'],
+      address: daoHandler.decoder['address'],
+      topics: [govBravoIface.getEventTopic("ProposalCreated")],
     });
 
-    // TODO create only if the record doesn't exist
-    let proposal = await prisma.proposal.upsert({
-      where: {
-            externalId_daoId: {
-                daoId: daoHandler.daoId,
-                externalId: proposalOnChainId,
-            },
-      },
-      update: {},
-      create: {
-        externalId: proposalOnChainId,
-        name: String(title),
-        description: "",
-        daoId: daoHandler.daoId,
-        daoHandlerId: daoHandler.id,
-        proposalType: ProposalType.MAKER_EXECUTIVE,
-        data: {
-            timeEnd: votingEndsTimestamp * 1000,
-            timeStart: votingStartsTimestamp * 1000,
-            timeCreated: proposalCreatedTimestamp * 1000,
+    proposals = logs.map((log) => ({
+      txBlock: log.blockNumber,
+      txHash: log.transactionHash,
+      eventData: govBravoIface.parseLog({
+        topics: log.topics,
+        data: log.data,
+      }).args,
+    }));
+
+  //   const latestBlockMined = await provider.getBlockNumber();
+  //   const ongoingProposals = proposals.filter(
+  //     (proposal) => proposal.eventData.endBlock > latestBlockMined
+  //   );
+
+    for (let i = 0; i < proposals.length; i++) {
+      let proposalCreatedTimestamp = (
+        await provider.getBlock(proposals[i].txBlock)
+      ).timestamp;
+
+      let votingStartsTimestamp =
+        proposalCreatedTimestamp +
+        (proposals[i].eventData.startBlock - proposals[i].txBlock) * 12;
+      let votingEndsTimestamp =
+        proposalCreatedTimestamp +
+        (proposals[i].eventData.endBlock - proposals[i].txBlock) * 12;
+      let { title, description } = await getProposalTitleAndDescription(
+          daoHandler.decoder['address'],
+        proposals[i].eventData.ipfsHash
+          ? proposals[i].eventData.ipfsHash
+          : proposals[i].eventData.description
+      );
+      let proposalUrl = daoHandler.decoder['proposalUrl'] + proposals[i].eventData.id;
+      let proposalOnChainId = Number(proposals[i].eventData.id).toString();
+
+      // Update latest block
+      let decoder = daoHandler.decoder;
+      decoder['latestProposalBlock'] = proposals[i].txBlock + 1;
+
+      await prisma.dAOHandler.update({
+        where: {
+          id: daoHandler.id,
         },
-        url: proposalUrl,
-      },
-    });
+        data: {
+          decoder: decoder,
+        },
+      });
+
+      // TODO create only if the record doesn't exist
+      await prisma.proposal.upsert({
+        where: {
+              externalId_daoId: {
+                  daoId: daoHandler.daoId,
+                  externalId: proposalOnChainId,
+              },
+        },
+        update: {},
+        create: {
+          externalId: proposalOnChainId,
+          name: String(title),
+          description: "",
+          daoId: daoHandler.daoId,
+          daoHandlerId: daoHandler.id,
+          proposalType: ProposalType.MAKER_EXECUTIVE,
+          data: {
+              timeEnd: votingEndsTimestamp * 1000,
+              timeStart: votingStartsTimestamp * 1000,
+              timeCreated: proposalCreatedTimestamp * 1000,
+          },
+          url: proposalUrl,
+        },
+      });
+    }
+  } catch (err) {
+    logger.error("Error while updating Gov Bravo Proposals", err)
+    throw new InternalServerErrorException();
   }
 
-  console.log("\n\n");
-  console.log(`inserted ${proposals.length} chain proposals`);
-  console.log("======================================================\n\n");
+  
+  logger.log("\n\n");
+  logger.log(`inserted ${proposals.length} chain proposals`);
+  logger.log("======================================================\n\n");
 }
 
 const fetchProposalInfoFromIPFS = async (
