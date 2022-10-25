@@ -67,7 +67,6 @@ export const updateSnapshotProposals = async (daoName: string, daoHandler : DAOH
               create: {
                 externalId: proposal.id,
                 name: String(proposal.title),
-                description: "" /*String(proposal.body)*/,
                 daoId: daoHandler.daoId,
                 daoHandlerId: daoHandler.id,
                 proposalType: ProposalType.SNAPSHOT,
