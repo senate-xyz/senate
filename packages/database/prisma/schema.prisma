@@ -69,7 +69,6 @@ model Proposal {
     id           String       @id @default(cuid())
     externalId   String       @unique
     name         String
-    description  String
     dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
     daoId        String
     daoHandlerId String

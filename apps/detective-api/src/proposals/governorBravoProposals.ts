@@ -50,7 +50,7 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
       let votingEndsTimestamp =
         proposalCreatedTimestamp +
         (proposals[i].eventData.endBlock - proposals[i].txBlock) * 12;
-      let { title, description } = await getProposalTitleAndDescription(
+      let { title } = await getProposalTitle(
           daoHandler.decoder['address'],
         proposals[i].eventData.ipfsHash
           ? proposals[i].eventData.ipfsHash
@@ -59,7 +59,6 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
       let proposalUrl = daoHandler.decoder['proposalUrl'] + proposals[i].eventData.id;
       let proposalOnChainId = Number(proposals[i].eventData.id).toString();
 
-      // Update latest block
       let decoder = daoHandler.decoder;
       decoder['latestProposalBlock'] = proposals[i].txBlock + 1;
 
@@ -72,7 +71,6 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
         },
       });
 
-      // TODO create only if the record doesn't exist
       await prisma.proposal.upsert({
         where: {
               externalId_daoId: {
@@ -84,7 +82,6 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
         create: {
           externalId: proposalOnChainId,
           name: String(title),
-          description: "",
           daoId: daoHandler.daoId,
           daoHandlerId: daoHandler.id,
           proposalType: ProposalType.MAKER_EXECUTIVE,
@@ -110,23 +107,18 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
 
 const fetchProposalInfoFromIPFS = async (
   hexHash: string
-): Promise<{ title: string; description: string }> => {
-  let title, description;
+): Promise<{ title: string; }> => {
+  let title
   try {
     const response = await axios.get(
       "https://gateway.pinata.cloud/ipfs/f01701220" + hexHash.substring(2)
     );
     title = response.data.title;
-    description = response.data.description;
   } catch (error) {
     title = "Unknown";
-    description = "Unknown";
   }
 
-  return {
-    title: title,
-    description: description,
-  };
+  return title;
 };
 
 const formatTitle = (text: String): String => {
@@ -144,18 +136,8 @@ const formatTitle = (text: String): String => {
   return temp;
 };
 
-// Some DAOs store onchain the proposal title and full description in the same variable.
-// This function parses that entire text and returns the title and the description
-const parseDescription = async (text: String) => {
-  return {
-    title: formatTitle(text),
-    description: text
-      ? text.split("\n").slice(1).join("\n")
-      : "Description unavailable",
-  };
-};
 
-const getProposalTitleAndDescription = async (
+const getProposalTitle = async (
   daoAddress: string,
   text: string
 ): Promise<any> => {
@@ -163,7 +145,7 @@ const getProposalTitleAndDescription = async (
     // Aave
     return await fetchProposalInfoFromIPFS(text);
   } else {
-    return parseDescription(text);
+    return formatTitle(text);
   }
 };
 

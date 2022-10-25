@@ -46,7 +46,7 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
   
       let votingStartsTimestamp = Number(proposals[i].eventData.startDate);
       let votingEndsTimestamp = Number(proposals[i].eventData.endDate);
-      let { title, description } = await getProposalTitleAndDescription(proposals[i].eventData.url);
+      let title = await getProposalTitle(proposals[i].eventData.url);
       let proposalUrl = daoHandler.decoder['proposalUrl'] + proposals[i].eventData.multiHash.substring(0, 7);
       let proposalOnChainId = Number(proposals[i].eventData.pollId).toString();
   
@@ -73,7 +73,6 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
         create: {
           externalId: proposalOnChainId,
           name: String(title),
-          description: "",
           daoId: daoHandler.daoId,
           daoHandlerId: mkrPollVoteHandler.id,
           proposalType: ProposalType.MAKER_POLL,
@@ -103,26 +102,17 @@ const formatTitle = (text: String): String => {
   return temp;
 };
 
-// Some DAOs store onchain the proposal title and full description in the same variable.
-// This function parses that entire text and returns the title and the description
-const formatDescription = (text: String) => {
-  return text;
-};
 
-const getProposalTitleAndDescription = async (url: string): Promise<any> => {
-  let title, description;
+
+const getProposalTitle = async (url: string): Promise<any> => {
+  let title;
   try {
     const response = await axios.get(url);
     title = formatTitle(response.data);
-    description = formatDescription(response.data.description);
   } catch (error) {
     title = "Unknown";
-    description = "Unknown";
   }
 
-  return {
-    title: title,
-    description: description,
-  };
+  return title;
 };
 

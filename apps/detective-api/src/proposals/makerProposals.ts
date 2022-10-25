@@ -80,7 +80,6 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
         create: {
           externalId: spellAddresses[i],
           name: response.data.title,
-          description: "" /*response.data.content*/,
           daoId: daoHandler.daoId,
           daoHandlerId: daoHandler.id,
           proposalType: ProposalType.MAKER_EXECUTIVE,
