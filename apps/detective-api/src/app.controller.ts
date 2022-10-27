@@ -10,20 +10,20 @@ export class AppController {
 
   @Post('updateProposals')
   async updateProposals(
-    @Query('daoId') daoId : string,
-    @Res() res: Response
-  ) {
+    @Query('daoId') daoId : string
+  ) : Promise<string> {
     await this.appService.updateProposals(daoId);
-    res.status(HttpStatus.OK).send();
+    
+    return "OK"
   }
 
   @Post('updateVotes')
   async updateVotes(
     @Query('daoId') daoId : string,
-    @Query('userId') userId : string,
-    @Res() res: Response
-  ) {
+    @Query('userId') userId : string
+  ) : Promise<string> {
     await this.appService.updateVotes(daoId, userId);
-    res.status(HttpStatus.OK).send();
+    
+    return "OK"
   }
 }

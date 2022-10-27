@@ -25,8 +25,13 @@ export class AppService {
       dao = await prisma.dAO.findFirst({
         where: {
           id: daoId
+        },
+        include: {
+          handlers: true,
+          subscriptions: true,
         }
       })
+
     } catch (err) {
       this.logger.error(err);
       throw new InternalServerErrorException();
@@ -72,6 +77,10 @@ export class AppService {
       dao = await prisma.dAO.findFirst({
         where: {
           id: daoId
+        },
+        include: {
+          handlers: true,
+          subscriptions: true,
         }
       });
   

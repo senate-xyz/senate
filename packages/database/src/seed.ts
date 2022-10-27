@@ -72,7 +72,7 @@ async function main() {
             decoder: {
               address: "0x0a3f6849f78076aefaDf113F5BED87720274dDC0",
               abi: makerChief.abi,
-              latestProposalBlock: 	15276296,
+              latestProposalBlock: 	15682797,
               proposalUrl: "https://vote.makerdao.com/executive/"
             },
           },
@@ -81,7 +81,7 @@ async function main() {
             decoder: {
               address: "0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d",
               abi: makerPollCreate.abi,
-              latestProposalBlock: 	15276296,
+              latestProposalBlock: 	15682797,
               proposalUrl: "https://vote.makerdao.com/polling/"
             },
           },
@@ -196,50 +196,29 @@ async function main() {
     where: {
       userId_daoId: {
         userId: testUserMaker.id,
-        daoId: aave.id,
+        daoId: maker.id,
       },
     },
     update: {},
     create: {
       userId: testUserMaker.id,
+      daoId: maker.id,
+    },
+  });
+
+  await prisma.subscription.upsert({
+    where: {
+      userId_daoId: {
+        userId: testUserAave.id,
+        daoId: aave.id,
+      },
+    },
+    update: {},
+    create: {
+      userId: testUserAave.id,
       daoId: aave.id,
     },
   });
-
-  await prisma.user.update({
-    where: { address: "0xCdB792c14391F7115Ba77A7Cd27f724fC9eA2091" },
-    data: {
-      subscriptions: {
-        create: [
-          {
-            daoId: maker.id,
-          },
-          {
-            daoId: aave.id,
-          },
-          
-        ],
-      },
-    },
-  });
-
-  await prisma.user.update({
-    where: { address: "0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98" },
-    data: {
-      subscriptions: {
-        create: [
-          {
-            daoId: maker.id,
-          },
-          {
-            daoId: aave.id,
-          },
-        ],
-      },
-    },
-  });
-
-  
 }
 
 main();

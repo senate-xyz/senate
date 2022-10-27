@@ -52,7 +52,9 @@ export const updateSnapshotProposals = async (daoName: string, daoHandler : DAOH
     if (
       proposals.length >
       (await prisma.proposal.count({ where: { daoId: daoHandler.daoId } }))
-    )
+    ) {
+
+      console.log("Ia taticule");
       await prisma
         .$transaction(
           proposals.map((proposal: any) =>
@@ -85,10 +87,15 @@ export const updateSnapshotProposals = async (daoName: string, daoHandler : DAOH
             logger.log(`upserted ${res.length} snapshot proposals for ${daoName}`);
           else logger.log(`upserted 0 snapshot proposals for ${daoName}`);
         });
+    } else {
+      logger.log(`upserted 0 snapshot proposals for ${daoName}`)
+    } 
 
   } catch (err) {
     logger.error("Error while updating snapshot proposals", err);
     throw new InternalServerErrorException();
   }
+
+  return;
     
 };
