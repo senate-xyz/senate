@@ -61,8 +61,9 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
           decoder: decoder,
         },
       });
-  
-       await prisma.proposal.upsert({
+
+      console.log(proposalOnChainId)
+      await prisma.proposal.upsert({
           where: {
               externalId_daoId: {
                   daoId: daoHandler.daoId,

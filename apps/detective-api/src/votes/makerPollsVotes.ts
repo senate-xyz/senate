@@ -15,7 +15,17 @@ export const updateMakerPollsVotes = async (daoHandler: DAOHandler, user: User, 
     let votes;  
 
     try {
-      votes = await getVotes(daoHandler, user);
+      let userLatestVoteBlock = await prisma.userLatestVoteBlock.findFirst({
+        where: {
+          userId: user.id,
+          daoHandlerId: daoHandler.id
+        },
+      });
+    
+      let latestVoteBlock = userLatestVoteBlock ? Number(userLatestVoteBlock.latestVoteBlock) : 0;
+      let currentBlock = await provider.getBlockNumber();
+
+      votes = await getVotes(daoHandler, user, latestVoteBlock);
       if (!votes) return;
     
       for (const vote of votes) {
@@ -69,6 +79,23 @@ export const updateMakerPollsVotes = async (daoHandler: DAOHandler, user: User, 
                   }
                 },
           });
+
+          await prisma.userLatestVoteBlock.upsert({
+            where: {
+              userId_daoHandlerId: {
+                userId: user.id,
+                daoHandlerId: daoHandler.id,
+              }
+            },
+            update: {
+              latestVoteBlock: currentBlock
+            },
+            create: {
+              userId: user.id,
+              daoHandlerId: daoHandler.id,
+              latestVoteBlock: currentBlock
+            }
+          })
       }
 
     } catch (err) {
@@ -79,11 +106,11 @@ export const updateMakerPollsVotes = async (daoHandler: DAOHandler, user: User, 
     console.log(`updated ${votes.length} maker poll votes`);
 }
 
-const getVotes = async (daoHandler: DAOHandler, user: User): Promise<any> => {
+const getVotes = async (daoHandler: DAOHandler, user: User, latestVoteBlock: number): Promise<any> => {
   const iface = new ethers.utils.Interface(JSON.parse(daoHandler.decoder["abi"]));
 
   const logs = await provider.getLogs({
-    fromBlock: daoHandler.decoder['latestVoteBlock'],
+    fromBlock: latestVoteBlock,
     address: daoHandler.decoder['address'],
     topics: [iface.getEventTopic("Voted"), hexZeroPad(user.address, 32)],
   });

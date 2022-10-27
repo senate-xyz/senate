@@ -12,11 +12,11 @@ async function main() {
             },
           });
         
-          let dao = await prisma.dAO.findFirst({
-            where: {
-              id: subscriptions[i].daoId,
-            },
-          });
+        let dao = await prisma.dAO.findFirst({
+          where: {
+            id: subscriptions[i].daoId,
+          },
+        });
 
         const options = {
             method: 'POST',
@@ -26,16 +26,13 @@ async function main() {
         console.log(`Updating subscription ${i} \n ${dao.name} - ${user.address} \n\n`);
 
         console.log(`Updating proposals for ${dao.name}`)
-        await fetch( `http://localhost:3100/api/updateProposals?daoId=${dao.id}`, options )
-            .then( response => response.text() )
-            .then( response => console.log(response) );
+        let response = await fetch( `http://localhost:3100/api/updateProposals?daoId=${dao.id}`, options )
+        console.log(await response.text());
         
         console.log(`Updating votes for user ${user.address}`)
-        await fetch( `http://localhost:3100/api/updateVotes?daoId=${dao.id}&userId=${user.id}`, options )
-            .then( response => response.text() )
-            .then( response => {
-                console.log(response);
-            } );
+        response = await fetch( `http://localhost:3100/api/updateVotes?daoId=${dao.id}&userId=${user.id}`, options );
+        console.log(await response.text());
+            
     }
 }
 
