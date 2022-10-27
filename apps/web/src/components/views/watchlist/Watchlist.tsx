@@ -22,6 +22,7 @@ const Watchlist = () => {
                 },
             }
         )
+        utils.invalidateQueries()
     }
 
     const handleUnsubscribe = async (daoId: string) => {
@@ -33,6 +34,7 @@ const Watchlist = () => {
                 },
             }
         )
+        utils.invalidateQueries()
     }
 
     if (!DAOs.data) return <div>Loading</div>
