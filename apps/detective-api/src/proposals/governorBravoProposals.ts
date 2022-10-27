@@ -82,7 +82,7 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
           name: String(title),
           daoId: daoHandler.daoId,
           daoHandlerId: daoHandler.id,
-          proposalType: ProposalType.MAKER_EXECUTIVE,
+          proposalType: ProposalType.BRAVO,
           data: {
               timeEnd: votingEndsTimestamp * 1000,
               timeStart: votingStartsTimestamp * 1000,

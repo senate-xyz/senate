@@ -14,8 +14,17 @@ export const updateMakerVotes = async (daoHandler: DAOHandler, user: User, daoNa
   let votedSpells;
 
   try {
+    let userLatestVoteBlock = await prisma.userLatestVoteBlock.findFirst({
+      where: {
+        userId: user.id,
+        daoHandlerId: daoHandler.id
+      },
+    });
+  
+    let latestVoteBlock = userLatestVoteBlock ? Number(userLatestVoteBlock.latestVoteBlock) : 0;
+    let currentBlock = await provider.getBlockNumber();
 
-    votedSpells = await getVotes(daoHandler, user);
+    votedSpells = await getVotes(daoHandler, user, latestVoteBlock);
     if (!votedSpells) return; 
 
     for (const votedSpellAddress of votedSpells) {
@@ -54,6 +63,23 @@ export const updateMakerVotes = async (daoHandler: DAOHandler, user: User, daoNa
             }
           },
         });
+
+        await prisma.userLatestVoteBlock.upsert({
+          where: {
+            userId_daoHandlerId: {
+              userId: user.id,
+              daoHandlerId: daoHandler.id,
+            }
+          },
+          update: {
+            latestVoteBlock: currentBlock
+          },
+          create: {
+            userId: user.id,
+            daoHandlerId: daoHandler.id,
+            latestVoteBlock: currentBlock
+          }
+        })
     }
 
   } catch (err) {
@@ -65,7 +91,7 @@ export const updateMakerVotes = async (daoHandler: DAOHandler, user: User, daoNa
   
 };
 
-const getVotes = async (daoHandler: DAOHandler, user: User): Promise<string[]> => {
+const getVotes = async (daoHandler: DAOHandler, user: User, latestVoteBlock: number): Promise<string[]> => {
   const iface = new ethers.utils.Interface(daoHandler.decoder["abi"]);
   const chiefContract = new ethers.Contract(daoHandler.decoder["address"], daoHandler.decoder["abi"], provider);
 
@@ -78,7 +104,7 @@ const getVotes = async (daoHandler: DAOHandler, user: User): Promise<string[]> =
   const voterAddressTopic = "0x" + "0".repeat(24) + user.address.substring(2);
 
   const logs = await provider.getLogs({
-    fromBlock: daoHandler.decoder['latestVoteBlock'],
+    fromBlock: latestVoteBlock,
     address: daoHandler.decoder['address'],
     topics: [
       [voteMultipleActionsTopic, voteSingleActionTopic],

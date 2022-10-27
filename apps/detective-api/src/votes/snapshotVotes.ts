@@ -59,6 +59,11 @@ export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, da
             },
         })
 
+        if (!proposal) {
+          console.log(`Snapshot proposal with externalId ${vote.proposal.id} does not exist in DB`);
+          continue;
+        }
+
         let votedOptions : VoteOption[] = getVotedOptions(vote.choice, vote.proposal.choices, user.id, daoHandler.daoId, proposal.id);
 
         for (const votedOption of votedOptions) {
@@ -101,7 +106,7 @@ export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, da
         
     }
   } catch (err) {
-    logger.error("Error while updating maker executive proposals", err);
+    logger.error("Error while updating snapshot proposals", err);
     throw new InternalServerErrorException();
   }
       
