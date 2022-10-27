@@ -1,9 +1,12 @@
 import aaveGovBravo from './abis/aaveGovBravo.json'
+import makerChief from './abis/makerChief.json'
+import makerPollCreate from './abis/makerPollCreate.json'
+import makerPollVote from './abis/makerPollVote.json'
 import { prisma } from './client'
-import { DAOHandlerType, ProposalType } from '@prisma/client'
+import { DAOHandlerType } from '@prisma/client'
 
 async function main() {
-    const testUser = await prisma.user.upsert({
+    const testUserMaker = await prisma.user.upsert({
         where: {
             address: '0xCdB792c14391F7115Ba77A7Cd27f724fC9eA2091',
         },
@@ -13,7 +16,17 @@ async function main() {
         },
     })
 
-    const aave = await prisma.dAO.upsert({
+    const testUserAave = await prisma.user.upsert({
+        where: {
+            address: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
+        },
+        update: {},
+        create: {
+            address: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
+        },
+    })
+
+    let aave = await prisma.dAO.upsert({
         where: { name: 'Aave' },
         update: {},
         create: {
@@ -28,7 +41,9 @@ async function main() {
                             address:
                                 '0xEC568fffba86c094cf06b22134B23074DFE2252c',
                             abi: aaveGovBravo.abi,
-                            latestBlock: 0,
+                            latestProposalBlock: 10000000,
+                            proposalUrl:
+                                'https://app.aave.com/governance/proposal/?proposalId=',
                         },
                     },
                     {
@@ -46,20 +61,41 @@ async function main() {
         },
     })
 
-    const ens = await prisma.dAO.upsert({
-        where: { name: 'ENS' },
+    let maker = await prisma.dAO.upsert({
+        where: { name: 'MakerDAO' },
         update: {},
         create: {
-            name: 'ENS',
+            name: 'MakerDAO',
             picture:
-                'https://cdn.stamp.fyi/space/ens.eth?s=160&cb=bc8a2856691e05ab',
+                'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             handlers: {
                 create: [
                     {
-                        type: DAOHandlerType.SNAPSHOT,
+                        type: DAOHandlerType.MAKER_EXECUTIVE,
                         decoder: {
-                            space: 'ens.eth',
-                            proposalsCount: 0,
+                            address:
+                                '0x0a3f6849f78076aefaDf113F5BED87720274dDC0',
+                            abi: makerChief.abi,
+                            latestProposalBlock: 15682797,
+                            proposalUrl: 'https://vote.makerdao.com/executive/',
+                        },
+                    },
+                    {
+                        type: DAOHandlerType.MAKER_POLL_CREATE,
+                        decoder: {
+                            address:
+                                '0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d',
+                            abi: makerPollCreate.abi,
+                            latestProposalBlock: 15682797,
+                            proposalUrl: 'https://vote.makerdao.com/polling/',
+                        },
+                    },
+                    {
+                        type: DAOHandlerType.MAKER_POLL_VOTE,
+                        decoder: {
+                            address:
+                                '0xD3A9FE267852281a1e6307a1C37CDfD76d39b133',
+                            abi: makerPollVote.abi,
                         },
                     },
                 ],
@@ -70,143 +106,123 @@ async function main() {
         },
     })
 
-    await prisma.subscription.upsert({
-        where: {
-            userId_daoId: {
-                userId: testUser.id,
-                daoId: String(aave?.id),
-            },
-        },
-        update: {},
-        create: {
-            userId: testUser.id,
-            daoId: String(aave?.id),
-        },
-    })
+    // const testProposal = await prisma.proposal.upsert({
+    //   where: {
+    //     externalId_daoId: {
+    //       daoId: aave.id,
+    //       externalId: "1",
+    //     },
+    //   },
+    //   update: {},
+    //   create: {
+    //     externalId: "1",
+    //     name: "Test name",
+    //     description: "Test description",
+    //     daoId: aave.id,
+    //     daoHandlerId: aave.handlers[0].id,
+    //     proposalType: ProposalType.SNAPSHOT,
+    //     data: {
+    //       timeStart: 1664975385,
+    //       timeEnd: 1665975385,
+    //     },
+    //     url: "",
+    //   },
+    // });
+
+    // const testProposal2 = await prisma.proposal.upsert({
+    //   where: {
+    //     externalId_daoId: {
+    //       daoId: aave.id,
+    //       externalId: "2",
+    //     },
+    //   },
+    //   update: {},
+    //   create: {
+    //     externalId: "2",
+    //     name: "Test name 2",
+    //     description: "Test description 2",
+    //     daoId: aave.id,
+    //     daoHandlerId: aave.handlers[0].id,
+    //     proposalType: ProposalType.BRAVO,
+    //     data: {
+    //       timeStart: 1664975385,
+    //       timeEnd: 1665975385,
+    //     },
+    //     url: "",
+    //   },
+    // });
+
+    // await prisma.vote.upsert({
+    //   where: {
+    //     userId_daoId_proposalId: {
+    //       userId: testUserMaker.id,
+    //       daoId: aave.id,
+    //       proposalId: testProposal.id,
+    //     },
+    //   },
+    //   update: {},
+    //   create: {
+    //     userId: testUserMaker.id,
+    //     daoId: aave.id,
+    //     proposalId: testProposal.id,
+    //     daoHandlerId: aave.handlers[0].id,
+    //     options: {
+    //       create: {
+    //         option: "1",
+    //         optionName: "Yes",
+    //       },
+    //     },
+    //   },
+    // });
+
+    // await prisma.vote.upsert({
+    //   where: {
+    //     userId_daoId_proposalId: {
+    //       userId: testUserMaker.id,
+    //       daoId: aave.id,
+    //       proposalId: testProposal2.id,
+    //     },
+    //   },
+    //   update: {},
+    //   create: {
+    //     userId: testUserMaker.id,
+    //     daoId: aave.id,
+    //     proposalId: testProposal2.id,
+    //     daoHandlerId: aave.handlers[0].id,
+    //     options: {
+    //       create: {
+    //         option: "0",
+    //         optionName: "No",
+    //       },
+    //     },
+    //   },
+    // });
 
     await prisma.subscription.upsert({
         where: {
             userId_daoId: {
-                userId: testUser.id,
-                daoId: String(ens?.id),
+                userId: testUserMaker.id,
+                daoId: maker.id,
             },
         },
         update: {},
         create: {
-            userId: testUser.id,
-            daoId: String(ens?.id),
+            userId: testUserMaker.id,
+            daoId: maker.id,
         },
     })
 
-    await prisma.proposal.upsert({
+    await prisma.subscription.upsert({
         where: {
-            externalId_daoId: {
-                daoId: ens?.id,
-                externalId: '3',
+            userId_daoId: {
+                userId: testUserAave.id,
+                daoId: aave.id,
             },
         },
         update: {},
         create: {
-            externalId: '3',
-            name: 'ENS proposal test snapshot',
-            description: 'Test description',
-            daoId: ens?.id,
-            daoHandlerId: ens?.handlers[0].id,
-            proposalType: ProposalType.SNAPSHOT,
-            data: {
-                timeStart: 1664975385,
-                timeEnd: 1665975385,
-            },
-        },
-    })
-
-    const testProposal = await prisma.proposal.upsert({
-        where: {
-            externalId_daoId: {
-                daoId: aave?.id,
-                externalId: '1',
-            },
-        },
-        update: {},
-        create: {
-            externalId: '1',
-            name: 'Aave proposal test snapshot',
-            description: 'Test description',
-            daoId: aave?.id,
-            daoHandlerId: aave?.handlers[0].id,
-            proposalType: ProposalType.SNAPSHOT,
-            data: {
-                timeStart: 1664975385,
-                timeEnd: 1665975385,
-            },
-        },
-    })
-
-    const testProposal2 = await prisma.proposal.upsert({
-        where: {
-            externalId_daoId: {
-                daoId: aave?.id,
-                externalId: '2',
-            },
-        },
-        update: {},
-        create: {
-            externalId: '2',
-            name: 'Aave proposal test bravo',
-            description: 'Test description 2',
-            daoId: aave?.id,
-            daoHandlerId: aave?.handlers[0].id,
-            proposalType: ProposalType.BRAVO1,
-            data: {
-                timeStart: 1664975385,
-                timeEnd: 1665975385,
-            },
-        },
-    })
-
-    await prisma.vote.upsert({
-        where: {
-            userId_daoId_proposalId: {
-                userId: testUser.id,
-                daoId: aave?.id,
-                proposalId: testProposal.id,
-            },
-        },
-        update: {},
-        create: {
-            userId: testUser.id,
-            daoId: aave?.id,
-            proposalId: testProposal.id,
-            daoHandlerId: aave?.handlers[0].id,
-            options: {
-                create: {
-                    option: '1',
-                    optionName: 'Yes',
-                },
-            },
-        },
-    })
-
-    await prisma.vote.upsert({
-        where: {
-            userId_daoId_proposalId: {
-                userId: testUser.id,
-                daoId: aave?.id,
-                proposalId: testProposal2.id,
-            },
-        },
-        update: {},
-        create: {
-            userId: testUser.id,
-            daoId: aave?.id,
-            proposalId: testProposal2.id,
-            daoHandlerId: aave?.handlers[0].id,
-            options: {
-                create: {
-                    option: '0',
-                    optionName: 'No',
-                },
-            },
+            userId: testUserAave.id,
+            daoId: aave.id,
         },
     })
 }
