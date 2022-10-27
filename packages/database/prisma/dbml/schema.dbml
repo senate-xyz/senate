@@ -43,7 +43,6 @@ Table Proposal {
   id String [pk]
   externalId String [unique, not null]
   name String [not null]
-  description String [not null]
   dao DAO [not null]
   daoId String [not null]
   daoHandlerId String [not null]
@@ -84,6 +83,17 @@ Table VoteOption {
 
   indexes {
     (voteProposalId, option) [unique]
+  }
+}
+
+Table UserLatestVoteBlock {
+  id String [pk]
+  userId String [not null]
+  daoHandlerId String [not null]
+  latestVoteBlock Int [not null]
+
+  indexes {
+    (userId, daoHandlerId) [unique]
   }
 }
 

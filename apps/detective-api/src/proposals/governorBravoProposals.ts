@@ -50,11 +50,9 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
       let votingEndsTimestamp =
         proposalCreatedTimestamp +
         (proposals[i].eventData.endBlock - proposals[i].txBlock) * 12;
-      let { title } = await getProposalTitle(
-          daoHandler.decoder['address'],
-        proposals[i].eventData.ipfsHash
-          ? proposals[i].eventData.ipfsHash
-          : proposals[i].eventData.description
+      let title = await getProposalTitle( 
+        daoHandler.decoder['address'],
+        proposals[i].eventData.ipfsHash ? proposals[i].eventData.ipfsHash : proposals[i].eventData.description
       );
       let proposalUrl = daoHandler.decoder['proposalUrl'] + proposals[i].eventData.id;
       let proposalOnChainId = Number(proposals[i].eventData.id).toString();

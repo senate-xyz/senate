@@ -107,6 +107,15 @@ model VoteOption {
     @@unique([voteProposalId, option])
 }
 
+model UserLatestVoteBlock {
+    id String @id @default(cuid())
+    userId String
+    daoHandlerId String
+    latestVoteBlock Int
+
+    @@unique([userId, daoHandlerId])
+}
+
 model Subscription {
     id String @id @default(cuid())
 

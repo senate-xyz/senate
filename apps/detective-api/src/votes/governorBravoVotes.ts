@@ -21,7 +21,17 @@ export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: Use
     let votes;
 
     try {
-      votes = await getVotes(daoHandler, user);
+      let userLatestVoteBlock = await prisma.userLatestVoteBlock.findFirst({
+        where: {
+          userId: user.id,
+          daoHandlerId: daoHandler.id
+        },
+      });
+    
+      let latestVoteBlock = userLatestVoteBlock ? Number(userLatestVoteBlock.latestVoteBlock) : 0;
+      let currentBlock = await provider.getBlockNumber();
+
+      votes = await getVotes(daoHandler, user, latestVoteBlock);
       if (!votes) return;
     
       for (const vote of votes) {
@@ -72,6 +82,23 @@ export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: Use
           });
       }
 
+      await prisma.userLatestVoteBlock.upsert({
+        where: {
+          userId_daoHandlerId: {
+            userId: user.id,
+            daoHandlerId: daoHandler.id,
+          }
+        },
+        update: {
+          latestVoteBlock: currentBlock
+        },
+        create: {
+          userId: user.id,
+          daoHandlerId: daoHandler.id,
+          latestVoteBlock: currentBlock
+        }
+      })
+
     } catch (err) {
       logger.error("Error while updating governor bravo votes", err);
       throw new InternalServerErrorException();
@@ -80,7 +107,7 @@ export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: Use
     logger.log(`Updated ${votes.length} Governor Bravo votes for ${daoName}`);
 }
 
-const getVotes = async (daoHandler: DAOHandler, user: User): Promise<Vote[]> => {
+const getVotes = async (daoHandler: DAOHandler, user: User, latestVoteBlock: number): Promise<Vote[]> => {
   const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi']);
 
   if (daoHandler.type !== DAOHandlerType.BRAVO1 && daoHandler.type !== DAOHandlerType.BRAVO2)
@@ -90,7 +117,7 @@ const getVotes = async (daoHandler: DAOHandler, user: User): Promise<Vote[]> => 
   switch (daoHandler.type) {
     case DAOHandlerType.BRAVO1:
       logs = await provider.getLogs({
-        fromBlock: 0/*daoHandler.decoder["latestVoteBlock"]*/,
+        fromBlock: latestVoteBlock,
         address: daoHandler.decoder['address'],
         topics: [
           govBravoIface.getEventTopic("VoteEmitted"),
