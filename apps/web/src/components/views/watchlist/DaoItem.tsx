@@ -106,8 +106,9 @@ export const DaoItem = (props: {
                         switch (handler.type) {
                             case 'BRAVO1':
                             case 'BRAVO2':
-                            case 'MAKER_POLL':
-                            case 'MAKER_PROPOSAL':
+                            case 'MAKER_POLL_CREATE':
+                            case 'MAKER_POLL_VOTE':
+                            case 'MAKER_EXECUTIVE':
                                 return (
                                     <Image
                                         key={index}

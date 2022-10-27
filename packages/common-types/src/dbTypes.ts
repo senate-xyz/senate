@@ -1,4 +1,5 @@
 import {
+    Prisma,
     ProposalType as ProposalTypePrisma,
     DAOHandlerType as DAOHandlerTypePrisma,
     Subscription as SubscriptionModelPrisma,
