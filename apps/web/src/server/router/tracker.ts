@@ -22,28 +22,14 @@ export const trackerRouter = createRouter().query('track', {
 
         if (user.id == '0') return
 
-        const subscriptions = await prisma.subscription.findMany({
-            where: { userId: user.id },
-            select: {
-                daoId: true,
-            },
-        })
-
-        if (!subscriptions.length) return
+        console.log(`Tracker for ${user.id}`)
 
         const userProposalsVoted = await prisma.proposal.findMany({
             where: {
                 AND: {
-                    daoId: {
-                        in: subscriptions.map((dao) => dao.daoId),
-                    },
-                    data: {
-                        path: '$.timeStart',
-                        lt: Number(new Date()),
-                    },
                     votes: {
-                        every: {
-                            userId: user.id,
+                        some: {
+                            user: user,
                         },
                     },
                 },
@@ -52,7 +38,7 @@ export const trackerRouter = createRouter().query('track', {
                 dao: true,
                 votes: {
                     where: {
-                        userId: user.id,
+                        user: user,
                     },
                 },
             },
