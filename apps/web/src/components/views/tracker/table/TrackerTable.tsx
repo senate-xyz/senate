@@ -6,7 +6,7 @@ import { PrismaJsonObject, TrackerProposalType } from '@senate/common-types'
 
 dayjs.extend(relativeTime)
 
-const tableHeader = ['Proposal', 'Description', 'Time Ag', 'Voted']
+const tableHeader = ['Proposal', 'Time Ag', 'Voted']
 
 export const TrackerThead = () => (
     <thead className="text-xs uppercase">
@@ -54,9 +54,6 @@ export const TrackerTable = (props: { votes; selectedDao }) => {
                                                     <p>{proposal.name}</p>
                                                 </a>
                                             </div>
-                                        </td>
-                                        <td className="py-4 px-6">
-                                            <p>{proposal.description}</p>
                                         </td>
                                         <td className="py-4 px-6">
                                             {dayjs(
