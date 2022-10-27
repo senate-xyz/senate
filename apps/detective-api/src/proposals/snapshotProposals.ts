@@ -53,8 +53,7 @@ export const updateSnapshotProposals = async (daoName: string, daoHandler : DAOH
       proposals.length >
       (await prisma.proposal.count({ where: { daoId: daoHandler.daoId } }))
     ) {
-
-      console.log("Ia taticule");
+      
       await prisma
         .$transaction(
           proposals.map((proposal: any) =>
