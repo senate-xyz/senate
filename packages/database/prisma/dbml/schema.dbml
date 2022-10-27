@@ -3,7 +3,7 @@
 //// ------------------------------------------------------
 
 Table User {
-  id String [pk, unique]
+  id String [pk]
   address String [unique, not null]
   proxies UserProxy [not null]
   subscriptions Subscription [not null]
@@ -11,14 +11,14 @@ Table User {
 }
 
 Table UserProxy {
-  id String [pk, unique]
+  id String [pk]
   address String [not null]
   user User [not null]
   userId String [not null]
 }
 
 Table DAO {
-  id String [pk, unique]
+  id String [pk]
   name String [unique, not null]
   picture String [not null]
   handlers DAOHandler [not null]
@@ -28,36 +28,36 @@ Table DAO {
 }
 
 Table DAOHandler {
-  id String [unique, not null]
+  id String [pk]
   type DAOHandlerType [not null]
   decoder Json [not null]
   dao DAO [not null]
   daoId String [not null]
 
   indexes {
-    (daoId, type) [pk]
+    (daoId, type) [unique]
   }
 }
 
 Table Proposal {
-  id String [unique, not null]
+  id String [pk]
   externalId String [unique, not null]
   name String [not null]
-  description String [not null]
   dao DAO [not null]
   daoId String [not null]
   daoHandlerId String [not null]
   proposalType ProposalType [not null]
   votes Vote [not null]
   data Json [not null]
+  url String [not null]
 
   indexes {
-    (externalId, daoId) [pk]
+    (externalId, daoId) [unique]
   }
 }
 
 Table Vote {
-  id String [unique, not null]
+  id String [pk]
   options VoteOption [not null]
   user User [not null]
   userId String [not null]
@@ -68,12 +68,12 @@ Table Vote {
   daoHandlerId String [not null]
 
   indexes {
-    (userId, daoId, proposalId) [pk]
+    (userId, daoId, proposalId) [unique]
   }
 }
 
 Table VoteOption {
-  id String [unique, not null]
+  id String [pk]
   option String [not null]
   optionName String [not null]
   vote Vote [not null]
@@ -82,34 +82,45 @@ Table VoteOption {
   voteProposalId String [not null]
 
   indexes {
-    (voteProposalId, option) [pk]
+    (voteProposalId, option) [unique]
+  }
+}
+
+Table UserLatestVoteBlock {
+  id String [pk]
+  userId String [not null]
+  daoHandlerId String [not null]
+  latestVoteBlock Int [not null]
+
+  indexes {
+    (userId, daoHandlerId) [unique]
   }
 }
 
 Table Subscription {
-  id String [unique, not null]
+  id String [pk]
   user User [not null]
   dao DAO [not null]
   userId String [not null]
   daoId String [not null]
 
   indexes {
-    (userId, daoId) [pk]
+    (userId, daoId) [unique]
   }
 }
 
 Enum DAOHandlerType {
   BRAVO1
   BRAVO2
-  MAKER_PROPOSAL
-  MAKER_POLL
+  MAKER_EXECUTIVE
+  MAKER_POLL_CREATE
+  MAKER_POLL_VOTE
   SNAPSHOT
 }
 
 Enum ProposalType {
-  BRAVO1
-  BRAVO2
-  MAKER_PROPOSAL
+  BRAVO
+  MAKER_EXECUTIVE
   MAKER_POLL
   SNAPSHOT
 }
