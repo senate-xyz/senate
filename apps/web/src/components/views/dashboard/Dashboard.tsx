@@ -5,14 +5,36 @@ import { DashboardTable } from './table/DashboardTable'
 
 export const DashboardHeader = () => <p>Dashboard</p>
 
-export const DashboardView = (props: { proposals }) => (
-    <div className="w-full">
-        <p>Dashboard</p>
+export const DashboardView = (props: { proposals }) => {
+    const refreshAllProposals = trpc.useMutation('public.refreshAllProposals')
+    const refreshAllVotes = trpc.useMutation('public.refreshAllVotes')
+
+    return (
         <div className="w-full">
-            <DashboardTable proposals={props.proposals} />
+            <p>Dashboard</p>
+            <div className="w-full">
+                <button
+                    className="w-auto self-end m-2 bg-red-200 p-1 rounded-sm"
+                    onClick={() => {
+                        refreshAllProposals.mutate()
+                    }}
+                >
+                    Refresh all proposals
+                </button>
+
+                <button
+                    className="w-auto self-end m-2 bg-red-200 p-1 rounded-sm"
+                    onClick={() => {
+                        refreshAllVotes.mutate()
+                    }}
+                >
+                    Refresh all votes
+                </button>
+                <DashboardTable proposals={props.proposals} />
+            </div>
         </div>
-    </div>
-)
+    )
+}
 
 export const Dashboard = () => {
     const { data: session } = useSession()

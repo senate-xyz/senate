@@ -9,7 +9,6 @@ const Watchlist = () => {
     const { data: session } = useSession()
 
     const DAOs = trpc.useQuery([session ? 'user.daos' : 'public.daos'])
-    const refreshAllProposals = trpc.useMutation('public.refreshAllProposals')
 
     const subscribe = trpc.useMutation('user.subscribe')
     const unsubscribe = trpc.useMutation('user.unsubscribe')
@@ -46,14 +45,6 @@ const Watchlist = () => {
         <div className="w-full flex flex-col">
             <p>Watchlist</p>
 
-            <button
-                className="w-auto self-end m-2 bg-red-200 p-1 rounded-sm"
-                onClick={() => {
-                    refreshAllProposals.mutate()
-                }}
-            >
-                Refresh proposals
-            </button>
             <div className="w-full flex">
                 <div className="grid grid-cols-4 gap-4">
                     {DAOs.data.map((dao: DAOType, index: number) => {
