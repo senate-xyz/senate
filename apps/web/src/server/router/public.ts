@@ -61,9 +61,26 @@ export const publicRouter = createRouter()
                 await fetch(
                     `${process.env.DETECTIVE_URL}/updateProposals?daoId=${dao.id}`,
                     {
-                        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                        method: 'POST',
                     }
                 )
+            })
+        },
+    })
+    .mutation('refreshAllVotes', {
+        async resolve() {
+            const daos = await prisma.dAO.findMany({})
+            const users = await prisma.user.findMany({})
+
+            daos.forEach(async (dao) => {
+                users.forEach(async (user) => {
+                    await fetch(
+                        `${process.env.DETECTIVE_URL}/updateVotes?daoId=${dao.id}&userId=${user.id}`,
+                        {
+                            method: 'POST',
+                        }
+                    )
+                })
             })
         },
     })
