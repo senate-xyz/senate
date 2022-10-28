@@ -50,3 +50,20 @@ export const publicRouter = createRouter()
             return daosList
         },
     })
+    .mutation('refreshAllProposals', {
+        async resolve() {
+            const daos = await prisma.dAO.findMany({})
+
+            daos.forEach(async (dao) => {
+                console.log(
+                    `${process.env.DETECTIVE_URL}/updateProposals?daoId=${dao.id}`
+                )
+                await fetch(
+                    `${process.env.DETECTIVE_URL}/updateProposals?daoId=${dao.id}`,
+                    {
+                        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                    }
+                )
+            })
+        },
+    })

@@ -9,8 +9,11 @@ const Watchlist = () => {
     const { data: session } = useSession()
 
     const DAOs = trpc.useQuery([session ? 'user.daos' : 'public.daos'])
+    const refreshAllProposals = trpc.useMutation('public.refreshAllProposals')
+
     const subscribe = trpc.useMutation('user.subscribe')
     const unsubscribe = trpc.useMutation('user.unsubscribe')
+
     const utils = trpc.useContext()
 
     const handleSubscribe = async (daoId: string) => {
@@ -40,9 +43,18 @@ const Watchlist = () => {
     if (!DAOs.data) return <div>Loading</div>
 
     return (
-        <div className="w-full">
+        <div className="w-full flex flex-col">
             <p>Watchlist</p>
-            <div className="w-full">
+
+            <button
+                className="w-auto self-end m-2 bg-red-200 p-1 rounded-sm"
+                onClick={() => {
+                    refreshAllProposals.mutate()
+                }}
+            >
+                Refresh proposals
+            </button>
+            <div className="w-full flex">
                 <div className="grid grid-cols-4 gap-4">
                     {DAOs.data.map((dao: DAOType, index: number) => {
                         return (
