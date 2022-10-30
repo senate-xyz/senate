@@ -28,7 +28,7 @@ const queryUserProxyAddreses = {
 
 const mutationUserAddProxy = {
     input: z.object({
-        address: z.string(),
+        address: z.string().startsWith('0x').length(42),
     }),
     async resolve({ ctx, input }) {
         const user = await prisma.user

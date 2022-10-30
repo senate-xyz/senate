@@ -8,6 +8,7 @@ const ProxyAccounts = () => {
     const removeProxy = trpc.useMutation('user.removeProxy')
     const utils = trpc.useContext()
 
+    const [error, setError] = useState('')
     if (!proxyAddresses.data) return <div>Loading</div>
 
     return (
@@ -24,6 +25,9 @@ const ProxyAccounts = () => {
                                 removeProxy.mutate(
                                     { address: proxyAddress.address },
                                     {
+                                        onError(e) {
+                                            setError(e.message)
+                                        },
                                         onSuccess() {
                                             utils.invalidateQueries()
                                         },
@@ -59,6 +63,9 @@ const ProxyAccounts = () => {
                         addProxy.mutate(
                             { address: newProxyAddress },
                             {
+                                onError(e) {
+                                    setError(e.message)
+                                },
                                 onSuccess() {
                                     utils.invalidateQueries()
                                 },
@@ -70,6 +77,9 @@ const ProxyAccounts = () => {
                 >
                     Submit
                 </button>
+            </div>
+            <div>
+                <pre>{error}</pre>
             </div>
         </div>
     )
