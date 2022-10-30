@@ -8,6 +8,7 @@ export const DashboardHeader = () => <p>Dashboard</p>
 export const DashboardView = (props: { proposals }) => {
     const refreshAllProposals = trpc.useMutation('public.refreshAllProposals')
     const refreshAllVotes = trpc.useMutation('public.refreshAllVotes')
+    const refreshAllProxyVotes = trpc.useMutation('public.refreshAllProxyVotes')
 
     return (
         <div className="w-full">
@@ -29,6 +30,15 @@ export const DashboardView = (props: { proposals }) => {
                     }}
                 >
                     Refresh all votes
+                </button>
+
+                <button
+                    className="w-auto self-end m-2 bg-red-200 p-1 rounded-sm"
+                    onClick={() => {
+                        refreshAllProxyVotes.mutate()
+                    }}
+                >
+                    Refresh all proxy votes
                 </button>
                 <DashboardTable proposals={props.proposals} />
             </div>
