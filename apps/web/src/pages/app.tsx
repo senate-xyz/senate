@@ -42,7 +42,7 @@ const Home: NextPage = () => {
                     {page == ViewsEnum.Dashboard && <DynamicDashboard />}
                     {page == ViewsEnum.Watchlist && <DynamicWatchlist />}
                     {page == ViewsEnum.Tracker && (
-                        <DynamicTracker shareButton={true} />
+                        <DynamicTracker shareButton={true} address={''} />
                     )}
                     {page == ViewsEnum.Settings && <DynamicSettings />}
                 </Suspense>

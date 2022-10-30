@@ -3,9 +3,10 @@ import { trpc } from '../../../../utils/trpc'
 
 const ProxyAccounts = () => {
     const [newProxyAddress, setNewProxyAddress] = useState('')
-    const proxyAddresses = trpc.useQuery(['user.proxyAddresses'])
-    const addProxy = trpc.useMutation('user.addProxy')
-    const removeProxy = trpc.useMutation('user.removeProxy')
+
+    const proxyAddresses = trpc.user.proxyAddreses.useQuery()
+    const addProxy = trpc.user.addProxy.useMutation()
+    const removeProxy = trpc.user.userRemoveProxy.useMutation()
     const utils = trpc.useContext()
 
     const [error, setError] = useState('')
@@ -29,7 +30,8 @@ const ProxyAccounts = () => {
                                             setError(e.message)
                                         },
                                         onSuccess() {
-                                            utils.invalidateQueries()
+                                            utils.invalidate()
+                                            setError('')
                                         },
                                     }
                                 )
@@ -67,7 +69,8 @@ const ProxyAccounts = () => {
                                     setError(e.message)
                                 },
                                 onSuccess() {
-                                    utils.invalidateQueries()
+                                    utils.invalidate()
+                                    setError('')
                                 },
                             }
                         )

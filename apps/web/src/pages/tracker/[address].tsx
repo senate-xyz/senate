@@ -3,10 +3,11 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { Tracker } from '../../components/views/tracker/Tracker'
 
-const Home: NextPage = () => {
+const TrackerPage: NextPage = () => {
     const router = useRouter()
     const { address } = router.query
 
+    if (!address) return <div>Loading</div>
     return (
         <div>
             <Tracker address={String(address)} shareButton={false} />
@@ -14,4 +15,4 @@ const Home: NextPage = () => {
     )
 }
 
-export default Home
+export default TrackerPage

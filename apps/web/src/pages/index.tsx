@@ -8,8 +8,8 @@ const Header = () => {
                 <a href="https://dev-senate-web.onrender.com/">
                     <div className="flex items-center justify-start">
                         <Image
-                            width="50px"
-                            height="50px"
+                            width={50}
+                            height={50}
                             src="/logo_dark.svg"
                             alt="very cool logo"
                         />

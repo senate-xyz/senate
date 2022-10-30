@@ -1,3 +1,4 @@
+import { TRPCContext } from '@trpc/react-query/shared'
 import { useSession } from 'next-auth/react'
 
 import { trpc } from '../../../utils/trpc'
@@ -5,10 +6,18 @@ import { DashboardTable } from './table/DashboardTable'
 
 export const DashboardHeader = () => <p>Dashboard</p>
 
-export const DashboardView = (props: { proposals }) => {
-    const refreshAllProposals = trpc.useMutation('public.refreshAllProposals')
-    const refreshAllVotes = trpc.useMutation('public.refreshAllVotes')
-    const refreshAllProxyVotes = trpc.useMutation('public.refreshAllProxyVotes')
+export const DashboardView = () => {
+    const refreshAllProposals = trpc.public.refreshAllProposals.useMutation()
+    const refreshAllVotes = trpc.public.refreshAllVotes.useMutation()
+    const refreshAllProxyVotes = trpc.public.refreshAllProxyVotes.useMutation()
+
+    const { data: session } = useSession()
+
+    const proposals = session
+        ? trpc.user.userProposals.useQuery()
+        : trpc.public.proposals.useQuery()
+
+    if (!proposals.data) return <div>Loading</div>
 
     return (
         <div className="w-full">
@@ -40,22 +49,15 @@ export const DashboardView = (props: { proposals }) => {
                 >
                     Refresh all proxy votes
                 </button>
-                <DashboardTable proposals={props.proposals} />
+
+                <DashboardTable proposals={proposals.data} />
             </div>
         </div>
     )
 }
 
 export const Dashboard = () => {
-    const { data: session } = useSession()
-
-    const proposals = trpc.useQuery([
-        session ? 'user.proposals' : 'public.proposals',
-    ])
-
-    if (!proposals.data) return <div>Loading</div>
-
-    return <DashboardView proposals={proposals} />
+    return <DashboardView />
 }
 
 export default Dashboard

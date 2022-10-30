@@ -1,10 +1,18 @@
+import { inferProcedureOutput } from '@trpc/server'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import Image from 'next/image'
+import { AppRouter } from '../../../../server/trpc/router/_app'
 
 dayjs.extend(relativeTime)
 
-export const DashboardRow = (props: { proposal }) => {
+export const DashboardRow = (props: {
+    proposal:
+        | inferProcedureOutput<AppRouter['user']['userProposals']>[0]
+        | inferProcedureOutput<AppRouter['public']['proposals']>[0]
+}) => {
+    if (!props.proposal.data) return <div>Invalid</div>
+
     return (
         <tr className="border-b">
             <td className="py-4 px-6">
