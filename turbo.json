@@ -12,7 +12,8 @@
         "NEXTAUTH_URL",
         "VERCEL_URL",
         "PROVIDER_URL",
-        "PORT"
+        "PORT",
+        "DETECTIVE_URL"
       ]
     },
     "start": {},

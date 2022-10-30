@@ -1,6 +1,8 @@
+import { inferProcedureOutput } from '@trpc/server'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { useState } from 'react'
+import { AppRouter } from '../../../server/trpc/router/_app'
 
 import { trpc } from '../../../utils/trpc'
 import { SharePopover } from './SharePopover'
@@ -17,25 +19,25 @@ export const TrackerTab = (props: {
     daoName: string
     daoPicture: string
     setSelectedDao: any
-}) => (
-    <button
-        className="m-4 flex rounded border border-gray-400 p-2"
-        onClick={() => {
-            props.setSelectedDao(props.daoName)
-        }}
-    >
-        <Image
-            className="absolute bottom-0 left-0"
-            src={props.daoPicture}
-            width="25"
-            height="25"
-            alt="dao image"
-        />
+}) => {
+    return (
+        <button
+            className="m-4 flex rounded border border-gray-400 p-2"
+            onClick={() => {
+                props.setSelectedDao(props.daoName)
+            }}
+        >
+            <Image
+                src={props.daoPicture}
+                width={25}
+                height={25}
+                alt="dao image"
+            />
 
-        <p>{props.daoName}</p>
-    </button>
-)
-
+            <p>{props.daoName}</p>
+        </button>
+    )
+}
 export const TrackerTabList = (props: { daosTabs; setSelectedDao }) => (
     <div className="flex rounded border border-gray-300">
         {props.daosTabs?.map((dao) => {
@@ -52,7 +54,7 @@ export const TrackerTabList = (props: { daosTabs; setSelectedDao }) => (
 )
 
 export const TrackerView = (props: {
-    votes
+    votes: inferProcedureOutput<AppRouter['tracker']['track']>
     daosTabs
     shareButton
     setSelectedDao
@@ -68,20 +70,16 @@ export const TrackerView = (props: {
     </div>
 )
 
-export const Tracker = (props: { address?: string; shareButton: boolean }) => {
+export const Tracker = (props: { address: string; shareButton: boolean }) => {
     const [selectedDao, setSelectedDao] = useState<string>()
 
     const { data: session } = useSession()
 
-    const votes = trpc.useQuery([
-        'tracker.track',
-        {
-            address: props.address
-                ? props.address
-                : session?.user?.id ??
-                  '0x000000000000000000000000000000000000dEaD',
-        },
-    ])
+    const votes = trpc.tracker.track.useQuery({
+        address: props.address
+            ? props.address
+            : session?.user?.id ?? '0x000000000000000000000000000000000000dEaD',
+    })
 
     const daosTabs = votes.data
         ?.map((vote: { dao }) => vote.dao)
@@ -98,7 +96,7 @@ export const Tracker = (props: { address?: string; shareButton: boolean }) => {
         <TrackerView
             shareButton={props.shareButton}
             daosTabs={daosTabs}
-            votes={votes}
+            votes={votes.data}
             selectedDao={selectedDao}
             setSelectedDao={setSelectedDao}
         />

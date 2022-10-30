@@ -4,14 +4,19 @@ import { useState } from 'react'
 import { FaBell, FaDiscord, FaSlack, FaTelegram } from 'react-icons/fa'
 
 import { DAOType } from '@senate/common-types'
+import { trpc } from '../../../utils/trpc'
+import { inferProcedureOutput } from '@trpc/server'
+import { AppRouter } from '../../../server/trpc/router/_app'
 
 export const DaoItem = (props: {
-    dao: DAOType
-    handleSubscribe
-    handleUnsubscribe
+    dao:
+        | inferProcedureOutput<AppRouter['user']['userDaos']>[0]
+        | inferProcedureOutput<AppRouter['public']['daos']>[0]
 }) => {
     const [showModal, setShowModal] = useState(false)
-    const { data: session } = useSession()
+
+    const subscribe = trpc.user.userSubscribe.useMutation()
+    const unsubscribe = trpc.user.userUnsubscribe.useMutation()
 
     const [subscribed, setSubscribed] = useState(
         props.dao.subscriptions.length > 0 ? true : false
@@ -49,10 +54,17 @@ export const DaoItem = (props: {
                                             className="mr-1 mb-1 rounded bg-red-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-red-600"
                                             type="button"
                                             onClick={() => {
-                                                props.handleUnsubscribe(
-                                                    props.dao.id
+                                                unsubscribe.mutate(
+                                                    {
+                                                        daoId: props.dao.id,
+                                                    },
+                                                    {
+                                                        onSuccess() {
+                                                            setSubscribed(false)
+                                                            setShowModal(false)
+                                                        },
+                                                    }
                                                 )
-                                                setShowModal(false)
                                             }}
                                         >
                                             Unsubscribe
@@ -62,10 +74,17 @@ export const DaoItem = (props: {
                                             className="mr-1 mb-1 rounded bg-emerald-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-emerald-600"
                                             type="button"
                                             onClick={() => {
-                                                props.handleSubscribe(
-                                                    props.dao.id
+                                                subscribe.mutate(
+                                                    {
+                                                        daoId: props.dao.id,
+                                                    },
+                                                    {
+                                                        onSuccess() {
+                                                            setSubscribed(true)
+                                                            setShowModal(false)
+                                                        },
+                                                    }
                                                 )
-                                                setShowModal(false)
                                             }}
                                         >
                                             Subscribe
