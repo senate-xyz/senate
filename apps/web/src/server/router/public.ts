@@ -84,3 +84,6 @@ export const publicRouter = createRouter()
             })
         },
     })
+    .mutation('refreshAllProxyVotes', {
+        async resolve() {},
+    })
