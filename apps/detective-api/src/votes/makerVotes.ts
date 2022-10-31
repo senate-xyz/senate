@@ -103,12 +103,7 @@ const getVotes = async (daoHandler: DAOHandler, voterAddress: string, latestVote
     "0xed08132900000000000000000000000000000000000000000000000000000000";
   const voteSingleActionTopic =
     "0xa69beaba00000000000000000000000000000000000000000000000000000000";
-  const voterAddressTopic = "0x" + "0".repeat(24) + voterAddress.substring(2);
-  console.log("\n");
-  console.log(voterAddressTopic, voterAddressTopic.length);
-  let tmp = hexZeroPad(voterAddress, 32)
-  console.log(tmp, tmp.length);
-  console.log("\n");
+  const voterAddressTopic = hexZeroPad(voterAddress, 32);
 
   const logs = await provider.getLogs({
     fromBlock: latestVoteBlock,
