@@ -19,7 +19,6 @@ model User {
     address       String         @unique
     proxies       UserProxy[]
     subscriptions Subscription[]
-    votes         Vote[]
 }
 
 model UserProxy {
@@ -83,15 +82,14 @@ model Proposal {
 model Vote {
     id           String       @id @default(cuid())
     options      VoteOption[]
-    user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId       String
+    voterAddress String
     proposal     Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
     proposalId   String
     dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
     daoId        String
     daoHandlerId String
 
-    @@unique ([userId, daoId, proposalId])
+    @@unique ([voterAddress, daoId, proposalId])
 }
 
 model VoteOption {
@@ -99,21 +97,21 @@ model VoteOption {
     option     String
     optionName String
 
-    vote           Vote   @relation(fields: [voteUserId, voteDaoId, voteProposalId], references: [userId, daoId, proposalId], onDelete: Cascade)
-    voteUserId     String
+    vote           Vote   @relation(fields: [voterAddress, voteDaoId, voteProposalId], references: [voterAddress, daoId, proposalId], onDelete: Cascade)
+    voterAddress     String
     voteDaoId      String
     voteProposalId String
 
     @@unique([voteProposalId, option])
 }
 
-model UserLatestVoteBlock {
+model VoterLatestVoteBlock {
     id String @id @default(cuid())
-    userId String
+    voterAddress String
     daoHandlerId String
     latestVoteBlock Int
 
-    @@unique([userId, daoHandlerId])
+    @@unique([voterAddress, daoHandlerId])
 }
 
 model Subscription {

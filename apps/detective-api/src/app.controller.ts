@@ -19,9 +19,9 @@ export class AppController {
   @Post('updateVotes')
   async updateVotes(
     @Query('daoId') daoId : string,
-    @Query('userId') userId : string,
+    @Query('voterAddress') voterAddress : string,
   ) {
-    await this.appService.updateVotes(daoId, userId);
+    await this.appService.updateVotes(daoId, voterAddress);
     return "OK"
   }
 }

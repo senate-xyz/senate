@@ -10,22 +10,22 @@ const provider = new ethers.providers.JsonRpcProvider({
 
 const logger = new Logger("MakerPollVotes");
 
-export const updateMakerPollsVotes = async (daoHandler: DAOHandler, user: User, daoName: string) => {
+export const updateMakerPollVotes = async (daoHandler: DAOHandler, voterAddress: string, daoName: string) => {
     logger.log("Updating Maker Poll votes");
     let votes;  
 
     try {
-      let userLatestVoteBlock = await prisma.userLatestVoteBlock.findFirst({
+      let voterLatestVoteBlock = await prisma.voterLatestVoteBlock.findFirst({
         where: {
-          userId: user.id,
+          voterAddress: voterAddress,
           daoHandlerId: daoHandler.id
         },
       });
     
-      let latestVoteBlock = userLatestVoteBlock ? Number(userLatestVoteBlock.latestVoteBlock) : 0;
+      let latestVoteBlock = voterLatestVoteBlock ? Number(voterLatestVoteBlock.latestVoteBlock) : 0;
       let currentBlock = await provider.getBlockNumber();
 
-      votes = await getVotes(daoHandler, user, latestVoteBlock);
+      votes = await getVotes(daoHandler, voterAddress, latestVoteBlock);
       if (!votes) return;
     
       for (const vote of votes) {
@@ -44,8 +44,8 @@ export const updateMakerPollsVotes = async (daoHandler: DAOHandler, user: User, 
 
           await prisma.vote.upsert({
               where: {
-                  userId_daoId_proposalId: {
-                    userId: user.id,
+                  voterAddress_daoId_proposalId: {
+                    voterAddress: voterAddress,
                     daoId: daoHandler.daoId,
                     proposalId: proposal.id
                   }
@@ -67,7 +67,7 @@ export const updateMakerPollsVotes = async (daoHandler: DAOHandler, user: User, 
                   }
                 },
                 create: {
-                  userId: user.id,
+                  voterAddress: voterAddress,
                   daoId: daoHandler.daoId,
                   proposalId: proposal.id,
                   daoHandlerId: daoHandler.id,
@@ -80,10 +80,10 @@ export const updateMakerPollsVotes = async (daoHandler: DAOHandler, user: User, 
                 },
           });
 
-          await prisma.userLatestVoteBlock.upsert({
+          await prisma.voterLatestVoteBlock.upsert({
             where: {
-              userId_daoHandlerId: {
-                userId: user.id,
+              voterAddress_daoHandlerId: {
+                voterAddress: voterAddress,
                 daoHandlerId: daoHandler.id,
               }
             },
@@ -91,7 +91,7 @@ export const updateMakerPollsVotes = async (daoHandler: DAOHandler, user: User, 
               latestVoteBlock: currentBlock
             },
             create: {
-              userId: user.id,
+              voterAddress: voterAddress,
               daoHandlerId: daoHandler.id,
               latestVoteBlock: currentBlock
             }
@@ -106,13 +106,13 @@ export const updateMakerPollsVotes = async (daoHandler: DAOHandler, user: User, 
     console.log(`updated ${votes.length} maker poll votes`);
 }
 
-const getVotes = async (daoHandler: DAOHandler, user: User, latestVoteBlock: number): Promise<any> => {
+const getVotes = async (daoHandler: DAOHandler, voterAddress: string, latestVoteBlock: number): Promise<any> => {
   const iface = new ethers.utils.Interface(JSON.parse(daoHandler.decoder["abi"]));
 
   const logs = await provider.getLogs({
     fromBlock: latestVoteBlock,
     address: daoHandler.decoder['address'],
-    topics: [iface.getEventTopic("Voted"), hexZeroPad(user.address, 32)],
+    topics: [iface.getEventTopic("Voted"), hexZeroPad(voterAddress, 32)],
   });
 
   const votes = logs.map((log) => {

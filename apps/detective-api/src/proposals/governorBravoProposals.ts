@@ -55,6 +55,8 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
       let decoder = daoHandler.decoder;
       decoder['latestProposalBlock'] = proposals[i].txBlock + 1;
 
+      logger.log(`Updating proposal ${proposalOnChainId}: ${title} with url ${proposalUrl}`);
+
       await prisma.dAOHandler.update({
         where: {
           id: daoHandler.id,
