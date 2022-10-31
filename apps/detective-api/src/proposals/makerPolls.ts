@@ -45,11 +45,12 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
         }))
 
         for (let i = 0; i < proposals.length; i++) {
-            const proposalCreatedTimestamp = Number(
-                proposals[i].eventData.blockCreated
-            )
+            const proposalCreatedTimestamp =
+                Number(proposals[i].eventData.blockCreated) * 100
 
-            const votingStartsTimestamp = Number(proposals[i].eventData.startDate)
+            const votingStartsTimestamp = Number(
+                proposals[i].eventData.startDate
+            )
             const votingEndsTimestamp = Number(proposals[i].eventData.endDate)
             const title = await getProposalTitle(proposals[i].eventData.url)
             const proposalUrl =
@@ -87,9 +88,9 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
                     daoHandlerId: mkrPollVoteHandler.id,
                     proposalType: ProposalType.MAKER_POLL,
                     data: {
-                        timeEnd: votingEndsTimestamp * 1000,
-                        timeStart: votingStartsTimestamp * 1000,
-                        timeCreated: proposalCreatedTimestamp * 1000,
+                        timeEnd: votingEndsTimestamp,
+                        timeStart: votingStartsTimestamp,
+                        timeCreated: proposalCreatedTimestamp,
                     },
                     url: proposalUrl,
                 },

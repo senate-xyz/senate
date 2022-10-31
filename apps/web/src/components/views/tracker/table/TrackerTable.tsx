@@ -8,7 +8,7 @@ import { AppRouter } from '../../../../server/trpc/router/_app'
 
 dayjs.extend(relativeTime)
 
-const tableHeader = ['Proposal', 'Time Ag', 'Voted']
+const tableHeader = ['Proposal', 'Time Ago', 'Voted']
 
 export const TrackerThead = () => (
     <thead className="text-xs uppercase">
@@ -38,7 +38,7 @@ export const TrackerTable = (props: {
                     {props.votes
                         .filter((vote) => vote.dao.name === props.selectedDao)
                         .map((proposal: TrackerProposalType) => {
-                            return (
+                            return proposal.data ? (
                                 <tr key={proposal.id} className="border-b">
                                     <td className="py-4 px-6">
                                         <div className="flex">
@@ -50,9 +50,9 @@ export const TrackerTable = (props: {
                                             />
 
                                             <a
-                                                href={(
-                                                    proposal.data as PrismaJsonObject
-                                                )['url']?.toString()}
+                                                href={proposal.data[
+                                                    'url'
+                                                ]?.toString()}
                                             >
                                                 <p>{proposal.name}</p>
                                             </a>
@@ -60,13 +60,19 @@ export const TrackerTable = (props: {
                                     </td>
                                     <td className="py-4 px-6">
                                         {dayjs(
-                                            (proposal.data as PrismaJsonObject)[
-                                                'timeEnd'
-                                            ]?.toString()
+                                            proposal.data['timeEnd'] * 1000
                                         ).fromNow()}
                                     </td>
-                                    <td className="py-4 px-6">idk</td>
+                                    <td className="py-4 px-6">
+                                        {proposal.votes.map((vote) => {
+                                            return vote['options'][0][
+                                                'optionName'
+                                            ]
+                                        })}
+                                    </td>
                                 </tr>
+                            ) : (
+                                <div>Invalid</div>
                             )
                         })}
                 </tbody>

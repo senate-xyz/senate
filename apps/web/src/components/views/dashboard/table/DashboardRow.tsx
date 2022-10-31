@@ -2,6 +2,7 @@ import { inferProcedureOutput } from '@trpc/server'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import Image from 'next/image'
+import Link from 'next/link'
 import { AppRouter } from '../../../../server/trpc/router/_app'
 
 dayjs.extend(relativeTime)
@@ -39,14 +40,12 @@ export const DashboardRow = (props: {
             </td>
             <td className="py-4 px-6">
                 <div>
-                    <a href={props.proposal.data['url']}>
-                        <p>{props.proposal.name}</p>
-                    </a>
+                    <Link href={props.proposal.url}>{props.proposal.name}</Link>
                 </div>
             </td>
 
             <td className="py-4 px-6">
-                {dayjs(props.proposal.data['timeEnd']).fromNow(true)}
+                {dayjs(props.proposal.data['timeEnd'] * 1000).fromNow(false)}
             </td>
 
             <td className="py-4 px-6">idk</td>

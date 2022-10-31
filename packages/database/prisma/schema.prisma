@@ -74,10 +74,10 @@ model Proposal {
     daoHandlerId String
     proposalType ProposalType
     votes        Vote[]
-    data         Json // depends on daoHandlerId.type
+    data         Json         @db.Json // depends on daoHandlerId.type
     url          String
 
-    @@unique ([externalId, daoId])
+    @@unique([externalId, daoId])
 }
 
 model Vote {
@@ -91,7 +91,7 @@ model Vote {
     daoId        String
     daoHandlerId String
 
-    @@unique ([userId, daoId, proposalId])
+    @@unique([userId, daoId, proposalId])
 }
 
 model VoteOption {
@@ -108,9 +108,9 @@ model VoteOption {
 }
 
 model UserLatestVoteBlock {
-    id String @id @default(cuid())
-    userId String
-    daoHandlerId String
+    id              String @id @default(cuid())
+    userId          String
+    daoHandlerId    String
     latestVoteBlock Int
 
     @@unique([userId, daoHandlerId])
