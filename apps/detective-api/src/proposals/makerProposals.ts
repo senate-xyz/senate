@@ -35,7 +35,7 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
 
     const spellAddressesSet = new Set<string>();
     for (let i = 0; i < logs.length; i++) {
-      console.log(`[EXEC PROPOSALS] maker event ${i} out of ${logs.length}`);
+      console.log(`maker event ${i} out of ${logs.length}`);
 
       let log = logs[i];
       let eventArgs = iface.decodeEventLog("LogNote", log.data);
@@ -58,18 +58,18 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
     spellAddresses = Array.from(spellAddressesSet);
 
     for (let i = 0; i < spellAddresses.length; i++) {
-      console.log(`inserted ${spellAddresses[i]} spell address`);
+      logger.log(`inserting spell address ${spellAddresses[i]}`);
 
       const response = await axios.get(
         "https://vote.makerdao.com/api/executive/" + spellAddresses[i]
       );
 
       if (!response.data) {
-        console.log(`Maker API did not return any data for spell ${spellAddresses[i]}`)
+        logger.warn(`Maker API did not return any data for spell ${spellAddresses[i]}`)
         continue;
       }
 
-      await prisma.proposal.upsert({
+      let proposal = await prisma.proposal.upsert({
         where: {
             externalId_daoId: {
                 daoId: daoHandler.daoId,
@@ -91,6 +91,8 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
           url: daoHandler.decoder['proposalUrl'] + spellAddresses[i],
         },
       });
+
+      logger.log("inserted executive proposal with id " + proposal.id);
     }
 
     let decoder = daoHandler.decoder;

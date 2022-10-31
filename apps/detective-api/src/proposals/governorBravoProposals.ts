@@ -34,11 +34,6 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
       }).args,
     }));
 
-  //   const latestBlockMined = await provider.getBlockNumber();
-  //   const ongoingProposals = proposals.filter(
-  //     (proposal) => proposal.eventData.endBlock > latestBlockMined
-  //   );
-
     for (let i = 0; i < proposals.length; i++) {
       let proposalCreatedTimestamp = (
         await provider.getBlock(proposals[i].txBlock)
