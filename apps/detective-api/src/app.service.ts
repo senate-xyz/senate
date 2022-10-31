@@ -6,7 +6,7 @@ import { updateMakerPolls } from "./proposals/makerPolls";
 import { updateMakerProposals } from "./proposals/makerProposals";
 import { updateSnapshotProposals } from "./proposals/snapshotProposals";
 import { updateGovernorBravoVotes } from "./votes/governorBravoVotes";
-import { updateMakerPollsVotes } from "./votes/makerPollsVotes";
+import { updateMakerPollVotes } from "./votes/makerPollVotes";
 import { updateMakerVotes } from "./votes/makerVotes";
 import { updateSnapshotVotes } from "./votes/snapshotVotes";
 
@@ -68,9 +68,9 @@ export class AppService {
       
   }
 
-  async updateVotes(daoId : string, userId: string) {
+  async updateVotes(daoId : string, voterAddress: string) {
     
-    let dao: Dao, user: User;
+    let dao: Dao;
 
     try {
       dao = await prisma.dAO.findFirst({
@@ -82,12 +82,6 @@ export class AppService {
           subscriptions: true,
         }
       });
-  
-      user = await prisma.user.findFirst({
-        where: {
-          id: userId
-        }
-      }); 
 
     } catch (err) {
       console.log(err)
@@ -98,30 +92,27 @@ export class AppService {
       throw new NotFoundException("DAO not found");
     }
 
-    if (!user) {
-      throw new NotFoundException("User not found");
-    }
 
-    this.logger.log(`Updating votes for user ${user.address} in ${dao.name}`)
+    this.logger.log(`Updating votes for user ${voterAddress} in ${dao.name}`)
 
     for (let handler of dao.handlers) {
-      this.logger.log(`Fetching votes for ${dao.name}, user ${user.address}, handler: ${handler.type}`)
+      this.logger.log(`Fetching votes for ${dao.name}, user ${voterAddress}, handler: ${handler.type}`)
       
       switch(handler.type) {
         case DAOHandlerType.SNAPSHOT: 
-          await updateSnapshotVotes(handler, user, dao.name);
+          await updateSnapshotVotes(handler, voterAddress, dao.name);
           break;
         
         case DAOHandlerType.BRAVO1 || DAOHandlerType.BRAVO2:
-          await updateGovernorBravoVotes(handler, user, dao.name);
+          await updateGovernorBravoVotes(handler, voterAddress, dao.name);
           break;
 
         case DAOHandlerType.MAKER_EXECUTIVE:
-          await updateMakerVotes(handler, user, dao.name);
+          await updateMakerVotes(handler, voterAddress, dao.name);
           break;
 
         case DAOHandlerType.MAKER_POLL_VOTE:
-          await updateMakerPollsVotes(handler, user, dao.name);
+          await updateMakerPollVotes(handler, voterAddress, dao.name);
           break;
 
         default:

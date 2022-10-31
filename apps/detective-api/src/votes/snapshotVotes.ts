@@ -5,7 +5,7 @@ import { Logger, InternalServerErrorException } from "@nestjs/common";
 
 const logger = new Logger("MakerExecutiveProposals");
 
-export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, daoName: string) => {
+export const updateSnapshotVotes = async (daoHandler: DAOHandler, voterAddress: string, daoName: string) => {
   logger.log(`Updating snapshot votes for ${daoName}`)
   let votes;
 
@@ -15,7 +15,7 @@ export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, da
       method: "POST",
       data: JSON.stringify({
         query: `{
-            votes(first: 1000, where: {voter: "${user?.address}", space:"${daoHandler.decoder['space']}"}) {
+            votes(first: 1000, where: {voter: "${voterAddress}", space:"${daoHandler.decoder['space']}"}) {
               id
               voter
               choice
@@ -64,13 +64,13 @@ export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, da
           continue;
         }
 
-        let votedOptions : VoteOption[] = getVotedOptions(vote.choice, vote.proposal.choices, user.id, daoHandler.daoId, proposal.id);
+        let votedOptions : VoteOption[] = getVotedOptions(vote.choice, vote.proposal.choices, voterAddress, daoHandler.daoId, proposal.id);
 
         for (const votedOption of votedOptions) {
           await prisma.vote.upsert({
             where: {
-              userId_daoId_proposalId: {
-                userId: user.id,
+              voterAddress_daoId_proposalId: {
+                voterAddress: voterAddress,
                 daoId: daoHandler.daoId,
                 proposalId: proposal.id
               }
@@ -90,7 +90,7 @@ export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, da
               }
             },
             create: {
-              userId: user.id,
+              voterAddress: voterAddress,
               daoId: daoHandler.daoId,
               proposalId: proposal.id,
               daoHandlerId: daoHandler.id,
@@ -112,7 +112,7 @@ export const updateSnapshotVotes = async (daoHandler: DAOHandler, user: User, da
       
 
   console.log(
-    `updated ${votes.length} snapshot votes for ${user?.address} in ${daoName}`
+    `updated ${votes.length} snapshot votes for ${voterAddress} in ${daoName}`
   );
 
 };

@@ -16,22 +16,22 @@ type Vote = {
 
 const logger = new Logger("MakerExecutiveProposals");
 
-export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: User, daoName: string) => {
+export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, voterAddress: string, daoName: string) => {
     logger.log(`Updating Governor Bravo votes for ${daoName}`);
     let votes;
 
     try {
-      let userLatestVoteBlock = await prisma.userLatestVoteBlock.findFirst({
+      let voterLatestVoteBlock = await prisma.voterLatestVoteBlock.findFirst({
         where: {
-          userId: user.id,
+          voterAddress: voterAddress,
           daoHandlerId: daoHandler.id
         },
       });
     
-      let latestVoteBlock = userLatestVoteBlock ? Number(userLatestVoteBlock.latestVoteBlock) : 0;
+      let latestVoteBlock = voterLatestVoteBlock ? Number(voterLatestVoteBlock.latestVoteBlock) : 0;
       let currentBlock = await provider.getBlockNumber();
 
-      votes = await getVotes(daoHandler, user, latestVoteBlock);
+      votes = await getVotes(daoHandler, voterAddress, latestVoteBlock);
       if (!votes) return;
     
       for (const vote of votes) {
@@ -45,8 +45,8 @@ export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: Use
     
         await prisma.vote.upsert({
             where: {
-              userId_daoId_proposalId: {
-                userId: user.id,
+              voterAddress_daoId_proposalId: {
+                voterAddress: voterAddress,
                 daoId: daoHandler.daoId,
                 proposalId: proposal.id
               }
@@ -68,7 +68,7 @@ export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: Use
               }
             },
             create: {
-              userId: user.id,
+              voterAddress: voterAddress,
               daoId: daoHandler.daoId,
               proposalId: proposal.id,
               daoHandlerId: daoHandler.id,
@@ -82,10 +82,10 @@ export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: Use
           });
       }
 
-      await prisma.userLatestVoteBlock.upsert({
+      await prisma.voterLatestVoteBlock.upsert({
         where: {
-          userId_daoHandlerId: {
-            userId: user.id,
+          voterAddress_daoHandlerId: {
+            voterAddress: voterAddress,
             daoHandlerId: daoHandler.id,
           }
         },
@@ -93,7 +93,7 @@ export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: Use
           latestVoteBlock: currentBlock
         },
         create: {
-          userId: user.id,
+          voterAddress: voterAddress,
           daoHandlerId: daoHandler.id,
           latestVoteBlock: currentBlock
         }
@@ -107,7 +107,7 @@ export const updateGovernorBravoVotes = async (daoHandler: DAOHandler, user: Use
     logger.log(`Updated ${votes.length} Governor Bravo votes for ${daoName}`);
 }
 
-const getVotes = async (daoHandler: DAOHandler, user: User, latestVoteBlock: number): Promise<Vote[]> => {
+const getVotes = async (daoHandler: DAOHandler, voterAddress: string, latestVoteBlock: number): Promise<Vote[]> => {
   const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi']);
 
   if (daoHandler.type !== DAOHandlerType.BRAVO1 && daoHandler.type !== DAOHandlerType.BRAVO2)
@@ -122,17 +122,17 @@ const getVotes = async (daoHandler: DAOHandler, user: User, latestVoteBlock: num
         topics: [
           govBravoIface.getEventTopic("VoteEmitted"),
           null,
-          hexZeroPad(user.address, 32),
+          hexZeroPad(voterAddress, 32),
         ],
       });
       break;
     case DAOHandlerType.BRAVO2:
       logs = await provider.getLogs({
-        fromBlock: 0 /*daoHandler.decoder["latestVoteBlock"]*/,
+        fromBlock: latestVoteBlock,
         address: daoHandler.decoder['address'],
         topics: [
           govBravoIface.getEventTopic("VoteCast"),
-          hexZeroPad(user.address, 32),
+          hexZeroPad(voterAddress, 32),
         ],
       });
       break;

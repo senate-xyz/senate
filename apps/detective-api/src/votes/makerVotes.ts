@@ -1,7 +1,9 @@
 import { ethers } from "ethers";
 import { Logger, InternalServerErrorException } from "@nestjs/common";
 import { prisma } from "@senate/database";
-import { Proposal, DAOHandler, User } from "@senate/common-types"
+import { DAOHandlerType} from "@prisma/client"
+import { Proposal, DAOHandler } from "@senate/common-types"
+import { hexZeroPad } from "ethers/lib/utils";
 
 const provider = new ethers.providers.JsonRpcProvider({
   url: String(process.env.PROVIDER_URL),
@@ -9,22 +11,22 @@ const provider = new ethers.providers.JsonRpcProvider({
 
 const logger = new Logger("MakerVotes");
 
-export const updateMakerVotes = async (daoHandler: DAOHandler, user: User, daoName: string) => {
+export const updateMakerVotes = async (daoHandler: DAOHandler, voterAddress: string, daoName: string) => {
   logger.log("Updating Maker executive votes");
   let votedSpells;
 
   try {
-    let userLatestVoteBlock = await prisma.userLatestVoteBlock.findFirst({
+    let voterLatestVoteBlock = await prisma.voterLatestVoteBlock.findFirst({
       where: {
-        userId: user.id,
+        voterAddress: voterAddress,
         daoHandlerId: daoHandler.id
       },
     });
   
-    let latestVoteBlock = userLatestVoteBlock ? Number(userLatestVoteBlock.latestVoteBlock) : 0;
+    let latestVoteBlock = voterLatestVoteBlock ? Number(voterLatestVoteBlock.latestVoteBlock) : 0;
     let currentBlock = await provider.getBlockNumber();
 
-    votedSpells = await getVotes(daoHandler, user, latestVoteBlock);
+    votedSpells = await getVotes(daoHandler, voterAddress, latestVoteBlock);
     if (!votedSpells) return; 
 
     for (const votedSpellAddress of votedSpells) {
@@ -43,15 +45,15 @@ export const updateMakerVotes = async (daoHandler: DAOHandler, user: User, daoNa
 
       await prisma.vote.upsert({
           where: {
-            userId_daoId_proposalId: {
-              userId: user.id,
+            voterAddress_daoId_proposalId: {
+              voterAddress: voterAddress,
               daoId: daoHandler.daoId,
               proposalId: proposal.id
             }
           },
           update: {},
           create: {
-            userId: user.id,
+            voterAddress: voterAddress,
             daoId: daoHandler.daoId,
             proposalId: proposal.id,
             daoHandlerId: daoHandler.id,
@@ -64,10 +66,10 @@ export const updateMakerVotes = async (daoHandler: DAOHandler, user: User, daoNa
           },
         });
 
-        await prisma.userLatestVoteBlock.upsert({
+        await prisma.voterLatestVoteBlock.upsert({
           where: {
-            userId_daoHandlerId: {
-              userId: user.id,
+            voterAddress_daoHandlerId: {
+              voterAddress: voterAddress,
               daoHandlerId: daoHandler.id,
             }
           },
@@ -75,7 +77,7 @@ export const updateMakerVotes = async (daoHandler: DAOHandler, user: User, daoNa
             latestVoteBlock: currentBlock
           },
           create: {
-            userId: user.id,
+            voterAddress: voterAddress,
             daoHandlerId: daoHandler.id,
             latestVoteBlock: currentBlock
           }
@@ -91,17 +93,22 @@ export const updateMakerVotes = async (daoHandler: DAOHandler, user: User, daoNa
   
 };
 
-const getVotes = async (daoHandler: DAOHandler, user: User, latestVoteBlock: number): Promise<string[]> => {
+const getVotes = async (daoHandler: DAOHandler, voterAddress: string, latestVoteBlock: number): Promise<string[]> => {
   const iface = new ethers.utils.Interface(daoHandler.decoder["abi"]);
   const chiefContract = new ethers.Contract(daoHandler.decoder["address"], daoHandler.decoder["abi"], provider);
 
-  if (daoHandler.type != "MAKER_EXECUTIVE") return [];
+  if (daoHandler.type != DAOHandlerType.MAKER_EXECUTIVE) return [];
 
   const voteMultipleActionsTopic =
     "0xed08132900000000000000000000000000000000000000000000000000000000";
   const voteSingleActionTopic =
     "0xa69beaba00000000000000000000000000000000000000000000000000000000";
-  const voterAddressTopic = "0x" + "0".repeat(24) + user.address.substring(2);
+  const voterAddressTopic = "0x" + "0".repeat(24) + voterAddress.substring(2);
+  console.log("\n");
+  console.log(voterAddressTopic, voterAddressTopic.length);
+  let tmp = hexZeroPad(voterAddress, 32)
+  console.log(tmp, tmp.length);
+  console.log("\n");
 
   const logs = await provider.getLogs({
     fromBlock: latestVoteBlock,
