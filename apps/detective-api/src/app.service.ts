@@ -41,13 +41,11 @@ export class AppService {
       throw new NotFoundException("DAO not found");
     }
 
-    this.logger.log(`Updating proposals for ${dao.name}`)
-
-    dao.handlers.forEach(async handler => {
+    for (let handler of dao.handlers) {
       this.logger.log(`Fetching proposals for ${dao.name}, handler: ${handler.type}`)
 
       switch(handler.type) {
-        case DAOHandlerType.SNAPSHOT: 
+        case DAOHandlerType.SNAPSHOT:
           await updateSnapshotProposals(dao.name, handler);
           break;
         
@@ -66,7 +64,8 @@ export class AppService {
         default:
           break;    
       }
-    })
+    }
+      
   }
 
   async updateVotes(daoId : string, userId: string) {
@@ -105,7 +104,7 @@ export class AppService {
 
     this.logger.log(`Updating votes for user ${user.address} in ${dao.name}`)
 
-    dao.handlers.forEach(async handler => {
+    for (let handler of dao.handlers) {
       this.logger.log(`Fetching votes for ${dao.name}, user ${user.address}, handler: ${handler.type}`)
       
       switch(handler.type) {
@@ -129,6 +128,6 @@ export class AppService {
           break;
         
       }
-    })
+    }
   }
 }

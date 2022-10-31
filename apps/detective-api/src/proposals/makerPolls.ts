@@ -62,8 +62,7 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
         },
       });
 
-      console.log(proposalOnChainId)
-      await prisma.proposal.upsert({
+      let proposal = await prisma.proposal.upsert({
           where: {
               externalId_daoId: {
                   daoId: daoHandler.daoId,
@@ -85,16 +84,18 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
           url: proposalUrl,
         },
       });
+
+      console.log("Inserted poll with id" + proposal.id);
     }
   } catch (err) {
     logger.log("Error while updating Maker Polls", err);
     throw new InternalServerErrorException();
   }
-  
 
   logger.log("\n\n");
   logger.log(`Updated ${proposals.length} maker polls`);
   logger.log("======================================================\n\n");
+  
 };
 
 const formatTitle = (text: String): String => {
@@ -102,8 +103,6 @@ const formatTitle = (text: String): String => {
 
   return temp;
 };
-
-
 
 const getProposalTitle = async (url: string): Promise<any> => {
   let title;
@@ -116,4 +115,3 @@ const getProposalTitle = async (url: string): Promise<any> => {
 
   return title;
 };
-
