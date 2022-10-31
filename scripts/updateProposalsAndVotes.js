@@ -30,7 +30,7 @@ async function main() {
         console.log(await response.text());
         
         console.log(`Updating votes for user ${user.address}`)
-        response = await fetch( `http://localhost:3100/api/updateVotes?daoId=${dao.id}&userId=${user.id}`, options );
+        response = await fetch( `http://localhost:3100/api/updateVotes?daoId=${dao.id}&voterAddress=${user.address}`, options );
         console.log(await response.text());
             
     }

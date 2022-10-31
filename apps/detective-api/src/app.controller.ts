@@ -16,19 +16,17 @@ export class AppController {
     constructor(private readonly appService: AppService) {}
 
     @Post('updateProposals')
-    async updateProposals(@Query('daoId') daoId: string): Promise<string> {
+    async updateProposals(@Query('daoId') daoId: string) {
         await this.appService.updateProposals(daoId)
-
         return 'OK'
     }
 
     @Post('updateVotes')
     async updateVotes(
         @Query('daoId') daoId: string,
-        @Query('userId') userId: string
-    ): Promise<string> {
-        await this.appService.updateVotes(daoId, userId)
-
+        @Query('voterAddress') voterAddress: string
+    ) {
+        await this.appService.updateVotes(daoId, voterAddress)
         return 'OK'
     }
 }
