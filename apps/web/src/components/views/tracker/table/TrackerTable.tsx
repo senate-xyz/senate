@@ -41,12 +41,11 @@ export const TrackerTable = (props: {
                             return (
                                 <tr key={proposal.id} className="border-b">
                                     <td className="py-4 px-6">
-                                        <div className="flex items-center">
+                                        <div className="flex">
                                             <Image
-                                                className="absolute bottom-0 left-0"
                                                 src={proposal.dao.picture}
-                                                width="40"
-                                                height="40"
+                                                width="20"
+                                                height="20"
                                                 alt="dao image"
                                             />
 
