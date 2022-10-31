@@ -74,9 +74,9 @@ export const updateSnapshotProposals = async (
                                 daoHandlerId: daoHandler.id,
                                 proposalType: ProposalType.SNAPSHOT,
                                 data: {
-                                    timeEnd: proposal.end * 1000,
-                                    timeStart: proposal.start * 1000,
-                                    timeCreated: proposal.created * 1000,
+                                    timeEnd: proposal.end,
+                                    timeStart: proposal.start,
+                                    timeCreated: proposal.created,
                                 },
                                 url: proposal.link,
                             },

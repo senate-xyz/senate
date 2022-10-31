@@ -39,6 +39,13 @@ export const trackerRouter = router({
                 include: {
                     dao: true,
                     votes: {
+                        include: {
+                            options: {
+                                select: {
+                                    optionName: true,
+                                },
+                            },
+                        },
                         where: {
                             user: user,
                         },

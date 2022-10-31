@@ -111,9 +111,19 @@ export const userRouter = router({
 
         const userProposals = await prisma.proposal.findMany({
             where: {
-                daoId: {
-                    in: userSubscriptions.map((sub) => sub.daoId),
-                },
+                AND: [
+                    {
+                        daoId: {
+                            in: userSubscriptions.map((sub) => sub.daoId),
+                        },
+                    },
+                    {
+                        data: {
+                            path: '$.timeEnd',
+                            gte: Date.now() / 1000,
+                        },
+                    },
+                ],
             },
             include: {
                 dao: {
