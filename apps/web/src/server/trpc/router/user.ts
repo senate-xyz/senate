@@ -4,6 +4,8 @@ import { router, publicProcedure } from '../trpc'
 
 export const userRouter = router({
     proxyAddreses: publicProcedure.query(async ({ ctx }) => {
+        if (!ctx.session) return
+
         const user = await prisma.user
             .findFirstOrThrow({
                 where: {
