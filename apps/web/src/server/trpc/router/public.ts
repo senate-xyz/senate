@@ -8,7 +8,7 @@ export const publicRouter = router({
             where: {
                 data: {
                     path: '$.timeEnd',
-                    lt: Number(new Date()),
+                    gte: Date.now() / 1000,
                 },
             },
             include: {
@@ -57,11 +57,20 @@ export const publicRouter = router({
     refreshAllVotes: publicProcedure.mutation(async () => {
         const daos = await prisma.dAO.findMany({})
         const users = await prisma.user.findMany({})
+        const userProxies = await prisma.userProxy.findMany({})
 
         daos.forEach(async (dao) => {
             users.forEach(async (user) => {
                 await fetch(
-                    `${process.env.DETECTIVE_URL}/updateVotes?daoId=${dao.id}&userId=${user.id}`,
+                    `${process.env.DETECTIVE_URL}/updateVotes?daoId=${dao.id}&voterAddress=${user.address}`,
+                    {
+                        method: 'POST',
+                    }
+                )
+            })
+            userProxies.forEach(async (userProxy) => {
+                await fetch(
+                    `${process.env.DETECTIVE_URL}/updateVotes?daoId=${dao.id}&voterAddress=${userProxy.address}`,
                     {
                         method: 'POST',
                     }

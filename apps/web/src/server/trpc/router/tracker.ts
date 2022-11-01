@@ -7,31 +7,29 @@ export const trackerRouter = router({
     track: publicProcedure
         .input(
             z.object({
-                address: z.string(),
+                addresses: z.string().array(),
             })
         )
         .query(async ({ input }) => {
-            const user = await prisma.user
-                .findFirstOrThrow({
-                    where: {
-                        address: input.address,
+            const user = await prisma.user.findMany({
+                where: {
+                    address: {
+                        in: input.addresses,
                     },
-                    select: {
-                        address: true,
-                    },
-                })
-                .catch(() => {
-                    return { address: '0' }
-                })
-
-            if (user.address == '0') return
+                },
+                select: {
+                    address: true,
+                },
+            })
 
             const userProposalsVoted = await prisma.proposal.findMany({
                 where: {
                     AND: {
                         votes: {
                             some: {
-                                voterAddress: user.address,
+                                voterAddress: {
+                                    in: user.map((user) => user.address),
+                                },
                             },
                         },
                     },
@@ -47,7 +45,9 @@ export const trackerRouter = router({
                             },
                         },
                         where: {
-                            voterAddress: user.address,
+                            voterAddress: {
+                                in: user.map((user) => user.address),
+                            },
                         },
                     },
                 },
