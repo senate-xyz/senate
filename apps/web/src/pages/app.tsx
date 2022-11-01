@@ -47,12 +47,12 @@ const Home: NextPage = () => {
                     {session?.user?.name
                         ? page == ViewsEnum.Tracker && (
                               <DynamicTracker
-                                  shareButton={true}
+                                  useProxies={true}
                                   address={session?.user?.name}
                               />
                           )
                         : page == ViewsEnum.Tracker && (
-                              <DynamicTracker shareButton={true} address="" />
+                              <DynamicTracker useProxies={true} address="" />
                           )}
 
                     {page == ViewsEnum.Settings && <DynamicSettings />}

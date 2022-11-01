@@ -10,7 +10,7 @@ const TrackerPage: NextPage = () => {
     if (!address) return <div>Loading</div>
     return (
         <div>
-            <Tracker address={String(address)} shareButton={false} />
+            <Tracker address={address.toString()} useProxies={false} />
         </div>
     )
 }
