@@ -135,14 +135,6 @@ export const userRouter = router({
                         },
                     },
                 },
-                votes: {
-                    where: {
-                        userId: user?.id,
-                    },
-                    include: {
-                        user: true,
-                    },
-                },
             },
         })
 

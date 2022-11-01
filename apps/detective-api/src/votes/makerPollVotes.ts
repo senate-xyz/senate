@@ -1,131 +1,145 @@
-import { prisma } from "@senate/database";
-import { BigNumber, ethers } from "ethers";
-import { hexZeroPad } from "ethers/lib/utils";
-import { Logger, InternalServerErrorException } from "@nestjs/common";
-import { Proposal, DAOHandler, User } from "@senate/common-types"
+import { prisma } from '@senate/database'
+import { BigNumber, ethers } from 'ethers'
+import { hexZeroPad } from 'ethers/lib/utils'
+import { Logger, InternalServerErrorException } from '@nestjs/common'
+import { Proposal, DAOHandler, User } from '@senate/common-types'
 
 const provider = new ethers.providers.JsonRpcProvider({
-  url: String(process.env.PROVIDER_URL),
-});
+    url: String(process.env.PROVIDER_URL),
+})
 
-const logger = new Logger("MakerPollVotes");
+const logger = new Logger('MakerPollVotes')
 
-export const updateMakerPollVotes = async (daoHandler: DAOHandler, voterAddress: string, daoName: string) => {
-    logger.log("Updating Maker Poll votes");
-    let votes;  
+export const updateMakerPollVotes = async (
+    daoHandler: DAOHandler,
+    voterAddress: string,
+    daoName: string
+) => {
+    logger.log('Updating Maker Poll votes')
+    let votes
 
     try {
-      let voterLatestVoteBlock = await prisma.voterLatestVoteBlock.findFirst({
-        where: {
-          voterAddress: voterAddress,
-          daoHandlerId: daoHandler.id
-        },
-      });
-    
-      let latestVoteBlock = voterLatestVoteBlock ? Number(voterLatestVoteBlock.latestVoteBlock) : 0;
-      let currentBlock = await provider.getBlockNumber();
-
-      votes = await getVotes(daoHandler, voterAddress, latestVoteBlock);
-      if (!votes) return;
-    
-      for (const vote of votes) {
-          let proposal : Proposal = await prisma.proposal.findFirst({
-              where: {
-                  externalId: vote.proposalOnChainId,
-                  daoId: daoHandler.daoId,
-                  daoHandlerId: daoHandler.id,
-              },
-          })
-
-          if (!proposal) {
-            logger.error(`Poll with externalId ${vote.proposalOnChainId} does not exist in DB for daoId: ${daoHandler.daoId} & daoHandlerId: ${daoHandler.id}`);
-            continue;
-          }
-
-          await prisma.vote.upsert({
-              where: {
-                  voterAddress_daoId_proposalId: {
+        const voterLatestVoteBlock =
+            await prisma.voterLatestVoteBlock.findFirst({
+                where: {
                     voterAddress: voterAddress,
+                    daoHandlerId: daoHandler.id,
+                },
+            })
+
+        const latestVoteBlock = voterLatestVoteBlock
+            ? Number(voterLatestVoteBlock.latestVoteBlock)
+            : 0
+        const currentBlock = await provider.getBlockNumber()
+
+        votes = await getVotes(daoHandler, voterAddress, latestVoteBlock)
+        if (!votes) return
+
+        for (const vote of votes) {
+            const proposal: Proposal = await prisma.proposal.findFirst({
+                where: {
+                    externalId: vote.proposalOnChainId,
                     daoId: daoHandler.daoId,
-                    proposalId: proposal.id
-                  }
+                    daoHandlerId: daoHandler.id,
+                },
+            })
+
+            if (!proposal) {
+                logger.error(
+                    `Poll with externalId ${vote.proposalOnChainId} does not exist in DB for daoId: ${daoHandler.daoId} & daoHandlerId: ${daoHandler.id}`
+                )
+                continue
+            }
+
+            await prisma.vote.upsert({
+                where: {
+                    voterAddress_daoId_proposalId: {
+                        voterAddress: voterAddress,
+                        daoId: daoHandler.daoId,
+                        proposalId: proposal.id,
+                    },
                 },
                 update: {
-                  options: {
-                    update: {
-                      where: {
-                        voteProposalId_option: {
-                          voteProposalId: proposal.id,
-                          option: vote.support,
-                        }
-                      },
-                      data: {
-                        option: vote.support,
-                        optionName: vote.support ? "Yes" : "No"
-                      },
-                    } 
-                  }
+                    options: {
+                        update: {
+                            where: {
+                                voteProposalId_option: {
+                                    voteProposalId: proposal.id,
+                                    option: vote.support,
+                                },
+                            },
+                            data: {
+                                option: vote.support,
+                                optionName: vote.support ? 'Yes' : 'No',
+                            },
+                        },
+                    },
                 },
                 create: {
-                  voterAddress: voterAddress,
-                  daoId: daoHandler.daoId,
-                  proposalId: proposal.id,
-                  daoHandlerId: daoHandler.id,
-                  options: {
-                    create: {
-                      option: vote.support,
-                      optionName: vote.support ? "Yes" : "No",
-                    }
-                  }
+                    voterAddress: voterAddress,
+                    daoId: daoHandler.daoId,
+                    proposalId: proposal.id,
+                    daoHandlerId: daoHandler.id,
+                    options: {
+                        create: {
+                            option: vote.support,
+                            optionName: vote.support ? 'Yes' : 'No',
+                        },
+                    },
                 },
-          });
+            })
 
-          await prisma.voterLatestVoteBlock.upsert({
-            where: {
-              voterAddress_daoHandlerId: {
-                voterAddress: voterAddress,
-                daoHandlerId: daoHandler.id,
-              }
-            },
-            update: {
-              latestVoteBlock: currentBlock
-            },
-            create: {
-              voterAddress: voterAddress,
-              daoHandlerId: daoHandler.id,
-              latestVoteBlock: currentBlock
-            }
-          })
-      }
-
+            await prisma.voterLatestVoteBlock.upsert({
+                where: {
+                    voterAddress_daoHandlerId: {
+                        voterAddress: voterAddress,
+                        daoHandlerId: daoHandler.id,
+                    },
+                },
+                update: {
+                    latestVoteBlock: currentBlock,
+                },
+                create: {
+                    voterAddress: voterAddress,
+                    daoHandlerId: daoHandler.id,
+                    latestVoteBlock: currentBlock,
+                },
+            })
+        }
     } catch (err) {
-      logger.error("Error while updating maker executive proposals", err);
-      throw new InternalServerErrorException();
+        logger.error('Error while updating maker executive proposals', err)
+        throw new InternalServerErrorException()
     }
 
-    console.log(`updated ${votes.length} maker poll votes`);
+    console.log(`updated ${votes.length} maker poll votes`)
 }
 
-const getVotes = async (daoHandler: DAOHandler, voterAddress: string, latestVoteBlock: number): Promise<any> => {
-  const iface = new ethers.utils.Interface(JSON.parse(daoHandler.decoder["abi"]));
+const getVotes = async (
+    daoHandler: DAOHandler,
+    voterAddress: string,
+    latestVoteBlock: number
+): Promise<any> => {
+    const iface = new ethers.utils.Interface(
+        JSON.parse(daoHandler.decoder['abi'])
+    )
 
-  const logs = await provider.getLogs({
-    fromBlock: latestVoteBlock,
-    address: daoHandler.decoder['address'],
-    topics: [iface.getEventTopic("Voted"), hexZeroPad(voterAddress, 32)],
-  });
+    const logs = await provider.getLogs({
+        fromBlock: latestVoteBlock,
+        address: daoHandler.decoder['address'],
+        topics: [iface.getEventTopic('Voted'), hexZeroPad(voterAddress, 32)],
+    })
 
-  const votes = logs.map((log) => {
-    let eventData = iface.parseLog({
-      topics: log.topics,
-      data: log.data,
-    }).args;
+    const votes = logs.map((log) => {
+        const eventData = iface.parseLog({
+            topics: log.topics,
+            data: log.data,
+        }).args
 
-    return {
-      proposalOnChainId: BigNumber.from(eventData.pollId).toString(),
-      support: BigNumber.from(eventData.optionId).toString(),
-    };
-  });
+        return {
+            proposalOnChainId: BigNumber.from(eventData.pollId).toString(),
+            support: BigNumber.from(eventData.optionId).toString(),
+        }
+    })
 
-  return votes;
-};
+    return votes
+}
