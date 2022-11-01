@@ -2,6 +2,7 @@ import type { NextPage } from 'next'
 import { useState, Suspense } from 'react'
 import NavBar, { ViewsEnum } from '../components/navbar/NavBar'
 import dynamic from 'next/dynamic'
+import { useSession } from 'next-auth/react'
 
 const DynamicDashboard = dynamic(
     () => import('../components/views/dashboard/Dashboard'),
@@ -33,6 +34,7 @@ const DynamicSettings = dynamic(
 
 const Home: NextPage = () => {
     const [page, setPage] = useState(ViewsEnum.Dashboard)
+    const { data: session } = useSession()
 
     return (
         <div className="flex flex-row">
@@ -41,9 +43,18 @@ const Home: NextPage = () => {
                 <Suspense fallback={`Loading...`}>
                     {page == ViewsEnum.Dashboard && <DynamicDashboard />}
                     {page == ViewsEnum.Watchlist && <DynamicWatchlist />}
-                    {page == ViewsEnum.Tracker && (
-                        <DynamicTracker shareButton={true} address={''} />
-                    )}
+
+                    {session?.user?.name
+                        ? page == ViewsEnum.Tracker && (
+                              <DynamicTracker
+                                  shareButton={true}
+                                  address={session?.user?.name}
+                              />
+                          )
+                        : page == ViewsEnum.Tracker && (
+                              <DynamicTracker shareButton={true} address="" />
+                          )}
+
                     {page == ViewsEnum.Settings && <DynamicSettings />}
                 </Suspense>
             </div>

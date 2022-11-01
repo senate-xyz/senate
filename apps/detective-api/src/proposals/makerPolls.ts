@@ -88,9 +88,9 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
                     daoHandlerId: mkrPollVoteHandler.id,
                     proposalType: ProposalType.MAKER_POLL,
                     data: {
-                        timeEnd: votingEndsTimestamp * 1000,
-                        timeStart: votingStartsTimestamp * 1000,
-                        timeCreated: proposalCreatedTimestamp * 1000,
+                        timeEnd: votingEndsTimestamp,
+                        timeStart: votingStartsTimestamp,
+                        timeCreated: proposalCreatedTimestamp * 100,
                     },
                     url: proposalUrl,
                 },

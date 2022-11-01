@@ -1,4 +1,3 @@
-import { TRPCContext } from '@trpc/react-query/shared'
 import { useSession } from 'next-auth/react'
 
 import { trpc } from '../../../utils/trpc'
@@ -9,7 +8,6 @@ export const DashboardHeader = () => <p>Dashboard</p>
 export const DashboardView = () => {
     const refreshAllProposals = trpc.public.refreshAllProposals.useMutation()
     const refreshAllVotes = trpc.public.refreshAllVotes.useMutation()
-    const refreshAllProxyVotes = trpc.public.refreshAllProxyVotes.useMutation()
 
     const { data: session } = useSession()
 
@@ -39,15 +37,6 @@ export const DashboardView = () => {
                     }}
                 >
                     Refresh all votes
-                </button>
-
-                <button
-                    className="w-auto self-end m-2 bg-red-200 p-1 rounded-sm"
-                    onClick={() => {
-                        refreshAllProxyVotes.mutate()
-                    }}
-                >
-                    Refresh all proxy votes
                 </button>
 
                 <DashboardTable proposals={proposals.data} />

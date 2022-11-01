@@ -91,9 +91,9 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
                     daoHandlerId: daoHandler.id,
                     proposalType: ProposalType.BRAVO,
                     data: {
-                        timeEnd: votingEndsTimestamp * 1000,
-                        timeStart: votingStartsTimestamp * 1000,
-                        timeCreated: proposalCreatedTimestamp * 1000,
+                        timeEnd: votingEndsTimestamp,
+                        timeStart: votingStartsTimestamp,
+                        timeCreated: proposalCreatedTimestamp,
                     },
                     url: proposalUrl,
                 },
