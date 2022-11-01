@@ -17,21 +17,21 @@ export const trackerRouter = router({
                         address: input.address,
                     },
                     select: {
-                        id: true,
+                        address: true,
                     },
                 })
                 .catch(() => {
-                    return { id: '0' }
+                    return { address: '0' }
                 })
 
-            if (user.id == '0') return
+            if (user.address == '0') return
 
             const userProposalsVoted = await prisma.proposal.findMany({
                 where: {
                     AND: {
                         votes: {
                             some: {
-                                user: user,
+                                voterAddress: user.address,
                             },
                         },
                     },
@@ -47,7 +47,7 @@ export const trackerRouter = router({
                             },
                         },
                         where: {
-                            user: user,
+                            voterAddress: user.address,
                         },
                     },
                 },

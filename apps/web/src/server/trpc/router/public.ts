@@ -21,11 +21,6 @@ export const publicRouter = router({
                         },
                     },
                 },
-                votes: {
-                    include: {
-                        user: true,
-                    },
-                },
             },
         })
 
