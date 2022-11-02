@@ -48,7 +48,14 @@ export const DashboardRow = (props: {
                 {dayjs(props.proposal.data['timeEnd'] * 1000).fromNow(false)}
             </td>
 
-            <td className="py-4 px-6">idk</td>
+            <td className="py-4 px-6">
+                {props.proposal.votes.map((vote) =>
+                    vote.options.map(
+                        (option) =>
+                            `${option.optionName} voted by ${option.voterAddress}`
+                    )
+                )}
+            </td>
         </tr>
     )
 }

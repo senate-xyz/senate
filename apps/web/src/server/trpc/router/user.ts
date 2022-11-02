@@ -87,18 +87,15 @@ export const userRouter = router({
             })
         }),
     userProposals: publicProcedure.query(async ({ ctx }) => {
-        const user = await prisma.user
-            .findFirstOrThrow({
-                where: {
-                    address: { equals: String(ctx.session?.user?.name) },
-                },
-                select: {
-                    id: true,
-                },
-            })
-            .catch(() => {
-                return { id: '0' }
-            })
+        const user = await prisma.user.findFirstOrThrow({
+            where: {
+                address: { equals: String(ctx.session?.user?.name) },
+            },
+            select: {
+                id: true,
+                proxies: true,
+            },
+        })
 
         const userSubscriptions = await prisma.subscription.findMany({
             where: {
@@ -135,6 +132,16 @@ export const userRouter = router({
                                 type: true,
                             },
                         },
+                    },
+                },
+                votes: {
+                    where: {
+                        voterAddress: {
+                            in: user.proxies.map((proxy) => proxy.address),
+                        },
+                    },
+                    include: {
+                        options: true,
                     },
                 },
             },

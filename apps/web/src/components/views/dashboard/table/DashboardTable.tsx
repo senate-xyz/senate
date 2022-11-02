@@ -2,7 +2,7 @@ import { inferProcedureOutput } from '@trpc/server'
 import { AppRouter } from '../../../../server/trpc/router/_app'
 import { DashboardRow } from './DashboardRow'
 
-const tableHeader = ['DAO', 'Proposal', 'Time left', 'Status']
+const tableHeader = ['DAO', 'Proposal', 'Time left', 'Vote']
 
 export const DashboardThead = () => (
     <thead className="text-xs uppercase">
