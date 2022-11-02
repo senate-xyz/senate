@@ -1,6 +1,5 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common'
-import { DAOHandlerType } from '@prisma/client'
-import { DAOHandler, Proposal, User } from '@senate/common-types'
+import { DAOHandler, DAOHandlerType, Proposal } from '@senate/common-types'
 import { prisma } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
@@ -42,13 +41,15 @@ export const updateGovernorBravoVotes = async (
         if (!votes) return
 
         for (const vote of votes) {
-            const proposal: Proposal = await prisma.proposal.findFirst({
+            const proposal = await prisma.proposal.findFirst({
                 where: {
                     externalId: vote.proposalOnChainId,
                     daoId: daoHandler.daoId,
                     daoHandlerId: daoHandler.id,
                 },
             })
+
+            if (!proposal) return
 
             await prisma.vote.upsert({
                 where: {
@@ -118,6 +119,9 @@ const getVotes = async (
     voterAddress: string,
     latestVoteBlock: number
 ): Promise<Vote[]> => {
+    if (!daoHandler.decoder) return []
+    if (!Array.isArray(daoHandler.decoder)) return []
+
     const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
 
     if (

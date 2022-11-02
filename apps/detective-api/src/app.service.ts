@@ -15,7 +15,7 @@ import { updateMakerPollVotes } from './votes/makerPollVotes'
 import { updateMakerVotes } from './votes/makerVotes'
 import { updateSnapshotVotes } from './votes/snapshotVotes'
 
-import { DAOType as Dao, User } from '@senate/common-types'
+import { DAOType as Dao } from '@senate/common-types'
 import { prisma } from '@senate/database'
 
 @Injectable()
@@ -23,7 +23,7 @@ export class AppService {
     private readonly logger = new Logger(AppService.name)
 
     async updateProposals(daoId: string) {
-        let dao: Dao
+        let dao
 
         try {
             dao = await prisma.dAO.findFirst({
@@ -73,7 +73,7 @@ export class AppService {
     }
 
     async updateVotes(daoId: string, voterAddress: string) {
-        let dao: Dao
+        let dao
 
         try {
             dao = await prisma.dAO.findFirst({
@@ -117,11 +117,11 @@ export class AppService {
                     break
 
                 case DAOHandlerType.MAKER_EXECUTIVE:
-                    await updateMakerVotes(handler, voterAddress, dao.name)
+                    await updateMakerVotes(handler, voterAddress)
                     break
 
                 case DAOHandlerType.MAKER_POLL_VOTE:
-                    await updateMakerPollVotes(handler, voterAddress, dao.name)
+                    await updateMakerPollVotes(handler, voterAddress)
                     break
 
                 default:

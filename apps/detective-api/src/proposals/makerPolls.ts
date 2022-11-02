@@ -1,6 +1,5 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common'
-import { DAOHandlerType, ProposalType } from '@prisma/client'
-import { DAOHandler } from '@senate/common-types'
+import { DAOHandler, DAOHandlerType, ProposalType } from '@senate/common-types'
 import { prisma } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
@@ -12,6 +11,9 @@ const provider = new ethers.providers.JsonRpcProvider({
 const logger = new Logger('MakerPolls')
 
 export const updateMakerPolls = async (daoHandler: DAOHandler) => {
+    if (!daoHandler.decoder) return
+    if (!Array.isArray(daoHandler.decoder)) return
+
     logger.log(
         `Searching polls from block ${daoHandler.decoder['latestProposalBlock']} ...`
     )
@@ -24,6 +26,8 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
                 type: DAOHandlerType.MAKER_POLL_VOTE,
             },
         })
+
+        if (!mkrPollVoteHandler) return
 
         const pollingContractIface = new ethers.utils.Interface(
             daoHandler.decoder['abi']

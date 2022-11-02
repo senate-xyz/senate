@@ -34,9 +34,9 @@
         "rxjs": "^7.5.7"
     },
     "devDependencies": {
-        "@senate/database": "*",
         "@senate/common-types": "*",
         "@senate/config": "*",
+        "@senate/database": "*",
         "@senate/tsconfig": "*",
         "@nestjs/cli": "^9.1.4",
         "@nestjs/schematics": "^9.0.3",

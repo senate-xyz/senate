@@ -1,5 +1,5 @@
 {
-  "extends": "@senate/tsconfig/nextjs.json",
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs"],
-  "exclude": ["node_modules"]
+    "extends": "@senate/tsconfig/nextjs.json",
+    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs"],
+    "exclude": ["node_modules"]
 }

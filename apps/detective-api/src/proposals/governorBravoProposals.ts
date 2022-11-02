@@ -1,6 +1,5 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common'
-import { ProposalType } from '@prisma/client'
-import { DAOHandler } from '@senate/common-types'
+import { type DAOHandler, ProposalType } from '@senate/common-types'
 import { prisma } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
@@ -12,6 +11,9 @@ const provider = new ethers.providers.JsonRpcProvider({
 const logger = new Logger('UpdateGovernorBravoProposals')
 
 export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
+    if (!daoHandler.decoder) return
+    if (!Array.isArray(daoHandler.decoder)) return
+
     logger.log(
         `Searching from block ${daoHandler.decoder['latestProposalBlock']} ...`
     )

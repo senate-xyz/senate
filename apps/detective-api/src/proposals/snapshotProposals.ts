@@ -1,6 +1,5 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common'
-import { ProposalType } from '@prisma/client'
-import { DAOHandler } from '@senate/common-types'
+import { DAOHandler, ProposalType } from '@senate/common-types'
 import { prisma } from '@senate/database'
 import axios from 'axios'
 
@@ -10,6 +9,9 @@ export const updateSnapshotProposals = async (
     daoName: string,
     daoHandler: DAOHandler
 ) => {
+    if (!daoHandler.decoder) return
+    if (!Array.isArray(daoHandler.decoder)) return
+
     logger.log(`Searching snapshot proposals for ${daoName}`)
     let proposals
 

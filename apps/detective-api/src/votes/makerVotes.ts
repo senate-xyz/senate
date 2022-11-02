@@ -1,8 +1,7 @@
 import { ethers } from 'ethers'
 import { Logger, InternalServerErrorException } from '@nestjs/common'
 import { prisma } from '@senate/database'
-import { DAOHandlerType } from '@prisma/client'
-import { Proposal, DAOHandler } from '@senate/common-types'
+import { Proposal, DAOHandler, DAOHandlerType } from '@senate/common-types'
 import { hexZeroPad } from 'ethers/lib/utils'
 
 const provider = new ethers.providers.JsonRpcProvider({
@@ -13,10 +12,9 @@ const logger = new Logger('MakerVotes')
 
 export const updateMakerVotes = async (
     daoHandler: DAOHandler,
-    voterAddress: string,
-    daoName: string
+    voterAddress: string
 ) => {
-    logger.log('Updating Maker executive votes')
+    logger.log(`Updating Maker votes`)
     let votedSpells
 
     try {
@@ -37,7 +35,7 @@ export const updateMakerVotes = async (
         if (!votedSpells) return
 
         for (const votedSpellAddress of votedSpells) {
-            const proposal: Proposal = await prisma.proposal.findFirst({
+            const proposal = await prisma.proposal.findFirst({
                 where: {
                     externalId: votedSpellAddress,
                     daoId: daoHandler.daoId,
@@ -105,6 +103,9 @@ const getVotes = async (
     voterAddress: string,
     latestVoteBlock: number
 ): Promise<string[]> => {
+    if (!daoHandler.decoder) return []
+    if (!Array.isArray(daoHandler.decoder)) return []
+
     const iface = new ethers.utils.Interface(daoHandler.decoder['abi'])
     const chiefContract = new ethers.Contract(
         daoHandler.decoder['address'],

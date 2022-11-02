@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { prisma } from '@senate/database'
-import { DAOHandler, VoteOption } from '@senate/common-types'
+import { DAOHandler } from '@senate/common-types'
 import { Logger, InternalServerErrorException } from '@nestjs/common'
 
 const logger = new Logger('MakerExecutiveProposals')
@@ -10,6 +10,9 @@ export const updateSnapshotVotes = async (
     voterAddress: string,
     daoName: string
 ) => {
+    if (!daoHandler.decoder) return
+    if (!Array.isArray(daoHandler.decoder)) return
+
     logger.log(`Updating snapshot votes for ${daoName}`)
     let votes
 
@@ -70,7 +73,7 @@ export const updateSnapshotVotes = async (
                     continue
                 }
 
-                const votedOptions: VoteOption[] = getVotedOptions(
+                const votedOptions = getVotedOptions(
                     vote.choice,
                     vote.proposal.choices,
                     voterAddress,
