@@ -6,6 +6,8 @@
     "declarationMap": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "suppressImplicitAnyIndexErrors": true,
     "inlineSources": false,
     "isolatedModules": true,
     "moduleResolution": "node",
@@ -14,8 +16,11 @@
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strict": true,
+    "strictNullChecks": true,
+    "resolveJsonModule": true,
     "paths": {
-      "@senate/database": ["./../database"]
+      "@senate/database": ["./../database"],
+      "@senate/common-types": ["./../common-types"]
     }
   },
   "exclude": ["node_modules"]

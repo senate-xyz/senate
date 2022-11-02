@@ -11,8 +11,8 @@ import {
     VoteOption as VoteOptionModelPrisma,
 } from '@prisma/client'
 
-export type ProposalType = ProposalTypePrisma
-export type DAOHandlerType = DAOHandlerTypePrisma
+export const ProposalType = ProposalTypePrisma
+export const DAOHandlerType = DAOHandlerTypePrisma
 export type DAO = DAOModelPrisma
 export type Subscription = SubscriptionModelPrisma
 export type Vote = VoteModelPrisma

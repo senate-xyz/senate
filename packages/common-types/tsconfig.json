@@ -1,8 +1,3 @@
 {
-  "extends": "@senate/tsconfig/node16.json",
-  "compilerOptions": {
-    "declaration": true
-  },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "tsup.config.ts"],
-  "exclude": ["node_modules"]
+    "extends": "@senate/tsconfig/node16.json"
 }

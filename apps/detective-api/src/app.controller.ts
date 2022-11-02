@@ -1,12 +1,4 @@
-import {
-    Controller,
-    HttpStatus,
-    Logger,
-    Post,
-    Query,
-    Res,
-} from '@nestjs/common'
-import { Response } from 'express'
+import { Controller, Logger, Post, Query } from '@nestjs/common'
 import { AppService } from './app.service'
 
 @Controller('api')
