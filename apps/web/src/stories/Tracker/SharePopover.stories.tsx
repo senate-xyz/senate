@@ -1,5 +1,6 @@
 import '../../styles/globals.css'
 import { SharePopover } from '../../components/views/tracker/SharePopover'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 export default {
     /* 👇 The title prop is optional.
@@ -8,13 +9,8 @@ export default {
      */
     title: 'Tracker/SharePopover',
     component: SharePopover,
-}
+} as ComponentMeta<typeof SharePopover>
 
-//👇 We create a “template” of how args map to rendering
-const Template = (args) => <SharePopover {...args} />
-
-export const Primary = {
-    args: {
-        //👇 The args you need here will depend on your component
-    },
-}
+export const Primary: ComponentStory<typeof SharePopover> = () => (
+    <SharePopover />
+)

@@ -1,42 +1,65 @@
 import '../../styles/globals.css'
 import { DashboardRow } from '../../components/views/dashboard/table/DashboardRow'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 export default {
     title: 'Dashboard/DashboardRow',
     component: DashboardRow,
-}
+} as ComponentMeta<typeof DashboardRow>
 
-const Template = (args) => <DashboardRow {...args} />
+export const Primary: ComponentStory<typeof DashboardRow> = (args) => (
+    <DashboardRow {...args} />
+)
 
-export const Primary = Template.bind({})
 Primary.args = {
     proposal: {
-        id: 'cl95izuz6000maqdvpm4lj6ba',
-        externalId: '1',
-        name: 'Aave proposal test snapshot',
-        description: 'Test description',
-        daoId: 'cl95izuyi0002aqdvdgb721xj',
-        daoHandlerId: 'cl95izuyi0003aqdv41llbvx9',
-        proposalType: 'SNAPSHOT',
-        data: { timeEnd: 1665975385, timeStart: 1664975385 },
+        id: 'cl9zcfdp100ql7yipn2teehlg',
+        externalId: '894',
+        name: 'PPG - Open Market Committee Proposal - October 31, 2022\n',
+        daoId: 'cl9zbtd5c000a7ygcl0exngl0',
+        daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+        proposalType: 'MAKER_POLL',
+        data: {
+            timeEnd: 1667491200,
+            timeStart: 1667232000,
+            timeCreated: 1586870800,
+        },
+        url: 'https://vote.makerdao.com/polling/QmahDuN',
         dao: {
-            id: 'cl95izuyi0002aqdvdgb721xj',
-            name: 'Aave',
+            id: 'cl9zbtd5c000a7ygcl0exngl0',
+            name: 'MakerDAO',
             picture:
-                'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
-            handlers: [{ type: 'BRAVO1' }, { type: 'SNAPSHOT' }],
+                'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+            handlers: [
+                {
+                    type: 'MAKER_EXECUTIVE',
+                },
+                {
+                    type: 'MAKER_POLL_CREATE',
+                },
+                {
+                    type: 'MAKER_POLL_VOTE',
+                },
+            ],
         },
         votes: [
             {
-                id: 'cl95izuza000paqdve5bzneil',
-                userId: 'cl95izuy90000aqdvhs3u5e69',
-                proposalId: 'cl95izuz6000maqdvpm4lj6ba',
-                daoId: 'cl95izuyi0002aqdvdgb721xj',
-                daoHandlerId: 'cl95izuyi0003aqdv41llbvx9',
-                user: {
-                    id: 'cl95izuy90000aqdvhs3u5e69',
-                    address: '0xCdB792c14391F7115Ba77A7Cd27f724fC9eA2091',
-                },
+                id: 'cl9zcoob700wo7yip3sfom8b1',
+                voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
+                proposalId: 'cl9zcfdp100ql7yipn2teehlg',
+                daoId: 'cl9zbtd5c000a7ygcl0exngl0',
+                daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                options: [
+                    {
+                        id: 'cl9zcoob700wp7yipbzptd6yp',
+                        option: '1',
+                        optionName: 'Yes',
+                        voterAddress:
+                            '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
+                        voteDaoId: 'cl9zbtd5c000a7ygcl0exngl0',
+                        voteProposalId: 'cl9zcfdp100ql7yipn2teehlg',
+                    },
+                ],
             },
         ],
     },

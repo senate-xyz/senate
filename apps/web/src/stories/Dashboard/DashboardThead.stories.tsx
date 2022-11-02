@@ -1,11 +1,12 @@
 import '../../styles/globals.css'
 import { DashboardThead } from '../../components/views/dashboard/table/DashboardTable'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 export default {
     title: 'Dashboard/DashboardThead',
     component: DashboardThead,
-}
+} as ComponentMeta<typeof DashboardThead>
 
-const Template = (args) => <DashboardThead {...args} />
-
-export const Primary = Template.bind({})
+export const Primary: ComponentStory<typeof DashboardThead> = () => (
+    <DashboardThead />
+)

@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import Image from 'next/image'
 
-import { PrismaJsonObject, TrackerProposalType } from '@senate/common-types'
+import { TrackerProposalType } from '@senate/common-types'
 import { inferProcedureOutput } from '@trpc/server'
 import { AppRouter } from '../../../../server/trpc/router/_app'
 
@@ -26,7 +26,7 @@ export const TrackerThead = () => (
 
 export const TrackerTable = (props: {
     votes: inferProcedureOutput<AppRouter['tracker']['track']>
-    selectedDao
+    selectedDao: string | undefined
 }) => {
     if (!props.votes) return <div>Loading</div>
     return (
