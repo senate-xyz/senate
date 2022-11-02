@@ -3,7 +3,7 @@ import makerChief from './abis/makerChief.json'
 import makerPollCreate from './abis/makerPollCreate.json'
 import makerPollVote from './abis/makerPollVote.json'
 import { prisma } from './client'
-import { DAOHandlerType, ProposalType } from '@prisma/client'
+import { DAOHandlerType } from '@prisma/client'
 
 async function main() {
     const aave = await prisma.dAO.upsert({
@@ -86,35 +86,83 @@ async function main() {
         },
     })
 
-    const testUserMaker = await prisma.user.upsert({
-        where: {
-            address: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-        },
+    const balancer = await prisma.dAO.upsert({
+        where: { name: 'Balancer' },
         update: {},
         create: {
-            address: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
+            name: 'Balancer',
+            picture:
+                'https://s2.coinmarketcap.com/static/img/coins/64x64/5728.png',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'balancer.eth',
+                            proposalsCount: 0,
+                        },
+                    },
+                ],
+            },
+        },
+        include: {
+            handlers: true,
         },
     })
 
-    const testDelegateContractMaker = await prisma.user.upsert({
-        where: {
-            address: '0xa6ca9f4210960dcf667f397bb24f5d023b7eacc8',
-        },
+    const optimism = await prisma.dAO.upsert({
+        where: { name: 'Optimism' },
         update: {},
         create: {
-            address: '0xa6ca9f4210960dcf667f397bb24f5d023b7eacc8',
+            name: 'Optimism',
+            picture:
+                'https://s2.coinmarketcap.com/static/img/coins/64x64/11840.png',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'opcollective.eth',
+                            proposalsCount: 0,
+                        },
+                    },
+                ],
+            },
+        },
+        include: {
+            handlers: true,
         },
     })
 
-    const testUserAave = await prisma.user.upsert({
-        where: {
-            address: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
-        },
-        update: {},
-        create: {
-            address: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
-        },
-    })
+    // const testUserMaker = await prisma.user.upsert({
+    //     where: {
+    //         address: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
+    //     },
+    //     update: {},
+    //     create: {
+    //         address: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
+    //     },
+    // })
+
+    // const testDelegateContractMaker = await prisma.user.upsert({
+    //     where: {
+    //         address: '0xa6ca9f4210960dcf667f397bb24f5d023b7eacc8',
+    //     },
+    //     update: {},
+    //     create: {
+    //         address: '0xa6ca9f4210960dcf667f397bb24f5d023b7eacc8',
+    //     },
+    // })
+
+    // const testUserAave = await prisma.user.upsert({
+    //     where: {
+    //         address: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
+    //     },
+    //     update: {},
+    //     create: {
+    //         address: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
+    //     },
+    // })
 }
 
 main()
