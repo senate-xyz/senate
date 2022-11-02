@@ -50,22 +50,18 @@ export class AppService {
 
             switch (handler.type) {
                 case DAOHandlerType.SNAPSHOT:
-                    console.log(handler.type)
                     await updateSnapshotProposals(dao.name, handler)
                     break
 
                 case DAOHandlerType.BRAVO1 || DAOHandlerType.BRAVO2:
-                    console.log(handler.type)
                     await updateGovernorBravoProposals(handler)
                     break
 
                 case DAOHandlerType.MAKER_EXECUTIVE:
-                    console.log(handler.type)
                     await updateMakerProposals(handler)
                     break
 
                 case DAOHandlerType.MAKER_POLL_CREATE:
-                    console.log(handler.type)
                     await updateMakerPolls(handler)
                     break
 
