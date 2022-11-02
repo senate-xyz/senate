@@ -18,7 +18,10 @@ const ProxyAccounts = () => {
 
             {proxyAddresses.data.map((proxyAddress) => {
                 return (
-                    <div className="flex flex-row items-center">
+                    <div
+                        key={proxyAddress.address}
+                        className="flex flex-row items-center"
+                    >
                         {proxyAddress.address}
 
                         <button
