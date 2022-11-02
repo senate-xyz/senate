@@ -12,7 +12,6 @@
     ],
     "scripts": {
         "build": "tsup",
-        "dev": "tsup --watch",
         "db:migrate:deploy": "prisma migrate deploy",
         "db:migrate:dev": "prisma migrate dev",
         "db:push": "prisma db push",

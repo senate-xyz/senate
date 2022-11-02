@@ -31,13 +31,13 @@
         "@nestjs/platform-express": "^9.1.4",
         "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",
-        "rxjs": "^7.5.7"
-    },
-    "devDependencies": {
+        "rxjs": "^7.5.7",
         "@senate/common-types": "*",
         "@senate/config": "*",
         "@senate/database": "*",
-        "@senate/tsconfig": "*",
+        "@senate/tsconfig": "*"
+    },
+    "devDependencies": {
         "@nestjs/cli": "^9.1.4",
         "@nestjs/schematics": "^9.0.3",
         "@nestjs/testing": "^9.1.4",

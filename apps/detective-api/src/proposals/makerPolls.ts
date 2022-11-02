@@ -11,8 +11,10 @@ const provider = new ethers.providers.JsonRpcProvider({
 const logger = new Logger('MakerPolls')
 
 export const updateMakerPolls = async (daoHandler: DAOHandler) => {
-    if (!daoHandler.decoder) return
-    if (!Array.isArray(daoHandler.decoder)) return
+    if (!daoHandler.decoder) {
+        console.log('Decoder nok.')
+        return
+    }
 
     logger.log(
         `Searching polls from block ${daoHandler.decoder['latestProposalBlock']} ...`

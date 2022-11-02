@@ -12,7 +12,6 @@
     ],
     "scripts": {
         "build": "tsup",
-        "dev": "tsup --watch",
         "clean": "rimraf .turbo node_modules dist",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
