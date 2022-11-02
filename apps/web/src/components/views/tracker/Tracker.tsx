@@ -1,7 +1,7 @@
 import { inferProcedureOutput } from '@trpc/server'
-import { useSession } from 'next-auth/react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
+import { DAO } from '@senate/common-types'
 import { AppRouter } from '../../../server/trpc/router/_app'
 
 import { trpc } from '../../../utils/trpc'
@@ -38,7 +38,10 @@ export const TrackerTab = (props: {
         </button>
     )
 }
-export const TrackerTabList = (props: { daosTabs; setSelectedDao }) => (
+export const TrackerTabList = (props: {
+    daosTabs: DAO[]
+    setSelectedDao: Dispatch<SetStateAction<string | undefined>>
+}) => (
     <div className="flex rounded border border-gray-300">
         {props.daosTabs?.map((dao) => {
             return (
@@ -55,20 +58,22 @@ export const TrackerTabList = (props: { daosTabs; setSelectedDao }) => (
 
 export const TrackerView = (props: {
     votes: inferProcedureOutput<AppRouter['tracker']['track']>
-    daosTabs
-    shareButton
-    setSelectedDao
-    selectedDao
-}) => (
-    <div>
-        <TrackerHeader shareButton={props.shareButton} />
-        <TrackerTabList
-            daosTabs={props.daosTabs}
-            setSelectedDao={props.setSelectedDao}
-        />
-        <TrackerTable votes={props.votes} selectedDao={props.selectedDao} />
-    </div>
-)
+    daosTabs: DAO[]
+    shareButton: boolean
+    setSelectedDao: Dispatch<SetStateAction<string | undefined>>
+    selectedDao: string | undefined
+}) => {
+    return (
+        <div>
+            <TrackerHeader shareButton={props.shareButton} />
+            <TrackerTabList
+                daosTabs={props.daosTabs}
+                setSelectedDao={props.setSelectedDao}
+            />
+            <TrackerTable votes={props.votes} selectedDao={props.selectedDao} />
+        </div>
+    )
+}
 
 export const Tracker = (props: { address: string; useProxies: boolean }) => {
     const [selectedDao, setSelectedDao] = useState<string>()
@@ -89,15 +94,13 @@ export const Tracker = (props: { address: string; useProxies: boolean }) => {
     }
 
     const daosTabs = userVotes.data
-        ?.map((vote: { dao }) => vote.dao)
-        .filter((element: { name }, index, array) => {
-            return (
-                array.findIndex((a: { name }) => a.name == element.name) ===
-                index
-            )
+        ?.map((vote) => vote.dao)
+        .filter((element, index, array) => {
+            return array.findIndex((a) => a.name == element.name) === index
         })
 
     if (!userVotes.data) return <div>Loading</div>
+    if (!daosTabs) return <div>No data</div>
 
     return (
         <TrackerView

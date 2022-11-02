@@ -1,12 +1,15 @@
 import '../../styles/globals.css'
 import { TrackerTabList } from '../../components/views/tracker/Tracker'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 export default {
     title: 'Tracker/TrackerTabList',
     component: TrackerTabList,
-}
+} as ComponentMeta<typeof TrackerTabList>
 
-const Template = (args) => <TrackerTabList {...args} />
+const Template: ComponentStory<typeof TrackerTabList> = (args) => (
+    <TrackerTabList {...args} />
+)
 
 export const Primary = Template.bind({})
 Primary.args = {

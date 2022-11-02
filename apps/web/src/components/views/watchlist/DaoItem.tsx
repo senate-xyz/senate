@@ -1,9 +1,7 @@
-import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { useState } from 'react'
 import { FaBell, FaDiscord, FaSlack, FaTelegram } from 'react-icons/fa'
 
-import { DAOType } from '@senate/common-types'
 import { trpc } from '../../../utils/trpc'
 import { inferProcedureOutput } from '@trpc/server'
 import { AppRouter } from '../../../server/trpc/router/_app'
@@ -94,7 +92,7 @@ export const DaoItem = (props: {
                                 {/*footer*/}
                                 <div className="flex items-center justify-end rounded-b border-t border-solid border-slate-200 p-6">
                                     <button
-                                        className="background-transparent mr-1 mb-1 px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none"
+                                        className="mr-1 mb-1 px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none"
                                         type="button"
                                         onClick={() => setShowModal(false)}
                                     >
