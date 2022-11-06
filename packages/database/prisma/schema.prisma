@@ -2,126 +2,144 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 generator dbml {
-    provider = "prisma-dbml-generator"
+  provider = "prisma-dbml-generator"
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id            String         @id @default(cuid())
-    address       String         @unique
-    proxies       UserProxy[]
-    subscriptions Subscription[]
+  id            String         @id @default(cuid())
+  address       String         @unique
+  proxies       UserProxy[]
+  subscriptions Subscription[]
 }
 
 model UserProxy {
-    id      String @id @default(cuid())
-    address String
-    user    User   @relation(fields: [userId], references: [id])
-    userId  String
+  id      String @id @default(cuid())
+  address String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
 }
 
 model DAO {
-    id            String         @id @default(cuid())
-    name          String         @unique
-    picture       String
-    handlers      DAOHandler[]
-    subscriptions Subscription[]
-    proposals     Proposal[]
-    votes         Vote[]
+  id            String         @id @default(cuid())
+  name          String         @unique
+  picture       String
+  handlers      DAOHandler[]
+  subscriptions Subscription[]
+  proposals     Proposal[]
+  votes         Vote[]
 }
 
 model DAOHandler {
-    id      String         @id @default(cuid())
-    type    DAOHandlerType
-    decoder Json //depends on type
-    dao     DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
-    daoId   String
+  id      String         @id @default(cuid())
+  type    DAOHandlerType
+  decoder Json //depends on type
+  dao     DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  daoId   String
 
-    @@unique([daoId, type])
+  @@unique([daoId, type])
 }
 
 enum DAOHandlerType {
-    BRAVO1
-    BRAVO2
-    MAKER_EXECUTIVE
-    MAKER_POLL_CREATE
-    MAKER_POLL_VOTE
-    SNAPSHOT
+  BRAVO1
+  BRAVO2
+  MAKER_EXECUTIVE
+  MAKER_POLL_CREATE
+  MAKER_POLL_VOTE
+  SNAPSHOT
 }
 
 enum ProposalType {
-    BRAVO
-    MAKER_EXECUTIVE
-    MAKER_POLL
-    SNAPSHOT
+  BRAVO
+  MAKER_EXECUTIVE
+  MAKER_POLL
+  SNAPSHOT
 }
 
 model Proposal {
-    id           String       @id @default(cuid())
-    externalId   String       @unique
-    name         String
-    dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
-    daoId        String
-    daoHandlerId String
-    proposalType ProposalType
-    votes        Vote[]
-    data         Json         @db.Json // depends on daoHandlerId.type
-    url          String
+  id           String       @id @default(cuid())
+  externalId   String       @unique
+  name         String
+  dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  daoId        String
+  daoHandlerId String
+  proposalType ProposalType
+  votes        Vote[]
+  data         Json         @db.Json // depends on daoHandlerId.type
+  url          String
 
-    @@unique([externalId, daoId])
+  @@unique([externalId, daoId])
 }
 
 model Vote {
-    id           String       @id @default(cuid())
-    options      VoteOption[]
-    voterAddress String
-    proposal     Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
-    proposalId   String
-    dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
-    daoId        String
-    daoHandlerId String
+  id           String       @id @default(cuid())
+  options      VoteOption[]
+  voterAddress String
+  proposal     Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  proposalId   String
+  dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  daoId        String
+  daoHandlerId String
 
-    @@unique([voterAddress, daoId, proposalId])
+  @@unique([voterAddress, daoId, proposalId])
 }
 
 model VoteOption {
-    id         String @id @default(cuid())
-    option     String
-    optionName String
+  id         String @id @default(cuid())
+  option     String
+  optionName String
 
-    vote           Vote   @relation(fields: [voterAddress, voteDaoId, voteProposalId], references: [voterAddress, daoId, proposalId], onDelete: Cascade)
-    voterAddress   String
-    voteDaoId      String
-    voteProposalId String
+  vote           Vote   @relation(fields: [voterAddress, voteDaoId, voteProposalId], references: [voterAddress, daoId, proposalId], onDelete: Cascade)
+  voterAddress   String
+  voteDaoId      String
+  voteProposalId String
 
-    @@unique([voteProposalId, option])
+  @@unique([voteProposalId, option])
 }
 
 model VoterLatestVoteBlock {
-    id              String @id @default(cuid())
-    voterAddress    String
-    daoHandlerId    String
-    latestVoteBlock Int
+  id              String @id @default(cuid())
+  voterAddress    String
+  daoHandlerId    String
+  latestVoteBlock Int
 
-    @@unique([voterAddress, daoHandlerId])
+  @@unique([voterAddress, daoHandlerId])
 }
 
 model Subscription {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-    dao  DAO  @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dao  DAO  @relation(fields: [daoId], references: [id], onDelete: Cascade)
 
-    userId String
-    daoId  String
+  userId String
+  daoId  String
 
-    @@unique([userId, daoId])
+  @@unique([userId, daoId])
+}
+
+model DAORefreshQueue {
+  id     String        @id @default(cuid())
+  daoId  String
+  status RefreshStatus
+}
+
+model UsersRefreshQueue {
+  id     String        @id @default(cuid())
+  userId String
+  status RefreshStatus
+}
+
+enum RefreshStatus {
+  NEW
+  PENDING
+  DONE
 }

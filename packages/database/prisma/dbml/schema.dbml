@@ -107,6 +107,18 @@ Table Subscription {
   }
 }
 
+Table DAORefreshQueue {
+  id String [pk]
+  daoId String [not null]
+  status RefreshStatus [not null]
+}
+
+Table UsersRefreshQueue {
+  id String [pk]
+  userId String [not null]
+  status RefreshStatus [not null]
+}
+
 Enum DAOHandlerType {
   BRAVO1
   BRAVO2
@@ -121,6 +133,12 @@ Enum ProposalType {
   MAKER_EXECUTIVE
   MAKER_POLL
   SNAPSHOT
+}
+
+Enum RefreshStatus {
+  NEW
+  PENDING
+  DONE
 }
 
 Ref: UserProxy.userId > User.id
