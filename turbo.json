@@ -25,6 +25,8 @@
     "db:migrate:deploy": {},
     "db:push": { "cache": false },
     "db:seed": { "cache": false },
+    "refresher:start": {},
+    "refresher:dev": {},
     "generate": {},
     "lint": { "cache": false },
     "lint:fix": { "cache": false },

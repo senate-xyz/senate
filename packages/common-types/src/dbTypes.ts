@@ -9,10 +9,12 @@ import {
     User as UserModelPrisma,
     DAOHandler as DAOHandlerModelPrisma,
     VoteOption as VoteOptionModelPrisma,
+    RefreshStatus as RefreshStatusPrisma,
 } from '@prisma/client'
 
 export const ProposalType = ProposalTypePrisma
 export const DAOHandlerType = DAOHandlerTypePrisma
+export const RefreshStatus = RefreshStatusPrisma
 export type DAO = DAOModelPrisma
 export type Subscription = SubscriptionModelPrisma
 export type Vote = VoteModelPrisma
