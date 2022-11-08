@@ -130,12 +130,16 @@ model DAORefreshQueue {
   id     String        @id @default(cuid())
   daoId  String
   status RefreshStatus
+
+  @@unique([daoId, status])
 }
 
 model UsersRefreshQueue {
   id     String        @id @default(cuid())
   userId String
   status RefreshStatus
+
+  @@unique([userId, status])
 }
 
 enum RefreshStatus {

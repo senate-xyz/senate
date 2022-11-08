@@ -16,6 +16,7 @@ import { updateMakerVotes } from './votes/makerVotes'
 import { updateSnapshotVotes } from './votes/snapshotVotes'
 
 import { prisma } from '@senate/database'
+import { RefreshStatus } from '@senate/common-types'
 
 @Injectable()
 export class AppService {
@@ -69,6 +70,18 @@ export class AppService {
                     break
             }
         }
+
+        await prisma.dAORefreshQueue.update({
+            where: {
+                daoId_status: {
+                    daoId: dao.id,
+                    status: RefreshStatus.PENDING,
+                },
+            },
+            data: {
+                status: RefreshStatus.DONE,
+            },
+        })
     }
 
     async updateVotes(daoId: string, voterAddress: string) {
@@ -127,5 +140,31 @@ export class AppService {
                     break
             }
         }
+
+        const user = await prisma.user
+            .findFirstOrThrow({
+                where: {
+                    address: voterAddress,
+                },
+            })
+            .catch((e) =>
+                console.log(
+                    'Cannot update user refresh status. Probably a proxy'
+                )
+            )
+
+        if (!user) return
+
+        await prisma.usersRefreshQueue.update({
+            where: {
+                userId_status: {
+                    userId: user.id,
+                    status: RefreshStatus.PENDING,
+                },
+            },
+            data: {
+                status: RefreshStatus.DONE,
+            },
+        })
     }
 }

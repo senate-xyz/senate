@@ -1,4 +1,6 @@
 import { prisma } from '@senate/database'
+import { z } from 'zod'
+import { RefreshStatus } from '../../../../../../packages/common-types/dist'
 
 import { router, publicProcedure } from '../trpc'
 
@@ -50,43 +52,69 @@ export const publicRouter = router({
         })
         return daosList
     }),
-    refreshAllProposals: publicProcedure.mutation(async () => {
-        const daos = await prisma.dAO.findMany({})
-
-        daos.forEach(async (dao) => {
-            await fetch(
-                `${process.env.DETECTIVE_URL}/updateProposals?daoId=${dao.id}`,
-                {
-                    method: 'POST',
-                }
-            )
-        })
-    }),
-    refreshAllVotes: publicProcedure.mutation(async () => {
-        const daos = await prisma.dAO.findMany({})
-        const users = await prisma.user.findMany({})
-        const userProxies = await prisma.userProxy.findMany({})
-
-        daos.forEach(async (dao) => {
-            users.forEach(async (user) => {
-                await fetch(
-                    `${process.env.DETECTIVE_URL}/updateVotes?daoId=${dao.id}&voterAddress=${user.address}`,
-                    {
-                        method: 'POST',
-                    }
-                )
+    refreshDao: publicProcedure
+        .input(
+            z.object({
+                daoId: z.string(),
             })
-            userProxies.forEach(async (userProxy) => {
-                await fetch(
-                    `${process.env.DETECTIVE_URL}/updateVotes?daoId=${dao.id}&voterAddress=${userProxy.address}`,
-                    {
-                        method: 'POST',
-                    }
-                )
+        )
+        .mutation(async ({ input }) => {
+            const dao = await prisma.dAO
+                .findFirstOrThrow({
+                    where: {
+                        id: input.daoId,
+                    },
+                    select: {
+                        id: true,
+                    },
+                })
+                .catch(() => {
+                    return { id: '0' }
+                })
+            await prisma.dAORefreshQueue.create({
+                data: {
+                    status: RefreshStatus.NEW,
+                    daoId: dao.id,
+                },
             })
-        })
-    }),
-    refreshAllProxyVotes: publicProcedure.mutation(() => {
-        console.log('refreshAllProxyVotes')
-    }),
+        }),
+    // refreshAllProposals: publicProcedure.mutation(async () => {
+    //     const daos = await prisma.dAO.findMany({})
+
+    //     daos.forEach(async (dao) => {
+    //         await fetch(
+    //             `${process.env.DETECTIVE_URL}/updateProposals?daoId=${dao.id}`,
+    //             {
+    //                 method: 'POST',
+    //             }
+    //         )
+    //     })
+    // }),
+    // refreshAllVotes: publicProcedure.mutation(async () => {
+    //     const daos = await prisma.dAO.findMany({})
+    //     const users = await prisma.user.findMany({})
+    //     const userProxies = await prisma.userProxy.findMany({})
+
+    //     daos.forEach(async (dao) => {
+    //         users.forEach(async (user) => {
+    //             await fetch(
+    //                 `${process.env.DETECTIVE_URL}/updateVotes?daoId=${dao.id}&voterAddress=${user.address}`,
+    //                 {
+    //                     method: 'POST',
+    //                 }
+    //             )
+    //         })
+    //         userProxies.forEach(async (userProxy) => {
+    //             await fetch(
+    //                 `${process.env.DETECTIVE_URL}/updateVotes?daoId=${dao.id}&voterAddress=${userProxy.address}`,
+    //                 {
+    //                     method: 'POST',
+    //                 }
+    //             )
+    //         })
+    //     })
+    // }),
+    // refreshAllProxyVotes: publicProcedure.mutation(() => {
+    //     console.log('refreshAllProxyVotes')
+    // }),
 })

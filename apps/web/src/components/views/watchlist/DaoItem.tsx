@@ -16,6 +16,8 @@ export const DaoItem = (props: {
     const subscribe = trpc.user.userSubscribe.useMutation()
     const unsubscribe = trpc.user.userUnsubscribe.useMutation()
 
+    const refreshDao = trpc.public.refreshDao.useMutation()
+
     const [subscribed, setSubscribed] = useState(
         props.dao.subscriptions.length > 0 ? true : false
     )
@@ -89,6 +91,18 @@ export const DaoItem = (props: {
                                         </button>
                                     )}
                                 </div>
+                                <button
+                                    className="mr-1 mb-1 rounded bg-blue-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-blue-600"
+                                    type="button"
+                                    onClick={() => {
+                                        refreshDao.mutate({
+                                            daoId: props.dao.id,
+                                        })
+                                    }}
+                                >
+                                    Refresh DAO
+                                </button>
+
                                 {/*footer*/}
                                 <div className="flex items-center justify-end rounded-b border-t border-solid border-slate-200 p-6">
                                     <button
