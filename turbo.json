@@ -27,7 +27,7 @@
     "db:seed": { "cache": false },
     "refresher:start": {},
     "refresher:dev": {},
-    "generate": {},
+    "generate": { "cache": false },
     "lint": { "cache": false },
     "lint:fix": { "cache": false },
     "prettier": { "cache": false },

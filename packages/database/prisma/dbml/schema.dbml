@@ -111,12 +111,20 @@ Table DAORefreshQueue {
   id String [pk]
   daoId String [not null]
   status RefreshStatus [not null]
+
+  indexes {
+    (daoId, status) [unique]
+  }
 }
 
 Table UsersRefreshQueue {
   id String [pk]
   userId String [not null]
   status RefreshStatus [not null]
+
+  indexes {
+    (userId, status) [unique]
+  }
 }
 
 Enum DAOHandlerType {

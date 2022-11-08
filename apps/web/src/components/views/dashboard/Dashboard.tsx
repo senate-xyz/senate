@@ -6,8 +6,9 @@ import { DashboardTable } from './table/DashboardTable'
 export const DashboardHeader = () => <p>Dashboard</p>
 
 export const DashboardView = () => {
-    const refreshAllProposals = trpc.public.refreshAllProposals.useMutation()
-    const refreshAllVotes = trpc.public.refreshAllVotes.useMutation()
+    const trpcUtil = trpc.useContext()
+    const refreshMyVotes = trpc.user.refreshMyVotes.useMutation()
+    const refreshStatus = trpc.user.refreshStatus.useQuery()
 
     const { data: session } = useSession()
 
@@ -24,21 +25,17 @@ export const DashboardView = () => {
                 <button
                     className="w-auto self-end m-2 bg-red-200 p-1 rounded-sm"
                     onClick={() => {
-                        refreshAllProposals.mutate()
+                        refreshMyVotes.mutate()
+                        trpcUtil.invalidate()
                     }}
+                    disabled={
+                        refreshStatus.data?.status == 'PENDING' ||
+                        refreshStatus.data?.status == 'NEW'
+                    }
                 >
-                    Refresh all proposals
+                    Refresh my votes
                 </button>
-
-                <button
-                    className="w-auto self-end m-2 bg-red-200 p-1 rounded-sm"
-                    onClick={() => {
-                        refreshAllVotes.mutate()
-                    }}
-                >
-                    Refresh all votes
-                </button>
-
+                Refresh status: {refreshStatus.data?.status}
                 <DashboardTable proposals={proposals.data} />
             </div>
         </div>

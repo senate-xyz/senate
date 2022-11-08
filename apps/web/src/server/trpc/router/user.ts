@@ -1,5 +1,6 @@
 import { prisma } from '@senate/database'
 import { z } from 'zod'
+import { RefreshStatus } from '../../../../../../packages/common-types/dist'
 import { router, publicProcedure } from '../trpc'
 
 export const userRouter = router({
@@ -252,4 +253,46 @@ export const userRouter = router({
                     return true
                 })
         }),
+
+    refreshStatus: publicProcedure.query(async ({ ctx }) => {
+        const user = await prisma.user
+            .findFirstOrThrow({
+                where: {
+                    address: { equals: String(ctx.session?.user?.name) },
+                },
+                select: {
+                    id: true,
+                },
+            })
+            .catch(() => {
+                return { id: '0' }
+            })
+        const status = await prisma.usersRefreshQueue.findFirst({
+            where: {
+                userId: user.id,
+            },
+        })
+        return status
+    }),
+
+    refreshMyVotes: publicProcedure.mutation(async ({ ctx }) => {
+        const user = await prisma.user
+            .findFirstOrThrow({
+                where: {
+                    address: { equals: String(ctx.session?.user?.name) },
+                },
+                select: {
+                    id: true,
+                },
+            })
+            .catch(() => {
+                return { id: '0' }
+            })
+        await prisma.usersRefreshQueue.create({
+            data: {
+                status: RefreshStatus.NEW,
+                userId: user.id,
+            },
+        })
+    }),
 })
