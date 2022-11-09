@@ -21,7 +21,7 @@ const refreshDaos = async () => {
     distinct: ["daoId"],
   });
 
-  if (!daosRefreshList) console.log("No DAOs to refresh.");
+  if (!daosRefreshList.length) console.log("No DAOs to refresh.");
 
   for (const daoRefreshEntry of daosRefreshList) {
     await prisma.dAORefreshQueue.update({
@@ -30,6 +30,7 @@ const refreshDaos = async () => {
       },
       data: {
         status: RefreshStatus.PENDING,
+        updatedAt: new Date(),
       },
     });
 
@@ -52,7 +53,7 @@ const refreshUsers = async () => {
     distinct: ["userId"],
   });
 
-  if (!usersRefreshList) console.log("No users to refresh.");
+  if (!usersRefreshList.length) console.log("No users to refresh.");
 
   for (const userRefreshEntry of usersRefreshList) {
     console.log(`Refresh userId: ${userRefreshEntry.userId}`);
@@ -85,6 +86,9 @@ const refreshUsers = async () => {
     });
 
     for (const sub of userSubs) {
+      console.log(
+        `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${user.address}`
+      );
       await fetch(
         `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${user.address}`,
         {
@@ -95,6 +99,9 @@ const refreshUsers = async () => {
       });
 
       for (const proxy of userProxies) {
+        console.log(
+          `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${proxy.address}`
+        );
         await fetch(
           `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${proxy.address}`,
           {

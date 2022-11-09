@@ -14,7 +14,7 @@ export const updateMakerPollVotes = async (
     daoHandler: DAOHandler,
     voterAddress: string
 ) => {
-    logger.log('Updating Maker Poll votes')
+    logger.log(`Updating Maker Poll votes for ${voterAddress}`)
     let votes
 
     try {
@@ -32,6 +32,7 @@ export const updateMakerPollVotes = async (
         const currentBlock = await provider.getBlockNumber()
 
         votes = await getVotes(daoHandler, voterAddress, latestVoteBlock)
+
         if (!votes) return
 
         for (const vote of votes) {
@@ -118,9 +119,6 @@ const getVotes = async (
     voterAddress: string,
     latestVoteBlock: number
 ): Promise<any> => {
-    if (!daoHandler.decoder) return
-    if (!Array.isArray(daoHandler.decoder)) return
-
     const iface = new ethers.utils.Interface(
         JSON.parse(daoHandler.decoder['abi'])
     )

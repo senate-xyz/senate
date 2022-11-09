@@ -3,17 +3,14 @@ import { prisma } from '@senate/database'
 import { DAOHandler } from '@senate/common-types'
 import { Logger, InternalServerErrorException } from '@nestjs/common'
 
-const logger = new Logger('MakerExecutiveProposals')
+const logger = new Logger('SnapshotVotes')
 
 export const updateSnapshotVotes = async (
     daoHandler: DAOHandler,
     voterAddress: string,
     daoName: string
 ) => {
-    if (!daoHandler.decoder) return
-    if (!Array.isArray(daoHandler.decoder)) return
-
-    logger.log(`Updating snapshot votes for ${daoName}`)
+    logger.log(`Updating Snapshot votes for ${voterAddress}`)
     let votes
 
     try {

@@ -13,7 +13,7 @@ type Vote = {
     support: string
 }
 
-const logger = new Logger('MakerExecutiveProposals')
+const logger = new Logger('BravoVotes')
 
 export const updateGovernorBravoVotes = async (
     daoHandler: DAOHandler,
