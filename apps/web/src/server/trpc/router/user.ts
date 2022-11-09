@@ -292,6 +292,7 @@ export const userRouter = router({
             data: {
                 status: RefreshStatus.NEW,
                 userId: user.id,
+                updatedAt: new Date(),
             },
         })
     }),

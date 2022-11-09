@@ -127,19 +127,17 @@ model Subscription {
 }
 
 model DAORefreshQueue {
-  id     String        @id @default(cuid())
-  daoId  String
-  status RefreshStatus
-
-  @@unique([daoId, status])
+  id        String        @id @default(cuid())
+  daoId     String
+  status    RefreshStatus
+  updatedAt DateTime
 }
 
 model UsersRefreshQueue {
-  id     String        @id @default(cuid())
-  userId String
-  status RefreshStatus
-
-  @@unique([userId, status])
+  id        String        @id @default(cuid())
+  userId    String
+  status    RefreshStatus
+  updatedAt DateTime
 }
 
 enum RefreshStatus {

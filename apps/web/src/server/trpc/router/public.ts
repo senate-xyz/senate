@@ -75,6 +75,7 @@ export const publicRouter = router({
                 data: {
                     status: RefreshStatus.NEW,
                     daoId: dao.id,
+                    updatedAt: new Date(),
                 },
             })
         }),

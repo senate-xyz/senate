@@ -8,7 +8,7 @@ const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL),
 })
 
-const logger = new Logger('UpdateGovernorBravoProposals')
+const logger = new Logger('BravoProposals')
 
 export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
     if (!daoHandler.decoder) {

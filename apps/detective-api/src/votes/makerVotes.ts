@@ -8,13 +8,13 @@ const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL),
 })
 
-const logger = new Logger('MakerVotes')
+const logger = new Logger('MakerExecutiveVotes')
 
 export const updateMakerVotes = async (
     daoHandler: DAOHandler,
     voterAddress: string
 ) => {
-    logger.log(`Updating Maker votes`)
+    logger.log(`Updating Maker votes for ${voterAddress}`)
     let votedSpells
 
     try {

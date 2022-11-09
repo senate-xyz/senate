@@ -23,10 +23,8 @@ export class AppService {
     private readonly logger = new Logger(AppService.name)
 
     async updateProposals(daoId: string) {
-        let dao
-
-        try {
-            dao = await prisma.dAO.findFirst({
+        const dao = await prisma.dAO
+            .findFirstOrThrow({
                 where: {
                     id: daoId,
                 },
@@ -35,10 +33,10 @@ export class AppService {
                     subscriptions: true,
                 },
             })
-        } catch (err) {
-            this.logger.error(err)
-            throw new InternalServerErrorException()
-        }
+            .catch((err) => {
+                this.logger.error(err)
+                throw new InternalServerErrorException()
+            })
 
         if (!dao) {
             throw new NotFoundException('DAO not found')
@@ -71,15 +69,20 @@ export class AppService {
             }
         }
 
+        const daoRefreshEntry = await prisma.dAORefreshQueue.findFirst({
+            where: {
+                daoId: dao.id,
+                status: RefreshStatus.PENDING,
+            },
+        })
+
         await prisma.dAORefreshQueue.update({
             where: {
-                daoId_status: {
-                    daoId: dao.id,
-                    status: RefreshStatus.PENDING,
-                },
+                id: daoRefreshEntry.id,
             },
             data: {
                 status: RefreshStatus.DONE,
+                updatedAt: new Date(),
             },
         })
     }
@@ -155,15 +158,19 @@ export class AppService {
 
         if (!user) return
 
+        const userRefreshEntry = await prisma.usersRefreshQueue.findFirst({
+            where: {
+                userId: user.id,
+            },
+        })
+
         await prisma.usersRefreshQueue.update({
             where: {
-                userId_status: {
-                    userId: user.id,
-                    status: RefreshStatus.PENDING,
-                },
+                id: userRefreshEntry.id,
             },
             data: {
                 status: RefreshStatus.DONE,
+                updatedAt: new Date(),
             },
         })
     }

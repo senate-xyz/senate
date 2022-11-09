@@ -80,7 +80,7 @@ export const Tracker = (props: { address: string; useProxies: boolean }) => {
 
     let userVotes
 
-    if (!props.useProxies) {
+    if (!props.useProxies && props.address) {
         userVotes = trpc.tracker.track.useQuery({
             addresses: [props.address],
         })
