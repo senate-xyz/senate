@@ -237,31 +237,6 @@ export const userRouter = router({
                 })
         }),
 
-    refreshStatus: publicProcedure.query(async ({ ctx }) => {
-        const user = await prisma.user
-            .findFirstOrThrow({
-                where: {
-                    name: { equals: String(ctx.session?.user?.name) },
-                },
-                select: {
-                    id: true,
-                },
-            })
-            .catch(() => {
-                return { id: '0' }
-            })
-        const status = await prisma.voter.findMany({
-            where: {
-                users: {
-                    every: {
-                        id: user.id,
-                    },
-                },
-            },
-        })
-        return status
-    }),
-
     refreshMyVotes: publicProcedure.mutation(async ({ ctx }) => {
         const user = await prisma.user
             .findFirstOrThrow({
