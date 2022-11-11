@@ -38,7 +38,7 @@ export const userRouter = router({
                             create: {
                                 address: input.address,
                                 refreshStatus: RefreshStatus.NEW,
-                                lastRefresh: new Date(),
+                                lastRefresh: new Date(0),
                             },
                         },
                     },
@@ -292,7 +292,6 @@ export const userRouter = router({
             },
             data: {
                 refreshStatus: RefreshStatus.NEW,
-                lastRefresh: new Date(),
             },
         })
         return true
