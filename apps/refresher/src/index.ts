@@ -70,7 +70,7 @@ const refreshUsers = async () => {
     const users = await prisma.user.findMany({
       where: {
         voters: {
-          every: {
+          some: {
             id: voter.id,
           },
         },
@@ -90,7 +90,7 @@ const refreshUsers = async () => {
 
     for (const sub of totalSubs) {
       console.log(
-        `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
+        `Refresh - PENDING -  voterId ${voter.address} - ${sub.daoId} at ${voter.lastRefresh} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
       );
       await fetch(
         `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`,

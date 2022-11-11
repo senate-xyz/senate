@@ -75,38 +75,32 @@ export const TrackerView = (props: {
     )
 }
 
-export const Tracker = (props: { address: string; useProxies: boolean }) => {
+export const Tracker = (props: { address: string }) => {
     const [selectedDao, setSelectedDao] = useState<string>()
 
-    let userVotes
+    const voters = trpc.user.voters.useQuery()
 
-    if (!props.useProxies && props.address) {
-        userVotes = trpc.tracker.track.useQuery({
-            addresses: [props.address],
-        })
-    } else {
-        const proxies = trpc.user.voters.useQuery()
-        userVotes = trpc.tracker.track.useQuery({
-            addresses: proxies.data
-                ? [props.address, ...proxies.data.map((voter) => voter.address)]
-                : Array.from(props.address),
-        })
-    }
+    const votes = trpc.tracker.track.useQuery({
+        addresses: props.address
+            ? [props.address]
+            : voters.data
+            ? [...voters.data.map((voter) => voter.address)]
+            : [props.address],
+    })
 
-    const daosTabs = userVotes.data
+    const daosTabs = votes.data
         ?.map((vote) => vote.dao)
         .filter((element, index, array) => {
             return array.findIndex((a) => a.name == element.name) === index
         })
 
-    if (!userVotes.data) return <div>Loading</div>
-    if (!daosTabs) return <div>No data</div>
+    if (!daosTabs || !votes.data) return <div>No data</div>
 
     return (
         <TrackerView
-            shareButton={props.useProxies ? false : true}
+            shareButton={false}
             daosTabs={daosTabs}
-            votes={userVotes.data}
+            votes={votes.data}
             selectedDao={selectedDao}
             setSelectedDao={setSelectedDao}
         />

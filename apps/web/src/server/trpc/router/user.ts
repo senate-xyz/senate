@@ -295,5 +295,6 @@ export const userRouter = router({
                 lastRefresh: new Date(),
             },
         })
+        return true
     }),
 })
