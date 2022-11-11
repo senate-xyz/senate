@@ -15,16 +15,20 @@ export const Primary = Template.bind({})
 Primary.args = {
     daosTabs: [
         {
-            id: 'cl95izuyi0002aqdvdgb721xj',
+            id: 'clabprufv00007yx2qcjlpin5',
             name: 'Aave',
             picture:
                 'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+            refreshStatus: 'DONE',
+            lastRefresh: new Date('2022-11-11T11:37:02.556Z'),
         },
         {
-            id: 'cl95izuys000caqdv0c4y2fht',
-            name: 'ENS',
+            id: 'clabprugh000a7yx2w7sln5pa',
+            name: 'MakerDAO',
             picture:
-                'https://cdn.stamp.fyi/space/ens.eth?s=160&cb=bc8a2856691e05ab',
+                'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+            refreshStatus: 'DONE',
+            lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
         },
     ],
 }

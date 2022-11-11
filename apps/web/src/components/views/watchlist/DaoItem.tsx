@@ -5,7 +5,6 @@ import { FaBell, FaDiscord, FaSlack, FaTelegram } from 'react-icons/fa'
 import { trpc } from '../../../utils/trpc'
 import { inferProcedureOutput } from '@trpc/server'
 import { AppRouter } from '../../../server/trpc/router/_app'
-import { LOADIPHLPAPI } from 'dns'
 
 export const DaoItem = (props: {
     dao:

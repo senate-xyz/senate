@@ -15,26 +15,30 @@ Primary.args = {
     shareButton: false,
     daosTabs: [
         {
-            id: 'cl9zbtbgb00007ygci5wct46m',
+            id: 'clabprufv00007yx2qcjlpin5',
             name: 'Aave',
             picture:
                 'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+            refreshStatus: 'DONE',
+            lastRefresh: new Date('2022-11-11T11:37:02.556Z'),
         },
         {
-            id: 'cl9zbtd5c000a7ygcl0exngl0',
+            id: 'clabprugh000a7yx2w7sln5pa',
             name: 'MakerDAO',
             picture:
                 'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+            refreshStatus: 'DONE',
+            lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
         },
     ],
     votes: [
         {
-            id: 'cl9zcepjy00iy7yiptbi7amty',
+            id: 'claccprkl004g7yr4u5vescmi',
             externalId:
                 '0x1d85c2688b000a9249668c7eb16d59095bb74cb9f0c244140ceb94c95a7ab877',
             name: '[ARC] Risk Parameter Updates for Aave V2: 2022-10-06',
-            daoId: 'cl9zbtbgb00007ygci5wct46m',
-            daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+            daoId: 'clabprufv00007yx2qcjlpin5',
+            daoHandlerId: 'clabprufv00027yx2q4upminp',
             proposalType: 'SNAPSHOT',
             data: {
                 timeEnd: 1665522000,
@@ -43,18 +47,20 @@ Primary.args = {
             },
             url: 'https://snapshot.org/#/aave.eth/proposal/0x1d85c2688b000a9249668c7eb16d59095bb74cb9f0c244140ceb94c95a7ab877',
             dao: {
-                id: 'cl9zbtbgb00007ygci5wct46m',
+                id: 'clabprufv00007yx2qcjlpin5',
                 name: 'Aave',
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T11:37:02.556Z'),
             },
             votes: [
                 {
-                    id: 'cl9zclqj500r07yip3rdaa3kk',
+                    id: 'clacd0hs6000j7y2lizgfsn2k',
                     voterAddress: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
-                    proposalId: 'cl9zcepjy00iy7yiptbi7amty',
-                    daoId: 'cl9zbtbgb00007ygci5wct46m',
-                    daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+                    proposalId: 'claccprkl004g7yr4u5vescmi',
+                    daoId: 'clabprufv00007yx2qcjlpin5',
+                    daoHandlerId: 'clabprufv00027yx2q4upminp',
                     options: [
                         {
                             optionName: 'YAE',
@@ -64,12 +70,12 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcepjz00iz7yipdt2jyd8x',
+            id: 'claccprkl004h7yr41f3xnllb',
             externalId:
                 '0xad105e87d4df487bbe1daec2cd94ca49d1ea595901f5773c1804107539288b59',
             name: 'Chaos Labs <> Aave',
-            daoId: 'cl9zbtbgb00007ygci5wct46m',
-            daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+            daoId: 'clabprufv00007yx2qcjlpin5',
+            daoHandlerId: 'clabprufv00027yx2q4upminp',
             proposalType: 'SNAPSHOT',
             data: {
                 timeEnd: 1665331200,
@@ -78,18 +84,20 @@ Primary.args = {
             },
             url: 'https://snapshot.org/#/aave.eth/proposal/0xad105e87d4df487bbe1daec2cd94ca49d1ea595901f5773c1804107539288b59',
             dao: {
-                id: 'cl9zbtbgb00007ygci5wct46m',
+                id: 'clabprufv00007yx2qcjlpin5',
                 name: 'Aave',
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T11:37:02.556Z'),
             },
             votes: [
                 {
-                    id: 'cl9zclrkp00r77yipcdci5y4i',
+                    id: 'clacd0hsb000q7y2lgsxkohk3',
                     voterAddress: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
-                    proposalId: 'cl9zcepjz00iz7yipdt2jyd8x',
-                    daoId: 'cl9zbtbgb00007ygci5wct46m',
-                    daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+                    proposalId: 'claccprkl004h7yr41f3xnllb',
+                    daoId: 'clabprufv00007yx2qcjlpin5',
+                    daoHandlerId: 'clabprufv00027yx2q4upminp',
                     options: [
                         {
                             optionName: ' Yes',
@@ -99,12 +107,12 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcepjz00j17yippzw4m944',
+            id: 'claccprkl004j7yr4p1gkdq8m',
             externalId:
                 '0x584eb4e0f79e1d9dcdd99b3a0c831bfc3c654af3f8f619d5f68eae23cd9cb149',
             name: 'Aave v3 Ethereum. Approval of path forward',
-            daoId: 'cl9zbtbgb00007ygci5wct46m',
-            daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+            daoId: 'clabprufv00007yx2qcjlpin5',
+            daoHandlerId: 'clabprufv00027yx2q4upminp',
             proposalType: 'SNAPSHOT',
             data: {
                 timeEnd: 1665482400,
@@ -113,18 +121,20 @@ Primary.args = {
             },
             url: 'https://snapshot.org/#/aave.eth/proposal/0x584eb4e0f79e1d9dcdd99b3a0c831bfc3c654af3f8f619d5f68eae23cd9cb149',
             dao: {
-                id: 'cl9zbtbgb00007ygci5wct46m',
+                id: 'clabprufv00007yx2qcjlpin5',
                 name: 'Aave',
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T11:37:02.556Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcloub00qt7yips4guemow',
+                    id: 'clacd0hrv000b7y2l1fqhz2w8',
                     voterAddress: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
-                    proposalId: 'cl9zcepjz00j17yippzw4m944',
-                    daoId: 'cl9zbtbgb00007ygci5wct46m',
-                    daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+                    proposalId: 'claccprkl004j7yr4p1gkdq8m',
+                    daoId: 'clabprufv00007yx2qcjlpin5',
+                    daoHandlerId: 'clabprufv00027yx2q4upminp',
                     options: [
                         {
                             optionName: 'Deploy a new Aave v3 Ethereum',
@@ -134,12 +144,12 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcepk100j67yip3s8wa1jx',
+            id: 'claccprkm004o7yr45w0x3xyq',
             externalId:
                 '0x765d1e018f32d7deb8d7b06dc55ac054f75891805a8f6befc2a8d7f497851540',
             name: 'Risk Parameter Updates for Aave V2: 2022-09-22',
-            daoId: 'cl9zbtbgb00007ygci5wct46m',
-            daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+            daoId: 'clabprufv00007yx2qcjlpin5',
+            daoHandlerId: 'clabprufv00027yx2q4upminp',
             proposalType: 'SNAPSHOT',
             data: {
                 timeEnd: 1664312400,
@@ -148,18 +158,20 @@ Primary.args = {
             },
             url: 'https://snapshot.org/#/aave.eth/proposal/0x765d1e018f32d7deb8d7b06dc55ac054f75891805a8f6befc2a8d7f497851540',
             dao: {
-                id: 'cl9zbtbgb00007ygci5wct46m',
+                id: 'clabprufv00007yx2qcjlpin5',
                 name: 'Aave',
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T11:37:02.556Z'),
             },
             votes: [
                 {
-                    id: 'cl9zclsm700rf7yipta74hcyi',
+                    id: 'clacd0hsg000x7y2lezsk2kf5',
                     voterAddress: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
-                    proposalId: 'cl9zcepk100j67yip3s8wa1jx',
-                    daoId: 'cl9zbtbgb00007ygci5wct46m',
-                    daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+                    proposalId: 'claccprkm004o7yr45w0x3xyq',
+                    daoId: 'clabprufv00007yx2qcjlpin5',
+                    daoHandlerId: 'clabprufv00027yx2q4upminp',
                     options: [
                         {
                             optionName: 'YAE',
@@ -169,12 +181,12 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcepk200jb7yipgw7o8aai',
+            id: 'claccprkm004r7yr42gwbp7dq',
             externalId:
                 '0xdaa660ea59f8678748d6f133d7d7ed70b941798aa9a0044a16a1285d09e26bf5',
             name: '[ARC] Whitelist Balancer’s Liquidity Mining Claim',
-            daoId: 'cl9zbtbgb00007ygci5wct46m',
-            daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+            daoId: 'clabprufv00007yx2qcjlpin5',
+            daoHandlerId: 'clabprufv00027yx2q4upminp',
             proposalType: 'SNAPSHOT',
             data: {
                 timeEnd: 1663973940,
@@ -183,18 +195,20 @@ Primary.args = {
             },
             url: 'https://snapshot.org/#/aave.eth/proposal/0xdaa660ea59f8678748d6f133d7d7ed70b941798aa9a0044a16a1285d09e26bf5',
             dao: {
-                id: 'cl9zbtbgb00007ygci5wct46m',
+                id: 'clabprufv00007yx2qcjlpin5',
                 name: 'Aave',
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T11:37:02.556Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcltnp00rm7yipjnmqlpee',
+                    id: 'clacd0hsl00157y2lbm65rmxl',
                     voterAddress: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
-                    proposalId: 'cl9zcepk200jb7yipgw7o8aai',
-                    daoId: 'cl9zbtbgb00007ygci5wct46m',
-                    daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+                    proposalId: 'claccprkm004r7yr42gwbp7dq',
+                    daoId: 'clabprufv00007yx2qcjlpin5',
+                    daoHandlerId: 'clabprufv00027yx2q4upminp',
                     options: [
                         {
                             optionName: 'YAE',
@@ -204,12 +218,12 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcepk400ji7yipfniofk8r',
+            id: 'claccprkn00517yr4pahq1mdz',
             externalId:
                 '0x519f6ecb17b00eb9c2c175c586173b15cfa5199247903cda9ddab48763ddb035',
             name: '[ARC] Ethereum v2 Reserve Factor - aFEI Holding Update ',
-            daoId: 'cl9zbtbgb00007ygci5wct46m',
-            daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+            daoId: 'clabprufv00007yx2qcjlpin5',
+            daoHandlerId: 'clabprufv00027yx2q4upminp',
             proposalType: 'SNAPSHOT',
             data: {
                 timeEnd: 1661763600,
@@ -218,18 +232,20 @@ Primary.args = {
             },
             url: 'https://snapshot.org/#/aave.eth/proposal/0x519f6ecb17b00eb9c2c175c586173b15cfa5199247903cda9ddab48763ddb035',
             dao: {
-                id: 'cl9zbtbgb00007ygci5wct46m',
+                id: 'clabprufv00007yx2qcjlpin5',
                 name: 'Aave',
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T11:37:02.556Z'),
             },
             votes: [
                 {
-                    id: 'cl9zclvqs00s27yiphvkm7903',
+                    id: 'clacd0hst001k7y2lbkpnrbct',
                     voterAddress: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
-                    proposalId: 'cl9zcepk400ji7yipfniofk8r',
-                    daoId: 'cl9zbtbgb00007ygci5wct46m',
-                    daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+                    proposalId: 'claccprkn00517yr4pahq1mdz',
+                    daoId: 'clabprufv00007yx2qcjlpin5',
+                    daoHandlerId: 'clabprufv00027yx2q4upminp',
                     options: [
                         {
                             optionName: 'YAE',
@@ -239,12 +255,12 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcepk500jk7yip5prqi64n',
+            id: 'claccprkn00527yr4uki8l5x7',
             externalId:
                 '0x19df23070be999efbb7caf6cd35c320eb74dd119bcb15d003dc2e82c2bbd0d94',
             name: '[ARC] Risk Parameter Updates for Ethereum Aave v2 Market',
-            daoId: 'cl9zbtbgb00007ygci5wct46m',
-            daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+            daoId: 'clabprufv00007yx2qcjlpin5',
+            daoHandlerId: 'clabprufv00027yx2q4upminp',
             proposalType: 'SNAPSHOT',
             data: {
                 timeEnd: 1661763600,
@@ -253,18 +269,20 @@ Primary.args = {
             },
             url: 'https://snapshot.org/#/aave.eth/proposal/0x19df23070be999efbb7caf6cd35c320eb74dd119bcb15d003dc2e82c2bbd0d94',
             dao: {
-                id: 'cl9zbtbgb00007ygci5wct46m',
+                id: 'clabprufv00007yx2qcjlpin5',
                 name: 'Aave',
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T11:37:02.556Z'),
             },
             votes: [
                 {
-                    id: 'cl9zclupb00ru7yipesy5hwfq',
+                    id: 'clacd0hsp001d7y2lzn26drh8',
                     voterAddress: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
-                    proposalId: 'cl9zcepk500jk7yip5prqi64n',
-                    daoId: 'cl9zbtbgb00007ygci5wct46m',
-                    daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+                    proposalId: 'claccprkn00527yr4uki8l5x7',
+                    daoId: 'clabprufv00007yx2qcjlpin5',
+                    daoHandlerId: 'clabprufv00027yx2q4upminp',
                     options: [
                         {
                             optionName: 'YAE',
@@ -274,12 +292,12 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcepk700jr7yipdtqjzzsr',
+            id: 'claccprkn005b7yr4dnfg4dqj',
             externalId:
                 '0x88e896a245ffeda703e0b8f5494f3e66628be6e32a7243e3341b545c2972857f',
             name: '[ARC] Add MaticX to Polygon v3 Market',
-            daoId: 'cl9zbtbgb00007ygci5wct46m',
-            daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+            daoId: 'clabprufv00007yx2qcjlpin5',
+            daoHandlerId: 'clabprufv00027yx2q4upminp',
             proposalType: 'SNAPSHOT',
             data: {
                 timeEnd: 1661122740,
@@ -288,18 +306,20 @@ Primary.args = {
             },
             url: 'https://snapshot.org/#/aave.eth/proposal/0x88e896a245ffeda703e0b8f5494f3e66628be6e32a7243e3341b545c2972857f',
             dao: {
-                id: 'cl9zbtbgb00007ygci5wct46m',
+                id: 'clabprufv00007yx2qcjlpin5',
                 name: 'Aave',
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T11:37:02.556Z'),
             },
             votes: [
                 {
-                    id: 'cl9zclwsw00s97yipqwyfj80y',
+                    id: 'clacd0hsx001r7y2llp5985ht',
                     voterAddress: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
-                    proposalId: 'cl9zcepk700jr7yipdtqjzzsr',
-                    daoId: 'cl9zbtbgb00007ygci5wct46m',
-                    daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+                    proposalId: 'claccprkn005b7yr4dnfg4dqj',
+                    daoId: 'clabprufv00007yx2qcjlpin5',
+                    daoHandlerId: 'clabprufv00027yx2q4upminp',
                     options: [
                         {
                             optionName: 'YAE',
@@ -309,12 +329,12 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcepk900k37yipi1a07no9',
+            id: 'claccprko005o7yr4ujcfa3pa',
             externalId:
                 '0xb17b3294dcb08316cb623c717add7f82df54948d558992f886be59d0958e9b24',
             name: 'Greenlight for GHO',
-            daoId: 'cl9zbtbgb00007ygci5wct46m',
-            daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+            daoId: 'clabprufv00007yx2qcjlpin5',
+            daoHandlerId: 'clabprufv00027yx2q4upminp',
             proposalType: 'SNAPSHOT',
             data: {
                 timeEnd: 1659261600,
@@ -323,18 +343,20 @@ Primary.args = {
             },
             url: 'https://snapshot.org/#/aave.eth/proposal/0xb17b3294dcb08316cb623c717add7f82df54948d558992f886be59d0958e9b24',
             dao: {
-                id: 'cl9zbtbgb00007ygci5wct46m',
+                id: 'clabprufv00007yx2qcjlpin5',
                 name: 'Aave',
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T11:37:02.556Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcm02a00sw7yipfgop626x',
+                    id: 'clacd0ht7002f7y2ljtghe30p',
                     voterAddress: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
-                    proposalId: 'cl9zcepk900k37yipi1a07no9',
-                    daoId: 'cl9zbtbgb00007ygci5wct46m',
-                    daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+                    proposalId: 'claccprko005o7yr4ujcfa3pa',
+                    daoId: 'clabprufv00007yx2qcjlpin5',
+                    daoHandlerId: 'clabprufv00027yx2q4upminp',
                     options: [
                         {
                             optionName: 'YAE',
@@ -344,12 +366,12 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcepk900k77yipidxsp5zu',
+            id: 'claccprko005s7yr417n4es8b',
             externalId:
                 'bafkreieeyh6pbqwhgryo6v67oxlmnfhaptrgkc3u7y6bvz2y3jdkxgrrh4',
             name: 'ARC: Extend the Safety Module Protection to Aave V2 Arc',
-            daoId: 'cl9zbtbgb00007ygci5wct46m',
-            daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+            daoId: 'clabprufv00007yx2qcjlpin5',
+            daoHandlerId: 'clabprufv00027yx2q4upminp',
             proposalType: 'SNAPSHOT',
             data: {
                 timeEnd: 1659294000,
@@ -358,18 +380,20 @@ Primary.args = {
             },
             url: 'https://snapshot.org/#/aave.eth/proposal/bafkreieeyh6pbqwhgryo6v67oxlmnfhaptrgkc3u7y6bvz2y3jdkxgrrh4',
             dao: {
-                id: 'cl9zbtbgb00007ygci5wct46m',
+                id: 'clabprufv00007yx2qcjlpin5',
                 name: 'Aave',
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T11:37:02.556Z'),
             },
             votes: [
                 {
-                    id: 'cl9zclz0s00so7yipfavveqfd',
+                    id: 'clacd0ht400277y2lu7w963j7',
                     voterAddress: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
-                    proposalId: 'cl9zcepk900k77yipidxsp5zu',
-                    daoId: 'cl9zbtbgb00007ygci5wct46m',
-                    daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+                    proposalId: 'claccprko005s7yr417n4es8b',
+                    daoId: 'clabprufv00007yx2qcjlpin5',
+                    daoHandlerId: 'clabprufv00027yx2q4upminp',
                     options: [
                         {
                             optionName: 'YAE - Do Extend SM to ARC market',
@@ -379,12 +403,12 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcepkb00ke7yipwiquetzj',
+            id: 'claccprkp005x7yr4as71hxfe',
             externalId:
                 'bafkreigdmcfmwvnxfolpds4xkdicgrszgmknig7pz2r2t37tltupdpyfu4',
             name: 'Risk-Off Framework for the Aave Protocol',
-            daoId: 'cl9zbtbgb00007ygci5wct46m',
-            daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+            daoId: 'clabprufv00007yx2qcjlpin5',
+            daoHandlerId: 'clabprufv00027yx2q4upminp',
             proposalType: 'SNAPSHOT',
             data: {
                 timeEnd: 1659153540,
@@ -393,18 +417,20 @@ Primary.args = {
             },
             url: 'https://snapshot.org/#/aave.eth/proposal/bafkreigdmcfmwvnxfolpds4xkdicgrszgmknig7pz2r2t37tltupdpyfu4',
             dao: {
-                id: 'cl9zbtbgb00007ygci5wct46m',
+                id: 'clabprufv00007yx2qcjlpin5',
                 name: 'Aave',
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T11:37:02.556Z'),
             },
             votes: [
                 {
-                    id: 'cl9zclxyx00sg7yip3riad8n9',
+                    id: 'clacd0ht0001z7y2lccjxko16',
                     voterAddress: '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
-                    proposalId: 'cl9zcepkb00ke7yipwiquetzj',
-                    daoId: 'cl9zbtbgb00007ygci5wct46m',
-                    daoHandlerId: 'cl9zbtbgb00027ygc9g6ms9gz',
+                    proposalId: 'claccprkp005x7yr4as71hxfe',
+                    daoId: 'clabprufv00007yx2qcjlpin5',
+                    daoHandlerId: 'clabprufv00027yx2q4upminp',
                     options: [
                         {
                             optionName: '3%',
@@ -414,215 +440,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcdr0e00hs7yip3e1s8iok',
-            externalId: '0x3ea2748a32D53449bee93e2AE101E6d7179d7865',
-            name: 'Update the PROXY_ACTIONS_END_CROPPER Address, Starknet Bridge Deposit Limit Increase, Core Unit MKR Vesting - September 28, 2022',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000b7ygckhwjdq0l',
-            proposalType: 'MAKER_EXECUTIVE',
-            data: {
-                timeEnd: 1664629211,
-                timeStart: 1664323200,
-                timeCreated: 1664323200,
-            },
-            url: 'https://vote.makerdao.com/executive/0x3ea2748a32D53449bee93e2AE101E6d7179d7865',
-            dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
-                name: 'MakerDAO',
-                picture:
-                    'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
-            },
-            votes: [
-                {
-                    id: 'cl9zcn01e00t97yippjeqpp2k',
-                    voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcdr0e00hs7yip3e1s8iok',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000b7ygckhwjdq0l',
-                    options: [
-                        {
-                            optionName: 'Yes',
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            id: 'cl9zcdw1100hx7yip5e3454n7',
-            externalId: '0x0900328701eA2561F530869c4fe088A72256409C',
-            name: 'Monetalis Clydesdale (RWA007-A) Onboarding, Funding Ambassador Program SPF, Core Unit MKR Streams and Transfers - October 5, 2022',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000b7ygckhwjdq0l',
-            proposalType: 'MAKER_EXECUTIVE',
-            data: {
-                timeEnd: 1665410555,
-                timeStart: 1664928000,
-                timeCreated: 1664928000,
-            },
-            url: 'https://vote.makerdao.com/executive/0x0900328701eA2561F530869c4fe088A72256409C',
-            dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
-                name: 'MakerDAO',
-                picture:
-                    'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
-            },
-            votes: [
-                {
-                    id: 'cl9zcn1zf00te7yipht57nwtk',
-                    voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcdw1100hx7yip5e3454n7',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000b7ygckhwjdq0l',
-                    options: [
-                        {
-                            optionName: 'Yes',
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            id: 'cl9zce2ka00i17yipin3ww7gv',
-            externalId: '0x07bFA4db5587A75617aFA9E43624b8C2609497b5',
-            name: 'Core Unit MKR Vesting, Recognized Delegate Compensation, MOMC Parameter Changes - September 07, 2022',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000b7ygckhwjdq0l',
-            proposalType: 'MAKER_EXECUTIVE',
-            data: {
-                timeEnd: 1662798645,
-                timeStart: 1662508800,
-                timeCreated: 1662508800,
-            },
-            url: 'https://vote.makerdao.com/executive/0x07bFA4db5587A75617aFA9E43624b8C2609497b5',
-            dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
-                name: 'MakerDAO',
-                picture:
-                    'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
-            },
-            votes: [
-                {
-                    id: 'cl9zcmxtk00t37yip74fe9ga7',
-                    voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zce2ka00i17yipin3ww7gv',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000b7ygckhwjdq0l',
-                    options: [
-                        {
-                            optionName: 'Yes',
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            id: 'cl9zce74f00i67yipz1etne2p',
-            externalId: '0xdfFa28aAABF9E6a07e19FDf3a9B94fDC93A039f1',
-            name: 'Collateral Auction Parameter Changes, MOMC Parameter Adjustments, Recognized Delegate Compensation for September - October 14, 2022',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000b7ygckhwjdq0l',
-            proposalType: 'MAKER_EXECUTIVE',
-            data: {
-                timeEnd: 1665938003,
-                timeStart: 1665705600,
-                timeCreated: 1665705600,
-            },
-            url: 'https://vote.makerdao.com/executive/0xdfFa28aAABF9E6a07e19FDf3a9B94fDC93A039f1',
-            dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
-                name: 'MakerDAO',
-                picture:
-                    'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
-            },
-            votes: [
-                {
-                    id: 'cl9zcn3sx00tk7yipzhqf46pw',
-                    voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zce74f00i67yipz1etne2p',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000b7ygckhwjdq0l',
-                    options: [
-                        {
-                            optionName: 'Yes',
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            id: 'cl9zcedf400ic7yipwbpj0pdh',
-            externalId: '0x8E4faFef5bF61f09654aDeB46E6bC970BcD42c52',
-            name: 'Enable DC-IAM for RWA-007-A (Monetalis Clydesdale), GUSD PSM Parameter Changes - October 13 , 2022',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000b7ygckhwjdq0l',
-            proposalType: 'MAKER_EXECUTIVE',
-            data: {
-                timeEnd: 1666550447,
-                timeStart: 1666137600,
-                timeCreated: 1666137600,
-            },
-            url: 'https://vote.makerdao.com/executive/0x8E4faFef5bF61f09654aDeB46E6bC970BcD42c52',
-            dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
-                name: 'MakerDAO',
-                picture:
-                    'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
-            },
-            votes: [
-                {
-                    id: 'cl9zcn5mg00tp7yip9rx0gxac',
-                    voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcedf400ic7yipwbpj0pdh',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000b7ygckhwjdq0l',
-                    options: [
-                        {
-                            optionName: 'Yes',
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            id: 'cl9zcek2l00ig7yiph1ydccoe',
-            externalId: '0x4124b7a881DBBF98D72474D1A882d3afE3758526',
-            name: 'rETH Technical Onboarding, Enable Starknet DAI Bridge Fees - October 26, 2022',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000b7ygckhwjdq0l',
-            proposalType: 'MAKER_EXECUTIVE',
-            data: {
-                timeEnd: 1667224931,
-                timeStart: 1666742400,
-                timeCreated: 1666742400,
-            },
-            url: 'https://vote.makerdao.com/executive/0x4124b7a881DBBF98D72474D1A882d3afE3758526',
-            dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
-                name: 'MakerDAO',
-                picture:
-                    'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
-            },
-            votes: [
-                {
-                    id: 'cl9zcn7kl00tv7yipr9ev2gxl',
-                    voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcek2l00ig7yiph1ydccoe',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000b7ygckhwjdq0l',
-                    options: [
-                        {
-                            optionName: 'Yes',
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            id: 'cl9zcenc700ij7yipr21oas92',
+            id: 'clacdap7n00337y2l23e92tjv',
             externalId: '877',
             name: 'Whitelist Oasis.app on rETHUSD Oracle (MIP10c9-SP31) - October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1665676800,
@@ -631,18 +453,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmZzFPF',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcnt4000u17yipnx4fovu9',
+                    id: 'clacdiprf006g7y2lfhghqygz',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcenc700ij7yipr21oas92',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdap7n00337y2l23e92tjv',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -652,11 +476,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zceowa00im7yipafb2h2z1',
+            id: 'clacdapf900347y2lqs40ar5m',
             externalId: '878',
             name: 'Change PSM-GUSD-A Parameters - October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1665676800,
@@ -665,18 +489,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmYffkv',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcnuxq00u67yipotl4gll6',
+                    id: 'clacdiprl006l7y2ly2tpv1q7',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zceowa00im7yipafb2h2z1',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdapf900347y2lqs40ar5m',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -686,11 +512,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zceqfk00py7yip4lfb1k43',
+            id: 'clacdapoa00357y2liorkhona',
             externalId: '879',
             name: 'End DAI Funding For Sourcecred - October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1665676800,
@@ -699,18 +525,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmYNSoy',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcnwr900ub7yipv8wgvdcp',
+                    id: 'clacdiprp006q7y2lg2f316zr',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zceqfk00py7yip4lfb1k43',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdapoa00357y2liorkhona',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -720,11 +548,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zceryn00q07yipn3ku2nti',
+            id: 'clacdapva00367y2l7py0qvow',
             externalId: '880',
             name: 'MOMC Guidance - Remove ETH Supply Yield And Liquidity Incentives From D3M Target Borrow Rate Calculations - October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1665676800,
@@ -733,18 +561,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmSvCFp',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcnykj00ug7yipwyug6lt3',
+                    id: 'clacdiprs006v7y2lqjga5l9t',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zceryn00q07yipn3ku2nti',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdapva00367y2l7py0qvow',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -754,11 +584,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcethq00q17yip065tecec',
+            id: 'clacdaq3s00387y2lditg5fy5',
             externalId: '881',
             name: 'MOMC Guidance - Allowed Spread Between D3M Target Borrow Rate And ETH-A Stability Fee October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1665676800,
@@ -767,18 +597,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmbbdsR',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zco0e600um7yipf1ca278a',
+                    id: 'clacdiprv00707y2lv750usjg',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcethq00q17yip065tecec',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdaq3s00387y2lditg5fy5',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -788,11 +620,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zceuzu00q27yiph84i7212',
+            id: 'clacdaqbr003a7y2lxumrbxv3',
             externalId: '882',
             name: 'Ratification Poll for Endgame Prelaunch MIP Set - October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1666627200,
@@ -801,18 +633,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmTmS5N',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zco27u00us7yip5dv3cbto',
+                    id: 'clacdips000757y2lkn6g2f7c',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zceuzu00q27yiph84i7212',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdaqbr003a7y2lxumrbxv3',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -822,11 +656,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcewqy00q47yip62qiom9q',
+            id: 'clacdaqj9003c7y2l451rgm8g',
             externalId: '883',
             name: 'Ratification Poll for Offboarding the Strategic Happiness Core Unit - SH-001 (MIP39c3-SP3) - October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1666627200,
@@ -835,18 +669,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmdUv8L',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zco41e00uy7yipawvpz89d',
+                    id: 'clacdips5007a7y2loznvygis',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcewqy00q47yip62qiom9q',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdaqj9003c7y2l451rgm8g',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -856,11 +692,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zceyb400q57yipgouyxnzm',
+            id: 'clacdaqqy003d7y2lr7iffjlu',
             externalId: '884',
             name: 'Ratification Poll for Offboarding the Events Core Unit - EVENTS-001 (MIP39c3-SP4) - October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1666627200,
@@ -869,18 +705,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmbP2Xd',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zco5zl00v47yipava177fi',
+                    id: 'clacdips8007f7y2lcfmy67x5',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zceyb400q57yipgouyxnzm',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdaqqy003d7y2lr7iffjlu',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -890,11 +728,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcezun00q77yiph93ox5qz',
+            id: 'clacdaqz1003f7y2ljrebdebr',
             externalId: '885',
             name: 'Ratification Poll for Offboarding the Real-World Finance Core Unit - RWF-001 (MIP39c3-SP5) - October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1666627200,
@@ -903,18 +741,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmX68eH',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zco7sx00va7yipgfliyw2j',
+                    id: 'clacdipsa007k7y2ls2syiv6i',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcezun00q77yiph93ox5qz',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdaqz1003f7y2ljrebdebr',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -924,11 +764,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcf1et00q97yipsqtvpqjl',
+            id: 'clacdar6p003g7y2lef54rn02',
             externalId: '886',
             name: 'Ratification Poll for Coinbase USDC Institutional Rewards (MIP81) - October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1666627200,
@@ -937,18 +777,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmbMaQ9',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zco9md00vg7yipyfh5l9mc',
+                    id: 'clacdipsd007p7y2lrhx5g077',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcf1et00q97yipsqtvpqjl',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdar6p003g7y2lef54rn02',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -958,11 +800,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcf2wy00qb7yipw3vga5b5',
+            id: 'clacdardq003i7y2lq72uux21',
             externalId: '887',
             name: 'Ratification Poll for Monetalis-Coinbase Appaloosa (MIP82) - October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1666627200,
@@ -971,18 +813,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmRVN2S',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcobfw00vm7yipx9yf3y96',
+                    id: 'clacdipsg007v7y2liccpybsf',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcf2wy00qb7yipw3vga5b5',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdardq003i7y2lq72uux21',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -992,11 +836,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcf4ft00qd7yipvlhfjvx6',
+            id: 'clacdarl7003k7y2lgrichus3',
             externalId: '888',
             name: 'Ratification Poll for Legal And Commercial Risk Domain Work on Greenlit Collateral BlockTower Credit - RWA Arranger SPF (MIP55c3-SP9) - October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1666627200,
@@ -1005,18 +849,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmcV2pM',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcod9b00vr7yip2c9salvr',
+                    id: 'clacdipsj00807y2lubbjj7r7',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcf4ft00qd7yipvlhfjvx6',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdarl7003k7y2lgrichus3',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -1026,11 +872,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcf5yi00qe7yipvqf7m1kb',
+            id: 'clacdarus003m7y2lr04cg6l6',
             externalId: '889',
             name: 'Ratification Poll for Facilitator Offboarding Process (MIP41c5) adjustments (MIP4c2-SP26) - October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1666627200,
@@ -1039,18 +885,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmYgLJ1',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcof3300vx7yip0y5tfmom',
+                    id: 'clacdipsn00867y2ln0j4hrx8',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcf5yi00qe7yipvqf7m1kb',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdarus003m7y2lr04cg6l6',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -1060,11 +908,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcf7gd00qf7yipva7x5rgv',
+            id: 'clacdas3w003o7y2ld59tlemq',
             externalId: '890',
             name: 'Ratification Poll for Facilitator Offboarding - RWF-001 (MIP41c5-SP12) - October 10, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1666627200,
@@ -1073,18 +921,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmRp4bD',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcogwp00w27yiprw7xhilh',
+                    id: 'clacdipsp008b7y2lrj48qx56',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcf7gd00qf7yipva7x5rgv',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdas3w003o7y2ld59tlemq',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -1094,11 +944,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcf94q00qh7yiphfaksp00',
+            id: 'clacdascl003q7y2la8nlh2e1',
             externalId: '891',
             name: 'MIP65 Asset Reallocation - October 24, 2022 \n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1666886400,
@@ -1107,18 +957,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmSfMtT',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcoiut00w87yipzm67m3ou',
+                    id: 'clacdipst008g7y2lwbvon7t9',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcf94q00qh7yiphfaksp00',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdascl003q7y2la8nlh2e1',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -1128,11 +980,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcfao200qi7yipwjyfjjnw',
+            id: 'clacdaslj003r7y2loxizeixn',
             externalId: '892',
             name: 'Activate Liquidations for Stablecoin Vaults to Clear Bad Debt - October 31, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1667491200,
@@ -1141,18 +993,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmSvAa5',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcokog00we7yippx45ef3l',
+                    id: 'clacdipsx008m7y2lflbls8zb',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcfao200qi7yipwjyfjjnw',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdaslj003r7y2loxizeixn',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -1162,11 +1016,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcfc6m00qk7yiph987vxy3',
+            id: 'clacdassk003s7y2ln4b4vr6e',
             externalId: '893',
             name: 'One Month Budget Extension for Strategic Happiness Core Unit - October 31, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1667491200,
@@ -1175,18 +1029,20 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmbpGs3',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcomhw00wj7yipjmnboy7i',
+                    id: 'clacdipt1008s7y2l6y4vmuls',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcfc6m00qk7yiph987vxy3',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdassk003s7y2ln4b4vr6e',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -1196,11 +1052,11 @@ Primary.args = {
             ],
         },
         {
-            id: 'cl9zcfdp100ql7yipn2teehlg',
+            id: 'clacdat08003u7y2l0k8ub6jq',
             externalId: '894',
             name: 'PPG - Open Market Committee Proposal - October 31, 2022\n',
-            daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-            daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
             proposalType: 'MAKER_POLL',
             data: {
                 timeEnd: 1667491200,
@@ -1209,18 +1065,56 @@ Primary.args = {
             },
             url: 'https://vote.makerdao.com/polling/QmahDuN',
             dao: {
-                id: 'cl9zbtd5c000a7ygcl0exngl0',
+                id: 'clabprugh000a7yx2w7sln5pa',
                 name: 'MakerDAO',
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
             },
             votes: [
                 {
-                    id: 'cl9zcoob700wo7yip3sfom8b1',
+                    id: 'clacdipt5008y7y2lxgna1t4i',
                     voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
-                    proposalId: 'cl9zcfdp100ql7yipn2teehlg',
-                    daoId: 'cl9zbtd5c000a7ygcl0exngl0',
-                    daoHandlerId: 'cl9zbtd5c000d7ygcbxjcwas9',
+                    proposalId: 'clacdat08003u7y2l0k8ub6jq',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
+                    options: [
+                        {
+                            optionName: 'Yes',
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            id: 'clacdat8x003w7y2l0rjxxilf',
+            externalId: '895',
+            name: 'Add the Compound V2 DAI Direct Deposit Module (D3M) - November 7, 2022\n',
+            daoId: 'clabprugh000a7yx2w7sln5pa',
+            daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
+            proposalType: 'MAKER_POLL',
+            data: {
+                timeEnd: 1668096000,
+                timeStart: 1667836800,
+                timeCreated: 1591888700,
+            },
+            url: 'https://vote.makerdao.com/polling/QmWYfgY',
+            dao: {
+                id: 'clabprugh000a7yx2w7sln5pa',
+                name: 'MakerDAO',
+                picture:
+                    'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+                refreshStatus: 'DONE',
+                lastRefresh: new Date('2022-11-11T10:40:02.964Z'),
+            },
+            votes: [
+                {
+                    id: 'clacdipt900937y2l5zb8gtug',
+                    voterAddress: '0x8804d391472126dA56b9a560AEf6C6d5AAA7607B',
+                    proposalId: 'clacdat8x003w7y2l0rjxxilf',
+                    daoId: 'clabprugh000a7yx2w7sln5pa',
+                    daoHandlerId: 'clabprugh000d7yx2rdt44wfw',
                     options: [
                         {
                             optionName: 'Yes',
@@ -1230,5 +1124,4 @@ Primary.args = {
             ],
         },
     ],
-    selectedDao: 'Aave',
 }
