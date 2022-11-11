@@ -4,13 +4,13 @@ import { RefreshStatus } from '../../../../../../packages/common-types/dist'
 import { router, publicProcedure } from '../trpc'
 
 export const userRouter = router({
-    proxyAddreses: publicProcedure.query(async ({ ctx }) => {
+    voters: publicProcedure.query(async ({ ctx }) => {
         if (!ctx.session) return
 
         const proxyAddresses = await prisma.voter.findMany({
             where: {
                 users: {
-                    every: {
+                    some: {
                         name: { equals: String(ctx.session?.user?.name) },
                     },
                 },
@@ -18,7 +18,7 @@ export const userRouter = router({
         })
         return proxyAddresses
     }),
-    addProxy: publicProcedure
+    addVoter: publicProcedure
         .input(
             z.object({
                 address: z.string().startsWith('0x').length(42),
@@ -45,7 +45,7 @@ export const userRouter = router({
                 },
             })
         }),
-    userRemoveProxy: publicProcedure
+    removeVoter: publicProcedure
         .input(
             z.object({
                 address: z.string(),
@@ -54,27 +54,30 @@ export const userRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            await prisma.voter.update({
-                where: {
-                    address: input.address,
-                },
-                data: {
-                    users: {
-                        disconnect: {
-                            name: String(ctx.session?.user?.name),
+            await prisma.user
+                .update({
+                    where: {
+                        name: String(ctx.session?.user?.name),
+                    },
+                    data: {
+                        voters: {
+                            disconnect: {
+                                address: input.address,
+                            },
                         },
                     },
-                },
-            })
+                })
+                .then((res) => console.log(res))
+                .catch((err) => console.log(err))
         }),
     userProposals: publicProcedure.query(async ({ ctx }) => {
         const user = await prisma.user.findFirstOrThrow({
             where: {
-                address: { equals: String(ctx.session?.user?.name) },
+                name: { equals: String(ctx.session?.user?.name) },
             },
             select: {
                 id: true,
-                proxies: true,
+                voters: true,
             },
         })
 
@@ -118,7 +121,7 @@ export const userRouter = router({
                 votes: {
                     where: {
                         voterAddress: {
-                            in: user.proxies.map((proxy) => proxy.address),
+                            in: user.voters.map((voter) => voter.address),
                         },
                     },
                     include: {
@@ -134,7 +137,7 @@ export const userRouter = router({
         const user = await prisma.user
             .findFirstOrThrow({
                 where: {
-                    address: { equals: String(ctx.session?.user?.name) },
+                    name: { equals: String(ctx.session?.user?.name) },
                 },
                 select: {
                     id: true,
@@ -171,7 +174,7 @@ export const userRouter = router({
             const user = await prisma.user
                 .findFirstOrThrow({
                     where: {
-                        address: { equals: String(ctx.session?.user?.name) },
+                        name: { equals: String(ctx.session?.user?.name) },
                     },
                     select: {
                         id: true,
@@ -210,7 +213,7 @@ export const userRouter = router({
             const user = await prisma.user
                 .findFirstOrThrow({
                     where: {
-                        address: { equals: String(ctx.session?.user?.name) },
+                        name: { equals: String(ctx.session?.user?.name) },
                     },
                     select: {
                         id: true,
@@ -238,7 +241,7 @@ export const userRouter = router({
         const user = await prisma.user
             .findFirstOrThrow({
                 where: {
-                    address: { equals: String(ctx.session?.user?.name) },
+                    name: { equals: String(ctx.session?.user?.name) },
                 },
                 select: {
                     id: true,
@@ -247,9 +250,13 @@ export const userRouter = router({
             .catch(() => {
                 return { id: '0' }
             })
-        const status = await prisma.usersRefreshQueue.findFirst({
+        const status = await prisma.voter.findMany({
             where: {
-                userId: user.id,
+                users: {
+                    every: {
+                        id: user.id,
+                    },
+                },
             },
         })
         return status
@@ -259,7 +266,7 @@ export const userRouter = router({
         const user = await prisma.user
             .findFirstOrThrow({
                 where: {
-                    address: { equals: String(ctx.session?.user?.name) },
+                    name: { equals: String(ctx.session?.user?.name) },
                 },
                 select: {
                     id: true,
@@ -268,11 +275,24 @@ export const userRouter = router({
             .catch(() => {
                 return { id: '0' }
             })
-        await prisma.usersRefreshQueue.create({
+
+        const voters = await prisma.voter.findMany({
+            where: {
+                users: {
+                    every: { id: user.id },
+                },
+            },
+        })
+
+        await prisma.voter.updateMany({
+            where: {
+                id: {
+                    in: voters.map((voter) => voter.id),
+                },
+            },
             data: {
-                status: RefreshStatus.NEW,
-                userId: user.id,
-                updatedAt: new Date(),
+                refreshStatus: RefreshStatus.NEW,
+                lastRefresh: new Date(),
             },
         })
     }),
