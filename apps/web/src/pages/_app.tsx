@@ -14,7 +14,10 @@ import { trpc } from '../utils/trpc'
 
 const { chains, provider } = configureChains(
     [chain.mainnet],
-    [infuraProvider({ apiKey: process.env.PROVIDER_URL }), publicProvider()]
+    [
+        infuraProvider({ apiKey: process.env.PROVIDER_URL ?? 'missing_key' }),
+        publicProvider(),
+    ]
 )
 
 const { connectors } = getDefaultWallets({

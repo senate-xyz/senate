@@ -26,7 +26,7 @@
     "@types/node-cron": "^3.0.5",
     "rimraf": "^3.0.2",
     "tsup": "^6.4.0",
-    "tsx": "^3.11.0",
+    "tsx": "^3.12.0",
     "typescript": "^4.8.4"
   },
   "dependencies": {
@@ -35,6 +35,6 @@
     "@senate/database": "*",
     "@senate/common-types": "*",
     "node-cron": "^3.0.2",
-    "node-fetch": "^3.2.10"
+    "node-fetch": "^3.3.0"
   }
 }
