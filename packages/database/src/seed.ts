@@ -3,7 +3,7 @@ import makerChief from './abis/makerChief.json'
 import makerPollCreate from './abis/makerPollCreate.json'
 import makerPollVote from './abis/makerPollVote.json'
 import { prisma } from './client'
-import { DAOHandlerType } from '@prisma/client'
+import { DAOHandlerType, RefreshStatus } from '@prisma/client'
 
 async function main() {
     const aave = await prisma.dAO.upsert({
@@ -35,6 +35,8 @@ async function main() {
                     },
                 ],
             },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
         },
         include: {
             handlers: true,
@@ -80,6 +82,8 @@ async function main() {
                     },
                 ],
             },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
         },
         include: {
             handlers: true,
@@ -104,6 +108,8 @@ async function main() {
                     },
                 ],
             },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
         },
         include: {
             handlers: true,
@@ -128,6 +134,8 @@ async function main() {
                     },
                 ],
             },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
         },
         include: {
             handlers: true,

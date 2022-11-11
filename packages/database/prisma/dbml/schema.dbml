@@ -4,16 +4,17 @@
 
 Table User {
   id String [pk]
-  address String [unique, not null]
-  proxies UserProxy [not null]
+  name String [unique, not null]
+  voters Voter [not null]
   subscriptions Subscription [not null]
 }
 
-Table UserProxy {
+Table Voter {
   id String [pk]
-  address String [not null]
-  user User [not null]
-  userId String [not null]
+  address String [unique, not null]
+  refreshStatus RefreshStatus [not null]
+  lastRefresh DateTime [not null]
+  users User [not null]
 }
 
 Table DAO {
@@ -24,6 +25,8 @@ Table DAO {
   subscriptions Subscription [not null]
   proposals Proposal [not null]
   votes Vote [not null]
+  refreshStatus RefreshStatus [not null]
+  lastRefresh DateTime [not null]
 }
 
 Table DAOHandler {
@@ -107,18 +110,9 @@ Table Subscription {
   }
 }
 
-Table DAORefreshQueue {
-  id String [pk]
-  daoId String [not null]
-  status RefreshStatus [not null]
-  updatedAt DateTime [not null]
-}
-
-Table UsersRefreshQueue {
-  id String [pk]
-  userId String [not null]
-  status RefreshStatus [not null]
-  updatedAt DateTime [not null]
+Table UserToVoter {
+  votersId String [ref: > Voter.id]
+  usersId String [ref: > User.id]
 }
 
 Enum DAOHandlerType {
@@ -142,8 +136,6 @@ Enum RefreshStatus {
   PENDING
   DONE
 }
-
-Ref: UserProxy.userId > User.id
 
 Ref: DAOHandler.daoId > DAO.id [delete: Cascade]
 

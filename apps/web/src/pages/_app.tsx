@@ -1,8 +1,4 @@
-import { httpBatchLink } from '@trpc/client/links/httpBatchLink'
-import { loggerLink } from '@trpc/client/links/loggerLink'
-import { withTRPC } from '@trpc/next'
 import { SessionProvider } from 'next-auth/react'
-import superjson from 'superjson'
 import type { AppType } from 'next/app'
 import type { Session } from 'next-auth'
 import '../styles/globals.css'
