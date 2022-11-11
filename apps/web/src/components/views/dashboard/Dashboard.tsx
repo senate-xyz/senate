@@ -28,14 +28,11 @@ export const DashboardView = () => {
                         refreshMyVotes.mutate()
                         trpcUtil.invalidate()
                     }}
-                    disabled={
-                        refreshStatus.data?.status == 'PENDING' ||
-                        refreshStatus.data?.status == 'NEW'
-                    }
                 >
                     Refresh my votes
                 </button>
-                Refresh status: {refreshStatus.data?.status}
+                Refresh status:{' '}
+                {refreshStatus.data?.map((voter) => voter.refreshStatus)}
                 <DashboardTable proposals={proposals.data} />
             </div>
         </div>

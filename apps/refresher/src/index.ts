@@ -1,5 +1,5 @@
 import { prisma } from "@senate/database";
-import { RefreshStatus } from "@senate/common-types";
+import { RefreshStatus, Subscription } from "@senate/common-types";
 import fetch from "node-fetch";
 import * as cron from "node-cron";
 
@@ -16,28 +16,29 @@ const main = () => {
 const refreshDaos = async () => {
   console.log("Refresh DAOs");
 
-  const daosRefreshList = await prisma.dAORefreshQueue.findMany({
-    where: { status: RefreshStatus.NEW },
-    distinct: ["daoId"],
+  const daos = await prisma.dAO.findMany({
+    where: { refreshStatus: RefreshStatus.NEW },
   });
 
-  if (!daosRefreshList.length) console.log("No DAOs to refresh.");
+  if (!daos.length) console.log("No DAOs to refresh.");
 
-  for (const daoRefreshEntry of daosRefreshList) {
-    await prisma.dAORefreshQueue.update({
+  for (const dao of daos) {
+    await prisma.dAO.update({
       where: {
-        id: daoRefreshEntry.id,
+        id: dao.id,
       },
       data: {
-        status: RefreshStatus.PENDING,
-        updatedAt: new Date(),
+        refreshStatus: RefreshStatus.PENDING,
+        lastRefresh: new Date(),
       },
     });
 
-    console.log(`Refresh daoId ${daoRefreshEntry.daoId}`);
+    console.log(
+      `Refresh - PENDING -  daoId ${dao.id} - ${dao.name} at ${dao.lastRefresh}`
+    );
 
     await fetch(
-      `${process.env.DETECTIVE_URL}/updateProposals?daoId=${daoRefreshEntry.daoId}`,
+      `${process.env.DETECTIVE_URL}/updateProposals?daoId=${dao.id}`,
       {
         method: "POST",
       }
@@ -46,71 +47,59 @@ const refreshDaos = async () => {
 };
 
 const refreshUsers = async () => {
-  console.log("Refresh Users");
+  console.log("Refresh Voters");
 
-  const usersRefreshList = await prisma.usersRefreshQueue.findMany({
-    where: { status: RefreshStatus.NEW },
-    distinct: ["userId"],
+  const voters = await prisma.voter.findMany({
+    where: { refreshStatus: RefreshStatus.NEW },
   });
 
-  if (!usersRefreshList.length) console.log("No users to refresh.");
+  if (!voters.length) console.log("No users to refresh.");
 
-  for (const userRefreshEntry of usersRefreshList) {
-    console.log(`Refresh userId: ${userRefreshEntry.userId}`);
+  for (const voter of voters) {
+    console.log(`Refresh voter id: ${voter.id}`);
 
-    await prisma.usersRefreshQueue.update({
+    await prisma.voter.update({
       where: {
-        id: userRefreshEntry.id,
+        id: voter.id,
       },
       data: {
-        status: RefreshStatus.PENDING,
+        refreshStatus: RefreshStatus.PENDING,
       },
     });
 
-    const user = await prisma.user.findFirst({
+    const users = await prisma.user.findMany({
       where: {
-        id: userRefreshEntry.userId,
+        voters: {
+          every: {
+            id: voter.id,
+          },
+        },
+      },
+      include: {
+        subscriptions: true,
       },
     });
 
-    if (!user) return;
+    const subs = users.map((user) => user.subscriptions);
 
-    const userProxies = await prisma.userProxy.findMany({
-      where: {
-        userId: user.id,
-      },
-    });
+    let totalSubs: Subscription[] = [];
 
-    const userSubs = await prisma.subscription.findMany({
-      where: { userId: user.id },
-    });
+    for (const sub of subs) {
+      totalSubs = [...sub];
+    }
 
-    for (const sub of userSubs) {
+    for (const sub of totalSubs) {
       console.log(
-        `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${user.address}`
+        `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
       );
       await fetch(
-        `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${user.address}`,
+        `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`,
         {
           method: "POST",
         }
       ).catch((e) => {
         console.log(e);
       });
-
-      for (const proxy of userProxies) {
-        console.log(
-          `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${proxy.address}`
-        );
-        await fetch(
-          `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${proxy.address}`,
-          {
-            method: "POST",
-          }
-        ).catch((e) => {
-          console.log(e);
-        });
-      }
     }
   }
 };

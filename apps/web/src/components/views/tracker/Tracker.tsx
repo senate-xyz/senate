@@ -85,10 +85,10 @@ export const Tracker = (props: { address: string; useProxies: boolean }) => {
             addresses: [props.address],
         })
     } else {
-        const proxies = trpc.user.proxyAddreses.useQuery()
+        const proxies = trpc.user.voters.useQuery()
         userVotes = trpc.tracker.track.useQuery({
             addresses: proxies.data
-                ? [props.address, ...proxies.data.map((proxy) => proxy.address)]
+                ? [props.address, ...proxies.data.map((voter) => voter.address)]
                 : Array.from(props.address),
         })
     }
