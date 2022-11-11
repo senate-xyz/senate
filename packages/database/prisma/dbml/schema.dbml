@@ -5,8 +5,8 @@
 Table User {
   id String [pk]
   name String [unique, not null]
-  voters Voter [not null]
   subscriptions Subscription [not null]
+  voters Voter [not null]
 }
 
 Table Voter {
@@ -21,20 +21,20 @@ Table DAO {
   id String [pk]
   name String [unique, not null]
   picture String [not null]
-  handlers DAOHandler [not null]
-  subscriptions Subscription [not null]
-  proposals Proposal [not null]
-  votes Vote [not null]
   refreshStatus RefreshStatus [not null]
   lastRefresh DateTime [not null]
+  handlers DAOHandler [not null]
+  proposals Proposal [not null]
+  subscriptions Subscription [not null]
+  votes Vote [not null]
 }
 
 Table DAOHandler {
   id String [pk]
   type DAOHandlerType [not null]
   decoder Json [not null]
-  dao DAO [not null]
   daoId String [not null]
+  dao DAO [not null]
 
   indexes {
     (daoId, type) [unique]
@@ -45,13 +45,13 @@ Table Proposal {
   id String [pk]
   externalId String [unique, not null]
   name String [not null]
-  dao DAO [not null]
   daoId String [not null]
   daoHandlerId String [not null]
   proposalType ProposalType [not null]
-  votes Vote [not null]
   data Json [not null]
   url String [not null]
+  dao DAO [not null]
+  votes Vote [not null]
 
   indexes {
     (externalId, daoId) [unique]
@@ -60,13 +60,13 @@ Table Proposal {
 
 Table Vote {
   id String [pk]
-  options VoteOption [not null]
   voterAddress String [not null]
-  proposal Proposal [not null]
   proposalId String [not null]
-  dao DAO [not null]
   daoId String [not null]
   daoHandlerId String [not null]
+  dao DAO [not null]
+  proposal Proposal [not null]
+  options VoteOption [not null]
 
   indexes {
     (voterAddress, daoId, proposalId) [unique]
@@ -77,10 +77,10 @@ Table VoteOption {
   id String [pk]
   option String [not null]
   optionName String [not null]
-  vote Vote [not null]
   voterAddress String [not null]
   voteDaoId String [not null]
   voteProposalId String [not null]
+  vote Vote [not null]
 
   indexes {
     (voteProposalId, option) [unique]
@@ -100,10 +100,10 @@ Table VoterLatestVoteBlock {
 
 Table Subscription {
   id String [pk]
-  user User [not null]
-  dao DAO [not null]
   userId String [not null]
   daoId String [not null]
+  dao DAO [not null]
+  user User [not null]
 
   indexes {
     (userId, daoId) [unique]
@@ -141,12 +141,12 @@ Ref: DAOHandler.daoId > DAO.id [delete: Cascade]
 
 Ref: Proposal.daoId > DAO.id [delete: Cascade]
 
-Ref: Vote.proposalId > Proposal.id [delete: Cascade]
-
 Ref: Vote.daoId > DAO.id [delete: Cascade]
+
+Ref: Vote.proposalId > Proposal.id [delete: Cascade]
 
 Ref: VoteOption.(voterAddress, voteDaoId, voteProposalId) > Vote.(voterAddress, daoId, proposalId) [delete: Cascade]
 
-Ref: Subscription.userId > User.id [delete: Cascade]
-
 Ref: Subscription.daoId > DAO.id [delete: Cascade]
+
+Ref: Subscription.userId > User.id [delete: Cascade]
