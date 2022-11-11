@@ -69,20 +69,13 @@ export class AppService {
             }
         }
 
-        const daoRefreshEntry = await prisma.dAORefreshQueue.findFirst({
+        await prisma.dAO.update({
             where: {
-                daoId: dao.id,
-                status: RefreshStatus.PENDING,
-            },
-        })
-
-        await prisma.dAORefreshQueue.update({
-            where: {
-                id: daoRefreshEntry.id,
+                id: dao.id,
             },
             data: {
-                status: RefreshStatus.DONE,
-                updatedAt: new Date(),
+                refreshStatus: RefreshStatus.DONE,
+                lastRefresh: new Date(),
             },
         })
     }
@@ -144,33 +137,13 @@ export class AppService {
             }
         }
 
-        const user = await prisma.user
-            .findFirstOrThrow({
-                where: {
-                    address: voterAddress,
-                },
-            })
-            .catch((e) =>
-                console.log(
-                    'Cannot update user refresh status. Probably a proxy'
-                )
-            )
-
-        if (!user) return
-
-        const userRefreshEntry = await prisma.usersRefreshQueue.findFirst({
+        await prisma.voter.update({
             where: {
-                userId: user.id,
-            },
-        })
-
-        await prisma.usersRefreshQueue.update({
-            where: {
-                id: userRefreshEntry.id,
+                address: voterAddress,
             },
             data: {
-                status: RefreshStatus.DONE,
-                updatedAt: new Date(),
+                refreshStatus: RefreshStatus.DONE,
+                lastRefresh: new Date(),
             },
         })
     }

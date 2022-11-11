@@ -69,4 +69,17 @@ export const publicRouter = router({
                 },
             })
         }),
+    refreshStatus: publicProcedure
+        .input(
+            z.object({
+                daoId: z.string(),
+            })
+        )
+        .query(async ({ input }) => {
+            return await prisma.dAO.findFirst({
+                where: {
+                    id: input.daoId,
+                },
+            })
+        }),
 })
