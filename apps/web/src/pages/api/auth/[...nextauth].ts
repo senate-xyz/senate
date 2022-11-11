@@ -5,6 +5,7 @@ import { getCsrfToken } from 'next-auth/react'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { IncomingMessage } from 'http'
 import { prisma } from '@senate/database'
+import { RefreshStatus } from '../../../../../../packages/common-types/dist'
 
 export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     const providers = [
@@ -35,17 +36,36 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
 
                     await siwe.validate(credentials?.signature || '')
 
-                    await prisma.user.upsert({
+                    const user = await prisma.user.upsert({
+                        where: {
+                            name: siwe.address,
+                        },
+                        create: {
+                            name: siwe.address,
+                        },
+                        update: {
+                            name: siwe.address,
+                        },
+                    })
+
+                    await prisma.voter.upsert({
                         where: {
                             address: siwe.address,
                         },
                         create: {
                             address: siwe.address,
+                            refreshStatus: RefreshStatus.NEW,
+                            lastRefresh: new Date(),
+                            users: { connect: { id: user.id } },
                         },
                         update: {
                             address: siwe.address,
+                            refreshStatus: RefreshStatus.NEW,
+                            lastRefresh: new Date(),
+                            users: { connect: { id: user.id } },
                         },
                     })
+
                     return {
                         id: siwe.address,
                     }

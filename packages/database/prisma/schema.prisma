@@ -16,16 +16,18 @@ datasource db {
 
 model User {
   id            String         @id @default(cuid())
-  address       String         @unique
-  proxies       UserProxy[]
+  name          String         @unique
+  voters        Voter[]
   subscriptions Subscription[]
 }
 
-model UserProxy {
-  id      String @id @default(cuid())
-  address String
-  user    User   @relation(fields: [userId], references: [id])
-  userId  String
+model Voter {
+  id            String        @id @default(cuid())
+  address       String        @unique
+  refreshStatus RefreshStatus
+  lastRefresh   DateTime
+
+  users User[]
 }
 
 model DAO {
@@ -36,6 +38,9 @@ model DAO {
   subscriptions Subscription[]
   proposals     Proposal[]
   votes         Vote[]
+
+  refreshStatus RefreshStatus
+  lastRefresh   DateTime
 }
 
 model DAOHandler {
@@ -124,20 +129,6 @@ model Subscription {
   daoId  String
 
   @@unique([userId, daoId])
-}
-
-model DAORefreshQueue {
-  id        String        @id @default(cuid())
-  daoId     String
-  status    RefreshStatus
-  updatedAt DateTime
-}
-
-model UsersRefreshQueue {
-  id        String        @id @default(cuid())
-  userId    String
-  status    RefreshStatus
-  updatedAt DateTime
 }
 
 enum RefreshStatus {
