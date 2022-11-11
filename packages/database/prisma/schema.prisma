@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,8 +14,8 @@ datasource db {
 model User {
   id            String         @id @default(cuid())
   name          String         @unique
-  voters        Voter[]
   subscriptions Subscription[]
+  voters        Voter[]
 }
 
 model Voter {
@@ -26,31 +23,93 @@ model Voter {
   address       String        @unique
   refreshStatus RefreshStatus
   lastRefresh   DateTime
-
-  users User[]
+  users         User[]
 }
 
 model DAO {
   id            String         @id @default(cuid())
   name          String         @unique
   picture       String
-  handlers      DAOHandler[]
-  subscriptions Subscription[]
-  proposals     Proposal[]
-  votes         Vote[]
-
   refreshStatus RefreshStatus
   lastRefresh   DateTime
+  handlers      DAOHandler[]
+  proposals     Proposal[]
+  subscriptions Subscription[]
+  votes         Vote[]
 }
 
 model DAOHandler {
   id      String         @id @default(cuid())
   type    DAOHandlerType
-  decoder Json //depends on type
-  dao     DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  decoder Json
   daoId   String
+  dao     DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
 
   @@unique([daoId, type])
+}
+
+model Proposal {
+  id           String       @id @default(cuid())
+  externalId   String       @unique
+  name         String
+  daoId        String
+  daoHandlerId String
+  proposalType ProposalType
+  data         Json
+  url          String
+  dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  votes        Vote[]
+
+  @@unique([externalId, daoId])
+  @@index([daoId], map: "Proposal_daoId_fkey")
+}
+
+model Vote {
+  id           String       @id @default(cuid())
+  voterAddress String
+  proposalId   String
+  daoId        String
+  daoHandlerId String
+  dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  proposal     Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  options      VoteOption[]
+
+  @@unique([voterAddress, daoId, proposalId])
+  @@index([daoId], map: "Vote_daoId_fkey")
+  @@index([proposalId], map: "Vote_proposalId_fkey")
+}
+
+model VoteOption {
+  id             String @id @default(cuid())
+  option         String
+  optionName     String
+  voterAddress   String
+  voteDaoId      String
+  voteProposalId String
+  vote           Vote   @relation(fields: [voterAddress, voteDaoId, voteProposalId], references: [voterAddress, daoId, proposalId], onDelete: Cascade)
+
+  @@unique([voteProposalId, option])
+  @@index([voterAddress, voteDaoId, voteProposalId], map: "VoteOption_voterAddress_voteDaoId_voteProposalId_fkey")
+}
+
+model VoterLatestVoteBlock {
+  id              String @id @default(cuid())
+  voterAddress    String
+  daoHandlerId    String
+  latestVoteBlock Int
+
+  @@unique([voterAddress, daoHandlerId])
+}
+
+model Subscription {
+  id     String @id @default(cuid())
+  userId String
+  daoId  String
+  dao    DAO    @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, daoId])
+  @@index([daoId], map: "Subscription_daoId_fkey")
 }
 
 enum DAOHandlerType {
@@ -67,68 +126,6 @@ enum ProposalType {
   MAKER_EXECUTIVE
   MAKER_POLL
   SNAPSHOT
-}
-
-model Proposal {
-  id           String       @id @default(cuid())
-  externalId   String       @unique
-  name         String
-  dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
-  daoId        String
-  daoHandlerId String
-  proposalType ProposalType
-  votes        Vote[]
-  data         Json         @db.Json // depends on daoHandlerId.type
-  url          String
-
-  @@unique([externalId, daoId])
-}
-
-model Vote {
-  id           String       @id @default(cuid())
-  options      VoteOption[]
-  voterAddress String
-  proposal     Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
-  proposalId   String
-  dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
-  daoId        String
-  daoHandlerId String
-
-  @@unique([voterAddress, daoId, proposalId])
-}
-
-model VoteOption {
-  id         String @id @default(cuid())
-  option     String
-  optionName String
-
-  vote           Vote   @relation(fields: [voterAddress, voteDaoId, voteProposalId], references: [voterAddress, daoId, proposalId], onDelete: Cascade)
-  voterAddress   String
-  voteDaoId      String
-  voteProposalId String
-
-  @@unique([voteProposalId, option])
-}
-
-model VoterLatestVoteBlock {
-  id              String @id @default(cuid())
-  voterAddress    String
-  daoHandlerId    String
-  latestVoteBlock Int
-
-  @@unique([voterAddress, daoHandlerId])
-}
-
-model Subscription {
-  id String @id @default(cuid())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  dao  DAO  @relation(fields: [daoId], references: [id], onDelete: Cascade)
-
-  userId String
-  daoId  String
-
-  @@unique([userId, daoId])
 }
 
 enum RefreshStatus {
