@@ -29,7 +29,6 @@ const refreshDaos = async () => {
       },
       data: {
         refreshStatus: RefreshStatus.PENDING,
-        lastRefresh: new Date(),
       },
     });
 
@@ -37,12 +36,18 @@ const refreshDaos = async () => {
       `Refresh - PENDING -  daoId ${dao.id} - ${dao.name} at ${dao.lastRefresh}`
     );
 
-    await fetch(
-      `${process.env.DETECTIVE_URL}/updateProposals?daoId=${dao.id}`,
-      {
-        method: "POST",
-      }
-    );
+    fetch(`${process.env.DETECTIVE_URL}/updateProposals?daoId=${dao.id}`, {
+      method: "POST",
+    })
+      .then((res) => {
+        if (res.ok)
+          console.log(
+            `Refresh - DONE -  daoId ${dao.id} - ${dao.name} at ${dao.lastRefresh}`
+          );
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }
 };
 
@@ -92,14 +97,21 @@ const refreshUsers = async () => {
       console.log(
         `Refresh - PENDING -  voterId ${voter.address} - ${sub.daoId} at ${voter.lastRefresh} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
       );
-      await fetch(
+      fetch(
         `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`,
         {
           method: "POST",
         }
-      ).catch((e) => {
-        console.log(e);
-      });
+      )
+        .then((res) => {
+          if (res.ok)
+            console.log(
+              `Refresh - DONE -  voterId ${voter.address} - ${sub.daoId} at ${voter.lastRefresh} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
+            );
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     }
   }
 };

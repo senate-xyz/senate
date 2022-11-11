@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { trpc } from '../../../../utils/trpc'
 
-const ProxyAccounts = () => {
+const VoterAddresses = () => {
     const [newProxyAddress, setNewProxyAddress] = useState('')
 
     const voters = trpc.user.voters.useQuery()
@@ -14,7 +14,7 @@ const ProxyAccounts = () => {
 
     return (
         <div className="w-full">
-            <p>ProxyAccounts</p>
+            <p>VoterAddresses</p>
 
             {voters.data.map((voter) => {
                 return (
@@ -52,7 +52,7 @@ const ProxyAccounts = () => {
                     htmlFor="proxyAddress"
                     className="m-2 block text-sm font-medium"
                 >
-                    Proxy address
+                    Voter address
                 </label>
                 <input
                     type="text"
@@ -91,4 +91,4 @@ const ProxyAccounts = () => {
     )
 }
 
-export default ProxyAccounts
+export default VoterAddresses

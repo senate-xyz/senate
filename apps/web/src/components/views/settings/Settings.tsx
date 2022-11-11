@@ -1,5 +1,5 @@
 import { useSession } from 'next-auth/react'
-import ProxyAccounts from './proxy-accounts/ProxyAccounts'
+import VoterAddresses from './voter-addresses/VoterAddresses'
 
 const Settings = () => {
     const { data: session } = useSession()
@@ -9,7 +9,7 @@ const Settings = () => {
     return (
         <div className="w-full">
             <p>Settings</p>
-            <ProxyAccounts />
+            <VoterAddresses />
         </div>
     )
 }

@@ -65,7 +65,6 @@ export const publicRouter = router({
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefresh: new Date(),
                 },
             })
         }),
