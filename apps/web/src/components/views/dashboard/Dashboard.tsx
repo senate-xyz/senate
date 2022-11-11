@@ -1,5 +1,4 @@
 import { useSession } from 'next-auth/react'
-import { RefreshStatus } from '../../../../../../packages/common-types/dist'
 
 import { trpc } from '../../../utils/trpc'
 import { DashboardTable } from './table/DashboardTable'

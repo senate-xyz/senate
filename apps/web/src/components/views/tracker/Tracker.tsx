@@ -81,9 +81,7 @@ export const Tracker = (props: { address: string }) => {
     const voters = trpc.user.voters.useQuery()
 
     const votes = trpc.tracker.track.useQuery({
-        addresses: props.address
-            ? [props.address]
-            : voters.data
+        addresses: voters.data
             ? [...voters.data.map((voter) => voter.address)]
             : [props.address],
     })
