@@ -9,10 +9,10 @@ export const DashboardView = () => {
     const trpcUtil = trpc.useContext()
     const refreshMyVotes = trpc.user.refreshMyVotes.useMutation({
         onSuccess: () => {
-            refreshStatuses.refetch()
+            voters.refetch()
         },
     })
-    const refreshStatuses = trpc.user.refreshStatus.useQuery()
+    const voters = trpc.user.voters.useQuery()
 
     const { data: session } = useSession()
 
@@ -26,7 +26,7 @@ export const DashboardView = () => {
         <div className="w-full">
             <p>Dashboard</p>
             <div className="w-full">
-                {refreshStatuses.data
+                {voters.data
                     ?.map((voter) => voter.refreshStatus)
                     .every((status) => status == 'DONE') ? (
                     <button
@@ -54,7 +54,7 @@ export const DashboardView = () => {
 
                 <div>
                     Refresh status: <br />
-                    {refreshStatuses.data?.map((voter) => (
+                    {voters.data?.map((voter) => (
                         <div className="flex flex-col">
                             {voter.address} - {voter.refreshStatus}
                         </div>
