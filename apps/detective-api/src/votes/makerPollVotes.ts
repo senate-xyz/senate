@@ -73,6 +73,7 @@ export const updateMakerPollVotes = async (
                             },
                         },
                     },
+                    addedAt: Date.now(),
                 },
                 create: {
                     voterAddress: voterAddress,
@@ -85,6 +86,7 @@ export const updateMakerPollVotes = async (
                             optionName: vote.support ? 'Yes' : 'No',
                         },
                     },
+                    addedAt: Date.now(),
                 },
             })
 

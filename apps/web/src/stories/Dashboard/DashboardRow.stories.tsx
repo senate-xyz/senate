@@ -42,6 +42,7 @@ Primary.args = {
                 },
             ],
         },
+        addedAt: 1586870800,
         votes: [
             {
                 id: 'cl9zcoob700wo7yip3sfom8b1',
@@ -60,6 +61,7 @@ Primary.args = {
                         voteProposalId: 'cl9zcfdp100ql7yipn2teehlg',
                     },
                 ],
+                addedAt: 1667232000
             },
         ],
     },

@@ -103,6 +103,7 @@ export const updateSnapshotVotes = async (
                                     create: votedOption,
                                 },
                             },
+                            addedAt: Date.now()
                         },
                         create: {
                             voterAddress: voterAddress,
@@ -121,6 +122,7 @@ export const updateSnapshotVotes = async (
                                         ] ?? 'No name',
                                 },
                             },
+                            addedAt: Date.now()
                         },
                     })
                 }

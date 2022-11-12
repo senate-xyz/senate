@@ -60,7 +60,7 @@ export const TrackerTable = (props: {
                                     </td>
                                     <td className="py-4 px-6">
                                         {dayjs(
-                                            proposal.data['timeEnd'] * 1000
+                                            proposal.data['timeEnd']
                                         ).fromNow()}
                                     </td>
                                     <td className="py-4 px-6">

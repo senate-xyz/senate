@@ -9,6 +9,7 @@ import {
     User as UserModelPrisma,
     DAOHandler as DAOHandlerModelPrisma,
     VoteOption as VoteOptionModelPrisma,
+    UserProxy as UserProxyModelPrisma,
 } from '@prisma/client'
 
 export const ProposalType = ProposalTypePrisma
@@ -20,6 +21,7 @@ export type Proposal = ProposalModelPrisma
 export type User = UserModelPrisma
 export type DAOHandler = DAOHandlerModelPrisma
 export type VoteOption = VoteOptionModelPrisma
+export type UserProxy = UserProxyModelPrisma
 
 export type DAOType = Prisma.DAOGetPayload<{
     include: {
@@ -32,6 +34,16 @@ export type TrackerProposalType = Prisma.ProposalGetPayload<{
     include: {
         dao: true
         votes: true
+    }
+}>
+
+export type SubscriptionWithProxies = Prisma.SubscriptionGetPayload<{
+    include: {
+        user: {
+            select: {
+                proxies: true
+            }   
+        }
     }
 }>
 

@@ -48,6 +48,7 @@ Primary.args = {
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
             },
+            addedAt: 1665111486,
             votes: [
                 {
                     id: 'cl9zclqj500r07yip3rdaa3kk',
@@ -60,6 +61,7 @@ Primary.args = {
                             optionName: 'YAE',
                         },
                     ],
+                    addedAt: 1665111456,
                 },
             ],
         },
@@ -83,6 +85,7 @@ Primary.args = {
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
             },
+            addedAt: 1664813401,
             votes: [
                 {
                     id: 'cl9zclrkp00r77yipcdci5y4i',
@@ -95,6 +98,7 @@ Primary.args = {
                             optionName: ' Yes',
                         },
                     ],
+                    addedAt: 1664813293,
                 },
             ],
         },
@@ -118,6 +122,7 @@ Primary.args = {
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
             },
+            addedAt: 1664807328,
             votes: [
                 {
                     id: 'cl9zcloub00qt7yips4guemow',
@@ -130,6 +135,7 @@ Primary.args = {
                             optionName: 'Deploy a new Aave v3 Ethereum',
                         },
                     ],
+                    addedAt: 1664877600,
                 },
             ],
         },
@@ -153,6 +159,7 @@ Primary.args = {
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
             },
+            addedAt: 1663914165,
             votes: [
                 {
                     id: 'cl9zclsm700rf7yipta74hcyi',
@@ -165,6 +172,7 @@ Primary.args = {
                             optionName: 'YAE',
                         },
                     ],
+                    addedAt: 1663914136,
                 },
             ],
         },
@@ -188,6 +196,7 @@ Primary.args = {
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
             },
+            addedAt: 1663436462,
             votes: [
                 {
                     id: 'cl9zcltnp00rm7yipjnmqlpee',
@@ -200,6 +209,7 @@ Primary.args = {
                             optionName: 'YAE',
                         },
                     ],
+                    addedAt: 1663542060,
                 },
             ],
         },
@@ -223,6 +233,7 @@ Primary.args = {
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
             },
+            addedAt: 1661363906,
             votes: [
                 {
                     id: 'cl9zclvqs00s27yiphvkm7903',
@@ -235,6 +246,7 @@ Primary.args = {
                             optionName: 'YAE',
                         },
                     ],
+                    addedAt: 1661446800,
                 },
             ],
         },
@@ -258,6 +270,7 @@ Primary.args = {
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
             },
+            addedAt: 1661363746,
             votes: [
                 {
                     id: 'cl9zclupb00ru7yipesy5hwfq',
@@ -270,6 +283,7 @@ Primary.args = {
                             optionName: 'YAE',
                         },
                     ],
+                    addedAt: 1661446800,
                 },
             ],
         },
@@ -293,6 +307,7 @@ Primary.args = {
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
             },
+            addedAt: 1660401177,
             votes: [
                 {
                     id: 'cl9zclwsw00s97yipqwyfj80y',
@@ -305,6 +320,7 @@ Primary.args = {
                             optionName: 'YAE',
                         },
                     ],
+                    addedAt: 1660518060,
                 },
             ],
         },
@@ -328,6 +344,7 @@ Primary.args = {
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
             },
+            addedAt: 1658924851,
             votes: [
                 {
                     id: 'cl9zcm02a00sw7yipfgop626x',
@@ -340,6 +357,7 @@ Primary.args = {
                             optionName: 'YAE',
                         },
                     ],
+                    addedAt: 1659011100,
                 },
             ],
         },
@@ -363,6 +381,7 @@ Primary.args = {
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
             },
+            addedAt: 1658866422,
             votes: [
                 {
                     id: 'cl9zclz0s00so7yipfavveqfd',
@@ -375,6 +394,7 @@ Primary.args = {
                             optionName: 'YAE - Do Extend SM to ARC market',
                         },
                     ],
+                    addedAt: 1658862000,
                 },
             ],
         },
@@ -398,6 +418,7 @@ Primary.args = {
                 picture:
                     'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
             },
+            addedAt: 1658427706,
             votes: [
                 {
                     id: 'cl9zclxyx00sg7yip3riad8n9',
@@ -410,6 +431,7 @@ Primary.args = {
                             optionName: '3%',
                         },
                     ],
+                    addedAt: 1658516400,
                 },
             ],
         },
@@ -432,6 +454,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1664323200,
             votes: [
                 {
                     id: 'cl9zcn01e00t97yippjeqpp2k',
@@ -444,6 +467,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1664323200,
                 },
             ],
         },
@@ -466,6 +490,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1664928000,
             votes: [
                 {
                     id: 'cl9zcn1zf00te7yipht57nwtk',
@@ -478,6 +503,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1664928000,
                 },
             ],
         },
@@ -491,7 +517,7 @@ Primary.args = {
             data: {
                 timeEnd: 1662798645,
                 timeStart: 1662508800,
-                timeCreated: 1662508800,
+                timeCreated: 1664928000,
             },
             url: 'https://vote.makerdao.com/executive/0x07bFA4db5587A75617aFA9E43624b8C2609497b5',
             dao: {
@@ -500,6 +526,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1664928000,
             votes: [
                 {
                     id: 'cl9zcmxtk00t37yip74fe9ga7',
@@ -512,6 +539,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1664928000,
                 },
             ],
         },
@@ -534,6 +562,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1665705600,
             votes: [
                 {
                     id: 'cl9zcn3sx00tk7yipzhqf46pw',
@@ -546,6 +575,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665705600,
                 },
             ],
         },
@@ -568,6 +598,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1666137600,
             votes: [
                 {
                     id: 'cl9zcn5mg00tp7yip9rx0gxac',
@@ -580,6 +611,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1666137600,
                 },
             ],
         },
@@ -602,6 +634,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1666742400,
             votes: [
                 {
                     id: 'cl9zcn7kl00tv7yipr9ev2gxl',
@@ -614,6 +647,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1666742400,
                 },
             ],
         },
@@ -627,7 +661,7 @@ Primary.args = {
             data: {
                 timeEnd: 1665676800,
                 timeStart: 1665417600,
-                timeCreated: 1571844100,
+                timeCreated: 1666742400,
             },
             url: 'https://vote.makerdao.com/polling/QmZzFPF',
             dao: {
@@ -636,6 +670,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1666742400,
             votes: [
                 {
                     id: 'cl9zcnt4000u17yipnx4fovu9',
@@ -648,6 +683,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600,
                 },
             ],
         },
@@ -670,6 +706,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1571845600,
             votes: [
                 {
                     id: 'cl9zcnuxq00u67yipotl4gll6',
@@ -682,6 +719,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600
                 },
             ],
         },
@@ -695,7 +733,7 @@ Primary.args = {
             data: {
                 timeEnd: 1665676800,
                 timeStart: 1665417600,
-                timeCreated: 1571846900,
+                timeCreated: 1665417600,
             },
             url: 'https://vote.makerdao.com/polling/QmYNSoy',
             dao: {
@@ -704,6 +742,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1665417600,
             votes: [
                 {
                     id: 'cl9zcnwr900ub7yipv8wgvdcp',
@@ -716,6 +755,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600,
                 },
             ],
         },
@@ -738,6 +778,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1571848200,
             votes: [
                 {
                     id: 'cl9zcnykj00ug7yipwyug6lt3',
@@ -750,6 +791,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600,
                 },
             ],
         },
@@ -772,6 +814,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1665417600,
             votes: [
                 {
                     id: 'cl9zco0e600um7yipf1ca278a',
@@ -784,6 +827,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600,
                 },
             ],
         },
@@ -806,6 +850,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1665417600,
             votes: [
                 {
                     id: 'cl9zco27u00us7yip5dv3cbto',
@@ -818,6 +863,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600,
                 },
             ],
         },
@@ -840,6 +886,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1665417600,
             votes: [
                 {
                     id: 'cl9zco41e00uy7yipawvpz89d',
@@ -852,6 +899,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600,
                 },
             ],
         },
@@ -874,6 +922,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1665417600,
             votes: [
                 {
                     id: 'cl9zco5zl00v47yipava177fi',
@@ -886,6 +935,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600,
                 },
             ],
         },
@@ -908,6 +958,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1665417600,
             votes: [
                 {
                     id: 'cl9zco7sx00va7yipgfliyw2j',
@@ -920,6 +971,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600,
                 },
             ],
         },
@@ -942,6 +994,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1665417600,
             votes: [
                 {
                     id: 'cl9zco9md00vg7yipyfh5l9mc',
@@ -954,6 +1007,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600,
                 },
             ],
         },
@@ -976,6 +1030,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1665417600,
             votes: [
                 {
                     id: 'cl9zcobfw00vm7yipx9yf3y96',
@@ -988,6 +1043,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600,
                 },
             ],
         },
@@ -1010,6 +1066,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1665417600,
             votes: [
                 {
                     id: 'cl9zcod9b00vr7yip2c9salvr',
@@ -1022,6 +1079,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600,
                 },
             ],
         },
@@ -1044,6 +1102,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1665417600,
             votes: [
                 {
                     id: 'cl9zcof3300vx7yip0y5tfmom',
@@ -1056,6 +1115,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600,
                 },
             ],
         },
@@ -1078,6 +1138,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1665417600,
             votes: [
                 {
                     id: 'cl9zcogwp00w27yiprw7xhilh',
@@ -1090,6 +1151,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1665417600,
                 },
             ],
         },
@@ -1112,6 +1174,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1666627200,
             votes: [
                 {
                     id: 'cl9zcoiut00w87yipzm67m3ou',
@@ -1124,6 +1187,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1666627200,
                 },
             ],
         },
@@ -1146,6 +1210,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1667232000,
             votes: [
                 {
                     id: 'cl9zcokog00we7yippx45ef3l',
@@ -1158,6 +1223,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1667232000,
                 },
             ],
         },
@@ -1180,6 +1246,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1667232000,
             votes: [
                 {
                     id: 'cl9zcomhw00wj7yipjmnboy7i',
@@ -1192,6 +1259,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1667232000,
                 },
             ],
         },
@@ -1214,6 +1282,7 @@ Primary.args = {
                 picture:
                     'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
             },
+            addedAt: 1667232000,
             votes: [
                 {
                     id: 'cl9zcoob700wo7yip3sfom8b1',
@@ -1226,6 +1295,7 @@ Primary.args = {
                             optionName: 'Yes',
                         },
                     ],
+                    addedAt: 1667232000,
                 },
             ],
         },

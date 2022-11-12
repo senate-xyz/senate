@@ -45,7 +45,7 @@ export const DashboardRow = (props: {
             </td>
 
             <td className="py-4 px-6">
-                {dayjs(props.proposal.data['timeEnd'] * 1000).fromNow(false)}
+                {dayjs(props.proposal.data['timeEnd']).fromNow(false)}
             </td>
 
             <td className="py-4 px-6">

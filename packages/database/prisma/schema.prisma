@@ -19,6 +19,7 @@ model User {
     address       String         @unique
     proxies       UserProxy[]
     subscriptions Subscription[]
+    notifications Notification[]
 }
 
 model UserProxy {
@@ -65,18 +66,42 @@ enum ProposalType {
 }
 
 model Proposal {
-    id           String       @id @default(cuid())
-    externalId   String       @unique
-    name         String
-    dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
-    daoId        String
-    daoHandlerId String
-    proposalType ProposalType
-    votes        Vote[]
-    data         Json         @db.Json // depends on daoHandlerId.type
-    url          String
+    id              String       @id @default(cuid())
+    externalId      String       @unique
+    name            String
+    dao             DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
+    daoId           String
+    daoHandlerId    String
+    proposalType    ProposalType
+    votes           Vote[]
+    notifications   Notification[]
+    data            Json         @db.Json // depends on daoHandlerId.type
+    url             String
+    addedAt         BigInt       // timestamp
 
     @@unique([externalId, daoId])
+}
+
+// enum StatusType {
+//     NOT_SENT
+//     PENDING
+//     SENT
+// }
+
+enum RoundupNotificationType {
+    NEW
+    ENDING_SOON
+}
+
+model Notification {
+    id           String       @id @default(cuid())
+    user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId       String
+    proposal     Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+    proposalId   String
+    type         RoundupNotificationType
+
+    @@unique([proposalId, userId])
 }
 
 model Vote {
@@ -88,6 +113,7 @@ model Vote {
     dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
     daoId        String
     daoHandlerId String
+    addedAt      BigInt   // timestamp
 
     @@unique([voterAddress, daoId, proposalId])
 }

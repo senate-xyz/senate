@@ -103,13 +103,14 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
                                 calculateVotingPeriodEndDate(
                                     response.data.spellData
                                 )
-                            ).valueOf() / 1000,
+                            ).valueOf(),
                         timeStart:
-                            new Date(response.data.date).valueOf() / 1000,
+                            new Date(response.data.date).valueOf(),
                         timeCreated:
-                            new Date(response.data.date).valueOf() / 1000,
+                            new Date(response.data.date).valueOf(),
                     },
                     url: daoHandler.decoder['proposalUrl'] + spellAddresses[i],
+                    addedAt: Date.now(),
                 },
             })
 
