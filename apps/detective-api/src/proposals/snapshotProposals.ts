@@ -1,6 +1,7 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common'
-import { DAOHandler, ProposalType } from '@senate/common-types'
+import { DAOHandler } from '@senate/common-types'
 import { prisma } from '@senate/database'
+import { ProposalType } from '@prisma/client'
 import axios from 'axios'
 
 const logger = new Logger('SnapshotProposals')
@@ -78,11 +79,12 @@ export const updateSnapshotProposals = async (
                                 daoHandlerId: daoHandler.id,
                                 proposalType: ProposalType.SNAPSHOT,
                                 data: {
-                                    timeEnd: proposal.end,
-                                    timeStart: proposal.start,
-                                    timeCreated: proposal.created,
+                                    timeEnd: proposal.end * 1000,
+                                    timeStart: proposal.start * 1000,
+                                    timeCreated: proposal.created * 1000,
                                 },
                                 url: proposal.link,
+                                addedAt: Date.now(),
                             },
                         })
                     )

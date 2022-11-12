@@ -1,8 +1,9 @@
 import { ethers } from 'ethers'
 import { Logger, InternalServerErrorException } from '@nestjs/common'
 import { prisma } from '@senate/database'
-import { Proposal, DAOHandler, DAOHandlerType } from '@senate/common-types'
+import { DAOHandler } from '@senate/common-types'
 import { hexZeroPad } from 'ethers/lib/utils'
+import { DAOHandlerType } from '@prisma/client'
 
 const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL),
@@ -70,6 +71,7 @@ export const updateMakerVotes = async (
                             optionName: 'Yes',
                         },
                     },
+                    addedAt: Date.now(),
                 },
             })
 

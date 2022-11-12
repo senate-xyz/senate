@@ -40,6 +40,7 @@ Primary.args = {
                     },
                 ],
             },
+            addedAt: 1667235611,
             votes: [],
         },
         {
@@ -70,6 +71,7 @@ Primary.args = {
                     },
                 ],
             },
+            addedAt: 1667360989,
             votes: [],
         },
         {
@@ -100,6 +102,7 @@ Primary.args = {
                     },
                 ],
             },
+            addedAt: 1667306198,
             votes: [],
         },
         {
@@ -130,6 +133,7 @@ Primary.args = {
                     },
                 ],
             },
+            addedAt: 1667245736,
             votes: [],
         },
         {
@@ -160,6 +164,7 @@ Primary.args = {
                     },
                 ],
             },
+            addedAt: 1667055731,
             votes: [],
         },
         {
@@ -192,6 +197,7 @@ Primary.args = {
                     },
                 ],
             },
+            addedAt: 1586867400,
             votes: [
                 {
                     id: 'cl9zcokog00we7yippx45ef3l',
@@ -210,6 +216,7 @@ Primary.args = {
                             voteProposalId: 'cl9zcfao200qi7yipwjyfjjnw',
                         },
                     ],
+                    addedAt: 1667232000,
                 },
             ],
         },
@@ -243,6 +250,7 @@ Primary.args = {
                     },
                 ],
             },
+            addedAt: 1586868900,
             votes: [
                 {
                     id: 'cl9zcomhw00wj7yipjmnboy7i',
@@ -261,6 +269,7 @@ Primary.args = {
                             voteProposalId: 'cl9zcfc6m00qk7yiph987vxy3',
                         },
                     ],
+                    addedAt: 1667232000,
                 },
             ],
         },
@@ -294,6 +303,7 @@ Primary.args = {
                     },
                 ],
             },
+            addedAt: 1586870800,
             votes: [
                 {
                     id: 'cl9zcoob700wo7yip3sfom8b1',
@@ -312,6 +322,7 @@ Primary.args = {
                             voteProposalId: 'cl9zcfdp100ql7yipn2teehlg',
                         },
                     ],
+                    addedAt: 1667232000,
                 },
             ],
         },

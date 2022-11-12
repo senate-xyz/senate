@@ -74,6 +74,7 @@ export const updateGovernorBravoVotes = async (
                             },
                         },
                     },
+                    addedAt: Date.now(),
                 },
                 create: {
                     voterAddress: voterAddress,
@@ -86,6 +87,7 @@ export const updateGovernorBravoVotes = async (
                             optionName: vote.support ? 'Yes' : 'No',
                         },
                     },
+                    addedAt: Date.now(),
                 },
             })
         }

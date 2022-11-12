@@ -1,0 +1,10 @@
+{
+    "extends": "@senate/tsconfig/base.json",
+    "compilerOptions": {
+      "outDir": "dist",
+      "esModuleInterop": true,
+      "moduleResolution": "node"
+    },
+    "include": ["src"],
+    "exclude": ["node_modules"]
+  }
