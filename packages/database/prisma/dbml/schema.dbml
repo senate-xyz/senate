@@ -4,7 +4,7 @@
 
 Table User {
   id String [pk]
-  address String [unique, not null]
+  name String [unique, not null]
   voters Voter [not null]
   subscriptions Subscription [not null]
   notifications Notification [not null]
