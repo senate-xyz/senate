@@ -2,7 +2,7 @@ import { prisma } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 import { Logger, InternalServerErrorException } from '@nestjs/common'
-import { Proposal, DAOHandler } from '@senate/common-types'
+import { DAOHandler } from '@senate/common-types'
 
 const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL),
