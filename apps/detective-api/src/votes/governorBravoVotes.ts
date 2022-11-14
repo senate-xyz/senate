@@ -1,5 +1,5 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common'
-import { DAOHandler, DAOHandlerType, Proposal } from '@senate/common-types'
+import { DAOHandler, DAOHandlerType } from '@senate/common-types'
 import { prisma } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
@@ -38,6 +38,7 @@ export const updateGovernorBravoVotes = async (
         const currentBlock = await provider.getBlockNumber()
 
         votes = await getVotes(daoHandler, voterAddress, latestVoteBlock)
+
         if (!votes) return
 
         for (const vote of votes) {
@@ -119,9 +120,6 @@ const getVotes = async (
     voterAddress: string,
     latestVoteBlock: number
 ): Promise<Vote[]> => {
-    if (!daoHandler.decoder) return []
-    if (!Array.isArray(daoHandler.decoder)) return []
-
     const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
 
     if (

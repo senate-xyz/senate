@@ -254,7 +254,7 @@ export const userRouter = router({
         const voters = await prisma.voter.findMany({
             where: {
                 users: {
-                    every: { id: user.id },
+                    some: { id: user.id },
                 },
             },
         })
