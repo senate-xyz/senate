@@ -2,6 +2,7 @@ import axios from 'axios'
 import { prisma } from '@senate/database'
 import { DAOHandler } from '@senate/common-types'
 import { Logger, InternalServerErrorException } from '@nestjs/common'
+import { Console } from 'console'
 
 const logger = new Logger('SnapshotVotes')
 
@@ -67,6 +68,11 @@ export const updateSnapshotVotes = async (
                     console.log(
                         `Snapshot proposal with externalId ${vote.proposal.id} does not exist in DB`
                     )
+                    continue
+                }
+
+                if (!vote.proposal.id) {
+                    console.log('Bad proposal id')
                     continue
                 }
 
