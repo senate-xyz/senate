@@ -122,13 +122,10 @@ const getVotes = async (
 ): Promise<Vote[]> => {
     const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
 
-    if (
-        daoHandler.type !== DAOHandlerType.BRAVO1 &&
-        daoHandler.type !== DAOHandlerType.BRAVO2
-    )
-        return []
+    latestVoteBlock = 0
 
     let logs: any[] = []
+    let votes
     switch (daoHandler.type) {
         case DAOHandlerType.BRAVO1:
             logs = await provider.getLogs({
@@ -136,11 +133,23 @@ const getVotes = async (
                 address: daoHandler.decoder['address'],
                 topics: [
                     govBravoIface.getEventTopic('VoteEmitted'),
-                    null,
-                    hexZeroPad(voterAddress, 32),
+                    [hexZeroPad(voterAddress, 32)],
                 ],
             })
+
+            votes = logs.map((log) => {
+                const eventData = govBravoIface.parseLog({
+                    topics: log.topics,
+                    data: log.data,
+                }).args
+
+                return {
+                    proposalOnChainId: BigNumber.from(eventData.id).toString(),
+                    support: String(eventData.support),
+                }
+            })
             break
+
         case DAOHandlerType.BRAVO2:
             logs = await provider.getLogs({
                 fromBlock: latestVoteBlock,
@@ -152,18 +161,6 @@ const getVotes = async (
             })
             break
     }
-
-    const votes = logs.map((log) => {
-        const eventData = govBravoIface.parseLog({
-            topics: log.topics,
-            data: log.data,
-        }).args
-
-        return {
-            proposalOnChainId: BigNumber.from(eventData.proposalId).toString(),
-            support: String(eventData.support),
-        }
-    })
 
     return votes
 }
