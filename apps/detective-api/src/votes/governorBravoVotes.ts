@@ -1,5 +1,5 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common'
-import { DAOHandler, DAOHandlerType, Proposal } from '@senate/common-types'
+import { DAOHandler, DAOHandlerType } from '@senate/common-types'
 import { prisma } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
@@ -13,7 +13,7 @@ type Vote = {
     support: string
 }
 
-const logger = new Logger('MakerExecutiveProposals')
+const logger = new Logger('BravoVotes')
 
 export const updateGovernorBravoVotes = async (
     daoHandler: DAOHandler,
@@ -38,6 +38,7 @@ export const updateGovernorBravoVotes = async (
         const currentBlock = await provider.getBlockNumber()
 
         votes = await getVotes(daoHandler, voterAddress, latestVoteBlock)
+
         if (!votes) return
 
         for (const vote of votes) {
@@ -121,18 +122,12 @@ const getVotes = async (
     voterAddress: string,
     latestVoteBlock: number
 ): Promise<Vote[]> => {
-    if (!daoHandler.decoder) return []
-    if (!Array.isArray(daoHandler.decoder)) return []
-
     const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
 
-    if (
-        daoHandler.type !== DAOHandlerType.BRAVO1 &&
-        daoHandler.type !== DAOHandlerType.BRAVO2
-    )
-        return []
+    latestVoteBlock = 0
 
     let logs: any[] = []
+    let votes
     switch (daoHandler.type) {
         case DAOHandlerType.BRAVO1:
             logs = await provider.getLogs({
@@ -140,11 +135,23 @@ const getVotes = async (
                 address: daoHandler.decoder['address'],
                 topics: [
                     govBravoIface.getEventTopic('VoteEmitted'),
-                    null,
-                    hexZeroPad(voterAddress, 32),
+                    [hexZeroPad(voterAddress, 32)],
                 ],
             })
+
+            votes = logs.map((log) => {
+                const eventData = govBravoIface.parseLog({
+                    topics: log.topics,
+                    data: log.data,
+                }).args
+
+                return {
+                    proposalOnChainId: BigNumber.from(eventData.id).toString(),
+                    support: String(eventData.support),
+                }
+            })
             break
+
         case DAOHandlerType.BRAVO2:
             logs = await provider.getLogs({
                 fromBlock: latestVoteBlock,
@@ -156,18 +163,6 @@ const getVotes = async (
             })
             break
     }
-
-    const votes = logs.map((log) => {
-        const eventData = govBravoIface.parseLog({
-            topics: log.topics,
-            data: log.data,
-        }).args
-
-        return {
-            proposalOnChainId: BigNumber.from(eventData.proposalId).toString(),
-            support: String(eventData.support),
-        }
-    })
 
     return votes
 }

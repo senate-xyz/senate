@@ -9,11 +9,13 @@ import {
     User as UserModelPrisma,
     DAOHandler as DAOHandlerModelPrisma,
     VoteOption as VoteOptionModelPrisma,
-    UserProxy as UserProxyModelPrisma,
+    RefreshStatus as RefreshStatusPrisma,
+    Voter as VoterPrisma,
 } from '@prisma/client'
 
 export const ProposalType = ProposalTypePrisma
 export const DAOHandlerType = DAOHandlerTypePrisma
+export const RefreshStatus = RefreshStatusPrisma
 export type DAO = DAOModelPrisma
 export type Subscription = SubscriptionModelPrisma
 export type Vote = VoteModelPrisma
@@ -21,7 +23,7 @@ export type Proposal = ProposalModelPrisma
 export type User = UserModelPrisma
 export type DAOHandler = DAOHandlerModelPrisma
 export type VoteOption = VoteOptionModelPrisma
-export type UserProxy = UserProxyModelPrisma
+export type Voter = VoterPrisma
 
 export type DAOType = Prisma.DAOGetPayload<{
     include: {
@@ -41,8 +43,8 @@ export type SubscriptionWithProxies = Prisma.SubscriptionGetPayload<{
     include: {
         user: {
             select: {
-                proxies: true
-            }   
+                voters: true
+            }
         }
     }
 }>

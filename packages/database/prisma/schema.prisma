@@ -1,85 +1,70 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 generator dbml {
-    provider = "prisma-dbml-generator"
+  provider = "prisma-dbml-generator"
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id            String         @id @default(cuid())
-    address       String         @unique
-    proxies       UserProxy[]
-    subscriptions Subscription[]
-    notifications Notification[]
+  id            String         @id @default(cuid())
+  address       String         @unique
+  voters        Voter[]
+  subscriptions Subscription[]
+  notifications Notification[]
 }
 
-model UserProxy {
-    id      String @id @default(cuid())
-    address String
-    user    User   @relation(fields: [userId], references: [id])
-    userId  String
+model Voter {
+  id            String        @id @default(cuid())
+  address       String        @unique
+  refreshStatus RefreshStatus
+  lastRefresh   DateTime
+  users         User[]
 }
 
 model DAO {
-    id            String         @id @default(cuid())
-    name          String         @unique
-    picture       String
-    handlers      DAOHandler[]
-    subscriptions Subscription[]
-    proposals     Proposal[]
-    votes         Vote[]
+  id            String         @id @default(cuid())
+  name          String         @unique
+  picture       String
+  refreshStatus RefreshStatus
+  lastRefresh   DateTime
+  handlers      DAOHandler[]
+  proposals     Proposal[]
+  subscriptions Subscription[]
+  votes         Vote[]
 }
 
 model DAOHandler {
-    id      String         @id @default(cuid())
-    type    DAOHandlerType
-    decoder Json //depends on type
-    dao     DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
-    daoId   String
+  id      String         @id @default(cuid())
+  type    DAOHandlerType
+  decoder Json
+  daoId   String
+  dao     DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
 
-    @@unique([daoId, type])
-}
-
-enum DAOHandlerType {
-    BRAVO1
-    BRAVO2
-    MAKER_EXECUTIVE
-    MAKER_POLL_CREATE
-    MAKER_POLL_VOTE
-    SNAPSHOT
-}
-
-enum ProposalType {
-    BRAVO
-    MAKER_EXECUTIVE
-    MAKER_POLL
-    SNAPSHOT
+  @@unique([daoId, type])
 }
 
 model Proposal {
-    id              String       @id @default(cuid())
-    externalId      String       @unique
-    name            String
-    dao             DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
-    daoId           String
-    daoHandlerId    String
-    proposalType    ProposalType
-    votes           Vote[]
-    notifications   Notification[]
-    data            Json         @db.Json // depends on daoHandlerId.type
-    url             String
-    addedAt         BigInt       // timestamp
+  id            String         @id @default(cuid())
+  externalId    String         @unique
+  name          String
+  daoId         String
+  daoHandlerId  String
+  proposalType  ProposalType
+  data          Json
+  url           String
+  dao           DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  votes         Vote[]
+  notifications Notification[]
+  addedAt       BigInt // timestamp
 
-    @@unique([externalId, daoId])
+  @@unique([externalId, daoId])
+  @@index([daoId], map: "Proposal_daoId_fkey")
 }
 
 // enum StatusType {
@@ -89,65 +74,88 @@ model Proposal {
 // }
 
 enum RoundupNotificationType {
-    NEW
-    ENDING_SOON
+  NEW
+  ENDING_SOON
 }
 
 model Notification {
-    id           String       @id @default(cuid())
-    user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId       String
-    proposal     Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
-    proposalId   String
-    type         RoundupNotificationType
+  id         String                  @id @default(cuid())
+  user       User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  proposal   Proposal                @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  proposalId String
+  type       RoundupNotificationType
 
-    @@unique([proposalId, userId])
+  @@unique([proposalId, userId])
 }
 
 model Vote {
-    id           String       @id @default(cuid())
-    options      VoteOption[]
-    voterAddress String
-    proposal     Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
-    proposalId   String
-    dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
-    daoId        String
-    daoHandlerId String
-    addedAt      BigInt   // timestamp
+  id           String       @id @default(cuid())
+  voterAddress String
+  proposalId   String
+  daoId        String
+  daoHandlerId String
+  dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  proposal     Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  options      VoteOption[]
+  addedAt      BigInt // timestamp
 
-    @@unique([voterAddress, daoId, proposalId])
+  @@unique([voterAddress, daoId, proposalId])
+  @@index([daoId], map: "Vote_daoId_fkey")
+  @@index([proposalId], map: "Vote_proposalId_fkey")
 }
 
 model VoteOption {
-    id         String @id @default(cuid())
-    option     String
-    optionName String
+  id             String @id @default(cuid())
+  option         String
+  optionName     String
+  voterAddress   String
+  voteDaoId      String
+  voteProposalId String
+  vote           Vote   @relation(fields: [voterAddress, voteDaoId, voteProposalId], references: [voterAddress, daoId, proposalId], onDelete: Cascade)
 
-    vote           Vote   @relation(fields: [voterAddress, voteDaoId, voteProposalId], references: [voterAddress, daoId, proposalId], onDelete: Cascade)
-    voterAddress   String
-    voteDaoId      String
-    voteProposalId String
-
-    @@unique([voteProposalId, option])
+  @@unique([voteProposalId, option])
+  @@index([voterAddress, voteDaoId, voteProposalId], map: "VoteOption_voterAddress_voteDaoId_voteProposalId_fkey")
 }
 
 model VoterLatestVoteBlock {
-    id              String @id @default(cuid())
-    voterAddress    String
-    daoHandlerId    String
-    latestVoteBlock Int
+  id              String @id @default(cuid())
+  voterAddress    String
+  daoHandlerId    String
+  latestVoteBlock Int
 
-    @@unique([voterAddress, daoHandlerId])
+  @@unique([voterAddress, daoHandlerId])
 }
 
 model Subscription {
-    id String @id @default(cuid())
+  id     String @id @default(cuid())
+  userId String
+  daoId  String
+  dao    DAO    @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-    dao  DAO  @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  @@unique([userId, daoId])
+  @@index([daoId], map: "Subscription_daoId_fkey")
+}
 
-    userId String
-    daoId  String
+enum DAOHandlerType {
+  BRAVO1
+  BRAVO2
+  MAKER_EXECUTIVE
+  MAKER_POLL_CREATE
+  MAKER_POLL_VOTE
+  SNAPSHOT
+}
 
-    @@unique([userId, daoId])
+enum ProposalType {
+  BRAVO
+  MAKER_EXECUTIVE
+  MAKER_POLL
+  SNAPSHOT
+}
+
+enum RefreshStatus {
+  NEW
+  PENDING
+  DONE
 }

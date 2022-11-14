@@ -2,18 +2,16 @@ import axios from 'axios'
 import { prisma } from '@senate/database'
 import { DAOHandler } from '@senate/common-types'
 import { Logger, InternalServerErrorException } from '@nestjs/common'
+import { Console } from 'console'
 
-const logger = new Logger('MakerExecutiveProposals')
+const logger = new Logger('SnapshotVotes')
 
 export const updateSnapshotVotes = async (
     daoHandler: DAOHandler,
     voterAddress: string,
     daoName: string
 ) => {
-    if (!daoHandler.decoder) return
-    if (!Array.isArray(daoHandler.decoder)) return
-
-    logger.log(`Updating snapshot votes for ${daoName}`)
+    logger.log(`Updating Snapshot votes for ${voterAddress}`)
     let votes
 
     try {
@@ -70,6 +68,11 @@ export const updateSnapshotVotes = async (
                     console.log(
                         `Snapshot proposal with externalId ${vote.proposal.id} does not exist in DB`
                     )
+                    continue
+                }
+
+                if (!vote.proposal.id) {
+                    console.log('Bad proposal id')
                     continue
                 }
 

@@ -16,9 +16,20 @@ export const DaoItem = (props: {
     const subscribe = trpc.user.userSubscribe.useMutation()
     const unsubscribe = trpc.user.userUnsubscribe.useMutation()
 
+    const refreshDao = trpc.public.refreshDao.useMutation({
+        onSuccess: () => {
+            refreshStatus.refetch()
+        },
+    })
+    const refreshStatus = trpc.public.refreshStatus.useQuery({
+        daoId: props.dao.id,
+    })
+
     const [subscribed, setSubscribed] = useState(
         props.dao.subscriptions.length > 0 ? true : false
     )
+
+    if (!refreshStatus.data) return <div>Loading...</div>
 
     return (
         <div>
@@ -89,6 +100,33 @@ export const DaoItem = (props: {
                                         </button>
                                     )}
                                 </div>
+                                <div className="flex flex-col">
+                                    <div>Last refresh at :</div>
+                                    <div>
+                                        {`${refreshStatus.data.lastRefresh}`}
+                                    </div>
+                                </div>
+                                {refreshStatus.data.refreshStatus == 'DONE' ? (
+                                    <button
+                                        className="mr-1 mb-1 rounded bg-blue-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-blue-600"
+                                        type="button"
+                                        onClick={() => {
+                                            refreshDao.mutate({
+                                                daoId: props.dao.id,
+                                            })
+                                        }}
+                                    >
+                                        Refresh DAO
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="mr-1 mb-1 rounded bg-orange-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-red-600"
+                                        type="button"
+                                    >
+                                        Refresh pending
+                                    </button>
+                                )}
+
                                 {/*footer*/}
                                 <div className="flex items-center justify-end rounded-b border-t border-solid border-slate-200 p-6">
                                     <button

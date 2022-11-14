@@ -1,21 +1,20 @@
 import { ethers } from 'ethers'
 import { Logger, InternalServerErrorException } from '@nestjs/common'
 import { prisma } from '@senate/database'
-import { DAOHandler } from '@senate/common-types'
+import { DAOHandler, type DAOHandlerType } from '@senate/common-types'
 import { hexZeroPad } from 'ethers/lib/utils'
-import { DAOHandlerType } from '@prisma/client'
 
 const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL),
 })
 
-const logger = new Logger('MakerVotes')
+const logger = new Logger('MakerExecutiveVotes')
 
 export const updateMakerVotes = async (
     daoHandler: DAOHandler,
     voterAddress: string
 ) => {
-    logger.log(`Updating Maker votes`)
+    logger.log(`Updating Maker votes for ${voterAddress}`)
     let votedSpells
 
     try {

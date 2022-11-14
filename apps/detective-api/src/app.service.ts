@@ -16,16 +16,15 @@ import { updateMakerVotes } from './votes/makerVotes'
 import { updateSnapshotVotes } from './votes/snapshotVotes'
 
 import { prisma } from '@senate/database'
+import { RefreshStatus } from '@senate/common-types'
 
 @Injectable()
 export class AppService {
     private readonly logger = new Logger(AppService.name)
 
     async updateProposals(daoId: string) {
-        let dao
-
-        try {
-            dao = await prisma.dAO.findFirst({
+        const dao = await prisma.dAO
+            .findFirstOrThrow({
                 where: {
                     id: daoId,
                 },
@@ -34,10 +33,10 @@ export class AppService {
                     subscriptions: true,
                 },
             })
-        } catch (err) {
-            this.logger.error(err)
-            throw new InternalServerErrorException()
-        }
+            .catch((err) => {
+                this.logger.error(err)
+                throw new InternalServerErrorException()
+            })
 
         if (!dao) {
             throw new NotFoundException('DAO not found')
@@ -69,6 +68,16 @@ export class AppService {
                     break
             }
         }
+
+        await prisma.dAO.update({
+            where: {
+                id: dao.id,
+            },
+            data: {
+                refreshStatus: RefreshStatus.DONE,
+                lastRefresh: new Date(),
+            },
+        })
     }
 
     async updateVotes(daoId: string, voterAddress: string) {
@@ -127,5 +136,15 @@ export class AppService {
                     break
             }
         }
+
+        await prisma.voter.update({
+            where: {
+                address: voterAddress,
+            },
+            data: {
+                refreshStatus: RefreshStatus.DONE,
+                lastRefresh: new Date(),
+            },
+        })
     }
 }
