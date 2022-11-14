@@ -1,8 +1,4 @@
-import { httpBatchLink } from '@trpc/client/links/httpBatchLink'
-import { loggerLink } from '@trpc/client/links/loggerLink'
-import { withTRPC } from '@trpc/next'
 import { SessionProvider } from 'next-auth/react'
-import superjson from 'superjson'
 import type { AppType } from 'next/app'
 import type { Session } from 'next-auth'
 import '../styles/globals.css'
@@ -18,7 +14,10 @@ import { trpc } from '../utils/trpc'
 
 const { chains, provider } = configureChains(
     [chain.mainnet],
-    [infuraProvider({ apiKey: process.env.PROVIDER_URL }), publicProvider()]
+    [
+        infuraProvider({ apiKey: process.env.PROVIDER_URL ?? 'missing_key' }),
+        publicProvider(),
+    ]
 )
 
 const { connectors } = getDefaultWallets({

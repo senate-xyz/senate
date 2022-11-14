@@ -1,99 +1,83 @@
 import { prisma } from '@senate/database'
 import { z } from 'zod'
+import { RefreshStatus } from '../../../../../../packages/common-types/dist'
 import { router, publicProcedure } from '../trpc'
 
 export const userRouter = router({
-    proxyAddreses: publicProcedure.query(async ({ ctx }) => {
+    voters: publicProcedure.query(async ({ ctx }) => {
         if (!ctx.session) return
 
-        const user = await prisma.user
-            .findFirstOrThrow({
-                where: {
-                    address: { equals: String(ctx.session?.user?.name) },
-                },
-                select: {
-                    id: true,
-                },
-            })
-            .catch(() => {
-                return { id: '0' }
-            })
-
-        const proxyAddresses = await prisma.userProxy.findMany({
+        const proxyAddresses = await prisma.voter.findMany({
             where: {
-                user: user,
+                users: {
+                    some: {
+                        name: { equals: String(ctx.session?.user?.name) },
+                    },
+                },
             },
         })
         return proxyAddresses
     }),
-    addProxy: publicProcedure
+    addVoter: publicProcedure
         .input(
             z.object({
                 address: z.string().startsWith('0x').length(42),
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const user = await prisma.user
-                .findFirstOrThrow({
-                    where: {
-                        address: { equals: String(ctx.session?.user?.name) },
-                    },
-                    select: {
-                        id: true,
-                    },
-                })
-                .catch(() => {
-                    return { id: '0' }
-                })
+            if (!ctx.session) return
 
-            await prisma.userProxy.upsert({
+            await prisma.user.update({
                 where: {
-                    id: 'id',
+                    name: String(ctx.session?.user?.name),
                 },
-                update: {
-                    address: input.address,
-                    userId: user.id,
-                },
-                create: {
-                    userId: user.id,
-                    address: input.address,
+                data: {
+                    voters: {
+                        connectOrCreate: {
+                            where: { address: input.address },
+                            create: {
+                                address: input.address,
+                                refreshStatus: RefreshStatus.NEW,
+                                lastRefresh: new Date(0),
+                            },
+                        },
+                    },
                 },
             })
         }),
-    userRemoveProxy: publicProcedure
+    removeVoter: publicProcedure
         .input(
             z.object({
                 address: z.string(),
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const user = await prisma.user
-                .findFirstOrThrow({
+            if (!ctx.session) return
+
+            await prisma.user
+                .update({
                     where: {
-                        address: { equals: String(ctx.session?.user?.name) },
+                        name: String(ctx.session?.user?.name),
                     },
-                    select: {
-                        id: true,
+                    data: {
+                        voters: {
+                            disconnect: {
+                                address: input.address,
+                            },
+                        },
                     },
                 })
-                .catch(() => {
-                    return { id: '0' }
-                })
-            await prisma.userProxy.deleteMany({
-                where: {
-                    userId: user.id,
-                    address: input.address,
-                },
-            })
+                .then((res) => console.log(res))
+                .catch((err) => console.log(err))
         }),
     userProposals: publicProcedure.query(async ({ ctx }) => {
         const user = await prisma.user.findFirstOrThrow({
             where: {
-                address: { equals: String(ctx.session?.user?.name) },
+                name: { equals: String(ctx.session?.user?.name) },
             },
             select: {
                 id: true,
-                proxies: true,
+                voters: true,
             },
         })
 
@@ -137,7 +121,7 @@ export const userRouter = router({
                 votes: {
                     where: {
                         voterAddress: {
-                            in: user.proxies.map((proxy) => proxy.address),
+                            in: user.voters.map((voter) => voter.address),
                         },
                     },
                     include: {
@@ -153,7 +137,7 @@ export const userRouter = router({
         const user = await prisma.user
             .findFirstOrThrow({
                 where: {
-                    address: { equals: String(ctx.session?.user?.name) },
+                    name: { equals: String(ctx.session?.user?.name) },
                 },
                 select: {
                     id: true,
@@ -190,7 +174,7 @@ export const userRouter = router({
             const user = await prisma.user
                 .findFirstOrThrow({
                     where: {
-                        address: { equals: String(ctx.session?.user?.name) },
+                        name: { equals: String(ctx.session?.user?.name) },
                     },
                     select: {
                         id: true,
@@ -229,7 +213,7 @@ export const userRouter = router({
             const user = await prisma.user
                 .findFirstOrThrow({
                     where: {
-                        address: { equals: String(ctx.session?.user?.name) },
+                        name: { equals: String(ctx.session?.user?.name) },
                     },
                     select: {
                         id: true,
@@ -252,4 +236,39 @@ export const userRouter = router({
                     return true
                 })
         }),
+
+    refreshMyVotes: publicProcedure.mutation(async ({ ctx }) => {
+        const user = await prisma.user
+            .findFirstOrThrow({
+                where: {
+                    name: { equals: String(ctx.session?.user?.name) },
+                },
+                select: {
+                    id: true,
+                },
+            })
+            .catch(() => {
+                return { id: '0' }
+            })
+
+        const voters = await prisma.voter.findMany({
+            where: {
+                users: {
+                    some: { id: user.id },
+                },
+            },
+        })
+
+        await prisma.voter.updateMany({
+            where: {
+                id: {
+                    in: voters.map((voter) => voter.id),
+                },
+            },
+            data: {
+                refreshStatus: RefreshStatus.NEW,
+            },
+        })
+        return true
+    }),
 })

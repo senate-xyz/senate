@@ -48,6 +48,18 @@ export const TrackerTable = (props: {
                                                 height="20"
                                                 alt="dao image"
                                             />
+                                            {proposal.proposalType}
+                                            <Image
+                                                width="20"
+                                                height="20"
+                                                alt="proposal type"
+                                                src={
+                                                    proposal.proposalType ==
+                                                    'SNAPSHOT'
+                                                        ? 'https://avatars.githubusercontent.com/u/72904068?s=200&v=4'
+                                                        : 'https://assets.coingecko.com/coins/images/279/thumb/ethereum.png'
+                                                }
+                                            />
 
                                             <a
                                                 href={proposal.data[

@@ -1,33 +1,33 @@
 import { useState } from 'react'
 import { trpc } from '../../../../utils/trpc'
 
-const ProxyAccounts = () => {
+const VoterAddresses = () => {
     const [newProxyAddress, setNewProxyAddress] = useState('')
 
-    const proxyAddresses = trpc.user.proxyAddreses.useQuery()
-    const addProxy = trpc.user.addProxy.useMutation()
-    const removeProxy = trpc.user.userRemoveProxy.useMutation()
+    const voters = trpc.user.voters.useQuery()
+    const addVoter = trpc.user.addVoter.useMutation()
+    const removeVoter = trpc.user.removeVoter.useMutation()
     const utils = trpc.useContext()
 
     const [error, setError] = useState('')
-    if (!proxyAddresses.data) return <div>Loading</div>
+    if (!voters.data) return <div>Loading</div>
 
     return (
         <div className="w-full">
-            <p>ProxyAccounts</p>
+            <p>VoterAddresses</p>
 
-            {proxyAddresses.data.map((proxyAddress) => {
+            {voters.data.map((voter) => {
                 return (
                     <div
-                        key={proxyAddress.address}
+                        key={voter.address}
                         className="flex flex-row items-center"
                     >
-                        {proxyAddress.address}
+                        {voter.address}
 
                         <button
                             onClick={() => {
-                                removeProxy.mutate(
-                                    { address: proxyAddress.address },
+                                removeVoter.mutate(
+                                    { address: voter.address },
                                     {
                                         onError(e) {
                                             setError(e.message)
@@ -52,7 +52,7 @@ const ProxyAccounts = () => {
                     htmlFor="proxyAddress"
                     className="m-2 block text-sm font-medium"
                 >
-                    Proxy address
+                    Voter address
                 </label>
                 <input
                     type="text"
@@ -65,7 +65,7 @@ const ProxyAccounts = () => {
                 />
                 <button
                     onClick={() => {
-                        addProxy.mutate(
+                        addVoter.mutate(
                             { address: newProxyAddress },
                             {
                                 onError(e) {
@@ -91,4 +91,4 @@ const ProxyAccounts = () => {
     )
 }
 
-export default ProxyAccounts
+export default VoterAddresses
