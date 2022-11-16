@@ -13,6 +13,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@senate/common-types": "*",
+    "@senate/config": "*",
+    "@senate/database": "*",
+    "@senate/tsconfig": "*",
     "express": "^4.18.2",
     "node-cron": "^3.0.2",
     "nodemailer": "^6.8.0",
