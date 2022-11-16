@@ -5,6 +5,7 @@
 Table User {
   id String [pk]
   name String [unique, not null]
+  email String [not null]
   voters Voter [not null]
   subscriptions Subscription [not null]
   notifications Notification [not null]
@@ -16,6 +17,7 @@ Table Voter {
   refreshStatus RefreshStatus [not null]
   lastRefresh DateTime [not null]
   users User [not null]
+  votes Vote [not null]
 }
 
 Table DAO {
@@ -70,7 +72,7 @@ Table Notification {
   type RoundupNotificationType [not null]
 
   indexes {
-    (proposalId, userId) [unique]
+    (proposalId, userId, type) [unique]
   }
 }
 
@@ -82,6 +84,7 @@ Table Vote {
   daoHandlerId String [not null]
   dao DAO [not null]
   proposal Proposal [not null]
+  voter Voter [not null]
   options VoteOption [not null]
   addedAt BigInt [not null]
 
@@ -135,6 +138,7 @@ Table UserToVoter {
 Enum RoundupNotificationType {
   NEW
   ENDING_SOON
+  VOTED
 }
 
 Enum DAOHandlerType {
@@ -170,6 +174,8 @@ Ref: Notification.proposalId > Proposal.id [delete: Cascade]
 Ref: Vote.daoId > DAO.id [delete: Cascade]
 
 Ref: Vote.proposalId > Proposal.id [delete: Cascade]
+
+Ref: Vote.voterAddress > Voter.address [delete: Cascade]
 
 Ref: VoteOption.(voterAddress, voteDaoId, voteProposalId) > Vote.(voterAddress, daoId, proposalId) [delete: Cascade]
 

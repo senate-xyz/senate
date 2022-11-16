@@ -14,6 +14,7 @@ datasource db {
 model User {
   id            String         @id @default(cuid())
   name          String         @unique
+  email         String
   voters        Voter[]
   subscriptions Subscription[]
   notifications Notification[]
@@ -25,6 +26,7 @@ model Voter {
   refreshStatus RefreshStatus
   lastRefresh   DateTime
   users         User[]
+  votes        Vote[]         
 }
 
 model DAO {
@@ -76,6 +78,7 @@ model Proposal {
 enum RoundupNotificationType {
   NEW
   ENDING_SOON
+  VOTED
 }
 
 model Notification {
@@ -86,7 +89,7 @@ model Notification {
   proposalId String
   type       RoundupNotificationType
 
-  @@unique([proposalId, userId])
+  @@unique([proposalId, userId, type])
 }
 
 model Vote {
@@ -97,6 +100,7 @@ model Vote {
   daoHandlerId String
   dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
   proposal     Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  voter        Voter        @relation(fields: [voterAddress], references: [address], onDelete: Cascade)
   options      VoteOption[]
   addedAt      BigInt // timestamp
 
