@@ -42,6 +42,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                         },
                         create: {
                             name: siwe.address,
+                            email: '',
                         },
                         update: {
                             name: siwe.address,

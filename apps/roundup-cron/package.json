@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsup",
+    "start": "tsup && node dist/index.js",
+    "dev": "tsup && node dist/index.js",
+    "start:roundup": "tsup && node dist/index.js",
+    "dev:roundup": "tsup && node dist/index.js"
   },
   "author": "",
   "license": "ISC",
