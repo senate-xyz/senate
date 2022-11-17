@@ -74,6 +74,7 @@ export const FollowedDAO = (props: {
                                         onSuccess() {
                                             refreshStatus.refetch()
                                             props.refreshDaos()
+                                            setShowMenu(false)
                                         },
                                     }
                                 )
