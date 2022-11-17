@@ -6,13 +6,33 @@ import * as cron from "node-cron";
 const main = () => {
   console.log("Refresher start");
 
-  cron.schedule("* * * * *", () => {
+  cron.schedule("* * * * *", async () => {
+    console.log("Auto refresh request");
+    await autoRefreshRequest();
     console.log("Running refresher");
     refreshDaos();
     refreshUsers();
   });
 };
 
+const autoRefreshRequest = async () => {
+  await prisma.dAO.updateMany({
+    where: {
+      refreshStatus: RefreshStatus.DONE,
+    },
+    data: {
+      refreshStatus: RefreshStatus.NEW,
+    },
+  });
+  await prisma.voter.updateMany({
+    where: {
+      refreshStatus: RefreshStatus.DONE,
+    },
+    data: {
+      refreshStatus: RefreshStatus.NEW,
+    },
+  });
+};
 const refreshDaos = async () => {
   console.log("Refresh DAOs");
 
