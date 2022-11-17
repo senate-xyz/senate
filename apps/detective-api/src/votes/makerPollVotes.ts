@@ -15,7 +15,8 @@ export const updateMakerPollVotes = async (
     voterAddress: string
 ) => {
     logger.log(`Updating Maker Poll votes for ${voterAddress}`)
-    let votes
+    let votes;
+    let updateLatestVoteBlock : boolean = true;
 
     try {
         const voterLatestVoteBlock =
@@ -45,6 +46,7 @@ export const updateMakerPollVotes = async (
             })
 
             if (!proposal) {
+                updateLatestVoteBlock = false;
                 logger.error(
                     `Poll with externalId ${vote.proposalOnChainId} does not exist in DB for daoId: ${daoHandler.daoId} & daoHandlerId: ${daoHandler.id}`
                 )
@@ -90,7 +92,9 @@ export const updateMakerPollVotes = async (
                     addedAt: Date.now(),
                 },
             })
+        }
 
+        if (updateLatestVoteBlock) {
             await prisma.voterLatestVoteBlock.upsert({
                 where: {
                     voterAddress_daoHandlerId: {
@@ -108,6 +112,7 @@ export const updateMakerPollVotes = async (
                 },
             })
         }
+        
     } catch (err) {
         logger.error('Error while updating maker executive proposals', err)
         throw new InternalServerErrorException()

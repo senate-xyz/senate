@@ -127,5 +127,3 @@ dist
 .pnp.*
 .DS_Store
 packages/database/prisma/db.sqlite
-
-scripts/userSeed.js

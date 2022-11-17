@@ -15,7 +15,8 @@ export const updateMakerVotes = async (
     voterAddress: string
 ) => {
     logger.log(`Updating Maker votes for ${voterAddress}`)
-    let votedSpells
+    let votedSpells;
+    let updateLatestVoteBlock : boolean = true;
 
     try {
         const voterLatestVoteBlock =
@@ -44,6 +45,7 @@ export const updateMakerVotes = async (
             })
 
             if (!proposal) {
+                updateLatestVoteBlock = false;
                 console.log(
                     `MKR Executive proposal with externalId ${votedSpellAddress} does not exist in DB`
                 )
@@ -73,7 +75,9 @@ export const updateMakerVotes = async (
                     addedAt: Date.now(),
                 },
             })
+        }
 
+        if (updateLatestVoteBlock) {
             await prisma.voterLatestVoteBlock.upsert({
                 where: {
                     voterAddress_daoHandlerId: {

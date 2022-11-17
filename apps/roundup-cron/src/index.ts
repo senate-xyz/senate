@@ -277,31 +277,31 @@ let sendRoundupEmails = async () => {
             }
         })
 
-        client.sendEmailWithTemplate({
-            "TemplateAlias": "roundup",
-            "TemplateModel": {
-              "endingSoonNotifs": endingSoonNotifs,
-              "newProposalsNotifs": newProposalsNotifs,
-              "votedProposalsNotifs": votedProposalsNotifs
-            },
-            "InlineCss": true,
-            "From": "info@senatelabs.xyz",
-            "To": `${user.email}`,
-            //"Bcc": "eugenptr@gmail.com,kohnagata@gmail.com,contact@andreiv.com,paulo@hey.com",
-            "Tag": "Daily Roundup",
-            "Headers": [
-              {
-                "Name": "CUSTOM-HEADER",
-                "Value": "value"
-              }
-            ],
-            "TrackOpens": true,
-            "Metadata": {
-                "color":"blue",
-                "client-id":"12345"
-             },
-             "MessageStream": "outbound"
-          })
+        // client.sendEmailWithTemplate({
+        //     "TemplateAlias": "roundup",
+        //     "TemplateModel": {
+        //       "endingSoonNotifs": endingSoonNotifs,
+        //       "newProposalsNotifs": newProposalsNotifs,
+        //       "votedProposalsNotifs": votedProposalsNotifs
+        //     },
+        //     "InlineCss": true,
+        //     "From": "info@senatelabs.xyz",
+        //     "To": `${user.email}`,
+        //     //"Bcc": "eugenptr@gmail.com,kohnagata@gmail.com,contact@andreiv.com,paulo@hey.com",
+        //     "Tag": "Daily Roundup",
+        //     "Headers": [
+        //       {
+        //         "Name": "CUSTOM-HEADER",
+        //         "Value": "value"
+        //       }
+        //     ],
+        //     "TrackOpens": true,
+        //     "Metadata": {
+        //         "color":"blue",
+        //         "client-id":"12345"
+        //      },
+        //      "MessageStream": "outbound"
+        //   })
     }
 }
 
