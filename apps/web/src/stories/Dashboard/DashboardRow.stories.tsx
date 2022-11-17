@@ -1,5 +1,5 @@
 import '../../styles/globals.css'
-import { DashboardRow } from '../../components/views/dashboard/table/DashboardRow'
+import { DashboardRow } from '../../components/views/proposals/table/ProposalsRow'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 // export default {

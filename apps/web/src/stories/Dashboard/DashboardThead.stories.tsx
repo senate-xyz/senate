@@ -1,5 +1,5 @@
 import '../../styles/globals.css'
-import { DashboardThead } from '../../components/views/dashboard/table/DashboardTable'
+import { DashboardThead } from '../../components/views/proposals/table/ProposalsTable'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 export default {

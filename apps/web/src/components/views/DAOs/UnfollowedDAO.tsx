@@ -6,7 +6,7 @@ import { trpc } from '../../../utils/trpc'
 import { inferProcedureOutput } from '@trpc/server'
 import { AppRouter } from '../../../server/trpc/router/_app'
 
-export const DaoItem = (props: {
+export const UnfollowedDAO = (props: {
     dao:
         | inferProcedureOutput<AppRouter['user']['userDaos']>[0]
         | inferProcedureOutput<AppRouter['public']['daos']>[0]
@@ -146,68 +146,53 @@ export const DaoItem = (props: {
             <button
                 onClick={() => setShowModal(true)}
                 type="button"
-                className={`${
-                    subscribed
-                        ? 'bg-emerald-500 text-white active:bg-emerald-500'
-                        : 'bg-pink-400 text-white active:bg-pink-500'
-                } mr-1 mb-1 rounded px-6 py-3 text-sm font-bold uppercase shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none`}
+                className="mr-1 mb-1 rounded bg-gray-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-emerald-500"
             >
-                <div className="mt-4">
+                <div className="mt-4 flex h-80 w-60 flex-col items-center">
                     <Image
-                        width="50"
-                        height="50"
+                        width="96"
+                        height="96"
                         src={props.dao.picture}
                         alt="dao Image"
                     />
-                    {props.dao.handlers.map((handler, index: number) => {
-                        switch (handler.type) {
-                            case 'BRAVO1':
-                            case 'BRAVO2':
-                            case 'MAKER_POLL_CREATE':
-                            case 'MAKER_POLL_VOTE':
-                            case 'MAKER_EXECUTIVE':
-                                return (
-                                    <Image
-                                        key={index}
-                                        width="25"
-                                        height="25"
-                                        src="https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"
-                                        alt="dao Image"
-                                    />
-                                )
 
-                            case 'SNAPSHOT':
-                                return (
-                                    <Image
-                                        key={index}
-                                        width="25"
-                                        height="25"
-                                        src="https://avatars.githubusercontent.com/u/72904068?s=200&v=4"
-                                        alt="dao Image"
-                                    />
-                                )
-                        }
-                    })}
-                </div>
-
-                <div className="px-6 py-4">
-                    <div className="mb-2 text-xl font-bold">
-                        {props.dao.name}
+                    <div className="px-6 py-4">
+                        <div className="mb-2 text-3xl font-bold">
+                            {props.dao.name}
+                        </div>
                     </div>
-                </div>
-                <div className="px-2 pt-4 pb-2">
-                    <span className="mr-2 mb-2 inline-block rounded-full bg-gray-200 p-1 text-sm font-semibold text-gray-700">
-                        <FaDiscord />
-                    </span>
-                    <span className="mr-2 mb-2 inline-block rounded-full bg-gray-200 p-1 text-sm font-semibold text-gray-700">
-                        <FaSlack />
-                    </span>
-                    <span className="mr-2 mb-2 inline-block rounded-full bg-gray-200 p-1 text-sm font-semibold text-gray-700">
-                        <FaTelegram />
-                    </span>
-                    <span className="mr-2 mb-2 inline-block rounded-full bg-gray-200 p-1 text-sm font-semibold text-gray-700">
-                        <FaBell />
-                    </span>
+
+                    <div className="flex flex-row">
+                        {props.dao.handlers.map((handler, index: number) => {
+                            switch (handler.type) {
+                                case 'BRAVO1':
+                                case 'BRAVO2':
+                                case 'MAKER_POLL_CREATE':
+                                case 'MAKER_POLL_VOTE':
+                                case 'MAKER_EXECUTIVE':
+                                    return (
+                                        <Image
+                                            key={index}
+                                            width="24"
+                                            height="24"
+                                            src="https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"
+                                            alt="dao Image"
+                                        />
+                                    )
+
+                                case 'SNAPSHOT':
+                                    return (
+                                        <Image
+                                            key={index}
+                                            width="24"
+                                            height="24"
+                                            src="https://avatars.githubusercontent.com/u/72904068?s=200&v=4"
+                                            alt="dao Image"
+                                        />
+                                    )
+                            }
+                        })}
+                    </div>
                 </div>
             </button>
         </div>

@@ -133,7 +133,7 @@ export const userRouter = router({
 
         return userProposals
     }),
-    userDaos: publicProcedure.query(async ({ ctx }) => {
+    userSubscribedDAOs: publicProcedure.query(async ({ ctx }) => {
         const user = await prisma.user
             .findFirstOrThrow({
                 where: {
@@ -148,7 +148,13 @@ export const userRouter = router({
             })
 
         const daosList = await prisma.dAO.findMany({
-            where: {},
+            where: {
+                subscriptions: {
+                    some: {
+                        user: { is: user },
+                    },
+                },
+            },
             orderBy: {
                 id: 'asc',
             },
