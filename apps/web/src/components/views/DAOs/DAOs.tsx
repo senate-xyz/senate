@@ -13,11 +13,20 @@ const DAOs = () => {
         <div className="flex w-full flex-col">
             <div className="p-4">
                 <p className="text-2xl">DAOs you are following</p>
-                <div className="grid auto-rows-max grid-cols-5 justify-start gap-3">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                     {followingDAOs.data ? (
                         followingDAOs.data.map(
                             (dao: DAOType, index: number) => {
-                                return <FollowedDAO dao={dao} key={index} />
+                                return (
+                                    <FollowedDAO
+                                        dao={dao}
+                                        key={index}
+                                        refreshDaos={() => {
+                                            allDAOs.refetch()
+                                            followingDAOs.refetch()
+                                        }}
+                                    />
+                                )
                             }
                         )
                     ) : (
@@ -29,7 +38,7 @@ const DAOs = () => {
             <div className="p-4">
                 <p className="text-2xl">DAOs you are not following yet...</p>
 
-                <div className="grid auto-rows-max grid-cols-5 justify-start gap-3">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                     {allDAOs.data ? (
                         allDAOs.data
                             .filter(
@@ -39,7 +48,16 @@ const DAOs = () => {
                                         .includes(dao.name)
                             )
                             .map((dao: DAOType, index: number) => {
-                                return <UnfollowedDAO dao={dao} key={index} />
+                                return (
+                                    <UnfollowedDAO
+                                        dao={dao}
+                                        key={index}
+                                        refreshDaos={() => {
+                                            allDAOs.refetch()
+                                            followingDAOs.refetch()
+                                        }}
+                                    />
+                                )
                             })
                     ) : (
                         <div>Loading...</div>
@@ -54,7 +72,7 @@ const DAOsContainer = () => {
     return (
         <div className="h-full w-full bg-slate-700">
             <div className="flex w-full flex-col">
-                <div className="flex h-48 items-center justify-between bg-slate-700 px-10">
+                <div className="flex h-48 items-center justify-between bg-slate-800 px-10">
                     <h1 className="text-5xl">DAOs</h1>
                     <ConnectButton />
                 </div>
