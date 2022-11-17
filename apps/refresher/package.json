@@ -22,19 +22,19 @@
     "prettier": "prettier src --check",
     "prettier:fix": "prettier src --write"
   },
+   "dependencies": {
+    "@senate/common-types": "*",
+    "@senate/config": "*",
+    "@senate/database": "*",
+    "@senate/tsconfig": "*",
+    "node-cron": "^3.0.2",
+    "node-fetch": "^3.3.0"
+  },
   "devDependencies": {
     "@types/node-cron": "^3.0.5",
     "rimraf": "^3.0.2",
     "tsup": "^6.4.0",
     "tsx": "^3.12.0",
     "typescript": "^4.8.4"
-  },
-  "dependencies": {
-    "@senate/config": "*",
-    "@senate/tsconfig": "*",
-    "@senate/database": "*",
-    "@senate/common-types": "*",
-    "node-cron": "^3.0.2",
-    "node-fetch": "^3.3.0"
   }
 }

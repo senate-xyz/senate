@@ -22,6 +22,7 @@ export const updateGovernorBravoVotes = async (
 ) => {
     logger.log(`Updating Governor Bravo votes for ${daoName}`)
     let votes
+    let updateLatestVoteBlock = true
 
     try {
         const voterLatestVoteBlock =
@@ -50,7 +51,13 @@ export const updateGovernorBravoVotes = async (
                 },
             })
 
-            if (!proposal) return
+            if (!proposal) {
+                updateLatestVoteBlock = false
+                logger.error(
+                    `GovBravo proposal with externalId ${vote.proposalOnChainId} does not exist in DB for daoId: ${daoHandler.daoId} & daoHandlerId: ${daoHandler.id}`
+                )
+                continue
+            }
 
             await prisma.vote.upsert({
                 where: {
@@ -93,22 +100,24 @@ export const updateGovernorBravoVotes = async (
             })
         }
 
-        await prisma.voterLatestVoteBlock.upsert({
-            where: {
-                voterAddress_daoHandlerId: {
+        if (updateLatestVoteBlock) {
+            await prisma.voterLatestVoteBlock.upsert({
+                where: {
+                    voterAddress_daoHandlerId: {
+                        voterAddress: voterAddress,
+                        daoHandlerId: daoHandler.id,
+                    },
+                },
+                update: {
+                    latestVoteBlock: currentBlock,
+                },
+                create: {
                     voterAddress: voterAddress,
                     daoHandlerId: daoHandler.id,
+                    latestVoteBlock: currentBlock,
                 },
-            },
-            update: {
-                latestVoteBlock: currentBlock,
-            },
-            create: {
-                voterAddress: voterAddress,
-                daoHandlerId: daoHandler.id,
-                latestVoteBlock: currentBlock,
-            },
-        })
+            })
+        }
     } catch (err) {
         logger.error('Error while updating governor bravo votes', err)
         throw new InternalServerErrorException()
@@ -123,8 +132,6 @@ const getVotes = async (
     latestVoteBlock: number
 ): Promise<Vote[]> => {
     const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
-
-    latestVoteBlock = 0
 
     let logs: any[] = []
     let votes
