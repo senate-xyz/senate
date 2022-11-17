@@ -128,4 +128,4 @@ dist
 .DS_Store
 packages/database/prisma/db.sqlite
 
-./scripts/userSeed.js
+scripts/userSeed.js
