@@ -15,6 +15,9 @@ export const FollowedDAO = (props: {
     const refreshStatus = trpc.public.refreshStatus.useQuery({
         daoId: props.dao.id,
     })
+    const activeProposalsForDao = trpc.public.activeProposalsForDao.useQuery({
+        daoId: props.dao.id,
+    })
 
     if (!refreshStatus.data) return <div>Loading...</div>
 
@@ -27,6 +30,7 @@ export const FollowedDAO = (props: {
                             <div className="flex w-full flex-row justify-between">
                                 <p>Notifications</p>
                                 <p
+                                    className="cursor-pointer"
                                     onClick={() => {
                                         setShowMenu(false)
                                     }}
@@ -34,10 +38,10 @@ export const FollowedDAO = (props: {
                                     X
                                 </p>
                             </div>
-                            <p>Get faily emails about:</p>
-                            <div className="flex w-full flex-row items-center justify-between">
+                            <p>Get daily emails about:</p>
+                            <div className="flex w-full flex-row items-center justify-between gap-2">
                                 <p>New Proposals</p>
-                                <label className="relative inline-flex cursor-pointer items-center gap-2">
+                                <label className="relative inline-flex cursor-pointer items-center bg-gray-700">
                                     <input
                                         type="checkbox"
                                         value=""
@@ -48,7 +52,7 @@ export const FollowedDAO = (props: {
                             </div>
                             <div className="flex w-full flex-row items-center justify-between gap-2">
                                 <p>Proposal ending soon</p>
-                                <label className="relative inline-flex cursor-pointer items-center">
+                                <label className="relative inline-flex cursor-pointer items-center bg-gray-700">
                                     <input
                                         type="checkbox"
                                         value=""
@@ -132,6 +136,15 @@ export const FollowedDAO = (props: {
                                     }
                                 }
                             )}
+                        </div>
+                        <div>
+                            {
+                                activeProposalsForDao.data?.filter(
+                                    (proposal) =>
+                                        proposal.data?.['timeEnd'] > Date.now()
+                                ).length
+                            }{' '}
+                            Active Proposals
                         </div>
                     </div>
                 </div>

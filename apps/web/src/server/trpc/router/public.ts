@@ -81,4 +81,21 @@ export const publicRouter = router({
                 },
             })
         }),
+    activeProposalsForDao: publicProcedure
+        .input(
+            z.object({
+                daoId: z.string(),
+            })
+        )
+        .query(async ({ input }) => {
+            return await prisma.proposal.findMany({
+                where: {
+                    AND: [
+                        {
+                            daoId: input.daoId,
+                        },
+                    ],
+                },
+            })
+        }),
 })

@@ -13,7 +13,7 @@ const DAOs = () => {
         <div className="flex w-full flex-col">
             <div className="p-4">
                 <p className="text-2xl">DAOs you are following</p>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-6">
                     {followingDAOs.data ? (
                         followingDAOs.data.map(
                             (dao: DAOType, index: number) => {
@@ -38,7 +38,7 @@ const DAOs = () => {
             <div className="p-4">
                 <p className="text-2xl">DAOs you are not following yet...</p>
 
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-6">
                     {allDAOs.data ? (
                         allDAOs.data
                             .filter(
