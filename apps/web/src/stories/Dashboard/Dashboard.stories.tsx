@@ -1,5 +1,5 @@
 import '../../styles/globals.css'
-import { DashboardView } from '../../components/views/dashboard/Dashboard'
+import { DashboardView } from '../../components/views/proposals/Proposals'
 import { Meta } from '@storybook/react'
 
 export default {

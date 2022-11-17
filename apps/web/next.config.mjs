@@ -25,6 +25,7 @@ export default defineNextConfig({
             'assets.coingecko.com',
             'cdn.stamp.fyi',
             'seeklogo.com',
+            'docs.synthetix.io',
         ],
     },
 })

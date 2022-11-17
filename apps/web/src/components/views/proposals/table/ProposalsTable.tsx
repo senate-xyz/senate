@@ -1,10 +1,10 @@
 import { inferProcedureOutput } from '@trpc/server'
 import { AppRouter } from '../../../../server/trpc/router/_app'
-import { DashboardRow } from './DashboardRow'
+import { ProposalsRow } from './ProposalsRow'
 
 const tableHeader = ['DAO', 'Proposal', 'Time left', 'Vote']
 
-export const DashboardThead = () => (
+export const ProposalsThead = () => (
     <thead className="text-xs uppercase">
         <tr>
             {tableHeader.map((column, index) => {
@@ -18,7 +18,7 @@ export const DashboardThead = () => (
     </thead>
 )
 
-export const DashboardTable = (props: {
+export const ProposalsTable = (props: {
     proposals:
         | inferProcedureOutput<AppRouter['user']['userProposals']>
         | inferProcedureOutput<AppRouter['public']['proposals']>
@@ -26,10 +26,10 @@ export const DashboardTable = (props: {
     return (
         <div className="w-full">
             <table className="w-full text-left text-sm">
-                <DashboardThead />
+                <ProposalsThead />
                 <tbody>
                     {props.proposals.map((proposal, index) => {
-                        return <DashboardRow key={index} proposal={proposal} />
+                        return <ProposalsRow key={index} proposal={proposal} />
                     })}
                 </tbody>
             </table>

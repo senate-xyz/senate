@@ -7,7 +7,7 @@ import { AppRouter } from '../../../../server/trpc/router/_app'
 
 dayjs.extend(relativeTime)
 
-export const DashboardRow = (props: {
+export const ProposalsRow = (props: {
     proposal:
         | inferProcedureOutput<AppRouter['user']['userProposals']>[0]
         | inferProcedureOutput<AppRouter['public']['proposals']>[0]

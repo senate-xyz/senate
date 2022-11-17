@@ -1,11 +1,11 @@
 import { useSession } from 'next-auth/react'
 
 import { trpc } from '../../../utils/trpc'
-import { DashboardTable } from './table/DashboardTable'
+import { ProposalsTable } from './table/ProposalsTable'
 
-export const DashboardHeader = () => <p>Dashboard</p>
+export const ProposalsHeader = () => <p>Dashboard</p>
 
-export const DashboardView = () => {
+export const ProposalsView = () => {
     const trpcUtil = trpc.useContext()
     const refreshMyVotes = trpc.user.refreshMyVotes.useMutation({
         onSuccess: () => {
@@ -31,7 +31,7 @@ export const DashboardView = () => {
                     .every((status) => status == 'DONE') ? (
                     <button
                         className={
-                            'w-auto self-end m-2 bg-green-200 p-1 rounded-sm'
+                            'm-2 w-auto self-end rounded-sm bg-green-200 p-1'
                         }
                         onClick={() => {
                             refreshMyVotes.mutate()
@@ -44,7 +44,7 @@ export const DashboardView = () => {
                 ) : (
                     <button
                         className={
-                            'w-auto self-end m-2 bg-red-200 p-1 rounded-sm'
+                            'm-2 w-auto self-end rounded-sm bg-red-200 p-1'
                         }
                         disabled={true}
                     >
@@ -60,14 +60,14 @@ export const DashboardView = () => {
                         </div>
                     ))}
                 </div>
-                <DashboardTable proposals={proposals.data} />
+                <ProposalsTable proposals={proposals.data} />
             </div>
         </div>
     )
 }
 
-export const Dashboard = () => {
-    return <DashboardView />
+export const Proposals = () => {
+    return <ProposalsView />
 }
 
-export default Dashboard
+export default Proposals
