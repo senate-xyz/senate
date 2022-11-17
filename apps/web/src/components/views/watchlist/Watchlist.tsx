@@ -15,10 +15,10 @@ const Watchlist = () => {
     if (!DAOs.data) return <div>Loading</div>
 
     return (
-        <div className="w-full flex flex-col">
+        <div className="flex w-full flex-col">
             <p>Watchlist</p>
 
-            <div className="w-full flex">
+            <div className="flex w-full">
                 <div className="grid grid-cols-4 gap-4">
                     {DAOs.data.map((dao: DAOType, index: number) => {
                         return <DaoItem dao={dao} key={index} />

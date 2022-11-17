@@ -15,8 +15,8 @@ export const updateMakerVotes = async (
     voterAddress: string
 ) => {
     logger.log(`Updating Maker votes for ${voterAddress}`)
-    let votedSpells;
-    let updateLatestVoteBlock : boolean = true;
+    let votedSpells
+    let updateLatestVoteBlock = true
 
     try {
         const voterLatestVoteBlock =
@@ -45,7 +45,7 @@ export const updateMakerVotes = async (
             })
 
             if (!proposal) {
-                updateLatestVoteBlock = false;
+                updateLatestVoteBlock = false
                 console.log(
                     `MKR Executive proposal with externalId ${votedSpellAddress} does not exist in DB`
                 )

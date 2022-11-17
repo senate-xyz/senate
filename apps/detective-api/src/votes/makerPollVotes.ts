@@ -15,8 +15,8 @@ export const updateMakerPollVotes = async (
     voterAddress: string
 ) => {
     logger.log(`Updating Maker Poll votes for ${voterAddress}`)
-    let votes;
-    let updateLatestVoteBlock : boolean = true;
+    let votes
+    let updateLatestVoteBlock = true
 
     try {
         const voterLatestVoteBlock =
@@ -46,7 +46,7 @@ export const updateMakerPollVotes = async (
             })
 
             if (!proposal) {
-                updateLatestVoteBlock = false;
+                updateLatestVoteBlock = false
                 logger.error(
                     `Poll with externalId ${vote.proposalOnChainId} does not exist in DB for daoId: ${daoHandler.daoId} & daoHandlerId: ${daoHandler.id}`
                 )
@@ -112,7 +112,6 @@ export const updateMakerPollVotes = async (
                 },
             })
         }
-        
     } catch (err) {
         logger.error('Error while updating maker executive proposals', err)
         throw new InternalServerErrorException()

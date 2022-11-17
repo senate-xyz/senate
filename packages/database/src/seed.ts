@@ -264,7 +264,8 @@ async function main() {
                                 '0xc0Da02939E1441F497fd74F78cE7Decb17B66529',
                             abi: compoundGovBravo.abi,
                             latestProposalBlock: 10000000,
-                            proposalUrl: 'https://compound.finance/governance/proposals/',
+                            proposalUrl:
+                                'https://compound.finance/governance/proposals/',
                         },
                     },
                     {
@@ -371,7 +372,6 @@ async function main() {
             handlers: true,
         },
     })
-
 }
 
 main()

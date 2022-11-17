@@ -31,7 +31,7 @@ export const DashboardView = () => {
                     .every((status) => status == 'DONE') ? (
                     <button
                         className={
-                            'w-auto self-end m-2 bg-green-200 p-1 rounded-sm'
+                            'm-2 w-auto self-end rounded-sm bg-green-200 p-1'
                         }
                         onClick={() => {
                             refreshMyVotes.mutate()
@@ -44,7 +44,7 @@ export const DashboardView = () => {
                 ) : (
                     <button
                         className={
-                            'w-auto self-end m-2 bg-red-200 p-1 rounded-sm'
+                            'm-2 w-auto self-end rounded-sm bg-red-200 p-1'
                         }
                         disabled={true}
                     >

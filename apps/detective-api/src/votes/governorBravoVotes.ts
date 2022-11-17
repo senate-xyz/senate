@@ -21,8 +21,8 @@ export const updateGovernorBravoVotes = async (
     daoName: string
 ) => {
     logger.log(`Updating Governor Bravo votes for ${daoName}`)
-    let votes;
-    let updateLatestVoteBlock : boolean = true;
+    let votes
+    let updateLatestVoteBlock = true
 
     try {
         const voterLatestVoteBlock =
@@ -52,11 +52,11 @@ export const updateGovernorBravoVotes = async (
             })
 
             if (!proposal) {
-                updateLatestVoteBlock = false;
+                updateLatestVoteBlock = false
                 logger.error(
                     `GovBravo proposal with externalId ${vote.proposalOnChainId} does not exist in DB for daoId: ${daoHandler.daoId} & daoHandlerId: ${daoHandler.id}`
                 )
-                continue;
+                continue
             }
 
             await prisma.vote.upsert({
@@ -118,7 +118,6 @@ export const updateGovernorBravoVotes = async (
                 },
             })
         }
-        
     } catch (err) {
         logger.error('Error while updating governor bravo votes', err)
         throw new InternalServerErrorException()
