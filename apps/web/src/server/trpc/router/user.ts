@@ -315,6 +315,9 @@ export const userRouter = router({
                         },
                     ],
                 },
+                orderBy: {
+                    timeEnd: 'asc',
+                },
                 include: {
                     dao: true,
                     votes: {

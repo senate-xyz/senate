@@ -3,6 +3,7 @@ import { inferProcedureOutput } from '@trpc/server'
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import { AppRouter } from '../../../server/trpc/router/_app'
+import Image from 'next/image'
 
 import { trpc } from '../../../utils/trpc'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -165,9 +166,21 @@ export const ProposalsView = () => {
                         </div>
                     )}
                     <div className="flex flex-col">
-                        {filteredActiveProposals.data?.map((proposal) => (
-                            <ActiveProposal proposal={proposal} />
-                        ))}
+                        <table className="w-full table-auto text-left">
+                            <thead>
+                                <th>DAO</th>
+                                <th>Proposal Title</th>
+                                <th>Ends in</th>
+                                <th>Vote status</th>
+                            </thead>
+                            <tbody>
+                                {filteredActiveProposals.data?.map(
+                                    (proposal) => (
+                                        <ActiveProposal proposal={proposal} />
+                                    )
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -181,22 +194,35 @@ const ActiveProposal = (props: {
     >[0]
 }) => {
     return (
-        <div className="my-2 flex h-32 w-full flex-row items-center justify-evenly bg-slate-300 p-2">
-            <img width="88" src={props.proposal.dao.picture} />
-            <p>{props.proposal.dao.name}</p>
-            <p>{props.proposal.name}</p>
-            <p>{dayjs(props.proposal.timeEnd).fromNow()}</p>
-            <p>
-                {props.proposal.votes.map((vote) =>
-                    vote.options.map((options) => options.optionName)
-                ).length > 0
-                    ? 'Voted - ' +
-                      props.proposal.votes.map((vote) =>
-                          vote.options.map((options) => options.optionName)
-                      )
-                    : 'Not voted yet'}
-            </p>
-        </div>
+        <tr className="my-2 h-32 w-full items-center justify-evenly bg-slate-300 p-2">
+            <td className="flex flex-row items-center">
+                <Image
+                    width="88"
+                    height="88"
+                    src={props.proposal.dao.picture}
+                    alt={props.proposal.dao.name}
+                />
+                <p>{props.proposal.dao.name}</p>
+            </td>
+            <td>
+                <p>{props.proposal.name}</p>
+            </td>
+            <td>
+                <p>{dayjs(props.proposal.timeEnd).fromNow()}</p>
+            </td>
+            <td>
+                <p>
+                    {props.proposal.votes.map((vote) =>
+                        vote.options.map((options) => options.optionName)
+                    ).length > 0
+                        ? 'Voted - ' +
+                          props.proposal.votes.map((vote) =>
+                              vote.options.map((options) => options.optionName)
+                          )
+                        : 'Not voted yet'}
+                </p>
+            </td>
+        </tr>
     )
 }
 
