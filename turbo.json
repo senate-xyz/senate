@@ -13,7 +13,9 @@
         "VERCEL_URL",
         "PROVIDER_URL",
         "PORT",
-        "DETECTIVE_URL"
+        "DETECTIVE_URL",
+        "POSTMARK_TOKEN",
+        "ROUNDUP_ENABLE"
       ]
     },
     "start": {},
