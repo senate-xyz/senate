@@ -301,7 +301,10 @@ export const userRouter = router({
                 where: {
                     AND: [
                         {
-                            daoId: input.fromDao,
+                            daoId:
+                                input.fromDao == 'any'
+                                    ? { not: '' }
+                                    : input.fromDao,
                         },
                         {
                             timeEnd: {

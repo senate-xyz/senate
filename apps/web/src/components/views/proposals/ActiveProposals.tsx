@@ -46,12 +46,12 @@ const voteStatus: { id: number; name: string }[] = [
 export const ActiveProposals = () => {
     const followingDAOs = trpc.user.userSubscribedDAOs.useQuery()
 
-    const [from, setFrom] = useState(followingDAOs.data?.[0].id)
+    const [from, setFrom] = useState('any')
     const [endingIn, setEndingIn] = useState(365 * 24 * 60 * 60 * 1000)
     const [withVoteStatus, setWithVoteStatus] = useState(0)
 
     const filteredActiveProposals = trpc.user.filteredActiveProposals.useQuery({
-        fromDao: from ?? 'undefined',
+        fromDao: from ?? 'any',
         endingIn: endingIn,
         withVoteStatus: withVoteStatus,
     })
@@ -67,6 +67,9 @@ export const ActiveProposals = () => {
                             setFrom(e.target.value)
                         }}
                     >
+                        <option key="any" value="any">
+                            Any
+                        </option>
                         {followingDAOs.data?.map((followingDAO) => {
                             return (
                                 <option

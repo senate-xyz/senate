@@ -3,12 +3,12 @@ import { useState, Suspense } from 'react'
 import NavBar, { ViewsEnum } from '../components/navbar/NavBar'
 import dynamic from 'next/dynamic'
 
-const DynamicDAOs = dynamic(() => import('../components/views/DAOs/DAOs'), {
+const DynamicDAOs = dynamic(() => import('../components/views/DAOs'), {
     suspense: true,
 })
 
 const DynamicProposals = dynamic(
-    () => import('../components/views/proposals/Proposals'),
+    () => import('../components/views/proposals'),
     {
         suspense: true,
     }
