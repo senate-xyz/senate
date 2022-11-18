@@ -1,4 +1,5 @@
 import { prisma } from '@senate/database'
+import { Input } from 'postcss'
 import { z } from 'zod'
 import { RefreshStatus } from '../../../../../../packages/common-types/dist'
 import { router, publicProcedure } from '../trpc'
@@ -277,4 +278,58 @@ export const userRouter = router({
         })
         return true
     }),
+
+    filteredActiveProposals: publicProcedure
+        .input(
+            z.object({
+                fromDao: z.string(),
+                endingIn: z.number(),
+                withVoteStatus: z.number(),
+            })
+        )
+        .query(async ({ ctx, input }) => {
+            const user = await prisma.user.findFirstOrThrow({
+                where: {
+                    name: { equals: String(ctx.session?.user?.name) },
+                },
+                include: {
+                    voters: true,
+                },
+            })
+
+            const userProposals = await prisma.proposal.findMany({
+                where: {
+                    AND: [
+                        {
+                            daoId: input.fromDao,
+                        },
+                        {
+                            timeEnd: {
+                                lte: new Date(Date.now() + input.endingIn),
+                            },
+                        },
+                        {
+                            timeEnd: {
+                                gte: new Date(),
+                            },
+                        },
+                    ],
+                },
+                include: {
+                    dao: true,
+                    votes: {
+                        where: {
+                            voterAddress: {
+                                in: user.voters.map((voter) => voter.address),
+                            },
+                        },
+                        include: {
+                            options: true,
+                        },
+                    },
+                },
+            })
+
+            return userProposals
+        }),
 })

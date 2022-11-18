@@ -64,7 +64,7 @@ export const FollowedDAO = (props: {
                         </div>
 
                         <button
-                            className="h-20 w-full bg-gray-500 text-xl font-bold text-black"
+                            className="h-20 w-full bg-gray-100 text-xl font-bold text-black"
                             onClick={() => {
                                 unsubscribe.mutate(
                                     {
