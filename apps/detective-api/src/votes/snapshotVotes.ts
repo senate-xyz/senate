@@ -84,6 +84,14 @@ export const updateSnapshotVotes = async (
                     proposal.id
                 )
 
+                await prisma.voteOption.deleteMany({
+                    where: {
+                        voterAddress: voterAddress,
+                        voteDaoId: daoHandler.daoId,
+                        voteProposalId: proposal.id,
+                    }
+                })
+
                 for (const votedOption of votedOptions) {
                     await prisma.vote.upsert({
                         where: {
@@ -95,18 +103,17 @@ export const updateSnapshotVotes = async (
                         },
                         update: {
                             options: {
-                                upsert: {
-                                    where: {
-                                        voteProposalId_option: {
-                                            voteProposalId: proposal.id,
-                                            option: String(votedOption.option),
-                                        },
-                                    },
-                                    update: {},
-                                    create: votedOption,
+                                create: {
+                                    option:
+                                        vote.choice.length > 0
+                                            ? String(vote.choice[0])
+                                            : String(vote.choice),
+                                    optionName:
+                                        vote.proposal.choices[
+                                            vote.choice - 1
+                                        ] ?? 'No name',
                                 },
                             },
-                            addedAt: Date.now(),
                         },
                         create: {
                             voterAddress: voterAddress,

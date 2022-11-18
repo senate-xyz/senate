@@ -101,10 +101,6 @@ Table VoteOption {
   voteDaoId String [not null]
   voteProposalId String [not null]
   vote Vote [not null]
-
-  indexes {
-    (voteProposalId, option) [unique]
-  }
 }
 
 Table VoterLatestVoteBlock {
