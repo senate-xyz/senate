@@ -27,7 +27,7 @@ const Home: NextPage = () => {
     return (
         <div className="flex flex-row">
             <NavBar page={page} setPage={setPage} />
-            <div className="w-full">
+            <div className="min-h-screen w-full">
                 <Suspense>
                     {page == ViewsEnum.DAOs && <DynamicDAOs />}
                     {page == ViewsEnum.Proposals && <DynamicProposals />}
