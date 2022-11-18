@@ -141,8 +141,7 @@ export const FollowedDAO = (props: {
                         <div>
                             {
                                 activeProposalsForDao.data?.filter(
-                                    (proposal) =>
-                                        proposal.data?.['timeEnd'] > Date.now()
+                                    (proposal) => proposal.timeEnd > new Date()
                                 ).length
                             }{' '}
                             Active Proposals
