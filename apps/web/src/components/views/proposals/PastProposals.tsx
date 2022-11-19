@@ -48,7 +48,7 @@ export const PastProposals = () => {
 
     const filteredPastProposals =
         trpc.user.proposals.filteredPastProposals.useQuery({
-            fromDao: from ?? 'any',
+            fromDao: from,
             endingIn: endedOn,
             withVoteStatus: withVoteStatus,
         })

@@ -118,13 +118,23 @@ export const userProposalsRouter = router({
                     break
             }
 
+            const userSubscriptions = await prisma.subscription.findMany({
+                where: {
+                    userId: user.id,
+                },
+            })
+
             const userProposals = await prisma.proposal.findMany({
                 where: {
                     AND: [
                         {
                             daoId:
                                 input.fromDao == 'any'
-                                    ? { not: '' }
+                                    ? {
+                                          in: userSubscriptions.map(
+                                              (sub) => sub.daoId
+                                          ),
+                                      }
                                     : input.fromDao,
                         },
                         {
@@ -212,13 +222,23 @@ export const userProposalsRouter = router({
                     break
             }
 
+            const userSubscriptions = await prisma.subscription.findMany({
+                where: {
+                    userId: user.id,
+                },
+            })
+
             const userProposals = await prisma.proposal.findMany({
                 where: {
                     AND: [
                         {
                             daoId:
                                 input.fromDao == 'any'
-                                    ? { not: '' }
+                                    ? {
+                                          in: userSubscriptions.map(
+                                              (sub) => sub.daoId
+                                          ),
+                                      }
                                     : input.fromDao,
                         },
                         {
