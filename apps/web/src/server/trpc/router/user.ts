@@ -297,6 +297,39 @@ export const userRouter = router({
                 },
             })
 
+            let voteStatusQuery
+            switch (input.withVoteStatus) {
+                case 1:
+                    voteStatusQuery = {
+                        votes: {
+                            some: {
+                                voterAddress: {
+                                    in: user.voters.map(
+                                        (voter) => voter.address
+                                    ),
+                                },
+                            },
+                        },
+                    }
+                    break
+                case 2:
+                    voteStatusQuery = {
+                        votes: {
+                            none: {
+                                voterAddress: {
+                                    in: user.voters.map(
+                                        (voter) => voter.address
+                                    ),
+                                },
+                            },
+                        },
+                    }
+                    break
+                default:
+                    voteStatusQuery = {}
+                    break
+            }
+
             const userProposals = await prisma.proposal.findMany({
                 where: {
                     AND: [
@@ -316,6 +349,101 @@ export const userRouter = router({
                                 gte: new Date(),
                             },
                         },
+                        voteStatusQuery,
+                    ],
+                },
+                orderBy: {
+                    timeEnd: 'asc',
+                },
+                include: {
+                    dao: true,
+                    votes: {
+                        where: {
+                            voterAddress: {
+                                in: user.voters.map((voter) => voter.address),
+                            },
+                        },
+                        include: {
+                            options: true,
+                        },
+                    },
+                },
+            })
+
+            return userProposals
+        }),
+
+    filteredPastProposals: publicProcedure
+        .input(
+            z.object({
+                fromDao: z.string(),
+                endingIn: z.number(),
+                withVoteStatus: z.number(),
+            })
+        )
+        .query(async ({ ctx, input }) => {
+            const user = await prisma.user.findFirstOrThrow({
+                where: {
+                    name: { equals: String(ctx.session?.user?.name) },
+                },
+                include: {
+                    voters: true,
+                },
+            })
+
+            let voteStatusQuery
+            switch (input.withVoteStatus) {
+                case 1:
+                    voteStatusQuery = {
+                        votes: {
+                            some: {
+                                voterAddress: {
+                                    in: user.voters.map(
+                                        (voter) => voter.address
+                                    ),
+                                },
+                            },
+                        },
+                    }
+                    break
+                case 2:
+                    voteStatusQuery = {
+                        votes: {
+                            none: {
+                                voterAddress: {
+                                    in: user.voters.map(
+                                        (voter) => voter.address
+                                    ),
+                                },
+                            },
+                        },
+                    }
+                    break
+                default:
+                    voteStatusQuery = {}
+                    break
+            }
+
+            const userProposals = await prisma.proposal.findMany({
+                where: {
+                    AND: [
+                        {
+                            daoId:
+                                input.fromDao == 'any'
+                                    ? { not: '' }
+                                    : input.fromDao,
+                        },
+                        {
+                            timeStart: {
+                                gte: new Date(Date.now() - input.endingIn),
+                            },
+                        },
+                        {
+                            timeEnd: {
+                                lte: new Date(),
+                            },
+                        },
+                        voteStatusQuery,
                     ],
                 },
                 orderBy: {

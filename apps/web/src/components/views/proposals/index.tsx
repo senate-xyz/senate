@@ -8,6 +8,7 @@ import Image from 'next/image'
 import { trpc } from '../../../utils/trpc'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { ActiveProposals } from './ActiveProposals'
+import { PastProposals } from './PastProposals'
 dayjs.extend(relativeTime)
 
 const tabs: { id: number; name: string }[] = [
@@ -35,7 +36,8 @@ export const ProposalsView = () => {
                                 className={
                                     (currentTab.id == tab.id
                                         ? 'text-gray-100'
-                                        : 'text-gray-400') + ' text-5xl'
+                                        : 'text-gray-400') +
+                                    ' text-5xl cursor-pointer'
                                 }
                                 onClick={() => {
                                     setCurrentTab(tab)
@@ -48,6 +50,7 @@ export const ProposalsView = () => {
                 </div>
                 <div className="mt-2">
                     {currentTab == tabs[0] && <ActiveProposals />}
+                    {currentTab == tabs[1] && <PastProposals />}
                 </div>
             </div>
         </div>
