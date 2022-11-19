@@ -1,15 +1,12 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { inferProcedureOutput } from '@trpc/server'
-import dayjs from 'dayjs'
 import { useState } from 'react'
-import { AppRouter } from '../../../server/trpc/router/_app'
-import Image from 'next/image'
 
-import { trpc } from '../../../utils/trpc'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { ActiveProposals } from './ActiveProposals'
 import { PastProposals } from './PastProposals'
-dayjs.extend(relativeTime)
+import { extend as dayJsExtend } from 'dayjs'
+
+dayJsExtend(relativeTime)
 
 const tabs: { id: number; name: string }[] = [
     {

@@ -1,7 +1,7 @@
 import { router } from '../trpc'
 import { publicRouter } from './public'
 import { trackerRouter } from './tracker'
-import { userRouter } from './user'
+import { userRouter } from './user/user'
 
 export const appRouter = router({
     public: publicRouter,

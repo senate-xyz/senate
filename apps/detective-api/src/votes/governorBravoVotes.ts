@@ -133,7 +133,7 @@ const getVotes = async (
 ): Promise<Vote[]> => {
     const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
 
-    let logs: any[] = []
+    let logs = []
     let votes
     switch (daoHandler.type) {
         case DAOHandlerType.BRAVO1:

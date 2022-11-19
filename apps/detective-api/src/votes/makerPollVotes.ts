@@ -124,7 +124,7 @@ const getVotes = async (
     daoHandler: DAOHandler,
     voterAddress: string,
     latestVoteBlock: number
-): Promise<any> => {
+): Promise<unknown> => {
     const iface = new ethers.utils.Interface(
         JSON.parse(daoHandler.decoder['abi'])
     )

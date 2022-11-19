@@ -44,17 +44,18 @@ const voteStatus: { id: number; name: string }[] = [
 ]
 
 export const ActiveProposals = () => {
-    const followingDAOs = trpc.user.userSubscribedDAOs.useQuery()
+    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
 
     const [from, setFrom] = useState('any')
     const [endingIn, setEndingIn] = useState(365 * 24 * 60 * 60 * 1000)
     const [withVoteStatus, setWithVoteStatus] = useState(0)
 
-    const filteredActiveProposals = trpc.user.filteredActiveProposals.useQuery({
-        fromDao: from ?? 'any',
-        endingIn: endingIn,
-        withVoteStatus: withVoteStatus,
-    })
+    const filteredActiveProposals =
+        trpc.user.proposals.filteredActiveProposals.useQuery({
+            fromDao: from ?? 'any',
+            endingIn: endingIn,
+            withVoteStatus: withVoteStatus,
+        })
 
     return (
         <div>
@@ -143,7 +144,7 @@ export const ActiveProposals = () => {
 
 const ActiveProposal = (props: {
     proposal: inferProcedureOutput<
-        AppRouter['user']['filteredActiveProposals']
+        AppRouter['user']['proposals']['filteredActiveProposals']
     >[0]
 }) => {
     return (

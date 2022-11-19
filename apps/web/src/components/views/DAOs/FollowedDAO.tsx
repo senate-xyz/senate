@@ -6,12 +6,14 @@ import { AppRouter } from '../../../server/trpc/router/_app'
 import { useState } from 'react'
 
 export const FollowedDAO = (props: {
-    dao: inferProcedureOutput<AppRouter['user']['userSubscribedDAOs']>[0]
+    dao: inferProcedureOutput<
+        AppRouter['user']['subscriptions']['subscribedDAOs']
+    >[0]
     refreshDaos: () => void
 }) => {
     const [showMenu, setShowMenu] = useState(false)
 
-    const unsubscribe = trpc.user.userUnsubscribe.useMutation()
+    const unsubscribe = trpc.user.subscriptions.unsubscribe.useMutation()
     const refreshStatus = trpc.public.refreshStatus.useQuery({
         daoId: props.dao.id,
     })

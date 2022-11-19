@@ -2,7 +2,6 @@ import axios from 'axios'
 import { prisma } from '@senate/database'
 import { DAOHandler } from '@senate/common-types'
 import { Logger, InternalServerErrorException } from '@nestjs/common'
-import { Console } from 'console'
 
 const logger = new Logger('SnapshotVotes')
 
@@ -141,15 +140,15 @@ export const updateSnapshotVotes = async (
 }
 
 const getVotedOptions = (
-    choices: any,
-    proposalChoices: any,
+    choices: [] | number,
+    proposalChoices: [],
     userId: string,
     daoId: string,
     proposalId: string
 ) => {
     const options = []
 
-    if (choices.length > 0) {
+    if (Array.isArray(choices)) {
         for (let i = 0; i < choices.length; i++) {
             options.push({
                 option: String(choices[i]),

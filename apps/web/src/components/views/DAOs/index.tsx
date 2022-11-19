@@ -7,7 +7,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 const DAOs = () => {
     const allDAOs = trpc.public.daos.useQuery()
-    const followingDAOs = trpc.user.userSubscribedDAOs.useQuery()
+    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
 
     return (
         <div className="flex w-full flex-col">

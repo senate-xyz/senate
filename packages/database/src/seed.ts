@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import aaveGovBravo from './abis/aaveGovBravo.json'
 import makerChief from './abis/makerChief.json'
 import makerPollCreate from './abis/makerPollCreate.json'

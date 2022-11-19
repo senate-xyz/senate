@@ -4,9 +4,9 @@ import { trpc } from '../../../../utils/trpc'
 const VoterAddresses = () => {
     const [newProxyAddress, setNewProxyAddress] = useState('')
 
-    const voters = trpc.user.voters.useQuery()
-    const addVoter = trpc.user.addVoter.useMutation()
-    const removeVoter = trpc.user.removeVoter.useMutation()
+    const voters = trpc.user.voters.voters.useQuery()
+    const addVoter = trpc.user.voters.addVoter.useMutation()
+    const removeVoter = trpc.user.voters.removeVoter.useMutation()
     const utils = trpc.useContext()
 
     const [error, setError] = useState('')

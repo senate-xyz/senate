@@ -147,7 +147,7 @@ const formatTitle = (text: string): string => {
 const getProposalTitle = async (
     daoAddress: string,
     text: string
-): Promise<any> => {
+): Promise<unknown> => {
     if (daoAddress === '0xEC568fffba86c094cf06b22134B23074DFE2252c') {
         // Aave
         return await fetchProposalInfoFromIPFS(text)

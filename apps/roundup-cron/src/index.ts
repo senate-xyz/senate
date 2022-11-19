@@ -12,6 +12,7 @@ import {
 
 config()
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const client = new ServerClient(process.env.POSTMARK_TOKEN ?? 'Missing Token')
 const oneMonth = 2592000000
 const threeDays = 259200000
@@ -252,6 +253,7 @@ const sendRoundupEmails = async () => {
         console.log('Time now', new Date(now))
         console.log('Ending soon votes', endingSoonNotifs)
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const newProposalsNotifs = (
             await prisma.notification.findMany({
                 where: {
@@ -287,6 +289,7 @@ const sendRoundupEmails = async () => {
             }
         })
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const votedProposalsNotifs = (
             await prisma.notification.findMany({
                 where: {

@@ -10,7 +10,7 @@ export const UnfollowedDAO = (props: {
     refreshDaos: () => void
 }) => {
     const [showMenu, setShowMenu] = useState(false)
-    const subscribe = trpc.user.userSubscribe.useMutation()
+    const subscribe = trpc.user.subscriptions.unsubscribe.useMutation()
 
     const refreshStatus = trpc.public.refreshStatus.useQuery({
         daoId: props.dao.id,

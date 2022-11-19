@@ -63,7 +63,7 @@ export const updateSnapshotProposals = async (
         ) {
             await prisma
                 .$transaction(
-                    proposals.map((proposal: any) =>
+                    proposals.map((proposal) =>
                         prisma.proposal.upsert({
                             where: {
                                 externalId_daoId: {

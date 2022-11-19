@@ -120,7 +120,7 @@ const formatTitle = (text: string): string => {
     return temp
 }
 
-const getProposalTitle = async (url: string): Promise<any> => {
+const getProposalTitle = async (url: string): Promise<unknown> => {
     let title
     try {
         const response = await axios.get(url)

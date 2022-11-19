@@ -1,5 +1,5 @@
 import NextAuth, { NextAuthOptions } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
+import Credentials from 'next-auth/providers/credentials'
 import { SiweMessage } from 'siwe'
 import { getCsrfToken } from 'next-auth/react'
 import { NextApiRequest, NextApiResponse } from 'next'
@@ -9,7 +9,7 @@ import { RefreshStatus } from '../../../../../../packages/common-types/dist'
 
 export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     const providers = [
-        CredentialsProvider({
+        Credentials({
             async authorize(credentials) {
                 try {
                     const siwe = new SiweMessage(
