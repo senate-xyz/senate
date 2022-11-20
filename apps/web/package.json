@@ -14,10 +14,10 @@
         "build-storybook": "yarn && build-storybook",
         "chromatic": "npx chromatic",
         "clean": "rimraf .next .turbo node_modules dist storybook-static",
-        "lint": "eslint src",
-        "lint:fix": "eslint src --fix",
-        "prettier": "prettier src --check",
-        "prettier:fix": "prettier src --write"
+        "lint": "eslint app",
+        "lint:fix": "eslint app --fix",
+        "prettier": "prettier app --check",
+        "prettier:fix": "prettier app --write"
     },
     "dependencies": {
         "@rainbow-me/rainbowkit": "^0.8.0",
@@ -28,6 +28,7 @@
         "@trpc/server": "10.0.0-rc.8",
         "core-js": "^3.26.1",
         "dayjs": "^1.11.6",
+        "encoding": "^0.1.13",
         "ethers": "^5.7.2",
         "framer-motion": "^7.6.7",
         "next": "13.0.3",
