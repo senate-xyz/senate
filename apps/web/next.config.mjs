@@ -18,9 +18,6 @@ export default defineNextConfig({
         locales: ['en'],
         defaultLocale: 'en',
     },
-    experimental: {
-        appDir: true,
-    },
     images: {
         domains: [
             's2.coinmarketcap.com',
