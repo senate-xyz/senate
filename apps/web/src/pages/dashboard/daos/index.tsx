@@ -6,9 +6,20 @@ import { FollowedDAO } from '../../../components/views/DAOs/FollowedDAO'
 import { UnfollowedDAO } from '../../../components/views/DAOs/UnfollowedDAO'
 import NavBar from '../../../components/navbar/NavBar'
 
+import { useRouter } from 'next/router'
+import RainbowConnect from '../../../components/RainbowConnect'
+import DashboardHeader from '../../../components/DashboardHeader'
+
 const DAOs = () => {
+    const router = useRouter()
+    const { user } = router.query
+
     const allDAOs = trpc.public.daos.useQuery()
-    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
+
+    console.log(user)
+    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery({
+        username: String(user),
+    })
 
     return (
         <div className="flex w-full flex-col">
@@ -73,17 +84,7 @@ const DAOsContainer = () => {
     return (
         <div className="flex flex-row">
             <NavBar />
-            <div className="min-h-screen w-full">
-                <div className="h-full w-full bg-slate-700">
-                    <div className="flex w-full flex-col">
-                        <div className="flex h-48 items-center justify-between bg-slate-800 px-10">
-                            <h1 className="text-5xl">DAOs</h1>
-                            <ConnectButton />
-                        </div>
-                        <DAOs />
-                    </div>
-                </div>
-            </div>
+            <DashboardHeader title="DAOs" component={<DAOs />} />
         </div>
     )
 }

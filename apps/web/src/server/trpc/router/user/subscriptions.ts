@@ -3,43 +3,49 @@ import { z } from 'zod'
 import { router, publicProcedure } from '../../trpc'
 
 export const userSubscriptionsRouter = router({
-    subscribedDAOs: publicProcedure.query(async ({ ctx }) => {
-        const user = await prisma.user
-            .findFirstOrThrow({
-                where: {
-                    name: { equals: String(ctx.session?.user?.name) },
-                },
-                select: {
-                    id: true,
-                },
+    subscribedDAOs: publicProcedure
+        .input(
+            z.object({
+                username: z.string(),
             })
-            .catch(() => {
-                return { id: '0' }
-            })
-
-        const daosList = await prisma.dAO.findMany({
-            where: {
-                subscriptions: {
-                    some: {
-                        user: { is: user },
-                    },
-                },
-            },
-            orderBy: {
-                id: 'asc',
-            },
-            distinct: 'id',
-            include: {
-                handlers: true,
-                subscriptions: {
+        )
+        .query(async ({ input }) => {
+            const user = await prisma.user
+                .findFirstOrThrow({
                     where: {
-                        userId: { contains: user.id },
+                        name: { equals: input.username },
+                    },
+                    select: {
+                        id: true,
+                    },
+                })
+                .catch(() => {
+                    return { id: '0' }
+                })
+
+            const daosList = await prisma.dAO.findMany({
+                where: {
+                    subscriptions: {
+                        some: {
+                            user: { is: user },
+                        },
                     },
                 },
-            },
-        })
-        return daosList
-    }),
+                orderBy: {
+                    id: 'asc',
+                },
+                distinct: 'id',
+                include: {
+                    handlers: true,
+                    subscriptions: {
+                        where: {
+                            userId: { contains: user.id },
+                        },
+                    },
+                },
+            })
+            return daosList
+        }),
     subscribe: publicProcedure
         .input(
             z.object({

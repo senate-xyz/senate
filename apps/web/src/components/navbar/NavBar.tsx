@@ -1,42 +1,10 @@
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import type { IconType } from 'react-icons'
 import { TfiLayoutPlaceholder } from 'react-icons/tfi'
 
-export enum ViewsEnum {
-    None = 1,
-    DAOs = 2,
-    Proposals = 3,
-    Settings = 5,
-}
-export interface NavItemProps {
-    name: string
-    id: ViewsEnum
-    link: string
-    icon: IconType
-}
-
-const linkItems: Array<NavItemProps> = [
-    {
-        name: 'DAOs',
-        id: ViewsEnum.DAOs,
-        link: '/dashboard/daos',
-        icon: TfiLayoutPlaceholder,
-    },
-    {
-        name: 'Proposals',
-        id: ViewsEnum.Proposals,
-        link: '/dashboard/proposals/active',
-        icon: TfiLayoutPlaceholder,
-    },
-    {
-        name: 'Settings',
-        id: ViewsEnum.Settings,
-        link: '/dashboard/settings',
-        icon: TfiLayoutPlaceholder,
-    },
-]
-
 export default function NavBar() {
+    const session = useSession()
+
     return (
         <div className="grid w-24 items-start bg-slate-900">
             <div className="flex flex-col items-center">
@@ -47,21 +15,37 @@ export default function NavBar() {
                     />
                 </Link>
 
-                {linkItems.map((item, index) => {
-                    return (
-                        <Link href={item.link} key={index}>
-                            <div className="flex flex-col items-center">
-                                <item.icon
-                                    className="fill-slate-400"
-                                    size="64"
-                                />
-                                <p className="text-sm text-slate-400">
-                                    {item.name}
-                                </p>
-                            </div>
-                        </Link>
-                    )
-                })}
+                <Link
+                    href={`/dashboard/daos/?user=${session.data?.user?.name}`}
+                >
+                    <div className="flex flex-col items-center">
+                        <TfiLayoutPlaceholder
+                            className="fill-slate-400"
+                            size="64"
+                        />
+                        <p className="text-sm text-slate-400">DAOs</p>
+                    </div>
+                </Link>
+
+                <Link href={`/dashboard/proposals/active`}>
+                    <div className="flex flex-col items-center">
+                        <TfiLayoutPlaceholder
+                            className="fill-slate-400"
+                            size="64"
+                        />
+                        <p className="text-sm text-slate-400">Proposals</p>
+                    </div>
+                </Link>
+
+                <Link href={`/dashboard/settings`}>
+                    <div className="flex flex-col items-center">
+                        <TfiLayoutPlaceholder
+                            className="fill-slate-400"
+                            size="64"
+                        />
+                        <p className="text-sm text-slate-400">Settings</p>
+                    </div>
+                </Link>
             </div>
         </div>
     )

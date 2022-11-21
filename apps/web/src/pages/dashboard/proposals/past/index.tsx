@@ -6,6 +6,8 @@ import { extend as dayJsExtend } from 'dayjs'
 import Link from 'next/link'
 import NavBar from '../../../../components/navbar/NavBar'
 import { PastProposals } from '../../../../components/views/proposals/PastProposals'
+import RainbowConnect from '../../../../components/RainbowConnect'
+import DashboardHeader from '../../../../components/DashboardHeader'
 
 dayJsExtend(relativeTime)
 
@@ -53,17 +55,7 @@ export const Proposals = () => {
     return (
         <div className="flex flex-row">
             <NavBar />
-            <div className="min-h-screen w-full">
-                <div className="h-full w-full bg-slate-700">
-                    <div className="flex w-full flex-col">
-                        <div className="flex h-48 items-center justify-between bg-slate-800 px-10">
-                            <h1 className="text-5xl">Proposals</h1>
-                            <ConnectButton />
-                        </div>
-                        <ProposalsView />
-                    </div>
-                </div>
-            </div>
+            <DashboardHeader title="Proposals" component={<ProposalsView />} />
         </div>
     )
 }
