@@ -1,8 +1,8 @@
 import { DAOType } from '@senate/common-types'
 
 import { trpc } from '../../../utils/trpc'
-import { FollowedDAO } from '../../../components/views/DAOs/FollowedDAO'
-import { UnfollowedDAO } from '../../../components/views/DAOs/UnfollowedDAO'
+import { FollowedDAO } from '../../../components/DAOs/FollowedDAO'
+import { UnfollowedDAO } from '../../../components/DAOs/UnfollowedDAO'
 import NavBar from '../../../components/navbar/NavBar'
 
 import { useRouter } from 'next/router'

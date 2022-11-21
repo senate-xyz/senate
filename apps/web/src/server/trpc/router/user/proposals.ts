@@ -1,5 +1,5 @@
 import { prisma } from '@senate/database'
-import { z } from 'zod'
+import { string, z } from 'zod'
 import { router, publicProcedure } from '../../trpc'
 
 export const userProposalsRouter = router({
@@ -70,16 +70,15 @@ export const userProposalsRouter = router({
     filteredActiveProposals: publicProcedure
         .input(
             z.object({
-                username: z.string(),
                 fromDao: z.string(),
                 endingIn: z.number(),
                 withVoteStatus: z.number(),
             })
         )
-        .query(async ({ input }) => {
+        .query(async ({ input, ctx }) => {
             const user = await prisma.user.findFirstOrThrow({
                 where: {
-                    name: { equals: String(input.username) },
+                    name: { equals: String(ctx.session?.user?.name) },
                 },
                 include: {
                     voters: true,
@@ -175,16 +174,15 @@ export const userProposalsRouter = router({
     filteredPastProposals: publicProcedure
         .input(
             z.object({
-                username: z.string(),
                 fromDao: z.string(),
                 endingIn: z.number(),
                 withVoteStatus: z.number(),
             })
         )
-        .query(async ({ input }) => {
+        .query(async ({ input, ctx }) => {
             const user = await prisma.user.findFirstOrThrow({
                 where: {
-                    name: { equals: input.username },
+                    name: { equals: String(ctx.session?.user?.name) },
                 },
                 include: {
                     voters: true,

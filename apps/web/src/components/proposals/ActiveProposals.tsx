@@ -1,27 +1,30 @@
 import { inferProcedureOutput } from '@trpc/server'
 import dayjs from 'dayjs'
 import { useState } from 'react'
-import { AppRouter } from '../../../server/trpc/router/_app'
-import { trpc } from '../../../utils/trpc'
+import { AppRouter } from '../../server/trpc/router/_app'
+import { trpc } from '../../utils/trpc'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 
-const endedOnOptions: { name: string; time: number }[] = [
+const endingInOptions: { name: string; time: number }[] = [
     {
-        name: 'Last 24 hours',
-        time: 24 * 60 * 60 * 1000,
+        name: 'Any day',
+        time: 365 * 24 * 60 * 60 * 1000,
     },
     {
-        name: 'Last 7 days',
+        name: '7 days',
         time: 7 * 24 * 60 * 60 * 1000,
     },
     {
-        name: 'Last 30 days',
-        time: 30 * 24 * 60 * 60 * 1000,
+        name: '5 days',
+        time: 5 * 24 * 60 * 60 * 1000,
     },
     {
-        name: 'Last 90 days',
-        time: 90 * 24 * 60 * 60 * 1000,
+        name: '3 days',
+        time: 3 * 24 * 60 * 60 * 1000,
+    },
+    {
+        name: '1 days',
+        time: 1 * 24 * 60 * 60 * 1000,
     },
 ]
 
@@ -40,23 +43,17 @@ const voteStatus: { id: number; name: string }[] = [
     },
 ]
 
-export const PastProposals = () => {
-    const router = useRouter()
-    const { user } = router.query
-
-    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery({
-        username: String(user),
-    })
+export const ActiveProposals = () => {
+    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
 
     const [from, setFrom] = useState('any')
-    const [endedOn, setEndedOn] = useState(24 * 60 * 60 * 1000)
+    const [endingIn, setEndingIn] = useState(365 * 24 * 60 * 60 * 1000)
     const [withVoteStatus, setWithVoteStatus] = useState(0)
 
-    const filteredPastProposals =
-        trpc.user.proposals.filteredPastProposals.useQuery({
-            username: String(user),
+    const filteredActiveProposals =
+        trpc.user.proposals.filteredActiveProposals.useQuery({
             fromDao: from,
-            endingIn: endedOn,
+            endingIn: endingIn,
             withVoteStatus: withVoteStatus,
         })
 
@@ -88,17 +85,20 @@ export const PastProposals = () => {
                 </div>
 
                 <div className="flex flex-col">
-                    <label htmlFor="endedOn">Ended on</label>
+                    <label htmlFor="endingIn">Ending in</label>
                     <select
-                        id="endedOn"
+                        id="endingIn"
                         onChange={(e) => {
-                            setEndedOn(Number(e.target.value))
+                            setEndingIn(Number(e.target.value))
                         }}
                     >
-                        {endedOnOptions.map((endedOn) => {
+                        {endingInOptions.map((endingIn) => {
                             return (
-                                <option key={endedOn.time} value={endedOn.time}>
-                                    {endedOn.name}
+                                <option
+                                    key={endingIn.time}
+                                    value={endingIn.time}
+                                >
+                                    {endingIn.name}
                                 </option>
                             )
                         })}
@@ -128,13 +128,18 @@ export const PastProposals = () => {
                     <thead>
                         <th>DAO</th>
                         <th>Proposal Title</th>
-                        <th>Ended on</th>
+                        <th>Ends in</th>
                         <th>Vote status</th>
                     </thead>
                     <tbody className="divide-y divide-gray-300">
-                        {filteredPastProposals.data?.map((proposal, index) => (
-                            <PastProposal key={index} proposal={proposal} />
-                        ))}
+                        {filteredActiveProposals.data?.map(
+                            (proposal, index) => (
+                                <ActiveProposal
+                                    key={index}
+                                    proposal={proposal}
+                                />
+                            )
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -142,9 +147,9 @@ export const PastProposals = () => {
     )
 }
 
-const PastProposal = (props: {
+const ActiveProposal = (props: {
     proposal: inferProcedureOutput<
-        AppRouter['user']['proposals']['filteredPastProposals']
+        AppRouter['user']['proposals']['filteredActiveProposals']
     >[0]
 }) => {
     return (

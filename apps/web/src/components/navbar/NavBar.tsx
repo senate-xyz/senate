@@ -18,13 +18,7 @@ export default function NavBar() {
                     />
                 </Link>
 
-                <Link
-                    href={`/dashboard/daos/?user=${
-                        session.data?.user?.name
-                            ? session.data?.user?.name
-                            : String(user)
-                    }`}
-                >
+                <Link href={`/dashboard/daos`}>
                     <div className="flex flex-col items-center">
                         <TfiLayoutPlaceholder
                             className="fill-slate-400"
@@ -34,13 +28,7 @@ export default function NavBar() {
                     </div>
                 </Link>
 
-                <Link
-                    href={`/dashboard/proposals/active/?user=${
-                        session.data?.user?.name
-                            ? session.data?.user?.name
-                            : String(user)
-                    }`}
-                >
+                <Link href={`/dashboard/proposals/active`}>
                     <div className="flex flex-col items-center">
                         <TfiLayoutPlaceholder
                             className="fill-slate-400"

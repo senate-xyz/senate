@@ -1,7 +1,10 @@
+import { useSession } from 'next-auth/react'
 import { useState } from 'react'
-import { trpc } from '../../../../utils/trpc'
+import { trpc } from '../../../utils/trpc'
 
 const VoterAddresses = () => {
+    const { data: session } = useSession()
+
     const [newProxyAddress, setNewProxyAddress] = useState('')
 
     const voters = trpc.user.voters.voters.useQuery()
@@ -10,6 +13,8 @@ const VoterAddresses = () => {
     const utils = trpc.useContext()
 
     const [error, setError] = useState('')
+
+    if (!session) return <div>Please log in</div>
     if (!voters.data) return <div>Loading</div>
 
     return (

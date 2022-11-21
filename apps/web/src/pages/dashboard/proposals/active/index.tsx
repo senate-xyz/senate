@@ -3,7 +3,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { extend as dayJsExtend } from 'dayjs'
 import Link from 'next/link'
 import NavBar from '../../../../components/navbar/NavBar'
-import { ActiveProposals } from '../../../../components/views/proposals/ActiveProposals'
+import { ActiveProposals } from '../../../../components/proposals/ActiveProposals'
 import DashboardHeader from '../../../../components/DashboardHeader'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
@@ -39,14 +39,7 @@ export const ProposalsView = () => {
                             <Link
                                 key={tab.id}
                                 className={tab.color}
-                                href={
-                                    tab.link +
-                                    `?user=${
-                                        session.data?.user?.name
-                                            ? session.data?.user?.name
-                                            : String(user)
-                                    }`
-                                }
+                                href={tab.link}
                             >
                                 {tab.name}
                             </Link>
