@@ -7,7 +7,6 @@ import { ActiveProposals } from '../../../../components/views/proposals/ActivePr
 import DashboardHeader from '../../../../components/DashboardHeader'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import { string } from 'zod'
 
 dayJsExtend(relativeTime)
 
