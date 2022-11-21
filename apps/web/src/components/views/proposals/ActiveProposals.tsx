@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { AppRouter } from '../../../server/trpc/router/_app'
 import { trpc } from '../../../utils/trpc'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 
 const endingInOptions: { name: string; time: number }[] = [
     {
@@ -44,7 +45,12 @@ const voteStatus: { id: number; name: string }[] = [
 ]
 
 export const ActiveProposals = () => {
-    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
+    const router = useRouter()
+    const { user } = router.query
+
+    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery({
+        username: String(user),
+    })
 
     const [from, setFrom] = useState('any')
     const [endingIn, setEndingIn] = useState(365 * 24 * 60 * 60 * 1000)
@@ -52,6 +58,7 @@ export const ActiveProposals = () => {
 
     const filteredActiveProposals =
         trpc.user.proposals.filteredActiveProposals.useQuery({
+            username: String(user),
             fromDao: from,
             endingIn: endingIn,
             withVoteStatus: withVoteStatus,
@@ -132,9 +139,14 @@ export const ActiveProposals = () => {
                         <th>Vote status</th>
                     </thead>
                     <tbody className="divide-y divide-gray-300">
-                        {filteredActiveProposals.data?.map((proposal) => (
-                            <ActiveProposal proposal={proposal} />
-                        ))}
+                        {filteredActiveProposals.data?.map(
+                            (proposal, index) => (
+                                <ActiveProposal
+                                    key={index}
+                                    proposal={proposal}
+                                />
+                            )
+                        )}
                     </tbody>
                 </table>
             </div>

@@ -1,13 +1,12 @@
-import { ConnectButton } from '@rainbow-me/rainbowkit'
-
 import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { extend as dayJsExtend } from 'dayjs'
 import Link from 'next/link'
 import NavBar from '../../../../components/navbar/NavBar'
 import { PastProposals } from '../../../../components/views/proposals/PastProposals'
-import RainbowConnect from '../../../../components/RainbowConnect'
 import DashboardHeader from '../../../../components/DashboardHeader'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 dayJsExtend(relativeTime)
 
@@ -27,6 +26,10 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
 ]
 
 export const ProposalsView = () => {
+    const router = useRouter()
+    const { user } = router.query
+    const session = useSession()
+
     return (
         <div className="w-full p-5">
             <div className="flex flex-col">
@@ -36,7 +39,14 @@ export const ProposalsView = () => {
                             <Link
                                 key={tab.id}
                                 className={tab.color}
-                                href={tab.link}
+                                href={
+                                    tab.link +
+                                    `?user=${
+                                        session.data?.user?.name
+                                            ? session.data?.user?.name
+                                            : String(user)
+                                    }`
+                                }
                             >
                                 {tab.name}
                             </Link>

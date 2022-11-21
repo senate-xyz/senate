@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { AppRouter } from '../../../server/trpc/router/_app'
 import { trpc } from '../../../utils/trpc'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 
 const endedOnOptions: { name: string; time: number }[] = [
     {
@@ -40,7 +41,12 @@ const voteStatus: { id: number; name: string }[] = [
 ]
 
 export const PastProposals = () => {
-    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
+    const router = useRouter()
+    const { user } = router.query
+
+    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery({
+        username: String(user),
+    })
 
     const [from, setFrom] = useState('any')
     const [endedOn, setEndedOn] = useState(24 * 60 * 60 * 1000)
@@ -48,6 +54,7 @@ export const PastProposals = () => {
 
     const filteredPastProposals =
         trpc.user.proposals.filteredPastProposals.useQuery({
+            username: String(user),
             fromDao: from,
             endingIn: endedOn,
             withVoteStatus: withVoteStatus,
@@ -125,8 +132,8 @@ export const PastProposals = () => {
                         <th>Vote status</th>
                     </thead>
                     <tbody className="divide-y divide-gray-300">
-                        {filteredPastProposals.data?.map((proposal) => (
-                            <PastProposal proposal={proposal} />
+                        {filteredPastProposals.data?.map((proposal, index) => (
+                            <PastProposal key={index} proposal={proposal} />
                         ))}
                     </tbody>
                 </table>

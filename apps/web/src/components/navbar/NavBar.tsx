@@ -1,8 +1,11 @@
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { TfiLayoutPlaceholder } from 'react-icons/tfi'
 
 export default function NavBar() {
+    const router = useRouter()
+    const { user } = router.query
     const session = useSession()
 
     return (
@@ -16,7 +19,11 @@ export default function NavBar() {
                 </Link>
 
                 <Link
-                    href={`/dashboard/daos/?user=${session.data?.user?.name}`}
+                    href={`/dashboard/daos/?user=${
+                        session.data?.user?.name
+                            ? session.data?.user?.name
+                            : String(user)
+                    }`}
                 >
                     <div className="flex flex-col items-center">
                         <TfiLayoutPlaceholder
@@ -27,7 +34,13 @@ export default function NavBar() {
                     </div>
                 </Link>
 
-                <Link href={`/dashboard/proposals/active`}>
+                <Link
+                    href={`/dashboard/proposals/active/?user=${
+                        session.data?.user?.name
+                            ? session.data?.user?.name
+                            : String(user)
+                    }`}
+                >
                     <div className="flex flex-col items-center">
                         <TfiLayoutPlaceholder
                             className="fill-slate-400"

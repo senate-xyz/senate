@@ -1,13 +1,11 @@
 import { DAOType } from '@senate/common-types'
 
 import { trpc } from '../../../utils/trpc'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { FollowedDAO } from '../../../components/views/DAOs/FollowedDAO'
 import { UnfollowedDAO } from '../../../components/views/DAOs/UnfollowedDAO'
 import NavBar from '../../../components/navbar/NavBar'
 
 import { useRouter } from 'next/router'
-import RainbowConnect from '../../../components/RainbowConnect'
 import DashboardHeader from '../../../components/DashboardHeader'
 
 const DAOs = () => {
@@ -16,7 +14,6 @@ const DAOs = () => {
 
     const allDAOs = trpc.public.daos.useQuery()
 
-    console.log(user)
     const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery({
         username: String(user),
     })
