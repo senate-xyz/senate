@@ -1,55 +1,48 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useState } from 'react'
 
 import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { extend as dayJsExtend } from 'dayjs'
-import NavBar from '../../../components/navbar/NavBar'
-import { PastProposals } from '../../../components/views/proposals/PastProposals'
-import { ActiveProposals } from '../../../components/views/proposals/ActiveProposals'
+import Link from 'next/link'
+import NavBar from '../../../../components/navbar/NavBar'
+import { PastProposals } from '../../../../components/views/proposals/PastProposals'
 
 dayJsExtend(relativeTime)
 
-const tabs: { id: number; name: string }[] = [
+const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
         id: 0,
         name: 'Active Proposals',
+        color: 'text-gray-400 text-5xl cursor-pointer',
+        link: '/dashboard/proposals/active',
     },
     {
         id: 1,
         name: 'Past Proposals',
+        color: 'text-gray-100 text-5xl cursor-pointer',
+        link: '/dashboard/proposals/past',
     },
 ]
 
 export const ProposalsView = () => {
-    const [currentTab, setCurrentTab] = useState(tabs[0])
-
     return (
         <div className="w-full p-5">
             <div className="flex flex-col">
                 <div className="flex w-full flex-row gap-10">
                     {tabs.map((tab) => {
                         return (
-                            <div
+                            <Link
                                 key={tab.id}
-                                className={
-                                    (currentTab.id == tab.id
-                                        ? 'text-gray-100'
-                                        : 'text-gray-400') +
-                                    ' text-5xl cursor-pointer'
-                                }
-                                onClick={() => {
-                                    setCurrentTab(tab)
-                                }}
+                                className={tab.color}
+                                href={tab.link}
                             >
                                 {tab.name}
-                            </div>
+                            </Link>
                         )
                     })}
                 </div>
                 <div className="mt-2">
-                    {currentTab == tabs[0] && <ActiveProposals />}
-                    {currentTab == tabs[1] && <PastProposals />}
+                    <PastProposals />
                 </div>
             </div>
         </div>

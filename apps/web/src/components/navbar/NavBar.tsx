@@ -25,7 +25,7 @@ const linkItems: Array<NavItemProps> = [
     {
         name: 'Proposals',
         id: ViewsEnum.Proposals,
-        link: '/dashboard/proposals',
+        link: '/dashboard/proposals/active',
         icon: TfiLayoutPlaceholder,
     },
     {
