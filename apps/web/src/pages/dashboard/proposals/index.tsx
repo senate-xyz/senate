@@ -2,9 +2,11 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useState } from 'react'
 
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { ActiveProposals } from './ActiveProposals'
-import { PastProposals } from './PastProposals'
+
 import { extend as dayJsExtend } from 'dayjs'
+import NavBar from '../../../components/navbar/NavBar'
+import { PastProposals } from '../../../components/views/proposals/PastProposals'
+import { ActiveProposals } from '../../../components/views/proposals/ActiveProposals'
 
 dayJsExtend(relativeTime)
 
@@ -56,13 +58,18 @@ export const ProposalsView = () => {
 
 export const Proposals = () => {
     return (
-        <div className="h-full w-full bg-slate-700">
-            <div className="flex w-full flex-col">
-                <div className="flex h-48 items-center justify-between bg-slate-800 px-10">
-                    <h1 className="text-5xl">Proposals</h1>
-                    <ConnectButton />
+        <div className="flex flex-row">
+            <NavBar />
+            <div className="min-h-screen w-full">
+                <div className="h-full w-full bg-slate-700">
+                    <div className="flex w-full flex-col">
+                        <div className="flex h-48 items-center justify-between bg-slate-800 px-10">
+                            <h1 className="text-5xl">Proposals</h1>
+                            <ConnectButton />
+                        </div>
+                        <ProposalsView />
+                    </div>
                 </div>
-                <ProposalsView />
             </div>
         </div>
     )

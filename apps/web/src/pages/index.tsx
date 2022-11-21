@@ -1,5 +1,6 @@
 import type { NextPage } from 'next'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const Header = () => {
     return (
@@ -53,9 +54,9 @@ const Mid = () => {
 
                 <div className="content-center justify-center">
                     <button className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700">
-                        <a href="/app">
+                        <Link href="/dashboard">
                             <p>Launch App</p>
-                        </a>
+                        </Link>
                     </button>
                 </div>
             </div>

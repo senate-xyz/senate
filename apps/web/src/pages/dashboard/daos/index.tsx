@@ -1,9 +1,10 @@
 import { DAOType } from '@senate/common-types'
 
 import { trpc } from '../../../utils/trpc'
-import { FollowedDAO } from './FollowedDAO'
-import { UnfollowedDAO } from './UnfollowedDAO'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { FollowedDAO } from '../../../components/views/DAOs/FollowedDAO'
+import { UnfollowedDAO } from '../../../components/views/DAOs/UnfollowedDAO'
+import NavBar from '../../../components/navbar/NavBar'
 
 const DAOs = () => {
     const allDAOs = trpc.public.daos.useQuery()
@@ -70,13 +71,18 @@ const DAOs = () => {
 
 const DAOsContainer = () => {
     return (
-        <div className="h-full w-full bg-slate-700">
-            <div className="flex w-full flex-col">
-                <div className="flex h-48 items-center justify-between bg-slate-800 px-10">
-                    <h1 className="text-5xl">DAOs</h1>
-                    <ConnectButton />
+        <div className="flex flex-row">
+            <NavBar />
+            <div className="min-h-screen w-full">
+                <div className="h-full w-full bg-slate-700">
+                    <div className="flex w-full flex-col">
+                        <div className="flex h-48 items-center justify-between bg-slate-800 px-10">
+                            <h1 className="text-5xl">DAOs</h1>
+                            <ConnectButton />
+                        </div>
+                        <DAOs />
+                    </div>
                 </div>
-                <DAOs />
             </div>
         </div>
     )
