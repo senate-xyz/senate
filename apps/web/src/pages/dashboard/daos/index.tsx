@@ -5,18 +5,12 @@ import { FollowedDAO } from '../../../components/DAOs/FollowedDAO'
 import { UnfollowedDAO } from '../../../components/DAOs/UnfollowedDAO'
 import NavBar from '../../../components/navbar/NavBar'
 
-import { useRouter } from 'next/router'
 import DashboardHeader from '../../../components/DashboardHeader'
 
 const DAOs = () => {
-    const router = useRouter()
-    const { user } = router.query
-
     const allDAOs = trpc.public.daos.useQuery()
 
-    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery({
-        username: String(user),
-    })
+    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
 
     return (
         <div className="flex w-full flex-col">
