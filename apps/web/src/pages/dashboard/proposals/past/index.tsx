@@ -5,8 +5,6 @@ import Link from 'next/link'
 import NavBar from '../../../../components/navbar/NavBar'
 import { PastProposals } from '../../../../components/proposals/PastProposals'
 import DashboardHeader from '../../../../components/DashboardHeader'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/router'
 
 dayJsExtend(relativeTime)
 
@@ -26,10 +24,6 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
 ]
 
 export const ProposalsView = () => {
-    const router = useRouter()
-    const { user } = router.query
-    const session = useSession()
-
     return (
         <div className="w-full p-5">
             <div className="flex flex-col">

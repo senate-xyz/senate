@@ -1,9 +1,7 @@
 import { inferProcedureOutput } from '@trpc/server'
-import Image from 'next/image'
 
 import { useState } from 'react'
 import { AppRouter } from '../../../server/trpc/router/_app'
-import { trpc } from '../../../utils/trpc'
 import BackCard from './BackCard'
 import FrontCard from './FrontCard'
 

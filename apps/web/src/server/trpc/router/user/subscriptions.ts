@@ -74,8 +74,11 @@ export const userSubscriptionsRouter = router({
                         daoId: input.daoId,
                     },
                 })
-                .then((res) => {
-                    return res
+                .then(() => {
+                    return true
+                })
+                .catch(() => {
+                    return false
                 })
         }),
 
@@ -110,6 +113,9 @@ export const userSubscriptionsRouter = router({
                 })
                 .then(() => {
                     return true
+                })
+                .catch(() => {
+                    return false
                 })
         }),
 })

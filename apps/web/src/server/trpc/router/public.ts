@@ -59,14 +59,21 @@ export const publicRouter = router({
             })
         )
         .mutation(async ({ input }) => {
-            await prisma.dAO.update({
-                where: {
-                    id: input.daoId,
-                },
-                data: {
-                    refreshStatus: RefreshStatus.NEW,
-                },
-            })
+            await prisma.dAO
+                .update({
+                    where: {
+                        id: input.daoId,
+                    },
+                    data: {
+                        refreshStatus: RefreshStatus.NEW,
+                    },
+                })
+                .then(() => {
+                    return true
+                })
+                .catch(() => {
+                    return false
+                })
         }),
     refreshStatus: publicProcedure
         .input(

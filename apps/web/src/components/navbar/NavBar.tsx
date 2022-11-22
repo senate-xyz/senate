@@ -1,13 +1,7 @@
-import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { TfiLayoutPlaceholder } from 'react-icons/tfi'
 
 export default function NavBar() {
-    const router = useRouter()
-    const { user } = router.query
-    const session = useSession()
-
     return (
         <div className="grid w-24 items-start bg-slate-900">
             <div className="flex flex-col items-center">

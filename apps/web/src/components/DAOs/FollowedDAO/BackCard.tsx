@@ -1,4 +1,4 @@
-import { DAOType } from '../../../../../../packages/common-types/dist'
+import { DAOType } from '@senate/common-types'
 import { trpc } from '../../../utils/trpc'
 
 const BackCard = (props: {

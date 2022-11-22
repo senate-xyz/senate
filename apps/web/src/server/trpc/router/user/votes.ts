@@ -25,16 +25,22 @@ export const userVotesRouter = router({
             },
         })
 
-        await prisma.voter.updateMany({
-            where: {
-                id: {
-                    in: voters.map((voter) => voter.id),
+        await prisma.voter
+            .updateMany({
+                where: {
+                    id: {
+                        in: voters.map((voter) => voter.id),
+                    },
                 },
-            },
-            data: {
-                refreshStatus: RefreshStatus.NEW,
-            },
-        })
-        return true
+                data: {
+                    refreshStatus: RefreshStatus.NEW,
+                },
+            })
+            .then(() => {
+                return true
+            })
+            .catch(() => {
+                return false
+            })
     }),
 })

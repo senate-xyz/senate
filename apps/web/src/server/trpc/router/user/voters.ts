@@ -27,23 +27,30 @@ export const userVotersRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            await prisma.user.update({
-                where: {
-                    name: String(ctx.session?.user?.name),
-                },
-                data: {
-                    voters: {
-                        connectOrCreate: {
-                            where: { address: input.address },
-                            create: {
-                                address: input.address,
-                                refreshStatus: RefreshStatus.NEW,
-                                lastRefresh: new Date(0),
+            await prisma.user
+                .update({
+                    where: {
+                        name: String(ctx.session?.user?.name),
+                    },
+                    data: {
+                        voters: {
+                            connectOrCreate: {
+                                where: { address: input.address },
+                                create: {
+                                    address: input.address,
+                                    refreshStatus: RefreshStatus.NEW,
+                                    lastRefresh: new Date(0),
+                                },
                             },
                         },
                     },
-                },
-            })
+                })
+                .then(() => {
+                    return true
+                })
+                .catch(() => {
+                    return false
+                })
         }),
     removeVoter: publicProcedure
         .input(
@@ -67,7 +74,11 @@ export const userVotersRouter = router({
                         },
                     },
                 })
-                .then((res) => console.log(res))
-                .catch((err) => console.log(err))
+                .then(() => {
+                    return true
+                })
+                .catch(() => {
+                    return false
+                })
         }),
 })
