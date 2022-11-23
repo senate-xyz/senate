@@ -1,5 +1,5 @@
 import { prisma } from '@senate/database'
-import { string, z } from 'zod'
+import { z } from 'zod'
 import { router, publicProcedure } from '../../trpc'
 
 export const userProposalsRouter = router({
