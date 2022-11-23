@@ -2,7 +2,7 @@ import RainbowConnect from './RainbowConnect'
 
 const DashboardHeader = (props: { title: string; component: JSX.Element }) => {
     return (
-        <div className="min-h-screen w-full">
+        <div className="min-h-screen w-full" data-cy="dashboard-header">
             <div className="h-full w-full bg-slate-700">
                 <div className="flex w-full flex-col">
                     <div className="flex h-48 items-center justify-between bg-slate-800 px-10">

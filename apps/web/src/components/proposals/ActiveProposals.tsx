@@ -126,10 +126,12 @@ export const ActiveProposals = () => {
             <div className="flex flex-col">
                 <table className="w-full table-auto border-separate border-spacing-y-4 text-left">
                     <thead>
-                        <th>DAO</th>
-                        <th>Proposal Title</th>
-                        <th>Ends in</th>
-                        <th>Vote status</th>
+                        <tr>
+                            <th>DAO</th>
+                            <th>Proposal Title</th>
+                            <th>Ends in</th>
+                            <th>Vote status</th>
+                        </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-300">
                         {filteredActiveProposals.data?.map(

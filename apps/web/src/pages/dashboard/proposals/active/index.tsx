@@ -25,24 +25,22 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
 
 export const ProposalsView = () => {
     return (
-        <div className="w-full p-5">
-            <div className="flex flex-col">
-                <div className="flex w-full flex-row gap-10">
-                    {tabs.map((tab) => {
-                        return (
-                            <Link
-                                key={tab.id}
-                                className={tab.color}
-                                href={tab.link}
-                            >
-                                {tab.name}
-                            </Link>
-                        )
-                    })}
-                </div>
-                <div className="mt-2">
-                    <ActiveProposals />
-                </div>
+        <div className="flex w-full flex-col p-5">
+            <div className="flex w-full flex-row gap-10">
+                {tabs.map((tab) => {
+                    return (
+                        <Link
+                            key={tab.id}
+                            className={tab.color}
+                            href={tab.link}
+                        >
+                            {tab.name}
+                        </Link>
+                    )
+                })}
+            </div>
+            <div className="mt-2">
+                <ActiveProposals />
             </div>
         </div>
     )
@@ -50,7 +48,7 @@ export const ProposalsView = () => {
 
 export const Proposals = () => {
     return (
-        <div className="flex flex-row">
+        <div className="flex w-full flex-row" data-cy="proposals-active">
             <NavBar />
             <DashboardHeader title="Proposals" component={<ProposalsView />} />
         </div>
