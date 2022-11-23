@@ -47,6 +47,8 @@ export const userSubscriptionsRouter = router({
             })
         )
         .mutation(async ({ ctx, input }) => {
+            console.log('new sub')
+            console.log(ctx.session?.user?.name)
             const user = await prisma.user
                 .findFirstOrThrow({
                     where: {
@@ -75,9 +77,11 @@ export const userSubscriptionsRouter = router({
                     },
                 })
                 .then(() => {
+                    console.log(true)
                     return true
                 })
                 .catch(() => {
+                    console.log(false)
                     return false
                 })
         }),

@@ -14,7 +14,7 @@ export const FollowedDAO = (props: {
     const [showMenu, setShowMenu] = useState(false)
 
     return (
-        <div>
+        <div data-cy="followed">
             {showMenu ? (
                 <BackCard
                     dao={props.dao}

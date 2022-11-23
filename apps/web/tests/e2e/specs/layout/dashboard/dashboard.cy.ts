@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-describe('home', () => {
+describe('dashboard', () => {
     beforeEach(() => {
         cy.visit('http://localhost:3000/dashboard')
     })
