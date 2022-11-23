@@ -7,7 +7,6 @@ module.exports = {
     "plugin:promise/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/recommended",
-    "plugin:cypress/recommended",
     "prettier",
   ],
 

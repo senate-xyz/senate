@@ -11,7 +11,6 @@ import { chain, configureChains, createClient, WagmiConfig } from 'wagmi'
 import { infuraProvider } from 'wagmi/providers/infura'
 import { publicProvider } from 'wagmi/providers/public'
 import { trpc } from '../utils/trpc'
-import Head from 'next/head'
 
 const { chains, provider } = configureChains(
     [chain.mainnet],
@@ -47,13 +46,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
                     getSiweMessageOptions={getSiweMessageOptions}
                 >
                     <RainbowKitProvider chains={chains}>
-                        <Head>
-                            <title>Senate</title>
-                            <meta
-                                name="viewport"
-                                content="initial-scale=1.0, width=device-width"
-                            />
-                        </Head>
                         <Component {...pageProps} />
                     </RainbowKitProvider>
                 </RainbowKitSiweNextAuthProvider>
