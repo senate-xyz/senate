@@ -69,16 +69,10 @@ model Proposal {
   @@index([daoId], map: "Proposal_daoId_fkey")
 }
 
-// enum StatusType {
-//     NOT_SENT
-//     PENDING
-//     SENT
-// }
-
 enum RoundupNotificationType {
   NEW
   ENDING_SOON
-  VOTED
+  PAST
 }
 
 model Notification {
@@ -87,6 +81,7 @@ model Notification {
   userId     String
   proposal   Proposal                @relation(fields: [proposalId], references: [id], onDelete: Cascade)
   proposalId String
+  daoId      String
   type       RoundupNotificationType
 
   @@unique([proposalId, userId, type])

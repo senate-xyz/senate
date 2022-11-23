@@ -69,6 +69,7 @@ Table Notification {
   userId String [not null]
   proposal Proposal [not null]
   proposalId String [not null]
+  daoId String [not null]
   type RoundupNotificationType [not null]
 
   indexes {
@@ -134,7 +135,7 @@ Table UserToVoter {
 Enum RoundupNotificationType {
   NEW
   ENDING_SOON
-  VOTED
+  PAST
 }
 
 Enum DAOHandlerType {
