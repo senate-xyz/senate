@@ -81,7 +81,7 @@ export class AppService {
     }
 
     async updateVotes(daoId: string, voterAddress: string) {
-        let dao
+        let dao;
 
         try {
             dao = await prisma.dAO.findFirst({

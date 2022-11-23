@@ -1,4 +1,5 @@
 import { config } from 'dotenv'
+import axios from 'axios'
 import { ServerClient } from 'postmark'
 import { schedule } from 'node-cron'
 import { prisma } from '@senate/database'
@@ -6,7 +7,7 @@ import { RoundupNotificationType } from '@prisma/client'
 import {
     Proposal,
     Subscription,
-    SubscriptionWithProxies,
+    UserWithVotingAddresses,
     Voter,
 } from '@senate/common-types'
 
@@ -23,7 +24,7 @@ const now: number = Date.now()
 schedule('*/15 * * * * *', async function () {
     if (!Boolean(process.env.ROUNDUP_ENABLE)) return
 
-    console.log('running a task every 15 second')
+    console.log('running a task every 30 second')
 
     const lastMonthProposals: Proposal[] = await prisma.proposal.findMany({
         where: {
@@ -33,15 +34,14 @@ schedule('*/15 * * * * *', async function () {
         },
     })
 
-    await clearNotificationsTable()
-    await addNewProposals(lastMonthProposals)
-    await addEndingProposals(lastMonthProposals)
-    await addRecentVotes()
+    await clearNotificationsTable();
+    await addNewProposals(lastMonthProposals);
+    await addEndingProposals(lastMonthProposals);
+    await addPastProposals(lastMonthProposals);
+    
+    await sendRoundupEmails();
 
-    const notifications = await prisma.notification.findMany()
-    console.log(notifications)
-
-    sendRoundupEmails()
+    console.log("Emails have been sent");
 })
 
 const clearNotificationsTable = async () => {
@@ -85,6 +85,7 @@ const addNewProposals = async (lastMonthProposals: Proposal[]) => {
                         create: {
                             userId: subscription.userId,
                             proposalId: proposal.id,
+                            daoId: proposal.daoId,
                             type: RoundupNotificationType.NEW,
                         },
                     })
@@ -102,17 +103,13 @@ const addNewProposals = async (lastMonthProposals: Proposal[]) => {
 }
 
 const addEndingProposals = async (lastMonthProposals: Proposal[]) => {
-    console.log('Adding voting due proposal notifications...')
-
-    console.log('Last month proposals: ', lastMonthProposals.length)
+    console.log('Adding ending proposals...')
 
     const proposals = lastMonthProposals.filter(
         (proposal) =>
             proposal.data?.['timeEnd'] <= now + threeDays &&
             proposal.data?.['timeEnd'] > now
     )
-
-    console.log('About to end proposals: ', proposals.length, proposals[0])
 
     if (proposals) {
         console.log(`Found ${proposals.length} ending soon proposals`)
@@ -121,235 +118,246 @@ const addEndingProposals = async (lastMonthProposals: Proposal[]) => {
     }
 
     for (const proposal of proposals) {
-        const subscriptions: SubscriptionWithProxies[] =
+        const subscriptions: Subscription[] =
             await prisma.subscription.findMany({
                 where: {
                     daoId: proposal.daoId,
                 },
-                include: {
-                    user: {
-                        select: {
-                            voters: true,
-                        },
-                    },
-                },
             })
 
-        for (const subscription of subscriptions) {
-            const userHasVoted = await userVoted(
-                subscription.user.voters,
-                proposal.id,
-                proposal.daoId
-            )
-            if (!userHasVoted) {
-                console.log(
-                    `User ${subscription.userId} hasn't voted for ${proposal.name}`
-                )
-                await prisma.notification.upsert({
-                    where: {
-                        proposalId_userId_type: {
-                            proposalId: proposal.id,
+        await prisma
+            .$transaction(
+                subscriptions.map((subscription: Subscription) => {
+                    return prisma.notification.upsert({
+                        where: {
+                            proposalId_userId_type: {
+                                proposalId: proposal.id,
+                                userId: subscription.userId,
+                                type: RoundupNotificationType.ENDING_SOON,
+                            },
+                        },
+                        update: {},
+                        create: {
                             userId: subscription.userId,
+                            proposalId: proposal.id,
+                            daoId: proposal.daoId,
                             type: RoundupNotificationType.ENDING_SOON,
                         },
-                    },
-                    update: {},
-                    create: {
-                        userId: subscription.userId,
-                        proposalId: proposal.id,
-                        type: RoundupNotificationType.ENDING_SOON,
-                    },
+                    })
                 })
-            } else {
-                console.log(
-                    `User ${subscription.userId} has already voted for ${proposal.name}`
-                )
-            }
-        }
+            )
+            .then((res) => {
+                if (res) console.log(`Inserted ${res.length} notifications`)
+                else console.log('Inserted 0 notifications')
+
+                return res
+            })
     }
 
     console.log('\n')
 }
 
-const addRecentVotes = async () => {
-    // Get votes added within 24hrs
-    const votes = await prisma.vote.findMany({
+const addPastProposals = async (lastMonthProposals: Proposal[]) => {
+    console.log('Adding new proposal notifications...')
+
+    const proposals = lastMonthProposals.filter(
+        (proposal) => proposal.data?.['timeEnd'] <= now &&
+            proposal.data?.['timeEnd'] >= now - oneDay
+    )
+
+    if (proposals) {
+        console.log(`Found ${proposals.length} new proposals`)
+    } else {
+        console.log(`Found 0 new proposals`)
+    }
+
+    for (const proposal of proposals) {
+        const subscriptions: Subscription[] =
+            await prisma.subscription.findMany({
+                where: {
+                    daoId: proposal.daoId,
+                },
+            })
+
+        await prisma
+            .$transaction(
+                subscriptions.map((subscription: Subscription) => {
+                    return prisma.notification.upsert({
+                        where: {
+                            proposalId_userId_type: {
+                                proposalId: proposal.id,
+                                userId: subscription.userId,
+                                type: RoundupNotificationType.PAST,
+                            },
+                        },
+                        update: {},
+                        create: {
+                            userId: subscription.userId,
+                            proposalId: proposal.id,
+                            daoId: proposal.daoId,
+                            type: RoundupNotificationType.PAST,
+                        },
+                    })
+                })
+            )
+            .then((res) => {
+                if (res) console.log(`Inserted ${res.length} notifications`)
+                else console.log('Inserted 0 notifications')
+
+                return res
+            })
+    }
+
+    console.log('\n')
+}
+
+const formatEmailTableData = async (user: UserWithVotingAddresses, notificationType: RoundupNotificationType): Promise<any> => {
+    const proposals = await prisma.notification.findMany({
         where: {
-            addedAt: {
-                gt: now - oneDay,
-            },
+            userId: user.id,
+            type: notificationType,
         },
         include: {
-            voter: {
+            proposal: {
                 include: {
-                    users: true,
+                    dao: true,
                 },
             },
         },
     })
 
-    console.log('Recent votes', votes)
+    const promises = proposals.map(async (notification) => {
+        let voted = await userVoted(user.voters, notification.proposalId, notification.daoId);
+        const dateOptions: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
 
-    for (const vote of votes) {
-        for (const user of vote.voter.users) {
-            // if (user subscribed to DAO)
-            await prisma.notification.upsert({
-                where: {
-                    proposalId_userId_type: {
-                        proposalId: vote.proposalId,
-                        userId: user.id,
-                        type: RoundupNotificationType.VOTED,
-                    },
-                },
-                update: {},
-                create: {
-                    userId: user.id,
-                    proposalId: vote.proposalId,
-                    type: RoundupNotificationType.VOTED,
-                },
-            })
+        let countdownUrl = await generateCountdownGifUrl(notification.proposal.data?.['timeEnd']);
+
+        return {
+            votingStatus: voted ? "Voted" : "Not voted yet",
+            rowBackground: voted ? "green" : "red",
+            proposalName: notification.proposal.name,
+            proposalUrl: notification.proposal.url,
+            daoLogoUrl: notification.proposal.dao.picture,
+            endDateUTC: formatTwoDigit(new Date(notification.proposal.data?.['timeEnd']).getUTCDate()),
+            endMonthUTC: formatTwoDigit(new Date(notification.proposal.data?.['timeEnd']).getUTCMonth() + 1),
+            endYearUTC: new Date(notification.proposal.data?.['timeEnd']).getUTCFullYear(),
+            endHoursUTC: formatTwoDigit(new Date(notification.proposal.data?.['timeEnd']).getUTCHours()),
+            endMinutesUTC: formatTwoDigit(new Date(notification.proposal.data?.['timeEnd']).getUTCMinutes()),
+            daysLeft: getDaysDifference(now, notification.proposal.data?.['timeEnd']),
+            hoursLeft: getHoursDifference(now, notification.proposal.data?.['timeEnd']),
+            minutesLeft: getMinutesDifference(now, notification.proposal.data?.['timeEnd']),
+            dateString: new Date(notification.proposal.data?.['timeEnd']).toLocaleDateString(undefined, dateOptions),
+            countdownUrl: countdownUrl
         }
+    });
+
+    return Promise.all(promises);
+}
+
+const formatTwoDigit = (timeUnit: number) : string => {
+    let timeUnitStr = timeUnit.toString();
+    return timeUnitStr.length == 1 ? "0" + timeUnitStr : timeUnitStr;
+}
+
+const generateCountdownGifUrl = async (endTimestamp: string): Promise<string> => {
+    let url = "";
+
+    let yearUTC = new Date(endTimestamp).getUTCFullYear()
+    let monthUTC = formatTwoDigit(new Date(endTimestamp).getUTCMonth() + 1)
+    let dateUTC = formatTwoDigit(new Date(endTimestamp).getUTCDate())
+    let hoursUTC = formatTwoDigit(new Date(endTimestamp).getUTCHours())
+    let minutesUTC = formatTwoDigit(new Date(endTimestamp).getUTCMinutes())
+
+    let endTimeString = `${yearUTC}-${monthUTC}-${dateUTC} ${hoursUTC}:${minutesUTC}:00`;
+
+    try {
+        const response = await axios({
+            url: ' https://countdownmail.com/api/create',
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': process.env.VOTING_COUNTDOWN_TOKEN,
+            },
+            data: {
+                skin_id: 6,
+                name: "Big Sale!",
+                time_end: endTimeString,
+                time_zone: "UTC",
+                font_family: "Roboto-Bold",
+                color_primary: "333333",
+                color_text: "333333",
+                color_bg: "F0F3F3",
+                transparent: "1",
+                font_size: "21",
+                day: "1",
+                days: "days",
+                hours: "hours",
+                minutes: "minutes",
+                seconds: "seconds"
+            }
+        });
+        url = response.data.message.src;
+    } catch (error) {
+        console.error(error);
     }
+
+    return url;
+
 }
 
 const sendRoundupEmails = async () => {
-    const users = await prisma.user.findMany()
+    const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const todaysDate = new Date(Date.now()).toLocaleDateString(undefined, dateOptions);
+
+    const users = await prisma.user.findMany({
+        include: {
+            voters: true
+        }
+    })
+
     for (const user of users) {
-        const endingSoonNotifs = (
-            await prisma.notification.findMany({
-                where: {
-                    userId: user.id,
-                    type: RoundupNotificationType.ENDING_SOON,
-                },
-                include: {
-                    proposal: {
-                        include: {
-                            dao: true,
-                        },
-                    },
-                },
-            })
-        ).map((notification) => {
-            return {
-                proposalName: notification.proposal.name,
-                proposalUrl: notification.proposal.url,
-                daoLogo: notification.proposal.dao.picture,
-                timeEnd: new Date(notification.proposal.data?.['timeEnd']),
-                daysLeft: getDaysDifference(
-                    now,
-                    notification.proposal.data?.['timeEnd']
-                ),
-                hoursLeft: getHoursDifference(
-                    now,
-                    notification.proposal.data?.['timeEnd']
-                ),
-                minutesLeft: getMinutesDifference(
-                    now,
-                    notification.proposal.data?.['timeEnd']
-                ),
-            }
+        let endingSoonProposalsData = await formatEmailTableData(user, RoundupNotificationType.ENDING_SOON);
+        let newProposalsData = await formatEmailTableData(user, RoundupNotificationType.NEW);
+        let pastProposalsData = await formatEmailTableData(user, RoundupNotificationType.PAST);
+
+        let response = await client.sendEmailWithTemplate({
+            "TemplateAlias": "roundup",
+            "TemplateModel": {
+                "todaysDate": todaysDate,
+                "endingSoonProposals": endingSoonProposalsData,
+                "endingSoonProposalsTableCssClass": endingSoonProposalsData.length > 0 ? "show" : "hide",
+                "endingSoonProposalsNoDataBoxCssClass": endingSoonProposalsData.length > 0 ? "hide" : "show",
+
+                "newProposals": newProposalsData,
+                "newProposalsTableCssClass": newProposalsData.length > 0 ? "show" : "hide",
+                "newProposalsNoDataBoxCssClass": newProposalsData.length > 0 ? "hide" : "show",
+
+                "pastProposals": pastProposalsData,
+                "pastProposalsTableCssClass": pastProposalsData.length > 0 ? "show" : "hide",
+                "pastProposalsNoDataBoxCssClass": pastProposalsData.length > 0 ? "hide" : "show",
+            },
+            "InlineCss": true,
+            "From": "info@senatelabs.xyz",
+            "To": `${"eugen.ptr@gmail.com"}`,
+            // "To": `${user.email}`,
+            // "Bcc": "kohh.reading@gmail.com,eugen.ptr@gmail.com,contact@andreiv.com,paulo@hey.com",
+            "Tag": "Daily Roundup",
+            "Headers": [
+                {
+                    "Name": "CUSTOM-HEADER",
+                    "Value": "value"
+                }
+            ],
+            "TrackOpens": true,
+            "Metadata": {
+                "color": "blue",
+                "client-id": "12345"
+            },
+            "MessageStream": "outbound"
         })
 
-        console.log('Time now', new Date(now))
-        console.log('Ending soon votes', endingSoonNotifs)
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const newProposalsNotifs = (
-            await prisma.notification.findMany({
-                where: {
-                    userId: user.id,
-                    type: RoundupNotificationType.NEW,
-                },
-                include: {
-                    proposal: {
-                        include: {
-                            dao: true,
-                        },
-                    },
-                },
-            })
-        ).map((notification) => {
-            return {
-                proposalName: notification.proposal.name,
-                proposalUrl: notification.proposal.url,
-                daoLogo: notification.proposal.dao.picture,
-                timeEnd: new Date(notification.proposal.data?.['timeEnd']),
-                daysLeft: getDaysDifference(
-                    now,
-                    notification.proposal.data?.['timeEnd']
-                ),
-                hoursLeft: getHoursDifference(
-                    now,
-                    notification.proposal.data?.['timeEnd']
-                ),
-                minutesLeft: getMinutesDifference(
-                    now,
-                    notification.proposal.data?.['timeEnd']
-                ),
-            }
-        })
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const votedProposalsNotifs = (
-            await prisma.notification.findMany({
-                where: {
-                    userId: user.id,
-                    type: RoundupNotificationType.VOTED,
-                },
-                include: {
-                    proposal: {
-                        include: {
-                            dao: true,
-                        },
-                    },
-                },
-            })
-        ).map((notification) => {
-            return {
-                proposalName: notification.proposal.name,
-                proposalUrl: notification.proposal.url,
-                daoLogo: notification.proposal.dao.picture,
-                timeEnd: new Date(notification.proposal.data?.['timeEnd']),
-                daysLeft: getDaysDifference(
-                    now,
-                    notification.proposal.data?.['timeEnd']
-                ),
-                hoursLeft: getHoursDifference(
-                    now,
-                    notification.proposal.data?.['timeEnd']
-                ),
-                minutesLeft: getMinutesDifference(
-                    now,
-                    notification.proposal.data?.['timeEnd']
-                ),
-            }
-        })
-
-        // client.sendEmailWithTemplate({
-        //     "TemplateAlias": "roundup",
-        //     "TemplateModel": {
-        //       "endingSoonNotifs": endingSoonNotifs,
-        //       "newProposalsNotifs": newProposalsNotifs,
-        //       "votedProposalsNotifs": votedProposalsNotifs
-        //     },
-        //     "InlineCss": true,
-        //     "From": "info@senatelabs.xyz",
-        //     "To": `${user.email}`,
-        //     //"Bcc": "eugenptr@gmail.com,kohnagata@gmail.com,contact@andreiv.com,paulo@hey.com",
-        //     "Tag": "Daily Roundup",
-        //     "Headers": [
-        //       {
-        //         "Name": "CUSTOM-HEADER",
-        //         "Value": "value"
-        //       }
-        //     ],
-        //     "TrackOpens": true,
-        //     "Metadata": {
-        //         "color":"blue",
-        //         "client-id":"12345"
-        //      },
-        //      "MessageStream": "outbound"
-        //   })
+        console.log(`Email sent to ${user.email}`, response);
     }
 }
 
@@ -373,10 +381,11 @@ const getMinutesDifference = (
     timestamp2: number
 ): number => {
     const timestampDifference = timestamp2 - timestamp1
+    const daysDifference = getDaysDifference(timestamp1, timestamp2)
     const hoursDifference = getHoursDifference(timestamp1, timestamp2)
     const minutesDifference = Math.floor(timestampDifference / 1000 / 60)
 
-    return minutesDifference - hoursDifference * 60
+    return minutesDifference - daysDifference * 24 * 60 - hoursDifference * 60
 }
 
 const userVoted = async (
@@ -394,14 +403,8 @@ const userVoted = async (
             },
         })
 
-        console.log(
-            `Proxy address ${voter.address} has vote ${vote} for proposal ${proposalId} in DAO ${daoId}`
-        )
-
         if (vote) voted = true
     }
-
-    console.log('User has voted: ', voted)
 
     return voted
 }

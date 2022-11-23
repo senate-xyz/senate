@@ -25,6 +25,12 @@ export type DAOHandler = DAOHandlerModelPrisma
 export type VoteOption = VoteOptionModelPrisma
 export type Voter = VoterPrisma
 
+export type UserWithVotingAddresses = Prisma.UserGetPayload<{
+    include: {
+        voters: true
+    }
+}>
+
 export type DAOType = Prisma.DAOGetPayload<{
     include: {
         handlers: true

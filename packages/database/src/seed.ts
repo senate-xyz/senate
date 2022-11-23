@@ -61,7 +61,7 @@ async function main() {
                             address:
                                 '0x0a3f6849f78076aefaDf113F5BED87720274dDC0',
                             abi: makerChief.abi,
-                            latestProposalBlock: 15682797,
+                            latestProposalBlock: 15876682,
                             proposalUrl: 'https://vote.makerdao.com/executive/',
                         },
                     },
@@ -71,7 +71,7 @@ async function main() {
                             address:
                                 '0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d',
                             abi: makerPollCreate.abi,
-                            latestProposalBlock: 15682797,
+                            latestProposalBlock: 15876682,
                             proposalUrl: 'https://vote.makerdao.com/polling/',
                         },
                     },
@@ -373,6 +373,126 @@ async function main() {
             handlers: true,
         },
     })
+
+    // Bobby - Stablenode
+ let bobby = await prisma.user.upsert({
+    where: {
+        name: '0x3Ee958c1696B9500303E3E1e8a66C3fE966F97b4'
+    },
+    update: {},
+    create: {
+        name: '0x3Ee958c1696B9500303E3E1e8a66C3fE966F97b4',
+        email: "bobby@stablenode.xyz",
+        subscriptions: {
+            create: [
+                {
+                    daoId: elementFinance.id
+                },
+                {
+                    daoId: optimism.id
+                },
+                {
+                    daoId: balancer.id
+                },
+                {
+                    daoId: oneInch.id
+                },
+                {
+                    daoId: hop.id
+                },
+                {
+                    daoId: aave.id
+                },
+                {
+                    daoId: safe.id
+                },
+            ]
+        }   
+    },
+    include: {
+        subscriptions: true
+    }
+})
+
+// stablenodegov.eth
+await prisma.voter.upsert({
+    where: {
+        address: bobby.name,
+    },
+    update: {},
+    create: {
+        address: "0x1d1a13b16667c284b87de62caeeff0ce89e342b2",
+        refreshStatus: RefreshStatus.NEW,
+        lastRefresh: new Date(0),
+        users: { connect: { id: bobby.id } },
+    },
+})
+
+// stablelab.eth
+await prisma.voter.upsert({
+    where: {
+        address: bobby.name,
+    },
+    update: {},
+    create: {
+        address: "0xea172676e4105e92cc52dbf45fd93b274ec96676",
+        refreshStatus: RefreshStatus.NEW,
+        lastRefresh: new Date(0),
+        users: { connect: { id: bobby.id } },
+    },
+})
+
+
+// Matt - Gauntlet
+let matt = await prisma.user.upsert({
+    where: {
+        name: '0x87edfD6b1B545d4358F0bF302B1a51660a0DFdF1'
+    },
+    update: {},
+    create: {
+        name: '0x87edfD6b1B545d4358F0bF302B1a51660a0DFdF1',
+        email: "matt@gauntlet.network",
+        subscriptions: {
+            create: [
+                {
+                    daoId: aave.id
+                },
+                {
+                    daoId: compound.id
+                },
+                {
+                    daoId: synthetix.id
+                },
+                {
+                    daoId: maker.id
+                },
+                {
+                    daoId: dydx.id
+                },
+                {
+                    daoId: uniswap.id
+                },
+            ]
+        }   
+    },
+    include: {
+        subscriptions: true
+    }
+})
+
+// stablenode voting wallet
+await prisma.voter.upsert({
+    where: {
+        address: matt.name,
+    },
+    update: {},
+    create: {
+        address: "0x683a4F9915D6216f73d6Df50151725036bD26C02",
+        refreshStatus: RefreshStatus.NEW,
+        lastRefresh: new Date(0),
+        users: { connect: { id: matt.id } },
+    },
+})
 }
 
 main()
