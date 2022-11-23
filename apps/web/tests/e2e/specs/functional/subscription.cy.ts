@@ -1,7 +1,7 @@
 import * as bip39 from 'bip39'
 
 describe('sub', () => {
-    const login = (name) => {
+    const login = (name: string) => {
         cy.session(name, () => {
             cy.setupMetamask(bip39.generateMnemonic(), 'main')
             cy.disconnectMetamaskWalletFromAllDapps()
