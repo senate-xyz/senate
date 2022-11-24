@@ -12,7 +12,7 @@ export const UnfollowedDAO = (props: {
     const [showMenu, setShowMenu] = useState(false)
 
     return (
-        <div>
+        <div data-cy="unfollowed">
             {showMenu ? (
                 <BackCard
                     dao={props.dao}
