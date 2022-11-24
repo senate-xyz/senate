@@ -26,18 +26,10 @@ schedule('*/15 * * * * *', async function () {
 
     console.log('running a task every 30 second')
 
-    const lastMonthProposals: Proposal[] = await prisma.proposal.findMany({
-        where: {
-            addedAt: {
-                gte: now - oneMonth,
-            },
-        },
-    })
-
     await clearNotificationsTable();
-    await addNewProposals(lastMonthProposals);
-    await addEndingProposals(lastMonthProposals);
-    await addPastProposals(lastMonthProposals);
+    await addNewProposals();
+    await addEndingProposals();
+    await addPastProposals();
     
     await sendRoundupEmails();
 
@@ -49,12 +41,19 @@ const clearNotificationsTable = async () => {
     await prisma.notification.deleteMany()
 }
 
-const addNewProposals = async (lastMonthProposals: Proposal[]) => {
+const addNewProposals = async () => {
     console.log('Adding new proposal notifications...')
 
-    const proposals = lastMonthProposals.filter(
-        (proposal) => proposal.data?.['timeCreated'] >= now - oneDay
-    )
+    const proposals = await prisma.proposal.findMany({
+        where: {
+            timeCreated: {
+                gte: new Date(now - oneDay),
+            },
+        },
+        orderBy: {
+            timeEnd: 'asc'
+        }
+    })
 
     if (proposals) {
         console.log(`Found ${proposals.length} new proposals`)
@@ -102,14 +101,29 @@ const addNewProposals = async (lastMonthProposals: Proposal[]) => {
     console.log('\n')
 }
 
-const addEndingProposals = async (lastMonthProposals: Proposal[]) => {
+const addEndingProposals = async () => {
     console.log('Adding ending proposals...')
 
-    const proposals = lastMonthProposals.filter(
-        (proposal) =>
-            proposal.data?.['timeEnd'] <= now + threeDays &&
-            proposal.data?.['timeEnd'] > now
-    )
+    const proposals = await prisma.proposal.findMany({
+        where: {
+            AND: [
+                {
+                    timeEnd: {
+                        lte: new Date(now + threeDays),
+                    }
+                },
+                {
+                    timeEnd: {
+                        gt: new Date(now),
+                    },
+                }
+            ]
+            
+        },
+        orderBy: {
+            timeEnd: 'asc'
+        }
+    })
 
     if (proposals) {
         console.log(`Found ${proposals.length} ending soon proposals`)
@@ -157,13 +171,29 @@ const addEndingProposals = async (lastMonthProposals: Proposal[]) => {
     console.log('\n')
 }
 
-const addPastProposals = async (lastMonthProposals: Proposal[]) => {
+const addPastProposals = async () => {
     console.log('Adding new proposal notifications...')
-
-    const proposals = lastMonthProposals.filter(
-        (proposal) => proposal.data?.['timeEnd'] <= now &&
-            proposal.data?.['timeEnd'] >= now - oneDay
-    )
+    
+    const proposals = await prisma.proposal.findMany({
+        where: {
+            AND: [
+                {
+                    timeEnd: {
+                        lte: new Date(now),
+                    }
+                },
+                {
+                    timeEnd: {
+                        gte: new Date(now - oneDay),
+                    },
+                }
+            ]
+            
+        },
+        orderBy: {
+            timeEnd: 'desc'
+        }
+    })
 
     if (proposals) {
         console.log(`Found ${proposals.length} new proposals`)
@@ -230,7 +260,7 @@ const formatEmailTableData = async (user: UserWithVotingAddresses, notificationT
         let voted = await userVoted(user.voters, notification.proposalId, notification.daoId);
         const dateOptions: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
 
-        let countdownUrl = await generateCountdownGifUrl(notification.proposal.data?.['timeEnd']);
+        let countdownUrl = await generateCountdownGifUrl(notification.proposal.timeEnd);
 
         return {
             votingStatus: voted ? "Voted" : "Not voted yet",
@@ -238,15 +268,9 @@ const formatEmailTableData = async (user: UserWithVotingAddresses, notificationT
             proposalName: notification.proposal.name,
             proposalUrl: notification.proposal.url,
             daoLogoUrl: notification.proposal.dao.picture,
-            endDateUTC: formatTwoDigit(new Date(notification.proposal.data?.['timeEnd']).getUTCDate()),
-            endMonthUTC: formatTwoDigit(new Date(notification.proposal.data?.['timeEnd']).getUTCMonth() + 1),
-            endYearUTC: new Date(notification.proposal.data?.['timeEnd']).getUTCFullYear(),
-            endHoursUTC: formatTwoDigit(new Date(notification.proposal.data?.['timeEnd']).getUTCHours()),
-            endMinutesUTC: formatTwoDigit(new Date(notification.proposal.data?.['timeEnd']).getUTCMinutes()),
-            daysLeft: getDaysDifference(now, notification.proposal.data?.['timeEnd']),
-            hoursLeft: getHoursDifference(now, notification.proposal.data?.['timeEnd']),
-            minutesLeft: getMinutesDifference(now, notification.proposal.data?.['timeEnd']),
-            dateString: new Date(notification.proposal.data?.['timeEnd']).toLocaleDateString(undefined, dateOptions),
+            endHoursUTC: formatTwoDigit(notification.proposal.timeEnd.getUTCHours()),
+            endMinutesUTC: formatTwoDigit(notification.proposal.timeEnd.getUTCMinutes()),
+            endDateString: notification.proposal.timeEnd.toLocaleDateString(undefined, dateOptions),
             countdownUrl: countdownUrl
         }
     });
@@ -259,14 +283,14 @@ const formatTwoDigit = (timeUnit: number) : string => {
     return timeUnitStr.length == 1 ? "0" + timeUnitStr : timeUnitStr;
 }
 
-const generateCountdownGifUrl = async (endTimestamp: string): Promise<string> => {
+const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
     let url = "";
 
-    let yearUTC = new Date(endTimestamp).getUTCFullYear()
-    let monthUTC = formatTwoDigit(new Date(endTimestamp).getUTCMonth() + 1)
-    let dateUTC = formatTwoDigit(new Date(endTimestamp).getUTCDate())
-    let hoursUTC = formatTwoDigit(new Date(endTimestamp).getUTCHours())
-    let minutesUTC = formatTwoDigit(new Date(endTimestamp).getUTCMinutes())
+    let yearUTC = endTime.getUTCFullYear()
+    let monthUTC = formatTwoDigit(endTime.getUTCMonth() + 1)
+    let dateUTC = formatTwoDigit(endTime.getUTCDate())
+    let hoursUTC = formatTwoDigit(endTime.getUTCHours())
+    let minutesUTC = formatTwoDigit(endTime.getUTCMinutes())
 
     let endTimeString = `${yearUTC}-${monthUTC}-${dateUTC} ${hoursUTC}:${minutesUTC}:00`;
 
@@ -312,7 +336,7 @@ const generateCountdownGifUrl = async (endTimestamp: string): Promise<string> =>
 
 const sendRoundupEmails = async () => {
     const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const todaysDate = new Date(Date.now()).toLocaleDateString(undefined, dateOptions);
+    const todaysDate = new Date(now).toLocaleDateString(undefined, dateOptions);
 
     const users = await prisma.user.findMany({
         include: {
@@ -343,9 +367,9 @@ const sendRoundupEmails = async () => {
             },
             "InlineCss": true,
             "From": "info@senatelabs.xyz",
-            // "To": `${"eugen.ptr@gmail.com"}`,
-            "To": `${user.email}`,
-            "Bcc": "kohh.reading@gmail.com,eugen.ptr@gmail.com,contact@andreiv.com,paulo@hey.com",
+            "To": `${"eugen.ptr@gmail.com"}`,
+            // "To": `${user.email}`,
+            // "Bcc": "kohh.reading@gmail.com,eugen.ptr@gmail.com,contact@andreiv.com,paulo@hey.com",
             "Tag": "Daily Roundup",
             "Headers": [
                 {
