@@ -272,16 +272,17 @@ const generateCountdownGifUrl = async (endTimestamp: string): Promise<string> =>
 
     try {
         const response = await axios({
-            url: ' https://countdownmail.com/api/create',
+            url: 'https://countdownmail.com/api/create',
             method: 'post',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
+                'Accept-Encoding': 'null',
                 'Authorization': process.env.VOTING_COUNTDOWN_TOKEN,
             },
             data: {
                 skin_id: 6,
-                name: "Big Sale!",
+                name: "Voting countdown",
                 time_end: endTimeString,
                 time_zone: "UTC",
                 font_family: "Roboto-Bold",
@@ -290,6 +291,8 @@ const generateCountdownGifUrl = async (endTimestamp: string): Promise<string> =>
                 color_bg: "F0F3F3",
                 transparent: "1",
                 font_size: "21",
+                expired_mes_on: 1,
+                expired_mes: "Voting ended",
                 day: "1",
                 days: "days",
                 hours: "hours",
@@ -297,6 +300,7 @@ const generateCountdownGifUrl = async (endTimestamp: string): Promise<string> =>
                 seconds: "seconds"
             }
         });
+
         url = response.data.message.src;
     } catch (error) {
         console.error(error);
@@ -322,8 +326,8 @@ const sendRoundupEmails = async () => {
         let pastProposalsData = await formatEmailTableData(user, RoundupNotificationType.PAST);
 
         let response = await client.sendEmailWithTemplate({
-            "TemplateAlias": "roundup",
-            "TemplateModel": {
+        "TemplateAlias": "roundup",
+        "TemplateModel": {
                 "todaysDate": todaysDate,
                 "endingSoonProposals": endingSoonProposalsData,
                 "endingSoonProposalsTableCssClass": endingSoonProposalsData.length > 0 ? "show" : "hide",
@@ -339,9 +343,9 @@ const sendRoundupEmails = async () => {
             },
             "InlineCss": true,
             "From": "info@senatelabs.xyz",
-            "To": `${"eugen.ptr@gmail.com"}`,
-            // "To": `${user.email}`,
-            // "Bcc": "kohh.reading@gmail.com,eugen.ptr@gmail.com,contact@andreiv.com,paulo@hey.com",
+            // "To": `${"eugen.ptr@gmail.com"}`,
+            "To": `${user.email}`,
+            "Bcc": "kohh.reading@gmail.com,eugen.ptr@gmail.com,contact@andreiv.com,paulo@hey.com",
             "Tag": "Daily Roundup",
             "Headers": [
                 {
