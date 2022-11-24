@@ -130,8 +130,7 @@ export const updateSnapshotVotes = async (
                                             vote.choice - 1
                                         ] ?? 'No name',
                                 },
-                            },
-                            addedAt: Date.now(),
+                            }
                         },
                     })
                 }

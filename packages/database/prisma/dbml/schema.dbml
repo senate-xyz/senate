@@ -59,7 +59,6 @@ Table Proposal {
   dao DAO [not null]
   votes Vote [not null]
   notifications Notification [not null]
-  addedAt BigInt [not null]
 
   indexes {
     (externalId, daoId) [unique]
@@ -90,7 +89,6 @@ Table Vote {
   proposal Proposal [not null]
   voter Voter [not null]
   options VoteOption [not null]
-  addedAt BigInt [not null]
 
   indexes {
     (voterAddress, daoId, proposalId) [unique]

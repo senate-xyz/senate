@@ -104,7 +104,6 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
                     timeCreated: new Date(response.data.date),
                     data: {},
                     url: daoHandler.decoder['proposalUrl'] + spellAddresses[i],
-                    addedAt: Date.now(),
                 },
             })
 

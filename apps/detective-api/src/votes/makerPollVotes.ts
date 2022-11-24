@@ -88,7 +88,6 @@ export const updateMakerPollVotes = async (
                             optionName: vote.support ? 'Yes' : 'No',
                         },
                     },
-                    addedAt: Date.now(),
                 },
             })
         }

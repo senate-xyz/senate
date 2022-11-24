@@ -94,7 +94,6 @@ export const updateGovernorBravoVotes = async (
                             optionName: vote.support ? 'Yes' : 'No',
                         },
                     },
-                    addedAt: Date.now(),
                 },
             })
         }

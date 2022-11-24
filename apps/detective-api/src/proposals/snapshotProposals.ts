@@ -83,7 +83,6 @@ export const updateSnapshotProposals = async (
                                 timeCreated: new Date(proposal.created * 1000),
                                 data: {},
                                 url: proposal.link,
-                                addedAt: Date.now(),
                             },
                         })
                     )
