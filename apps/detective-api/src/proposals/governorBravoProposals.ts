@@ -67,9 +67,11 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
             const decoder = daoHandler.decoder
             decoder['latestProposalBlock'] = proposals[i].txBlock + 1
 
+            console.log('Ipfs hash ', proposals[i].eventData.ipfsHash)
             logger.log(
                 `Updating proposal ${proposalOnChainId}: ${title} with url ${proposalUrl}`
             )
+            console.log('\n');
 
             await prisma.dAOHandler.update({
                 where: {
@@ -118,11 +120,12 @@ const fetchProposalInfoFromIPFS = async (
     let title
     try {
         const response = await axios.get(
-            'https://gateway.pinata.cloud/ipfs/f01701220' + hexHash.substring(2)
+            process.env.IPFS_GATEWAY_URL + 'f01701220' + hexHash.substring(2)
         )
         title = response.data.title
     } catch (error) {
         title = 'Unknown'
+        console.error(error);
     }
 
     return title

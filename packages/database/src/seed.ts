@@ -292,7 +292,7 @@ async function main() {
         create: {
             name: 'Synthetix',
             picture:
-                'https://docs.synthetix.io/img/logos/synthetix_icon_blue.svg',
+                'https://cdn.stamp.fyi/space/synthetix-stakers-poll.eth?s=160&cb=96785b08b3fbf84b',
             handlers: {
                 create: [
                     {

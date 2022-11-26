@@ -309,19 +309,25 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
                 name: "Voting countdown",
                 time_end: endTimeString,
                 time_zone: "UTC",
-                font_family: "Roboto-Bold",
-                color_primary: "333333",
-                color_text: "333333",
-                color_bg: "F0F3F3",
+                font_family: "Roboto-Medium",
+                label_font_family: "RobotoCondensed-Light",
+                color_primary: "000000",
+                color_text: "000000",
+                color_bg: "FFFFFF",
                 transparent: "1",
-                font_size: "21",
+                font_size: 26,
+                label_font_size: 8,
                 expired_mes_on: 1,
-                expired_mes: "Voting ended",
+                expired_mes: "Proposal Ended",
                 day: "1",
                 days: "days",
                 hours: "hours",
                 minutes: "minutes",
-                seconds: "seconds"
+                seconds: "seconds",
+                advanced_params: {
+                    "separator_color"  : "FFFFFF",
+                    "labels_color" : "000000"
+                }
             }
         });
 
