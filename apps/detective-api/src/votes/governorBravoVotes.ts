@@ -59,6 +59,14 @@ export const updateGovernorBravoVotes = async (
                 continue
             }
 
+            await prisma.voteOption.deleteMany({
+                where: {
+                    voterAddress: voterAddress,
+                    voteDaoId: daoHandler.daoId,
+                    voteProposalId: proposal.id,
+                }
+            })
+
             await prisma.vote.upsert({
                 where: {
                     voterAddress_daoId_proposalId: {
@@ -69,20 +77,11 @@ export const updateGovernorBravoVotes = async (
                 },
                 update: {
                     options: {
-                        update: {
-                            where: {
-                                voteProposalId_option: {
-                                    voteProposalId: proposal.id,
-                                    option: vote.support,
-                                },
-                            },
-                            data: {
-                                option: vote.support,
-                                optionName: vote.support ? 'Yes' : 'No',
-                            },
+                        create: {
+                            option: vote.support,
+                            optionName: vote.support ? 'Yes' : 'No',
                         },
                     },
-                    addedAt: Date.now(),
                 },
                 create: {
                     voterAddress: voterAddress,
@@ -95,7 +94,6 @@ export const updateGovernorBravoVotes = async (
                             optionName: vote.support ? 'Yes' : 'No',
                         },
                     },
-                    addedAt: Date.now(),
                 },
             })
         }

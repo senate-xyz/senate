@@ -72,7 +72,6 @@ export const updateMakerVotes = async (
                             optionName: 'Yes',
                         },
                     },
-                    addedAt: Date.now(),
                 },
             })
         }

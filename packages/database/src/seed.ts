@@ -61,7 +61,7 @@ async function main() {
                             address:
                                 '0x0a3f6849f78076aefaDf113F5BED87720274dDC0',
                             abi: makerChief.abi,
-                            latestProposalBlock: 15682797,
+                            latestProposalBlock: 15876682,
                             proposalUrl: 'https://vote.makerdao.com/executive/',
                         },
                     },
@@ -71,7 +71,7 @@ async function main() {
                             address:
                                 '0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d',
                             abi: makerPollCreate.abi,
-                            latestProposalBlock: 15682797,
+                            latestProposalBlock: 15876682,
                             proposalUrl: 'https://vote.makerdao.com/polling/',
                         },
                     },
@@ -292,7 +292,7 @@ async function main() {
         create: {
             name: 'Synthetix',
             picture:
-                'https://docs.synthetix.io/img/logos/synthetix_icon_blue.svg',
+                'https://cdn.stamp.fyi/space/synthetix-stakers-poll.eth?s=160&cb=96785b08b3fbf84b',
             handlers: {
                 create: [
                     {
