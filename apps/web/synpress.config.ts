@@ -3,6 +3,7 @@ import synpressPlugins from '@synthetixio/synpress/plugins'
 import cypressLocalStoragePlugin from 'cypress-localstorage-commands/plugin'
 
 export default defineConfig({
+    projectId: '8rph21',
     userAgent: 'synpress',
     retries: {
         // Configure retry attempts for `cypress run`
@@ -10,8 +11,8 @@ export default defineConfig({
         runMode: 0,
         openMode: 0,
     },
-    screenshotsFolder: 'cypress/screenshots',
-    videosFolder: 'cypress/videos',
+    screenshotsFolder: 'tests/e2e/screenshots',
+    videosFolder: 'tests/e2e/videos',
     video: false,
     chromeWebSecurity: true,
     modifyObstructiveCode: false,
