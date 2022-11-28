@@ -28,6 +28,7 @@
     "dev:detective": {},
     "dev:refresher": {},
     "dev:roundup": {},
+    "test:web": {},
     "db:migrate:deploy": {},
     "db:push": { "cache": false },
     "db:seed": { "cache": false },

@@ -22,6 +22,7 @@
     "dev:detective": "turbo run dev:detective",
     "dev:refresher": "turbo run dev:refresher",
     "dev:roundup": "turbo run dev:roundup",
+    "test:web": "turbo run test:web",
     "db:migrate:deploy": "turbo run db:migrate:deploy",
     "db:push": "turbo run db:push",
     "db:seed": "turbo run db:seed",

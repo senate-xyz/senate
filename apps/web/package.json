@@ -9,6 +9,7 @@
         "synpress": "synpress open --configFile=synpress.config.ts",
         "test:e2e": "synpress run --config baseUrl=http://localhost:3000 --configFile=synpress.config.ts --record --key c68ca14f-14b6-4b50-ba6d-f31f73eb9a89",
         "test": "start-server-and-test dev http://localhost:3000 test:e2e",
+        "test:web": "start-server-and-test dev http://localhost:3000 test:e2e",
         "start": "next start",
         "start:web": "next start",
         "dev": "next dev",
