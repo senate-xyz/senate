@@ -13,7 +13,6 @@ export default defineConfig({
     },
     screenshotsFolder: 'tests/e2e/screenshots',
     videosFolder: 'tests/e2e/videos',
-    video: false,
     chromeWebSecurity: true,
     modifyObstructiveCode: false,
     viewportWidth: 1366,

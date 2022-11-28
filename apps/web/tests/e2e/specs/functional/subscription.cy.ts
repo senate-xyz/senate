@@ -3,7 +3,7 @@ import * as bip39 from 'bip39'
 describe('sub', () => {
     const login = (name: string) => {
         cy.session(name, () => {
-            cy.setupMetamask(bip39.generateMnemonic(), 'main')
+            cy.setupMetamask(bip39.generateMnemonic(), 'mainnet')
             cy.disconnectMetamaskWalletFromAllDapps()
             cy.visit('http://localhost:3000/dashboard/daos')
             cy.switchToMetamaskWindow()
@@ -39,42 +39,62 @@ describe('sub', () => {
         /* ==== Generated with Cypress Studio ==== */
         login('testUser')
         /* ==== Generated with Cypress Studio ==== */
-        cy.get(':nth-child(1) > .mt-4').should('be.visible');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').should('be.visible');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').should('be.enabled');
-        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Aave');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click();
-        cy.get('.h-full > .h-20').should('be.visible');
-        cy.get('.h-full > .h-20').should('be.enabled');
-        cy.get('.h-full > .h-20').click();
-        cy.get('[data-cy="followed"] > .mt-4').should('be.visible');
-        cy.get('[data-cy="followed"] > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Aave');
-        cy.get('[data-cy="followed"] > .mt-4').click();
-        cy.get('.h-full > .h-20').should('be.visible');
-        cy.get('.h-full > .h-20').should('be.enabled');
-        cy.get('.h-full > .h-20').click();
-        cy.get(':nth-child(1) > .mt-4').should('be.visible');
-        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('be.visible');
-        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Aave');
+        cy.get(':nth-child(1) > .mt-4').should('be.visible')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').should('be.visible')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').should('be.enabled')
+        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+            'have.text',
+            'Aave'
+        )
+        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
+        cy.get('.h-full > .h-20').should('be.visible')
+        cy.get('.h-full > .h-20').should('be.enabled')
+        cy.get('.h-full > .h-20').click()
+        cy.get('[data-cy="followed"] > .mt-4').should('be.visible')
+        cy.get(
+            '[data-cy="followed"] > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'Aave')
+        cy.get('[data-cy="followed"] > .mt-4').click()
+        cy.get('.h-full > .h-20').should('be.visible')
+        cy.get('.h-full > .h-20').should('be.enabled')
+        cy.get('.h-full > .h-20').click()
+        cy.get(':nth-child(1) > .mt-4').should('be.visible')
+        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+            'be.visible'
+        )
+        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+            'have.text',
+            'Aave'
+        )
         /* ==== End Cypress Studio ==== */
         /* ==== Generated with Cypress Studio ==== */
-        cy.get(':nth-child(1) > .mt-4').should('be.visible');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').should('be.visible');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').should('be.enabled');
-        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Aave');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click();
-        cy.get('.h-full > .h-20').should('be.visible');
-        cy.get('.h-full > .h-20').should('be.enabled');
-        cy.get('.h-full > .h-20').click();
-        cy.get('[data-cy="followed"] > .mt-4').should('be.visible');
-        cy.get('[data-cy="followed"] > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Aave');
-        cy.get('[data-cy="followed"] > .mt-4').click();
-        cy.get('.h-full > .h-20').should('be.visible');
-        cy.get('.h-full > .h-20').should('be.enabled');
-        cy.get('.h-full > .h-20').click();
-        cy.get(':nth-child(1) > .mt-4').should('be.visible');
-        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('be.visible');
-        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Aave');
+        cy.get(':nth-child(1) > .mt-4').should('be.visible')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').should('be.visible')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').should('be.enabled')
+        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+            'have.text',
+            'Aave'
+        )
+        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
+        cy.get('.h-full > .h-20').should('be.visible')
+        cy.get('.h-full > .h-20').should('be.enabled')
+        cy.get('.h-full > .h-20').click()
+        cy.get('[data-cy="followed"] > .mt-4').should('be.visible')
+        cy.get(
+            '[data-cy="followed"] > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'Aave')
+        cy.get('[data-cy="followed"] > .mt-4').click()
+        cy.get('.h-full > .h-20').should('be.visible')
+        cy.get('.h-full > .h-20').should('be.enabled')
+        cy.get('.h-full > .h-20').click()
+        cy.get(':nth-child(1) > .mt-4').should('be.visible')
+        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+            'be.visible'
+        )
+        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+            'have.text',
+            'Aave'
+        )
         /* ==== End Cypress Studio ==== */
     })
 

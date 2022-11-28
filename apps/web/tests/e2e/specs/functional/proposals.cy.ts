@@ -3,7 +3,7 @@ import * as bip39 from 'bip39'
 describe('proposals', () => {
     const login = (name: string) => {
         cy.session(name, () => {
-            cy.setupMetamask(bip39.generateMnemonic(), 'main')
+            cy.setupMetamask(bip39.generateMnemonic(), 'mainnet')
             cy.disconnectMetamaskWalletFromAllDapps()
             cy.visit('http://localhost:3000/dashboard/daos')
             cy.switchToMetamaskWindow()
@@ -40,55 +40,111 @@ describe('proposals', () => {
         cy.visit('http://localhost:3000/dashboard/daos')
         login('testUser')
         /* ==== Generated with Cypress Studio ==== */
-        cy.visit('http://localhost:3000/dashboard/daos');
-        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Aave');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click();
-        cy.get('.h-full > .h-20').click();
-        cy.get('[data-cy="followed"] > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Aave');
-        cy.get(':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'MakerDAO');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click();
-        cy.get('.h-full > .h-20').click();
-        cy.get(':nth-child(1) > .grid > :nth-child(2) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'MakerDAO');
-        cy.get(':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Balancer');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click();
-        cy.get('.h-full > .h-20').click();
-        cy.get(':nth-child(1) > .grid > :nth-child(3) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Balancer');
-        cy.get(':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Optimism');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click();
-        cy.get('.h-full > .h-20').click();
-        cy.get(':nth-child(1) > .grid > :nth-child(4) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Optimism');
-        cy.get(':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Element');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click();
-        cy.get('.h-full > .h-20').click();
-        cy.get(':nth-child(1) > .grid > :nth-child(5) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Element');
-        cy.get(':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', '1inch');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click();
-        cy.get('.h-full > .h-20').click();
-        cy.get(':nth-child(1) > .grid > :nth-child(6) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', '1inch');
-        cy.get(':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Hop Protocol');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click();
-        cy.get('.h-full > .h-20').click();
-        cy.get(':nth-child(7) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Hop Protocol');
-        cy.get(':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'SafeDAO');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click();
-        cy.get('.h-full > .h-20').click();
-        cy.get(':nth-child(8) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'SafeDAO');
-        cy.get(':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Compound');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click();
-        cy.get('.h-full > .h-20').click();
-        cy.get(':nth-child(9) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Compound');
-        cy.get(':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Synthetix');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click();
-        cy.get('.h-full > .h-20').click();
-        cy.get(':nth-child(10) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Synthetix');
-        cy.get(':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'dYdX');
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click();
-        cy.get('.h-full > .h-20').click();
-        cy.get(':nth-child(11) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'dYdX');
-        cy.get('[data-cy="unfollowed"] > .mt-4 > .flex-col > .px-6').should('have.text', 'Uniswap');
-        cy.get('.h-20').click();
-        cy.get('.h-20').click();
-        cy.get(':nth-child(12) > .mt-4 > .flex-col > .px-6 > .mb-2').should('have.text', 'Uniswap');
+        cy.visit('http://localhost:3000/dashboard/daos')
+        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+            'have.text',
+            'Aave'
+        )
+        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
+        cy.get('.h-full > .h-20').click()
+        cy.get(
+            '[data-cy="followed"] > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'Aave')
+        cy.get(
+            ':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'MakerDAO')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
+        cy.get('.h-full > .h-20').click()
+        cy.get(
+            ':nth-child(1) > .grid > :nth-child(2) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'MakerDAO')
+        cy.get(
+            ':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'Balancer')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
+        cy.get('.h-full > .h-20').click()
+        cy.get(
+            ':nth-child(1) > .grid > :nth-child(3) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'Balancer')
+        cy.get(
+            ':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'Optimism')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
+        cy.get('.h-full > .h-20').click()
+        cy.get(
+            ':nth-child(1) > .grid > :nth-child(4) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'Optimism')
+        cy.get(
+            ':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'Element')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
+        cy.get('.h-full > .h-20').click()
+        cy.get(
+            ':nth-child(1) > .grid > :nth-child(5) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'Element')
+        cy.get(
+            ':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', '1inch')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
+        cy.get('.h-full > .h-20').click()
+        cy.get(
+            ':nth-child(1) > .grid > :nth-child(6) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', '1inch')
+        cy.get(
+            ':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'Hop Protocol')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
+        cy.get('.h-full > .h-20').click()
+        cy.get(':nth-child(7) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+            'have.text',
+            'Hop Protocol'
+        )
+        cy.get(
+            ':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'SafeDAO')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
+        cy.get('.h-full > .h-20').click()
+        cy.get(':nth-child(8) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+            'have.text',
+            'SafeDAO'
+        )
+        cy.get(
+            ':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'Compound')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
+        cy.get('.h-full > .h-20').click()
+        cy.get(':nth-child(9) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+            'have.text',
+            'Compound'
+        )
+        cy.get(
+            ':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'Synthetix')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
+        cy.get('.h-full > .h-20').click()
+        cy.get(':nth-child(10) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+            'have.text',
+            'Synthetix'
+        )
+        cy.get(
+            ':nth-child(2) > .grid > :nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2'
+        ).should('have.text', 'dYdX')
+        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
+        cy.get('.h-full > .h-20').click()
+        cy.get(':nth-child(11) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+            'have.text',
+            'dYdX'
+        )
+        cy.get('[data-cy="unfollowed"] > .mt-4 > .flex-col > .px-6').should(
+            'have.text',
+            'Uniswap'
+        )
+        cy.get('.h-20').click()
+        cy.get('.h-20').click()
+        cy.get(':nth-child(12) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+            'have.text',
+            'Uniswap'
+        )
         /* ==== End Cypress Studio ==== */
     })
 

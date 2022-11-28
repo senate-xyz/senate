@@ -7,7 +7,7 @@
         "postinstall": "prisma generate",
         "build": "next build",
         "synpress": "synpress open --configFile=synpress.config.ts",
-        "test:e2e": "synpress run --config baseUrl=http://localhost:3000 --configFile=synpress.config.ts",
+        "test:e2e": "synpress run --config baseUrl=http://localhost:3000 --configFile=synpress.config.ts --record --key c68ca14f-14b6-4b50-ba6d-f31f73eb9a89",
         "start": "next start",
         "start:web": "next start",
         "dev": "next dev",
