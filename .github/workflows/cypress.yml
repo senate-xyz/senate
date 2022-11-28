@@ -17,3 +17,5 @@ jobs:
         with:
           install-command: yarn --frozen-lockfile --prefer-offline --no-audit
           command: yarn test:web
+        env:
+          SECRET_WORDS: "test test test test test test test test test test test junk"
