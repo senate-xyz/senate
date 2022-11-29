@@ -1,29 +1,27 @@
-name: run my vanilla Cypress tests
+name: Cypress tests
 on:
   push:
     branches:
       - "main"
+      - "staging"
       - "cypress"
   workflow_dispatch:
 
 jobs:
   cypress-run:
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        machines: [1, 2, 3]
+    runs-on: ubuntu-latest
+    container: cypress/browsers:node18.12.0-chrome106-ff106
     name: E2E on Chrome
     steps:
       - uses: actions/checkout@v2
-      - uses: cypress-io/github-action@v4.2.2
-        with:
-          install-command: yarn --frozen-lockfile --prefer-offline --no-audit
-          build: yarn build
-          command: yarn test:web
-          headed: true
-          record: true
-          parallel: true
-          group: "Actions example"
+      - name: Install Yarn
+        run: npm install -g yarn
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Test
+        run: yarn test:web
         env:
           SECRET_WORDS: "test test test test test test test test test test test junk"
           DATABASE_URL: ${{ secrets.DATABASE_URL }}

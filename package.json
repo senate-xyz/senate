@@ -23,6 +23,7 @@
     "dev:refresher": "turbo run dev:refresher",
     "dev:roundup": "turbo run dev:roundup",
     "test:web": "turbo run test:web",
+    "test:e2e": "turbo run test:e2e",
     "db:migrate:deploy": "turbo run db:migrate:deploy",
     "db:push": "turbo run db:push",
     "db:seed": "turbo run db:seed",
@@ -39,8 +40,8 @@
     "lint:fix": "turbo run lint:fix"
   },
   "devDependencies": {
-    "prettier": "^2.7.1",
-    "tsx": "^3.12.0",
+    "prettier": "^2.8.0",
+    "tsx": "^3.12.1",
     "turbo": "latest"
   },
   "packageManager": "yarn@1.22.19"

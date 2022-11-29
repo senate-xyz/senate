@@ -90,19 +90,23 @@ describe('home', () => {
     })
 
     /* ==== Test Created with Cypress Studio ==== */
-    it('has everything visible', function() {
+    it('has everything visible', function () {
         /* ==== Generated with Cypress Studio ==== */
-        cy.get('[data-cy="logo-image"]').should('be.visible');
-        cy.get('a > .flex > p').should('be.visible');
-        cy.get('[data-cy="content"] > .w-full').should('be.visible');
-        cy.get('[data-cy="home"]').should('be.visible');
-        cy.get(':nth-child(2) > img').should('be.visible');
-        cy.get('.rounded > a > p').should('be.visible');
-        cy.get('.m-4').should('be.visible');
-        cy.get('[data-cy="content"] > .w-full > .flex > :nth-child(1)').should('be.visible');
-        cy.get('[data-cy="content"] > .w-full > .flex > :nth-child(2)').should('be.visible');
+        cy.get('[data-cy="logo-image"]').should('be.visible')
+        cy.get('a > .flex > p').should('be.visible')
+        cy.get('[data-cy="content"] > .w-full').should('be.visible')
+        cy.get('[data-cy="home"]').should('be.visible')
+        cy.get(':nth-child(2) > img').should('be.visible')
+        cy.get('.rounded > a > p').should('be.visible')
+        cy.get('.m-4').should('be.visible')
+        cy.get('[data-cy="content"] > .w-full > .flex > :nth-child(1)').should(
+            'be.visible'
+        )
+        cy.get('[data-cy="content"] > .w-full > .flex > :nth-child(2)').should(
+            'be.visible'
+        )
         /* ==== End Cypress Studio ==== */
-    });
+    })
 })
 
 export {}

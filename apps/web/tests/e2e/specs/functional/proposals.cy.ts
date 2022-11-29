@@ -35,7 +35,7 @@ describe('proposals', () => {
     }
 
     /* ==== Test Created with Cypress Studio ==== */
-    it('subscribes to all daos', function () {
+    it.skip('subscribes to all daos', function () {
         /* ==== Generated with Cypress Studio ==== */
         cy.visit('http://localhost:3000/dashboard/daos')
         login('testUser')
@@ -149,7 +149,7 @@ describe('proposals', () => {
     })
 
     /* ==== Test Created with Cypress Studio ==== */
-    it('goes to proposals', function () {
+    it.skip('goes to proposals', function () {
         /* ==== Generated with Cypress Studio ==== */
         cy.visit('http://localhost:3000/dashboard/daos')
         login('testUser')
@@ -165,7 +165,7 @@ describe('proposals', () => {
     })
 
     /* ==== Test Created with Cypress Studio ==== */
-    it('has active proposals', function () {
+    it.skip('has active proposals', function () {
         login('testUser')
         cy.visit('http://localhost:3000/dashboard/proposals/active')
         /* ==== Generated with Cypress Studio ==== */
@@ -185,7 +185,7 @@ describe('proposals', () => {
     })
 
     /* ==== Test Created with Cypress Studio ==== */
-    it('has past proposals', function () {
+    it.skip('has past proposals', function () {
         login('testUser')
         cy.visit('http://localhost:3000/dashboard/proposals/past')
         /* ==== Generated with Cypress Studio ==== */
@@ -221,7 +221,7 @@ describe('proposals', () => {
     })
 
     /* ==== Test Created with Cypress Studio ==== */
-    it('has active proposals dao filter', function () {
+    it.skip('has active proposals dao filter', function () {
         login('testUser')
         cy.visit('http://localhost:3000/dashboard/proposals/active')
         /* ==== Generated with Cypress Studio ==== */
@@ -267,7 +267,7 @@ describe('proposals', () => {
     })
 
     /* ==== Test Created with Cypress Studio ==== */
-    it('has past proposals dao filter', function () {
+    it.skip('has past proposals dao filter', function () {
         login('testUser')
         cy.visit('http://localhost:3000/dashboard/proposals/past')
         /* ==== Generated with Cypress Studio ==== */
@@ -337,7 +337,7 @@ describe('proposals', () => {
     })
 
     /* ==== Test Created with Cypress Studio ==== */
-    it('unsubscribes all', function () {
+    it.skip('unsubscribes all', function () {
         /* ==== Generated with Cypress Studio ==== */
         cy.visit('http://localhost:3000/dashboard/daos')
         login('testUser')

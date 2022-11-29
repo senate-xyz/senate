@@ -35,7 +35,7 @@ describe('sub', () => {
     }
 
     /* ==== Test Created with Cypress Studio ==== */
-    it('subscribes and unsubscribes first', function () {
+    it.skip('subscribes and unsubscribes first', function () {
         /* ==== Generated with Cypress Studio ==== */
         login('testUser')
         /* ==== Generated with Cypress Studio ==== */
@@ -99,7 +99,7 @@ describe('sub', () => {
     })
 
     /* ==== Test Created with Cypress Studio ==== */
-    it('subscribes and unsubscribes all', function () {
+    it.skip('subscribes and unsubscribes all', function () {
         login('testUser')
         /* ==== Generated with Cypress Studio ==== */
 

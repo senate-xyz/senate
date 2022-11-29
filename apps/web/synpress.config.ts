@@ -6,13 +6,12 @@ export default defineConfig({
     projectId: '8rph21',
     userAgent: 'synpress',
     retries: {
-        // Configure retry attempts for `cypress run`
-        // Default is 0
-        runMode: 0,
+        runMode: 2,
         openMode: 0,
     },
     screenshotsFolder: 'tests/e2e/screenshots',
     videosFolder: 'tests/e2e/videos',
+    downloadsFolder: 'tests/e2e/downloads',
     chromeWebSecurity: true,
     modifyObstructiveCode: false,
     viewportWidth: 1366,
