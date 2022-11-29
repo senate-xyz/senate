@@ -32,6 +32,6 @@ export default defineConfig({
         experimentalStudio: true,
         baseUrl: 'http://localhost:3000',
         specPattern: 'tests/e2e/specs/**/*.{js,jsx,ts,tsx}',
-        supportFile: 'tests/e2e/support.js',
+        supportFile: 'tests/e2e/support.ts',
     },
 })

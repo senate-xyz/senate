@@ -7,7 +7,7 @@
         "**/*.tsx",
         "**/*.cjs",
         "**/*.mjs",
-        "tests/e2e/support.js"
+        "tests/e2e/support.ts"
     ],
     "exclude": ["node_modules"],
     "compilerOptions": {
