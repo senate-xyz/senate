@@ -9,15 +9,21 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-20.04
-    # let's make sure our tests pass on Chrome browser
+    strategy:
+      matrix:
+        machines: [1, 2, 3]
     name: E2E on Chrome
     steps:
       - uses: actions/checkout@v2
-      - uses: cypress-io/github-action@v4
+      - uses: cypress-io/github-action@v10
         with:
           install-command: yarn --frozen-lockfile --prefer-offline --no-audit
           build: yarn build
           command: yarn test:web
+          headed: true
+          record: true
+          parallel: true
+          group: "Actions example"
         env:
           SECRET_WORDS: "test test test test test test test test test test test junk"
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
