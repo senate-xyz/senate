@@ -5,7 +5,7 @@ import * as bip39 from 'bip39'
 describe('login', () => {
     before(() => {
         cy.clearCookies()
-        cy.setupMetamask(bip39.generateMnemonic(), 'mainnet')
+        cy.switchToMetamaskWindow()
         cy.disconnectMetamaskWalletFromAllDapps()
     })
 
