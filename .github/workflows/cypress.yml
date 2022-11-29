@@ -16,7 +16,7 @@ jobs:
       - uses: cypress-io/github-action@v4
         with:
           install-command: yarn --frozen-lockfile --prefer-offline --no-audit
-          build: yarn generate && yarn build
+          build: yarn build
           command: yarn test:web
         env:
           SECRET_WORDS: "test test test test test test test test test test test junk"
