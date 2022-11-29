@@ -20,3 +20,10 @@ jobs:
           command: yarn test:web
         env:
           SECRET_WORDS: "test test test test test test test test test test test junk"
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          PROVIDER_URL: ${{ secrets.PROVIDER_URL }}
+          DETECTIVE_URL: ${{ secrets.DETECTIVE_URL }}
+          ROUNDUP_ENABLED: ${{ secrets.ROUNDUP_ENABLED }}
+          POSTMARK_TOKEN: ${{ secrets.POSTMARK_TOKEN }}
