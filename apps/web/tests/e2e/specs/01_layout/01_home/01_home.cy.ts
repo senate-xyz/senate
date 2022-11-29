@@ -1,16 +1,38 @@
 /// <reference types="cypress" />
+import * as bip39 from 'bip39'
 
 describe('home', () => {
+    //during these first tests we need to make sure metamask window is not active
+
+    before(() => {
+        cy.clearCookies()
+        cy.setupMetamask(bip39.generateMnemonic(), 'mainnet')
+        cy.disconnectMetamaskWalletFromAllDapps()
+    })
     beforeEach(() => {
+        // eslint-disable-next-line promise/catch-or-return
+        cy.isCypressWindowActive().then((res) => {
+            // eslint-disable-next-line promise/always-return
+            if (!res) cy.switchToCypressWindow()
+        })
         cy.visit('http://localhost:3000')
     })
 
     it('should have Senate title', () => {
-        // https://on.cypress.io/title
+        // eslint-disable-next-line promise/catch-or-return
+        cy.isCypressWindowActive().then((res) => {
+            // eslint-disable-next-line promise/always-return
+            if (!res) cy.switchToCypressWindow()
+        })
         cy.title().should('include', 'Senate')
     })
 
     it('displays front page full width', () => {
+        // eslint-disable-next-line promise/catch-or-return
+        cy.isCypressWindowActive().then((res) => {
+            // eslint-disable-next-line promise/always-return
+            if (!res) cy.switchToCypressWindow()
+        })
         cy.get('[data-cy="home"]').should('have.css', 'width', '100%')
     })
 

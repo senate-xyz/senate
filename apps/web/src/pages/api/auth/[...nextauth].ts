@@ -22,16 +22,19 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                             ? `https://${process.env.VERCEL_URL}`
                             : null)
                     if (!nextAuthUrl) {
-                        return null
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        return 'bad url' as any
                     }
 
                     const nextAuthHost = new URL(nextAuthUrl).host
                     if (siwe.domain !== nextAuthHost) {
-                        return null
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        return 'bad domain' as any
                     }
 
                     if (siwe.nonce !== (await getCsrfToken({ req }))) {
-                        return null
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        return 'bad nonce' as any
                     }
 
                     await siwe.validate(credentials?.signature || '')
@@ -71,7 +74,8 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                         id: siwe.address,
                     }
                 } catch (e) {
-                    return null
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    return e as any
                 }
             },
             credentials: {

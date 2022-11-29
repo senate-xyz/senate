@@ -10,10 +10,11 @@ describe('login', () => {
     })
 
     beforeEach(() => {
+        cy.switchToCypressWindow()
         cy.visit('http://localhost:3000/dashboard/daos')
     })
 
-    it.skip('it should do wallet connect on clear cookies', () => {
+    it('it should do wallet connect on clear cookies', () => {
         cy.clearCookies()
 
         cy.switchToMetamaskWindow()
@@ -42,7 +43,7 @@ describe('login', () => {
         cy.contains('0xf3…2266')
     })
 
-    it.skip('it should connect with cookies', () => {
+    it('it should connect with cookies', () => {
         cy.get('[data-cy="daos"]')
             .get('[data-cy="dashboard-header"]')
             .contains('Connect Wallet')
@@ -56,7 +57,7 @@ describe('login', () => {
         cy.contains('0xf3…2266')
     })
 
-    it.skip('it should disconnect with cookies', () => {
+    it('it should disconnect with cookies', () => {
         cy.get('[data-cy="daos"]')
             .get('[data-cy="dashboard-header"]')
             .contains('Connect Wallet')
@@ -75,7 +76,7 @@ describe('login', () => {
             .contains('Connect Wallet')
     })
 
-    it.skip('it should create new account', () => {
+    it('it should create new account', () => {
         cy.switchToMetamaskWindow()
 
         cy.disconnectMetamaskWalletFromAllDapps()

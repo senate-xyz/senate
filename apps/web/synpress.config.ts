@@ -19,9 +19,9 @@ export default defineConfig({
     env: {
         coverage: false,
     },
-    defaultCommandTimeout: 30000,
-    pageLoadTimeout: 30000,
-    requestTimeout: 30000,
+    defaultCommandTimeout: 10000,
+    pageLoadTimeout: 10000,
+    requestTimeout: 10000,
     e2e: {
         setupNodeEvents(on, config) {
             cypressLocalStoragePlugin(on, config)
@@ -31,7 +31,11 @@ export default defineConfig({
         experimentalSessionAndOrigin: true,
         experimentalStudio: true,
         baseUrl: 'http://localhost:3000',
-        specPattern: 'tests/e2e/specs/**/*.{js,jsx,ts,tsx}',
+        specPattern: [
+            'tests/e2e/specs/01_layout/**/*.{js,jsx,ts,tsx}',
+            'tests/e2e/specs/02_design/**/*.{js,jsx,ts,tsx}',
+            'tests/e2e/specs/03_functional/**/*.{js,jsx,ts,tsx}',
+        ],
         supportFile: 'tests/e2e/support.ts',
     },
 })
