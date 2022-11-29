@@ -15,7 +15,7 @@ jobs:
     name: E2E on Chrome
     steps:
       - uses: actions/checkout@v2
-      - uses: cypress-io/github-action@v10
+      - uses: cypress-io/github-action@v4.2.2
         with:
           install-command: yarn --frozen-lockfile --prefer-offline --no-audit
           build: yarn build
