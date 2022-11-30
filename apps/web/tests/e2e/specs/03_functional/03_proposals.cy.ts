@@ -19,7 +19,7 @@ describe('proposals', () => {
             // eslint-disable-next-line promise/catch-or-return, promise/always-return
             cy.contains('MetaMask').then((btn) => {
                 ;(btn as unknown as Cypress.Chainable).click()
-                cy.acceptMetamaskAccess()
+                //cy.acceptMetamaskAccess()
                 cy.wait(1000)
             })
 
