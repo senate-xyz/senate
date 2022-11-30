@@ -19,11 +19,8 @@ describe('sub', () => {
             // eslint-disable-next-line promise/catch-or-return, promise/always-return
             cy.contains('MetaMask').then((btn) => {
                 ;(btn as unknown as Cypress.Chainable).click()
-
-                cy.switchToMetamaskNotification()
                 cy.acceptMetamaskAccess()
                 cy.wait(1000)
-                cy.switchToCypressWindow()
             })
 
             cy.contains('Send message').click()

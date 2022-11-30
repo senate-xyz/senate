@@ -16,11 +16,8 @@ describe('login', () => {
         // eslint-disable-next-line promise/catch-or-return, promise/always-return
         cy.contains('MetaMask').then((btn) => {
             ;(btn as unknown as Cypress.Chainable).click()
-
-            cy.switchToMetamaskNotification()
             cy.acceptMetamaskAccess()
             cy.wait(1000)
-            cy.switchToCypressWindow()
         })
 
         cy.get('[data-testid="rk-auth-message-button"]').should(
