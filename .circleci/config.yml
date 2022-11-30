@@ -2,16 +2,12 @@ version: 2.1
 orbs:
   cypress: cypress-io/cypress@2.1.0
   codecov: codecov/codecov@1.2.3 #
-  win: circleci/windows@4.1.1
 
 executors:
   with-chrome:
     docker:
       - image: "cypress/browsers:node18.12.0-chrome107"
     resource_class: large
-    environment:
-      PERCY_TOKEN:
-      CYPRESS_coverage: false
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Commands ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 commands:
