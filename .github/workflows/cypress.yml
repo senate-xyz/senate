@@ -1,27 +1,26 @@
-name: Cypress tests
+name: E2E CI
+
 on:
   push:
-    branches:
-      - "main"
-      - "staging"
-      - "cypress"
-  workflow_dispatch:
+    branches: [main, staging, cypress]
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   cypress-run:
-    runs-on: ubuntu-latest
-    container: cypress/browsers:node18.12.0-chrome107
-    name: E2E on Chrome
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-      - name: Install Yarn
-        run: npm install -g yarn
-      - name: Install dependencies
-        run: yarn
-      - name: Build
-        run: yarn build
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Test
-        run: yarn test:web
+        uses: cypress-io/github-action@v4
+        with:
+          install-command: yarn --frozen-lockfile --prefer-offline --no-audit
+          build: yarn build
+          command: yarn test:web
         env:
           SECRET_WORDS: "test test test test test test test test test test test junk"
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
