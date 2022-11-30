@@ -1,14 +1,6 @@
 /// <reference types="cypress" />
-import * as bip39 from 'bip39'
 
 describe('home', () => {
-    //during these first tests we need to make sure metamask window is not active
-
-    before(() => {
-        cy.clearCookies()
-        cy.setupMetamask(bip39.generateMnemonic(), 'mainnet')
-        cy.disconnectMetamaskWalletFromAllDapps()
-    })
     beforeEach(() => {
         // eslint-disable-next-line promise/catch-or-return
         cy.isCypressWindowActive().then((res) => {

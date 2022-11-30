@@ -1,108 +1,62 @@
 /// <reference types="cypress" />
 
-import * as bip39 from 'bip39'
-
 describe('login', () => {
-    before(() => {
-        cy.clearCookies()
-        cy.switchToMetamaskWindow()
-        cy.disconnectMetamaskWalletFromAllDapps()
-    })
-
     beforeEach(() => {
-        cy.switchToCypressWindow()
         cy.visit('http://localhost:3000/dashboard/daos')
     })
 
-    it('it should do wallet connect on clear cookies', () => {
-        cy.clearCookies()
-
-        cy.switchToMetamaskWindow()
-        cy.disconnectMetamaskWalletFromAllDapps()
-        cy.switchMetamaskAccount(1)
-        cy.switchToCypressWindow()
-
-        cy.get('[data-cy="daos"]')
-            .get('[data-cy="dashboard-header"]')
-            .contains('Connect Wallet')
-            .click()
+    it('it should do wallet connect', () => {
+        /* ==== Generated with Cypress Studio ==== */
+        cy.get('[data-testid="rk-connect-button"]').should(
+            'have.text',
+            'Connect Wallet'
+        )
+        cy.get('[data-testid="rk-connect-button"]').click()
 
         cy.contains('MetaMask').click()
-
-        cy.switchToMetamaskNotification()
         cy.acceptMetamaskAccess()
 
-        cy.switchToCypressWindow()
-
-        cy.contains('Send message').click()
-        cy.switchToMetamaskNotification()
+        cy.get('[data-testid="rk-auth-message-button"]').should(
+            'have.text',
+            'Send message'
+        )
+        cy.get('[data-testid="rk-auth-message-button"]').click()
         cy.confirmMetamaskSignatureRequest()
-
-        cy.switchToCypressWindow()
-
-        cy.contains('0xf3…2266')
+        cy.get('[data-testid="rk-account-button"]').should(
+            'have.text',
+            '0 ETH🍣0xf3…2266'
+        )
+        /* ==== End Cypress Studio ==== */
     })
 
-    it('it should connect with cookies', () => {
-        cy.get('[data-cy="daos"]')
-            .get('[data-cy="dashboard-header"]')
-            .contains('Connect Wallet')
-            .click()
-        cy.contains('Send message').click()
-        cy.switchToMetamaskNotification()
+    it('it should disconnect', () => {
+        /* ==== Generated with Cypress Studio ==== */
+        cy.get('[data-testid="rk-connect-button"]').should(
+            'have.text',
+            'Connect Wallet'
+        )
+        cy.get('[data-testid="rk-connect-button"]').click()
+
+        cy.get('[data-testid="rk-auth-message-button"]').should(
+            'have.text',
+            'Send message'
+        )
+        cy.get('[data-testid="rk-auth-message-button"]').click()
         cy.confirmMetamaskSignatureRequest()
-
-        cy.switchToCypressWindow()
-
-        cy.contains('0xf3…2266')
-    })
-
-    it('it should disconnect with cookies', () => {
-        cy.get('[data-cy="daos"]')
-            .get('[data-cy="dashboard-header"]')
-            .contains('Connect Wallet')
-            .click()
-        cy.contains('Send message').click()
-        cy.switchToMetamaskNotification()
-        cy.confirmMetamaskSignatureRequest()
-
-        cy.switchToCypressWindow()
-
-        cy.contains('0xf3…2266').click()
-        cy.contains('Disconnect').click()
-
-        cy.get('[data-cy="daos"]')
-            .get('[data-cy="dashboard-header"]')
-            .contains('Connect Wallet')
-    })
-
-    it('it should create new account', () => {
-        cy.switchToMetamaskWindow()
-
-        cy.disconnectMetamaskWalletFromAllDapps()
-        cy.createMetamaskAccount()
-        cy.switchMetamaskAccount(2)
-
-        cy.switchToCypressWindow()
-        cy.get('[data-cy="daos"]')
-            .get('[data-cy="dashboard-header"]')
-            .contains('Connect Wallet')
-            .click()
-
-        cy.contains('MetaMask').click()
-
-        cy.switchToMetamaskNotification()
-        cy.acceptMetamaskAccess()
-
-        cy.switchToCypressWindow()
-
-        cy.contains('Send message').click()
-        cy.switchToMetamaskNotification()
-        cy.confirmMetamaskSignatureRequest()
-
-        cy.switchToCypressWindow()
-
-        cy.contains('0x70…79C8').click()
+        cy.get('[data-testid="rk-account-button"]').should(
+            'have.text',
+            '0 ETH🍣0xf3…2266'
+        )
+        /* ==== End Cypress Studio ==== */
+        /* ==== Generated with Cypress Studio ==== */
+        cy.get('[data-testid="rk-account-button"]').click()
+        cy.get('[data-testid="rk-disconnect-button"]').should(
+            'have.text',
+            'Disconnect'
+        )
+        cy.get('[data-testid="rk-disconnect-button"]').click()
+        cy.get('#rk_connect_title').should('have.text', 'Connect a Wallet')
+        /* ==== End Cypress Studio ==== */
     })
 })
 

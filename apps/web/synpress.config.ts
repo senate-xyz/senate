@@ -32,6 +32,7 @@ export default defineConfig({
         experimentalStudio: true,
         baseUrl: 'http://localhost:3000',
         specPattern: [
+            'tests/e2e/specs/00_tests_setup.cy.ts',
             'tests/e2e/specs/01_layout/**/*.{js,jsx,ts,tsx}',
             'tests/e2e/specs/02_design/**/*.{js,jsx,ts,tsx}',
             'tests/e2e/specs/03_functional/**/*.{js,jsx,ts,tsx}',
