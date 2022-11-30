@@ -22,7 +22,7 @@ jobs:
           no_output_timeout: 30m
       - run:
           name: Run Test
-          command: yarn test:e2e
+          command: yarn test:web
           no_output_timeout: 30m
 
 workflows:
