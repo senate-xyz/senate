@@ -17,9 +17,7 @@ describe('login', () => {
         cy.contains('MetaMask').then((btn) => {
             ;(btn as unknown as Cypress.Chainable).click()
             cy.wait(1000)
-            cy.switchToMetamaskNotification()
             cy.acceptMetamaskAccess()
-            cy.switchToCypressWindow()
         })
 
         cy.get('[data-testid="rk-auth-message-button"]').should(

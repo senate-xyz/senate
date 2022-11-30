@@ -11,20 +11,10 @@ describe('home', () => {
     })
 
     it('should have Senate title', () => {
-        // eslint-disable-next-line promise/catch-or-return
-        cy.isCypressWindowActive().then((res) => {
-            // eslint-disable-next-line promise/always-return
-            if (!res) cy.switchToCypressWindow()
-        })
         cy.title().should('include', 'Senate')
     })
 
     it('displays front page full width', () => {
-        // eslint-disable-next-line promise/catch-or-return
-        cy.isCypressWindowActive().then((res) => {
-            // eslint-disable-next-line promise/always-return
-            if (!res) cy.switchToCypressWindow()
-        })
         cy.get('[data-cy="home"]').should('have.css', 'width', '100%')
     })
 
