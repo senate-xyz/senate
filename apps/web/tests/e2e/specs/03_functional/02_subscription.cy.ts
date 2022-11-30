@@ -20,7 +20,6 @@ describe('sub', () => {
             cy.contains('MetaMask').then((btn) => {
                 ;(btn as unknown as Cypress.Chainable).click()
                 cy.wait(1000)
-                cy.acceptMetamaskAccess()
             })
 
             cy.contains('Send message').click()
