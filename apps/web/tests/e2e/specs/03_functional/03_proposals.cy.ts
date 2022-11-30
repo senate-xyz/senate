@@ -1,10 +1,6 @@
 import * as bip39 from 'bip39'
 
 describe('proposals', () => {
-    before(() => {
-        cy.setupMetamask(bip39.generateMnemonic(), 'mainnet')
-    })
-
     const login = (name: string) => {
         cy.session(name, () => {
             cy.setupMetamask(bip39.generateMnemonic(), 'mainnet')

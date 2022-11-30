@@ -2,10 +2,6 @@
 import * as bip39 from 'bip39'
 
 describe('login', () => {
-    before(() => {
-        cy.setupMetamask(bip39.generateMnemonic(), 'mainnet')
-    })
-
     beforeEach(() => {
         cy.visit('http://localhost:3000/dashboard/daos')
     })
