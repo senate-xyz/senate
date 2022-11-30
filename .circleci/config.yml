@@ -1,31 +1,66 @@
 version: 2.1
 orbs:
-  node: circleci/node@5.0.3
+  cypress: cypress-io/cypress@2.1.0
+  codecov: codecov/codecov@1.2.3 #
+  win: circleci/windows@4.1.1
 
-jobs:
-  synpress-test:
-    machine:
-      image: ubuntu-2004:202010-01
-    working_directory: ~/app
+executors:
+  with-chrome:
+    docker:
+      - image: "cypress/browsers:node18.12.0-chrome107"
+    resource_class: large
+    environment:
+      PERCY_TOKEN:
+      CYPRESS_coverage: false
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Commands ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+commands:
+  report-coverage:
+    description: |
+      Store coverage report as an artifact and send it to Codecov service.
     steps:
-      - checkout
-      - node/install:
-          install-yarn: true
-          node-version: "18.12"
-      - run:
-          name: Install deps
-          command: yarn
-          no_output_timeout: 30m
-      - run:
-          name: Build
-          command: yarn build
-          no_output_timeout: 30m
-      - run:
-          name: Run Test
-          command: yarn test:web
-          no_output_timeout: 30m
+      - store_artifacts:
+          path: coverage
+      - run: npx nyc report --reporter=text || true
+      - codecov/upload:
+          file: coverage/coverage-final.json
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Workflows ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+linux-workflow: &linux-workflow
+  jobs:
+    # Setup
+    #  1. Install Cypress
+    #  2. Validate types
+    #  3. Run server unit-tests
+    - cypress/install:
+        name: "Setup Linux"
+        yarn: true
+        executor: with-chrome
+        build: "yarn build"
+        post-steps:
+          - run:
+              name: Print machine info ℹ️
+              command: yarn synpress info
+
+    # Run E2E tests in Chrome
+    - cypress/run:
+        name: "UI Tests - Chrome"
+        browser: chrome
+        spec: apps/web/tests/e2e/specs/*
+        executor: with-chrome
+        wait-on: "http://localhost:3000"
+        yarn: true
+        start: yarn dev
+        record: true
+        parallel: true
+        parallelism: 5
+        ci-build-id: ${CIRCLE_SHA1:0:8}
+        group: "UI - Chrome"
+        requires:
+          - Setup Linux
+        post-steps:
+          - report-coverage
 
 workflows:
-  test_my_app:
-    jobs:
-      - synpress-test
+  linux:
+    <<: *linux-workflow
