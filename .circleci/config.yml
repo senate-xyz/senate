@@ -1,0 +1,27 @@
+version: 2.1
+orbs:
+  node: circleci/node@5.0.3
+
+jobs:
+  synpress-test:
+    machine:
+      image: ubuntu-2004:202010-01
+    working_directory: ~/app
+    steps:
+      - checkout
+      - node/install:
+          install-yarn: true
+          node-version: '18.12'
+      - run:
+          name: Install deps
+          command: yarn
+          no_output_timeout: 30m
+      - run:
+          name: Run Test
+          command: yarn test:e2e
+          no_output_timeout: 30m
+
+workflows:
+  test_my_app:
+    jobs:
+      - synpress-test
