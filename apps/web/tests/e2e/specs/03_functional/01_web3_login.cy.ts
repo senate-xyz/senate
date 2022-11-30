@@ -15,7 +15,7 @@ describe('login', () => {
 
         // eslint-disable-next-line promise/catch-or-return, promise/always-return
         cy.contains('MetaMask').then((btn) => {
-            ;(btn as Cypress.Chainable).click()
+            ;(btn as unknown as Cypress.Chainable).click()
             cy.wait(1000)
             cy.acceptMetamaskAccess()
         })
