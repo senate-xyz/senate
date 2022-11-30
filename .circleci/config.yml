@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  cypress: cypress-io/cypress@2.1.0
+  cypress: cypress-io/cypress@2.2.0
   codecov: codecov/codecov@1.2.3 #
 
 executors:
@@ -25,18 +25,11 @@ commands:
 linux-workflow: &linux-workflow
   jobs:
     # Setup
-    #  1. Install Cypress
-    #  2. Validate types
-    #  3. Run server unit-tests
     - cypress/install:
         name: "Setup Linux"
         yarn: true
         executor: with-chrome
         build: "yarn build"
-        post-steps:
-          - run:
-              name: Print machine info ℹ️
-              command: yarn synpress info
 
     # Run E2E tests in Chrome
     - cypress/run:
@@ -46,7 +39,7 @@ linux-workflow: &linux-workflow
         executor: with-chrome
         wait-on: "http://localhost:3000"
         yarn: true
-        start: yarn dev
+        start: yarn test:web
         record: true
         parallel: true
         parallelism: 5
