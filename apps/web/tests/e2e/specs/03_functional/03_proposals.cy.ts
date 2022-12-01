@@ -7,7 +7,6 @@ describe('proposals', () => {
             cy.disconnectMetamaskWalletFromAllDapps()
             cy.visit('http://localhost:3000/dashboard/daos')
             cy.disconnectMetamaskWalletFromDapp()
-            /* ==== Generated with Cypress Studio ==== */
             cy.get('[data-testid="rk-connect-button"]').click()
             cy.get('[data-testid="rk-wallet-option-metaMask"]').click()
             cy.acceptMetamaskAccess()
