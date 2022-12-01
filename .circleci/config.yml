@@ -1,55 +1,30 @@
 version: 2.1
 orbs:
-  cypress: cypress-io/cypress@2.2.0
-  codecov: codecov/codecov@1.2.3 #
+  node: circleci/node@5.0.3
 
-executors:
-  with-chrome:
-    docker:
-      - image: "cypress/browsers:node18.12.0-chrome107"
-    resource_class: large
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Commands ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-commands:
-  report-coverage:
-    description: |
-      Store coverage report as an artifact and send it to Codecov service.
+jobs:
+  synpress-test:
+    machine:
+      image: ubuntu-2004:202010-01
     steps:
-      - store_artifacts:
-          path: coverage
-      - run: npx nyc report --reporter=text || true
-      - codecov/upload:
-          file: coverage/coverage-final.json
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Workflows ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-linux-workflow: &linux-workflow
-  jobs:
-    # Setup
-    - cypress/install:
-        name: "Setup Linux"
-        yarn: true
-        executor: with-chrome
-        build: "yarn build"
-
-    # Run E2E tests in Chrome
-    - cypress/run:
-        name: "UI Tests - Chrome"
-        browser: chrome
-        spec: apps/web/tests/e2e/specs/*
-        executor: with-chrome
-        wait-on: "http://localhost:3000"
-        yarn: true
-        start: yarn test:web
-        record: true
-        parallel: true
-        parallelism: 5
-        ci-build-id: ${CIRCLE_SHA1:0:8}
-        group: "UI - Chrome"
-        requires:
-          - Setup Linux
-        post-steps:
-          - report-coverage
+      - checkout
+      - node/install:
+          install-yarn: true
+          node-version: "18.12"
+      - run:
+          name: Install deps
+          command: yarn
+          no_output_timeout: 30m
+      - run:
+          name: Build
+          command: yarn build
+          no_output_timeout: 30m
+      - run:
+          name: Test
+          command: yarn test:web
+          no_output_timeout: 30m
 
 workflows:
-  linux:
-    <<: *linux-workflow
+  test_my_app:
+    jobs:
+      - synpress-test
