@@ -7,9 +7,8 @@ executors:
     macos:
       xcode: 13.4.1
 
-jobs:
-  deps:
-    executor: macos-executor
+commands:
+  deps-command:
     steps:
       - checkout
       - node/install:
@@ -24,52 +23,37 @@ jobs:
           command: yarn
           no_output_timeout: 30m
 
-  build:
-    executor: macos-executor
+  build-command:
     steps:
       - run:
           name: Build
           command: yarn build
           no_output_timeout: 30m
-      - run:
-          name: Test
-          command: yarn test:web
-          no_output_timeout: 30m
-      - store_artifacts:
-          path: /Users/distiller/project/apps/web/tests/e2e/screenshots/
-      - store_artifacts:
-          path: /Users/distiller/project/apps/web/tests/e2e/videos/
 
-  test:
-    executor: macos-executor
+  test-command:
     steps:
       - run:
           name: Test
           command: yarn test:web
           no_output_timeout: 30m
-      - store_artifacts:
-          path: /Users/distiller/project/apps/web/tests/e2e/screenshots/
-      - store_artifacts:
-          path: /Users/distiller/project/apps/web/tests/e2e/videos/
 
-  store_results:
-    executor: macos-executor
+  store-results-command:
     steps:
       - store_artifacts:
           path: /Users/distiller/project/apps/web/tests/e2e/screenshots/
       - store_artifacts:
           path: /Users/distiller/project/apps/web/tests/e2e/videos/
+
+jobs:
+  synpress-e2e-job:
+    executor: macos-executor
+    steps:
+      - deps-command
+      - build-command
+      - test-command
+      - store-results-command
 
 workflows:
   synpress-e2e:
     jobs:
-      - deps
-      - build:
-          requires:
-            - deps
-      - test:
-          requires:
-            - build
-      - store_results:
-          requires:
-            - test
+      - synpress-e2e-job
