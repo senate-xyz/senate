@@ -3,7 +3,7 @@ orbs:
   node: circleci/node@5.0.3
 
 jobs:
-  synpress-e2e:
+  deps:
     macos:
       xcode: 13.4.1
     steps:
@@ -19,6 +19,11 @@ jobs:
           name: Install deps
           command: yarn
           no_output_timeout: 30m
+
+  build:
+    macos:
+      xcode: 13.4.1
+    steps:
       - run:
           name: Build
           command: yarn build
@@ -32,7 +37,38 @@ jobs:
       - store_artifacts:
           path: /Users/distiller/project/apps/web/tests/e2e/videos/
 
+  test:
+    macos:
+      xcode: 13.4.1
+    steps:
+      - run:
+          name: Test
+          command: yarn test:web
+          no_output_timeout: 30m
+      - store_artifacts:
+          path: /Users/distiller/project/apps/web/tests/e2e/screenshots/
+      - store_artifacts:
+          path: /Users/distiller/project/apps/web/tests/e2e/videos/
+
+  store_results:
+    macos:
+      xcode: 13.4.1
+    steps:
+      - store_artifacts:
+          path: /Users/distiller/project/apps/web/tests/e2e/screenshots/
+      - store_artifacts:
+          path: /Users/distiller/project/apps/web/tests/e2e/videos/
+
 workflows:
-  tests:
+  synpress-e2e:
     jobs:
-      - synpress-e2e
+      - deps
+      - build:
+          requires:
+            - deps
+      - test:
+          requires:
+            - build
+      - store_results:
+          requires:
+            - test
