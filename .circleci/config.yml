@@ -11,10 +11,10 @@ jobs:
       - node/install:
           install-yarn: true
           node-version: "18.12"
-      # - run:
-      #     name: Install Chrome
-      #     command: brew install google-chrome
-      #     no_output_timeout: 30m
+      - run:
+          name: Install Chrome
+          command: brew install google-chrome
+          no_output_timeout: 30m
       - run:
           name: Install deps
           command: yarn
