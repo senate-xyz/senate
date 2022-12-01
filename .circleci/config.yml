@@ -2,10 +2,14 @@ version: 2.1
 orbs:
   node: circleci/node@5.0.3
 
-jobs:
-  deps:
+executors:
+  macos-executor:
     macos:
       xcode: 13.4.1
+
+jobs:
+  deps:
+    executor: macos-executor
     steps:
       - checkout
       - node/install:
@@ -21,8 +25,7 @@ jobs:
           no_output_timeout: 30m
 
   build:
-    macos:
-      xcode: 13.4.1
+    executor: macos-executor
     steps:
       - run:
           name: Build
@@ -38,8 +41,7 @@ jobs:
           path: /Users/distiller/project/apps/web/tests/e2e/videos/
 
   test:
-    macos:
-      xcode: 13.4.1
+    executor: macos-executor
     steps:
       - run:
           name: Test
@@ -51,8 +53,7 @@ jobs:
           path: /Users/distiller/project/apps/web/tests/e2e/videos/
 
   store_results:
-    macos:
-      xcode: 13.4.1
+    executor: macos-executor
     steps:
       - store_artifacts:
           path: /Users/distiller/project/apps/web/tests/e2e/screenshots/
