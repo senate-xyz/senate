@@ -3,7 +3,7 @@ orbs:
   node: circleci/node@5.0.3
 
 jobs:
-  synpress-test:
+  synpress-e2e:
     macos:
       xcode: 13.4.1
     steps:
@@ -27,8 +27,12 @@ jobs:
           name: Test
           command: yarn test:web
           no_output_timeout: 30m
+      - store_artifacts:
+          path: /apps/web/tests/e2e/screenshots/
+      - store_artifacts:
+          path: /apps/web/tests/e2e/videos/
 
 workflows:
-  test_my_app:
+  tests:
     jobs:
-      - synpress-test
+      - synpress-e2e
