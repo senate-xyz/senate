@@ -4,8 +4,8 @@ orbs:
 
 jobs:
   synpress-test:
-    machine:
-      image: ubuntu-2004:202010-01
+    macos:
+      xcode: 13.4.1
     steps:
       - checkout
       - node/install:
