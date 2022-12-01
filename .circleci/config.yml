@@ -28,9 +28,9 @@ jobs:
           command: yarn test:web
           no_output_timeout: 30m
       - store_artifacts:
-          path: /apps/web/tests/e2e/screenshots/
+          path: /Users/distiller/project/apps/web/tests/e2e/screenshots/
       - store_artifacts:
-          path: /apps/web/tests/e2e/videos/
+          path: /Users/distiller/project/apps/web/tests/e2e/videos/
 
 workflows:
   tests:
