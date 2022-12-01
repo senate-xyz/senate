@@ -6,30 +6,17 @@ describe('sub', () => {
             cy.setupMetamask(bip39.generateMnemonic(), 'mainnet')
             cy.disconnectMetamaskWalletFromAllDapps()
             cy.visit('http://localhost:3000/dashboard/daos')
-            cy.switchToMetamaskWindow()
-            cy.disconnectMetamaskWalletFromAllDapps()
-            cy.switchMetamaskAccount(1)
-            cy.switchToCypressWindow()
-
-            cy.get('[data-cy="daos"]')
-                .get('[data-cy="dashboard-header"]')
-                .contains('Connect Wallet')
-                .click()
-
-            // eslint-disable-next-line promise/catch-or-return, promise/always-return
-            cy.contains('MetaMask').then((btn) => {
-                ;(btn as unknown as Cypress.Chainable).click()
-                cy.acceptMetamaskAccess()
-                cy.wait(1000)
-            })
-
-            cy.contains('Send message').click()
-            cy.switchToMetamaskNotification()
+            cy.disconnectMetamaskWalletFromDapp()
+            /* ==== Generated with Cypress Studio ==== */
+            cy.get('[data-testid="rk-connect-button"]').click()
+            cy.get('[data-testid="rk-wallet-option-metaMask"]').click()
+            cy.acceptMetamaskAccess()
+            cy.get('[data-testid="rk-auth-message-button"]').click()
             cy.confirmMetamaskSignatureRequest()
-
-            cy.switchToCypressWindow()
-
-            cy.contains('0xf3…2266')
+            cy.get('[data-testid="rk-account-button"]').should(
+                'have.text',
+                '0 ETH🍣0xf3…2266'
+            )
         })
         cy.visit('http://localhost:3000/dashboard/daos')
     }
