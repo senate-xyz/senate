@@ -28,7 +28,7 @@ commands:
 jobs:
   synpress-e2e-job:
     machine: # executor type
-      image: ubuntu-2004:202010-01
+      image: ubuntu-2004:current
     steps:
       - checkout
 
