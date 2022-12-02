@@ -36,6 +36,10 @@ jobs:
           replace-existing: true
           chrome-version: 108.0.5359.71
 
+      - run:
+          command: |
+            google-chrome --version
+
       - node/install:
           install-yarn: true
           node-version: "18.12"
