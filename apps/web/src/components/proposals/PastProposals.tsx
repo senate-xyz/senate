@@ -117,21 +117,30 @@ export const PastProposals = () => {
                 </div>
             </div>
             <div className="flex flex-col">
-                <table className="w-full table-auto border-separate border-spacing-y-4 text-left">
-                    <thead>
-                        <tr>
-                            <th>DAO</th>
-                            <th>Proposal Title</th>
-                            <th>Ended on</th>
-                            <th>Vote status</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-300">
-                        {filteredPastProposals.data?.map((proposal, index) => (
-                            <PastProposal key={index} proposal={proposal} />
-                        ))}
-                    </tbody>
-                </table>
+                {filteredPastProposals.data?.length ? (
+                    <table className="w-full table-auto border-separate border-spacing-y-4 text-left">
+                        <thead>
+                            <tr>
+                                <th>DAO</th>
+                                <th>Proposal Title</th>
+                                <th>Ended on</th>
+                                <th>Vote status</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-300">
+                            {filteredPastProposals.data?.map(
+                                (proposal, index) => (
+                                    <PastProposal
+                                        key={index}
+                                        proposal={proposal}
+                                    />
+                                )
+                            )}
+                        </tbody>
+                    </table>
+                ) : (
+                    <div>No past proposals for current selection</div>
+                )}
             </div>
         </div>
     )

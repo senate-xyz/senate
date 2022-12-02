@@ -174,24 +174,49 @@ describe('proposals', () => {
         cy.visit('http://localhost:3000/dashboard/proposals/active')
         /* ==== Generated with Cypress Studio ==== */
         cy.get('#fromDao').select('clavg9p020000u6sgsybz2srd')
-        cy.get('.divide-y > :first-child > :nth-child(1) > .m-2 > p').should(
-            'have.text',
-            'Aave'
-        )
-        cy.get('.divide-y > :last-child > :nth-child(1) > .m-2 > p').should(
-            'have.text',
-            'Aave'
-        )
+
+        cy.wait(5000)
+
+        // eslint-disable-next-line promise/catch-or-return
+        cy.contains('No active proposals for current selection')
+            // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+            .should((_) => {})
+            .then((res) => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                // eslint-disable-next-line promise/always-return
+                if (!res.length) {
+                    cy.get(
+                        '.divide-y > :first-child > :nth-child(1) > .m-2 > p'
+                    ).should('have.text', 'Aave')
+                    cy.get(
+                        '.divide-y > :last-child > :nth-child(1) > .m-2 > p'
+                    ).should('have.text', 'Aave')
+                }
+            })
 
         cy.get('#fromDao').select('clavg9qs3000au6sgtua21s3g')
-        cy.get('.divide-y > :first-child > :nth-child(1) > .m-2 > p').should(
-            'have.text',
-            'MakerDAO'
-        )
-        cy.get('.divide-y > :last-child > :nth-child(1) > .m-2 > p').should(
-            'have.text',
-            'MakerDAO'
-        )
+
+        cy.wait(5000)
+
+        // eslint-disable-next-line promise/catch-or-return
+        cy.contains('No active proposals for current selection') // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+            // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+            .should((_) => {})
+            .then((res) => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                // eslint-disable-next-line promise/always-return
+                if (!res.length) {
+                    cy.get(
+                        '.divide-y > :first-child > :nth-child(1) > .m-2 > p'
+                    ).should('have.text', 'MakerDAO')
+                    cy.get(
+                        '.divide-y > :last-child > :nth-child(1) > .m-2 > p'
+                    ).should('have.text', 'MakerDAO')
+                }
+            })
+
         /* ==== End Cypress Studio ==== */
     })
 
@@ -202,25 +227,48 @@ describe('proposals', () => {
         /* ==== Generated with Cypress Studio ==== */
         cy.get('#endedOn').select('7776000000')
         cy.get('#fromDao').select('clavg9p020000u6sgsybz2srd')
-        cy.get('.divide-y > :first-child > :nth-child(1) > .m-2 > p').should(
-            'have.text',
-            'Aave'
-        )
-        cy.get('.divide-y > :last-child > :nth-child(1) > .m-2 > p').should(
-            'have.text',
-            'Aave'
-        )
+
+        cy.wait(5000)
+
+        // eslint-disable-next-line promise/catch-or-return
+        cy.contains('No past proposals for current selection') // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+            .should((_) => {})
+            .then((res) => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                // eslint-disable-next-line promise/always-return
+                if (!res.length) {
+                    cy.get(
+                        '.divide-y > :first-child > :nth-child(1) > .m-2 > p'
+                    ).should('have.text', 'Aave')
+                    cy.get(
+                        '.divide-y > :last-child > :nth-child(1) > .m-2 > p'
+                    ).should('have.text', 'Aave')
+                }
+            })
 
         cy.get('#endedOn').select('7776000000')
         cy.get('#fromDao').select('clavg9qs3000au6sgtua21s3g')
-        cy.get('.divide-y > :first-child > :nth-child(1) > .m-2 > p').should(
-            'have.text',
-            'MakerDAO'
-        )
-        cy.get('.divide-y > :last-child > :nth-child(1) > .m-2 > p').should(
-            'have.text',
-            'MakerDAO'
-        )
+
+        cy.wait(5000)
+
+        // eslint-disable-next-line promise/catch-or-return
+        cy.contains('No past proposals for current selection') // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+            .should((_) => {})
+            .then((res) => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                // eslint-disable-next-line promise/always-return
+                if (!res.length) {
+                    cy.get(
+                        '.divide-y > :first-child > :nth-child(1) > .m-2 > p'
+                    ).should('have.text', 'MakerDAO')
+                    cy.get(
+                        '.divide-y > :last-child > :nth-child(1) > .m-2 > p'
+                    ).should('have.text', 'MakerDAO')
+                }
+            })
+
         /* ==== End Cypress Studio ==== */
     })
 

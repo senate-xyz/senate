@@ -124,26 +124,30 @@ export const ActiveProposals = () => {
                 </div>
             </div>
             <div className="flex flex-col">
-                <table className="w-full table-auto border-separate border-spacing-y-4 text-left">
-                    <thead>
-                        <tr>
-                            <th>DAO</th>
-                            <th>Proposal Title</th>
-                            <th>Ends in</th>
-                            <th>Vote status</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-300">
-                        {filteredActiveProposals.data?.map(
-                            (proposal, index) => (
-                                <ActiveProposal
-                                    key={index}
-                                    proposal={proposal}
-                                />
-                            )
-                        )}
-                    </tbody>
-                </table>
+                {filteredActiveProposals.data?.length ? (
+                    <table className="w-full table-auto border-separate border-spacing-y-4 text-left">
+                        <thead>
+                            <tr>
+                                <th>DAO</th>
+                                <th>Proposal Title</th>
+                                <th>Ends in</th>
+                                <th>Vote status</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-300">
+                            {filteredActiveProposals.data?.map(
+                                (proposal, index) => (
+                                    <ActiveProposal
+                                        key={index}
+                                        proposal={proposal}
+                                    />
+                                )
+                            )}
+                        </tbody>
+                    </table>
+                ) : (
+                    <div>No active proposals for current selection</div>
+                )}
             </div>
         </div>
     )

@@ -6,7 +6,8 @@
             "cypress",
             "@synthetixio/synpress/support",
             "cypress-wait-until",
-            "@testing-library/cypress"
+            "@testing-library/cypress",
+            "node"
         ],
         "outDir": "./output"
     },
