@@ -36,7 +36,7 @@ jobs:
           install-yarn: true
           node-version: "18.12"
 
-      - browser-tools/install-chrome
+      - browser-tools/install-chrome:
           replace-existing: true
           chrome-version: 108.0.5359.71
 
