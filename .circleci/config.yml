@@ -54,21 +54,10 @@ jobs:
           paths:
             - /Users/distiller/Library/Caches/Homebrew
             - /usr/local/Homebrew
+            - /opt/homebrew/Caskroom/google-chrome
 
-      - restore_cache:
-          name: Restore yarn deps from cache
-          key: deps-{{ checksum "yarn.lock" }}
-
-      - run:
-          name: Install deps
-          command: yarn --frozen-lockfile --cache-folder ~/.cache/yarn
-          no_output_timeout: 30m
-
-      - save_cache:
-          name: Save yarn deps cache
-          key: deps-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
+      - node/install-packages:
+          pkg-manager: yarn
 
       - build-command
       - test-command
