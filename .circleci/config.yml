@@ -35,13 +35,17 @@ jobs:
     steps:
       - checkout
 
+      - node/install:
+          install-yarn: true
+          node-version: "18.12"
+
       - restore_cache:
           name: Restore Chrome install from cache
           key: brew-v1
 
       - run:
           name: Install Chrome
-          command: brew install google-chrome
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew install google-chrome
           no_output_timeout: 30m
 
       - save_cache:
@@ -55,9 +59,6 @@ jobs:
           name: Restore yarn deps from cache
           key: deps-{{ checksum "yarn.lock" }}
 
-      - node/install:
-          install-yarn: true
-          node-version: "18.12"
       - run:
           name: Install deps
           command: yarn --frozen-lockfile --cache-folder ~/.cache/yarn
