@@ -41,7 +41,7 @@ jobs:
 
       - restore_cache:
           name: Restore Chrome install from cache
-          key: brew-v2
+          key: brew-v3
 
       - run:
           name: Install Chrome
@@ -50,7 +50,7 @@ jobs:
 
       - save_cache:
           name: Save Chrome install to cache
-          key: brew-v2
+          key: brew-v3
           paths:
             - /Users/distiller/Library/Caches/Homebrew
 
