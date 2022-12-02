@@ -14,8 +14,8 @@ export default defineConfig({
     downloadsFolder: 'tests/e2e/downloads',
     chromeWebSecurity: true,
     modifyObstructiveCode: false,
-    viewportWidth: 1366,
-    viewportHeight: 850,
+    viewportWidth: 1920,
+    viewportHeight: 1080,
     env: {
         coverage: false,
     },

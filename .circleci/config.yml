@@ -32,9 +32,9 @@ jobs:
     steps:
       - checkout
 
-      - browser-tools/install-chrome:
-          replace-existing: true
-          chrome-version: 108.0.5359.71
+      # - browser-tools/install-chrome:
+      #     replace-existing: true
+      #     chrome-version: 108.0.5359.71
 
       - run:
           command: |
