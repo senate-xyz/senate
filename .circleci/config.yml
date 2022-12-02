@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   node: circleci/node@5.0.3
+  browser-tools: circleci/browser-tools@1.4.0
 
 executors:
   macos-executor:
@@ -39,20 +40,8 @@ jobs:
           install-yarn: true
           node-version: "18.12"
 
-      - restore_cache:
-          name: Restore Chrome install from cache
-          key: brew-v4
-
-      - run:
-          name: Install Chrome
-          command: brew install google-chrome
-          no_output_timeout: 30m
-
-      - save_cache:
-          name: Save Chrome install to cache
-          key: brew-v4
-          paths:
-            - /Users/distiller/Library/Caches/Homebrew
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
 
       - node/install-packages:
           pkg-manager: yarn
