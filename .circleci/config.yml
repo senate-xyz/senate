@@ -50,7 +50,7 @@ jobs:
             - /usr/local/Homebrew
 
       - restore_cache:
-          key: deps-{{ checksum "yarn.lock" }
+          key: deps-{{ checksum "yarn.lock" }}
 
       - node/install:
           install-yarn: true
@@ -61,7 +61,7 @@ jobs:
           no_output_timeout: 30m
 
       - save_cache:
-          key: deps-{{ checksum "yarn.lock" }
+          key: deps-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
 
