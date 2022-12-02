@@ -7,7 +7,7 @@
         "postinstall": "prisma generate",
         "build": "next build",
         "synpress": "synpress open --configFile=synpress.config.ts",
-        "test:e2e": "synpress run --configFile=synpress.config.ts",
+        "test:e2e": "synpress run --configFile=synpress.config.ts --browser chrome",
         "test": "start-server-and-test dev http://localhost:3000 test:e2e",
         "test:web": "start-server-and-test dev http://localhost:3000 test:e2e",
         "start": "next start",

@@ -28,13 +28,13 @@ commands:
 jobs:
   synpress-e2e-job:
     machine: # executor type
-      image: ubuntu-2004:current
+      image: ubuntu-2204:current
     steps:
       - checkout
 
-      # - browser-tools/install-chrome:
-      #     replace-existing: true
-      #     chrome-version: 108.0.5359.71
+      - browser-tools/install-chrome:
+          replace-existing: true
+          chrome-version: 108.0.5359.71
 
       - run:
           command: |
