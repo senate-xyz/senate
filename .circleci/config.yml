@@ -8,16 +8,15 @@ executors:
       xcode: 13.4.1
 
 commands:
-  deps-command:
+  brew-command:
     steps:
-      - checkout
-      - node/install:
-          install-yarn: true
-          node-version: "18.12"
       - run:
           name: Install Chrome
           command: brew install google-chrome
           no_output_timeout: 30m
+
+  deps-command:
+    steps:
       - run:
           name: Install deps
           command: yarn
@@ -48,7 +47,34 @@ jobs:
   synpress-e2e-job:
     executor: macos-executor
     steps:
+      - checkout
+      - node/install:
+          install-yarn: true
+          node-version: "18.12"
+
+      - restore_cache:
+        keys:
+          - brew-v1
+
+      - brew-command
+
+      - save_cache:
+        key: brew-v1
+        paths:
+          - /Users/distiller/Library/Caches/Homebrew
+          - /usr/local/Homebrew
+
+      - restore_cache:
+        keys:
+          - deps-{{ .Branch }}-{{ checksum "yarn.lock" }
+
       - deps-command
+
+      - save_cache:
+        key: deps-{{ .Branch }}-{{ checksum "yarn.lock" }
+        paths:
+          - ~/.cache/yarn
+
       - build-command
       - test-command
       - store-results-command
