@@ -3,11 +3,6 @@ orbs:
   node: circleci/node@5.0.3
   browser-tools: circleci/browser-tools@1.4.0
 
-executors:
-  macos-executor:
-    macos:
-      xcode: 13.4.1
-
 commands:
   build-command:
     steps:
@@ -32,7 +27,6 @@ commands:
 
 jobs:
   synpress-e2e-job:
-    executor: macos-executor
     steps:
       - checkout
 
