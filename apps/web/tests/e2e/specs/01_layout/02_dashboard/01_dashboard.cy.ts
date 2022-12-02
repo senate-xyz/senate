@@ -127,24 +127,6 @@ describe('dashboard', () => {
         cy.get('#endingIn').should('be.enabled')
         cy.get('#voteStatus').should('be.visible')
         cy.get('#voteStatus').should('be.enabled')
-        cy.get('.h-full').should('be.visible')
-        cy.get('tr > :nth-child(2)').click()
-        cy.get('.h-full').click()
-        cy.get('.mt-2 > :nth-child(1) > .flex-row').click()
-        cy.get('.mt-2 > :nth-child(1) > :nth-child(2) > .w-full').click()
-        cy.get('.h-48').click()
-        cy.get('.mt-2 > :nth-child(1) > :nth-child(2) > .w-full').should(
-            'be.visible'
-        )
-        /* ==== End Cypress Studio ==== */
-        /* ==== Generated with Cypress Studio ==== */
-        cy.get('.text-gray-100').should('have.class', 'text-gray-100')
-        cy.get('.text-gray-400').should('have.class', 'text-gray-400')
-        /* ==== End Cypress Studio ==== */
-        /* ==== Generated with Cypress Studio ==== */
-        cy.get('.text-gray-100').should('have.class', 'text-gray-100')
-        cy.get('.text-gray-400').should('have.class', 'text-gray-400')
-        /* ==== End Cypress Studio ==== */
     })
 
     /* ==== Test Created with Cypress Studio ==== */
@@ -171,12 +153,6 @@ describe('dashboard', () => {
         cy.get('#endedOn').should('be.enabled')
         cy.get('#voteStatus').should('be.visible')
         cy.get('#voteStatus').should('be.enabled')
-        cy.get('.mt-2 > :nth-child(1) > :nth-child(2) > .w-full').should(
-            'be.visible'
-        )
-        cy.get('.h-full').should('have.class', 'w-full')
-        cy.get('.h-full').should('have.class', 'h-full')
-        /* ==== End Cypress Studio ==== */
     })
 
     /* ==== Test Created with Cypress Studio ==== */
