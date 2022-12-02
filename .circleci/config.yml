@@ -32,8 +32,8 @@ jobs:
     steps:
       - checkout
 
-      - browser-tools/install-chrome:
-          replace-existing: true
+      - browser-tools/install-browser-tools:
+          replace-existing-chrome: true
           chrome-version: 108.0.5359.71
 
       - run:
