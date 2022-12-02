@@ -41,16 +41,16 @@ jobs:
 
       - restore_cache:
           name: Restore Chrome install from cache
-          key: brew-v3
+          key: brew-v4
 
       - run:
           name: Install Chrome
-          command: HOMEBREW_NO_AUTO_UPDATE=1 brew install google-chrome
+          command: brew install google-chrome
           no_output_timeout: 30m
 
       - save_cache:
           name: Save Chrome install to cache
-          key: brew-v3
+          key: brew-v4
           paths:
             - /Users/distiller/Library/Caches/Homebrew
 
