@@ -37,7 +37,8 @@ jobs:
           node-version: "18.12"
 
       - browser-tools/install-chrome
-      - browser-tools/install-chromedriver
+          replace-existing: true
+          chrome-version: 108.0.5359.71
 
       - node/install-packages:
           pkg-manager: yarn
