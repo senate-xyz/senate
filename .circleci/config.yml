@@ -21,9 +21,9 @@ commands:
   store-results-command:
     steps:
       - store_artifacts:
-          path: /Users/distiller/project/apps/web/tests/e2e/screenshots/
+          path: /home/circleci/project/apps/web/tests/e2e/screenshots/
       - store_artifacts:
-          path: /Users/distiller/project/apps/web/tests/e2e/videos/
+          path: /home/circleci/project/apps/web/tests/e2e/videos/
 
 jobs:
   synpress-e2e-job:
@@ -32,13 +32,13 @@ jobs:
     steps:
       - checkout
 
-      - node/install:
-          install-yarn: true
-          node-version: "18.12"
-
       - browser-tools/install-chrome:
           replace-existing: true
           chrome-version: 108.0.5359.71
+
+      - node/install:
+          install-yarn: true
+          node-version: "18.12"
 
       - node/install-packages:
           pkg-manager: yarn
