@@ -27,8 +27,8 @@ commands:
 
 jobs:
   synpress-e2e-job:
-    machine: # executor type
-      image: ubuntu-2204:current
+    macos:
+      xcode: 13.4.1
     steps:
       - checkout
 
