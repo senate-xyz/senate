@@ -16,7 +16,7 @@ const DAOs = () => {
         <div className="flex w-full flex-col bg-[#1E1B20]">
             <div className="p-10">
                 <p className="mb-4 text-[36px] text-white">Your DAOs</p>
-                <div className="grid grid-cols-6">
+                <div className="grid grid-cols-6 gap-10">
                     {followingDAOs.data ? (
                         followingDAOs.data.map(
                             (dao: DAOType, index: number) => {
@@ -42,7 +42,7 @@ const DAOs = () => {
                 <p className="mb-4 text-[36px] text-white">
                     DAOs you can subscribe to
                 </p>
-                <div className="grid grid-cols-6">
+                <div className="grid grid-cols-6 gap-10">
                     {allDAOs.data ? (
                         allDAOs.data
                             .filter(
