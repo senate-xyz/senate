@@ -1,4 +1,4 @@
-import DashboardHeader from '../../../components/DashboardHeader'
+import DashboardHeader from '../../../components/Dashboard'
 import NavBar from '../../../components/navbar/NavBar'
 import VoterAddresses from '../../../components/settings/voter-addresses/VoterAddresses'
 

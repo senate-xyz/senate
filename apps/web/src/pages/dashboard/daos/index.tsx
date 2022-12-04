@@ -5,7 +5,7 @@ import { FollowedDAO } from '../../../components/DAOs/FollowedDAO'
 import { UnfollowedDAO } from '../../../components/DAOs/UnfollowedDAO'
 import NavBar from '../../../components/navbar/NavBar'
 
-import DashboardHeader from '../../../components/DashboardHeader'
+import Dashboard from '../../../components/Dashboard'
 
 const DAOs = () => {
     const allDAOs = trpc.public.daos.useQuery()
@@ -13,10 +13,10 @@ const DAOs = () => {
     const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
 
     return (
-        <div className="flex w-full flex-col">
-            <div className="p-4">
-                <p className="text-2xl">DAOs you are following</p>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-6">
+        <div className="flex w-full flex-col bg-[#1E1B20]">
+            <div className="p-10">
+                <p className="mb-4 text-[36px] text-white">Your DAOs</p>
+                <div className="grid grid-cols-6">
                     {followingDAOs.data ? (
                         followingDAOs.data.map(
                             (dao: DAOType, index: number) => {
@@ -38,10 +38,11 @@ const DAOs = () => {
                 </div>
             </div>
 
-            <div className="p-4">
-                <p className="text-2xl">DAOs you are not following yet...</p>
-
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-6">
+            <div className="p-10">
+                <p className="mb-4 text-[36px] text-white">
+                    DAOs you can subscribe to
+                </p>
+                <div className="grid grid-cols-6">
                     {allDAOs.data ? (
                         allDAOs.data
                             .filter(
@@ -75,7 +76,7 @@ const DAOsContainer = () => {
     return (
         <div className="flex w-full flex-row" data-cy="daos">
             <NavBar />
-            <DashboardHeader title="DAOs" component={<DAOs />} />
+            <Dashboard title="DAOs" component={<DAOs />} />
         </div>
     )
 }

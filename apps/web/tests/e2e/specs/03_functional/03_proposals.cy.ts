@@ -217,6 +217,28 @@ describe('proposals', () => {
                 }
             })
 
+        cy.get('#fromDao').select('clavg9zvq001yu6sgnfo8r82a')
+
+        cy.wait(5000)
+
+        // eslint-disable-next-line promise/catch-or-return
+        cy.contains('No active proposals for current selection') // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+            // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+            .should((_) => {})
+            .then((res) => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                // eslint-disable-next-line promise/always-return
+                if (!res.length) {
+                    cy.get(
+                        '.divide-y > :first-child > :nth-child(1) > .m-2 > p'
+                    ).should('have.text', 'Synthetix')
+                    cy.get(
+                        '.divide-y > :last-child > :nth-child(1) > .m-2 > p'
+                    ).should('have.text', 'Synthetix')
+                }
+            })
+
         /* ==== End Cypress Studio ==== */
     })
 
@@ -266,6 +288,28 @@ describe('proposals', () => {
                     cy.get(
                         '.divide-y > :last-child > :nth-child(1) > .m-2 > p'
                     ).should('have.text', 'MakerDAO')
+                }
+            })
+
+        cy.get('#endedOn').select('7776000000')
+        cy.get('#fromDao').select('clavg9zvq001yu6sgnfo8r82a')
+
+        cy.wait(5000)
+
+        // eslint-disable-next-line promise/catch-or-return
+        cy.contains('No past proposals for current selection') // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+            .should((_) => {})
+            .then((res) => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                // eslint-disable-next-line promise/always-return
+                if (!res.length) {
+                    cy.get(
+                        '.divide-y > :first-child > :nth-child(1) > .m-2 > p'
+                    ).should('have.text', 'Synthetix')
+                    cy.get(
+                        '.divide-y > :last-child > :nth-child(1) > .m-2 > p'
+                    ).should('have.text', 'Synthetix')
                 }
             })
 

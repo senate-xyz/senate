@@ -30,6 +30,7 @@
         "core-js": "^3.26.1",
         "dayjs": "^1.11.6",
         "ethers": "^5.7.2",
+        "fast-average-color": "^9.1.1",
         "framer-motion": "^7.6.15",
         "next": "13.0.5",
         "next-auth": "^4.17.0",

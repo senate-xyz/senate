@@ -1,48 +1,98 @@
 import Link from 'next/link'
-import { TfiLayoutPlaceholder } from 'react-icons/tfi'
+import Image from 'next/image'
+import { useRouter } from 'next/router'
 
 export default function NavBar() {
+    const { asPath } = useRouter()
+
     return (
-        <div
-            className="flex w-24 flex-col items-center bg-slate-900"
-            data-cy="navbar"
-        >
-            <Link href="/" data-cy="logo">
-                <TfiLayoutPlaceholder
-                    size="64"
-                    className="my-12 fill-slate-600"
+        <div className="flex w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black">
+            <Link href="/" className="mt-10 mb-20">
+                <Image
+                    src="/assets/Senate Logo/64/White.svg"
+                    width={64}
+                    height={64}
+                    alt={'Senate logo'}
                 />
             </Link>
 
-            <Link href={`/dashboard/daos`}>
-                <div className="flex flex-col items-center">
-                    <TfiLayoutPlaceholder
-                        className="fill-slate-400"
-                        size="64"
-                    />
-                    <p className="text-sm text-slate-400">DAOs</p>
-                </div>
-            </Link>
+            <div className="flex flex-col gap-5">
+                <Link href={`/dashboard/daos`}>
+                    {asPath.includes('daos') ? (
+                        <div className="flex flex-col items-center">
+                            <Image
+                                src="/assets/Icon/DAOs/Active.svg"
+                                width={64}
+                                height={64}
+                                alt={'active daos button'}
+                            />
+                            <p className="text-[13px] text-white">DAOs</p>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center">
+                            <Image
+                                src="/assets/Icon/DAOs/Inactive.svg"
+                                width={64}
+                                height={64}
+                                alt={'inactive daos button'}
+                            />
+                            <p className="text-[13px] text-gray-600">DAOs</p>
+                        </div>
+                    )}
+                </Link>
 
-            <Link href={`/dashboard/proposals/active`}>
-                <div className="flex flex-col items-center">
-                    <TfiLayoutPlaceholder
-                        className="fill-slate-400"
-                        size="64"
-                    />
-                    <p className="text-sm text-slate-400">Proposals</p>
-                </div>
-            </Link>
+                <Link href={`/dashboard/proposals/active`}>
+                    {asPath.includes('proposals') ? (
+                        <div className="flex flex-col items-center">
+                            <Image
+                                src="/assets/Icon/Proposals/Active.svg"
+                                width={64}
+                                height={64}
+                                alt={'active proposals button'}
+                            />
+                            <p className="text-[13px] text-white">Proposals</p>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center">
+                            <Image
+                                src="/assets/Icon/Proposals/Inactive.svg"
+                                width={64}
+                                height={64}
+                                alt={'inactive proposals button'}
+                            />
+                            <p className="text-[13px] text-gray-600">
+                                Proposals
+                            </p>
+                        </div>
+                    )}
+                </Link>
 
-            <Link href={`/dashboard/settings`}>
-                <div className="flex flex-col items-center">
-                    <TfiLayoutPlaceholder
-                        className="fill-slate-400"
-                        size="64"
-                    />
-                    <p className="text-sm text-slate-400">Settings</p>
-                </div>
-            </Link>
+                <Link href={`/dashboard/settings`}>
+                    {asPath.includes('settings') ? (
+                        <div className="flex flex-col items-center">
+                            <Image
+                                src="/assets/Icon/Settings/Active.svg"
+                                width={64}
+                                height={64}
+                                alt={'active settings button'}
+                            />
+                            <p className="text-[13px] text-white">Settings</p>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center">
+                            <Image
+                                src="/assets/Icon/Settings/Inactive.svg"
+                                width={64}
+                                height={64}
+                                alt={'inactive settings button'}
+                            />
+                            <p className="text-[13px] text-gray-600">
+                                Settings
+                            </p>
+                        </div>
+                    )}
+                </Link>
+            </div>
         </div>
     )
 }

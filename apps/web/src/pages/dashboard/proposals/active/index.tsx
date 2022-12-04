@@ -4,7 +4,7 @@ import { extend as dayJsExtend } from 'dayjs'
 import Link from 'next/link'
 import NavBar from '../../../../components/navbar/NavBar'
 import { ActiveProposals } from '../../../../components/proposals/ActiveProposals'
-import DashboardHeader from '../../../../components/DashboardHeader'
+import DashboardHeader from '../../../../components/Dashboard'
 
 dayJsExtend(relativeTime)
 
