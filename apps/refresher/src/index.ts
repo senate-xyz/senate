@@ -84,15 +84,6 @@ const refreshUsers = async () => {
     for (const voter of voters) {
         console.log(`Refresh voter id: ${voter.id}`)
 
-        await prisma.voter.update({
-            where: {
-                id: voter.id,
-            },
-            data: {
-                refreshStatus: RefreshStatus.PENDING,
-            },
-        })
-
         const users = await prisma.user.findMany({
             where: {
                 voters: {
@@ -112,6 +103,17 @@ const refreshUsers = async () => {
 
         for (const sub of subs) {
             totalSubs = [...sub]
+        }
+
+        if (totalSubs.length) {
+            await prisma.voter.update({
+                where: {
+                    id: voter.id,
+                },
+                data: {
+                    refreshStatus: RefreshStatus.PENDING,
+                },
+            })
         }
 
         for (const sub of totalSubs) {
