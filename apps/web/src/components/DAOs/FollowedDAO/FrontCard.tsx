@@ -99,7 +99,15 @@ const FrontCard = (props: {
                         }
                     })}
                 </div>
-                <div className="p-6 text-[15px] font-thin">
+                <div
+                    className={
+                        activeProposalsForDao.data?.filter(
+                            (proposal) => proposal.timeEnd > new Date()
+                        ).length
+                            ? 'cursor-pointer p-6 text-[15px] font-thin underline decoration-from-font underline-offset-2'
+                            : 'p-6 text-[15px] font-thin'
+                    }
+                >
                     {
                         activeProposalsForDao.data?.filter(
                             (proposal) => proposal.timeEnd > new Date()
