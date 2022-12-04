@@ -9,7 +9,7 @@ export default function NavBar() {
         <div className="flex w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black">
             <Link href="/" className="mt-10 mb-20">
                 <Image
-                    src="/assets/Senate Logo/64/White.svg"
+                    src="/assets/Senate_Logo/64/White.svg"
                     width={64}
                     height={64}
                     alt={'Senate logo'}

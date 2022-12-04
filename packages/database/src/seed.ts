@@ -14,8 +14,7 @@ async function main() {
         update: {},
         create: {
             name: 'Aave',
-            picture:
-                'https://s2.coinmarketcap.com/static/img/coins/200x200/7278.png',
+            picture: '/assets/Project_Icons/aave.png',
             handlers: {
                 create: [
                     {
@@ -51,8 +50,7 @@ async function main() {
         update: {},
         create: {
             name: 'MakerDAO',
-            picture:
-                'https://seeklogo.com/images/M/maker-mkr-logo-FAA728D102-seeklogo.com.png',
+            picture: '/assets/Project_Icons/maker-dao.png',
             handlers: {
                 create: [
                     {
@@ -98,8 +96,7 @@ async function main() {
         update: {},
         create: {
             name: 'Balancer',
-            picture:
-                'https://s2.coinmarketcap.com/static/img/coins/64x64/5728.png',
+            picture: '/assets/Project_Icons/balancer.png',
             handlers: {
                 create: [
                     {
@@ -124,8 +121,7 @@ async function main() {
         update: {},
         create: {
             name: 'Optimism',
-            picture:
-                'https://s2.coinmarketcap.com/static/img/coins/64x64/11840.png',
+            picture: '/assets/Project_Icons/optimism.png',
             handlers: {
                 create: [
                     {
@@ -150,8 +146,7 @@ async function main() {
         update: {},
         create: {
             name: 'Element',
-            picture:
-                'https://avatars.githubusercontent.com/u/72033522?s=200&v=4',
+            picture: '/assets/Project_Icons/element.png',
             handlers: {
                 create: [
                     {
@@ -176,8 +171,7 @@ async function main() {
         update: {},
         create: {
             name: '1inch',
-            picture:
-                'https://cdn.stamp.fyi/space/1inch.eth?s=160&cb=5fd6552b6730c3b2',
+            picture: '/assets/Project_Icons/1inch.png',
             handlers: {
                 create: [
                     {
@@ -202,8 +196,7 @@ async function main() {
         update: {},
         create: {
             name: 'Hop Protocol',
-            picture:
-                'https://cdn.stamp.fyi/space/hop.eth?s=160&cb=0a687c9504ef864b',
+            picture: '/assets/Project_Icons/hop-exchange.png',
             handlers: {
                 create: [
                     {
@@ -228,8 +221,7 @@ async function main() {
         update: {},
         create: {
             name: 'SafeDAO',
-            picture:
-                'https://cdn.stamp.fyi/space/safe.eth?s=160&cb=b227bc2bf685db55',
+            picture: '/assets/Project_Icons/gnosis.png',
             handlers: {
                 create: [
                     {
@@ -254,8 +246,7 @@ async function main() {
         update: {},
         create: {
             name: 'Compound',
-            picture:
-                'https://cdn.stamp.fyi/space/comp-vote.eth?s=160&cb=e9c3c6393d6b0f76',
+            picture: '/assets/Project_Icons/compound.png',
             handlers: {
                 create: [
                     {
@@ -291,8 +282,7 @@ async function main() {
         update: {},
         create: {
             name: 'Synthetix',
-            picture:
-                'https://cdn.stamp.fyi/space/synthetix-stakers-poll.eth?s=160&cb=96785b08b3fbf84b',
+            picture: '/assets/Project_Icons/synthetix.png',
             handlers: {
                 create: [
                     {
@@ -317,8 +307,7 @@ async function main() {
         update: {},
         create: {
             name: 'dYdX',
-            picture:
-                'https://cdn.stamp.fyi/space/dydxgov.eth?s=160&cb=960ccb272688872b',
+            picture: '/assets/Project_Icons/dydx.png',
             handlers: {
                 create: [
                     {
@@ -343,8 +332,7 @@ async function main() {
         update: {},
         create: {
             name: 'Uniswap',
-            picture:
-                'https://cdn.stamp.fyi/space/uniswap?s=160&cb=7b5f087c16a60022',
+            picture: '/assets/Project_Icons/uniswap.png',
             handlers: {
                 create: [
                     {

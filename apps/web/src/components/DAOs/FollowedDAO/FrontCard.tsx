@@ -9,7 +9,7 @@ const FrontCard = (props: {
     refreshDaos: () => void
     setShowMenu: (show: boolean) => void
 }) => {
-    const [backgroundColor, setBackgroundColor] = useState('#000000')
+    const [backgroundColor, setBackgroundColor] = useState('#525252')
 
     useEffect(() => {
         const fetch = async (url: string) => {
@@ -18,7 +18,8 @@ const FrontCard = (props: {
             fac.getColorAsync(url)
                 // eslint-disable-next-line promise/always-return
                 .then((color) => {
-                    setBackgroundColor(color.hex)
+                    setBackgroundColor(`${color.hex}80`)
+                    console.log(color.hex)
                 })
                 .catch((e) => {
                     console.log(e)
@@ -31,14 +32,17 @@ const FrontCard = (props: {
         daoId: props.dao.id,
     })
 
+    const cardClassNames = `flex h-full w-full flex-col rounded text-sm font-bold text-white shadow`
+
     return (
         <div
+            style={{ backgroundColor: backgroundColor }}
             // eslint-disable-next-line tailwindcss/no-custom-classname
-            className={`bg-[${backgroundColor}] flex h-full w-full flex-col rounded text-sm font-bold text-white shadow`}
+            className={cardClassNames}
         >
             <div className="flex w-full flex-col items-end pt-4 pr-4">
                 <div
-                    className="cursor-pointer "
+                    className="cursor-pointer"
                     onClick={() => {
                         props.setShowMenu(true)
                     }}
@@ -74,7 +78,7 @@ const FrontCard = (props: {
                                         key={index}
                                         width="24"
                                         height="24"
-                                        src="/assets/Chain/Snapshot/On Dark.svg"
+                                        src="/assets/Chain/Snapshot/On_Dark.svg"
                                         alt="snapshot proposals"
                                     />
                                 )
@@ -88,7 +92,7 @@ const FrontCard = (props: {
                                         key={index}
                                         width="24"
                                         height="24"
-                                        src="/assets/Chain/Ethereum/On Dark.svg"
+                                        src="/assets/Chain/Ethereum/On_Dark.svg"
                                         alt="chain proposals"
                                     />
                                 )

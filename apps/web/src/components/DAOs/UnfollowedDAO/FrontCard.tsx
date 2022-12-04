@@ -8,7 +8,7 @@ const FrontCard = (props: {
     refreshDaos: () => void
     setShowMenu: (show: boolean) => void
 }) => {
-    const [backgroundColor, setBackgroundColor] = useState('#000000')
+    const [backgroundColor, setBackgroundColor] = useState('#525252')
 
     useEffect(() => {
         const fetch = async (url: string) => {
@@ -17,7 +17,8 @@ const FrontCard = (props: {
             fac.getColorAsync(url)
                 // eslint-disable-next-line promise/always-return
                 .then((color) => {
-                    setBackgroundColor(color.hex)
+                    setBackgroundColor(`${color.hex}80`)
+                    console.log(color.hex)
                 })
                 .catch((e) => {
                     console.log(e)
@@ -28,10 +29,11 @@ const FrontCard = (props: {
 
     return (
         <div
+            style={{ backgroundColor: backgroundColor }}
             // eslint-disable-next-line tailwindcss/no-custom-classname
-            className={`bg-[${backgroundColor}] flex h-full w-full flex-col items-center justify-between rounded text-sm font-bold text-white shadow`}
+            className={`flex h-full w-full flex-col items-center justify-between rounded text-sm font-bold text-white shadow`}
         >
-            <div className="flex flex-col items-center justify-between">
+            <div className="flex flex-col items-center justify-between pt-4">
                 <Image
                     width="96"
                     height="96"
@@ -54,7 +56,7 @@ const FrontCard = (props: {
                                         key={index}
                                         width="24"
                                         height="24"
-                                        src="/assets/Chain/Snapshot/On Dark.svg"
+                                        src="/assets/Chain/Snapshot/On_Dark.svg"
                                         alt="snapshot proposals"
                                     />
                                 )
@@ -68,7 +70,7 @@ const FrontCard = (props: {
                                         key={index}
                                         width="24"
                                         height="24"
-                                        src="/assets/Chain/Ethereum/On Dark.svg"
+                                        src="/assets/Chain/Ethereum/On_Dark.svg"
                                         alt="chain proposals"
                                     />
                                 )
