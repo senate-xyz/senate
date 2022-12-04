@@ -33,7 +33,7 @@ const FrontCard = (props: {
             // eslint-disable-next-line tailwindcss/no-custom-classname
             className={`flex h-full w-full flex-col items-center justify-between rounded text-sm font-bold text-white shadow`}
         >
-            <div className="flex flex-col items-center justify-between pt-4">
+            <div className="flex flex-col items-center justify-between pt-10">
                 <Image
                     width="96"
                     height="96"
