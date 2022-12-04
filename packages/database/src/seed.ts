@@ -307,7 +307,7 @@ async function main() {
         update: {},
         create: {
             name: 'dYdX',
-            picture: '/assets/Project_Icons/dydx.png',
+            picture: '/assets/Project_Icons/dYdX.png',
             handlers: {
                 create: [
                     {
