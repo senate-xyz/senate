@@ -18,7 +18,7 @@ const FrontCard = (props: {
             fac.getColorAsync(url)
                 // eslint-disable-next-line promise/always-return
                 .then((color) => {
-                    setBackgroundColor(`${color.hex}88`)
+                    setBackgroundColor(`${color.hex}50`)
                     console.log(color.hex)
                 })
                 .catch((e) => {

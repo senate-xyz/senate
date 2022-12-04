@@ -6,7 +6,11 @@ import '@rainbow-me/rainbowkit/styles.css'
 import type { GetSiweMessageOptions } from '@rainbow-me/rainbowkit-siwe-next-auth'
 import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth'
 
-import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import {
+    darkTheme,
+    getDefaultWallets,
+    RainbowKitProvider,
+} from '@rainbow-me/rainbowkit'
 import { chain, configureChains, createClient, WagmiConfig } from 'wagmi'
 import { infuraProvider } from 'wagmi/providers/infura'
 import { publicProvider } from 'wagmi/providers/public'
@@ -46,7 +50,15 @@ const MyApp: AppType<{ session: Session | null }> = ({
                 <RainbowKitSiweNextAuthProvider
                     getSiweMessageOptions={getSiweMessageOptions}
                 >
-                    <RainbowKitProvider chains={chains}>
+                    <RainbowKitProvider
+                        chains={chains}
+                        theme={darkTheme({
+                            accentColor: '#262626',
+                            accentColorForeground: 'white',
+                            borderRadius: 'medium',
+                            overlayBlur: 'small',
+                        })}
+                    >
                         <Head>
                             <title>Senate</title>
                             <meta
