@@ -13,13 +13,11 @@ const FrontCard = (props: {
 
     useEffect(() => {
         const fetch = async (url: string) => {
-            console.log(url)
             const fac = new FastAverageColor()
             fac.getColorAsync(url)
                 // eslint-disable-next-line promise/always-return
                 .then((color) => {
                     setBackgroundColor(`${color.hex}50`)
-                    console.log(color.hex)
                 })
                 .catch((e) => {
                     console.log(e)
@@ -32,15 +30,12 @@ const FrontCard = (props: {
         daoId: props.dao.id,
     })
 
-    const cardClassNames = `flex h-full w-full flex-col rounded text-sm font-bold text-white shadow`
-
     return (
         <div
             style={{ backgroundColor: backgroundColor }}
-            // eslint-disable-next-line tailwindcss/no-custom-classname
-            className={cardClassNames}
+            className="relative flex h-full w-full flex-col rounded text-sm font-bold text-white shadow"
         >
-            <div className="flex w-full flex-col items-end pt-4 pr-4">
+            <div className="absolute flex w-full flex-col items-end pt-4 pr-4">
                 <div
                     className="cursor-pointer"
                     onClick={() => {
@@ -104,8 +99,8 @@ const FrontCard = (props: {
                         activeProposalsForDao.data?.filter(
                             (proposal) => proposal.timeEnd > new Date()
                         ).length
-                            ? 'cursor-pointer pt-6 text-[15px] font-thin underline decoration-from-font underline-offset-2'
-                            : 'pt-6 text-[15px] font-thin'
+                            ? 'cursor-pointer pt-6 pb-1 text-[15px] font-thin underline decoration-from-font underline-offset-2'
+                            : 'pt-6 pb-1 text-[15px] font-thin'
                     }
                 >
                     {activeProposalsForDao.data?.filter(

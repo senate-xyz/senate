@@ -12,13 +12,11 @@ const FrontCard = (props: {
 
     useEffect(() => {
         const fetch = async (url: string) => {
-            console.log(url)
             const fac = new FastAverageColor()
             fac.getColorAsync(url)
                 // eslint-disable-next-line promise/always-return
                 .then((color) => {
                     setBackgroundColor(`${color.hex}50`)
-                    console.log(color.hex)
                 })
                 .catch((e) => {
                     console.log(e)
@@ -30,8 +28,7 @@ const FrontCard = (props: {
     return (
         <div
             style={{ backgroundColor: backgroundColor }}
-            // eslint-disable-next-line tailwindcss/no-custom-classname
-            className={`flex h-full w-full flex-col items-center justify-between rounded text-sm font-bold text-white shadow`}
+            className="relative flex h-full w-full flex-col rounded text-sm font-bold text-white shadow"
         >
             <div className="flex h-full flex-col items-center justify-end px-6 pb-6">
                 <Image

@@ -19,7 +19,7 @@ const DAOs = () => {
                     <p className="mb-4 w-full text-[36px] font-medium text-white">
                         Your DAOs
                     </p>
-                    <div className="m-auto grid grid-cols-1 place-items-center gap-10 md:max-2xl:grid-cols-3 2xl:grid-cols-6">
+                    <div className="grid grid-cols-1 place-items-center gap-10 min-[650px]:grid-cols-2 min-[900px]:grid-cols-3 min-[1150px]:grid-cols-4 min-[1500px]:grid-cols-5 min-[1650px]:grid-cols-6">
                         {followingDAOs.data ? (
                             followingDAOs.data.map(
                                 (dao: DAOType, index: number) => {
@@ -47,7 +47,7 @@ const DAOs = () => {
                     <p className="mb-4 w-full text-[36px] font-medium text-white">
                         DAOs you can subscribe to
                     </p>
-                    <div className="m-auto grid grid-cols-1 place-items-center gap-10 md:max-2xl:grid-cols-3 2xl:grid-cols-6">
+                    <div className="grid grid-cols-1 place-items-center gap-10 min-[650px]:grid-cols-2 min-[900px]:grid-cols-3 min-[1150px]:grid-cols-4 min-[1500px]:grid-cols-5 min-[1650px]:grid-cols-6">
                         {allDAOs.data ? (
                             allDAOs.data
                                 .filter(
