@@ -7,11 +7,14 @@ const main = () => {
     console.log('Refresher start')
 
     cron.schedule('* * * * *', async () => {
-        console.log('Auto refresh request')
-        await autoRefreshRequest()
         console.log('Running refresher')
         refreshDaos()
         refreshUsers()
+    })
+
+    cron.schedule('*/10 * * * *', async () => {
+        console.log('Auto refresh request')
+        await autoRefreshRequest()
     })
 }
 
