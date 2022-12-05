@@ -13,8 +13,8 @@ const DAOs = () => {
     const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
 
     return (
-        <div className="flex w-full flex-col bg-[#1E1B20]">
-            <div className="p-10">
+        <div className="flex w-full flex-col items-center bg-[#1E1B20]">
+            <div className="p-10 max-w-fit">
                 <p className="mb-4 text-[36px] text-white">Your DAOs</p>
                 <div className="m-auto grid grid-cols-1 gap-10 md:max-2xl:grid-cols-3 2xl:grid-cols-6">
                     {followingDAOs.data ? (
@@ -38,7 +38,7 @@ const DAOs = () => {
                 </div>
             </div>
 
-            <div className="p-10">
+            <div className="p-10 max-w-fit">
                 <p className="mb-4 text-[36px] text-white">
                     DAOs you can subscribe to
                 </p>
