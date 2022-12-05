@@ -68,20 +68,10 @@ export class AppService {
                     break
             }
         }
-
-        await prisma.dAO.update({
-            where: {
-                id: dao.id,
-            },
-            data: {
-                refreshStatus: RefreshStatus.DONE,
-                lastRefresh: new Date(),
-            },
-        })
     }
 
     async updateVotes(daoId: string, voterAddress: string) {
-        let dao;
+        let dao
 
         try {
             dao = await prisma.dAO.findFirst({
@@ -136,15 +126,5 @@ export class AppService {
                     break
             }
         }
-
-        await prisma.voter.update({
-            where: {
-                address: voterAddress,
-            },
-            data: {
-                refreshStatus: RefreshStatus.DONE,
-                lastRefresh: new Date(),
-            },
-        })
     }
 }

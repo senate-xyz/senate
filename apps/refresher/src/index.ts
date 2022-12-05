@@ -36,11 +36,22 @@ const autoRefreshRequest = async () => {
 const refreshDaos = async () => {
     console.log('Refresh DAOs')
 
+    const oneHour = 3600000
+    const now: number = Date.now()
+
     const daos = await prisma.dAO.findMany({
-        where: { refreshStatus: RefreshStatus.NEW },
+        where: {
+            OR: [
+                { refreshStatus: RefreshStatus.NEW },
+                { lastRefresh: { lte: new Date(now - oneHour) } },
+            ],
+        },
     })
 
-    if (!daos.length) console.log('No DAOs to refresh.')
+    if (!daos.length) {
+        console.log('No DAOs to refresh.')
+        return
+    } else console.log(`Refreshing ${daos.length} DAOs`)
 
     for (const dao of daos) {
         await prisma.dAO.update({
@@ -53,17 +64,27 @@ const refreshDaos = async () => {
         })
 
         console.log(
-            `Refresh - PENDING -  daoId ${dao.id} - ${dao.name} at ${dao.lastRefresh}`
+            `Refresh - PENDING - ${dao.name} (${dao.id}) at ${dao.lastRefresh}`
         )
 
         fetch(`${process.env.DETECTIVE_URL}/updateProposals?daoId=${dao.id}`, {
             method: 'POST',
         })
-            .then((res) => {
-                if (res.ok)
+            .then(async (res) => {
+                if (res.ok) {
                     console.log(
-                        `Refresh - DONE -  daoId ${dao.id} - ${dao.name} at ${dao.lastRefresh}`
+                        `Refresh - DONE - ${dao.name} (${dao.id}) at ${dao.lastRefresh}`
                     )
+                    await prisma.dAO.update({
+                        where: {
+                            id: dao.id,
+                        },
+                        data: {
+                            refreshStatus: RefreshStatus.DONE,
+                            lastRefresh: new Date(),
+                        },
+                    })
+                }
                 return
             })
             .catch((e) => {
@@ -75,14 +96,25 @@ const refreshDaos = async () => {
 const refreshUsers = async () => {
     console.log('Refresh Voters')
 
+    const oneHour = 3600000
+    const now: number = Date.now()
+
     const voters = await prisma.voter.findMany({
-        where: { refreshStatus: RefreshStatus.NEW },
+        where: {
+            OR: [
+                { refreshStatus: RefreshStatus.NEW },
+                { lastRefresh: { lte: new Date(now - oneHour) } },
+            ],
+        },
     })
 
-    if (!voters.length) console.log('No users to refresh.')
+    if (!voters.length) {
+        console.log('No users to refresh.')
+        return
+    } else console.log(`Refreshing ${voters.length} voters`)
 
     for (const voter of voters) {
-        console.log(`Refresh voter id: ${voter.id}`)
+        console.log(`Refresh voter: ${voter.address} (${voter.id})`)
 
         const users = await prisma.user.findMany({
             where: {
@@ -118,7 +150,7 @@ const refreshUsers = async () => {
 
         for (const sub of totalSubs) {
             console.log(
-                `Refresh - PENDING -  voterId ${voter.address} - ${sub.daoId} at ${voter.lastRefresh} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
+                `Refresh - PENDING - voter ${voter.address} - daoId ${sub.daoId} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
             )
             fetch(
                 `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`,
@@ -126,11 +158,21 @@ const refreshUsers = async () => {
                     method: 'POST',
                 }
             )
-                .then((res) => {
-                    if (res.ok)
+                .then(async (res) => {
+                    if (res.ok) {
                         console.log(
-                            `Refresh - DONE -  voterId ${voter.address} - ${sub.daoId} at ${voter.lastRefresh} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
+                            `Refresh - DONE -  voter ${voter.address} - ${sub.daoId} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
                         )
+                        await prisma.voter.update({
+                            where: {
+                                id: voter.id,
+                            },
+                            data: {
+                                refreshStatus: RefreshStatus.DONE,
+                                lastRefresh: new Date(),
+                            },
+                        })
+                    }
                     return
                 })
                 .catch((e) => {
