@@ -93,6 +93,24 @@ export default function NavBar() {
                     )}
                 </Link>
             </div>
+            <div className="flex h-full flex-row items-end justify-between pb-5 opacity-50">
+                <Link href="https://twitter.com/SenateLabs">
+                    <Image
+                        src="/assets/Icon/Twitter.svg"
+                        alt="twitter"
+                        width={24}
+                        height={24}
+                    />
+                </Link>
+                <Link href="https://github.com/senate-xyz/senate">
+                    <Image
+                        src="/assets/Icon/Github.svg"
+                        alt="twitter"
+                        width={24}
+                        height={24}
+                    />
+                </Link>
+            </div>
         </div>
     )
 }

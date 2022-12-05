@@ -9,7 +9,7 @@ const FrontCard = (props: {
     refreshDaos: () => void
     setShowMenu: (show: boolean) => void
 }) => {
-    const [backgroundColor, setBackgroundColor] = useState('#525252')
+    const [backgroundColor, setBackgroundColor] = useState('#4e4e4e')
 
     useEffect(() => {
         const fetch = async (url: string) => {
@@ -18,7 +18,7 @@ const FrontCard = (props: {
             fac.getColorAsync(url)
                 // eslint-disable-next-line promise/always-return
                 .then((color) => {
-                    setBackgroundColor(`${color.hex}80`)
+                    setBackgroundColor(`${color.hex}50`)
                     console.log(color.hex)
                 })
                 .catch((e) => {
@@ -51,7 +51,7 @@ const FrontCard = (props: {
                         width="32"
                         height="32"
                         src="/assets/Icon/Menu.svg"
-                        alt="dao Image"
+                        alt="menu button"
                     />
                 </div>
             </div>
@@ -60,11 +60,11 @@ const FrontCard = (props: {
                     width="96"
                     height="96"
                     src={props.dao.picture}
-                    alt="dao Image"
+                    alt="dao logo"
                 />
 
                 <div className="px-6 py-4">
-                    <div className="mb-2 text-[36px] font-thin">
+                    <div className="mb-2 text-[36px] font-light leading-8">
                         {props.dao.name}
                     </div>
                 </div>
@@ -99,13 +99,24 @@ const FrontCard = (props: {
                         }
                     })}
                 </div>
-                <div className="p-6 text-[15px] font-thin">
-                    {
+                <div
+                    className={
                         activeProposalsForDao.data?.filter(
                             (proposal) => proposal.timeEnd > new Date()
                         ).length
-                    }{' '}
-                    Active Proposals
+                            ? 'cursor-pointer p-6 text-[15px] font-thin underline decoration-from-font underline-offset-2'
+                            : 'p-6 text-[15px] font-thin'
+                    }
+                >
+                    {activeProposalsForDao.data?.filter(
+                        (proposal) => proposal.timeEnd > new Date()
+                    ).length
+                        ? activeProposalsForDao.data
+                              ?.filter(
+                                  (proposal) => proposal.timeEnd > new Date()
+                              )
+                              .length.toString() + ' Active Proposals'
+                        : 'No Active Proposals'}
                 </div>
             </div>
         </div>

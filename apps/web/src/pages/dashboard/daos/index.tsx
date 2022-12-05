@@ -13,59 +13,70 @@ const DAOs = () => {
     const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
 
     return (
-        <div className="flex w-full flex-col bg-[#1E1B20]">
-            <div className="p-10">
-                <p className="mb-4 text-[36px] text-white">Your DAOs</p>
-                <div className="grid grid-cols-6 gap-10">
-                    {followingDAOs.data ? (
-                        followingDAOs.data.map(
-                            (dao: DAOType, index: number) => {
-                                return (
-                                    <FollowedDAO
-                                        dao={dao}
-                                        key={index}
-                                        refreshDaos={() => {
-                                            allDAOs.refetch()
-                                            followingDAOs.refetch()
-                                        }}
-                                    />
-                                )
-                            }
-                        )
-                    ) : (
-                        <div>Loading...</div>
-                    )}
-                </div>
-            </div>
-
-            <div className="p-10">
-                <p className="mb-4 text-[36px] text-white">
-                    DAOs you can subscribe to
-                </p>
-                <div className="grid grid-cols-6 gap-10">
-                    {allDAOs.data ? (
-                        allDAOs.data
-                            .filter(
-                                (dao) =>
-                                    !followingDAOs.data
-                                        ?.map((followedDAO) => followedDAO.name)
-                                        .includes(dao.name)
+        <div className="flex w-full flex-col items-center bg-[#1E1B20]">
+            <div>
+                <div className="p-10">
+                    <p className="mb-4 w-full text-[36px] font-medium text-white">
+                        Your DAOs
+                    </p>
+                    <div className="m-auto grid grid-cols-1 place-items-center gap-10 md:max-2xl:grid-cols-3 2xl:grid-cols-6">
+                        {followingDAOs.data ? (
+                            followingDAOs.data.map(
+                                (dao: DAOType, index: number) => {
+                                    return (
+                                        <FollowedDAO
+                                            dao={dao}
+                                            key={index}
+                                            refreshDaos={() => {
+                                                allDAOs.refetch()
+                                                followingDAOs.refetch()
+                                            }}
+                                        />
+                                    )
+                                }
                             )
-                            .map((dao: DAOType, index: number) => {
-                                return (
-                                    <UnfollowedDAO
-                                        dao={dao}
-                                        key={index}
-                                        refreshDaos={() => {
-                                            allDAOs.refetch()
-                                            followingDAOs.refetch()
-                                        }}
-                                    />
+                        ) : (
+                            <p className="mb-4 text-[16px] text-white">
+                                Loading...
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                <div className="p-10">
+                    <p className="mb-4 w-full text-[36px] font-medium text-white">
+                        DAOs you can subscribe to
+                    </p>
+                    <div className="m-auto grid grid-cols-1 place-items-center gap-10 md:max-2xl:grid-cols-3 2xl:grid-cols-6">
+                        {allDAOs.data ? (
+                            allDAOs.data
+                                .filter(
+                                    (dao) =>
+                                        !followingDAOs.data
+                                            ?.map(
+                                                (followedDAO) =>
+                                                    followedDAO.name
+                                            )
+                                            .includes(dao.name)
                                 )
-                            })
-                    ) : (
-                        <div>Loading...</div>
-                    )}
+                                .map((dao: DAOType, index: number) => {
+                                    return (
+                                        <UnfollowedDAO
+                                            dao={dao}
+                                            key={index}
+                                            refreshDaos={() => {
+                                                allDAOs.refetch()
+                                                followingDAOs.refetch()
+                                            }}
+                                        />
+                                    )
+                                })
+                        ) : (
+                            <p className="mb-4 text-[16px] text-white">
+                                Loading...
+                            </p>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

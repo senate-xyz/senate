@@ -8,7 +8,7 @@ const FrontCard = (props: {
     refreshDaos: () => void
     setShowMenu: (show: boolean) => void
 }) => {
-    const [backgroundColor, setBackgroundColor] = useState('#525252')
+    const [backgroundColor, setBackgroundColor] = useState('#4e4e4e')
 
     useEffect(() => {
         const fetch = async (url: string) => {
@@ -17,7 +17,7 @@ const FrontCard = (props: {
             fac.getColorAsync(url)
                 // eslint-disable-next-line promise/always-return
                 .then((color) => {
-                    setBackgroundColor(`${color.hex}80`)
+                    setBackgroundColor(`${color.hex}50`)
                     console.log(color.hex)
                 })
                 .catch((e) => {
@@ -38,11 +38,11 @@ const FrontCard = (props: {
                     width="96"
                     height="96"
                     src={props.dao.picture}
-                    alt="dao Image"
+                    alt="dao logo"
                 />
 
                 <div className="px-6 py-4">
-                    <div className="mb-2 text-[36px] font-thin">
+                    <div className="mb-2 text-[36px] font-thin leading-8">
                         {props.dao.name}
                     </div>
                 </div>
@@ -79,7 +79,7 @@ const FrontCard = (props: {
                 </div>
             </div>
             <button
-                className="h-20 w-full bg-white text-xl font-bold text-black"
+                className="h-[56px] w-full bg-white text-xl font-bold text-black"
                 onClick={() => {
                     props.setShowMenu(true)
                 }}
