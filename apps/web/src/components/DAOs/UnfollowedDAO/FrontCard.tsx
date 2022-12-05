@@ -33,7 +33,7 @@ const FrontCard = (props: {
             // eslint-disable-next-line tailwindcss/no-custom-classname
             className={`flex h-full w-full flex-col items-center justify-between rounded text-sm font-bold text-white shadow`}
         >
-            <div className="flex flex-col items-center justify-between pt-10">
+            <div className="flex h-full flex-col items-center justify-end px-6 pb-6">
                 <Image
                     width="96"
                     height="96"
@@ -41,13 +41,13 @@ const FrontCard = (props: {
                     alt="dao logo"
                 />
 
-                <div className="px-6 py-4">
-                    <div className="mb-2 text-[36px] font-thin leading-8">
+                <div className="pt-6">
+                    <div className="text-center text-[36px] font-thin leading-8">
                         {props.dao.name}
                     </div>
                 </div>
 
-                <div className="flex flex-row gap-4 opacity-50">
+                <div className="flex flex-row gap-4 pt-6 opacity-50">
                     {props.dao.handlers.map((handler, index: number) => {
                         switch (handler.type) {
                             case 'SNAPSHOT':

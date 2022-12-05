@@ -55,7 +55,7 @@ const FrontCard = (props: {
                     />
                 </div>
             </div>
-            <div className="flex h-full flex-col items-center justify-between">
+            <div className="flex h-full flex-col items-center justify-end px-6 pb-6">
                 <Image
                     width="96"
                     height="96"
@@ -63,13 +63,13 @@ const FrontCard = (props: {
                     alt="dao logo"
                 />
 
-                <div className="px-6 py-4">
-                    <div className="mb-2 text-[36px] font-light leading-8">
+                <div className="pt-6">
+                    <div className="text-center text-[36px] font-light leading-8">
                         {props.dao.name}
                     </div>
                 </div>
 
-                <div className="flex flex-row gap-4 opacity-50">
+                <div className="flex flex-row gap-4 pt-6 opacity-50">
                     {props.dao.handlers.map((handler, index: number) => {
                         switch (handler.type) {
                             case 'SNAPSHOT':
@@ -104,8 +104,8 @@ const FrontCard = (props: {
                         activeProposalsForDao.data?.filter(
                             (proposal) => proposal.timeEnd > new Date()
                         ).length
-                            ? 'cursor-pointer p-6 text-[15px] font-thin underline decoration-from-font underline-offset-2'
-                            : 'p-6 text-[15px] font-thin'
+                            ? 'cursor-pointer pt-6 text-[15px] font-thin underline decoration-from-font underline-offset-2'
+                            : 'pt-6 text-[15px] font-thin'
                     }
                 >
                     {activeProposalsForDao.data?.filter(
