@@ -16,7 +16,7 @@ const DAOs = () => {
         <div className="flex w-full flex-col items-center bg-[#1E1B20]">
             <div>
                 <div className="p-10">
-                    <p className="mb-4 w-full text-[36px] text-white">
+                    <p className="mb-4 w-full text-[36px] font-medium text-white">
                         Your DAOs
                     </p>
                     <div className="m-auto grid grid-cols-1 place-items-center gap-10 md:max-2xl:grid-cols-3 2xl:grid-cols-6">
@@ -44,7 +44,7 @@ const DAOs = () => {
                 </div>
 
                 <div className="p-10">
-                    <p className="mb-4 w-full text-[36px] text-white">
+                    <p className="mb-4 w-full text-[36px] font-medium text-white">
                         DAOs you can subscribe to
                     </p>
                     <div className="m-auto grid grid-cols-1 place-items-center gap-10 md:max-2xl:grid-cols-3 2xl:grid-cols-6">

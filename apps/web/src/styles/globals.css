@@ -1,3 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: 'Matter';
+    font-weight: 300;
+    src: url('/assets/Fonts_for_Senate/MatterTRIAL-Light.woff') format('woff');
+}
+@font-face {
+    font-family: 'Matter';
+    font-weight: 400;
+    src: url('/assets/Fonts_for_Senate/MatterTRIAL-Regular.woff') format('woff');
+}
+@font-face {
+    font-family: 'Matter';
+    font-weight: 500;
+
+    src: url('/assets/Fonts_for_Senate/MatterTRIAL-Medium.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Matter';
+    font-weight: 600;
+    src: url('/assets/Fonts_for_Senate/MatterTRIAL-SemiBold.woff')
+        format('woff');
+}
+
+@font-face {
+    font-family: 'Matter';
+    font-weight: 700;
+    src: url('/assets/Fonts_for_Senate/MatterTRIAL-Bold.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Matter';
+    font-weight: 800;
+    src: url('/assets/Fonts_for_Senate/MatterTRIAL-Heavy.woff') format('woff');
+}

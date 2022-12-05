@@ -64,7 +64,7 @@ const FrontCard = (props: {
                 />
 
                 <div className="px-6 py-4">
-                    <div className="mb-2 text-[36px] font-thin">
+                    <div className="mb-2 text-[36px] font-light leading-8">
                         {props.dao.name}
                     </div>
                 </div>
@@ -108,12 +108,15 @@ const FrontCard = (props: {
                             : 'p-6 text-[15px] font-thin'
                     }
                 >
-                    {
-                        activeProposalsForDao.data?.filter(
-                            (proposal) => proposal.timeEnd > new Date()
-                        ).length
-                    }{' '}
-                    Active Proposals
+                    {activeProposalsForDao.data?.filter(
+                        (proposal) => proposal.timeEnd > new Date()
+                    ).length
+                        ? activeProposalsForDao.data
+                              ?.filter(
+                                  (proposal) => proposal.timeEnd > new Date()
+                              )
+                              .length.toString() + ' Active Proposals'
+                        : 'No Active Proposals'}
                 </div>
             </div>
         </div>

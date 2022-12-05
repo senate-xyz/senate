@@ -42,7 +42,7 @@ const FrontCard = (props: {
                 />
 
                 <div className="px-6 py-4">
-                    <div className="mb-2 text-[36px] font-thin">
+                    <div className="mb-2 text-[36px] font-thin leading-8">
                         {props.dao.name}
                     </div>
                 </div>
@@ -79,7 +79,7 @@ const FrontCard = (props: {
                 </div>
             </div>
             <button
-                className="h-20 w-full bg-white text-xl font-bold text-black"
+                className="h-[56px] w-full bg-white text-xl font-bold text-black"
                 onClick={() => {
                     props.setShowMenu(true)
                 }}
