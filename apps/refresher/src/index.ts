@@ -149,6 +149,17 @@ const refreshUsers = async () => {
                     refreshStatus: RefreshStatus.PENDING,
                 },
             })
+        } else {
+            //nothing to update
+            await prisma.voter.update({
+                where: {
+                    id: voter.id,
+                },
+                data: {
+                    refreshStatus: RefreshStatus.DONE,
+                    lastRefresh: new Date(),
+                },
+            })
         }
 
         for (const sub of totalSubs) {
