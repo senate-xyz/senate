@@ -4,8 +4,8 @@ import Link from 'next/link'
 
 const Header = () => {
     return (
-        <div className="flex w-full justify-between" data-cy="home">
-            <div className="m-2" data-cy="logo">
+        <div className="flex w-full justify-between">
+            <div className="m-2">
                 <a href="https://dev-senate-web.onrender.com/">
                     <div className="flex items-center justify-start">
                         <Image
@@ -13,13 +13,12 @@ const Header = () => {
                             height={50}
                             src="/logo_dark.svg"
                             alt="very cool logo"
-                            data-cy="logo-image"
                         />
                         <p>Senate</p>
                     </div>
                 </a>
             </div>
-            <div className="m-3 flex gap-3" data-cy="links">
+            <div className="m-3 flex gap-3">
                 <a href="/about">
                     <p>About</p>
                 </a>
@@ -42,7 +41,7 @@ const Header = () => {
 
 const Mid = () => {
     return (
-        <div className="flex justify-between gap-4" data-cy="content">
+        <div className="flex justify-between gap-4">
             <div className="flex w-full flex-col items-center">
                 <div className="flex flex-col">
                     <p>Join</p>

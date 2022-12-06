@@ -50,7 +50,7 @@ export const ProposalsView = () => {
 
 export const Proposals = () => {
     return (
-        <div className="flex w-full flex-row" data-cy="proposals-past">
+        <div className="flex w-full flex-row">
             <NavBar />
             <DashboardHeader title="Proposals" component={<ProposalsView />} />
         </div>

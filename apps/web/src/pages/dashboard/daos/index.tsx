@@ -85,7 +85,7 @@ const DAOs = () => {
 
 const DAOsContainer = () => {
     return (
-        <div className="flex w-full flex-row" data-cy="daos">
+        <div className="flex w-full flex-row">
             <NavBar />
             <Dashboard title="DAOs" component={<DAOs />} />
         </div>

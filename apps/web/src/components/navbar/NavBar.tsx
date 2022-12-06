@@ -6,7 +6,7 @@ export default function NavBar() {
     const { asPath } = useRouter()
 
     return (
-        <div className="flex w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black">
+        <div className="flex min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black">
             <Link href="/" className="mt-10 mb-20">
                 <Image
                     src="/assets/Senate_Logo/64/White.svg"
