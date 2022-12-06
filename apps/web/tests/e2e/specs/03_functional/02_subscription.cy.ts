@@ -24,34 +24,32 @@ describe('sub', () => {
     it('subscribes and unsubscribes first', function () {
         /* ==== Generated with Cypress Studio ==== */
         login('testUser')
-
         /* ==== Generated with Cypress Studio ==== */
-        cy.get(':nth-child(1) > .mt-4').should('be.visible')
-        cy.get(':nth-child(1) > .mt-4 > .h-20').should('be.visible')
-        cy.get(':nth-child(1) > .mt-4 > .h-20').should('be.enabled')
-        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
-            'have.text',
-            'Aave'
-        )
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
-        cy.get('.h-full > .h-20').should('be.visible')
-        cy.get('.h-full > .h-20').should('be.enabled')
-        cy.get('.h-full > .h-20').click()
-        cy.get('[data-cy="followed"] > .mt-4').should('be.visible')
         cy.get(
-            '[data-cy="followed"] > .mt-4 > .flex-col > .px-6 > .mb-2'
+            ':nth-child(1) > .relative > .h-full > :nth-child(2) > .text-center'
         ).should('have.text', 'Aave')
-        cy.get('[data-cy="followed"] > .mt-4').click()
-        cy.get('.h-full > .h-20').should('be.visible')
-        cy.get('.h-full > .h-20').should('be.enabled')
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(1) > .mt-4').should('be.visible')
-        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
-            'be.visible'
-        )
-        cy.get(':nth-child(1) > .mt-4 > .flex-col > .px-6 > .mb-2').should(
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').should(
             'have.text',
-            'Aave'
+            'Subscribe'
+        )
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').click()
+        cy.get('.h-20').should('have.text', 'Confirm')
+        cy.get('.h-20').click()
+        cy.get(
+            ':nth-child(1) > .grid > .h-\\[320px\\] > .relative > .h-full'
+        ).should('be.visible')
+        cy.get(
+            ':nth-child(1) > .grid > .h-\\[320px\\] > .relative > .h-full > :nth-child(2) > .text-center'
+        ).should('have.text', 'Aave')
+        cy.get('.cursor-pointer > img').click()
+        cy.get('.h-20').should('have.text', 'Unsubscribe')
+        cy.get('.h-20').click()
+        cy.get(
+            ':nth-child(1) > .relative > .h-full > :nth-child(2) > .text-center'
+        ).should('have.text', 'Aave')
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').should(
+            'have.text',
+            'Subscribe'
         )
         /* ==== End Cypress Studio ==== */
     })
@@ -60,98 +58,90 @@ describe('sub', () => {
     it('subscribes and unsubscribes all', function () {
         login('testUser')
         /* ==== Generated with Cypress Studio ==== */
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get('[data-cy="followed"] > .mt-4').should('be.visible')
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(1) > .grid > :nth-child(2) > .mt-4').should(
-            'be.visible'
-        )
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(1) > .grid > :nth-child(3) > .mt-4').should(
-            'be.visible'
-        )
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(1) > .grid > :nth-child(4) > .mt-4').should(
-            'be.visible'
-        )
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(1) > .grid > :nth-child(5) > .mt-4').should(
-            'be.visible'
-        )
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(1) > .grid > :nth-child(6) > .mt-4').should(
-            'be.visible'
-        )
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(7) > .mt-4').should('be.visible')
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(8) > .mt-4').should('be.visible')
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(9) > .mt-4').should('be.visible')
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(10) > .mt-4').should('be.visible')
-        cy.get(':nth-child(1) > .mt-4 > .h-20').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(11) > .mt-4').should('be.visible')
-        cy.get('.h-20').click()
-        cy.get('.h-20').click()
-        cy.get(':nth-child(12) > .mt-4').should('be.visible')
-        cy.get(':nth-child(1) > .mt-4').click()
-        cy.get('.h-20').click()
-        cy.get('[data-cy="unfollowed"] > .mt-4').should('be.visible')
-        cy.get(':nth-child(1) > .grid > :nth-child(1) > .mt-4').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(2) > .grid > :nth-child(2) > .mt-4').should(
-            'be.visible'
-        )
-        cy.get(':nth-child(1) > .grid > :nth-child(1) > .mt-4').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(2) > .grid > :nth-child(3) > .mt-4').should(
-            'be.visible'
-        )
-        cy.get(':nth-child(1) > .grid > :nth-child(1) > .mt-4').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(2) > .grid > :nth-child(4) > .mt-4').should(
-            'be.visible'
-        )
-        cy.get(':nth-child(1) > .grid > :nth-child(1) > .mt-4').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(2) > .grid > :nth-child(5) > .mt-4').should(
-            'be.visible'
-        )
-        cy.get(':nth-child(1) > .grid > :nth-child(1) > .mt-4').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(2) > .grid > :nth-child(6) > .mt-4').should(
-            'be.visible'
-        )
-        cy.get(':nth-child(1) > .grid > :nth-child(1) > .mt-4').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(7) > .mt-4').should('be.visible')
-        cy.get(':nth-child(1) > .grid > :nth-child(1) > .mt-4').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(8) > .mt-4').should('be.visible')
-        cy.get(':nth-child(1) > .grid > :nth-child(1) > .mt-4').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(9) > .mt-4').should('be.visible')
-        cy.get(':nth-child(1) > .grid > :nth-child(1) > .mt-4').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(10) > .mt-4').should('be.visible')
-        cy.get(':nth-child(1) > .grid > :nth-child(1) > .mt-4').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(11) > .mt-4').should('be.visible')
-        cy.get('[data-cy="followed"] > .mt-4').click()
-        cy.get('.h-full > .h-20').click()
-        cy.get(':nth-child(12) > .mt-4').should('be.visible')
+        cy.get(':nth-child(1) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Aave');
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(1) > .grid > .h-\\[320px\\] > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Aave');
+        cy.get(':nth-child(2) > .grid > :nth-child(1) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'MakerDAO');
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(1) > .grid > :nth-child(2) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'MakerDAO');
+        cy.get(':nth-child(2) > .grid > :nth-child(1) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Balancer');
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(1) > .grid > :nth-child(3) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Balancer');
+        cy.get(':nth-child(2) > .grid > :nth-child(1) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Optimism');
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(1) > .grid > :nth-child(4) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Optimism');
+        cy.get(':nth-child(2) > .grid > :nth-child(1) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Element');
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(1) > .grid > :nth-child(5) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Element');
+        cy.get(':nth-child(2) > .grid > :nth-child(1) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', '1inch');
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(1) > .grid > :nth-child(6) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', '1inch');
+        cy.get(':nth-child(2) > .grid > :nth-child(1) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Hop Protocol');
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(7) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Hop Protocol');
+        cy.get(':nth-child(2) > .grid > :nth-child(1) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'SafeDAO');
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(8) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'SafeDAO');
+        cy.get(':nth-child(2) > .grid > :nth-child(1) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Compound');
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(9) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Compound');
+        cy.get(':nth-child(2) > .grid > :nth-child(1) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Synthetix');
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(10) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Synthetix');
+        cy.get(':nth-child(2) > .grid > :nth-child(1) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'dYdX');
+        cy.get(':nth-child(1) > .relative > .h-\\[56px\\]').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(11) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'dYdX');
+        cy.get(':nth-child(2) > .grid > .h-\\[320px\\] > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Uniswap');
+        cy.get('.h-\\[56px\\]').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(12) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Uniswap');
+        cy.get(':nth-child(1) > .relative > .absolute > .cursor-pointer > img').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(2) > .grid > .h-\\[320px\\] > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Aave');
+        cy.get(':nth-child(1) > .relative > .absolute > .cursor-pointer > img').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(2) > .grid > :nth-child(2) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'MakerDAO');
+        cy.get(':nth-child(1) > .relative > .absolute > .cursor-pointer > img').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(2) > .grid > :nth-child(3) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Balancer');
+        cy.get(':nth-child(1) > .relative > .absolute > .cursor-pointer > img').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(2) > .grid > :nth-child(4) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Optimism');
+        cy.get(':nth-child(1) > .relative > .absolute > .cursor-pointer > img').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(2) > .grid > :nth-child(5) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Element');
+        cy.get(':nth-child(1) > .relative > .absolute > .cursor-pointer > img').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(2) > .grid > :nth-child(6) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', '1inch');
+        cy.get(':nth-child(1) > .relative > .absolute > .cursor-pointer > img').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(7) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Hop Protocol');
+        cy.get(':nth-child(1) > .relative > .absolute > .cursor-pointer > img').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(8) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'SafeDAO');
+        cy.get(':nth-child(1) > .relative > .absolute > .cursor-pointer > img').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(9) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Compound');
+        cy.get(':nth-child(1) > .relative > .absolute > .cursor-pointer > img').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(10) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Synthetix');
+        cy.get(':nth-child(1) > .relative > .absolute > .cursor-pointer > img').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(11) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'dYdX');
+        cy.get('.cursor-pointer > img').click();
+        cy.get('.h-20').click();
+        cy.get(':nth-child(12) > .relative > .h-full > :nth-child(2) > .text-center').should('have.text', 'Uniswap');
         /* ==== End Cypress Studio ==== */
     })
 })
