@@ -196,7 +196,7 @@ async function main() {
         update: {},
         create: {
             name: 'Hop Protocol',
-            picture: '/assets/Project_Icons/hop-exchange.png',
+            picture: '/assets/Project_Icons/hop-protocol.png',
             handlers: {
                 create: [
                     {
@@ -221,7 +221,7 @@ async function main() {
         update: {},
         create: {
             name: 'SafeDAO',
-            picture: '/assets/Project_Icons/gnosis.png',
+            picture: '/assets/Project_Icons/safe.png',
             handlers: {
                 create: [
                     {
