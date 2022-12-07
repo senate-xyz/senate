@@ -13,7 +13,7 @@ const DAOs = () => {
     const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
 
     return (
-        <div className="flex w-full flex-col items-center bg-[#1E1B20]">
+        <div className="flex grow flex-col bg-[#1E1B20] p-5">
             <div>
                 <div className="p-10">
                     <p className="mb-4 w-full text-[36px] font-medium text-white">
@@ -85,7 +85,7 @@ const DAOs = () => {
 
 const DAOsContainer = () => {
     return (
-        <div className="flex w-full flex-row">
+        <div className="flex min-h-screen flex-row">
             <NavBar />
             <Dashboard title="DAOs" component={<DAOs />} />
         </div>
