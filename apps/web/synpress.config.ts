@@ -39,4 +39,5 @@ export default defineConfig({
         ],
         supportFile: 'tests/e2e/support.ts',
     },
+    watchForFileChanges: false,
 })

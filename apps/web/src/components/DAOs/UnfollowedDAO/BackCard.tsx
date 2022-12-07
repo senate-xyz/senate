@@ -10,7 +10,10 @@ const BackCard = (props: {
     const subscribe = trpc.user.subscriptions.subscribe.useMutation()
 
     return (
-        <div className="flex h-full w-full flex-col items-center justify-between rounded bg-black text-sm font-bold text-white shadow">
+        <div
+            className="flex h-full w-full flex-col items-center justify-between rounded bg-black text-sm font-bold text-white shadow"
+            data-testid="daocard-unfollowed-back"
+        >
             <div className="flex h-full w-full flex-col items-center justify-between">
                 <div className="flex flex-col items-center gap-2 pt-5">
                     <div className="flex w-full flex-row justify-between">
@@ -20,6 +23,7 @@ const BackCard = (props: {
                             onClick={() => {
                                 props.setShowMenu(false)
                             }}
+                            data-testid="close-menu"
                         >
                             <Image
                                 width="32"
@@ -69,6 +73,7 @@ const BackCard = (props: {
                             }
                         )
                     }}
+                    data-testid="subscribe"
                 >
                     Confirm
                 </button>

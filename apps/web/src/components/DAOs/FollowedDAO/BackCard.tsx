@@ -8,11 +8,15 @@ const BackCard = (props: {
 }) => {
     const unsubscribe = trpc.user.subscriptions.unsubscribe.useMutation()
     return (
-        <div className="flex h-full w-full cursor-pointer flex-col rounded bg-black text-sm font-bold text-white shadow">
+        <div
+            className="flex h-full w-full cursor-pointer flex-col rounded bg-black text-sm font-bold text-white shadow"
+            data-testid="daocard-followed-back"
+        >
             <div className="flex w-full flex-row justify-between px-4 pt-4">
                 <p>Notifications</p>
                 <div
                     className="cursor-pointer"
+                    data-testid="close-menu"
                     onClick={() => {
                         props.setShowMenu(false)
                     }}
@@ -22,6 +26,7 @@ const BackCard = (props: {
                         height="32"
                         src="/assets/Icon/Close.svg"
                         alt="close button"
+                        data-testid="daocard-followed-closemenu"
                     />
                 </div>
             </div>
@@ -55,6 +60,7 @@ const BackCard = (props: {
 
                 <button
                     className="h-20 w-full bg-white text-xl font-bold text-black"
+                    data-testid="unsubscribe"
                     onClick={() => {
                         unsubscribe.mutate(
                             {

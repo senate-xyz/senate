@@ -29,6 +29,7 @@ const FrontCard = (props: {
         <div
             style={{ backgroundColor: backgroundColor }}
             className="relative flex h-full w-full flex-col rounded text-sm font-bold text-white shadow"
+            data-testid="daocard-unfollowed-front"
         >
             <div className="flex h-full flex-col items-center justify-end px-6 pb-6">
                 <Image
@@ -36,15 +37,20 @@ const FrontCard = (props: {
                     height="96"
                     src={props.dao.picture}
                     alt="dao logo"
+                    data-testid="dao-picture"
                 />
 
-                <div className="pt-6">
-                    <div className="text-center text-[36px] font-thin leading-8">
-                        {props.dao.name}
-                    </div>
+                <div
+                    className="pt-6 text-center text-[36px] font-thin leading-8"
+                    data-testid="dao-name"
+                >
+                    {props.dao.name}
                 </div>
 
-                <div className="flex flex-row gap-4 pt-6 opacity-50">
+                <div
+                    className="flex flex-row gap-4 pt-6 opacity-50"
+                    data-testid="dao-handlers"
+                >
                     {props.dao.handlers.map((handler, index: number) => {
                         switch (handler.type) {
                             case 'SNAPSHOT':
@@ -55,6 +61,7 @@ const FrontCard = (props: {
                                         height="24"
                                         src="/assets/Chain/Snapshot/On_Dark.svg"
                                         alt="snapshot proposals"
+                                        data-testid="dao-handler-snapshot"
                                     />
                                 )
                             case 'BRAVO1':
@@ -69,6 +76,7 @@ const FrontCard = (props: {
                                         height="24"
                                         src="/assets/Chain/Ethereum/On_Dark.svg"
                                         alt="chain proposals"
+                                        data-testid="dao-handler-chain"
                                     />
                                 )
                         }
@@ -80,6 +88,7 @@ const FrontCard = (props: {
                 onClick={() => {
                     props.setShowMenu(true)
                 }}
+                data-testid="open-menu"
             >
                 Subscribe
             </button>

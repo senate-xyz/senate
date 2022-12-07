@@ -55,7 +55,7 @@ export const PastProposals = () => {
 
     return (
         <div>
-            <div className="flex flex-row gap-5">
+            <div className="flex flex-row gap-5" data-testid="past-proposals">
                 <div className="flex h-[38px] w-[300px] flex-row items-center">
                     <label
                         className="flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white"
@@ -69,6 +69,7 @@ export const PastProposals = () => {
                         onChange={(e) => {
                             setFrom(e.target.value)
                         }}
+                        data-testid="from-selector"
                     >
                         <option key="any" value="any">
                             Any
@@ -78,6 +79,7 @@ export const PastProposals = () => {
                                 <option
                                     key={followingDAO.id}
                                     value={followingDAO.id}
+                                    data-testid={`select-${followingDAO.id}`}
                                 >
                                     {followingDAO.name}
                                 </option>
@@ -99,10 +101,15 @@ export const PastProposals = () => {
                         onChange={(e) => {
                             setEndedOn(Number(e.target.value))
                         }}
+                        data-testid="ended-selector"
                     >
                         {endedOnOptions.map((endedOn) => {
                             return (
-                                <option key={endedOn.time} value={endedOn.time}>
+                                <option
+                                    key={endedOn.time}
+                                    value={endedOn.time}
+                                    data-testid={`select-${endedOn.time}`}
+                                >
                                     {endedOn.name}
                                 </option>
                             )
@@ -123,10 +130,15 @@ export const PastProposals = () => {
                         onChange={(e) => {
                             setWithVoteStatus(Number(e.target.value))
                         }}
+                        data-testid="status-selector"
                     >
                         {voteStatus.map((status) => {
                             return (
-                                <option key={status.id} value={status.id}>
+                                <option
+                                    key={status.id}
+                                    value={status.id}
+                                    data-testid={`select-${status.id}`}
+                                >
                                     {status.name}
                                 </option>
                             )
@@ -136,7 +148,10 @@ export const PastProposals = () => {
             </div>
             <div className="mt-[16px] flex flex-col">
                 {filteredPastProposals.data?.length ? (
-                    <table className="w-full table-auto border-separate border-spacing-y-[4px] text-left">
+                    <table
+                        className="w-full table-auto border-separate border-spacing-y-[4px] text-left"
+                        data-testid="table"
+                    >
                         <thead className="h-[56px] bg-black text-white">
                             <tr>
                                 <th className="w-[200px] pl-[16px] font-normal">
@@ -163,7 +178,9 @@ export const PastProposals = () => {
                         </tbody>
                     </table>
                 ) : (
-                    <div>No past proposals for current selection</div>
+                    <div data-testid="no-proposals">
+                        No past proposals for current selection
+                    </div>
                 )}
             </div>
         </div>
@@ -181,8 +198,11 @@ const PastProposal = (props: {
         ).length > 0
 
     return (
-        <tr className="h-[96px] w-full items-center justify-evenly bg-[#121212] text-[#EDEDED]">
-            <td>
+        <tr
+            className="h-[96px] w-full items-center justify-evenly bg-[#121212] text-[#EDEDED]"
+            data-testid="past-proposal"
+        >
+            <td data-testid="col1">
                 <div className="m-[12px] flex w-max flex-row items-center gap-[8px]">
                     <div className="border border-b-2 border-r-2 border-t-0 border-l-0">
                         <Image
@@ -190,29 +210,44 @@ const PastProposal = (props: {
                             height={64}
                             src={props.proposal.dao.picture}
                             alt={props.proposal.dao.name}
+                            data-testid="dao-picture"
                         />
                     </div>
-                    <div className="text-[24px] font-thin">
+                    <div
+                        className="text-[24px] font-thin"
+                        data-testid="dao-name"
+                    >
                         {props.proposal.dao.name}
                     </div>
                 </div>
             </td>
-            <td className="cursor-pointer hover:underline">
-                <a href={props.proposal.url} target="_blank" rel="noreferrer">
-                    <div className="text-[18px] font-normal">
+            <td className="cursor-pointer hover:underline" data-testid="col2">
+                <a
+                    href={props.proposal.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-testid="proposal-url"
+                >
+                    <div
+                        className="text-[18px] font-normal"
+                        data-testid="proposal-name"
+                    >
                         {props.proposal.name}
                     </div>
                 </a>
             </td>
-            <td>
-                <div className="text-[21px]">
+            <td data-testid="col3">
+                <div className="text-[21px]" data-testid="proposal-ended">
                     {dayjs(props.proposal.timeEnd).fromNow()}
                 </div>
             </td>
-            <td>
+            <td data-testid="col4">
                 <div className="text-end">
                     {voted ? (
-                        <div className="flex w-full flex-col items-center">
+                        <div
+                            className="flex w-full flex-col items-center"
+                            data-testid="proposal-voted"
+                        >
                             <Image
                                 src="/assets/Icon/Voted.svg"
                                 alt="voted"
@@ -222,7 +257,10 @@ const PastProposal = (props: {
                             <div className="text-[18px]">Voted</div>
                         </div>
                     ) : (
-                        <div className="flex w-full flex-col items-center">
+                        <div
+                            className="flex w-full flex-col items-center"
+                            data-testid="proposal-not-voted"
+                        >
                             <Image
                                 src="/assets/Icon/Not Voted Yet.svg"
                                 alt="voted"
