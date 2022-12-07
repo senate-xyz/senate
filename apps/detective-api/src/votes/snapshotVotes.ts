@@ -88,7 +88,7 @@ export const updateSnapshotVotes = async (
                         voterAddress: voterAddress,
                         voteDaoId: daoHandler.daoId,
                         voteProposalId: proposal.id,
-                    }
+                    },
                 })
 
                 for (const votedOption of votedOptions) {
@@ -130,7 +130,7 @@ export const updateSnapshotVotes = async (
                                             vote.choice - 1
                                         ] ?? 'No name',
                                 },
-                            }
+                            },
                         },
                     })
                 }

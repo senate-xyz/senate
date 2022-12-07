@@ -5,7 +5,6 @@ import { schedule } from 'node-cron'
 import { prisma } from '@senate/database'
 import { RoundupNotificationType } from '@prisma/client'
 import {
-    Proposal,
     Subscription,
     UserWithVotingAddresses,
     Voter,
@@ -26,14 +25,14 @@ schedule('*/15 * * * * *', async function () {
 
     console.log('running a task every 30 second')
 
-    await clearNotificationsTable();
-    await addNewProposals();
-    await addEndingProposals();
-    await addPastProposals();
-    
-    await sendRoundupEmails();
+    await clearNotificationsTable()
+    await addNewProposals()
+    await addEndingProposals()
+    await addPastProposals()
 
-    console.log("Emails have been sent");
+    await sendRoundupEmails()
+
+    console.log('Emails have been sent')
 })
 
 const clearNotificationsTable = async () => {
@@ -51,8 +50,8 @@ const addNewProposals = async () => {
             },
         },
         orderBy: {
-            timeEnd: 'asc'
-        }
+            timeEnd: 'asc',
+        },
     })
 
     if (proposals) {
@@ -110,19 +109,18 @@ const addEndingProposals = async () => {
                 {
                     timeEnd: {
                         lte: new Date(now + threeDays),
-                    }
+                    },
                 },
                 {
                     timeEnd: {
                         gt: new Date(now),
                     },
-                }
-            ]
-            
+                },
+            ],
         },
         orderBy: {
-            timeEnd: 'asc'
-        }
+            timeEnd: 'asc',
+        },
     })
 
     if (proposals) {
@@ -173,26 +171,25 @@ const addEndingProposals = async () => {
 
 const addPastProposals = async () => {
     console.log('Adding new proposal notifications...')
-    
+
     const proposals = await prisma.proposal.findMany({
         where: {
             AND: [
                 {
                     timeEnd: {
                         lte: new Date(now),
-                    }
+                    },
                 },
                 {
                     timeEnd: {
                         gte: new Date(now - oneDay),
                     },
-                }
-            ]
-            
+                },
+            ],
         },
         orderBy: {
-            timeEnd: 'desc'
-        }
+            timeEnd: 'desc',
+        },
     })
 
     if (proposals) {
@@ -241,7 +238,10 @@ const addPastProposals = async () => {
     console.log('\n')
 }
 
-const formatEmailTableData = async (user: UserWithVotingAddresses, notificationType: RoundupNotificationType): Promise<any> => {
+const formatEmailTableData = async (
+    user: UserWithVotingAddresses,
+    notificationType: RoundupNotificationType
+): Promise<any> => {
     const proposals = await prisma.notification.findMany({
         where: {
             userId: user.id,
@@ -257,42 +257,59 @@ const formatEmailTableData = async (user: UserWithVotingAddresses, notificationT
     })
 
     const promises = proposals.map(async (notification) => {
-        let voted = await userVoted(user.voters, notification.proposalId, notification.daoId);
-        const dateOptions: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+        const voted = await userVoted(
+            user.voters,
+            notification.proposalId,
+            notification.daoId
+        )
+        const dateOptions: Intl.DateTimeFormatOptions = {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        }
 
-        let countdownUrl = await generateCountdownGifUrl(notification.proposal.timeEnd);
+        const countdownUrl = await generateCountdownGifUrl(
+            notification.proposal.timeEnd
+        )
 
         return {
-            votingStatus: voted ? "Voted" : "Not voted yet",
-            rowBackground: voted ? "green" : "red",
+            votingStatus: voted ? 'Voted' : 'Not voted yet',
+            rowBackground: voted ? 'green' : 'red',
             proposalName: notification.proposal.name,
             proposalUrl: notification.proposal.url,
             daoLogoUrl: notification.proposal.dao.picture,
-            endHoursUTC: formatTwoDigit(notification.proposal.timeEnd.getUTCHours()),
-            endMinutesUTC: formatTwoDigit(notification.proposal.timeEnd.getUTCMinutes()),
-            endDateString: notification.proposal.timeEnd.toLocaleDateString(undefined, dateOptions),
-            countdownUrl: countdownUrl
+            endHoursUTC: formatTwoDigit(
+                notification.proposal.timeEnd.getUTCHours()
+            ),
+            endMinutesUTC: formatTwoDigit(
+                notification.proposal.timeEnd.getUTCMinutes()
+            ),
+            endDateString: notification.proposal.timeEnd.toLocaleDateString(
+                undefined,
+                dateOptions
+            ),
+            countdownUrl: countdownUrl,
         }
-    });
+    })
 
-    return Promise.all(promises);
+    return Promise.all(promises)
 }
 
-const formatTwoDigit = (timeUnit: number) : string => {
-    let timeUnitStr = timeUnit.toString();
-    return timeUnitStr.length == 1 ? "0" + timeUnitStr : timeUnitStr;
+const formatTwoDigit = (timeUnit: number): string => {
+    const timeUnitStr = timeUnit.toString()
+    return timeUnitStr.length == 1 ? '0' + timeUnitStr : timeUnitStr
 }
 
 const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
-    let url = "";
+    let url = ''
 
-    let yearUTC = endTime.getUTCFullYear()
-    let monthUTC = formatTwoDigit(endTime.getUTCMonth() + 1)
-    let dateUTC = formatTwoDigit(endTime.getUTCDate())
-    let hoursUTC = formatTwoDigit(endTime.getUTCHours())
-    let minutesUTC = formatTwoDigit(endTime.getUTCMinutes())
+    const yearUTC = endTime.getUTCFullYear()
+    const monthUTC = formatTwoDigit(endTime.getUTCMonth() + 1)
+    const dateUTC = formatTwoDigit(endTime.getUTCDate())
+    const hoursUTC = formatTwoDigit(endTime.getUTCHours())
+    const minutesUTC = formatTwoDigit(endTime.getUTCMinutes())
 
-    let endTimeString = `${yearUTC}-${monthUTC}-${dateUTC} ${hoursUTC}:${minutesUTC}:00`;
+    const endTimeString = `${yearUTC}-${monthUTC}-${dateUTC} ${hoursUTC}:${minutesUTC}:00`
 
     try {
         const response = await axios({
@@ -300,98 +317,117 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
+                Accept: 'application/json',
                 'Accept-Encoding': 'null',
-                'Authorization': process.env.VOTING_COUNTDOWN_TOKEN,
+                Authorization: process.env.VOTING_COUNTDOWN_TOKEN,
             },
             data: {
                 skin_id: 6,
-                name: "Voting countdown",
+                name: 'Voting countdown',
                 time_end: endTimeString,
-                time_zone: "UTC",
-                font_family: "Roboto-Medium",
-                label_font_family: "RobotoCondensed-Light",
-                color_primary: "000000",
-                color_text: "000000",
-                color_bg: "FFFFFF",
-                transparent: "1",
+                time_zone: 'UTC',
+                font_family: 'Roboto-Medium',
+                label_font_family: 'RobotoCondensed-Light',
+                color_primary: '000000',
+                color_text: '000000',
+                color_bg: 'FFFFFF',
+                transparent: '1',
                 font_size: 26,
                 label_font_size: 8,
                 expired_mes_on: 1,
-                expired_mes: "Proposal Ended",
-                day: "1",
-                days: "days",
-                hours: "hours",
-                minutes: "minutes",
-                seconds: "seconds",
+                expired_mes: 'Proposal Ended',
+                day: '1',
+                days: 'days',
+                hours: 'hours',
+                minutes: 'minutes',
+                seconds: 'seconds',
                 advanced_params: {
-                    "separator_color"  : "FFFFFF",
-                    "labels_color" : "000000"
-                }
-            }
-        });
+                    separator_color: 'FFFFFF',
+                    labels_color: '000000',
+                },
+            },
+        })
 
-        url = response.data.message.src;
+        url = response.data.message.src
     } catch (error) {
-        console.error(error);
+        console.error(error)
     }
 
-    return url;
-
+    return url
 }
 
 const sendRoundupEmails = async () => {
-    const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const todaysDate = new Date(now).toLocaleDateString(undefined, dateOptions);
+    const dateOptions: Intl.DateTimeFormatOptions = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    }
+    const todaysDate = new Date(now).toLocaleDateString(undefined, dateOptions)
 
     const users = await prisma.user.findMany({
         include: {
-            voters: true
-        }
+            voters: true,
+        },
     })
 
     for (const user of users) {
-        let endingSoonProposalsData = await formatEmailTableData(user, RoundupNotificationType.ENDING_SOON);
-        let newProposalsData = await formatEmailTableData(user, RoundupNotificationType.NEW);
-        let pastProposalsData = await formatEmailTableData(user, RoundupNotificationType.PAST);
+        const endingSoonProposalsData = await formatEmailTableData(
+            user,
+            RoundupNotificationType.ENDING_SOON
+        )
+        const newProposalsData = await formatEmailTableData(
+            user,
+            RoundupNotificationType.NEW
+        )
+        const pastProposalsData = await formatEmailTableData(
+            user,
+            RoundupNotificationType.PAST
+        )
 
-        let response = await client.sendEmailWithTemplate({
-        "TemplateAlias": "roundup",
-        "TemplateModel": {
-                "todaysDate": todaysDate,
-                "endingSoonProposals": endingSoonProposalsData,
-                "endingSoonProposalsTableCssClass": endingSoonProposalsData.length > 0 ? "show" : "hide",
-                "endingSoonProposalsNoDataBoxCssClass": endingSoonProposalsData.length > 0 ? "hide" : "show",
+        const response = await client.sendEmailWithTemplate({
+            TemplateAlias: 'roundup',
+            TemplateModel: {
+                todaysDate: todaysDate,
+                endingSoonProposals: endingSoonProposalsData,
+                endingSoonProposalsTableCssClass:
+                    endingSoonProposalsData.length > 0 ? 'show' : 'hide',
+                endingSoonProposalsNoDataBoxCssClass:
+                    endingSoonProposalsData.length > 0 ? 'hide' : 'show',
 
-                "newProposals": newProposalsData,
-                "newProposalsTableCssClass": newProposalsData.length > 0 ? "show" : "hide",
-                "newProposalsNoDataBoxCssClass": newProposalsData.length > 0 ? "hide" : "show",
+                newProposals: newProposalsData,
+                newProposalsTableCssClass:
+                    newProposalsData.length > 0 ? 'show' : 'hide',
+                newProposalsNoDataBoxCssClass:
+                    newProposalsData.length > 0 ? 'hide' : 'show',
 
-                "pastProposals": pastProposalsData,
-                "pastProposalsTableCssClass": pastProposalsData.length > 0 ? "show" : "hide",
-                "pastProposalsNoDataBoxCssClass": pastProposalsData.length > 0 ? "hide" : "show",
+                pastProposals: pastProposalsData,
+                pastProposalsTableCssClass:
+                    pastProposalsData.length > 0 ? 'show' : 'hide',
+                pastProposalsNoDataBoxCssClass:
+                    pastProposalsData.length > 0 ? 'hide' : 'show',
             },
-            "InlineCss": true,
-            "From": "info@senatelabs.xyz",
-            "To": `${"eugen.ptr@gmail.com"}`,
+            InlineCss: true,
+            From: 'info@senatelabs.xyz',
+            To: `${'eugen.ptr@gmail.com'}`,
             // "To": `${user.email}`,
             // "Bcc": "kohh.reading@gmail.com,eugen.ptr@gmail.com,contact@andreiv.com,paulo@hey.com",
-            "Tag": "Daily Roundup",
-            "Headers": [
+            Tag: 'Daily Roundup',
+            Headers: [
                 {
-                    "Name": "CUSTOM-HEADER",
-                    "Value": "value"
-                }
+                    Name: 'CUSTOM-HEADER',
+                    Value: 'value',
+                },
             ],
-            "TrackOpens": true,
-            "Metadata": {
-                "color": "blue",
-                "client-id": "12345"
+            TrackOpens: true,
+            Metadata: {
+                color: 'blue',
+                'client-id': '12345',
             },
-            "MessageStream": "outbound"
+            MessageStream: 'outbound',
         })
 
-        console.log(`Email sent to ${user.email}`, response);
+        console.log(`Email sent to ${user.email}`, response)
     }
 }
 
