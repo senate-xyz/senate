@@ -1,7 +1,4 @@
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import { useAccount, useDisconnect } from 'wagmi'
-import { trpc } from '../../../utils/trpc'
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
@@ -25,18 +22,6 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
 ]
 
 const NotificationSettings = () => {
-    const { address } = useAccount()
-    const { disconnect } = useDisconnect()
-
-    const currentEmail = trpc.user.settings.email.useQuery()
-    const storeEmail = trpc.user.settings.setEmail.useMutation()
-
-    const [email, setEmail] = useState('')
-
-    useEffect(() => {
-        setEmail(String(currentEmail.data))
-    }, [currentEmail.data])
-
     return (
         <div className="flex grow flex-col bg-[#1E1B20] p-5">
             <div className="flex w-full flex-row gap-10">
