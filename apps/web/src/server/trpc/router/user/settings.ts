@@ -2,8 +2,41 @@ import { prisma } from '@senate/database'
 import { z } from 'zod'
 import { RefreshStatus } from '@senate/common-types'
 import { router, publicProcedure } from '../../trpc'
+import { Input } from 'postcss'
 
-export const userVotersRouter = router({
+export const userSettingsRouter = router({
+    email: publicProcedure.query(async ({ ctx }) => {
+        if (!ctx.session) return
+
+        const user = await prisma.user.findFirstOrThrow({
+            where: {
+                name: String(ctx.session?.user?.name),
+            },
+        })
+        return user.email
+    }),
+
+    setEmail: publicProcedure
+        .input(
+            z.object({
+                emailAddress: z.string(),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            if (!ctx.session) return
+
+            const user = await prisma.user.update({
+                where: {
+                    name: String(ctx.session?.user?.name),
+                },
+                data: {
+                    email: input.emailAddress,
+                },
+            })
+
+            return user.email
+        }),
+
     voters: publicProcedure.query(async ({ ctx }) => {
         if (!ctx.session) return
 

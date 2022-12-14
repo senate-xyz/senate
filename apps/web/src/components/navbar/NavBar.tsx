@@ -67,7 +67,7 @@ export default function NavBar() {
                     )}
                 </Link>
 
-                <Link href={`/dashboard/settings`}>
+                <Link href={`/dashboard/settings/account`}>
                     {asPath.includes('settings') ? (
                         <div className="flex flex-col items-center">
                             <Image
