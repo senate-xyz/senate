@@ -22,13 +22,17 @@ const now: number = Date.now()
 schedule(String(process.env.ROUNDUP_CRON_INTERVAL) ?? "* * 31 2 *", async function () {
     if (!Boolean(process.env.ROUNDUP_ENABLE)) return
 
+    console.log('Starting roundup cron job...');
     await clearNotificationsTable();
+    console.log('Notifications table cleared')
     await addNewProposals();
+    console.log('New proposals added')
     await addEndingProposals();
+    console.log('Ending proposals added')
     await addPastProposals();
+    console.log('Past proposals added')
     
     await sendRoundupEmails();
-
     console.log('Emails have been sent')
 })
 
