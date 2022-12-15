@@ -12,7 +12,6 @@ import {
 
 config()
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const client = new ServerClient(process.env.POSTMARK_TOKEN ?? 'Missing Token')
 const oneMonth = 2592000000
 const threeDays = 259200000
