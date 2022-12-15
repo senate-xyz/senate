@@ -3,13 +3,13 @@ import { router } from '../../trpc'
 import { appRouter } from '../_app'
 import { userProposalsRouter } from './proposals'
 import { userSubscriptionsRouter } from './subscriptions'
-import { userVotersRouter } from './voters'
+import { userSettingsRouter } from './settings'
 import { userVotesRouter } from './votes'
 
 export const userRouter = router({
     proposals: userProposalsRouter,
     subscriptions: userSubscriptionsRouter,
-    voters: userVotersRouter,
+    settings: userSettingsRouter,
     votes: userVotesRouter,
 })
 

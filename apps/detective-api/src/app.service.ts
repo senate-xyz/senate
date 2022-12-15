@@ -16,7 +16,6 @@ import { updateMakerVotes } from './votes/makerVotes'
 import { updateSnapshotVotes } from './votes/snapshotVotes'
 
 import { prisma } from '@senate/database'
-import { RefreshStatus } from '@senate/common-types'
 
 @Injectable()
 export class AppService {

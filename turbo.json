@@ -15,7 +15,9 @@
         "PORT",
         "DETECTIVE_URL",
         "POSTMARK_TOKEN",
-        "ROUNDUP_ENABLE"
+        "VOTING_COUNTDOWN_TOKEN",
+        "ROUNDUP_ENABLE",
+        "IPFS_GATEWAY_URL"
       ]
     },
     "start": {},

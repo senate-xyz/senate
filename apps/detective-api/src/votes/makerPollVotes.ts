@@ -58,7 +58,7 @@ export const updateMakerPollVotes = async (
                     voterAddress: voterAddress,
                     voteDaoId: daoHandler.daoId,
                     voteProposalId: proposal.id,
-                }
+                },
             })
 
             await prisma.vote.upsert({

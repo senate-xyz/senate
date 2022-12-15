@@ -71,7 +71,7 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
             logger.log(
                 `Updating proposal ${proposalOnChainId}: ${title} with url ${proposalUrl}`
             )
-            console.log('\n');
+            console.log('\n')
 
             await prisma.dAOHandler.update({
                 where: {
@@ -125,7 +125,7 @@ const fetchProposalInfoFromIPFS = async (
         title = response.data.title
     } catch (error) {
         title = 'Unknown'
-        console.error(error);
+        console.error(error)
     }
 
     return title
