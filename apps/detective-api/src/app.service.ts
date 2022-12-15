@@ -24,7 +24,7 @@ export class AppService {
 
     async updateProposals(daoId: string) {
         const dao = await prisma.dAO
-            .findFirstOrThrow({
+            .findFirst({
                 where: {
                     id: daoId,
                 },

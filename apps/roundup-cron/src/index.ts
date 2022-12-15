@@ -20,11 +20,9 @@ const threeDays = 259200000
 const oneDay = 86400000
 const now: number = Date.now()
 
-// Creating a cron job which runs on every 10 second
-schedule('*/15 * * * * *', async function () {
+// Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
+schedule(String(process.env.ROUNDUP_CRON_INTERVAL) ?? "* * 31 2 *", async function () {
     if (!Boolean(process.env.ROUNDUP_ENABLE)) return
-
-    console.log('running a task every 30 second')
 
     await clearNotificationsTable();
     await addNewProposals();
@@ -264,8 +262,8 @@ const formatEmailTableData = async (user: UserWithVotingAddresses, notificationT
 
         return {
             votingStatus: voted ? "Voted" : "Not voted yet",
-            rowBackground: voted ? "green" : "red",
-            proposalName: notification.proposal.name,
+            votingStatusIconUrl: "https://i.postimg.cc/zD4t0ykw/not-voted-yet.png",
+            proposalName: notification.proposal.name.length > 100 ? notification.proposal.name.substring(0, 100) + "..." : notification.proposal.name,
             proposalUrl: notification.proposal.url,
             daoLogoUrl: notification.proposal.dao.picture,
             endHoursUTC: formatTwoDigit(notification.proposal.timeEnd.getUTCHours()),
@@ -314,7 +312,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
                 color_primary: "000000",
                 color_text: "000000",
                 color_bg: "FFFFFF",
-                transparent: "1",
+                transparent: "0",
                 font_size: 26,
                 label_font_size: 8,
                 expired_mes_on: 1,
@@ -351,12 +349,18 @@ const sendRoundupEmails = async () => {
     })
 
     for (const user of users) {
+        
+        if (!user.email)
+            continue;
+
         let endingSoonProposalsData = await formatEmailTableData(user, RoundupNotificationType.ENDING_SOON);
         let newProposalsData = await formatEmailTableData(user, RoundupNotificationType.NEW);
         let pastProposalsData = await formatEmailTableData(user, RoundupNotificationType.PAST);
 
+        let to : string = process.env.EXEC_ENV === 'PROD' ? String(user.email) : String(process.env.TEST_EMAIL);
+
         let response = await client.sendEmailWithTemplate({
-        "TemplateAlias": "roundup",
+        "TemplateAlias": "hifi-roundup",
         "TemplateModel": {
                 "todaysDate": todaysDate,
                 "endingSoonProposals": endingSoonProposalsData,
@@ -373,9 +377,8 @@ const sendRoundupEmails = async () => {
             },
             "InlineCss": true,
             "From": "info@senatelabs.xyz",
-            "To": `${"eugen.ptr@gmail.com"}`,
-            // "To": `${user.email}`,
-            // "Bcc": "kohh.reading@gmail.com,eugen.ptr@gmail.com,contact@andreiv.com,paulo@hey.com",
+            "To": to,
+            "Bcc": process.env.ROUNDUP_BCC_EMAILS ?? "",
             "Tag": "Daily Roundup",
             "Headers": [
                 {

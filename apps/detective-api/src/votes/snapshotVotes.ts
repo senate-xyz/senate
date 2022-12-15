@@ -136,7 +136,7 @@ export const updateSnapshotVotes = async (
                 }
             }
     } catch (err) {
-        logger.error('Error while updating snapshot proposals', err)
+        logger.error('Error while updating snapshot votes', err)
         throw new InternalServerErrorException()
     }
 
