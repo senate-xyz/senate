@@ -55,13 +55,7 @@ export const updateSnapshotProposals = async (
 
         logger.log(`got ${proposals.length} proposals for ${daoName}`)
 
-        if (
-            proposals.length >
-            (await prisma.proposal.count({
-                where: { daoId: daoHandler.daoId },
-            }))
-        ) {
-            await prisma
+        await prisma
                 .$transaction(
                     proposals.map((proposal) =>
                         prisma.proposal.upsert({
@@ -98,9 +92,6 @@ export const updateSnapshotProposals = async (
                         )
                     return res
                 })
-        } else {
-            logger.log(`upserted 0 snapshot proposals for ${daoName}`)
-        }
     } catch (err) {
         logger.error('Error while updating snapshot proposals', err)
         throw new InternalServerErrorException()
