@@ -45,10 +45,13 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                         },
                         create: {
                             name: siwe.address,
+                            newUser: true,
+                            terms: false,
                             email: '',
                         },
                         update: {
                             name: siwe.address,
+                            newUser: false,
                         },
                     })
 
@@ -103,12 +106,12 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                 return session
             },
         },
-        // https://next-auth.js.org/configuration/providers/oauth
         providers,
         secret: process.env.NEXTAUTH_SECRET,
         session: {
             strategy: 'jwt',
         },
+        debug: true,
     }
 }
 
@@ -116,20 +119,6 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
 // https://next-auth.js.org/configuration/options
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
     const authOptions = getAuthOptions(req)
-
-    if (!Array.isArray(req.query.nextauth)) {
-        res.status(400).send('Bad request')
-        return
-    }
-
-    const isDefaultSigninPage =
-        req.method === 'GET' &&
-        req.query.nextauth.find((value) => value === 'signin')
-
-    // Hide Sign-In with Ethereum from default sign page
-    if (isDefaultSigninPage) {
-        authOptions.providers.pop()
-    }
 
     return await NextAuth(req, res, authOptions)
 }

@@ -54,7 +54,7 @@ const Mid = () => {
 
                 <div className="content-center justify-center">
                     <button className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700">
-                        <Link href="/dashboard">
+                        <Link href="/dashboard/daos">
                             <p>Launch App</p>
                         </Link>
                     </button>

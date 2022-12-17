@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 
 export default function NavBar() {
-    const { asPath } = useRouter()
+    const router = useRouter()
 
     return (
         <div className="flex min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black">
@@ -18,7 +18,7 @@ export default function NavBar() {
 
             <div className="flex flex-col gap-5">
                 <Link href={`/dashboard/daos`}>
-                    {asPath.includes('daos') ? (
+                    {router.asPath.includes('daos') ? (
                         <div className="flex flex-col items-center">
                             <Image
                                 src="/assets/Icon/DAOs/Active.svg"
@@ -42,7 +42,7 @@ export default function NavBar() {
                 </Link>
 
                 <Link href={`/dashboard/proposals/active`}>
-                    {asPath.includes('proposals') ? (
+                    {router.asPath.includes('proposals') ? (
                         <div className="flex flex-col items-center">
                             <Image
                                 src="/assets/Icon/Proposals/Active.svg"
@@ -68,7 +68,7 @@ export default function NavBar() {
                 </Link>
 
                 <Link href={`/dashboard/settings/account`}>
-                    {asPath.includes('settings') ? (
+                    {router.asPath.includes('settings') ? (
                         <div className="flex flex-col items-center">
                             <Image
                                 src="/assets/Icon/Settings/Active.svg"
