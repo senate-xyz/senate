@@ -14,11 +14,12 @@ const NewUser = () => {
     const storeNewUser = trpc.user.settings.setNewUser.useMutation()
 
     const newUser = trpc.user.settings.newUser.useQuery()
+
     if (newUser.data) {
         if (!newUser.data.newUser) {
             setTimeout(() => {
                 router.push('/dashboard/daos')
-            }, 10000)
+            }, 12000)
         }
     }
 
