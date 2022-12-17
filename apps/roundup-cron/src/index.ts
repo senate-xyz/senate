@@ -267,15 +267,17 @@ const formatEmailTableData = async (
         const votingStatus = voted ? "Voted" :
             (notificationType == RoundupNotificationType.PAST ? "Didn't vote" : "Not voted yet");
 
-        const votingStatusIconUrl = voted ? process.env.WEBAPP_URL + "assets/Icon/Voted.svg" :
-            (notificationType == RoundupNotificationType.PAST ? process.env.WEBAPP_URL + "assets/Icon/DidntVote.svg" : process.env.WEBAPP_URL + "assets/Icon/NotVotedYet.svg");
+        const votingStatusIconUrl = voted ? process.env.WEBAPP_URL + "/assets/Icon/Voted.png" :
+            (notificationType == RoundupNotificationType.PAST ? process.env.WEBAPP_URL + "/assets/Icon/DidntVote.png" : process.env.WEBAPP_URL + "/assets/Icon/NotVotedYet.png");
+
+        console.log("Voting status icon url: " + votingStatusIconUrl);
 
         return {
             votingStatus: votingStatus,
             votingStatusIconUrl: votingStatusIconUrl,
             proposalName: notification.proposal.name.length > 100 ? notification.proposal.name.substring(0, 100) + "..." : notification.proposal.name,
             proposalUrl: notification.proposal.url,
-            daoLogoUrl: notification.proposal.dao.picture,
+            daoLogoUrl: process.env.WEBAPP_URL + notification.proposal.dao.picture,
             endHoursUTC: formatTwoDigit(
                 notification.proposal.timeEnd.getUTCHours()
             ),
@@ -383,7 +385,7 @@ const sendRoundupEmails = async () => {
         let response = await client.sendEmailWithTemplate({
         "TemplateAlias": "daily-bulletin",
         "TemplateModel": {
-                "senateLogoUrl": process.env.WEBAPP_URL + "assets/Senate_Logo/64/White.svg",
+                "senateLogoUrl": process.env.WEBAPP_URL + "/assets/Senate_Logo/64/White.png",
                 "todaysDate": todaysDate,
                 "endingSoonProposals": endingSoonProposalsData,
                 "endingSoonProposalsTableCssClass": endingSoonProposalsData.length > 0 ? "show" : "hide",
@@ -397,9 +399,9 @@ const sendRoundupEmails = async () => {
                 "pastProposalsTableCssClass": pastProposalsData.length > 0 ? "show" : "hide",
                 "pastProposalsNoDataBoxCssClass": pastProposalsData.length > 0 ? "hide" : "show",
 
-                "twitterIconUrl": process.env.WEBAPP_URL + "assets/Icon/TwitterWhite.svg",
-                "discordIconUrl": process.env.WEBAPP_URL + "assets/Icon/DiscordWhite.svg",
-                "githubIconUrl": process.env.WEBAPP_URL + "assets/Icon/GithubWhite.svg",
+                "twitterIconUrl": process.env.WEBAPP_URL + "/assets/Icon/TwitterWhite.png",
+                "discordIconUrl": process.env.WEBAPP_URL + "/assets/Icon/DiscordWhite.png",
+                "githubIconUrl": process.env.WEBAPP_URL + "/assets/Icon/GithubWhite.png",
             },
             "InlineCss": true,
             "From": "info@senatelabs.xyz",
