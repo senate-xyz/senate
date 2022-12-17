@@ -270,8 +270,6 @@ const formatEmailTableData = async (
         const votingStatusIconUrl = voted ? process.env.WEBAPP_URL + "/assets/Icon/Voted.png" :
             (notificationType == RoundupNotificationType.PAST ? process.env.WEBAPP_URL + "/assets/Icon/DidntVote.png" : process.env.WEBAPP_URL + "/assets/Icon/NotVotedYet.png");
 
-        console.log("Voting status icon url: " + votingStatusIconUrl);
-
         return {
             votingStatus: votingStatus,
             votingStatusIconUrl: votingStatusIconUrl,
