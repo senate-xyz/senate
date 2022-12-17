@@ -37,6 +37,65 @@ export const userSettingsRouter = router({
             return user.email
         }),
 
+    setTerms: publicProcedure
+        .input(
+            z.object({
+                value: z.boolean(),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            if (!ctx.session) return
+
+            const user = await prisma.user.update({
+                where: {
+                    name: String(ctx.session?.user?.name),
+                },
+                data: {
+                    terms: input.value,
+                },
+            })
+
+            return user.terms
+        }),
+
+    setNewUser: publicProcedure
+        .input(
+            z.object({
+                value: z.boolean(),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            if (!ctx.session) return
+
+            const user = await prisma.user.update({
+                where: {
+                    name: String(ctx.session?.user?.name),
+                },
+                data: {
+                    newUser: input.value,
+                },
+            })
+
+            return user.newUser
+        }),
+
+    newUser: publicProcedure.query(async ({ ctx }) => {
+        let result = true
+
+        const user = await prisma.user.findFirst({
+            where: {
+                name: { equals: String(ctx.session?.user?.name) },
+            },
+            select: {
+                newUser: true,
+            },
+        })
+
+        result = user?.newUser ?? true
+
+        return { newUser: result }
+    }),
+
     voters: publicProcedure.query(async ({ ctx }) => {
         if (!ctx.session) return
 

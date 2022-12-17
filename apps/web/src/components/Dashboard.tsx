@@ -9,7 +9,6 @@ const Dashboard = (props: { title: string; component: JSX.Element }) => {
         <div
             className="h-full min-h-screen w-full bg-black"
             onWheel={(e) => {
-                console.log(window.scrollY)
                 if (window.scrollY > 0) {
                     setHeaderHeight('h-[96px]')
                     setComponentPadding('pt-[96px]')
