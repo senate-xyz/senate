@@ -91,9 +91,6 @@ const addNewProposals = async () => {
                 })
             )
             .then((res) => {
-                if (res) console.log(`Inserted ${res.length} notifications`)
-                else console.log('Inserted 0 notifications')
-
                 return res
             })
     }
@@ -160,9 +157,6 @@ const addEndingProposals = async () => {
                 })
             )
             .then((res) => {
-                if (res) console.log(`Inserted ${res.length} notifications`)
-                else console.log('Inserted 0 notifications')
-
                 return res
             })
     }
@@ -229,9 +223,6 @@ const addPastProposals = async () => {
                 })
             )
             .then((res) => {
-                if (res) console.log(`Inserted ${res.length} notifications`)
-                else console.log('Inserted 0 notifications')
-
                 return res
             })
     }
@@ -273,9 +264,15 @@ const formatEmailTableData = async (
             notification.proposal.timeEnd
         )
 
+        const votingStatus = voted ? "Voted" :
+            (notificationType == RoundupNotificationType.PAST ? "Didn't vote" : "Not voted yet");
+
+        const votingStatusIconUrl = voted ? process.env.WEBAPP_URL + "assets/Icon/Voted.svg" :
+            (notificationType == RoundupNotificationType.PAST ? process.env.WEBAPP_URL + "assets/Icon/DidntVote.svg" : process.env.WEBAPP_URL + "assets/Icon/NotVotedYet.svg");
+
         return {
-            votingStatus: voted ? "Voted" : "Not voted yet",
-            votingStatusIconUrl: "https://i.postimg.cc/zD4t0ykw/not-voted-yet.png",
+            votingStatus: votingStatus,
+            votingStatusIconUrl: votingStatusIconUrl,
             proposalName: notification.proposal.name.length > 100 ? notification.proposal.name.substring(0, 100) + "..." : notification.proposal.name,
             proposalUrl: notification.proposal.url,
             daoLogoUrl: notification.proposal.dao.picture,
@@ -384,8 +381,9 @@ const sendRoundupEmails = async () => {
         let to : string = process.env.EXEC_ENV === 'PROD' ? String(user.email) : String(process.env.TEST_EMAIL);
 
         let response = await client.sendEmailWithTemplate({
-        "TemplateAlias": "hifi-roundup",
+        "TemplateAlias": "daily-bulletin",
         "TemplateModel": {
+                "senateLogoUrl": process.env.WEBAPP_URL + "assets/Senate_Logo/64/White.svg",
                 "todaysDate": todaysDate,
                 "endingSoonProposals": endingSoonProposalsData,
                 "endingSoonProposalsTableCssClass": endingSoonProposalsData.length > 0 ? "show" : "hide",
@@ -398,23 +396,17 @@ const sendRoundupEmails = async () => {
                 "pastProposals": pastProposalsData,
                 "pastProposalsTableCssClass": pastProposalsData.length > 0 ? "show" : "hide",
                 "pastProposalsNoDataBoxCssClass": pastProposalsData.length > 0 ? "hide" : "show",
+
+                "twitterIconUrl": process.env.WEBAPP_URL + "assets/Icon/TwitterWhite.svg",
+                "discordIconUrl": process.env.WEBAPP_URL + "assets/Icon/DiscordWhite.svg",
+                "githubIconUrl": process.env.WEBAPP_URL + "assets/Icon/GithubWhite.svg",
             },
             "InlineCss": true,
             "From": "info@senatelabs.xyz",
             "To": to,
             "Bcc": process.env.ROUNDUP_BCC_EMAILS ?? "",
-            "Tag": "Daily Roundup",
-            "Headers": [
-                {
-                    Name: 'CUSTOM-HEADER',
-                    Value: 'value',
-                },
-            ],
+            "Tag": "Daily Bulletin",
             TrackOpens: true,
-            Metadata: {
-                color: 'blue',
-                'client-id': '12345',
-            },
             MessageStream: 'outbound',
         })
 
