@@ -5,12 +5,20 @@
 Table User {
   id String [pk]
   newUser Boolean [not null]
-  terms Boolean [not null]
+  acceptedTerms Boolean [not null]
   name String [unique, not null]
   email String [not null]
   voters Voter [not null]
   subscriptions Subscription [not null]
   notifications Notification [not null]
+  userSettings UserSettings
+}
+
+Table UserSettings {
+  id String [pk]
+  user User [not null]
+  userId String [unique, not null]
+  dailyBulletinEmail Boolean [not null, default: true]
 }
 
 Table Voter {
@@ -162,6 +170,8 @@ Enum RefreshStatus {
   PENDING
   DONE
 }
+
+Ref: UserSettings.userId - User.id
 
 Ref: DAOHandler.daoId > DAO.id [delete: Cascade]
 

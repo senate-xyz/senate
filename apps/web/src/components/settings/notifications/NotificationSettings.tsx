@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { trpc } from '../../../utils/trpc'
+import { m } from 'framer-motion'
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
@@ -22,6 +24,11 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
 ]
 
 const NotificationSettings = () => {
+    const dailyBulletinSetting = trpc.user.settings.userSettings.useQuery()
+    const setDailyBulletin = trpc.user.settings.setDailyBulletin.useMutation()
+
+    if (!dailyBulletinSetting.data) return
+
     return (
         <div className="flex grow flex-col bg-[#1E1B20] p-5">
             <div className="flex w-full flex-row gap-10">
@@ -59,7 +66,23 @@ const NotificationSettings = () => {
                             <label className="relative inline-flex cursor-pointer items-center bg-[#5EF413]">
                                 <input
                                     type="checkbox"
-                                    value=""
+                                    checked={Boolean(
+                                        dailyBulletinSetting.data
+                                            .dailyBulletinEmail
+                                    )}
+                                    onChange={(e) => {
+                                        console.log(e.target.checked)
+                                        setDailyBulletin.mutate(
+                                            {
+                                                value: e.target.checked,
+                                            },
+                                            {
+                                                onSettled() {
+                                                    dailyBulletinSetting.refetch()
+                                                },
+                                            }
+                                        )
+                                    }}
                                     className="peer sr-only"
                                 />
                                 <div className="peer h-6 w-11 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[##5EF413] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300"></div>

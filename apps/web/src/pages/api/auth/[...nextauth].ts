@@ -46,8 +46,13 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                         create: {
                             name: siwe.address,
                             newUser: true,
-                            terms: false,
+                            acceptedTerms: false,
                             email: '',
+                            userSettings: {
+                                create: {
+                                    dailyBulletinEmail: true,
+                                },
+                            },
                         },
                         update: {
                             name: siwe.address,
