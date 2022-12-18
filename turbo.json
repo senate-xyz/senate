@@ -17,7 +17,12 @@
         "POSTMARK_TOKEN",
         "VOTING_COUNTDOWN_TOKEN",
         "ROUNDUP_ENABLE",
-        "IPFS_GATEWAY_URL"
+        "IPFS_GATEWAY_URL",
+        "WEBAPP_URL",
+        "EXEC_ENV",
+        "TEST_EMAIL",
+        "ROUNDUP_BCC_EMAILS",
+        "ROUNDUP_CRON_INTERVAL"
       ]
     },
     "start": {},

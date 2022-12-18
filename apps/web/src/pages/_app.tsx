@@ -11,14 +11,14 @@ import {
     getDefaultWallets,
     RainbowKitProvider,
 } from '@rainbow-me/rainbowkit'
-import { chain, configureChains, createClient, WagmiConfig } from 'wagmi'
+import { mainnet, configureChains, createClient, WagmiConfig } from 'wagmi'
 import { infuraProvider } from 'wagmi/providers/infura'
 import { publicProvider } from 'wagmi/providers/public'
 import { trpc } from '../utils/trpc'
 import Head from 'next/head'
 
 const { chains, provider } = configureChains(
-    [chain.mainnet],
+    [mainnet],
     [
         infuraProvider({ apiKey: process.env.PROVIDER_URL ?? 'missing_key' }),
         publicProvider(),

@@ -2,7 +2,6 @@ import { prisma } from '@senate/database'
 import { z } from 'zod'
 import { RefreshStatus } from '@senate/common-types'
 import { router, publicProcedure } from '../../trpc'
-import { Input } from 'postcss'
 
 export const userSettingsRouter = router({
     email: publicProcedure.query(async ({ ctx }) => {

@@ -56,42 +56,39 @@ export const updateSnapshotProposals = async (
         logger.log(`got ${proposals.length} proposals for ${daoName}`)
 
         await prisma
-                .$transaction(
-                    proposals.map((proposal) =>
-                        prisma.proposal.upsert({
-                            where: {
-                                externalId_daoId: {
-                                    daoId: daoHandler.daoId,
-                                    externalId: proposal.id,
-                                },
-                            },
-                            update: {},
-                            create: {
-                                externalId: proposal.id,
-                                name: String(proposal.title),
+            .$transaction(
+                proposals.map((proposal) =>
+                    prisma.proposal.upsert({
+                        where: {
+                            externalId_daoId: {
                                 daoId: daoHandler.daoId,
-                                daoHandlerId: daoHandler.id,
-                                proposalType: ProposalType.SNAPSHOT,
-                                timeEnd: new Date(proposal.end * 1000),
-                                timeStart: new Date(proposal.start * 1000),
-                                timeCreated: new Date(proposal.created * 1000),
-                                data: {},
-                                url: proposal.link,
+                                externalId: proposal.id,
                             },
-                        })
-                    )
+                        },
+                        update: {},
+                        create: {
+                            externalId: proposal.id,
+                            name: String(proposal.title),
+                            daoId: daoHandler.daoId,
+                            daoHandlerId: daoHandler.id,
+                            proposalType: ProposalType.SNAPSHOT,
+                            timeEnd: new Date(proposal.end * 1000),
+                            timeStart: new Date(proposal.start * 1000),
+                            timeCreated: new Date(proposal.created * 1000),
+                            data: {},
+                            url: proposal.link,
+                        },
+                    })
                 )
-                .then((res) => {
-                    if (res)
-                        logger.log(
-                            `upserted ${res.length} snapshot proposals for ${daoName}`
-                        )
-                    else
-                        logger.log(
-                            `upserted 0 snapshot proposals for ${daoName}`
-                        )
-                    return res
-                })
+            )
+            .then((res) => {
+                if (res)
+                    logger.log(
+                        `upserted ${res.length} snapshot proposals for ${daoName}`
+                    )
+                else logger.log(`upserted 0 snapshot proposals for ${daoName}`)
+                return res
+            })
     } catch (err) {
         logger.error('Error while updating snapshot proposals', err)
         throw new InternalServerErrorException()
