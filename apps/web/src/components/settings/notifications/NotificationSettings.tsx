@@ -27,7 +27,7 @@ const NotificationSettings = () => {
     const dailyBulletinSetting = trpc.user.settings.userSettings.useQuery()
     const setDailyBulletin = trpc.user.settings.setDailyBulletin.useMutation()
 
-    if (!dailyBulletinSetting.data) return
+    if (!dailyBulletinSetting.data) return <div />
 
     return (
         <div className="flex grow flex-col bg-[#1E1B20] p-5">
