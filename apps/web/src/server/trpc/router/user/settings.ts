@@ -18,7 +18,7 @@ export const userSettingsRouter = router({
     setEmail: publicProcedure
         .input(
             z.object({
-                emailAddress: z.string(),
+                emailAddress: z.string().email(),
             })
         )
         .mutation(async ({ ctx, input }) => {
