@@ -262,7 +262,7 @@ const PastProposal = (props: {
                             data-testid="proposal-not-voted"
                         >
                             <Image
-                                src="/assets/Icon/Not Voted Yet.svg"
+                                src="/assets/Icon/NotVotedYet.svg"
                                 alt="voted"
                                 width={32}
                                 height={32}
