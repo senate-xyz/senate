@@ -112,7 +112,7 @@ const NewUser = () => {
                                         }}
                                         className="h-4 w-4 rounded border-gray-300 bg-gray-100  accent-gray-100 checked:bg-gray-600 focus:ring-2"
                                     />
-                                    <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    <label className="ml-2 text-sm font-medium text-white">
                                         I agree to the{' '}
                                         <Link
                                             href={'/terms'}
