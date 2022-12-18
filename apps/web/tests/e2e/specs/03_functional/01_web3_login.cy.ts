@@ -13,8 +13,8 @@ describe('login', () => {
         cy.contains('Send message').click()
         cy.confirmMetamaskSignatureRequest()
         cy.get('[data-testid="rk-account-button"]').should(
-            'have.text',
-            '0 ETH🍣0xf3…2266'
+            'contain.text',
+            '🍣0xf3…2266'
         )
         /* ==== End Cypress Studio ==== */
     })
@@ -25,8 +25,8 @@ describe('login', () => {
         cy.contains('Send message').click()
         cy.confirmMetamaskSignatureRequest()
         cy.get('[data-testid="rk-account-button"]').should(
-            'have.text',
-            '0 ETH🍣0xf3…2266'
+            'contain.text',
+            '🍣0xf3…2266'
         )
         /* ==== End Cypress Studio ==== */
     })
