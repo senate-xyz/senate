@@ -88,7 +88,7 @@ export const userSettingsRouter = router({
         }),
 
     newUser: publicProcedure.query(async ({ ctx }) => {
-        let result = true
+        let result = false
 
         const user = await prisma.user.findFirst({
             where: {
@@ -99,7 +99,7 @@ export const userSettingsRouter = router({
             },
         })
 
-        result = user?.newUser ?? true
+        result = user?.newUser ?? false
 
         return { newUser: result }
     }),
