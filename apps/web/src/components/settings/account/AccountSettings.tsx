@@ -92,7 +92,7 @@ const AccountSettings = () => {
                                 />
                             ) : (
                                 <input
-                                    className="h-full w-[320px] px-2"
+                                    className="h-full w-[320px] px-2 text-black"
                                     value={email}
                                     onChange={(e) => {
                                         setEmail(e.target.value)

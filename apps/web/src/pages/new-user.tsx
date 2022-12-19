@@ -77,7 +77,7 @@ const NewUser = () => {
                                 {address && (
                                     <div className="flex h-[46px] flex-col">
                                         <input
-                                            className="h-full w-full bg-[#D9D9D9] px-2"
+                                            className="h-full w-full bg-[#D9D9D9] px-2 text-black"
                                             value={email}
                                             onChange={(e) =>
                                                 setEmail(e.target.value)
