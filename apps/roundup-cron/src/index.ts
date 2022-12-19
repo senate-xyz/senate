@@ -113,7 +113,7 @@ const addNewProposals = async () => {
         console.log(`Found 0 new proposals`)
     }
 
-    insertNotifications(proposals, RoundupNotificationType.NEW)
+    await insertNotifications(proposals, RoundupNotificationType.NEW)
 
     console.log('\n')
 }
@@ -147,7 +147,7 @@ const addEndingProposals = async () => {
         console.log(`Found 0 ending soon proposals`)
     }
 
-    insertNotifications(proposals, RoundupNotificationType.ENDING_SOON);
+    await insertNotifications(proposals, RoundupNotificationType.ENDING_SOON);
 
     console.log('\n')
 }
@@ -181,7 +181,7 @@ const addPastProposals = async () => {
         console.log(`Found 0 past proposals`)
     }
 
-    insertNotifications(proposals, RoundupNotificationType.PAST)
+    await insertNotifications(proposals, RoundupNotificationType.PAST)
 
     console.log('\n')
 }
@@ -330,6 +330,14 @@ const sendRoundupEmails = async () => {
     const todaysDate = new Date(now).toLocaleDateString(undefined, dateOptions)
 
     const users = await prisma.user.findMany({
+        where: {
+            email: {
+                not: ''
+            },
+            userSettings: {
+                dailyBulletinEmail: true
+            },
+        },
         include: {
             voters: true,
         },
