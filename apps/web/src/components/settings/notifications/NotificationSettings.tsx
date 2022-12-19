@@ -26,8 +26,6 @@ const NotificationSettings = () => {
     const dailyBulletinSetting = trpc.user.settings.userSettings.useQuery()
     const setDailyBulletin = trpc.user.settings.setDailyBulletin.useMutation()
 
-    if (!dailyBulletinSetting.data) return <div />
-
     return (
         <div className="flex grow flex-col bg-[#1E1B20] p-5">
             <div className="flex w-full flex-row gap-10">
@@ -67,7 +65,7 @@ const NotificationSettings = () => {
                                     type="checkbox"
                                     checked={Boolean(
                                         dailyBulletinSetting.data
-                                            .dailyBulletinEmail
+                                            ?.dailyBulletinEmail ?? false
                                     )}
                                     onChange={(e) => {
                                         console.log(e.target.checked)
