@@ -8,6 +8,7 @@ import {
     Subscription,
     UserWithVotingAddresses,
     Voter,
+    Proposal
 } from '@senate/common-types'
 
 config()
@@ -30,19 +31,70 @@ schedule(
         console.log('Notifications table cleared')
         await addNewProposals()
         console.log('New proposals added')
-        await addEndingProposals()
-        console.log('Ending proposals added')
-        await addPastProposals()
-        console.log('Past proposals added')
+    //     await addEndingProposals()
+    //     console.log('Ending proposals added')
+    //     await addPastProposals()
+    //     console.log('Past proposals added')
 
-        await sendRoundupEmails()
-        console.log('Emails have been sent')
+    //     await sendRoundupEmails()
+    //     console.log('Emails have been sent')
     }
 )
 
 const clearNotificationsTable = async () => {
     console.log('Clearing notifications table...')
     await prisma.notification.deleteMany()
+}
+
+const insertNotifications = async (proposals: Proposal[], type: RoundupNotificationType) => {
+    
+    for (const proposal of proposals) {
+
+        //Get users which should be notified
+        const users = await prisma.user.findMany({
+            where: {
+                email: {
+                    not: ''
+                },
+                userSettings: {
+                    dailyBulletinEmail: true
+                },
+                subscriptions: {
+                    some: {
+                        daoId: proposal.daoId
+                    }
+                }
+            },
+            select: {
+                id: true,
+            }
+        })
+
+        await prisma
+            .$transaction(
+                users.map((user) => {
+                    return prisma.notification.upsert({
+                        where: {
+                            proposalId_userId_type: {
+                                proposalId: proposal.id,
+                                userId: user.id,
+                                type: type,
+                            },
+                        },
+                        update: {},
+                        create: {
+                            userId: user.id,
+                            proposalId: proposal.id,
+                            daoId: proposal.daoId,
+                            type: RoundupNotificationType.NEW,
+                        },
+                    })
+                })
+            )
+            .then((res) => {
+                return res
+            })
+    }
 }
 
 const addNewProposals = async () => {
@@ -65,39 +117,7 @@ const addNewProposals = async () => {
         console.log(`Found 0 new proposals`)
     }
 
-    for (const proposal of proposals) {
-        const subscriptions: Subscription[] =
-            await prisma.subscription.findMany({
-                where: {
-                    daoId: proposal.daoId,
-                },
-            })
-
-        await prisma
-            .$transaction(
-                subscriptions.map((subscription: Subscription) => {
-                    return prisma.notification.upsert({
-                        where: {
-                            proposalId_userId_type: {
-                                proposalId: proposal.id,
-                                userId: subscription.userId,
-                                type: RoundupNotificationType.NEW,
-                            },
-                        },
-                        update: {},
-                        create: {
-                            userId: subscription.userId,
-                            proposalId: proposal.id,
-                            daoId: proposal.daoId,
-                            type: RoundupNotificationType.NEW,
-                        },
-                    })
-                })
-            )
-            .then((res) => {
-                return res
-            })
-    }
+    insertNotifications(proposals, RoundupNotificationType.NEW)
 
     console.log('\n')
 }
