@@ -95,12 +95,14 @@ export default function NavBar() {
             </div>
             <div className="flex h-full flex-col items-center justify-end gap-2">
                 <div className="flex flex-row items-end justify-between pb-16 opacity-50">
-                    <Image
-                        src="/assets/Icon/Twitter.svg"
-                        alt="twitter"
-                        width={24}
-                        height={24}
-                    />
+                    <Link href="https://twitter.com/SenateLabs">
+                        <Image
+                            src="/assets/Icon/Twitter.svg"
+                            alt="twitter"
+                            width={24}
+                            height={24}
+                        />
+                    </Link>
 
                     <Link href="https://github.com/senate-xyz/senate">
                         <Image
