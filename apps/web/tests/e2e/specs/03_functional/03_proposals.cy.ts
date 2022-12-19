@@ -12,10 +12,6 @@ describe('proposals', () => {
             cy.acceptMetamaskAccess()
             cy.get('[data-testid="rk-auth-message-button"]').click()
             cy.confirmMetamaskSignatureRequest()
-            cy.get('.h-\\[46px\\] > .h-full').type('test@test.com')
-            cy.get('#default-checkbox').check()
-            cy.get('.h-\\[42px\\]').click()
-            cy.wait(12000)
             cy.get('[data-testid="rk-account-button"]').should(
                 'contain.text',
                 '🍣0xf3…2266'
