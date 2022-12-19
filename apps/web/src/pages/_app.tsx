@@ -16,6 +16,7 @@ import { infuraProvider } from 'wagmi/providers/infura'
 import { publicProvider } from 'wagmi/providers/public'
 import { trpc } from '../utils/trpc'
 import Head from 'next/head'
+import Script from 'next/script'
 
 const { chains, provider } = configureChains(
     [mainnet],
@@ -45,38 +46,45 @@ const MyApp: AppType<{ session: Session | null }> = ({
     pageProps: { session, ...pageProps },
 }) => {
     return (
-        <WagmiConfig client={wagmiClient}>
-            <SessionProvider refetchInterval={0} session={session}>
-                <RainbowKitSiweNextAuthProvider
-                    getSiweMessageOptions={getSiweMessageOptions}
-                >
-                    <RainbowKitProvider
-                        chains={chains}
-                        theme={darkTheme({
-                            accentColor: '#262626',
-                            accentColorForeground: 'white',
-                            borderRadius: 'medium',
-                            overlayBlur: 'small',
-                        })}
+        <>
+            <Script id="show-banner">
+                {`(function(t,r,a,c,k){ c=['track','identify','converted'],t.o=t._init||{}, c.map(function(n){return t.o[n]=t.o[n]||function(){(t.o[n].q=t.o[n].q||[]).push(arguments);};}),t._init=t.o, k=r.createElement("script"),k.type="text/javascript",k.async=true,k.src="https://cdn.howuku.com/js/track.js",k.setAttribute("key",a), r.getElementsByTagName("head")[0].appendChild(k); })(window, document, "9mv6yAGkYDZV0BJEzlN34O");`}
+            </Script>
+
+            <WagmiConfig client={wagmiClient}>
+                <SessionProvider refetchInterval={0} session={session}>
+                    <RainbowKitSiweNextAuthProvider
+                        getSiweMessageOptions={getSiweMessageOptions}
                     >
-                        <Head>
-                            <title>Senate</title>
-                            <link
-                                rel="icon"
-                                type="image/png"
-                                sizes="64x64"
-                                href="/assets/Senate_Logo/64/Black.svg"
-                            />
-                            <meta
-                                name="viewport"
-                                content="initial-scale=1.0, width=device-width"
-                            />
-                        </Head>
-                        <Component {...pageProps} />
-                    </RainbowKitProvider>
-                </RainbowKitSiweNextAuthProvider>
-            </SessionProvider>
-        </WagmiConfig>
+                        <RainbowKitProvider
+                            chains={chains}
+                            theme={darkTheme({
+                                accentColor: '#262626',
+                                accentColorForeground: 'white',
+                                borderRadius: 'medium',
+                                overlayBlur: 'small',
+                            })}
+                        >
+                            <Head>
+                                <title>Senate</title>
+                                <link
+                                    rel="icon"
+                                    type="image/png"
+                                    sizes="64x64"
+                                    href="/assets/Senate_Logo/64/Black.svg"
+                                />
+                                <meta
+                                    name="viewport"
+                                    content="initial-scale=1.0, width=device-width"
+                                />
+                            </Head>
+
+                            <Component {...pageProps} />
+                        </RainbowKitProvider>
+                    </RainbowKitSiweNextAuthProvider>
+                </SessionProvider>
+            </WagmiConfig>
+        </>
     )
 }
 

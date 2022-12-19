@@ -110,6 +110,14 @@ export default function NavBar() {
                         height={24}
                     />
                 </Link>
+                <Link href="https://discord.gg/bxCCkwtP">
+                    <Image
+                        src="/assets/Icon/DiscordWhite.svg"
+                        alt="twitter"
+                        width={24}
+                        height={24}
+                    />
+                </Link>
             </div>
         </div>
     )

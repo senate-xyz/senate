@@ -246,11 +246,6 @@ export const userProposalsRouter = router({
                                 gte: new Date(Date.now() - input.endingIn),
                             },
                         },
-                        {
-                            timeEnd: {
-                                lte: new Date(),
-                            },
-                        },
                         voteStatusQuery,
                     ],
                 },
