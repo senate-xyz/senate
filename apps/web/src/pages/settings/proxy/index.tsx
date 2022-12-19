@@ -1,10 +1,10 @@
-import DashboardHeader from '../../../../components/Dashboard'
-import NavBar from '../../../../components/navbar/NavBar'
+import DashboardHeader from '../../../components/Dashboard'
+import NavBar from '../../../components/navbar/NavBar'
 import dynamic from 'next/dynamic'
 
 const SettingsContainer = () => {
     const ProxySettingsNOSRR = dynamic(
-        import('./../../../../components/settings/proxy/ProxySettings'),
+        import('./../../../components/settings/proxy/ProxySettings'),
         {
             ssr: false,
         }

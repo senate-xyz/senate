@@ -8,19 +8,19 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
         id: 0,
         name: 'Account',
         color: 'text-white text-[36px] font-bold cursor-pointer',
-        link: '/dashboard/settings/account',
+        link: '/settings/account',
     },
     {
         id: 1,
         name: 'Proxy Addresses',
         color: 'text-[#808080] text-[36px] font-light cursor-pointer',
-        link: '/dashboard/settings/proxy',
+        link: '/settings/proxy',
     },
     {
         id: 2,
         name: 'Notifications',
         color: 'text-[#808080] text-[36px] font-light cursor-pointer',
-        link: '/dashboard/settings/notifications',
+        link: '/settings/notifications',
     },
 ]
 
@@ -32,6 +32,7 @@ const AccountSettings = () => {
     const storeEmail = trpc.user.settings.setEmail.useMutation()
 
     const [email, setEmail] = useState('')
+    const [emailUpdated, setEmailUpdated] = useState(false)
 
     useEffect(() => {
         setEmail(String(currentEmail.data))
@@ -80,17 +81,23 @@ const AccountSettings = () => {
                     </div>
                     {address && (
                         <div className="flex h-[46px] flex-row items-center">
-                            {currentEmail.data != email ? (
+                            {currentEmail.data == email ? (
                                 <input
                                     className="h-full w-[320px] bg-[#D9D9D9] px-2"
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value)
+                                        setEmailUpdated(false)
+                                    }}
                                 />
                             ) : (
                                 <input
                                     className="h-full w-[320px] px-2"
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value)
+                                        setEmailUpdated(false)
+                                    }}
                                 />
                             )}
 
@@ -102,6 +109,7 @@ const AccountSettings = () => {
                                         {
                                             onSuccess() {
                                                 currentEmail.refetch()
+                                                setEmailUpdated(true)
                                             },
                                         }
                                     )
@@ -112,6 +120,11 @@ const AccountSettings = () => {
                         </div>
                     )}
                 </div>
+                {emailUpdated && (
+                    <div className="text-[18px] font-thin text-white">
+                        Email address successfully updated!
+                    </div>
+                )}
             </div>
         </div>
     )

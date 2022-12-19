@@ -2,7 +2,7 @@
 
 describe('login', () => {
     beforeEach(() => {
-        cy.visit('http://localhost:3000/dashboard/daos')
+        cy.visit('http://localhost:3000/daos')
     })
 
     it('it should do wallet connect', () => {

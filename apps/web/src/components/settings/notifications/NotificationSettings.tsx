@@ -1,25 +1,24 @@
 import Link from 'next/link'
 import { trpc } from '../../../utils/trpc'
-import { m } from 'framer-motion'
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
         id: 0,
         name: 'Account',
         color: 'text-[#808080] text-[36px] font-light cursor-pointer',
-        link: '/dashboard/settings/account',
+        link: '/settings/account',
     },
     {
         id: 1,
         name: 'Proxy Addresses',
         color: 'text-[#808080] text-[36px] font-light cursor-pointer',
-        link: '/dashboard/settings/proxy',
+        link: '/settings/proxy',
     },
     {
         id: 2,
         name: 'Notifications',
         color: 'text-white text-[36px] font-bold cursor-pointer',
-        link: '/dashboard/settings/notifications',
+        link: '/settings/notifications',
     },
 ]
 
@@ -27,7 +26,7 @@ const NotificationSettings = () => {
     const dailyBulletinSetting = trpc.user.settings.userSettings.useQuery()
     const setDailyBulletin = trpc.user.settings.setDailyBulletin.useMutation()
 
-    if (!dailyBulletinSetting.data) return
+    if (!dailyBulletinSetting.data) return <div />
 
     return (
         <div className="flex grow flex-col bg-[#1E1B20] p-5">

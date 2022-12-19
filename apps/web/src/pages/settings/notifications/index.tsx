@@ -1,11 +1,11 @@
-import DashboardHeader from '../../../../components/Dashboard'
-import NavBar from '../../../../components/navbar/NavBar'
+import DashboardHeader from '../../../components/Dashboard'
+import NavBar from '../../../components/navbar/NavBar'
 import dynamic from 'next/dynamic'
 
 const SettingsContainer = () => {
     const NotificationSettingsNOSRR = dynamic(
         import(
-            './../../../../components/settings/notifications/NotificationSettings'
+            './../../../components/settings/notifications/NotificationSettings'
         ),
         {
             ssr: false,

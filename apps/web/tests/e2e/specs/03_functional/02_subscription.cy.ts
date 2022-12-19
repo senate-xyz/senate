@@ -5,23 +5,19 @@ describe('sub', () => {
         cy.session(name, () => {
             cy.setupMetamask(bip39.generateMnemonic(), 'mainnet')
             cy.disconnectMetamaskWalletFromAllDapps()
-            cy.visit('http://localhost:3000/dashboard/daos')
+            cy.visit('http://localhost:3000/daos')
             cy.disconnectMetamaskWalletFromDapp()
             cy.get('[data-testid="rk-connect-button"]').click()
             cy.get('[data-testid="rk-wallet-option-metaMask"]').click()
             cy.acceptMetamaskAccess()
             cy.get('[data-testid="rk-auth-message-button"]').click()
             cy.confirmMetamaskSignatureRequest()
-            cy.get('.h-\\[46px\\] > .h-full').type('test@test.com')
-            cy.get('#default-checkbox').check()
-            cy.get('.h-\\[42px\\]').click()
-            cy.wait(12000)
             cy.get('[data-testid="rk-account-button"]').should(
                 'contain.text',
                 '🍣0xf3…2266'
             )
         })
-        cy.visit('http://localhost:3000/dashboard/daos')
+        cy.visit('http://localhost:3000/daos')
     }
 
     /* ==== Test Created with Cypress Studio ==== */
