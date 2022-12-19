@@ -18,7 +18,7 @@ const Dashboard = (props: { title: string; component: JSX.Element }) => {
                 }
             }}
         >
-            <div className="absolute left-0 z-20 flex min-h-[44px] w-full flex-col justify-center bg-red-200 px-4 text-center">
+            <div className="absolute left-0 z-20 flex min-h-[44px] w-full flex-col justify-center bg-red-200 px-4 text-center text-black">
                 This software is still in beta and some proposals, for some
                 DAOs, at some times, still fail to load. So it’s still not
                 totally reliable, you know? If you find something wrong or
