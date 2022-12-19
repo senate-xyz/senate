@@ -189,7 +189,7 @@ describe('proposals', () => {
         cy.visit('http://localhost:3000/proposals/active')
         /* ==== Generated with Cypress Studio ==== */
         cy.get('[data-testid="from-selector"]').select(
-            'clavg9p020000u6sgsybz2srd'
+            'clbtra0ex000097vzn2xvd3x8'
         )
         cy.get(
             ':first-child > [data-testid="col1"] > * > [data-testid="dao-name"]'
@@ -198,7 +198,7 @@ describe('proposals', () => {
             ':last-child > [data-testid="col1"] > * > [data-testid="dao-name"]'
         ).should('have.text', 'Aave')
         cy.get('[data-testid="from-selector"]').select(
-            'clavg9zvq001yu6sgnfo8r82a'
+            'clbtra9te001y97vzj5mr47w3'
         )
         cy.get(
             ':first-child > [data-testid="col1"] > * > [data-testid="dao-name"]'
@@ -216,7 +216,7 @@ describe('proposals', () => {
         /* ==== Generated with Cypress Studio ==== */
         cy.get('[data-testid="ended-selector"]').select('7776000000')
         cy.get('[data-testid="from-selector"]').select(
-            'clavg9p020000u6sgsybz2srd'
+            'clbtra0ex000097vzn2xvd3x8'
         )
         cy.get(
             ':first-child > [data-testid="col1"] > * > [data-testid="dao-name"]'
@@ -225,7 +225,7 @@ describe('proposals', () => {
             ':last-child > [data-testid="col1"] > * > [data-testid="dao-name"]'
         ).should('have.text', 'Aave')
         cy.get('[data-testid="from-selector"]').select(
-            'clavg9qs3000au6sgtua21s3g'
+            'clbtra24c000a97vzljrbb457'
         )
         cy.get(
             ':first-child > [data-testid="col1"] > * > [data-testid="dao-name"]'
@@ -234,7 +234,7 @@ describe('proposals', () => {
             ':last-child > [data-testid="col1"] > * > [data-testid="dao-name"]'
         ).should('have.text', 'MakerDAO')
         cy.get('[data-testid="from-selector"]').select(
-            'clavg9zvq001yu6sgnfo8r82a'
+            'clbtra9te001y97vzj5mr47w3'
         )
         cy.get(
             ':first-child > [data-testid="col1"] > * > [data-testid="dao-name"]'
