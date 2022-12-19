@@ -16,21 +16,21 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                         JSON.parse(credentials?.message || '{}')
                     )
 
-                    const nextAuthUrl =
-                        process.env.NEXTAUTH_URL ||
-                        (process.env.VERCEL_URL
-                            ? `https://${process.env.VERCEL_URL}`
-                            : null)
-                    if (!nextAuthUrl) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        return 'bad url' as any
-                    }
+                    // const nextAuthUrl =
+                    //     process.env.NEXTAUTH_URL ||
+                    //     (process.env.VERCEL_URL
+                    //         ? `https://${process.env.VERCEL_URL}`
+                    //         : null)
+                    // if (!nextAuthUrl) {
+                    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    //     return 'bad url' as any
+                    // }
 
-                    const nextAuthHost = new URL(nextAuthUrl).host
-                    if (siwe.domain !== nextAuthHost) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        return 'bad domain' as any
-                    }
+                    // const nextAuthHost = new URL(nextAuthUrl).host
+                    // if (siwe.domain !== nextAuthHost) {
+                    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    //     return 'bad domain' as any
+                    // }
 
                     if (siwe.nonce !== (await getCsrfToken({ req }))) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
