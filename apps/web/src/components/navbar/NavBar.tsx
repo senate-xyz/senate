@@ -17,7 +17,7 @@ export default function NavBar() {
             </Link>
 
             <div className="flex flex-col gap-5">
-                <Link href={`/dashboard/daos`}>
+                <Link href={`/daos`}>
                     {router.asPath.includes('daos') ? (
                         <div className="flex flex-col items-center">
                             <Image
@@ -41,7 +41,7 @@ export default function NavBar() {
                     )}
                 </Link>
 
-                <Link href={`/dashboard/proposals/active`}>
+                <Link href={`/proposals/active`}>
                     {router.asPath.includes('proposals') ? (
                         <div className="flex flex-col items-center">
                             <Image
@@ -67,7 +67,7 @@ export default function NavBar() {
                     )}
                 </Link>
 
-                <Link href={`/dashboard/settings/account`}>
+                <Link href={`/settings/account`}>
                     {router.asPath.includes('settings') ? (
                         <div className="flex flex-col items-center">
                             <Image

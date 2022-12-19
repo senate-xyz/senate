@@ -29,7 +29,11 @@ const Dashboard = (props: { title: string; component: JSX.Element }) => {
                         <RainbowConnect />
                     </div>
                 </div>
-                <div className={`${componentPadding}`}>{props.component}</div>
+                <div
+                    className={`flex min-h-screen flex-col ${componentPadding}`}
+                >
+                    {props.component}
+                </div>
             </div>
         </div>
     )

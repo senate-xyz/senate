@@ -1,11 +1,11 @@
 import { DAOType } from '@senate/common-types'
 
-import { trpc } from '../../../utils/trpc'
-import { FollowedDAO } from '../../../components/DAOs/FollowedDAO'
-import { UnfollowedDAO } from '../../../components/DAOs/UnfollowedDAO'
-import NavBar from '../../../components/navbar/NavBar'
+import { trpc } from '../../utils/trpc'
+import { FollowedDAO } from '../../components/DAOs/FollowedDAO'
+import { UnfollowedDAO } from '../../components/DAOs/UnfollowedDAO'
+import NavBar from '../../components/navbar/NavBar'
 
-import Dashboard from '../../../components/Dashboard'
+import Dashboard from '../../components/Dashboard'
 
 const DAOs = () => {
     const allDAOs = trpc.public.daos.useQuery()

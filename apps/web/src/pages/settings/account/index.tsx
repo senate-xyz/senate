@@ -1,10 +1,10 @@
-import DashboardHeader from '../../../../components/Dashboard'
-import NavBar from '../../../../components/navbar/NavBar'
+import DashboardHeader from '../../../components/Dashboard'
+import NavBar from '../../../components/navbar/NavBar'
 import dynamic from 'next/dynamic'
 
 const SettingsContainer = () => {
     const AccountSettingsNOSRR = dynamic(
-        import('./../../../../components/settings/account/AccountSettings'),
+        import('./../../../components/settings/account/AccountSettings'),
         {
             ssr: false,
         }

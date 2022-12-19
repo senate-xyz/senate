@@ -58,7 +58,7 @@ export const ActiveProposals = () => {
         })
 
     return (
-        <div>
+        <div className="">
             <div className="flex flex-row gap-5" data-testid="active-proposals">
                 <div className="flex h-[38px] w-[300px] flex-row items-center">
                     <label
