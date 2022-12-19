@@ -24,7 +24,7 @@ const Dashboard = (props: { title: string; component: JSX.Element }) => {
                 }
             }}
         >
-            <div className="absolute left-0 z-20 w-full justify-center bg-red-200 p-1 text-center text-black">
+            <div className="absolute left-0 z-20 w-full justify-center bg-slate-300 p-1 text-center text-black">
                 This software is still in beta and some proposals, for some
                 DAOs, at some times, fail to load. So it’s not totally reliable
                 yet. If you find something wrong or missing or just plain weird,{' '}
