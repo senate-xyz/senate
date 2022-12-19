@@ -61,6 +61,12 @@ const MyApp: AppType<{ session: Session | null }> = ({
                     >
                         <Head>
                             <title>Senate</title>
+                            <link
+                                rel="icon"
+                                type="image/png"
+                                sizes="64x64"
+                                href="/assets/Senate_Logo/64/Black.svg"
+                            />
                             <meta
                                 name="viewport"
                                 content="initial-scale=1.0, width=device-width"
