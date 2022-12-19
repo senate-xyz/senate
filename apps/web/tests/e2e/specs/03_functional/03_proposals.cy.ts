@@ -5,7 +5,7 @@ describe('proposals', () => {
         cy.session(name, () => {
             cy.setupMetamask(bip39.generateMnemonic(), 'mainnet')
             cy.disconnectMetamaskWalletFromAllDapps()
-            cy.visit('http://localhost:3000/dashboard/daos')
+            cy.visit('http://localhost:3000/daos')
             cy.disconnectMetamaskWalletFromDapp()
             cy.get('[data-testid="rk-connect-button"]').click()
             cy.get('[data-testid="rk-wallet-option-metaMask"]').click()
@@ -21,7 +21,7 @@ describe('proposals', () => {
                 '🍣0xf3…2266'
             )
         })
-        cy.visit('http://localhost:3000/dashboard/daos')
+        cy.visit('http://localhost:3000/daos')
     }
 
     /* ==== Test Created with Cypress Studio ==== */
@@ -155,13 +155,13 @@ describe('proposals', () => {
     it('goes to proposals', function () {
         /* ==== Generated with Cypress Studio ==== */
         login('testUser')
-        cy.visit('http://localhost:3000/dashboard/daos')
+        cy.visit('http://localhost:3000/daos')
     })
 
     /* ==== Test Created with Cypress Studio ==== */
     it('has active proposals', function () {
         login('testUser')
-        cy.visit('http://localhost:3000/dashboard/proposals/active')
+        cy.visit('http://localhost:3000/proposals/active')
         /* ==== Generated with Cypress Studio ==== */
         cy.get(
             ':first-child > .cursor-pointer > [data-testid="proposal-url"] > [data-testid="proposal-name"]'
@@ -175,7 +175,7 @@ describe('proposals', () => {
     /* ==== Test Created with Cypress Studio ==== */
     it('has past proposals', function () {
         login('testUser')
-        cy.visit('http://localhost:3000/dashboard/proposals/past')
+        cy.visit('http://localhost:3000/proposals/past')
         /* ==== Generated with Cypress Studio ==== */
         cy.get('[data-testid="ended-selector"]').select('7776000000')
         cy.get(
@@ -190,7 +190,7 @@ describe('proposals', () => {
     /* ==== Test Created with Cypress Studio ==== */
     it('has active proposals dao filter', function () {
         login('testUser')
-        cy.visit('http://localhost:3000/dashboard/proposals/active')
+        cy.visit('http://localhost:3000/proposals/active')
         /* ==== Generated with Cypress Studio ==== */
         cy.get('[data-testid="from-selector"]').select(
             'clavg9p020000u6sgsybz2srd'
@@ -216,7 +216,7 @@ describe('proposals', () => {
     /* ==== Test Created with Cypress Studio ==== */
     it('has past proposals dao filter', function () {
         login('testUser')
-        cy.visit('http://localhost:3000/dashboard/proposals/past')
+        cy.visit('http://localhost:3000/proposals/past')
         /* ==== Generated with Cypress Studio ==== */
         cy.get('[data-testid="ended-selector"]').select('7776000000')
         cy.get('[data-testid="from-selector"]').select(
@@ -252,7 +252,7 @@ describe('proposals', () => {
     /* ==== Test Created with Cypress Studio ==== */
     it('unsubscribes all', function () {
         login('testUser')
-        cy.visit('http://localhost:3000/dashboard/daos')
+        cy.visit('http://localhost:3000/daos')
 
         /* ==== Generated with Cypress Studio ==== */
         cy.get(

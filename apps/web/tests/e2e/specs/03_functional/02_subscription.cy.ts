@@ -5,7 +5,7 @@ describe('sub', () => {
         cy.session(name, () => {
             cy.setupMetamask(bip39.generateMnemonic(), 'mainnet')
             cy.disconnectMetamaskWalletFromAllDapps()
-            cy.visit('http://localhost:3000/dashboard/daos')
+            cy.visit('http://localhost:3000/daos')
             cy.disconnectMetamaskWalletFromDapp()
             cy.get('[data-testid="rk-connect-button"]').click()
             cy.get('[data-testid="rk-wallet-option-metaMask"]').click()
@@ -21,7 +21,7 @@ describe('sub', () => {
                 '🍣0xf3…2266'
             )
         })
-        cy.visit('http://localhost:3000/dashboard/daos')
+        cy.visit('http://localhost:3000/daos')
     }
 
     /* ==== Test Created with Cypress Studio ==== */

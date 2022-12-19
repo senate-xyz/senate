@@ -18,7 +18,7 @@ const NewUser = () => {
     if (newUser.data) {
         if (!newUser.data.newUser) {
             setTimeout(() => {
-                router.push('/dashboard/daos')
+                router.push('/daos')
             }, 12000)
         }
     }
