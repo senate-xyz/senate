@@ -68,7 +68,7 @@ export const ActiveProposals = () => {
                         From
                     </label>
                     <select
-                        className="h-full w-full"
+                        className="h-full w-full text-black"
                         id="fromDao"
                         onChange={(e) => {
                             setFrom(e.target.value)
@@ -100,7 +100,7 @@ export const ActiveProposals = () => {
                         <div>Ending in</div>
                     </label>
                     <select
-                        className="h-full w-full"
+                        className="h-full w-full text-black"
                         id="endingIn"
                         onChange={(e) => {
                             setEndingIn(Number(e.target.value))
@@ -129,7 +129,7 @@ export const ActiveProposals = () => {
                         <div>With Vote Status of</div>
                     </label>
                     <select
-                        className="h-full w-full"
+                        className="h-full w-full text-black"
                         id="voteStatus"
                         onChange={(e) => {
                             setWithVoteStatus(Number(e.target.value))
