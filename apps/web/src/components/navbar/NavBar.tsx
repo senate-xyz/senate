@@ -9,7 +9,12 @@ export default function NavBar() {
     return (
         <div className="flex min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black">
             <Script id="howuku">
-                {`(function(t,r,a,c,k){ c=['track','identify','converted'],t.o=t._init||{}, c.map(function(n){return t.o[n]=t.o[n]||function(){(t.o[n].q=t.o[n].q||[]).push(arguments);};}),t._init=t.o, k=r.createElement("script"),k.type="text/javascript",k.async=true,k.src="https://cdn.howuku.com/js/track.js",k.setAttribute("key",a), r.getElementsByTagName("head")[0].appendChild(k); })(window, document, "9mv6yAGkYDZV0BJEzlN34O");`}
+                {`(function(t,r,a,c,k){
+                c=['track','identify','converted'],t.o=t._init||{},
+                c.map(function(n){return t.o[n]=t.o[n]||function(){(t.o[n].q=t.o[n].q||[]).push(arguments);};}),t._init=t.o,
+                k=r.createElement("script"),k.type="text/javascript",k.async=true,k.src="https://cdn.howuku.com/js/track.js",k.setAttribute("key",a),
+                r.getElementsByTagName("head")[0].appendChild(k);
+                })(window, document, "9mv6yAGkYDZV0BJEzlN34O");`}
             </Script>
             <Script src="https://api.buildbetter.app/v1/widget/index.js" />
             <Script id="feedback">
