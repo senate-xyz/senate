@@ -115,21 +115,27 @@ const NewUser = () => {
                                     <label className="ml-2 text-sm font-medium text-white">
                                         I agree to the{' '}
                                         <Link
-                                            href={'https://senatelabs.notion.site/Terms-of-Service-990ca9e655094b6f9673a3ead572956a'}
+                                            href={
+                                                'https://senatelabs.notion.site/Terms-of-Service-990ca9e655094b6f9673a3ead572956a'
+                                            }
                                             className="underline"
                                         >
                                             Terms & Conditions
                                         </Link>{' '}
                                         ,{' '}
                                         <Link
-                                            href={'https://www.notion.so/senatelabs/Privacy-Policy-494e23d8a4e34d0189bfe07e0ae01bde '}
+                                            href={
+                                                'https://senatelabs.notion.site/Privacy-Policy-494e23d8a4e34d0189bfe07e0ae01bde'
+                                            }
                                             className="underline"
                                         >
                                             Privacy Policy
                                         </Link>{' '}
                                         and{' '}
                                         <Link
-                                            href={'https://senatelabs.notion.site/Cookie-Policy-b429fe7b181e4cfda95f404f480bfdc7'}
+                                            href={
+                                                'https://senatelabs.notion.site/Cookie-Policy-b429fe7b181e4cfda95f404f480bfdc7'
+                                            }
                                             className="underline"
                                         >
                                             Cookie Policy
