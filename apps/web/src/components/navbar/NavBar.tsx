@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import Script from 'next/script'
 
 export default function NavBar() {
     const router = useRouter()
