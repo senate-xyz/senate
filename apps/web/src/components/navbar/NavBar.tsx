@@ -1,12 +1,32 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import Script from 'next/script'
 
 export default function NavBar() {
     const router = useRouter()
 
     return (
         <div className="flex min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black">
+            <Script id="howuku">
+                {`(function(t,r,a,c,k){ c=['track','identify','converted'],t.o=t._init||{}, c.map(function(n){return t.o[n]=t.o[n]||function(){(t.o[n].q=t.o[n].q||[]).push(arguments);};}),t._init=t.o, k=r.createElement("script"),k.type="text/javascript",k.async=true,k.src="https://cdn.howuku.com/js/track.js",k.setAttribute("key",a), r.getElementsByTagName("head")[0].appendChild(k); })(window, document, "9mv6yAGkYDZV0BJEzlN34O");`}
+            </Script>
+            <Script src="https://api.buildbetter.app/v1/widget/index.js" />
+            <Script id="feedback">
+                {`function start() {
+                if (
+                    window.hasOwnProperty("BuildBetter") &&
+                    typeof window.BuildBetter.FeedbackWidget.init === "function"
+                ) {
+                    window.BuildBetter.FeedbackWidget.init({
+                    token: "2a9153b8-a377-4245-8204-40451f8f876d",
+                    });
+                }
+                window.clearInterval(interval);
+                }
+                var interval = window.setInterval(start, 1000);`}
+            </Script>
+
             <Link href="/" className="mt-10 mb-20">
                 <Image
                     src="/assets/Senate_Logo/64/White.svg"
@@ -93,31 +113,32 @@ export default function NavBar() {
                     )}
                 </Link>
             </div>
-            <div className="flex h-full flex-row items-end justify-between pb-5 opacity-50">
-                <Link href="https://twitter.com/SenateLabs">
+            <div className="flex h-full flex-col items-center justify-end gap-2">
+                <div className="flex flex-row items-end justify-between pb-16 opacity-50">
                     <Image
                         src="/assets/Icon/Twitter.svg"
                         alt="twitter"
                         width={24}
                         height={24}
                     />
-                </Link>
-                <Link href="https://github.com/senate-xyz/senate">
-                    <Image
-                        src="/assets/Icon/Github.svg"
-                        alt="twitter"
-                        width={24}
-                        height={24}
-                    />
-                </Link>
-                <Link href="https://discord.gg/bxCCkwtP">
-                    <Image
-                        src="/assets/Icon/DiscordWhite.svg"
-                        alt="twitter"
-                        width={24}
-                        height={24}
-                    />
-                </Link>
+
+                    <Link href="https://github.com/senate-xyz/senate">
+                        <Image
+                            src="/assets/Icon/Github.svg"
+                            alt="twitter"
+                            width={24}
+                            height={24}
+                        />
+                    </Link>
+                    <Link href="https://discord.gg/bxCCkwtP">
+                        <Image
+                            src="/assets/Icon/DiscordWhite.svg"
+                            alt="twitter"
+                            width={24}
+                            height={24}
+                        />
+                    </Link>
+                </div>
             </div>
         </div>
     )
