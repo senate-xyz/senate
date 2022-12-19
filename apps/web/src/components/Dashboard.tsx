@@ -40,7 +40,9 @@ const Dashboard = (props: { title: string; component: JSX.Element }) => {
                 <div
                     className={`fixed z-10 flex w-full bg-black transition-all ${headerHeight} items-center justify-between border border-x-0 border-t-0 border-[#545454] px-10`}
                 >
-                    <h1 className={`${titleSize} font-semibold text-white`}>
+                    <h1
+                        className={`${titleSize} font-semibold text-white transition`}
+                    >
                         {props.title}
                     </h1>
                     <div className="pr-20">
