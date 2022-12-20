@@ -60,7 +60,16 @@ const NotificationSettings = () => {
                         </div>
 
                         <div className="flex flex-row items-center justify-between gap-2">
-                            <label className="relative inline-flex cursor-pointer items-center bg-[#5EF413]">
+                            <label
+                                className={`relative inline-flex cursor-pointer items-center ${
+                                    Boolean(
+                                        dailyBulletinSetting.data
+                                            ?.dailyBulletinEmail ?? false
+                                    )
+                                        ? 'bg-[#5EF413]'
+                                        : 'bg-gray-400'
+                                }`}
+                            >
                                 <input
                                     type="checkbox"
                                     checked={Boolean(

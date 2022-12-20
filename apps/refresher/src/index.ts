@@ -71,7 +71,7 @@ const refreshDaos = async () => {
 
     const daos = await prisma.dAO.findMany({
         where: {
-            OR: [{ refreshStatus: RefreshStatus.NEW }],
+            refreshStatus: RefreshStatus.NEW,
         },
     })
 
@@ -125,7 +125,7 @@ const refreshUsers = async () => {
 
     const voters = await prisma.voter.findMany({
         where: {
-            OR: [{ refreshStatus: RefreshStatus.NEW }],
+            refreshStatus: RefreshStatus.NEW,
         },
     })
 

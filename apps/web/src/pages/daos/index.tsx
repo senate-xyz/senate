@@ -3,7 +3,6 @@ import { DAOType } from '@senate/common-types'
 import { trpc } from '../../utils/trpc'
 import { FollowedDAO } from '../../components/DAOs/FollowedDAO'
 import { UnfollowedDAO } from '../../components/DAOs/UnfollowedDAO'
-import NavBar from '../../components/navbar/NavBar'
 
 import Dashboard from '../../components/Dashboard'
 import { useSession } from 'next-auth/react'
@@ -94,7 +93,6 @@ const DAOs = () => {
 const DAOsContainer = () => {
     return (
         <div className="flex min-h-screen flex-row">
-            <NavBar />
             <Dashboard title="DAOs" component={<DAOs />} />
         </div>
     )

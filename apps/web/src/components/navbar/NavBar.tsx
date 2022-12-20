@@ -6,7 +6,7 @@ export default function NavBar() {
     const router = useRouter()
 
     return (
-        <div className="flex min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black">
+        <div className="flex min-h-screen min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black">
             <Link href="/" className="mt-10 mb-20">
                 <Image
                     src="/assets/Senate_Logo/64/White.svg"
@@ -93,34 +93,33 @@ export default function NavBar() {
                     )}
                 </Link>
             </div>
-            <div className="flex h-full flex-col items-center justify-end gap-2">
-                <div className="flex flex-row items-end justify-between pb-16 opacity-50">
-                    <Link href="https://twitter.com/SenateLabs">
-                        <Image
-                            src="/assets/Icon/Twitter.svg"
-                            alt="twitter"
-                            width={24}
-                            height={24}
-                        />
-                    </Link>
 
-                    <Link href="https://github.com/senate-xyz/senate">
-                        <Image
-                            src="/assets/Icon/Github.svg"
-                            alt="twitter"
-                            width={24}
-                            height={24}
-                        />
-                    </Link>
-                    <Link href="https://discord.gg/bxCCkwtP">
-                        <Image
-                            src="/assets/Icon/DiscordWhite.svg"
-                            alt="twitter"
-                            width={24}
-                            height={24}
-                        />
-                    </Link>
-                </div>
+            <div className="flex grow flex-row items-end justify-between justify-self-end pb-2 opacity-50">
+                <Link href="https://twitter.com/SenateLabs">
+                    <Image
+                        src="/assets/Icon/Twitter.svg"
+                        alt="twitter"
+                        width={24}
+                        height={24}
+                    />
+                </Link>
+
+                <Link href="https://github.com/senate-xyz/senate">
+                    <Image
+                        src="/assets/Icon/Github.svg"
+                        alt="twitter"
+                        width={24}
+                        height={24}
+                    />
+                </Link>
+                <Link href="https://discord.gg/bxCCkwtP">
+                    <Image
+                        src="/assets/Icon/DiscordWhite.svg"
+                        alt="twitter"
+                        width={24}
+                        height={24}
+                    />
+                </Link>
             </div>
         </div>
     )

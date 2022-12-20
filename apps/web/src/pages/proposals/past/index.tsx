@@ -2,7 +2,6 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { extend as dayJsExtend } from 'dayjs'
 import Link from 'next/link'
-import NavBar from '../../../components/navbar/NavBar'
 import { PastProposals } from '../../../components/proposals/PastProposals'
 import DashboardHeader from '../../../components/Dashboard'
 
@@ -49,7 +48,6 @@ export const ProposalsView = () => {
 export const Proposals = () => {
     return (
         <div className="flex min-h-screen flex-row">
-            <NavBar />
             <DashboardHeader title="Proposals" component={<ProposalsView />} />
         </div>
     )
