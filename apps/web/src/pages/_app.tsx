@@ -91,7 +91,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
                                     typeof window.BuildBetter.FeedbackWidget.init === "function"
                                 ) {
                                     window.BuildBetter.FeedbackWidget.init({
-                                    token: "2a9153b8-a377-4245-8204-40451f8f876d",
+                                    token: "671228cf-23f1-41bf-8ad9-ee22328942d9",
                                     });
                                 }
                                 window.clearInterval(interval);
