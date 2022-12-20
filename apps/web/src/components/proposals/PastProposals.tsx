@@ -59,6 +59,7 @@ export const PastProposals = () => {
     useEffect(() => {
         followingDAOs.refetch()
         filteredPastProposals.refetch()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session])
 
     return (

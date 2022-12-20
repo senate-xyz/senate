@@ -1,8 +1,5 @@
 import { RoundupNotificationType } from '@prisma/client'
-import {
-    Proposal, UserWithVotingAddresses,
-    Voter
-} from '@senate/common-types'
+import { Proposal, UserWithVotingAddresses, Voter } from '@senate/common-types'
 import { prisma } from '@senate/database'
 import axios from 'axios'
 import { config } from 'dotenv'
@@ -42,28 +39,29 @@ const clearNotificationsTable = async () => {
     await prisma.notification.deleteMany()
 }
 
-const insertNotifications = async (proposals: Proposal[], type: RoundupNotificationType) => {
-    
+const insertNotifications = async (
+    proposals: Proposal[],
+    type: RoundupNotificationType
+) => {
     for (const proposal of proposals) {
-
         //Get users which should be notified
         const users = await prisma.user.findMany({
             where: {
                 email: {
-                    not: ''
+                    not: '',
                 },
                 userSettings: {
-                    dailyBulletinEmail: true
+                    dailyBulletinEmail: true,
                 },
                 subscriptions: {
                     some: {
-                        daoId: proposal.daoId
-                    }
-                }
+                        daoId: proposal.daoId,
+                    },
+                },
             },
             select: {
                 id: true,
-            }
+            },
         })
 
         await prisma
@@ -147,7 +145,7 @@ const addEndingProposals = async () => {
         console.log(`Found 0 ending soon proposals`)
     }
 
-    await insertNotifications(proposals, RoundupNotificationType.ENDING_SOON);
+    await insertNotifications(proposals, RoundupNotificationType.ENDING_SOON)
 
     console.log('\n')
 }
@@ -189,6 +187,7 @@ const addPastProposals = async () => {
 const formatEmailTableData = async (
     user: UserWithVotingAddresses,
     notificationType: RoundupNotificationType
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
     const proposals = await prisma.notification.findMany({
         where: {
@@ -332,10 +331,10 @@ const sendRoundupEmails = async () => {
     const users = await prisma.user.findMany({
         where: {
             email: {
-                not: ''
+                not: '',
             },
             userSettings: {
-                dailyBulletinEmail: true
+                dailyBulletinEmail: true,
             },
         },
         include: {
@@ -408,32 +407,32 @@ const sendRoundupEmails = async () => {
     }
 }
 
-const getDaysDifference = (timestamp1: number, timestamp2: number): number => {
-    const timestampDifference = timestamp2 - timestamp1
-    const daysDifference = Math.floor(timestampDifference / 1000 / 60 / 60 / 24)
+// const getDaysDifference = (timestamp1: number, timestamp2: number): number => {
+//     const timestampDifference = timestamp2 - timestamp1
+//     const daysDifference = Math.floor(timestampDifference / 1000 / 60 / 60 / 24)
 
-    return daysDifference
-}
+//     return daysDifference
+// }
 
-const getHoursDifference = (timestamp1: number, timestamp2: number): number => {
-    const timestampDifference = timestamp2 - timestamp1
-    const daysDifference = getDaysDifference(timestamp1, timestamp2)
-    const hoursDifference = Math.floor(timestampDifference / 1000 / 60 / 60)
+// const getHoursDifference = (timestamp1: number, timestamp2: number): number => {
+//     const timestampDifference = timestamp2 - timestamp1
+//     const daysDifference = getDaysDifference(timestamp1, timestamp2)
+//     const hoursDifference = Math.floor(timestampDifference / 1000 / 60 / 60)
 
-    return hoursDifference - daysDifference * 24
-}
+//     return hoursDifference - daysDifference * 24
+// }
 
-const getMinutesDifference = (
-    timestamp1: number,
-    timestamp2: number
-): number => {
-    const timestampDifference = timestamp2 - timestamp1
-    const daysDifference = getDaysDifference(timestamp1, timestamp2)
-    const hoursDifference = getHoursDifference(timestamp1, timestamp2)
-    const minutesDifference = Math.floor(timestampDifference / 1000 / 60)
+// const getMinutesDifference = (
+//     timestamp1: number,
+//     timestamp2: number
+// ): number => {
+//     const timestampDifference = timestamp2 - timestamp1
+//     const daysDifference = getDaysDifference(timestamp1, timestamp2)
+//     const hoursDifference = getHoursDifference(timestamp1, timestamp2)
+//     const minutesDifference = Math.floor(timestampDifference / 1000 / 60)
 
-    return minutesDifference - daysDifference * 24 * 60 - hoursDifference * 60
-}
+//     return minutesDifference - daysDifference * 24 * 60 - hoursDifference * 60
+// }
 
 const userVoted = async (
     voters: Voter[],
