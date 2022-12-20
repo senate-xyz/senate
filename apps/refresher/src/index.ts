@@ -106,7 +106,7 @@ const refreshUsers = async () => {
         where: {
             OR: [
                 { refreshStatus: RefreshStatus.NEW },
-                { lastRefresh: { lte: new Date(now - oneHour) } },
+                { lastRefresh: { lte: new Date(now - oneHour * 3) } },
             ],
         },
     })
