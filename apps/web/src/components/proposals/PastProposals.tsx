@@ -1,9 +1,10 @@
 import { inferProcedureOutput } from '@trpc/server'
 import dayjs from 'dayjs'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AppRouter } from '../../server/trpc/router/_app'
 import { trpc } from '../../utils/trpc'
 import Image from 'next/image'
+import { useSession } from 'next-auth/react'
 
 const endedOnOptions: { name: string; time: number }[] = [
     {
@@ -52,6 +53,13 @@ export const PastProposals = () => {
             endingIn: endedOn,
             withVoteStatus: withVoteStatus,
         })
+
+    const session = useSession()
+
+    useEffect(() => {
+        followingDAOs.refetch()
+        filteredPastProposals.refetch()
+    }, [session])
 
     return (
         <div>

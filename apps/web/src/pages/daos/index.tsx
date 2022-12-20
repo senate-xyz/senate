@@ -6,11 +6,19 @@ import { UnfollowedDAO } from '../../components/DAOs/UnfollowedDAO'
 import NavBar from '../../components/navbar/NavBar'
 
 import Dashboard from '../../components/Dashboard'
+import { useSession } from 'next-auth/react'
+import { useEffect } from 'react'
 
 const DAOs = () => {
+    const session = useSession()
+
     const allDAOs = trpc.public.daos.useQuery()
 
     const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
+
+    useEffect(() => {
+        followingDAOs.refetch()
+    }, [session])
 
     return (
         <div className="flex grow flex-col bg-[#1E1B20] p-5">
