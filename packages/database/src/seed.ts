@@ -361,6 +361,257 @@ async function main() {
             handlers: true,
         },
     })
+
+    const ens = await prisma.dAO.upsert({
+        where: { name: 'ENS' },
+        update: {},
+        create: {
+            name: 'ENS',
+            picture: '/assets/Project_Icons/ens.png',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'ens.eth',
+                            proposalsCount: 0,
+                        },
+                    },
+                ],
+            },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
+        },
+        include: {
+            handlers: true,
+        },
+    })
+
+    const fwb = await prisma.dAO.upsert({
+        where: { name: 'Friends With Benefits' },
+        update: {},
+        create: {
+            name: 'Friends With Benefits',
+            picture: '/assets/Project_Icons/friends-with-benefits.png',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'friendswithbenefits.eth',
+                            proposalsCount: 0,
+                        },
+                    },
+                ],
+            },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
+        },
+        include: {
+            handlers: true,
+        },
+    })
+
+    const gnosis = await prisma.dAO.upsert({
+        where: { name: 'GnosisDAO' },
+        update: {},
+        create: {
+            name: 'GnosisDAO',
+            picture: '/assets/Project_Icons/gnosis.png',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'gnosis.eth',
+                            proposalsCount: 0,
+                        },
+                    },
+                ],
+            },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
+        },
+        include: {
+            handlers: true,
+        },
+    })
+
+    const indexCoop = await prisma.dAO.upsert({
+        where: { name: 'Index Coop' },
+        update: {},
+        create: {
+            name: 'Index Coop',
+            picture: '/assets/Project_Icons/index-coop.png',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'index-coop.eth',
+                            proposalsCount: 0,
+                        },
+                    },
+                ],
+            },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
+        },
+        include: {
+            handlers: true,
+        },
+    })
+
+    const paladin = await prisma.dAO.upsert({
+        where: { name: 'Paladin' },
+        update: {},
+        create: {
+            name: 'Paladin',
+            picture: '/assets/Project_Icons/paladin.png',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'palvote.eth',
+                            proposalsCount: 0,
+                        },
+                    },
+                ],
+            },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
+        },
+        include: {
+            handlers: true,
+        },
+    })
+
+    const sushi = await prisma.dAO.upsert({
+        where: { name: 'Sushi' },
+        update: {},
+        create: {
+            name: 'Sushi',
+            picture: '/assets/Project_Icons/sushiswap.png',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'sushigov.eth',
+                            proposalsCount: 0,
+                        },
+                    },
+                ],
+            },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
+        },
+        include: {
+            handlers: true,
+        },
+    })
+
+    const instadapp = await prisma.dAO.upsert({
+        where: { name: 'Instadapp' },
+        update: {},
+        create: {
+            name: 'Instadapp',
+            picture: '/assets/Project_Icons/instadapp.png',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'instadapp-gov.eth',
+                            proposalsCount: 0,
+                        },
+                    },
+                ],
+            },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
+        },
+        include: {
+            handlers: true,
+        },
+    })
+
+    const gitcoin = await prisma.dAO.upsert({
+        where: { name: 'Gitcoin' },
+        update: {},
+        create: {
+            name: 'Gitcoin',
+            picture: '/assets/Project_Icons/gitcoin.png',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'gitcoindao.eth',
+                            proposalsCount: 0,
+                        },
+                    },
+                ],
+            },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
+        },
+        include: {
+            handlers: true,
+        },
+    })
+
+    const gearbox = await prisma.dAO.upsert({
+        where: { name: 'Gearbox' },
+        update: {},
+        create: {
+            name: 'Gearbox',
+            picture: '/assets/Project_Icons/gearbox.png',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'gearbox.eth',
+                            proposalsCount: 0,
+                        },
+                    },
+                ],
+            },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
+        },
+        include: {
+            handlers: true,
+        },
+    })
+
+    const euler = await prisma.dAO.upsert({
+        where: { name: 'Euler' },
+        update: {},
+        create: {
+            name: 'Euler',
+            picture: '/assets/Project_Icons/euler.png',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'eulerdao.eth',
+                            proposalsCount: 0,
+                        },
+                    },
+                ],
+            },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
+        },
+        include: {
+            handlers: true,
+        },
+    })
+
 }
 
 main()
