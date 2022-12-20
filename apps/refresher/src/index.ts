@@ -147,6 +147,7 @@ const refreshUsers = async () => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.PENDING,
+                    lastRefresh: new Date(),
                 },
             })
         } else {
