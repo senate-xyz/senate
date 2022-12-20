@@ -145,7 +145,7 @@ const NewUser = () => {
 
                                 {email && terms ? (
                                     <div
-                                        className="flex h-[42px] w-full cursor-pointer flex-col justify-center bg-white text-center"
+                                        className="flex h-[42px] w-full cursor-pointer flex-col justify-center bg-white text-center text-black"
                                         onClick={() => {
                                             storeTerms.mutate(
                                                 {
@@ -185,7 +185,7 @@ const NewUser = () => {
                                         Enter the Senate
                                     </div>
                                 ) : (
-                                    <div className="flex h-[42px] w-full flex-col justify-center bg-[#ABABAB] text-center">
+                                    <div className="flex h-[42px] w-full flex-col justify-center bg-[#ABABAB] text-center text-black">
                                         Enter the Senate
                                     </div>
                                 )}
