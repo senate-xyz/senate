@@ -49,242 +49,242 @@ describe('sub', () => {
         login('testUser')
         /* ==== Generated with Cypress Studio ==== */
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Aave')
         cy.get(
             ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > [data-testid="open-menu"]'
         ).click()
         cy.get('[data-testid="subscribe"]').click()
         cy.get(
-            '[data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            '[data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Aave')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'MakerDAO')
         cy.get(
             ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > [data-testid="open-menu"]'
         ).click()
         cy.get('[data-testid="subscribe"]').click()
         cy.get(
-            ':nth-child(2) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(2) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'MakerDAO')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Balancer')
         cy.get(
             ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > [data-testid="open-menu"]'
         ).click()
         cy.get('[data-testid="subscribe"]').click()
         cy.get(
-            ':nth-child(3) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(3) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Balancer')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Optimism')
         cy.get(
             ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > [data-testid="open-menu"]'
         ).click()
         cy.get('[data-testid="subscribe"]').click()
         cy.get(
-            ':nth-child(4) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(4) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Optimism')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Element')
         cy.get(
             ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > [data-testid="open-menu"]'
         ).click()
         cy.get('[data-testid="subscribe"]').click()
         cy.get(
-            ':nth-child(5) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(5) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Element')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', '1inch')
         cy.get(
             ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > [data-testid="open-menu"]'
         ).click()
         cy.get('[data-testid="subscribe"]').click()
         cy.get(
-            ':nth-child(6) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(6) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', '1inch')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Hop Protocol')
         cy.get(
             ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > [data-testid="open-menu"]'
         ).click()
         cy.get('[data-testid="subscribe"]').click()
         cy.get(
-            ':nth-child(7) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(7) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Hop Protocol')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'SafeDAO')
         cy.get(
             ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > [data-testid="open-menu"]'
         ).click()
         cy.get('[data-testid="subscribe"]').click()
         cy.get(
-            ':nth-child(8) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(8) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'SafeDAO')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Compound')
         cy.get(
             ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > [data-testid="open-menu"]'
         ).click()
         cy.get('[data-testid="subscribe"]').click()
         cy.get(
-            ':nth-child(9) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(9) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Compound')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Synthetix')
         cy.get(
             ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > [data-testid="open-menu"]'
         ).click()
         cy.get('[data-testid="subscribe"]').click()
         cy.get(
-            ':nth-child(10) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(10) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Synthetix')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'dYdX')
         cy.get(
             ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > [data-testid="open-menu"]'
         ).click()
         cy.get('[data-testid="subscribe"]').click()
         cy.get(
-            ':nth-child(11) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(11) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'dYdX')
         cy.get(
-            '[data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Uniswap')
         cy.get(
-            '[data-testid="daocard-unfollowed-front"] > [data-testid="open-menu"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > [data-testid="open-menu"]'
         ).click()
         cy.get('[data-testid="subscribe"]').click()
         cy.get(
-            ':nth-child(12) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(12) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Uniswap')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Aave')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="open-menu"] > img'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .absolute > [data-testid="open-menu"] > img'
         ).click()
         cy.get('[data-testid="unsubscribe"]').click()
         cy.get(
-            '[data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Aave')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'MakerDAO')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="open-menu"] > img'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .absolute > [data-testid="open-menu"] > img'
         ).click()
         cy.get('[data-testid="unsubscribe"]').click()
         cy.get(
-            ':nth-child(2) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(2) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'MakerDAO')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Balancer')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="open-menu"] > img'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .absolute > [data-testid="open-menu"] > img'
         ).click()
         cy.get('[data-testid="unsubscribe"]').click()
         cy.get(
-            ':nth-child(3) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(3) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Balancer')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Optimism')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="open-menu"] > img'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .absolute > [data-testid="open-menu"] > img'
         ).click()
         cy.get('[data-testid="unsubscribe"]').click()
         cy.get(
-            ':nth-child(4) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(4) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Optimism')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Element')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="open-menu"] > img'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .absolute > [data-testid="open-menu"] > img'
         ).click()
         cy.get('[data-testid="unsubscribe"]').click()
         cy.get(
-            ':nth-child(5) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(5) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Element')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', '1inch')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="open-menu"] > img'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .absolute > [data-testid="open-menu"] > img'
         ).click()
         cy.get('[data-testid="unsubscribe"]').click()
         cy.get(
-            ':nth-child(6) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(6) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', '1inch')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Hop Protocol')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="open-menu"] > img'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .absolute > [data-testid="open-menu"] > img'
         ).click()
         cy.get('[data-testid="unsubscribe"]').click()
         cy.get(
-            ':nth-child(7) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(7) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Hop Protocol')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'SafeDAO')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="open-menu"] > img'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .absolute > [data-testid="open-menu"] > img'
         ).click()
         cy.get('[data-testid="unsubscribe"]').click()
         cy.get(
-            ':nth-child(8) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(8) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'SafeDAO')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Compound')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="open-menu"] > img'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .absolute > [data-testid="open-menu"] > img'
         ).click()
         cy.get('[data-testid="unsubscribe"]').click()
         cy.get(
-            ':nth-child(9) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(9) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Compound')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Synthetix')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="open-menu"] > img'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .absolute > [data-testid="open-menu"] > img'
         ).click()
         cy.get('[data-testid="unsubscribe"]').click()
         cy.get(
-            ':nth-child(10) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(10) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Synthetix')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'dYdX')
         cy.get(
-            ':nth-child(1) > [data-testid="daocard-followed-front"] > * > [data-testid="open-menu"] > img'
+            ':nth-child(1) > [data-testid="daocard-followed-front"] > .absolute > [data-testid="open-menu"] > img'
         ).click()
         cy.get('[data-testid="unsubscribe"]').click()
         cy.get(
-            ':nth-child(11) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(11) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'dYdX')
         cy.get(
-            '[data-testid="daocard-followed-front"] > * > [data-testid="dao-name"]'
+            '[data-testid="daocard-followed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Uniswap')
         cy.get('[data-testid="open-menu"] > img').click()
         cy.get('[data-testid="unsubscribe"]').click()
         cy.get(
-            ':nth-child(12) > [data-testid="daocard-unfollowed-front"] > * > [data-testid="dao-name"]'
+            ':nth-child(12) > [data-testid="daocard-unfollowed-front"] > .h-full > [data-testid="dao-name"]'
         ).should('have.text', 'Uniswap')
         /* ==== End Cypress Studio ==== */
     })
