@@ -388,10 +388,10 @@ async function main() {
     })
 
     const fwb = await prisma.dAO.upsert({
-        where: { name: 'Friends With Benefits' },
+        where: { name: 'FWB' },
         update: {},
         create: {
-            name: 'Friends With Benefits',
+            name: 'FWB',
             picture: '/assets/Project_Icons/friends-with-benefits.png',
             handlers: {
                 create: [
