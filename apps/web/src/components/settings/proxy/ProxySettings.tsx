@@ -53,8 +53,8 @@ const ProxySettings = () => {
 
                     <div className="w-[50%] text-[18px] font-light text-white">
                         Proxy Addresses are wallet addresses that you can add in
-                        Senate, so that you can see the voting activity and DAOs
-                        that those proxy addresses hold tokens for.
+                        Senate, so that you can see the voting activity of
+                        multiple addresses.
                     </div>
 
                     <div className="mt-12 flex flex-col gap-6">
