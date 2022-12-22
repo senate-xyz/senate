@@ -1,12 +1,16 @@
 import { DAOType } from '@senate/common-types'
 import { trpc } from '../../../utils/trpc'
 import Image from 'next/image'
+import { useState } from 'react'
 const BackCard = (props: {
     dao: DAOType
     refreshDaos: () => void
     setShowMenu: (show: boolean) => void
 }) => {
     const unsubscribe = trpc.user.subscriptions.unsubscribe.useMutation()
+
+    const [getDailyEmails, setDailyEmails] = useState(true)
+
     return (
         <div
             className="flex h-full w-full cursor-pointer flex-col rounded bg-black text-sm font-bold text-white shadow"
@@ -33,7 +37,21 @@ const BackCard = (props: {
             <div className="flex h-full w-full flex-col items-center justify-between">
                 <div className="flex flex-col items-center gap-2 pt-5">
                     <div className="flex w-full flex-row justify-between"></div>
-                    <p>Get daily emails about:</p>
+                    <div className="flex w-full flex-row items-center justify-between gap-2">
+                        <p>Get daily emails</p>
+                        <label className="relative inline-flex cursor-pointer items-center bg-gray-400">
+                            <input
+                                type="checkbox"
+                                checked={getDailyEmails}
+                                onChange={(e) =>
+                                    setDailyEmails(e.target.checked)
+                                }
+                                className="peer sr-only"
+                            />
+                            <div className="peer h-6 w-11 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+                        </label>
+                    </div>
+                    {/* <p>Get daily emails about:</p>
                     <div className="flex w-full flex-row items-center justify-between gap-2">
                         <p>New Proposals</p>
                         <label className="relative inline-flex cursor-pointer items-center bg-gray-700">
@@ -55,7 +73,7 @@ const BackCard = (props: {
                             />
                             <div className="peer h-6 w-11 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5  after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-gray-500 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300"></div>
                         </label>
-                    </div>
+                    </div> */}
                 </div>
 
                 <button
