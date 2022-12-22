@@ -5,6 +5,7 @@ import { AppRouter } from '../../server/trpc/router/_app'
 import { trpc } from '../../utils/trpc'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 const endingInOptions: { name: string; time: number }[] = [
     {
@@ -59,12 +60,16 @@ export const ActiveProposals = () => {
         })
 
     const session = useSession()
+    const router = useRouter()
+    const { daoName } = router.query
 
     useEffect(() => {
+        setFrom(daoName as string || 'any')
         followingDAOs.refetch()
         filteredActiveProposals.refetch()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session])
+
 
     return (
         <div className="">

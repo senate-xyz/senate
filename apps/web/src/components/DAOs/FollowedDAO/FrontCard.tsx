@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { DAOType } from '@senate/common-types'
 import { trpc } from '../../../utils/trpc'
 import { useEffect, useState } from 'react'
@@ -116,11 +117,14 @@ const FrontCard = (props: {
                     {activeProposalsForDao.data?.filter(
                         (proposal) => proposal.timeEnd > new Date()
                     ).length
-                        ? activeProposalsForDao.data
+                        ? 
+                        <Link href={`/proposals/active?daoName=${props.dao.name}`}>
+                            {activeProposalsForDao.data
                               ?.filter(
                                   (proposal) => proposal.timeEnd > new Date()
                               )
-                              .length.toString() + ' Active Proposals'
+                              .length.toString() + ' Active Proposals'}
+                        </Link>
                         : 'No Active Proposals'}
                 </div>
             </div>
