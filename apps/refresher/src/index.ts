@@ -12,10 +12,21 @@ const main = () => {
         refreshUsers()
     })
 
-    cron.schedule('*/10 * * * *', async () => {
-        console.log('Auto refresh request')
-        await autoRefreshRequest()
-    })
+    cron.schedule(
+        process.env.REFRESHER_INTERVAL ?? '*/10 * * * *',
+        async () => {
+            console.log('Auto refresh request')
+            await autoRefreshRequest()
+        }
+    )
+
+    cron.schedule(
+        process.env.REFRESHER_FORCE_INTERVAL ?? '5 */3 * * *',
+        async () => {
+            console.log('Auto force refresh request')
+            await autoForceRefreshRequest()
+        }
+    )
 }
 
 const autoRefreshRequest = async () => {
@@ -36,18 +47,31 @@ const autoRefreshRequest = async () => {
         },
     })
 }
+
+const autoForceRefreshRequest = async () => {
+    await prisma.dAO.updateMany({
+        where: {
+            refreshStatus: RefreshStatus.PENDING,
+        },
+        data: {
+            refreshStatus: RefreshStatus.NEW,
+        },
+    })
+    await prisma.voter.updateMany({
+        where: {
+            refreshStatus: RefreshStatus.PENDING,
+        },
+        data: {
+            refreshStatus: RefreshStatus.NEW,
+        },
+    })
+}
 const refreshDaos = async () => {
     console.log('Refresh DAOs')
 
-    const oneHour = 3600000
-    const now: number = Date.now()
-
     const daos = await prisma.dAO.findMany({
         where: {
-            OR: [
-                { refreshStatus: RefreshStatus.NEW },
-                { lastRefresh: { lte: new Date(now - oneHour) } },
-            ],
+            refreshStatus: RefreshStatus.NEW,
         },
     })
 
@@ -99,15 +123,9 @@ const refreshDaos = async () => {
 const refreshUsers = async () => {
     console.log('Refresh Voters')
 
-    const oneHour = 3600000
-    const now: number = Date.now()
-
     const voters = await prisma.voter.findMany({
         where: {
-            OR: [
-                { refreshStatus: RefreshStatus.NEW },
-                { lastRefresh: { lte: new Date(now - oneHour) } },
-            ],
+            refreshStatus: RefreshStatus.NEW,
         },
     })
 

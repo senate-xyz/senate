@@ -242,10 +242,16 @@ export const userProposalsRouter = router({
                                     : input.fromDao,
                         },
                         {
-                            timeStart: {
+                            timeEnd: {
                                 gte: new Date(Date.now() - input.endingIn),
                             },
                         },
+                        {
+                            timeEnd: {
+                                lt: new Date(Date.now()),
+                            },
+                        },
+
                         voteStatusQuery,
                     ],
                 },

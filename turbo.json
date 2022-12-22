@@ -22,7 +22,9 @@
         "EXEC_ENV",
         "TEST_EMAIL",
         "ROUNDUP_BCC_EMAILS",
-        "ROUNDUP_CRON_INTERVAL"
+        "ROUNDUP_CRON_INTERVAL",
+        "REFRESHER_INTERVAL",
+        "REFRESHER_FORCE_INTERVAL"
       ]
     },
     "start": {},

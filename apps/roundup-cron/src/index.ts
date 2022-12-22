@@ -1,20 +1,14 @@
-import { config } from 'dotenv'
-import axios from 'axios'
-import { ServerClient } from 'postmark'
-import { schedule } from 'node-cron'
-import { prisma } from '@senate/database'
 import { RoundupNotificationType } from '@prisma/client'
-import {
-    Subscription,
-    UserWithVotingAddresses,
-    Voter,
-} from '@senate/common-types'
+import { Proposal, UserWithVotingAddresses, Voter } from '@senate/common-types'
+import { prisma } from '@senate/database'
+import axios from 'axios'
+import { config } from 'dotenv'
+import { schedule } from 'node-cron'
+import { ServerClient } from 'postmark'
 
 config()
 
 const client = new ServerClient(process.env.POSTMARK_TOKEN ?? 'Missing Token')
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const oneMonth = 2592000000
 const threeDays = 259200000
 const oneDay = 86400000
 const now: number = Date.now()
@@ -45,6 +39,58 @@ const clearNotificationsTable = async () => {
     await prisma.notification.deleteMany()
 }
 
+const insertNotifications = async (
+    proposals: Proposal[],
+    type: RoundupNotificationType
+) => {
+    for (const proposal of proposals) {
+        //Get users which should be notified
+        const users = await prisma.user.findMany({
+            where: {
+                email: {
+                    not: '',
+                },
+                userSettings: {
+                    dailyBulletinEmail: true,
+                },
+                subscriptions: {
+                    some: {
+                        daoId: proposal.daoId,
+                    },
+                },
+            },
+            select: {
+                id: true,
+            },
+        })
+
+        await prisma
+            .$transaction(
+                users.map((user) => {
+                    return prisma.notification.upsert({
+                        where: {
+                            proposalId_userId_type: {
+                                proposalId: proposal.id,
+                                userId: user.id,
+                                type: type,
+                            },
+                        },
+                        update: {},
+                        create: {
+                            userId: user.id,
+                            proposalId: proposal.id,
+                            daoId: proposal.daoId,
+                            type: type,
+                        },
+                    })
+                })
+            )
+            .then((res) => {
+                return res
+            })
+    }
+}
+
 const addNewProposals = async () => {
     console.log('Adding new proposal notifications...')
 
@@ -65,39 +111,7 @@ const addNewProposals = async () => {
         console.log(`Found 0 new proposals`)
     }
 
-    for (const proposal of proposals) {
-        const subscriptions: Subscription[] =
-            await prisma.subscription.findMany({
-                where: {
-                    daoId: proposal.daoId,
-                },
-            })
-
-        await prisma
-            .$transaction(
-                subscriptions.map((subscription: Subscription) => {
-                    return prisma.notification.upsert({
-                        where: {
-                            proposalId_userId_type: {
-                                proposalId: proposal.id,
-                                userId: subscription.userId,
-                                type: RoundupNotificationType.NEW,
-                            },
-                        },
-                        update: {},
-                        create: {
-                            userId: subscription.userId,
-                            proposalId: proposal.id,
-                            daoId: proposal.daoId,
-                            type: RoundupNotificationType.NEW,
-                        },
-                    })
-                })
-            )
-            .then((res) => {
-                return res
-            })
-    }
+    await insertNotifications(proposals, RoundupNotificationType.NEW)
 
     console.log('\n')
 }
@@ -131,39 +145,7 @@ const addEndingProposals = async () => {
         console.log(`Found 0 ending soon proposals`)
     }
 
-    for (const proposal of proposals) {
-        const subscriptions: Subscription[] =
-            await prisma.subscription.findMany({
-                where: {
-                    daoId: proposal.daoId,
-                },
-            })
-
-        await prisma
-            .$transaction(
-                subscriptions.map((subscription: Subscription) => {
-                    return prisma.notification.upsert({
-                        where: {
-                            proposalId_userId_type: {
-                                proposalId: proposal.id,
-                                userId: subscription.userId,
-                                type: RoundupNotificationType.ENDING_SOON,
-                            },
-                        },
-                        update: {},
-                        create: {
-                            userId: subscription.userId,
-                            proposalId: proposal.id,
-                            daoId: proposal.daoId,
-                            type: RoundupNotificationType.ENDING_SOON,
-                        },
-                    })
-                })
-            )
-            .then((res) => {
-                return res
-            })
-    }
+    await insertNotifications(proposals, RoundupNotificationType.ENDING_SOON)
 
     console.log('\n')
 }
@@ -192,44 +174,12 @@ const addPastProposals = async () => {
     })
 
     if (proposals) {
-        console.log(`Found ${proposals.length} new proposals`)
+        console.log(`Found ${proposals.length} past proposals`)
     } else {
-        console.log(`Found 0 new proposals`)
+        console.log(`Found 0 past proposals`)
     }
 
-    for (const proposal of proposals) {
-        const subscriptions: Subscription[] =
-            await prisma.subscription.findMany({
-                where: {
-                    daoId: proposal.daoId,
-                },
-            })
-
-        await prisma
-            .$transaction(
-                subscriptions.map((subscription: Subscription) => {
-                    return prisma.notification.upsert({
-                        where: {
-                            proposalId_userId_type: {
-                                proposalId: proposal.id,
-                                userId: subscription.userId,
-                                type: RoundupNotificationType.PAST,
-                            },
-                        },
-                        update: {},
-                        create: {
-                            userId: subscription.userId,
-                            proposalId: proposal.id,
-                            daoId: proposal.daoId,
-                            type: RoundupNotificationType.PAST,
-                        },
-                    })
-                })
-            )
-            .then((res) => {
-                return res
-            })
-    }
+    await insertNotifications(proposals, RoundupNotificationType.PAST)
 
     console.log('\n')
 }
@@ -237,6 +187,7 @@ const addPastProposals = async () => {
 const formatEmailTableData = async (
     user: UserWithVotingAddresses,
     notificationType: RoundupNotificationType
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
     const proposals = await prisma.notification.findMany({
         where: {
@@ -378,6 +329,14 @@ const sendRoundupEmails = async () => {
     const todaysDate = new Date(now).toLocaleDateString(undefined, dateOptions)
 
     const users = await prisma.user.findMany({
+        where: {
+            email: {
+                not: '',
+            },
+            userSettings: {
+                dailyBulletinEmail: true,
+            },
+        },
         include: {
             voters: true,
         },
@@ -448,32 +407,32 @@ const sendRoundupEmails = async () => {
     }
 }
 
-const getDaysDifference = (timestamp1: number, timestamp2: number): number => {
-    const timestampDifference = timestamp2 - timestamp1
-    const daysDifference = Math.floor(timestampDifference / 1000 / 60 / 60 / 24)
+// const getDaysDifference = (timestamp1: number, timestamp2: number): number => {
+//     const timestampDifference = timestamp2 - timestamp1
+//     const daysDifference = Math.floor(timestampDifference / 1000 / 60 / 60 / 24)
 
-    return daysDifference
-}
+//     return daysDifference
+// }
 
-const getHoursDifference = (timestamp1: number, timestamp2: number): number => {
-    const timestampDifference = timestamp2 - timestamp1
-    const daysDifference = getDaysDifference(timestamp1, timestamp2)
-    const hoursDifference = Math.floor(timestampDifference / 1000 / 60 / 60)
+// const getHoursDifference = (timestamp1: number, timestamp2: number): number => {
+//     const timestampDifference = timestamp2 - timestamp1
+//     const daysDifference = getDaysDifference(timestamp1, timestamp2)
+//     const hoursDifference = Math.floor(timestampDifference / 1000 / 60 / 60)
 
-    return hoursDifference - daysDifference * 24
-}
+//     return hoursDifference - daysDifference * 24
+// }
 
-const getMinutesDifference = (
-    timestamp1: number,
-    timestamp2: number
-): number => {
-    const timestampDifference = timestamp2 - timestamp1
-    const daysDifference = getDaysDifference(timestamp1, timestamp2)
-    const hoursDifference = getHoursDifference(timestamp1, timestamp2)
-    const minutesDifference = Math.floor(timestampDifference / 1000 / 60)
+// const getMinutesDifference = (
+//     timestamp1: number,
+//     timestamp2: number
+// ): number => {
+//     const timestampDifference = timestamp2 - timestamp1
+//     const daysDifference = getDaysDifference(timestamp1, timestamp2)
+//     const hoursDifference = getHoursDifference(timestamp1, timestamp2)
+//     const minutesDifference = Math.floor(timestampDifference / 1000 / 60)
 
-    return minutesDifference - daysDifference * 24 * 60 - hoursDifference * 60
-}
+//     return minutesDifference - daysDifference * 24 * 60 - hoursDifference * 60
+// }
 
 const userVoted = async (
     voters: Voter[],

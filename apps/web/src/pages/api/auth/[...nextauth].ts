@@ -16,74 +16,61 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                         JSON.parse(credentials?.message || '{}')
                     )
 
-                    const nextAuthUrl =
-                        process.env.NEXTAUTH_URL ||
-                        (process.env.VERCEL_URL
-                            ? `https://${process.env.VERCEL_URL}`
-                            : null)
-                    if (!nextAuthUrl) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        return 'bad url' as any
-                    }
+                    const nextAuthUrl = new URL(process.env.NEXTAUTH_URL ?? '')
 
-                    const nextAuthHost = new URL(nextAuthUrl).host
-                    if (siwe.domain !== nextAuthHost) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        return 'bad domain' as any
-                    }
+                    const result = await siwe.verify({
+                        signature: credentials?.signature || '',
+                        domain: nextAuthUrl.host,
+                        nonce: await getCsrfToken({ req }),
+                    })
 
-                    if (siwe.nonce !== (await getCsrfToken({ req }))) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        return 'bad nonce' as any
-                    }
-
-                    await siwe.validate(credentials?.signature || '')
-
-                    const user = await prisma.user.upsert({
-                        where: {
-                            name: siwe.address,
-                        },
-                        create: {
-                            name: siwe.address,
-                            newUser: true,
-                            acceptedTerms: false,
-                            email: '',
-                            userSettings: {
-                                create: {
-                                    dailyBulletinEmail: true,
+                    if (result.success) {
+                        const user = await prisma.user.upsert({
+                            where: {
+                                name: siwe.address,
+                            },
+                            create: {
+                                name: siwe.address,
+                                newUser: true,
+                                acceptedTerms: false,
+                                email: '',
+                                userSettings: {
+                                    create: {
+                                        dailyBulletinEmail: true,
+                                    },
                                 },
                             },
-                        },
-                        update: {
-                            name: siwe.address,
-                            newUser: false,
-                        },
-                    })
+                            update: {
+                                name: siwe.address,
+                                newUser: false,
+                            },
+                        })
 
-                    await prisma.voter.upsert({
-                        where: {
-                            address: siwe.address,
-                        },
-                        create: {
-                            address: siwe.address,
-                            refreshStatus: RefreshStatus.NEW,
-                            lastRefresh: new Date(0),
-                            users: { connect: { id: user.id } },
-                        },
-                        update: {
-                            address: siwe.address,
-                            refreshStatus: RefreshStatus.NEW,
-                            lastRefresh: new Date(0),
-                            users: { connect: { id: user.id } },
-                        },
-                    })
+                        await prisma.voter.upsert({
+                            where: {
+                                address: siwe.address,
+                            },
+                            create: {
+                                address: siwe.address,
+                                refreshStatus: RefreshStatus.NEW,
+                                lastRefresh: new Date(0),
+                                users: { connect: { id: user.id } },
+                            },
+                            update: {
+                                address: siwe.address,
+                                refreshStatus: RefreshStatus.NEW,
+                                lastRefresh: new Date(0),
+                                users: { connect: { id: user.id } },
+                            },
+                        })
 
-                    return {
-                        id: siwe.address,
+                        return {
+                            id: siwe.address,
+                        }
                     }
+                    return null
                 } catch (e) {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    return e as any
+                    return null
                 }
             },
             credentials: {

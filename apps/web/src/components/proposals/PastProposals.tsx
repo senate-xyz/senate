@@ -1,9 +1,10 @@
 import { inferProcedureOutput } from '@trpc/server'
 import dayjs from 'dayjs'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AppRouter } from '../../server/trpc/router/_app'
 import { trpc } from '../../utils/trpc'
 import Image from 'next/image'
+import { useSession } from 'next-auth/react'
 
 const endedOnOptions: { name: string; time: number }[] = [
     {
@@ -53,6 +54,14 @@ export const PastProposals = () => {
             withVoteStatus: withVoteStatus,
         })
 
+    const session = useSession()
+
+    useEffect(() => {
+        followingDAOs.refetch()
+        filteredPastProposals.refetch()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [session])
+
     return (
         <div>
             <div className="flex flex-row gap-5" data-testid="past-proposals">
@@ -64,7 +73,7 @@ export const PastProposals = () => {
                         From
                     </label>
                     <select
-                        className="h-full w-full"
+                        className="h-full w-full text-black"
                         id="fromDao"
                         onChange={(e) => {
                             setFrom(e.target.value)
@@ -96,7 +105,7 @@ export const PastProposals = () => {
                         Ended on
                     </label>
                     <select
-                        className="h-full w-full"
+                        className="h-full w-full text-black"
                         id="endedOn"
                         onChange={(e) => {
                             setEndedOn(Number(e.target.value))
@@ -125,7 +134,7 @@ export const PastProposals = () => {
                         With vote status of
                     </label>
                     <select
-                        className="h-full w-full"
+                        className="h-full w-full text-black"
                         id="voteStatus"
                         onChange={(e) => {
                             setWithVoteStatus(Number(e.target.value))

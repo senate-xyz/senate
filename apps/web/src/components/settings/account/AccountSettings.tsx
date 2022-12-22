@@ -83,7 +83,7 @@ const AccountSettings = () => {
                         <div className="flex h-[46px] flex-row items-center">
                             {currentEmail.data == email ? (
                                 <input
-                                    className="h-full w-[320px] bg-[#D9D9D9] px-2"
+                                    className="h-full w-[320px] bg-[#D9D9D9] px-2 text-black"
                                     value={email}
                                     onChange={(e) => {
                                         setEmail(e.target.value)
@@ -92,7 +92,7 @@ const AccountSettings = () => {
                                 />
                             ) : (
                                 <input
-                                    className="h-full w-[320px] px-2"
+                                    className="h-full w-[320px] px-2 text-black"
                                     value={email}
                                     onChange={(e) => {
                                         setEmail(e.target.value)

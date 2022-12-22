@@ -3,14 +3,22 @@ import { DAOType } from '@senate/common-types'
 import { trpc } from '../../utils/trpc'
 import { FollowedDAO } from '../../components/DAOs/FollowedDAO'
 import { UnfollowedDAO } from '../../components/DAOs/UnfollowedDAO'
-import NavBar from '../../components/navbar/NavBar'
 
 import Dashboard from '../../components/Dashboard'
+import { useSession } from 'next-auth/react'
+import { useEffect } from 'react'
 
 const DAOs = () => {
+    const session = useSession()
+
     const allDAOs = trpc.public.daos.useQuery()
 
     const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
+
+    useEffect(() => {
+        followingDAOs.refetch()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [session])
 
     return (
         <div className="flex grow flex-col bg-[#1E1B20] p-5">
@@ -86,7 +94,6 @@ const DAOs = () => {
 const DAOsContainer = () => {
     return (
         <div className="flex min-h-screen flex-row">
-            <NavBar />
             <Dashboard title="DAOs" component={<DAOs />} />
         </div>
     )

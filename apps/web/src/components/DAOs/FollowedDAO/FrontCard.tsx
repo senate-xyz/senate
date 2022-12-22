@@ -3,6 +3,7 @@ import { DAOType } from '@senate/common-types'
 import { trpc } from '../../../utils/trpc'
 import { useEffect, useState } from 'react'
 import { FastAverageColor } from 'fast-average-color'
+import Link from 'next/link'
 
 const FrontCard = (props: {
     dao: DAOType
@@ -115,13 +116,19 @@ const FrontCard = (props: {
                 >
                     {activeProposalsForDao.data?.filter(
                         (proposal) => proposal.timeEnd > new Date()
-                    ).length
-                        ? activeProposalsForDao.data
-                              ?.filter(
-                                  (proposal) => proposal.timeEnd > new Date()
-                              )
-                              .length.toString() + ' Active Proposals'
-                        : 'No Active Proposals'}
+                    ).length ? (
+                        <Link
+                            href={`/proposals/active?fromFilter=${props.dao.id}`}
+                        >
+                            {activeProposalsForDao.data
+                                ?.filter(
+                                    (proposal) => proposal.timeEnd > new Date()
+                                )
+                                .length.toString() + ' Active Proposals'}
+                        </Link>
+                    ) : (
+                        'No Active Proposals'
+                    )}
                 </div>
             </div>
         </div>

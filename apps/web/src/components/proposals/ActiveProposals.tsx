@@ -1,9 +1,11 @@
 import { inferProcedureOutput } from '@trpc/server'
 import dayjs from 'dayjs'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AppRouter } from '../../server/trpc/router/_app'
 import { trpc } from '../../utils/trpc'
 import Image from 'next/image'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 const endingInOptions: { name: string; time: number }[] = [
     {
@@ -44,18 +46,34 @@ const voteStatus: { id: number; name: string }[] = [
 ]
 
 export const ActiveProposals = () => {
-    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
+    const session = useSession()
+
+    const router = useRouter()
+    const { fromFilter } = router.query
 
     const [from, setFrom] = useState('any')
     const [endingIn, setEndingIn] = useState(365 * 24 * 60 * 60 * 1000)
     const [withVoteStatus, setWithVoteStatus] = useState(0)
 
+    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
     const filteredActiveProposals =
         trpc.user.proposals.filteredActiveProposals.useQuery({
             fromDao: from,
             endingIn: endingIn,
             withVoteStatus: withVoteStatus,
         })
+
+    useEffect(() => {
+        if (fromFilter) {
+            setFrom(String(fromFilter))
+        }
+    }, [fromFilter])
+
+    useEffect(() => {
+        followingDAOs.refetch()
+        filteredActiveProposals.refetch()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [session])
 
     return (
         <div className="">
@@ -68,11 +86,12 @@ export const ActiveProposals = () => {
                         From
                     </label>
                     <select
-                        className="h-full w-full"
+                        className="h-full w-full text-black"
                         id="fromDao"
                         onChange={(e) => {
                             setFrom(e.target.value)
                         }}
+                        value={from}
                         data-testid="from-selector"
                     >
                         <option key="any" value="any">
@@ -100,7 +119,7 @@ export const ActiveProposals = () => {
                         <div>Ending in</div>
                     </label>
                     <select
-                        className="h-full w-full"
+                        className="h-full w-full text-black"
                         id="endingIn"
                         onChange={(e) => {
                             setEndingIn(Number(e.target.value))
@@ -129,7 +148,7 @@ export const ActiveProposals = () => {
                         <div>With Vote Status of</div>
                     </label>
                     <select
-                        className="h-full w-full"
+                        className="h-full w-full text-black"
                         id="voteStatus"
                         onChange={(e) => {
                             setWithVoteStatus(Number(e.target.value))
