@@ -4,7 +4,7 @@
 
 @layer base {
     :root {
-        @apply dark:bg-black;
+        @apply dark:bg-black bg-black;
     }
 }
 
