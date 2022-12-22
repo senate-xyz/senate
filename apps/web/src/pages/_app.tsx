@@ -21,7 +21,9 @@ import Script from 'next/script'
 const { chains, provider } = configureChains(
     [mainnet],
     [
-        infuraProvider({ apiKey: process.env.PROVIDER_URL ?? 'missing_key' }),
+        infuraProvider({
+            apiKey: process.env.NEXT_PUBLIC_PROVIDER_URL ?? 'missing_key',
+        }),
         publicProvider(),
     ]
 )

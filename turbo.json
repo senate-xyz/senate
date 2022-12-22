@@ -12,6 +12,7 @@
         "NEXTAUTH_URL",
         "VERCEL_URL",
         "PROVIDER_URL",
+        "NEXT_PUBLIC_PROVIDER_URL",
         "PORT",
         "DETECTIVE_URL",
         "POSTMARK_TOKEN",

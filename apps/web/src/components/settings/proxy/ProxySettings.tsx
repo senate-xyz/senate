@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { trpc } from '../../../utils/trpc'
+import { useProvider } from 'wagmi'
+import { ethers } from 'ethers'
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
@@ -24,6 +26,8 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
 ]
 
 const ProxySettings = () => {
+    const provider = useProvider()
+
     const voters = trpc.user.settings.voters.useQuery()
     const removeVoter = trpc.user.settings.removeVoter.useMutation()
     const addVoter = trpc.user.settings.addVoter.useMutation()
@@ -70,6 +74,7 @@ const ProxySettings = () => {
                                         </div>
                                         <button
                                             onClick={() => {
+                                                provider.resolveName
                                                 removeVoter.mutate(
                                                     { address: voter.address },
                                                     {
@@ -98,9 +103,19 @@ const ProxySettings = () => {
 
                         <div
                             className="flex h-full w-[72px] cursor-pointer flex-col justify-center bg-[#ABABAB] text-center"
-                            onClick={() => {
+                            onClick={async () => {
+                                let resolvedAddress = proxyAddress
+                                if (
+                                    (await provider.resolveName(proxyAddress))
+                                        ?.length
+                                ) {
+                                    resolvedAddress = String(
+                                        await provider.resolveName(proxyAddress)
+                                    )
+                                }
+
                                 addVoter.mutate(
-                                    { address: proxyAddress },
+                                    { address: resolvedAddress },
                                     {
                                         onSuccess() {
                                             voters.refetch()
