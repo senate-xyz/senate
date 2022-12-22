@@ -250,7 +250,7 @@ export const userProposalsRouter = router({
                     ],
                 },
                 orderBy: {
-                    timeEnd: 'asc',
+                    timeEnd: 'desc',
                 },
                 include: {
                     dao: true,
