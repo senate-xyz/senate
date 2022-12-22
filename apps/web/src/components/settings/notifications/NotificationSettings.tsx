@@ -60,16 +60,7 @@ const NotificationSettings = () => {
                         </div>
 
                         <div className="flex flex-row items-center justify-between gap-2">
-                            <label
-                                className={`relative inline-flex cursor-pointer items-center ${
-                                    Boolean(
-                                        dailyBulletinSetting.data
-                                            ?.dailyBulletinEmail ?? false
-                                    )
-                                        ? 'bg-[#5EF413]'
-                                        : 'bg-gray-400'
-                                }`}
-                            >
+                            <label className="relative inline-flex cursor-pointer items-center bg-gray-400">
                                 <input
                                     type="checkbox"
                                     checked={Boolean(
@@ -91,7 +82,7 @@ const NotificationSettings = () => {
                                     }}
                                     className="peer sr-only"
                                 />
-                                <div className="peer h-6 w-11 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[##5EF413] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300"></div>
+                                <div className="peer h-6 w-11 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
                             </label>
                         </div>
                     </div>
