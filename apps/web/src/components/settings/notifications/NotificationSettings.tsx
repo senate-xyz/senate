@@ -62,11 +62,7 @@ const NotificationSettings = () => {
                         </div>
 
                         <div className="flex flex-row items-center justify-between gap-2">
-<<<<<<< Updated upstream
-                            <label className="relative inline-flex cursor-pointer items-center bg-[#5EF413]">
-=======
                             <label className="relative inline-flex cursor-pointer items-center bg-gray-400">
->>>>>>> Stashed changes
                                 <input
                                     type="checkbox"
                                     checked={Boolean(
