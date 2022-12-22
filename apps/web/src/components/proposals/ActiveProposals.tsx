@@ -5,6 +5,7 @@ import { AppRouter } from '../../server/trpc/router/_app'
 import { trpc } from '../../utils/trpc'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 const endingInOptions: { name: string; time: number }[] = [
     {
@@ -45,12 +46,16 @@ const voteStatus: { id: number; name: string }[] = [
 ]
 
 export const ActiveProposals = () => {
-    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
+    const session = useSession()
+
+    const router = useRouter()
+    const { fromFilter } = router.query
 
     const [from, setFrom] = useState('any')
     const [endingIn, setEndingIn] = useState(365 * 24 * 60 * 60 * 1000)
     const [withVoteStatus, setWithVoteStatus] = useState(0)
 
+    const followingDAOs = trpc.user.subscriptions.subscribedDAOs.useQuery()
     const filteredActiveProposals =
         trpc.user.proposals.filteredActiveProposals.useQuery({
             fromDao: from,
@@ -58,7 +63,11 @@ export const ActiveProposals = () => {
             withVoteStatus: withVoteStatus,
         })
 
-    const session = useSession()
+    useEffect(() => {
+        if (fromFilter) {
+            setFrom(String(fromFilter))
+        }
+    }, [fromFilter])
 
     useEffect(() => {
         followingDAOs.refetch()
@@ -82,6 +91,7 @@ export const ActiveProposals = () => {
                         onChange={(e) => {
                             setFrom(e.target.value)
                         }}
+                        value={from}
                         data-testid="from-selector"
                     >
                         <option key="any" value="any">
