@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    :root {
+        @apply dark:bg-black;
+    }
+}
+
 @font-face {
     font-family: 'Matter';
     font-weight: 300;
