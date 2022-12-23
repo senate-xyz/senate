@@ -13,6 +13,10 @@ const threeDays = 259200000
 const oneDay = 86400000
 const now: number = Date.now()
 
+const delay = (ms: number) : Promise<any> => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
 schedule(
     String(process.env.ROUNDUP_CRON_INTERVAL) ?? '* * 31 2 *',
@@ -29,6 +33,7 @@ schedule(
         await addPastProposals()
         console.log('Past proposals added')
 
+        console.log('Sending emailzzzz...')
         await sendRoundupEmails()
         console.log('Emails have been sent')
     }
@@ -189,71 +194,79 @@ const formatEmailTableData = async (
     notificationType: RoundupNotificationType
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
-    const proposals = await prisma.notification.findMany({
-        where: {
-            userId: user.id,
-            type: notificationType,
-        },
-        include: {
-            proposal: {
-                include: {
-                    dao: true,
+    let promises: Promise<any>[] = [];
+
+    try {
+        const proposals = await prisma.notification.findMany({
+            where: {
+                userId: user.id,
+                type: notificationType,
+            },
+            include: {
+                proposal: {
+                    include: {
+                        dao: true,
+                    },
                 },
             },
-        },
-    })
-
-    const promises = proposals.map(async (notification) => {
-        const voted = await userVoted(
-            user.voters,
-            notification.proposalId,
-            notification.daoId
-        )
-        const dateOptions: Intl.DateTimeFormatOptions = {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        }
-
-        const countdownUrl = await generateCountdownGifUrl(
-            notification.proposal.timeEnd
-        )
-
-        const votingStatus = voted
-            ? 'Voted'
-            : notificationType == RoundupNotificationType.PAST
-            ? "Didn't vote"
-            : 'Not voted yet'
-
-        const votingStatusIconUrl = voted
-            ? process.env.WEBAPP_URL + '/assets/Icon/Voted.png'
-            : notificationType == RoundupNotificationType.PAST
-            ? process.env.WEBAPP_URL + '/assets/Icon/DidntVote.png'
-            : process.env.WEBAPP_URL + '/assets/Icon/NotVotedYet.png'
-
-        return {
-            votingStatus: votingStatus,
-            votingStatusIconUrl: votingStatusIconUrl,
-            proposalName:
-                notification.proposal.name.length > 100
-                    ? notification.proposal.name.substring(0, 100) + '...'
-                    : notification.proposal.name,
-            proposalUrl: notification.proposal.url,
-            daoLogoUrl:
-                process.env.WEBAPP_URL + notification.proposal.dao.picture,
-            endHoursUTC: formatTwoDigit(
-                notification.proposal.timeEnd.getUTCHours()
-            ),
-            endMinutesUTC: formatTwoDigit(
-                notification.proposal.timeEnd.getUTCMinutes()
-            ),
-            endDateString: notification.proposal.timeEnd.toLocaleDateString(
-                undefined,
-                dateOptions
-            ),
-            countdownUrl: countdownUrl,
-        }
-    })
+        })
+    
+        promises = proposals.map(async (notification) => {
+            const voted = await userVoted(
+                user.voters,
+                notification.proposalId,
+                notification.daoId
+            )
+            const dateOptions: Intl.DateTimeFormatOptions = {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+            }
+    
+            await delay(5000);
+            const countdownUrl = await generateCountdownGifUrl(
+                notification.proposal.timeEnd
+            )
+    
+            const votingStatus = voted
+                ? 'Voted'
+                : notificationType == RoundupNotificationType.PAST
+                ? "Didn't vote"
+                : 'Not voted yet'
+    
+            const votingStatusIconUrl = voted
+                ? process.env.WEBAPP_URL + '/assets/Icon/Voted.png'
+                : notificationType == RoundupNotificationType.PAST
+                ? process.env.WEBAPP_URL + '/assets/Icon/DidntVote.png'
+                : process.env.WEBAPP_URL + '/assets/Icon/NotVotedYet.png'
+    
+            return {
+                votingStatus: votingStatus,
+                votingStatusIconUrl: votingStatusIconUrl,
+                proposalName:
+                    notification.proposal.name.length > 100
+                        ? notification.proposal.name.substring(0, 100) + '...'
+                        : notification.proposal.name,
+                proposalUrl: notification.proposal.url,
+                daoLogoUrl:
+                    process.env.WEBAPP_URL + notification.proposal.dao.picture,
+                endHoursUTC: formatTwoDigit(
+                    notification.proposal.timeEnd.getUTCHours()
+                ),
+                endMinutesUTC: formatTwoDigit(
+                    notification.proposal.timeEnd.getUTCMinutes()
+                ),
+                endDateString: notification.proposal.timeEnd.toLocaleDateString(
+                    undefined,
+                    dateOptions
+                ),
+                countdownUrl: countdownUrl,
+            }
+        })
+    } catch(error) {
+        console.error(error)
+    }
+    
 
     return Promise.all(promises)
 }
@@ -313,7 +326,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
 
         url = response.data.message.src
     } catch (error) {
-        console.error(error)
+        console.error("Failed to generate countdown gif: ", error)
     }
 
     return url
@@ -327,84 +340,98 @@ const sendRoundupEmails = async () => {
         day: 'numeric',
     }
     const todaysDate = new Date(now).toLocaleDateString(undefined, dateOptions)
+    console.log("Server time is: ", new Date(Date.now()));
 
-    const users = await prisma.user.findMany({
-        where: {
-            email: {
-                not: '',
+    try {
+        console.log("Searching for users with daily bulletin enabled...")
+        const users = await prisma.user.findMany({
+            where: {
+                email: {
+                    not: '',
+                },
+                userSettings: {
+                    dailyBulletinEmail: true,
+                },
             },
-            userSettings: {
-                dailyBulletinEmail: true,
+            include: {
+                voters: true,
             },
-        },
-        include: {
-            voters: true,
-        },
-    })
-
-    for (const user of users) {
-        if (!user.email) continue
-
-        const endingSoonProposalsData = await formatEmailTableData(
-            user,
-            RoundupNotificationType.ENDING_SOON
-        )
-        const newProposalsData = await formatEmailTableData(
-            user,
-            RoundupNotificationType.NEW
-        )
-        const pastProposalsData = await formatEmailTableData(
-            user,
-            RoundupNotificationType.PAST
-        )
-
-        const to: string =
-            process.env.EXEC_ENV === 'PROD'
-                ? String(user.email)
-                : String(process.env.TEST_EMAIL)
-
-        const response = await client.sendEmailWithTemplate({
-            TemplateAlias: 'daily-bulletin',
-            TemplateModel: {
-                senateLogoUrl:
-                    process.env.WEBAPP_URL + '/assets/Senate_Logo/64/White.png',
-                todaysDate: todaysDate,
-                endingSoonProposals: endingSoonProposalsData,
-                endingSoonProposalsTableCssClass:
-                    endingSoonProposalsData.length > 0 ? 'show' : 'hide',
-                endingSoonProposalsNoDataBoxCssClass:
-                    endingSoonProposalsData.length > 0 ? 'hide' : 'show',
-
-                newProposals: newProposalsData,
-                newProposalsTableCssClass:
-                    newProposalsData.length > 0 ? 'show' : 'hide',
-                newProposalsNoDataBoxCssClass:
-                    newProposalsData.length > 0 ? 'hide' : 'show',
-
-                pastProposals: pastProposalsData,
-                pastProposalsTableCssClass:
-                    pastProposalsData.length > 0 ? 'show' : 'hide',
-                pastProposalsNoDataBoxCssClass:
-                    pastProposalsData.length > 0 ? 'hide' : 'show',
-
-                twitterIconUrl:
-                    process.env.WEBAPP_URL + '/assets/Icon/TwitterWhite.png',
-                discordIconUrl:
-                    process.env.WEBAPP_URL + '/assets/Icon/DiscordWhite.png',
-                githubIconUrl:
-                    process.env.WEBAPP_URL + '/assets/Icon/GithubWhite.png',
-            },
-            InlineCss: true,
-            From: 'info@senatelabs.xyz',
-            To: to,
-            Bcc: process.env.ROUNDUP_BCC_EMAILS ?? '',
-            Tag: 'Daily Bulletin',
-            TrackOpens: true,
-            MessageStream: 'outbound',
         })
+        console.log("Found " + users.length + " users with daily bulletin enabled.")
+    
+        for (const user of users) {
+            if (!user.email) continue
+            console.log('Sending email to ' + user.email);
+    
+            const endingSoonProposalsData = await formatEmailTableData(
+                user,
+                RoundupNotificationType.ENDING_SOON
+            )
+            console.log("Ending soon proposals: ", endingSoonProposalsData);
+            const newProposalsData = await formatEmailTableData(
+                user,
+                RoundupNotificationType.NEW
+            )
+            console.log("New proposals: ", newProposalsData);
+            const pastProposalsData = await formatEmailTableData(
+                user,
+                RoundupNotificationType.PAST
+            )
+            console.log("Past proposals: ", pastProposalsData);
 
-        console.log(`Email sent to ${user.email}`, response)
+    
+            const to: string =
+                process.env.EXEC_ENV === 'PROD'
+                    ? String(user.email)
+                    : String(process.env.TEST_EMAIL)
+    
+            const response = await client.sendEmailWithTemplate({
+                TemplateAlias: 'daily-bulletin',
+                TemplateModel: {
+                    senateLogoUrl:
+                        process.env.WEBAPP_URL + '/assets/Senate_Logo/64/White.png',
+                    todaysDate: todaysDate,
+                    endingSoonProposals: endingSoonProposalsData,
+                    endingSoonProposalsTableCssClass:
+                        endingSoonProposalsData.length > 0 ? 'show' : 'hide',
+                    endingSoonProposalsNoDataBoxCssClass:
+                        endingSoonProposalsData.length > 0 ? 'hide' : 'show',
+    
+                    newProposals: newProposalsData,
+                    newProposalsTableCssClass:
+                        newProposalsData.length > 0 ? 'show' : 'hide',
+                    newProposalsNoDataBoxCssClass:
+                        newProposalsData.length > 0 ? 'hide' : 'show',
+    
+                    pastProposals: pastProposalsData,
+                    pastProposalsTableCssClass:
+                        pastProposalsData.length > 0 ? 'show' : 'hide',
+                    pastProposalsNoDataBoxCssClass:
+                        pastProposalsData.length > 0 ? 'hide' : 'show',
+    
+                    twitterIconUrl:
+                        process.env.WEBAPP_URL + '/assets/Icon/TwitterWhite.png',
+                    discordIconUrl:
+                        process.env.WEBAPP_URL + '/assets/Icon/DiscordWhite.png',
+                    githubIconUrl:
+                        process.env.WEBAPP_URL + '/assets/Icon/GithubWhite.png',
+                },
+                InlineCss: true,
+                From: 'info@senatelabs.xyz',
+                To: to,
+                Bcc: process.env.ROUNDUP_BCC_EMAILS ?? '',
+                Tag: 'Daily Bulletin',
+                TrackOpens: true,
+                MessageStream: 'outbound',
+            })
+    
+            console.log(`Email sent to ${user.email}`, response)
+        }
+
+    } catch (error) {
+        console.error(error)
     }
+
 }
 
 // const getDaysDifference = (timestamp1: number, timestamp2: number): number => {
