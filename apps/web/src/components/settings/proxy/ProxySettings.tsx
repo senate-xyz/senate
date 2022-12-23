@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { trpc } from '../../../utils/trpc'
 import { useProvider } from 'wagmi'
-import { ethers } from 'ethers'
+import Image from 'next/image'
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
@@ -28,7 +28,10 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
 const ProxySettings = () => {
     const provider = useProvider()
 
-    const voters = trpc.user.settings.voters.useQuery()
+    const voters = trpc.user.settings.voters.useQuery(
+        {},
+        { refetchInterval: 5000 }
+    )
     const removeVoter = trpc.user.settings.removeVoter.useMutation()
     const addVoter = trpc.user.settings.addVoter.useMutation()
 
@@ -72,22 +75,41 @@ const ProxySettings = () => {
                                         <div className="font-mono text-[18px] font-light text-white">
                                             {voter.address}
                                         </div>
-                                        <button
-                                            onClick={() => {
-                                                provider.resolveName
-                                                removeVoter.mutate(
-                                                    { address: voter.address },
-                                                    {
-                                                        onSuccess() {
-                                                            voters.refetch()
+                                        {voter.lastRefresh < new Date(1) ? (
+                                            <div className="flex flex-row items-center gap-2">
+                                                <Image
+                                                    src="/assets/Senate_Logo/Loading/senate-loading-onDark.svg"
+                                                    height={32}
+                                                    width={32}
+                                                    alt="loading"
+                                                />
+                                                <div className="text-[18px] font-light text-white">
+                                                    This address is still
+                                                    syncing... Just give us a
+                                                    minute.
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => {
+                                                    provider.resolveName
+                                                    removeVoter.mutate(
+                                                        {
+                                                            address:
+                                                                voter.address,
                                                         },
-                                                    }
-                                                )
-                                            }}
-                                            className="text-[18px] font-light text-white underline"
-                                        >
-                                            Delete
-                                        </button>
+                                                        {
+                                                            onSuccess() {
+                                                                voters.refetch()
+                                                            },
+                                                        }
+                                                    )
+                                                }}
+                                                className="text-[18px] font-light text-white underline"
+                                            >
+                                                Delete
+                                            </button>
+                                        )}
                                     </div>
                                 )
                             })}

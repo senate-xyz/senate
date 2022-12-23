@@ -6,7 +6,7 @@ import * as cron from 'node-cron'
 const main = () => {
     console.log('Refresher start')
 
-    cron.schedule('* * * * *', async () => {
+    cron.schedule('*/10 * * * * *', async () => {
         console.log('Running refresher')
         refreshDaos()
         refreshUsers()
