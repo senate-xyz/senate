@@ -612,6 +612,31 @@ async function main() {
         },
     })
 
+    const aura = await prisma.dAO.upsert({
+        where: { name: 'Aura Finance' },
+        update: {},
+        create: {
+            name: 'Aura Finance',
+            picture: '/assets/Project_Icons/aura-finance.png',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'aurafinance.eth',
+                            proposalsCount: 0,
+                        },
+                    },
+                ],
+            },
+            refreshStatus: RefreshStatus.DONE,
+            lastRefresh: new Date(),
+        },
+        include: {
+            handlers: true,
+        },
+    })
+
 }
 
 main()
