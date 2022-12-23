@@ -28,10 +28,9 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
 const ProxySettings = () => {
     const provider = useProvider()
 
-    const voters = trpc.user.settings.voters.useQuery(
-        {},
-        { refetchInterval: 5000 }
-    )
+    const voters = trpc.user.settings.voters.useQuery(undefined, {
+        refetchInterval: 5000,
+    })
     const removeVoter = trpc.user.settings.removeVoter.useMutation()
     const addVoter = trpc.user.settings.addVoter.useMutation()
 
