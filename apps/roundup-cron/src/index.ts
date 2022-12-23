@@ -339,8 +339,8 @@ const sendRoundupEmails = async () => {
         month: 'long',
         day: 'numeric',
     }
+    
     const todaysDate = new Date(now).toLocaleDateString(undefined, dateOptions)
-    console.log("Server time is: ", new Date(Date.now()));
 
     try {
         console.log("Searching for users with daily bulletin enabled...")
@@ -367,18 +367,16 @@ const sendRoundupEmails = async () => {
                 user,
                 RoundupNotificationType.ENDING_SOON
             )
-            console.log("Ending soon proposals: ", endingSoonProposalsData);
+
             const newProposalsData = await formatEmailTableData(
                 user,
                 RoundupNotificationType.NEW
             )
-            console.log("New proposals: ", newProposalsData);
+            
             const pastProposalsData = await formatEmailTableData(
                 user,
                 RoundupNotificationType.PAST
             )
-            console.log("Past proposals: ", pastProposalsData);
-
     
             const to: string =
                 process.env.EXEC_ENV === 'PROD'
@@ -433,33 +431,6 @@ const sendRoundupEmails = async () => {
     }
 
 }
-
-// const getDaysDifference = (timestamp1: number, timestamp2: number): number => {
-//     const timestampDifference = timestamp2 - timestamp1
-//     const daysDifference = Math.floor(timestampDifference / 1000 / 60 / 60 / 24)
-
-//     return daysDifference
-// }
-
-// const getHoursDifference = (timestamp1: number, timestamp2: number): number => {
-//     const timestampDifference = timestamp2 - timestamp1
-//     const daysDifference = getDaysDifference(timestamp1, timestamp2)
-//     const hoursDifference = Math.floor(timestampDifference / 1000 / 60 / 60)
-
-//     return hoursDifference - daysDifference * 24
-// }
-
-// const getMinutesDifference = (
-//     timestamp1: number,
-//     timestamp2: number
-// ): number => {
-//     const timestampDifference = timestamp2 - timestamp1
-//     const daysDifference = getDaysDifference(timestamp1, timestamp2)
-//     const hoursDifference = getHoursDifference(timestamp1, timestamp2)
-//     const minutesDifference = Math.floor(timestampDifference / 1000 / 60)
-
-//     return minutesDifference - daysDifference * 24 * 60 - hoursDifference * 60
-// }
 
 const userVoted = async (
     voters: Voter[],
