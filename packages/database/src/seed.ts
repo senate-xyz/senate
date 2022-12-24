@@ -38,7 +38,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -84,7 +84,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -109,7 +109,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -134,7 +134,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -159,7 +159,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -184,7 +184,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -209,7 +209,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -234,7 +234,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -270,7 +270,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -295,7 +295,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -320,7 +320,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -355,7 +355,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -380,7 +380,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -405,7 +405,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -430,7 +430,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -455,7 +455,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -480,7 +480,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -505,7 +505,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -530,7 +530,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -555,7 +555,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -580,7 +580,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -605,7 +605,7 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -630,13 +630,12 @@ async function main() {
                 ],
             },
             refreshStatus: RefreshStatus.DONE,
-            lastRefresh: new Date(),
+            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
         },
     })
-
 }
 
 main()
