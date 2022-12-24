@@ -10,6 +10,15 @@ export const updateSnapshotVotes = async (
     voterAddress: string,
     daoName: string
 ) => {
+    const currentVotesCount = await prisma.vote.count({
+        where: {
+            AND: [
+                { daoHandlerId: daoHandler.id },
+                { voterAddress: voterAddress },
+            ],
+        },
+    })
+
     logger.log(`Updating Snapshot votes for ${voterAddress}`)
     let votes
 
@@ -19,7 +28,7 @@ export const updateSnapshotVotes = async (
                 method: 'POST',
                 data: JSON.stringify({
                     query: `{
-            votes(first: 1000, where: {voter: "${voterAddress}", space:"${daoHandler.decoder['space']}"}) {
+            votes(first: 10, skip:${currentVotesCount}, where: {voter: "${voterAddress}", space:"${daoHandler.decoder['space']}"}) {
               id
               voter
               choice

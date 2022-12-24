@@ -15,6 +15,12 @@ export const updateSnapshotProposals = async (
         return
     }
 
+    const currentProposalsCount = await prisma.proposal.count({
+        where: {
+            daoHandlerId: daoHandler.id,
+        },
+    })
+
     logger.log(`Searching snapshot proposals for ${daoName}`)
     let proposals
 
@@ -25,7 +31,8 @@ export const updateSnapshotProposals = async (
                 data: JSON.stringify({
                     query: `{
                 proposals (
-                first:1000,
+                first:10,
+                skip:${currentProposalsCount}
                   where: {
                     space_in: ["${daoHandler.decoder['space']}"],
                   }
