@@ -37,7 +37,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -83,7 +83,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -108,7 +108,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -133,7 +133,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -158,7 +158,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -183,7 +183,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -208,7 +208,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -233,7 +233,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -269,7 +269,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -294,7 +294,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -319,7 +319,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -354,7 +354,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -379,7 +379,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -404,7 +404,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -429,7 +429,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -454,7 +454,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -479,7 +479,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -504,7 +504,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -529,7 +529,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -554,7 +554,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -579,7 +579,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -604,7 +604,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
@@ -629,7 +629,7 @@ async function main() {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.NEW,
             lastRefresh: new Date(1),
         },
         include: {
