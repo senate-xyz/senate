@@ -9,7 +9,7 @@ const main = () => {
     cron.schedule('*/10 * * * * *', async () => {
         console.log('Running refresher')
         refreshDaos()
-        refreshUsers()
+        // refreshUsers()
     })
 
     cron.schedule(
@@ -189,7 +189,7 @@ const refreshUsers = async () => {
                 `Refresh - PENDING - voter ${voter.address} - daoId ${totalSubs[i].daoId} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${totalSubs[i].daoId}&voterAddress=${voter.address}`
             )
 
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            await new Promise((resolve) => setTimeout(resolve, 250))
 
             fetch(
                 `${process.env.DETECTIVE_URL}/updateVotes?daoId=${totalSubs[i].daoId}&voterAddress=${voter.address}`,
