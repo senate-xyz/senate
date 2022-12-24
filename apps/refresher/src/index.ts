@@ -80,7 +80,7 @@ const refreshDaos = async () => {
         return
     } else console.log(`Refreshing ${daos.length} DAOs`)
 
-    for (const dao of daos) {
+    for await (const dao of daos) {
         await prisma.dAO.update({
             where: {
                 id: dao.id,
@@ -93,6 +93,8 @@ const refreshDaos = async () => {
         console.log(
             `Refresh - PENDING - ${dao.name} (${dao.id}) at ${dao.lastRefresh}`
         )
+
+        await new Promise(r => setTimeout(r, 1000));
 
         fetch(`${process.env.DETECTIVE_URL}/updateProposals?daoId=${dao.id}`, {
             method: 'POST',
@@ -180,10 +182,13 @@ const refreshUsers = async () => {
             })
         }
 
-        for (const sub of totalSubs) {
+        for await (const sub of totalSubs) {
             console.log(
                 `Refresh - PENDING - voter ${voter.address} - daoId ${sub.daoId} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
             )
+    
+            await new Promise(r => setTimeout(r, 1000));
+
             fetch(
                 `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`,
                 {
