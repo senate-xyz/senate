@@ -38,25 +38,26 @@ export const updateSnapshotVotes = async (
             .get('https://hub.snapshot.org/graphql', {
                 method: 'POST',
                 data: JSON.stringify({
-                    query: `{
-                        votes(first: 10, skip: ${currentVotesCount}, orderBy: "created", orderDirection: asc, where: {voter: "${voterAddress}", space: "${
+                    query: ` {
+  votes(first: 10, skip: ${currentVotesCount}, orderBy: "created", orderDirection: asc, where: {voter: ${voterAddress}, space: ${
                         daoHandler.decoder['space']
-                    }", created_lt: ${latestProposal.timeEnd.valueOf()}}) {
-                        id
-                        voter
-                        choice
-                        proposal {
-                            id
-                            choices
-                            title
-                            body
-                            created
-                            start
-                            end
-                            link
-                        }
-                    }
-        }`,
+                    }, created_lt: ${latestProposal.timeCreated.valueOf()}}) {
+    id
+    voter
+    choice
+    proposal {
+      id
+      choices
+      title
+      body
+      created
+      start
+      end
+      link
+    }
+  }
+}
+`,
                 }),
                 headers: {
                     'content-type': 'application/json',
