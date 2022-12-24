@@ -641,10 +641,10 @@ const seedDAOs = async () => {
 const seedUsers = async () => {
     await prisma.user.upsert({
         where: {
-            name: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
         },
         create: {
-            name: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
             newUser: true,
             acceptedTerms: false,
             email: '',
@@ -655,7 +655,7 @@ const seedUsers = async () => {
             },
         },
         update: {
-            name: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
             newUser: false,
         },
     })
@@ -794,7 +794,7 @@ const seedVoters = async () => {
     for (const voter of voters) {
         await prisma.user.update({
             where: {
-                name: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+                name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
             },
             data: {
                 voters: {
