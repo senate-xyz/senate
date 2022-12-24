@@ -130,6 +130,7 @@ const refreshUsers = async () => {
         where: {
             refreshStatus: RefreshStatus.NEW,
         },
+        take: 5,
     })
 
     if (!voters.length) {
