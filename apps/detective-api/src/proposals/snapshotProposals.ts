@@ -37,7 +37,7 @@ export const updateSnapshotProposals = async (
                     space_in: ["${daoHandler.decoder['space']}"],
                   }
                   orderBy: "created",
-                  orderDirection: desc
+                  orderDirection: asc
                 ) {
                   id
                   title
