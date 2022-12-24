@@ -59,7 +59,7 @@ const seedData = async () => {
                             address:
                                 '0x0a3f6849f78076aefaDf113F5BED87720274dDC0',
                             abi: makerChief.abi,
-                            latestProposalBlock: 15876682,
+                            latestProposalBlock: 10000000,
                             proposalUrl: 'https://vote.makerdao.com/executive/',
                         },
                     },
@@ -69,7 +69,7 @@ const seedData = async () => {
                             address:
                                 '0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d',
                             abi: makerPollCreate.abi,
-                            latestProposalBlock: 15876682,
+                            latestProposalBlock: 10000000,
                             proposalUrl: 'https://vote.makerdao.com/polling/',
                         },
                     },
