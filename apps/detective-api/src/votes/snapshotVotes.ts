@@ -68,6 +68,7 @@ export const updateSnapshotVotes = async (
                 },
             })
             .then((response) => {
+                if (response.status == 429) throw new Error('Too many requests')
                 return response.data
             })
             .then((data) => {
@@ -79,7 +80,7 @@ export const updateSnapshotVotes = async (
             })
 
         //TODO support multiple choice vote
-        if (votes.length)
+        if (votes)
             for (const vote of votes) {
                 const proposal = await prisma.proposal.findFirst({
                     where: {
