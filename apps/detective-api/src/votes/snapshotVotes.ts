@@ -42,11 +42,15 @@ export const updateSnapshotVotes = async (
             votes(
                 first: 10,
                 skip:${currentVotesCount},
-                created_lt:${latestProposal.timeEnd.valueOf()},
+               
                 orderBy: "created",
                 orderDirection: asc,
-                where: {voter: "${voterAddress}",
-                space:"${daoHandler.decoder['space']}"}) {
+                where: {
+                    voter: "${voterAddress}",
+                    space:"${daoHandler.decoder['space']}",
+                    created_lt:${latestProposal.timeEnd.valueOf()}
+                }
+                ) {
               id
               voter
               choice
