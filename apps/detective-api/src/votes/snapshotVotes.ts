@@ -19,6 +19,17 @@ export const updateSnapshotVotes = async (
         },
     })
 
+    const latestProposal = await prisma.proposal.findFirst({
+        where: {
+            daoHandlerId: daoHandler.id,
+        },
+        orderBy: {
+            timeCreated: 'desc',
+        },
+    })
+
+    if (!latestProposal) return
+
     logger.log(`Updating Snapshot votes for ${voterAddress}`)
     let votes
 
@@ -31,6 +42,7 @@ export const updateSnapshotVotes = async (
             votes(
                 first: 10,
                 skip:${currentVotesCount},
+                created_lt:${latestProposal.timeCreated.valueOf()}
                 orderBy: "created",
                 orderDirection: asc,
                 where: {voter: "${voterAddress}",
