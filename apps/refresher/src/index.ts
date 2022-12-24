@@ -73,6 +73,7 @@ const refreshDaos = async () => {
         where: {
             refreshStatus: RefreshStatus.NEW,
         },
+        take: 10,
     })
 
     if (!daos.length) {
