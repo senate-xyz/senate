@@ -42,7 +42,6 @@ export const updateSnapshotVotes = async (
             votes(
                 first: 10,
                 skip:${currentVotesCount},
-                created_gt:${latestProposal.timeCreated.valueOf()},
                 orderBy: "created",
                 orderDirection: asc,
                 where: {voter: "${voterAddress}",
