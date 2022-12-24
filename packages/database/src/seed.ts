@@ -8,7 +8,7 @@ import compoundGovBravo from './abis/compoundGovBravo.json'
 import { prisma } from './client'
 import { DAOHandlerType, RefreshStatus } from '@prisma/client'
 
-const seedDAOs = async () => {
+const seedData = async () => {
     const aave = await prisma.dAO.upsert({
         where: { name: 'Aave' },
         update: {},
@@ -636,10 +636,9 @@ const seedDAOs = async () => {
             handlers: true,
         },
     })
-}
 
-const seedUsers = async () => {
-    await prisma.user.upsert({
+    //Seed user
+    const seedUser = await prisma.user.upsert({
         where: {
             name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
         },
@@ -659,7 +658,147 @@ const seedUsers = async () => {
             newUser: false,
         },
     })
+
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: aave.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: maker.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: balancer.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: optimism.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: elementFinance.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: oneInch.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: hop.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: safe.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: compound.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: synthetix.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: dydx.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: uniswap.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: ens.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: fwb.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: gnosis.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: indexCoop.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: paladin.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: sushi.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: instadapp.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: gitcoin.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: gearbox.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: euler.id,
+        },
+    })
+    await prisma.subscription.create({
+        data: {
+            userId: seedUser.id,
+            daoId: aura.id,
+        },
+    })
 }
+
 const seedVoters = async () => {
     const voters = [
         '0x0E1774FD4f836E6Ba2E22d0e11F4c69684ae4EB7',
@@ -815,8 +954,7 @@ const seedVoters = async () => {
 }
 
 async function main() {
-    await seedDAOs()
-    await seedUsers()
+    await seedData()
 
     await seedVoters()
 }
