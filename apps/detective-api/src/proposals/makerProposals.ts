@@ -72,16 +72,17 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
         for (let i = 0; i < spellAddresses.length; i++) {
             logger.log(`inserting spell address ${spellAddresses[i]}`)
 
+            if (
+                spellAddresses[i] ==
+                '0x0000000000000000000000000000000000000000'
+            )
+                continue
+
             const response = await axios.get(
                 'https://vote.makerdao.com/api/executive/' + spellAddresses[i]
             )
 
-            if (
-                !response.data ||
-                response.status == 404 ||
-                spellAddresses[i] ==
-                    '0x0000000000000000000000000000000000000000'
-            ) {
+            if (!response.data || response.status == 404) {
                 // logger.warn(
                 //     `Maker API did not return any data for spell ${spellAddresses[i]}`
                 // )
