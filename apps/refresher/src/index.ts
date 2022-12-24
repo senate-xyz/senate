@@ -139,13 +139,17 @@ const refreshUsers = async () => {
     } else console.log(`Refreshing ${voters.length} voters`)
 
     for (let i = 0; i < voters.length; i++) {
-        console.log(`Refresh voter: ${voters[i].address} (${voters[i].id})`)
+        const voter = voters[i]
+
+        if (!voter.address) continue
+
+        console.log(`Refresh voter: ${voter.address} (${voter.id})`)
 
         const users = await prisma.user.findMany({
             where: {
                 voters: {
                     some: {
-                        id: voters[i].id,
+                        id: voter.id,
                     },
                 },
             },
@@ -165,7 +169,7 @@ const refreshUsers = async () => {
         if (totalSubs.length) {
             await prisma.voter.update({
                 where: {
-                    id: voters[i].id,
+                    id: voter.id,
                 },
                 data: {
                     refreshStatus: RefreshStatus.PENDING,
@@ -175,7 +179,7 @@ const refreshUsers = async () => {
             //nothing to update
             await prisma.voter.update({
                 where: {
-                    id: voters[i].id,
+                    id: voter.id,
                 },
                 data: {
                     refreshStatus: RefreshStatus.DONE,
@@ -185,14 +189,15 @@ const refreshUsers = async () => {
         }
 
         for (let i = 0; i < totalSubs.length; i++) {
+            const sub = totalSubs[i]
             console.log(
-                `Refresh - PENDING - voter ${voters[i].address} - daoId ${totalSubs[i].daoId} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${totalSubs[i].daoId}&voterAddress=${voters[i].address}`
+                `Refresh - PENDING - voter ${voter.address} - daoId ${sub.daoId} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
             )
 
             await new Promise((resolve) => setTimeout(resolve, 250))
 
             fetch(
-                `${process.env.DETECTIVE_URL}/updateVotes?daoId=${totalSubs[i].daoId}&voterAddress=${voters[i].address}`,
+                `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`,
                 {
                     method: 'POST',
                 }
@@ -200,11 +205,11 @@ const refreshUsers = async () => {
                 .then(async (res) => {
                     if (res.ok) {
                         console.log(
-                            `Refresh - DONE -  voter ${voters[i].address} - ${totalSubs[i].daoId} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${totalSubs[i].daoId}&voterAddress=${voters[i].address}`
+                            `Refresh - DONE -  voter ${voter.address} - ${sub.daoId} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
                         )
                         await prisma.voter.update({
                             where: {
-                                id: voters[i].id,
+                                id: voter.id,
                             },
                             data: {
                                 refreshStatus: RefreshStatus.DONE,
