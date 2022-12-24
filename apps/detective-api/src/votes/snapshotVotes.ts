@@ -76,7 +76,7 @@ export const updateSnapshotVotes = async (
             })
 
         //TODO support multiple choice vote
-        if (votes)
+        if (votes) {
             for (const vote of votes) {
                 const proposal = await prisma.proposal.findFirst({
                     where: {
@@ -159,14 +159,16 @@ export const updateSnapshotVotes = async (
                     })
                 }
             }
+            console.log(
+                `updated ${votes.length} snapshot votes for ${voterAddress} in ${daoName}`
+            )
+        }
     } catch (err) {
         logger.error('Error while updating snapshot votes', err)
         throw new InternalServerErrorException()
     }
 
-    console.log(
-        `updated ${votes.length} snapshot votes for ${voterAddress} in ${daoName}`
-    )
+    console.log(`updated 0 snapshot votes for ${voterAddress} in ${daoName}`)
 }
 
 const getVotedOptions = (
