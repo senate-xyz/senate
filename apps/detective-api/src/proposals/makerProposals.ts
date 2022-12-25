@@ -147,6 +147,9 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const calculateVotingPeriodEndDate = (spellData: any) => {
+    console.log(
+        `${spellData.dateExecuted} - ${spellData.nextCastTime} - ${spellData.expiration}`
+    )
     return spellData.hasBeenCast
         ? spellData.dateExecuted
         : spellData.hasBeenScheduled
