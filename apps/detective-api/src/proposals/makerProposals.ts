@@ -108,9 +108,12 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
                     daoId: daoHandler.daoId,
                     daoHandlerId: daoHandler.id,
                     proposalType: ProposalType.MAKER_EXECUTIVE,
-                    timeEnd: new Date(
-                        calculateVotingPeriodEndDate(response.data.spellData)
-                    ),
+                    timeEnd:
+                        new Date(
+                            calculateVotingPeriodEndDate(
+                                response.data.spellData
+                            )
+                        ) ?? new Date(0),
                     timeStart: new Date(response.data.date),
                     timeCreated: new Date(response.data.date),
                     data: {},
