@@ -97,7 +97,7 @@ const refreshDaos = async () => {
             `Refresh - PENDING - ${dao.name} (${dao.id}) at ${dao.lastRefresh}`
         )
 
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        await new Promise((resolve) => setTimeout(resolve, 100))
 
         fetch(`${process.env.DETECTIVE_URL}/updateProposals?daoId=${dao.id}`, {
             method: 'POST',
@@ -196,7 +196,7 @@ const refreshUsers = async () => {
                 `Refresh - PENDING - voter ${voter.address} - daoId ${sub.daoId} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
             )
 
-            await new Promise((resolve) => setTimeout(resolve, 250))
+            await new Promise((resolve) => setTimeout(resolve, 100))
 
             fetch(
                 `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`,
