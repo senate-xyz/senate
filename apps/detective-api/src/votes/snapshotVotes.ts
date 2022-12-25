@@ -39,9 +39,9 @@ export const updateSnapshotVotes = async (
                 method: 'POST',
                 data: JSON.stringify({
                     query: ` {
-  votes(first: 10, skip: ${currentVotesCount}, orderBy: "created", orderDirection: asc, where: {voter: ${voterAddress}, space: ${
+  votes(first: 10, skip: ${currentVotesCount}, orderBy: "created", orderDirection: asc, where: {voter: "${voterAddress}", space: "${
                         daoHandler.decoder['space']
-                    }, created_lt: ${latestProposal.timeCreated.valueOf()}}) {
+                    }", created_lt: ${latestProposal.timeCreated.valueOf()}}) {
     id
     voter
     choice
