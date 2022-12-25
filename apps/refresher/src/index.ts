@@ -9,7 +9,7 @@ const main = () => {
     cron.schedule('*/10 * * * * *', async () => {
         console.log('Running refresher')
         refreshDaos()
-        refreshUsers()
+        // refreshUsers()
     })
 
     cron.schedule(
