@@ -78,9 +78,14 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
             )
                 continue
 
-            const response = await axios.get(
-                'https://vote.makerdao.com/api/executive/' + spellAddresses[i]
-            )
+            const response = await axios
+                .get(
+                    'https://vote.makerdao.com/api/executive/' +
+                        spellAddresses[i]
+                )
+                .catch(() => {
+                    return { status: 404, data: {} }
+                })
 
             if (!response.data || response.status == 404) {
                 // logger.warn(
