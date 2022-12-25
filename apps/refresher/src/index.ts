@@ -73,6 +73,9 @@ const refreshDaos = async () => {
         where: {
             refreshStatus: RefreshStatus.NEW,
         },
+        orderBy: {
+            lastRefresh: 'asc',
+        },
         take: 1,
     })
 
@@ -131,6 +134,9 @@ const refreshUsers = async () => {
     const voters = await prisma.voter.findMany({
         where: {
             refreshStatus: RefreshStatus.NEW,
+        },
+        orderBy: {
+            lastRefresh: 'asc',
         },
         take: 1,
     })
