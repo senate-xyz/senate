@@ -108,12 +108,9 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
                     daoId: daoHandler.daoId,
                     daoHandlerId: daoHandler.id,
                     proposalType: ProposalType.MAKER_EXECUTIVE,
-                    timeEnd:
-                        new Date(
-                            calculateVotingPeriodEndDate(
-                                response.data.spellData
-                            )
-                        ) ?? new Date(0),
+                    timeEnd: new Date(
+                        calculateVotingPeriodEndDate(response.data.spellData)
+                    ),
                     timeStart: new Date(response.data.date),
                     timeCreated: new Date(response.data.date),
                     data: {},
@@ -147,9 +144,9 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const calculateVotingPeriodEndDate = (spellData: any) => {
-    console.log(
-        `${spellData.dateExecuted} - ${spellData.nextCastTime} - ${spellData.expiration}`
-    )
+    if (!spellData.dateExecuted && spellData.nextCastTime)
+        return spellData.expiration
+
     return spellData.hasBeenCast
         ? spellData.dateExecuted
         : spellData.hasBeenScheduled
