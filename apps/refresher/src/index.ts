@@ -6,10 +6,10 @@ import * as cron from 'node-cron'
 const main = () => {
     console.log('Refresher start')
 
-    cron.schedule('*/10 * * * * *', async () => {
+    cron.schedule('*/30 * * * * *', async () => {
         console.log('Running refresher')
         refreshDaos()
-        // refreshUsers()
+        refreshUsers()
     })
 
     cron.schedule(
@@ -73,7 +73,7 @@ const refreshDaos = async () => {
         where: {
             refreshStatus: RefreshStatus.NEW,
         },
-        take: 5,
+        take: 1,
     })
 
     if (!daos.length) {
@@ -81,7 +81,9 @@ const refreshDaos = async () => {
         return
     } else console.log(`Refreshing ${daos.length} DAOs`)
 
-    for await (const dao of daos) {
+    for (let i = 0; i < daos.length; i++) {
+        const dao = daos[i]
+
         await prisma.dAO.update({
             where: {
                 id: dao.id,
@@ -130,7 +132,7 @@ const refreshUsers = async () => {
         where: {
             refreshStatus: RefreshStatus.NEW,
         },
-        take: 5,
+        take: 1,
     })
 
     if (!voters.length) {
@@ -194,7 +196,7 @@ const refreshUsers = async () => {
                 `Refresh - PENDING - voter ${voter.address} - daoId ${sub.daoId} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
             )
 
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            await new Promise((resolve) => setTimeout(resolve, 250))
 
             fetch(
                 `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`,
