@@ -122,9 +122,12 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
                             spellAddresses[i],
                     },
                 })
+                .then((proposal) =>
+                    logger.log(
+                        'inserted executive proposal with id ' + proposal.id
+                    )
+                )
                 .catch((e) => console.log(e))
-
-            logger.log('inserted executive proposal with id ' + proposal.id)
         }
 
         const decoder = daoHandler.decoder
