@@ -94,29 +94,35 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
                 continue
             }
 
-            const proposal = await prisma.proposal.upsert({
-                where: {
-                    externalId_daoId: {
-                        daoId: daoHandler.daoId,
-                        externalId: spellAddresses[i],
+            const proposal = await prisma.proposal
+                .upsert({
+                    where: {
+                        externalId_daoId: {
+                            daoId: daoHandler.daoId,
+                            externalId: spellAddresses[i],
+                        },
                     },
-                },
-                update: {},
-                create: {
-                    externalId: spellAddresses[i],
-                    name: response.data.title,
-                    daoId: daoHandler.daoId,
-                    daoHandlerId: daoHandler.id,
-                    proposalType: ProposalType.MAKER_EXECUTIVE,
-                    timeEnd: new Date(
-                        calculateVotingPeriodEndDate(response.data.spellData)
-                    ),
-                    timeStart: new Date(response.data.date),
-                    timeCreated: new Date(response.data.date),
-                    data: {},
-                    url: daoHandler.decoder['proposalUrl'] + spellAddresses[i],
-                },
-            })
+                    update: {},
+                    create: {
+                        externalId: spellAddresses[i],
+                        name: response.data.title,
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id,
+                        proposalType: ProposalType.MAKER_EXECUTIVE,
+                        timeEnd: new Date(
+                            calculateVotingPeriodEndDate(
+                                response.data.spellData
+                            )
+                        ),
+                        timeStart: new Date(response.data.date),
+                        timeCreated: new Date(response.data.date),
+                        data: {},
+                        url:
+                            daoHandler.decoder['proposalUrl'] +
+                            spellAddresses[i],
+                    },
+                })
+                .catch((e) => console.log(e))
 
             logger.log('inserted executive proposal with id ' + proposal.id)
         }
