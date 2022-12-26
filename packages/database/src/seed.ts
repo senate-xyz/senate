@@ -14,7 +14,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Aave',
-            picture: '/assets/Project_Icons/aave.png',
+            picture: '/assets/Project_Icons/aave.svg',
             handlers: {
                 create: [
                     {
@@ -50,7 +50,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'MakerDAO',
-            picture: '/assets/Project_Icons/maker-dao.png',
+            picture: '/assets/Project_Icons/makerdao.svg',
             handlers: {
                 create: [
                     {
@@ -96,7 +96,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Balancer',
-            picture: '/assets/Project_Icons/balancer.png',
+            picture: '/assets/Project_Icons/balancer.svg',
             handlers: {
                 create: [
                     {
@@ -121,7 +121,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Optimism',
-            picture: '/assets/Project_Icons/optimism.png',
+            picture: '/assets/Project_Icons/optimism.svg',
             handlers: {
                 create: [
                     {
@@ -146,7 +146,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Element',
-            picture: '/assets/Project_Icons/element.png',
+            picture: '/assets/Project_Icons/element-dao.svg',
             handlers: {
                 create: [
                     {
@@ -171,7 +171,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: '1inch',
-            picture: '/assets/Project_Icons/1inch.png',
+            picture: '/assets/Project_Icons/1inch.svg',
             handlers: {
                 create: [
                     {
@@ -196,7 +196,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Hop Protocol',
-            picture: '/assets/Project_Icons/hop-protocol.png',
+            picture: '/assets/Project_Icons/hop-protocol.svg',
             handlers: {
                 create: [
                     {
@@ -221,7 +221,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'SafeDAO',
-            picture: '/assets/Project_Icons/safe.png',
+            picture: '/assets/Project_Icons/safedao.svg',
             handlers: {
                 create: [
                     {
@@ -246,7 +246,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Compound',
-            picture: '/assets/Project_Icons/compound.png',
+            picture: '/assets/Project_Icons/compound.svg',
             handlers: {
                 create: [
                     {
@@ -282,7 +282,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Synthetix',
-            picture: '/assets/Project_Icons/synthetix.png',
+            picture: '/assets/Project_Icons/synthetix.svg',
             handlers: {
                 create: [
                     {
@@ -307,7 +307,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'dYdX',
-            picture: '/assets/Project_Icons/dYdX.png',
+            picture: '/assets/Project_Icons/dYdX.svg',
             handlers: {
                 create: [
                     {
@@ -332,7 +332,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Uniswap',
-            picture: '/assets/Project_Icons/uniswap.png',
+            picture: '/assets/Project_Icons/uniswap.svg',
             handlers: {
                 create: [
                     {
@@ -367,7 +367,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'ENS',
-            picture: '/assets/Project_Icons/ens.png',
+            picture: '/assets/Project_Icons/ens.svg',
             handlers: {
                 create: [
                     {
@@ -392,7 +392,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'FWB',
-            picture: '/assets/Project_Icons/friends-with-benefits.png',
+            picture: '/assets/Project_Icons/friends-with-benefits.svg',
             handlers: {
                 create: [
                     {
@@ -417,7 +417,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'GnosisDAO',
-            picture: '/assets/Project_Icons/gnosis.png',
+            picture: '/assets/Project_Icons/gnosis.svg',
             handlers: {
                 create: [
                     {
@@ -442,7 +442,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Index Coop',
-            picture: '/assets/Project_Icons/index-coop.png',
+            picture: '/assets/Project_Icons/index-coop.svg',
             handlers: {
                 create: [
                     {
@@ -467,7 +467,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Paladin',
-            picture: '/assets/Project_Icons/paladin.png',
+            picture: '/assets/Project_Icons/paladin.svg',
             handlers: {
                 create: [
                     {
@@ -492,7 +492,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Sushi',
-            picture: '/assets/Project_Icons/sushiswap.png',
+            picture: '/assets/Project_Icons/sushiswap.svg',
             handlers: {
                 create: [
                     {
@@ -517,7 +517,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Instadapp',
-            picture: '/assets/Project_Icons/instadapp.png',
+            picture: '/assets/Project_Icons/instadapp.svg',
             handlers: {
                 create: [
                     {
@@ -542,7 +542,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Gitcoin',
-            picture: '/assets/Project_Icons/gitcoin.png',
+            picture: '/assets/Project_Icons/gitcoin.svg',
             handlers: {
                 create: [
                     {
@@ -567,7 +567,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Gearbox',
-            picture: '/assets/Project_Icons/gearbox.png',
+            picture: '/assets/Project_Icons/gearbox.svg',
             handlers: {
                 create: [
                     {
@@ -592,7 +592,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Euler',
-            picture: '/assets/Project_Icons/euler.png',
+            picture: '/assets/Project_Icons/euler.svg',
             handlers: {
                 create: [
                     {
@@ -617,7 +617,7 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Aura Finance',
-            picture: '/assets/Project_Icons/aura-finance.png',
+            picture: '/assets/Project_Icons/aura-finance.svg',
             handlers: {
                 create: [
                     {
