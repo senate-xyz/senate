@@ -94,7 +94,7 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
                 continue
             }
 
-            const proposal = await prisma.proposal
+            await prisma.proposal
                 .upsert({
                     where: {
                         externalId_daoId: {
