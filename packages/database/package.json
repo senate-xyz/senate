@@ -27,14 +27,14 @@
         "prettier:fix": "prettier src --write"
     },
     "dependencies": {
-        "@prisma/client": "^4.7.1"
+        "@prisma/client": "^4.8.0"
     },
     "devDependencies": {
         "@senate/common-types": "*",
         "@senate/config": "*",
         "@senate/tsconfig": "*",
         "eslint": "^8.30.0",
-        "prisma": "^4.7.1",
+        "prisma": "^4.8.0",
         "prisma-dbml-generator": "^0.10.0",
         "rimraf": "^3.0.2",
         "tsup": "^6.5.0",
