@@ -1,3 +1,10 @@
+/*
+    @banteg's article on MakerDAO's governance was incredibly helpful in understanding
+    how to fetch executive proposals. Thank you ser!
+
+    https://medium.com/@banteg/deep-dive-into-makerdao-governance-437c89493203
+*/
+
 import { InternalServerErrorException, Logger } from '@nestjs/common'
 import { DAOHandler, ProposalType } from '@senate/common-types'
 import { prisma } from '@senate/database'
@@ -88,9 +95,9 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
                 })
 
             if (!response.data || response.status == 404) {
-                // logger.warn(
-                //     `Maker API did not return any data for spell ${spellAddresses[i]}`
-                // )
+                logger.warn(
+                    `Maker API did not return any data for spell ${spellAddresses[i]}`
+                )
                 continue
             }
 
@@ -109,11 +116,7 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
                         daoId: daoHandler.daoId,
                         daoHandlerId: daoHandler.id,
                         proposalType: ProposalType.MAKER_EXECUTIVE,
-                        timeEnd: new Date(
-                            calculateVotingPeriodEndDate(
-                                response.data.spellData
-                            )
-                        ),
+                        timeEnd: new Date(response.data.spellData.expiration),
                         timeStart: new Date(response.data.date),
                         timeCreated: new Date(response.data.date),
                         data: {},
@@ -149,18 +152,6 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
     logger.log('\n\n')
     logger.log(`inserted ${spellAddresses.length} maker executive proposals`)
     logger.log('======================================================\n\n')
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const calculateVotingPeriodEndDate = (spellData: any) => {
-    if (!spellData.dateExecuted && spellData.nextCastTime)
-        return spellData.expiration
-
-    return spellData.hasBeenCast
-        ? spellData.dateExecuted
-        : spellData.hasBeenScheduled
-        ? spellData.nextCastTime
-        : spellData.expiration
 }
 
 const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
