@@ -31,7 +31,7 @@ export const updateSnapshotProposals = async (
                 data: JSON.stringify({
                     query: `{
                 proposals (
-                first:10,
+                first:1000,
                 skip:${currentProposalsCount}
                   where: {
                     space_in: ["${daoHandler.decoder['space']}"],
