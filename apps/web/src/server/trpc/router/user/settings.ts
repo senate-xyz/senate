@@ -1,13 +1,12 @@
-import { prisma } from '@senate/database'
 import { z } from 'zod'
 import { RefreshStatus } from '@senate/common-types'
-import { router, publicProcedure } from '../../trpc'
+import { router, protectedProcedure } from '../../trpc'
 
 export const userSettingsRouter = router({
-    email: publicProcedure.query(async ({ ctx }) => {
+    email: protectedProcedure.query(async ({ ctx }) => {
         if (!ctx.session) return
 
-        const user = await prisma.user.findFirstOrThrow({
+        const user = await ctx.prisma.user.findFirstOrThrow({
             where: {
                 name: String(ctx.session?.user?.name),
             },
@@ -15,7 +14,7 @@ export const userSettingsRouter = router({
         return user.email
     }),
 
-    setEmail: publicProcedure
+    setEmail: protectedProcedure
         .input(
             z.object({
                 emailAddress: z.string().email(),
@@ -24,7 +23,7 @@ export const userSettingsRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            const user = await prisma.user.update({
+            const user = await ctx.prisma.user.update({
                 where: {
                     name: String(ctx.session?.user?.name),
                 },
@@ -39,7 +38,7 @@ export const userSettingsRouter = router({
             return user.email
         }),
 
-    setTerms: publicProcedure
+    setTerms: protectedProcedure
         .input(
             z.object({
                 value: z.boolean(),
@@ -48,7 +47,7 @@ export const userSettingsRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            const user = await prisma.user.update({
+            const user = await ctx.prisma.user.update({
                 where: {
                     name: String(ctx.session?.user?.name),
                 },
@@ -63,7 +62,7 @@ export const userSettingsRouter = router({
             return user.acceptedTerms
         }),
 
-    setNewUser: publicProcedure
+    setNewUser: protectedProcedure
         .input(
             z.object({
                 value: z.boolean(),
@@ -72,7 +71,7 @@ export const userSettingsRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            const user = await prisma.user.update({
+            const user = await ctx.prisma.user.update({
                 where: {
                     name: String(ctx.session?.user?.name),
                 },
@@ -87,10 +86,10 @@ export const userSettingsRouter = router({
             return user.newUser
         }),
 
-    newUser: publicProcedure.query(async ({ ctx }) => {
+    newUser: protectedProcedure.query(async ({ ctx }) => {
         let result = false
 
-        const user = await prisma.user.findFirst({
+        const user = await ctx.prisma.user.findFirst({
             where: {
                 name: { equals: String(ctx.session?.user?.name) },
             },
@@ -104,8 +103,8 @@ export const userSettingsRouter = router({
         return { newUser: result }
     }),
 
-    userSettings: publicProcedure.query(async ({ ctx }) => {
-        const user = await prisma.user.findFirst({
+    userSettings: protectedProcedure.query(async ({ ctx }) => {
+        const user = await ctx.prisma.user.findFirst({
             where: {
                 name: { equals: String(ctx.session?.user?.name) },
             },
@@ -116,7 +115,7 @@ export const userSettingsRouter = router({
         return user?.userSettings
     }),
 
-    setDailyBulletin: publicProcedure
+    setDailyBulletin: protectedProcedure
         .input(
             z.object({
                 value: z.boolean(),
@@ -125,7 +124,7 @@ export const userSettingsRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            const user = await prisma.user.findFirst({
+            const user = await ctx.prisma.user.findFirst({
                 where: {
                     name: { equals: String(ctx.session?.user?.name) },
                 },
@@ -134,7 +133,7 @@ export const userSettingsRouter = router({
                 },
             })
 
-            const userSettings = await prisma.userSettings.upsert({
+            const userSettings = await ctx.prisma.userSettings.upsert({
                 where: { userId: user?.id },
                 create: {
                     userId: user?.id ?? 'null',
@@ -148,10 +147,10 @@ export const userSettingsRouter = router({
             return userSettings
         }),
 
-    voters: publicProcedure.query(async ({ ctx }) => {
+    voters: protectedProcedure.query(async ({ ctx }) => {
         if (!ctx.session) return
 
-        const proxyAddresses = await prisma.voter.findMany({
+        const proxyAddresses = await ctx.prisma.voter.findMany({
             where: {
                 users: {
                     some: {
@@ -162,7 +161,7 @@ export const userSettingsRouter = router({
         })
         return proxyAddresses
     }),
-    addVoter: publicProcedure
+    addVoter: protectedProcedure
         .input(
             z.object({
                 address: z.string().startsWith('0x').length(42),
@@ -171,7 +170,7 @@ export const userSettingsRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            await prisma.user
+            await ctx.prisma.user
                 .update({
                     where: {
                         name: String(ctx.session?.user?.name),
@@ -196,7 +195,7 @@ export const userSettingsRouter = router({
                     return false
                 })
         }),
-    removeVoter: publicProcedure
+    removeVoter: protectedProcedure
         .input(
             z.object({
                 address: z.string(),
@@ -205,7 +204,7 @@ export const userSettingsRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            await prisma.user
+            await ctx.prisma.user
                 .update({
                     where: {
                         name: String(ctx.session?.user?.name),
