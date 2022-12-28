@@ -13,8 +13,9 @@ const threeDays = 259200000
 const oneDay = 86400000
 const now: number = Date.now()
 
-const delay = (ms: number) : Promise<any> => {
-    return new Promise(resolve => setTimeout(resolve, ms));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const delay = (ms: number): Promise<any> => {
+    return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
@@ -194,7 +195,8 @@ const formatEmailTableData = async (
     notificationType: RoundupNotificationType
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
-    let promises: Promise<any>[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let promises: Promise<any>[] = []
 
     try {
         const proposals = await prisma.notification.findMany({
@@ -210,7 +212,7 @@ const formatEmailTableData = async (
                 },
             },
         })
-    
+
         promises = proposals.map(async (notification) => {
             const voted = await userVoted(
                 user.voters,
@@ -222,24 +224,24 @@ const formatEmailTableData = async (
                 month: 'short',
                 day: 'numeric',
             }
-    
-            await delay(5000);
+
+            await delay(5000)
             const countdownUrl = await generateCountdownGifUrl(
                 notification.proposal.timeEnd
             )
-    
+
             const votingStatus = voted
                 ? 'Voted'
                 : notificationType == RoundupNotificationType.PAST
                 ? "Didn't vote"
                 : 'Not voted yet'
-    
+
             const votingStatusIconUrl = voted
                 ? process.env.WEBAPP_URL + '/assets/Icon/Voted.png'
                 : notificationType == RoundupNotificationType.PAST
                 ? process.env.WEBAPP_URL + '/assets/Icon/DidntVote.png'
                 : process.env.WEBAPP_URL + '/assets/Icon/NotVotedYet.png'
-    
+
             return {
                 votingStatus: votingStatus,
                 votingStatusIconUrl: votingStatusIconUrl,
@@ -263,10 +265,9 @@ const formatEmailTableData = async (
                 countdownUrl: countdownUrl,
             }
         })
-    } catch(error) {
+    } catch (error) {
         console.error(error)
     }
-    
 
     return Promise.all(promises)
 }
@@ -326,7 +327,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
 
         url = response.data.message.src
     } catch (error) {
-        console.error("Failed to generate countdown gif: ", error)
+        console.error('Failed to generate countdown gif: ', error)
     }
 
     return url
@@ -339,11 +340,11 @@ const sendRoundupEmails = async () => {
         month: 'long',
         day: 'numeric',
     }
-    
+
     const todaysDate = new Date(now).toLocaleDateString(undefined, dateOptions)
 
     try {
-        console.log("Searching for users with daily bulletin enabled...")
+        console.log('Searching for users with daily bulletin enabled...')
         const users = await prisma.user.findMany({
             where: {
                 email: {
@@ -357,12 +358,14 @@ const sendRoundupEmails = async () => {
                 voters: true,
             },
         })
-        console.log("Found " + users.length + " users with daily bulletin enabled.")
-    
+        console.log(
+            'Found ' + users.length + ' users with daily bulletin enabled.'
+        )
+
         for (const user of users) {
             if (!user.email) continue
-            console.log('Sending email to ' + user.email);
-    
+            console.log('Sending email to ' + user.email)
+
             const endingSoonProposalsData = await formatEmailTableData(
                 user,
                 RoundupNotificationType.ENDING_SOON
@@ -372,45 +375,48 @@ const sendRoundupEmails = async () => {
                 user,
                 RoundupNotificationType.NEW
             )
-            
+
             const pastProposalsData = await formatEmailTableData(
                 user,
                 RoundupNotificationType.PAST
             )
-    
+
             const to: string =
                 process.env.EXEC_ENV === 'PROD'
                     ? String(user.email)
                     : String(process.env.TEST_EMAIL)
-    
+
             const response = await client.sendEmailWithTemplate({
                 TemplateAlias: 'daily-bulletin',
                 TemplateModel: {
                     senateLogoUrl:
-                        process.env.WEBAPP_URL + '/assets/Senate_Logo/64/White.png',
+                        process.env.WEBAPP_URL +
+                        '/assets/Senate_Logo/64/White.png',
                     todaysDate: todaysDate,
                     endingSoonProposals: endingSoonProposalsData,
                     endingSoonProposalsTableCssClass:
                         endingSoonProposalsData.length > 0 ? 'show' : 'hide',
                     endingSoonProposalsNoDataBoxCssClass:
                         endingSoonProposalsData.length > 0 ? 'hide' : 'show',
-    
+
                     newProposals: newProposalsData,
                     newProposalsTableCssClass:
                         newProposalsData.length > 0 ? 'show' : 'hide',
                     newProposalsNoDataBoxCssClass:
                         newProposalsData.length > 0 ? 'hide' : 'show',
-    
+
                     pastProposals: pastProposalsData,
                     pastProposalsTableCssClass:
                         pastProposalsData.length > 0 ? 'show' : 'hide',
                     pastProposalsNoDataBoxCssClass:
                         pastProposalsData.length > 0 ? 'hide' : 'show',
-    
+
                     twitterIconUrl:
-                        process.env.WEBAPP_URL + '/assets/Icon/TwitterWhite.png',
+                        process.env.WEBAPP_URL +
+                        '/assets/Icon/TwitterWhite.png',
                     discordIconUrl:
-                        process.env.WEBAPP_URL + '/assets/Icon/DiscordWhite.png',
+                        process.env.WEBAPP_URL +
+                        '/assets/Icon/DiscordWhite.png',
                     githubIconUrl:
                         process.env.WEBAPP_URL + '/assets/Icon/GithubWhite.png',
                 },
@@ -422,14 +428,12 @@ const sendRoundupEmails = async () => {
                 TrackOpens: true,
                 MessageStream: 'outbound',
             })
-    
+
             console.log(`Email sent to ${user.email}`, response)
         }
-
     } catch (error) {
         console.error(error)
     }
-
 }
 
 const userVoted = async (

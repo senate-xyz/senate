@@ -1,10 +1,9 @@
-import { prisma } from '@senate/database'
 import { z } from 'zod'
-import { router, publicProcedure } from '../../trpc'
+import { router, protectedProcedure } from '../../trpc'
 
 export const userSubscriptionsRouter = router({
-    subscribedDAOs: publicProcedure.query(async ({ ctx }) => {
-        const user = await prisma.user
+    subscribedDAOs: protectedProcedure.query(async ({ ctx }) => {
+        const user = await ctx.prisma.user
             .findFirstOrThrow({
                 where: {
                     name: { equals: String(ctx.session?.user?.name) },
@@ -17,7 +16,7 @@ export const userSubscriptionsRouter = router({
                 return { id: '0' }
             })
 
-        const daosList = await prisma.dAO.findMany({
+        const daosList = await ctx.prisma.dAO.findMany({
             where: {
                 subscriptions: {
                     some: {
@@ -40,14 +39,14 @@ export const userSubscriptionsRouter = router({
         })
         return daosList
     }),
-    subscribe: publicProcedure
+    subscribe: protectedProcedure
         .input(
             z.object({
                 daoId: z.string(),
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const user = await prisma.user
+            const user = await ctx.prisma.user
                 .findFirstOrThrow({
                     where: {
                         name: { equals: String(ctx.session?.user?.name) },
@@ -60,7 +59,7 @@ export const userSubscriptionsRouter = router({
                     return { id: '0' }
                 })
 
-            await prisma.subscription
+            await ctx.prisma.subscription
                 .upsert({
                     where: {
                         userId_daoId: {
@@ -82,14 +81,14 @@ export const userSubscriptionsRouter = router({
                 })
         }),
 
-    unsubscribe: publicProcedure
+    unsubscribe: protectedProcedure
         .input(
             z.object({
                 daoId: z.string(),
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const user = await prisma.user
+            const user = await ctx.prisma.user
                 .findFirstOrThrow({
                     where: {
                         name: { equals: String(ctx.session?.user?.name) },
@@ -102,7 +101,7 @@ export const userSubscriptionsRouter = router({
                     return { id: '0' }
                 })
 
-            await prisma.subscription
+            await ctx.prisma.subscription
                 .delete({
                     where: {
                         userId_daoId: {
