@@ -1,6 +1,5 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common'
-import { DAOHandler, DAOHandlerType, ProposalType } from '@senate/common-types'
-import { prisma } from '@senate/database'
+import { type DAOHandler, DAOHandlerType, prisma } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
 

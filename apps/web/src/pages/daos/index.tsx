@@ -1,4 +1,4 @@
-import { DAOType } from '@senate/common-types'
+import { DAOType } from '@senate/database'
 
 import { trpc } from '../../utils/trpc'
 import { FollowedDAO } from '../../components/DAOs/FollowedDAO'

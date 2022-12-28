@@ -1,6 +1,5 @@
 import axios from 'axios'
-import { prisma } from '@senate/database'
-import { DAOHandler } from '@senate/common-types'
+import { prisma, type DAOHandler } from '@senate/database'
 import { Logger, InternalServerErrorException } from '@nestjs/common'
 
 const logger = new Logger('SnapshotVotes')

@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { RefreshStatus } from '@senate/common-types'
 import { router, protectedProcedure } from '../../trpc'
 
 export const userSettingsRouter = router({
@@ -181,8 +180,6 @@ export const userSettingsRouter = router({
                                 where: { address: input.address },
                                 create: {
                                     address: input.address,
-                                    refreshStatus: RefreshStatus.NEW,
-                                    lastRefresh: new Date(0),
                                 },
                             },
                         },

@@ -51,7 +51,9 @@ export class AppService {
                     await updateSnapshotProposals(dao.name, handler)
                     break
 
-                case DAOHandlerType.AAVE_CHAIN || DAOHandlerType.COMPOUND_CHAIN || DAOHandlerType.UNISWAP_CHAIN:
+                case DAOHandlerType.AAVE_CHAIN ||
+                    DAOHandlerType.COMPOUND_CHAIN ||
+                    DAOHandlerType.UNISWAP_CHAIN:
                     await updateGovernorBravoProposals(handler)
                     break
 
@@ -105,7 +107,9 @@ export class AppService {
                     await updateSnapshotVotes(handler, voterAddress, dao.name)
                     break
 
-                case DAOHandlerType.AAVE_CHAIN || DAOHandlerType.COMPOUND_CHAIN || DAOHandlerType.UNISWAP_CHAIN:
+                case DAOHandlerType.AAVE_CHAIN ||
+                    DAOHandlerType.COMPOUND_CHAIN ||
+                    DAOHandlerType.UNISWAP_CHAIN:
                     await updateGovernorBravoVotes(
                         handler,
                         voterAddress,

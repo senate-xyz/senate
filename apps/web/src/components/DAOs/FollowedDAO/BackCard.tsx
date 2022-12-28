@@ -1,7 +1,8 @@
-import { DAOType } from '@senate/common-types'
 import { trpc } from '../../../utils/trpc'
 import Image from 'next/image'
 import { useState } from 'react'
+import type { DAOType } from '@senate/database'
+
 const BackCard = (props: {
     dao: DAOType
     refreshDaos: () => void

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { DAOType } from '../../../../../../packages/common-types/dist'
+import { DAOType } from '@senate/database'
 import { trpc } from '../../../utils/trpc'
 import Image from 'next/image'
 

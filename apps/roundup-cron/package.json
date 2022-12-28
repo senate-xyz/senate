@@ -17,7 +17,6 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@senate/common-types": "*",
         "@senate/config": "*",
         "@senate/database": "*",
         "@senate/tsconfig": "*",

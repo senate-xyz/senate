@@ -1,6 +1,6 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common'
-import { DAOHandler, DAOHandlerType } from '@senate/common-types'
-import { prisma } from '@senate/database'
+import { type DAOHandler, DAOHandlerType, prisma } from '@senate/database'
+
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 

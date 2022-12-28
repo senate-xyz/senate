@@ -44,7 +44,6 @@
         "zod": "^3.20.2"
     },
     "devDependencies": {
-        "@senate/common-types": "*",
         "@senate/config": "*",
         "@senate/database": "*",
         "@senate/tsconfig": "*",

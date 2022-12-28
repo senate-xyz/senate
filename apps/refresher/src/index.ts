@@ -1,5 +1,4 @@
-import { prisma } from '@senate/database'
-import { RefreshStatus, Subscription } from '@senate/common-types'
+import { prisma, type RefreshStatus, type Subscription } from '@senate/database'
 import fetch from 'node-fetch'
 import * as cron from 'node-cron'
 

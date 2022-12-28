@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { DAOType } from '@senate/common-types'
+import type { DAOType } from '@senate/database'
 import { trpc } from '../../../utils/trpc'
 import { useEffect, useState } from 'react'
 import { FastAverageColor } from 'fast-average-color'

@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { trpc } from '../../../utils/trpc'
 import { useProvider } from 'wagmi'
-import Image from 'next/image'
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
@@ -74,7 +73,7 @@ const ProxySettings = () => {
                                         <div className="font-mono text-[18px] font-light text-white">
                                             {voter.address}
                                         </div>
-                                        {voter.lastRefresh < new Date(1) ? (
+                                        {/* {voter.lastRefresh < new Date(1) ? (
                                             <div className="flex flex-row items-center gap-2">
                                                 <Image
                                                     src="/assets/Senate_Logo/Loading/senate-loading-onDark.svg"
@@ -88,27 +87,26 @@ const ProxySettings = () => {
                                                     minute.
                                                 </div>
                                             </div>
-                                        ) : (
-                                            <button
-                                                onClick={() => {
-                                                    provider.resolveName
-                                                    removeVoter.mutate(
-                                                        {
-                                                            address:
-                                                                voter.address,
+                                        ) : ( */}
+                                        <button
+                                            onClick={() => {
+                                                provider.resolveName
+                                                removeVoter.mutate(
+                                                    {
+                                                        address: voter.address,
+                                                    },
+                                                    {
+                                                        onSuccess() {
+                                                            voters.refetch()
                                                         },
-                                                        {
-                                                            onSuccess() {
-                                                                voters.refetch()
-                                                            },
-                                                        }
-                                                    )
-                                                }}
-                                                className="text-[18px] font-light text-white underline"
-                                            >
-                                                Delete
-                                            </button>
-                                        )}
+                                                    }
+                                                )
+                                            }}
+                                            className="text-[18px] font-light text-white underline"
+                                        >
+                                            Delete
+                                        </button>
+                                        {/* )} */}
                                     </div>
                                 )
                             })}

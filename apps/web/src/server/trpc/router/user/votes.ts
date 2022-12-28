@@ -1,4 +1,4 @@
-import { RefreshStatus } from '@senate/common-types'
+import { RefreshStatus } from '@senate/database'
 import { router, protectedProcedure } from '../../trpc'
 
 export const userVotesRouter = router({
@@ -24,22 +24,15 @@ export const userVotesRouter = router({
             },
         })
 
-        await ctx.prisma.voter
-            .updateMany({
-                where: {
-                    id: {
-                        in: voters.map((voter) => voter.id),
-                    },
+        await ctx.prisma.voterHandler.updateMany({
+            where: {
+                voterId: {
+                    in: voters.map((voter) => voter.id),
                 },
-                data: {
-                    refreshStatus: RefreshStatus.NEW,
-                },
-            })
-            .then(() => {
-                return true
-            })
-            .catch(() => {
-                return false
-            })
+            },
+            data: {
+                refreshStatus: RefreshStatus.NEW,
+            },
+        })
     }),
 })

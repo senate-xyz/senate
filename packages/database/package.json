@@ -30,7 +30,6 @@
         "@prisma/client": "^4.8.0"
     },
     "devDependencies": {
-        "@senate/common-types": "*",
         "@senate/config": "*",
         "@senate/tsconfig": "*",
         "eslint": "^8.30.0",

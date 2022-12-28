@@ -1,6 +1,11 @@
-import { RoundupNotificationType } from '@prisma/client'
-import { Proposal, UserWithVotingAddresses, Voter } from '@senate/common-types'
-import { prisma } from '@senate/database'
+import {
+    type Proposal,
+    type UserWithVotingAddresses,
+    type Voter,
+    RoundupNotificationType,
+    prisma,
+} from '@senate/database'
+
 import axios from 'axios'
 import { config } from 'dotenv'
 import { schedule } from 'node-cron'

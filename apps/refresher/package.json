@@ -23,7 +23,6 @@
         "prettier:fix": "prettier src --write"
     },
     "dependencies": {
-        "@senate/common-types": "*",
         "@senate/config": "*",
         "@senate/database": "*",
         "@senate/tsconfig": "*",

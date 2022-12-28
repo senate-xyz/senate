@@ -5,7 +5,6 @@ import { getCsrfToken } from 'next-auth/react'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { IncomingMessage } from 'http'
 import { prisma } from '@senate/database'
-import { RefreshStatus } from '../../../../../../packages/common-types/dist'
 
 export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     const providers = [
@@ -52,14 +51,10 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                             },
                             create: {
                                 address: siwe.address,
-                                refreshStatus: RefreshStatus.NEW,
-                                lastRefresh: new Date(0),
                                 users: { connect: { id: user.id } },
                             },
                             update: {
                                 address: siwe.address,
-                                refreshStatus: RefreshStatus.NEW,
-                                lastRefresh: new Date(0),
                                 users: { connect: { id: user.id } },
                             },
                         })

@@ -1,7 +1,6 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common'
-import { DAOHandler } from '@senate/common-types'
-import { prisma } from '@senate/database'
-import { ProposalType } from '@prisma/client'
+import { type DAOHandler, prisma } from '@senate/database'
+
 import axios from 'axios'
 
 const logger = new Logger('SnapshotProposals')

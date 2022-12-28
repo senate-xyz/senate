@@ -1,8 +1,7 @@
-import { prisma } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 import { Logger, InternalServerErrorException } from '@nestjs/common'
-import { DAOHandler } from '@senate/common-types'
+import { type DAOHandler, prisma } from '@senate/database'
 
 const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL),

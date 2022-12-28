@@ -1,6 +1,4 @@
 import { z } from 'zod'
-import { RefreshStatus } from '@senate/common-types'
-
 import { router, publicProcedure } from '../trpc'
 
 export const publicRouter = router({
@@ -51,42 +49,6 @@ export const publicRouter = router({
         })
         return daosList
     }),
-    refreshDao: publicProcedure
-        .input(
-            z.object({
-                daoId: z.string(),
-            })
-        )
-        .mutation(async ({ ctx, input }) => {
-            await ctx.prisma.dAO
-                .update({
-                    where: {
-                        id: input.daoId,
-                    },
-                    data: {
-                        refreshStatus: RefreshStatus.NEW,
-                    },
-                })
-                .then(() => {
-                    return true
-                })
-                .catch(() => {
-                    return false
-                })
-        }),
-    refreshStatus: publicProcedure
-        .input(
-            z.object({
-                daoId: z.string(),
-            })
-        )
-        .query(async ({ ctx, input }) => {
-            return await ctx.prisma.dAO.findFirst({
-                where: {
-                    id: input.daoId,
-                },
-            })
-        }),
     activeProposalsForDao: publicProcedure
         .input(
             z.object({

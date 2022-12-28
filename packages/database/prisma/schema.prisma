@@ -33,10 +33,10 @@ model UserSettings {
 }
 
 model Voter {
-  id            String        @id @default(cuid())
-  address       String        @unique
-  users         User[]
-  votes         Vote[]
+  id      String @id @default(cuid())
+  address String @unique
+  users   User[]
+  votes   Vote[]
 }
 
 model DAO {
@@ -50,16 +50,16 @@ model DAO {
 }
 
 model DAOHandler {
-  id      String         @id @default(cuid())
-  type    DAOHandlerType
-  decoder Json
-  lastChainProposalCreatedBlock BigInt? @default(0)
-  lastSnapshotProposalCreatedTimestamp DateTime? @default("1970-01-01T00:00:00.000Z")
-  lastRefreshTimestamp DateTime @default("1970-01-01T00:00:00.000Z")
-  refreshStatus RefreshStatus @default(NEW)
-  daoId   String
-  dao     DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
-  proposals Proposal[]
+  id                                   String         @id @default(cuid())
+  type                                 DAOHandlerType
+  decoder                              Json
+  lastChainProposalCreatedBlock        BigInt?        @default(0)
+  lastSnapshotProposalCreatedTimestamp DateTime?      @default("1970-01-01T00:00:00.000Z")
+  lastRefreshTimestamp                 DateTime       @default("1970-01-01T00:00:00.000Z")
+  refreshStatus                        RefreshStatus  @default(NEW)
+  daoId                                String
+  dao                                  DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  proposals                            Proposal[]
 
   @@unique([daoId, type])
 }
@@ -131,31 +131,31 @@ model VoteOption {
 }
 
 model VoterHandler {
-  id String @id @default(cuid())
-  voterId String
-  daoHandlerId String
-  refreshStatus RefreshStatus @default(NEW)
-  lastRefreshTimestamp DateTime @default("1970-01-01T00:00:00.000Z")
-  lastChainVoteCreatedBlock BigInt? @default(0)
-  lastSnapshotVoteCreatedTimestamp DateTime? @default("1970-01-01T00:00:00.000Z")
+  id                               String        @id @default(cuid())
+  voterId                          String
+  daoHandlerId                     String
+  refreshStatus                    RefreshStatus @default(NEW)
+  lastRefreshTimestamp             DateTime      @default("1970-01-01T00:00:00.000Z")
+  lastChainVoteCreatedBlock        BigInt?       @default(0)
+  lastSnapshotVoteCreatedTimestamp DateTime?     @default("1970-01-01T00:00:00.000Z")
 
   @@unique([voterId, daoHandlerId])
 }
 
 model Subscription {
-  id     String @id @default(cuid())
-  userId String
-  daoId  String
+  id                   String  @id @default(cuid())
+  userId               String
+  daoId                String
   notificationsEnabled Boolean @default(true)
-  dao    DAO    @relation(fields: [daoId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dao                  DAO     @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, daoId])
   @@index([daoId], map: "Subscription_daoId_fkey")
 }
 
 model RefreshQueue {
-  id          String @id @default(cuid())
+  id          String      @id @default(cuid())
   refreshType RefreshType
   clientId    String
   priority    BigInt
