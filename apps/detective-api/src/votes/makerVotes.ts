@@ -14,7 +14,7 @@ export const updateMakerVotes = async (
     daoHandler: DAOHandler,
     voterAddress: string
 ) => {
-    logger.log(`Updating Maker votes for ${voterAddress}`)
+    logger.log(`Updating Maker executive votes for ${voterAddress}`)
     let votedSpells
     let updateLatestVoteBlock = true
 
@@ -141,6 +141,7 @@ const getVotes = async (
 
     const spellAddressesSet = new Set<string>()
     for (let i = 0; i < logs.length; i++) {
+        console.log(`[EXECUTIVE VOTES] maker event ${i} out of ${logs.length}`)
         const log = logs[i]
         const eventArgs = iface.decodeEventLog('LogNote', log.data)
 

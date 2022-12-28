@@ -134,7 +134,7 @@ const getVotes = async (
     let logs = []
     let votes
     switch (daoHandler.type) {
-        case DAOHandlerType.BRAVO1:
+        case DAOHandlerType.AAVE_CHAIN:
             logs = await provider.getLogs({
                 fromBlock: latestVoteBlock,
                 address: daoHandler.decoder['address'],
@@ -157,7 +157,7 @@ const getVotes = async (
             })
             break
 
-        case DAOHandlerType.BRAVO2:
+        case DAOHandlerType.COMPOUND_CHAIN || DAOHandlerType.UNISWAP_CHAIN:
             logs = await provider.getLogs({
                 fromBlock: latestVoteBlock,
                 address: daoHandler.decoder['address'],

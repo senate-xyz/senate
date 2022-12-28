@@ -86,8 +86,9 @@ const FrontCard = (props: {
                                         data-testid="dao-handler-snapshot"
                                     />
                                 )
-                            case 'BRAVO1':
-                            case 'BRAVO2':
+                            case 'AAVE_CHAIN':
+                            case 'COMPOUND_CHAIN':
+                            case 'UNISWAP_CHAIN':
                             case 'MAKER_POLL_CREATE':
                             case 'MAKER_POLL_VOTE':
                             case 'MAKER_EXECUTIVE':

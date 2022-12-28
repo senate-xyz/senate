@@ -6,7 +6,7 @@ import makerPollVote from './abis/makerPollVote.json'
 import uniswapGovBravo from './abis/uniswapGovBravo.json'
 import compoundGovBravo from './abis/compoundGovBravo.json'
 import { prisma } from './client'
-import { DAOHandlerType, RefreshStatus } from '@prisma/client'
+import { DAOHandlerType, RefreshStatus, DAOHandler } from '@prisma/client'
 
 const seedData = async () => {
     const aave = await prisma.dAO.upsert({
@@ -18,12 +18,11 @@ const seedData = async () => {
             handlers: {
                 create: [
                     {
-                        type: DAOHandlerType.BRAVO1,
+                        type: DAOHandlerType.AAVE_CHAIN,
                         decoder: {
                             address:
                                 '0xEC568fffba86c094cf06b22134B23074DFE2252c',
                             abi: aaveGovBravo.abi,
-                            latestProposalBlock: 10000000,
                             proposalUrl:
                                 'https://app.aave.com/governance/proposal/?proposalId=',
                         },
@@ -37,8 +36,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -59,7 +56,6 @@ const seedData = async () => {
                             address:
                                 '0x0a3f6849f78076aefaDf113F5BED87720274dDC0',
                             abi: makerChief.abi,
-                            latestProposalBlock: 10000000,
                             proposalUrl: 'https://vote.makerdao.com/executive/',
                         },
                     },
@@ -69,7 +65,6 @@ const seedData = async () => {
                             address:
                                 '0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d',
                             abi: makerPollCreate.abi,
-                            latestProposalBlock: 10000000,
                             proposalUrl: 'https://vote.makerdao.com/polling/',
                         },
                     },
@@ -83,8 +78,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -108,8 +101,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -133,8 +124,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -158,8 +147,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -183,8 +170,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -208,8 +193,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -233,8 +216,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -250,12 +231,15 @@ const seedData = async () => {
             handlers: {
                 create: [
                     {
-                        type: DAOHandlerType.BRAVO2,
+                        type: DAOHandlerType.COMPOUND_CHAIN,
+                        lastChainProposalCreatedBlock: 10000000,
+                        lastSnapshotProposalCreatedTimestamp: new Date(),
+                        refreshStatus: RefreshStatus.NEW,
+                        lastRefreshTimestamp: new Date(1),
                         decoder: {
                             address:
                                 '0xc0Da02939E1441F497fd74F78cE7Decb17B66529',
                             abi: compoundGovBravo.abi,
-                            latestProposalBlock: 10000000,
                             proposalUrl:
                                 'https://compound.finance/governance/proposals/',
                         },
@@ -269,8 +253,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -294,8 +276,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -319,8 +299,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -336,7 +314,7 @@ const seedData = async () => {
             handlers: {
                 create: [
                     {
-                        type: DAOHandlerType.BRAVO2,
+                        type: DAOHandlerType.UNISWAP_CHAIN,
                         decoder: {
                             address:
                                 '0x408ED6354d4973f66138C91495F2f2FCbd8724C3',
@@ -354,8 +332,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -379,8 +355,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -404,8 +378,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -429,8 +401,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -454,8 +424,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -479,8 +447,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -504,8 +470,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -529,8 +493,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -554,8 +516,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -579,8 +539,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -604,8 +562,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -629,8 +585,6 @@ const seedData = async () => {
                     },
                 ],
             },
-            refreshStatus: RefreshStatus.NEW,
-            lastRefresh: new Date(1),
         },
         include: {
             handlers: true,
@@ -644,9 +598,6 @@ const seedData = async () => {
         },
         create: {
             name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
-            newUser: true,
-            acceptedTerms: false,
-            email: '',
             userSettings: {
                 create: {
                     dailyBulletinEmail: true,
@@ -943,14 +894,58 @@ const seedVoters = async () => {
                         },
                         create: {
                             address: voter,
-                            refreshStatus: RefreshStatus.NEW,
-                            lastRefresh: new Date(0),
                         },
                     },
                 },
             },
         })
     }
+
+    let user = await prisma.user.findFirst({
+            where: {
+                name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
+            },
+            include: {
+                subscriptions: true,
+                voters: true
+        
+            }
+        }
+    )
+
+    if (user) {
+        for (const subscription of user.subscriptions) {
+            let dao = await prisma.dAO.findFirst({
+                where: {
+                    id: subscription.daoId
+                },
+                include: {
+                    handlers: true,
+                }
+            })
+    
+            if (dao) {
+                for (const handler of dao.handlers) {
+                    for (const voter of user.voters) {
+                        await prisma.voterHandler.upsert({
+                            where: {
+                                voterId_daoHandlerId: {
+                                    voterId: voter.id,
+                                    daoHandlerId: handler.id
+                                },
+                            },
+                            update: {},
+                            create: {
+                                voterId: voter.id,
+                                daoHandlerId: handler.id,
+                            }
+                        })
+                    }
+                }
+            }        
+        }
+    }
+    
 }
 
 async function main() {

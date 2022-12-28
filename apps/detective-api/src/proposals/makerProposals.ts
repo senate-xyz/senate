@@ -51,7 +51,7 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
 
         const spellAddressesSet = new Set<string>()
         for (let i = 0; i < logs.length; i++) {
-            console.log(`maker event ${i} out of ${logs.length}`)
+            console.log(`[EXECUTIVE PROPOSAL] maker event ${i} out of ${logs.length}`)
 
             const log = logs[i]
             const eventArgs = iface.decodeEventLog('LogNote', log.data)

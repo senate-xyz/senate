@@ -4,10 +4,12 @@
 
 Table User {
   id String [pk]
-  newUser Boolean [not null]
-  acceptedTerms Boolean [not null]
+  newUser Boolean [not null, default: true]
+  acceptedTerms Boolean [not null, default: false]
   name String [unique, not null]
-  email String [not null]
+  email String [not null, default: '']
+  lastActive DateTime [not null, default: 1970-01-01T00:00:00+00:00]
+  sessionCount Int [not null, default: 0]
   voters Voter [not null]
   subscriptions Subscription [not null]
   notifications Notification [not null]
@@ -24,8 +26,6 @@ Table UserSettings {
 Table Voter {
   id String [pk]
   address String [unique, not null]
-  refreshStatus RefreshStatus [not null]
-  lastRefresh DateTime [not null]
   users User [not null]
   votes Vote [not null]
 }
@@ -34,8 +34,6 @@ Table DAO {
   id String [pk]
   name String [unique, not null]
   picture String [not null]
-  refreshStatus RefreshStatus [not null]
-  lastRefresh DateTime [not null]
   handlers DAOHandler [not null]
   proposals Proposal [not null]
   subscriptions Subscription [not null]
@@ -46,8 +44,13 @@ Table DAOHandler {
   id String [pk]
   type DAOHandlerType [not null]
   decoder Json [not null]
+  lastChainProposalCreatedBlock BigInt [default: 0]
+  lastSnapshotProposalCreatedTimestamp DateTime [default: 1970-01-01T00:00:00+00:00]
+  lastRefreshTimestamp DateTime [not null, default: 1970-01-01T00:00:00+00:00]
+  refreshStatus RefreshStatus [not null, default: 'NEW']
   daoId String [not null]
   dao DAO [not null]
+  proposals Proposal [not null]
 
   indexes {
     (daoId, type) [unique]
@@ -60,12 +63,12 @@ Table Proposal {
   name String [not null]
   daoId String [not null]
   daoHandlerId String [not null]
-  proposalType ProposalType [not null]
   data Json [not null]
   timeCreated DateTime [not null]
   timeStart DateTime [not null]
   timeEnd DateTime [not null]
   url String [not null]
+  daoHandler DAOHandler [not null]
   dao DAO [not null]
   votes Vote [not null]
   notifications Notification [not null]
@@ -115,14 +118,17 @@ Table VoteOption {
   vote Vote [not null]
 }
 
-Table VoterLatestVoteBlock {
+Table VoterHandler {
   id String [pk]
-  voterAddress String [not null]
+  voterId String [not null]
   daoHandlerId String [not null]
-  latestVoteBlock Int [not null]
+  refreshStatus RefreshStatus [not null, default: 'NEW']
+  lastRefreshTimestamp DateTime [not null, default: 1970-01-01T00:00:00+00:00]
+  lastChainVoteCreatedBlock BigInt [default: 0]
+  lastSnapshotVoteCreatedTimestamp DateTime [default: 1970-01-01T00:00:00+00:00]
 
   indexes {
-    (voterAddress, daoHandlerId) [unique]
+    (voterId, daoHandlerId) [unique]
   }
 }
 
@@ -130,12 +136,20 @@ Table Subscription {
   id String [pk]
   userId String [not null]
   daoId String [not null]
+  notificationsEnabled Boolean [not null, default: true]
   dao DAO [not null]
   user User [not null]
 
   indexes {
     (userId, daoId) [unique]
   }
+}
+
+Table RefreshQueue {
+  id String [pk]
+  refreshType RefreshType [not null]
+  clientId String [not null]
+  priority BigInt [not null]
 }
 
 Table UserToVoter {
@@ -150,18 +164,12 @@ Enum RoundupNotificationType {
 }
 
 Enum DAOHandlerType {
-  BRAVO1
-  BRAVO2
+  AAVE_CHAIN
+  COMPOUND_CHAIN
+  UNISWAP_CHAIN
   MAKER_EXECUTIVE
   MAKER_POLL_CREATE
   MAKER_POLL_VOTE
-  SNAPSHOT
-}
-
-Enum ProposalType {
-  BRAVO
-  MAKER_EXECUTIVE
-  MAKER_POLL
   SNAPSHOT
 }
 
@@ -171,9 +179,20 @@ Enum RefreshStatus {
   DONE
 }
 
+Enum RefreshType {
+  DAOCHAINPROPOSALS
+  DAOSNAPSHOTPROPOSALS
+  DAOCHAINVOTES
+  DAOSNAPSHOTVOTES
+  VOTERCHAINVOTES
+  VOTERSNAPSHOTVOTES
+}
+
 Ref: UserSettings.userId - User.id
 
 Ref: DAOHandler.daoId > DAO.id [delete: Cascade]
+
+Ref: Proposal.daoHandlerId > DAOHandler.id [delete: Cascade]
 
 Ref: Proposal.daoId > DAO.id [delete: Cascade]
 
