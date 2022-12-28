@@ -1,10 +1,9 @@
-import { prisma } from '@senate/database'
 import { RefreshStatus } from '@senate/common-types'
-import { router, publicProcedure } from '../../trpc'
+import { router, protectedProcedure } from '../../trpc'
 
 export const userVotesRouter = router({
-    refreshVotes: publicProcedure.mutation(async ({ ctx }) => {
-        const user = await prisma.user
+    refreshVotes: protectedProcedure.mutation(async ({ ctx }) => {
+        const user = await ctx.prisma.user
             .findFirstOrThrow({
                 where: {
                     name: { equals: String(ctx.session?.user?.name) },
@@ -17,7 +16,7 @@ export const userVotesRouter = router({
                 return { id: '0' }
             })
 
-        const voters = await prisma.voter.findMany({
+        const voters = await ctx.prisma.voter.findMany({
             where: {
                 users: {
                     some: { id: user.id },
@@ -25,7 +24,7 @@ export const userVotesRouter = router({
             },
         })
 
-        await prisma.voter
+        await ctx.prisma.voter
             .updateMany({
                 where: {
                     id: {

@@ -13,6 +13,7 @@ const threeDays = 259200000
 const oneDay = 86400000
 const now: number = Date.now()
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const delay = (ms: number): Promise<any> => {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
@@ -194,6 +195,7 @@ const formatEmailTableData = async (
     notificationType: RoundupNotificationType
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let promises: Promise<any>[] = []
 
     try {

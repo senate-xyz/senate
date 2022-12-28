@@ -1,12 +1,11 @@
-import { prisma } from '@senate/database'
 import { z } from 'zod'
 import { RefreshStatus } from '@senate/common-types'
 
 import { router, publicProcedure } from '../trpc'
 
 export const publicRouter = router({
-    proposals: publicProcedure.query(async () => {
-        const userProposals = await prisma.proposal.findMany({
+    proposals: publicProcedure.query(async ({ ctx }) => {
+        const userProposals = await ctx.prisma.proposal.findMany({
             where: {
                 data: {
                     path: '$.timeEnd',
@@ -36,8 +35,8 @@ export const publicRouter = router({
 
         return userProposals
     }),
-    daos: publicProcedure.query(async () => {
-        const daosList = await prisma.dAO.findMany({
+    daos: publicProcedure.query(async ({ ctx }) => {
+        const daosList = await ctx.prisma.dAO.findMany({
             where: {},
             orderBy: {
                 id: 'asc',
@@ -58,8 +57,8 @@ export const publicRouter = router({
                 daoId: z.string(),
             })
         )
-        .mutation(async ({ input }) => {
-            await prisma.dAO
+        .mutation(async ({ ctx, input }) => {
+            await ctx.prisma.dAO
                 .update({
                     where: {
                         id: input.daoId,
@@ -81,8 +80,8 @@ export const publicRouter = router({
                 daoId: z.string(),
             })
         )
-        .query(async ({ input }) => {
-            return await prisma.dAO.findFirst({
+        .query(async ({ ctx, input }) => {
+            return await ctx.prisma.dAO.findFirst({
                 where: {
                     id: input.daoId,
                 },
@@ -94,8 +93,8 @@ export const publicRouter = router({
                 daoId: z.string(),
             })
         )
-        .query(async ({ input }) => {
-            return await prisma.proposal.findMany({
+        .query(async ({ ctx, input }) => {
+            return await ctx.prisma.proposal.findMany({
                 where: {
                     AND: [
                         {

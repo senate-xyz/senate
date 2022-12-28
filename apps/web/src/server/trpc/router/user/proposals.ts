@@ -1,10 +1,9 @@
-import { prisma } from '@senate/database'
 import { z } from 'zod'
-import { router, publicProcedure } from '../../trpc'
+import { router, protectedProcedure } from '../../trpc'
 
 export const userProposalsRouter = router({
-    proposals: publicProcedure.query(async ({ ctx }) => {
-        const user = await prisma.user.findFirstOrThrow({
+    proposals: protectedProcedure.query(async ({ ctx }) => {
+        const user = await ctx.prisma.user.findFirstOrThrow({
             where: {
                 name: { equals: String(ctx.session?.user?.name) },
             },
@@ -14,7 +13,7 @@ export const userProposalsRouter = router({
             },
         })
 
-        const userSubscriptions = await prisma.subscription.findMany({
+        const userSubscriptions = await ctx.prisma.subscription.findMany({
             where: {
                 AND: {
                     userId: user?.id,
@@ -25,7 +24,7 @@ export const userProposalsRouter = router({
             },
         })
 
-        const userProposals = await prisma.proposal.findMany({
+        const userProposals = await ctx.prisma.proposal.findMany({
             where: {
                 AND: [
                     {
@@ -67,7 +66,7 @@ export const userProposalsRouter = router({
         return userProposals
     }),
 
-    filteredActiveProposals: publicProcedure
+    filteredActiveProposals: protectedProcedure
         .input(
             z.object({
                 fromDao: z.string(),
@@ -76,7 +75,7 @@ export const userProposalsRouter = router({
             })
         )
         .query(async ({ input, ctx }) => {
-            const user = await prisma.user.findFirstOrThrow({
+            const user = await ctx.prisma.user.findFirstOrThrow({
                 where: {
                     name: { equals: String(ctx.session?.user?.name) },
                 },
@@ -118,13 +117,13 @@ export const userProposalsRouter = router({
                     break
             }
 
-            const userSubscriptions = await prisma.subscription.findMany({
+            const userSubscriptions = await ctx.prisma.subscription.findMany({
                 where: {
                     userId: user.id,
                 },
             })
 
-            const userProposals = await prisma.proposal.findMany({
+            const userProposals = await ctx.prisma.proposal.findMany({
                 where: {
                     AND: [
                         {
@@ -171,7 +170,7 @@ export const userProposalsRouter = router({
             return userProposals
         }),
 
-    filteredPastProposals: publicProcedure
+    filteredPastProposals: protectedProcedure
         .input(
             z.object({
                 fromDao: z.string(),
@@ -180,7 +179,7 @@ export const userProposalsRouter = router({
             })
         )
         .query(async ({ input, ctx }) => {
-            const user = await prisma.user.findFirstOrThrow({
+            const user = await ctx.prisma.user.findFirstOrThrow({
                 where: {
                     name: { equals: String(ctx.session?.user?.name) },
                 },
@@ -222,13 +221,13 @@ export const userProposalsRouter = router({
                     break
             }
 
-            const userSubscriptions = await prisma.subscription.findMany({
+            const userSubscriptions = await ctx.prisma.subscription.findMany({
                 where: {
                     userId: user.id,
                 },
             })
 
-            const userProposals = await prisma.proposal.findMany({
+            const userProposals = await ctx.prisma.proposal.findMany({
                 where: {
                     AND: [
                         {

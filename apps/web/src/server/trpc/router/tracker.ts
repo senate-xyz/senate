@@ -1,4 +1,3 @@
-import { prisma } from '@senate/database'
 import { z } from 'zod'
 
 import { router, publicProcedure } from '../trpc'
@@ -10,8 +9,8 @@ export const trackerRouter = router({
                 addresses: z.array(z.string().startsWith('0x').length(42)),
             })
         )
-        .query(async ({ input }) => {
-            const userProposalsVoted = await prisma.proposal.findMany({
+        .query(async ({ ctx, input }) => {
+            const userProposalsVoted = await ctx.prisma.proposal.findMany({
                 where: {
                     votes: {
                         some: {
