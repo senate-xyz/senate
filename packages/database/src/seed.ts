@@ -233,9 +233,6 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.COMPOUND_CHAIN,
                         lastChainProposalCreatedBlock: 10000000,
-                        lastSnapshotProposalCreatedTimestamp: new Date(),
-                        refreshStatus: RefreshStatus.NEW,
-                        lastRefreshTimestamp: new Date(1),
                         decoder: {
                             address:
                                 '0xc0Da02939E1441F497fd74F78cE7Decb17B66529',
@@ -901,29 +898,27 @@ const seedVoters = async () => {
         })
     }
 
-    let user = await prisma.user.findFirst({
-            where: {
-                name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
-            },
-            include: {
-                subscriptions: true,
-                voters: true
-        
-            }
-        }
-    )
+    const user = await prisma.user.findFirst({
+        where: {
+            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
+        },
+        include: {
+            subscriptions: true,
+            voters: true,
+        },
+    })
 
     if (user) {
         for (const subscription of user.subscriptions) {
-            let dao = await prisma.dAO.findFirst({
+            const dao = await prisma.dAO.findFirst({
                 where: {
-                    id: subscription.daoId
+                    id: subscription.daoId,
                 },
                 include: {
                     handlers: true,
-                }
+                },
             })
-    
+
             if (dao) {
                 for (const handler of dao.handlers) {
                     for (const voter of user.voters) {
@@ -931,21 +926,20 @@ const seedVoters = async () => {
                             where: {
                                 voterId_daoHandlerId: {
                                     voterId: voter.id,
-                                    daoHandlerId: handler.id
+                                    daoHandlerId: handler.id,
                                 },
                             },
                             update: {},
                             create: {
                                 voterId: voter.id,
                                 daoHandlerId: handler.id,
-                            }
+                            },
                         })
                     }
                 }
-            }        
+            }
         }
     }
-    
 }
 
 async function main() {

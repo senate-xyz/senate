@@ -17,7 +17,7 @@ model User {
   acceptedTerms Boolean        @default(false)
   name          String         @unique
   email         String         @default("")
-  lastActive    DateTime       @default("1970-01-01T00:00:00.000Z")
+  lastActive    DateTime       @default(now())
   sessionCount  Int            @default(0)
   voters        Voter[]
   subscriptions Subscription[]
@@ -40,10 +40,11 @@ model Voter {
 }
 
 model DAO {
-  id            String         @id @default(cuid())
-  name          String         @unique
-  picture       String
-  handlers      DAOHandler[]
+  id       String       @id @default(cuid())
+  name     String       @unique
+  picture  String
+  handlers DAOHandler[]
+
   proposals     Proposal[]
   subscriptions Subscription[]
   votes         Vote[]
@@ -54,8 +55,8 @@ model DAOHandler {
   type                                 DAOHandlerType
   decoder                              Json
   lastChainProposalCreatedBlock        BigInt?        @default(0)
-  lastSnapshotProposalCreatedTimestamp DateTime?      @default("1970-01-01T00:00:00.000Z")
-  lastRefreshTimestamp                 DateTime       @default("1970-01-01T00:00:00.000Z")
+  lastSnapshotProposalCreatedTimestamp DateTime?      @default(dbgenerated("(FROM_UNIXTIME(0))"))
+  lastRefreshTimestamp                 DateTime       @default(dbgenerated("(FROM_UNIXTIME(0))"))
   refreshStatus                        RefreshStatus  @default(NEW)
   daoId                                String
   dao                                  DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
@@ -135,9 +136,10 @@ model VoterHandler {
   voterId                          String
   daoHandlerId                     String
   refreshStatus                    RefreshStatus @default(NEW)
-  lastRefreshTimestamp             DateTime      @default("1970-01-01T00:00:00.000Z")
+  lastRefreshTimestamp             DateTime      @default(dbgenerated("(FROM_UNIXTIME(0))"))
   lastChainVoteCreatedBlock        BigInt?       @default(0)
-  lastSnapshotVoteCreatedTimestamp DateTime?     @default("1970-01-01T00:00:00.000Z")
+  lastSnapshotVoteCreatedTimestamp DateTime?     @default(dbgenerated("(FROM_UNIXTIME(0))"))
+  dAOId                            String
 
   @@unique([voterId, daoHandlerId])
 }
