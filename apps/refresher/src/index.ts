@@ -8,7 +8,8 @@ import {
 import fetch from 'node-fetch'
 import * as cron from 'node-cron'
 
-const DAOS_PROPOSALS_SNAPSHOT_INTERVAL = 1
+const DAOS_PROPOSALS_SNAPSHOT_INTERVAL = 1 // in minutes
+const DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE = 30 // in minutes
 
 const main = () => {
     console.log({ action: 'refresh_start' })
@@ -105,20 +106,43 @@ const addSnapshotProposalsToQueue = async () => {
         console.log({ action: 'snapshot_proposals_queue', details: 'start' })
         const snapshotDaos = await tx.dAO.findMany({
             where: {
-                handlers: {
-                    some: {
-                        type: DAOHandlerType.SNAPSHOT,
-                        refreshStatus: {
-                            in: [RefreshStatus.DONE, RefreshStatus.NEW]
-                        },
-                        lastRefreshTimestamp: {
-                            lt: new Date(
-                                Date.now() -
-                                    DAOS_PROPOSALS_SNAPSHOT_INTERVAL * 60 * 1000
-                            )
+                OR: [
+                    {
+                        //normal refresh interval
+                        handlers: {
+                            some: {
+                                type: DAOHandlerType.SNAPSHOT,
+                                refreshStatus: {
+                                    in: [RefreshStatus.DONE, RefreshStatus.NEW]
+                                },
+                                lastRefreshTimestamp: {
+                                    lt: new Date(
+                                        Date.now() -
+                                            DAOS_PROPOSALS_SNAPSHOT_INTERVAL *
+                                                60 *
+                                                1000
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    {
+                        //force refresh interval
+                        handlers: {
+                            some: {
+                                type: DAOHandlerType.SNAPSHOT,
+                                lastRefreshTimestamp: {
+                                    lt: new Date(
+                                        Date.now() -
+                                            DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE *
+                                                60 *
+                                                1000
+                                    )
+                                }
+                            }
                         }
                     }
-                }
+                ]
             },
             include: {
                 handlers: {
