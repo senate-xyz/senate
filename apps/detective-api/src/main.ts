@@ -8,7 +8,7 @@ async function bootstrap() {
     const logger = new Logger('Bootstrap')
 
     const app = await NestFactory.create(AppModule, {
-        logger: console,
+        logger: console
     })
     await app.listen(PORT)
     logger.log(`Detective API running on port ${PORT}... `)

@@ -11,7 +11,7 @@ import axios from 'axios'
 import { ethers } from 'ethers'
 
 const provider = new ethers.providers.JsonRpcProvider({
-    url: String(process.env.PROVIDER_URL),
+    url: String(process.env.PROVIDER_URL)
 })
 
 const logger = new Logger('MakerExecutiveProposals')
@@ -45,7 +45,7 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
         const logs = await provider.getLogs({
             fromBlock: daoHandler.decoder['latestProposalBlock'],
             address: daoHandler.decoder['address'],
-            topics: [[voteMultipleActionsTopic, voteSingleActionTopic]],
+            topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
         })
 
         const spellAddressesSet = new Set<string>()
@@ -107,8 +107,8 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
                     where: {
                         externalId_daoId: {
                             daoId: daoHandler.daoId,
-                            externalId: spellAddresses[i],
-                        },
+                            externalId: spellAddresses[i]
+                        }
                     },
                     update: {},
                     create: {
@@ -123,8 +123,8 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
                         data: {},
                         url:
                             daoHandler.decoder['proposalUrl'] +
-                            spellAddresses[i],
-                    },
+                            spellAddresses[i]
+                    }
                 })
                 .then((proposal) =>
                     logger.log(
@@ -139,11 +139,11 @@ export const updateMakerProposals = async (daoHandler: DAOHandler) => {
 
         await prisma.dAOHandler.update({
             where: {
-                id: daoHandler.id,
+                id: daoHandler.id
             },
             data: {
-                decoder: decoder,
-            },
+                decoder: decoder
+            }
         })
     } catch (err) {
         logger.error('Error while updating maker executive proposals', err)

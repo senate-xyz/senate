@@ -9,7 +9,7 @@ export {
     RefreshStatus,
     DAOHandlerType,
     RoundupNotificationType,
-    type DAOHandler,
+    type DAOHandler
 } from '@prisma/client'
 
 export type DAOType = Prisma.DAOGetPayload<{

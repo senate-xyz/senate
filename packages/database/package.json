@@ -31,7 +31,6 @@
     },
     "devDependencies": {
         "@senate/config": "*",
-        "@senate/tsconfig": "*",
         "eslint": "^8.30.0",
         "prisma": "^4.8.0",
         "prisma-dbml-generator": "^0.10.0",

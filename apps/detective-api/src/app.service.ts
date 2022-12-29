@@ -2,7 +2,7 @@ import {
     Injectable,
     InternalServerErrorException,
     Logger,
-    NotFoundException,
+    NotFoundException
 } from '@nestjs/common'
 
 import { DAOHandlerType } from '@prisma/client'
@@ -25,12 +25,12 @@ export class AppService {
         const dao = await prisma.dAO
             .findFirst({
                 where: {
-                    id: daoId,
+                    id: daoId
                 },
                 include: {
                     handlers: true,
-                    subscriptions: true,
-                },
+                    subscriptions: true
+                }
             })
             .catch((err) => {
                 this.logger.error(err)
@@ -77,12 +77,12 @@ export class AppService {
         try {
             dao = await prisma.dAO.findFirst({
                 where: {
-                    id: daoId,
+                    id: daoId
                 },
                 include: {
                     handlers: true,
-                    subscriptions: true,
-                },
+                    subscriptions: true
+                }
             })
         } catch (err) {
             console.log(err)

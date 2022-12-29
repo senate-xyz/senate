@@ -6,7 +6,7 @@ import makerPollVote from './abis/makerPollVote.json'
 import uniswapGovBravo from './abis/uniswapGovBravo.json'
 import compoundGovBravo from './abis/compoundGovBravo.json'
 import { prisma } from './client'
-import { DAOHandlerType, RefreshStatus, DAOHandler } from '@prisma/client'
+import { DAOHandlerType } from '@prisma/client'
 
 const seedData = async () => {
     const aave = await prisma.dAO.upsert({
@@ -24,22 +24,22 @@ const seedData = async () => {
                                 '0xEC568fffba86c094cf06b22134B23074DFE2252c',
                             abi: aaveGovBravo.abi,
                             proposalUrl:
-                                'https://app.aave.com/governance/proposal/?proposalId=',
-                        },
+                                'https://app.aave.com/governance/proposal/?proposalId='
+                        }
                     },
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'aave.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const maker = await prisma.dAO.upsert({
@@ -56,8 +56,8 @@ const seedData = async () => {
                             address:
                                 '0x0a3f6849f78076aefaDf113F5BED87720274dDC0',
                             abi: makerChief.abi,
-                            proposalUrl: 'https://vote.makerdao.com/executive/',
-                        },
+                            proposalUrl: 'https://vote.makerdao.com/executive/'
+                        }
                     },
                     {
                         type: DAOHandlerType.MAKER_POLL_CREATE,
@@ -65,23 +65,23 @@ const seedData = async () => {
                             address:
                                 '0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d',
                             abi: makerPollCreate.abi,
-                            proposalUrl: 'https://vote.makerdao.com/polling/',
-                        },
+                            proposalUrl: 'https://vote.makerdao.com/polling/'
+                        }
                     },
                     {
                         type: DAOHandlerType.MAKER_POLL_VOTE,
                         decoder: {
                             address:
                                 '0xD3A9FE267852281a1e6307a1C37CDfD76d39b133',
-                            abi: makerPollVote.abi,
-                        },
-                    },
-                ],
-            },
+                            abi: makerPollVote.abi
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const balancer = await prisma.dAO.upsert({
@@ -96,15 +96,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'balancer.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const optimism = await prisma.dAO.upsert({
@@ -119,15 +119,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'opcollective.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const elementFinance = await prisma.dAO.upsert({
@@ -142,15 +142,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'elfi.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const oneInch = await prisma.dAO.upsert({
@@ -165,15 +165,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: '1inch.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const hop = await prisma.dAO.upsert({
@@ -188,15 +188,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'hop.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const safe = await prisma.dAO.upsert({
@@ -211,15 +211,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'safe.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const compound = await prisma.dAO.upsert({
@@ -238,22 +238,22 @@ const seedData = async () => {
                                 '0xc0Da02939E1441F497fd74F78cE7Decb17B66529',
                             abi: compoundGovBravo.abi,
                             proposalUrl:
-                                'https://compound.finance/governance/proposals/',
-                        },
+                                'https://compound.finance/governance/proposals/'
+                        }
                     },
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'comp-vote.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const synthetix = await prisma.dAO.upsert({
@@ -268,15 +268,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'snxgov.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const dydx = await prisma.dAO.upsert({
@@ -291,15 +291,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'dydxgov.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const uniswap = await prisma.dAO.upsert({
@@ -317,22 +317,22 @@ const seedData = async () => {
                                 '0x408ED6354d4973f66138C91495F2f2FCbd8724C3',
                             abi: uniswapGovBravo.abi,
                             latestProposalBlock: 10000000,
-                            proposalUrl: 'https://app.uniswap.org/#/vote/',
-                        },
+                            proposalUrl: 'https://app.uniswap.org/#/vote/'
+                        }
                     },
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'uniswap',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const ens = await prisma.dAO.upsert({
@@ -347,15 +347,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'ens.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const fwb = await prisma.dAO.upsert({
@@ -370,15 +370,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'friendswithbenefits.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const gnosis = await prisma.dAO.upsert({
@@ -393,15 +393,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'gnosis.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const indexCoop = await prisma.dAO.upsert({
@@ -416,15 +416,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'index-coop.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const paladin = await prisma.dAO.upsert({
@@ -439,15 +439,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'palvote.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const sushi = await prisma.dAO.upsert({
@@ -462,15 +462,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'sushigov.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const instadapp = await prisma.dAO.upsert({
@@ -485,15 +485,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'instadapp-gov.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const gitcoin = await prisma.dAO.upsert({
@@ -508,15 +508,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'gitcoindao.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const gearbox = await prisma.dAO.upsert({
@@ -531,15 +531,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'gearbox.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const euler = await prisma.dAO.upsert({
@@ -554,15 +554,15 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'eulerdao.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     const aura = await prisma.dAO.upsert({
@@ -577,173 +577,173 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'aurafinance.eth',
-                            proposalsCount: 0,
-                        },
-                    },
-                ],
-            },
+                            proposalsCount: 0
+                        }
+                    }
+                ]
+            }
         },
         include: {
-            handlers: true,
-        },
+            handlers: true
+        }
     })
 
     //Seed user
     const seedUser = await prisma.user.upsert({
         where: {
-            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
+            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
         },
         create: {
             name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
             userSettings: {
                 create: {
-                    dailyBulletinEmail: true,
-                },
-            },
+                    dailyBulletinEmail: true
+                }
+            }
         },
         update: {
             name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
-            newUser: false,
-        },
+            newUser: false
+        }
     })
 
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: aave.id,
-        },
+            daoId: aave.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: maker.id,
-        },
+            daoId: maker.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: balancer.id,
-        },
+            daoId: balancer.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: optimism.id,
-        },
+            daoId: optimism.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: elementFinance.id,
-        },
+            daoId: elementFinance.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: oneInch.id,
-        },
+            daoId: oneInch.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: hop.id,
-        },
+            daoId: hop.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: safe.id,
-        },
+            daoId: safe.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: compound.id,
-        },
+            daoId: compound.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: synthetix.id,
-        },
+            daoId: synthetix.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: dydx.id,
-        },
+            daoId: dydx.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: uniswap.id,
-        },
+            daoId: uniswap.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: ens.id,
-        },
+            daoId: ens.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: fwb.id,
-        },
+            daoId: fwb.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: gnosis.id,
-        },
+            daoId: gnosis.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: indexCoop.id,
-        },
+            daoId: indexCoop.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: paladin.id,
-        },
+            daoId: paladin.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: sushi.id,
-        },
+            daoId: sushi.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: instadapp.id,
-        },
+            daoId: instadapp.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: gitcoin.id,
-        },
+            daoId: gitcoin.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: gearbox.id,
-        },
+            daoId: gearbox.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: euler.id,
-        },
+            daoId: euler.id
+        }
     })
     await prisma.subscription.create({
         data: {
             userId: seedUser.id,
-            daoId: aura.id,
-        },
+            daoId: aura.id
+        }
     })
 }
 
@@ -875,48 +875,48 @@ const seedVoters = async () => {
         '0xa50Ec178Bd0B184A890AB6d2e7a757a01Db3a702',
         '0xd714Dd60e22BbB1cbAFD0e40dE5Cfa7bBDD3F3C8',
         '0xDf71878436e521e430fACf36ee5e3D74fA519F2c',
-        '0x3Ee958c1696B9500303E3E1e8a66C3fE966F97b4',
+        '0x3Ee958c1696B9500303E3E1e8a66C3fE966F97b4'
     ]
 
     for (const voter of voters) {
         await prisma.user.update({
             where: {
-                name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
+                name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
             },
             data: {
                 voters: {
                     connectOrCreate: {
                         where: {
-                            address: voter,
+                            address: voter
                         },
                         create: {
-                            address: voter,
-                        },
-                    },
-                },
-            },
+                            address: voter
+                        }
+                    }
+                }
+            }
         })
     }
 
     const user = await prisma.user.findFirst({
         where: {
-            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
+            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
         },
         include: {
             subscriptions: true,
-            voters: true,
-        },
+            voters: true
+        }
     })
 
     if (user) {
         for (const subscription of user.subscriptions) {
             const dao = await prisma.dAO.findFirst({
                 where: {
-                    id: subscription.daoId,
+                    id: subscription.daoId
                 },
                 include: {
-                    handlers: true,
-                },
+                    handlers: true
+                }
             })
 
             if (dao) {
@@ -926,14 +926,14 @@ const seedVoters = async () => {
                             where: {
                                 voterId_daoHandlerId: {
                                     voterId: voter.id,
-                                    daoHandlerId: handler.id,
-                                },
+                                    daoHandlerId: handler.id
+                                }
                             },
                             update: {},
                             create: {
                                 voterId: voter.id,
-                                daoHandlerId: handler.id,
-                            },
+                                daoHandlerId: handler.id
+                            }
                         })
                     }
                 }

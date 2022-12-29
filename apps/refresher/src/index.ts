@@ -31,38 +31,38 @@ const main = () => {
 const autoRefreshRequest = async () => {
     await prisma.dAO.updateMany({
         where: {
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.DONE
         },
         data: {
-            refreshStatus: RefreshStatus.NEW,
-        },
+            refreshStatus: RefreshStatus.NEW
+        }
     })
     await prisma.voter.updateMany({
         where: {
-            refreshStatus: RefreshStatus.DONE,
+            refreshStatus: RefreshStatus.DONE
         },
         data: {
-            refreshStatus: RefreshStatus.NEW,
-        },
+            refreshStatus: RefreshStatus.NEW
+        }
     })
 }
 
 const autoForceRefreshRequest = async () => {
     await prisma.dAO.updateMany({
         where: {
-            refreshStatus: RefreshStatus.PENDING,
+            refreshStatus: RefreshStatus.PENDING
         },
         data: {
-            refreshStatus: RefreshStatus.NEW,
-        },
+            refreshStatus: RefreshStatus.NEW
+        }
     })
     await prisma.voter.updateMany({
         where: {
-            refreshStatus: RefreshStatus.PENDING,
+            refreshStatus: RefreshStatus.PENDING
         },
         data: {
-            refreshStatus: RefreshStatus.NEW,
-        },
+            refreshStatus: RefreshStatus.NEW
+        }
     })
 }
 const refreshDaos = async () => {
@@ -70,12 +70,12 @@ const refreshDaos = async () => {
 
     const daos = await prisma.dAO.findMany({
         where: {
-            refreshStatus: RefreshStatus.NEW,
+            refreshStatus: RefreshStatus.NEW
         },
         orderBy: {
-            lastRefresh: 'asc',
+            lastRefresh: 'asc'
         },
-        take: 1,
+        take: 1
     })
 
     if (!daos.length) {
@@ -88,11 +88,11 @@ const refreshDaos = async () => {
 
         await prisma.dAO.update({
             where: {
-                id: dao.id,
+                id: dao.id
             },
             data: {
-                refreshStatus: RefreshStatus.PENDING,
-            },
+                refreshStatus: RefreshStatus.PENDING
+            }
         })
 
         console.log(
@@ -102,7 +102,7 @@ const refreshDaos = async () => {
         await new Promise((resolve) => setTimeout(resolve, 100))
 
         fetch(`${process.env.DETECTIVE_URL}/updateProposals?daoId=${dao.id}`, {
-            method: 'POST',
+            method: 'POST'
         })
             .then(async (res) => {
                 if (res.ok) {
@@ -111,12 +111,12 @@ const refreshDaos = async () => {
                     )
                     await prisma.dAO.update({
                         where: {
-                            id: dao.id,
+                            id: dao.id
                         },
                         data: {
                             refreshStatus: RefreshStatus.DONE,
-                            lastRefresh: new Date(),
-                        },
+                            lastRefresh: new Date()
+                        }
                     })
                 }
                 return
@@ -132,12 +132,12 @@ const refreshUsers = async () => {
 
     const voters = await prisma.voter.findMany({
         where: {
-            refreshStatus: RefreshStatus.NEW,
+            refreshStatus: RefreshStatus.NEW
         },
         orderBy: {
-            lastRefresh: 'asc',
+            lastRefresh: 'asc'
         },
-        take: 1,
+        take: 1
     })
 
     if (!voters.length) {
@@ -156,13 +156,13 @@ const refreshUsers = async () => {
             where: {
                 voters: {
                     some: {
-                        id: voter.id,
-                    },
-                },
+                        id: voter.id
+                    }
+                }
             },
             include: {
-                subscriptions: true,
-            },
+                subscriptions: true
+            }
         })
 
         const subs = users.map((user) => user.subscriptions)
@@ -176,22 +176,22 @@ const refreshUsers = async () => {
         if (totalSubs.length) {
             await prisma.voter.update({
                 where: {
-                    id: voter.id,
+                    id: voter.id
                 },
                 data: {
-                    refreshStatus: RefreshStatus.PENDING,
-                },
+                    refreshStatus: RefreshStatus.PENDING
+                }
             })
         } else {
             //nothing to update
             await prisma.voter.update({
                 where: {
-                    id: voter.id,
+                    id: voter.id
                 },
                 data: {
                     refreshStatus: RefreshStatus.DONE,
-                    lastRefresh: new Date(),
-                },
+                    lastRefresh: new Date()
+                }
             })
         }
 
@@ -206,7 +206,7 @@ const refreshUsers = async () => {
             fetch(
                 `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`,
                 {
-                    method: 'POST',
+                    method: 'POST'
                 }
             )
                 .then(async (res) => {
@@ -216,12 +216,12 @@ const refreshUsers = async () => {
                         )
                         await prisma.voter.update({
                             where: {
-                                id: voter.id,
+                                id: voter.id
                             },
                             data: {
                                 refreshStatus: RefreshStatus.DONE,
-                                lastRefresh: new Date(),
-                            },
+                                lastRefresh: new Date()
+                            }
                         })
                     }
                     return

@@ -6,61 +6,61 @@ export default function NavBar() {
     const router = useRouter()
 
     return (
-        <div className="flex min-h-screen min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black">
-            <Link href="/" className="mt-10 mb-20">
+        <div className='flex min-h-screen min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black'>
+            <Link href='/' className='mt-10 mb-20'>
                 <Image
-                    src="/assets/Senate_Logo/64/White.svg"
+                    src='/assets/Senate_Logo/64/White.svg'
                     width={64}
                     height={64}
                     alt={'Senate logo'}
                 />
             </Link>
 
-            <div className="flex flex-col gap-5">
+            <div className='flex flex-col gap-5'>
                 <Link href={`/daos`}>
                     {router.asPath.includes('daos') ? (
-                        <div className="flex flex-col items-center">
+                        <div className='flex flex-col items-center'>
                             <Image
-                                src="/assets/Icon/DAOs/Active.svg"
+                                src='/assets/Icon/DAOs/Active.svg'
                                 width={64}
                                 height={64}
                                 alt={'active daos button'}
                             />
-                            <p className="text-[13px] text-white">DAOs</p>
+                            <p className='text-[13px] text-white'>DAOs</p>
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center">
+                        <div className='flex flex-col items-center'>
                             <Image
-                                src="/assets/Icon/DAOs/Inactive.svg"
+                                src='/assets/Icon/DAOs/Inactive.svg'
                                 width={64}
                                 height={64}
                                 alt={'inactive daos button'}
                             />
-                            <p className="text-[13px] text-gray-600">DAOs</p>
+                            <p className='text-[13px] text-gray-600'>DAOs</p>
                         </div>
                     )}
                 </Link>
 
                 <Link href={`/proposals/active`}>
                     {router.asPath.includes('proposals') ? (
-                        <div className="flex flex-col items-center">
+                        <div className='flex flex-col items-center'>
                             <Image
-                                src="/assets/Icon/Proposals/Active.svg"
+                                src='/assets/Icon/Proposals/Active.svg'
                                 width={64}
                                 height={64}
                                 alt={'active proposals button'}
                             />
-                            <p className="text-[13px] text-white">Proposals</p>
+                            <p className='text-[13px] text-white'>Proposals</p>
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center">
+                        <div className='flex flex-col items-center'>
                             <Image
-                                src="/assets/Icon/Proposals/Inactive.svg"
+                                src='/assets/Icon/Proposals/Inactive.svg'
                                 width={64}
                                 height={64}
                                 alt={'inactive proposals button'}
                             />
-                            <p className="text-[13px] text-gray-600">
+                            <p className='text-[13px] text-gray-600'>
                                 Proposals
                             </p>
                         </div>
@@ -69,24 +69,24 @@ export default function NavBar() {
 
                 <Link href={`/settings/account`}>
                     {router.asPath.includes('settings') ? (
-                        <div className="flex flex-col items-center">
+                        <div className='flex flex-col items-center'>
                             <Image
-                                src="/assets/Icon/Settings/Active.svg"
+                                src='/assets/Icon/Settings/Active.svg'
                                 width={64}
                                 height={64}
                                 alt={'active settings button'}
                             />
-                            <p className="text-[13px] text-white">Settings</p>
+                            <p className='text-[13px] text-white'>Settings</p>
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center">
+                        <div className='flex flex-col items-center'>
                             <Image
-                                src="/assets/Icon/Settings/Inactive.svg"
+                                src='/assets/Icon/Settings/Inactive.svg'
                                 width={64}
                                 height={64}
                                 alt={'inactive settings button'}
                             />
-                            <p className="text-[13px] text-gray-600">
+                            <p className='text-[13px] text-gray-600'>
                                 Settings
                             </p>
                         </div>
@@ -94,28 +94,28 @@ export default function NavBar() {
                 </Link>
             </div>
 
-            <div className="flex grow flex-row items-end justify-between justify-self-end pb-2 opacity-50">
-                <Link href="https://twitter.com/SenateLabs">
+            <div className='flex grow flex-row items-end justify-between justify-self-end pb-2 opacity-50'>
+                <Link href='https://twitter.com/SenateLabs'>
                     <Image
-                        src="/assets/Icon/Twitter.svg"
-                        alt="twitter"
+                        src='/assets/Icon/Twitter.svg'
+                        alt='twitter'
                         width={24}
                         height={24}
                     />
                 </Link>
 
-                <Link href="https://github.com/senate-xyz/senate">
+                <Link href='https://github.com/senate-xyz/senate'>
                     <Image
-                        src="/assets/Icon/Github.svg"
-                        alt="twitter"
+                        src='/assets/Icon/Github.svg'
+                        alt='twitter'
                         width={24}
                         height={24}
                     />
                 </Link>
-                <Link href="https://discord.gg/bxCCkwtP">
+                <Link href='https://discord.gg/bxCCkwtP'>
                     <Image
-                        src="/assets/Icon/DiscordWhite.svg"
-                        alt="twitter"
+                        src='/assets/Icon/DiscordWhite.svg'
+                        alt='twitter'
                         width={24}
                         height={24}
                     />

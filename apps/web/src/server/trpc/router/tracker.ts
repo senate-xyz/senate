@@ -6,7 +6,7 @@ export const trackerRouter = router({
     track: publicProcedure
         .input(
             z.object({
-                addresses: z.array(z.string().startsWith('0x').length(42)),
+                addresses: z.array(z.string().startsWith('0x').length(42))
             })
         )
         .query(async ({ ctx, input }) => {
@@ -15,10 +15,10 @@ export const trackerRouter = router({
                     votes: {
                         some: {
                             voterAddress: {
-                                in: input.addresses,
-                            },
-                        },
-                    },
+                                in: input.addresses
+                            }
+                        }
+                    }
                 },
                 include: {
                     dao: true,
@@ -26,19 +26,19 @@ export const trackerRouter = router({
                         include: {
                             options: {
                                 select: {
-                                    optionName: true,
-                                },
-                            },
+                                    optionName: true
+                                }
+                            }
                         },
                         where: {
                             voterAddress: {
-                                in: input.addresses,
-                            },
-                        },
-                    },
-                },
+                                in: input.addresses
+                            }
+                        }
+                    }
+                }
             })
 
             return userProposalsVoted
-        }),
+        })
 })

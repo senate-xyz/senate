@@ -126,7 +126,6 @@ Table VoterHandler {
   lastRefreshTimestamp DateTime [not null]
   lastChainVoteCreatedBlock BigInt [default: 0]
   lastSnapshotVoteCreatedTimestamp DateTime
-  dAOId String [not null]
 
   indexes {
     (voterId, daoHandlerId) [unique]

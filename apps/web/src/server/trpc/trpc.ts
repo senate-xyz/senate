@@ -7,7 +7,7 @@ const t = initTRPC.context<Context>().create({
     transformer: superjson,
     errorFormatter({ shape }) {
         return shape
-    },
+    }
 })
 
 export const router = t.router
@@ -28,8 +28,8 @@ const isAuthed = t.middleware(({ ctx, next }) => {
     return next({
         ctx: {
             // infers the `session` as non-nullable
-            session: { ...ctx.session, user: ctx.session.user },
-        },
+            session: { ...ctx.session, user: ctx.session.user }
+        }
     })
 })
 

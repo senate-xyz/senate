@@ -29,12 +29,12 @@ const NewUser = () => {
     const [showSigninAnimation, setShowSigninAnimation] = useState(false)
 
     return (
-        <div className="flex min-h-screen w-full flex-row bg-black">
-            <div className="flex min-h-full w-full flex-col">
+        <div className='flex min-h-screen w-full flex-row bg-black'>
+            <div className='flex min-h-full w-full flex-col'>
                 {showSigninAnimation ? (
-                    <div className="flex h-full w-full flex-row items-center justify-center">
+                    <div className='flex h-full w-full flex-row items-center justify-center'>
                         <Image
-                            src="/assets/Senate_Logo/Senate_Animation.gif"
+                            src='/assets/Senate_Logo/Senate_Animation.gif'
                             alt={''}
                             width={300}
                             height={300}
@@ -42,15 +42,15 @@ const NewUser = () => {
                     </div>
                 ) : (
                     <div>
-                        <div className="flex w-full flex-row justify-between px-12 pt-[20px]">
-                            <div className="flex flex-row items-center">
+                        <div className='flex w-full flex-row justify-between px-12 pt-[20px]'>
+                            <div className='flex flex-row items-center'>
                                 <Image
-                                    src="/assets/Senate_Logo/64/White.svg"
+                                    src='/assets/Senate_Logo/64/White.svg'
                                     width={64}
                                     height={64}
                                     alt={'Senate logo'}
                                 />
-                                <div className="relative -left-2 -top-1 text-[40px] font-semibold text-white">
+                                <div className='relative -left-2 -top-1 text-[40px] font-semibold text-white'>
                                     senate
                                 </div>
                             </div>
@@ -59,30 +59,30 @@ const NewUser = () => {
                             </div>
                         </div>
 
-                        <div className="flex h-full w-full flex-row items-center justify-center ">
-                            <div className="flex w-[40%] flex-col gap-3">
-                                <div className="text-[36px] font-bold text-white">
+                        <div className='flex h-full w-full flex-row items-center justify-center '>
+                            <div className='flex w-[40%] flex-col gap-3'>
+                                <div className='text-[36px] font-bold text-white'>
                                     Welcome to Senate
                                 </div>
-                                <div className="text-[15px] font-normal text-white">
+                                <div className='text-[15px] font-normal text-white'>
                                     Senate works best with your email address,
                                     so we can notify you of new proposals from
                                     the DAOs you follow.
                                 </div>
 
-                                <div className="text-[18px] font-light text-white">
+                                <div className='text-[18px] font-light text-white'>
                                     Your Email Address
                                 </div>
 
                                 {address && (
-                                    <div className="flex h-[46px] flex-col">
+                                    <div className='flex h-[46px] flex-col'>
                                         <input
-                                            className="h-full w-full bg-[#D9D9D9] px-2 text-black"
+                                            className='h-full w-full bg-[#D9D9D9] px-2 text-black'
                                             value={email}
                                             onChange={(e) =>
                                                 setEmail(e.target.value)
                                             }
-                                            placeholder="delegatoooor@defi.dao"
+                                            placeholder='delegatoooor@defi.dao'
                                         />
 
                                         {/* <div
@@ -102,23 +102,23 @@ const NewUser = () => {
                                 </div> */}
                                     </div>
                                 )}
-                                <div className="flex flex-row">
+                                <div className='flex flex-row'>
                                     <input
-                                        id="default-checkbox"
-                                        type="checkbox"
+                                        id='default-checkbox'
+                                        type='checkbox'
                                         checked={terms}
                                         onChange={(e) => {
                                             setTerms(e.target.checked)
                                         }}
-                                        className="h-4 w-4 rounded border-gray-300 bg-gray-100  accent-gray-100 checked:bg-gray-600 focus:ring-2"
+                                        className='h-4 w-4 rounded border-gray-300 bg-gray-100  accent-gray-100 checked:bg-gray-600 focus:ring-2'
                                     />
-                                    <label className="ml-2 text-sm font-medium text-white">
+                                    <label className='ml-2 text-sm font-medium text-white'>
                                         I agree to the{' '}
                                         <Link
                                             href={
                                                 'https://senatelabs.notion.site/Terms-of-Service-990ca9e655094b6f9673a3ead572956a'
                                             }
-                                            className="underline"
+                                            className='underline'
                                         >
                                             Terms & Conditions
                                         </Link>{' '}
@@ -127,7 +127,7 @@ const NewUser = () => {
                                             href={
                                                 'https://senatelabs.notion.site/Privacy-Policy-494e23d8a4e34d0189bfe07e0ae01bde'
                                             }
-                                            className="underline"
+                                            className='underline'
                                         >
                                             Privacy Policy
                                         </Link>{' '}
@@ -136,7 +136,7 @@ const NewUser = () => {
                                             href={
                                                 'https://senatelabs.notion.site/Cookie-Policy-b429fe7b181e4cfda95f404f480bfdc7'
                                             }
-                                            className="underline"
+                                            className='underline'
                                         >
                                             Cookie Policy
                                         </Link>{' '}
@@ -145,31 +145,31 @@ const NewUser = () => {
 
                                 {email && terms ? (
                                     <div
-                                        className="flex h-[42px] w-full cursor-pointer flex-col justify-center bg-white text-center text-black"
+                                        className='flex h-[42px] w-full cursor-pointer flex-col justify-center bg-white text-center text-black'
                                         onClick={() => {
                                             storeTerms.mutate(
                                                 {
-                                                    value: terms,
+                                                    value: terms
                                                 },
                                                 {
                                                     onSettled() {
                                                         newUser.refetch()
-                                                    },
+                                                    }
                                                 }
                                             )
                                             storeEmail.mutate(
                                                 {
-                                                    emailAddress: email,
+                                                    emailAddress: email
                                                 },
                                                 {
                                                     onSettled() {
                                                         newUser.refetch()
-                                                    },
+                                                    }
                                                 }
                                             )
                                             storeNewUser.mutate(
                                                 {
-                                                    value: false,
+                                                    value: false
                                                 },
                                                 {
                                                     onSettled() {
@@ -177,7 +177,7 @@ const NewUser = () => {
                                                         setShowSigninAnimation(
                                                             true
                                                         )
-                                                    },
+                                                    }
                                                 }
                                             )
                                         }}
@@ -185,7 +185,7 @@ const NewUser = () => {
                                         Enter the Senate
                                     </div>
                                 ) : (
-                                    <div className="flex h-[42px] w-full flex-col justify-center bg-[#ABABAB] text-center text-black">
+                                    <div className='flex h-[42px] w-full flex-col justify-center bg-[#ABABAB] text-center text-black'>
                                         Enter the Senate
                                     </div>
                                 )}

@@ -25,12 +25,11 @@
     "dependencies": {
         "@senate/config": "*",
         "@senate/database": "*",
-        "@senate/tsconfig": "*",
         "node-cron": "^3.0.2",
         "node-fetch": "^3.3.0"
     },
     "devDependencies": {
-        "@types/node-cron": "^3.0.6",
+        "@types/node-cron": "^3.0.7",
         "rimraf": "^3.0.2",
         "tsup": "^6.5.0",
         "tsx": "^3.12.1",

@@ -4,7 +4,7 @@ import { Logger, InternalServerErrorException } from '@nestjs/common'
 import { type DAOHandler, prisma } from '@senate/database'
 
 const provider = new ethers.providers.JsonRpcProvider({
-    url: String(process.env.PROVIDER_URL),
+    url: String(process.env.PROVIDER_URL)
 })
 
 const logger = new Logger('MakerPollVotes')
@@ -22,8 +22,8 @@ export const updateMakerPollVotes = async (
             await prisma.voterLatestVoteBlock.findFirst({
                 where: {
                     voterAddress: voterAddress,
-                    daoHandlerId: daoHandler.id,
-                },
+                    daoHandlerId: daoHandler.id
+                }
             })
 
         const latestVoteBlock = voterLatestVoteBlock
@@ -40,8 +40,8 @@ export const updateMakerPollVotes = async (
                 where: {
                     externalId: vote.proposalOnChainId,
                     daoId: daoHandler.daoId,
-                    daoHandlerId: daoHandler.id,
-                },
+                    daoHandlerId: daoHandler.id
+                }
             })
 
             if (!proposal) {
@@ -56,8 +56,8 @@ export const updateMakerPollVotes = async (
                 where: {
                     voterAddress: voterAddress,
                     voteDaoId: daoHandler.daoId,
-                    voteProposalId: proposal.id,
-                },
+                    voteProposalId: proposal.id
+                }
             })
 
             await prisma.vote.upsert({
@@ -65,16 +65,16 @@ export const updateMakerPollVotes = async (
                     voterAddress_daoId_proposalId: {
                         voterAddress: voterAddress,
                         daoId: daoHandler.daoId,
-                        proposalId: proposal.id,
-                    },
+                        proposalId: proposal.id
+                    }
                 },
                 update: {
                     options: {
                         create: {
                             option: vote.support,
-                            optionName: vote.support ? 'Yes' : 'No',
-                        },
-                    },
+                            optionName: vote.support ? 'Yes' : 'No'
+                        }
+                    }
                 },
                 create: {
                     voterAddress: voterAddress,
@@ -84,10 +84,10 @@ export const updateMakerPollVotes = async (
                     options: {
                         create: {
                             option: vote.support,
-                            optionName: vote.support ? 'Yes' : 'No',
-                        },
-                    },
-                },
+                            optionName: vote.support ? 'Yes' : 'No'
+                        }
+                    }
+                }
             })
         }
 
@@ -96,17 +96,17 @@ export const updateMakerPollVotes = async (
                 where: {
                     voterAddress_daoHandlerId: {
                         voterAddress: voterAddress,
-                        daoHandlerId: daoHandler.id,
-                    },
+                        daoHandlerId: daoHandler.id
+                    }
                 },
                 update: {
-                    latestVoteBlock: currentBlock,
+                    latestVoteBlock: currentBlock
                 },
                 create: {
                     voterAddress: voterAddress,
                     daoHandlerId: daoHandler.id,
-                    latestVoteBlock: currentBlock,
-                },
+                    latestVoteBlock: currentBlock
+                }
             })
         }
     } catch (err) {
@@ -129,18 +129,18 @@ const getVotes = async (
     const logs = await provider.getLogs({
         fromBlock: latestVoteBlock,
         address: daoHandler.decoder['address'],
-        topics: [iface.getEventTopic('Voted'), hexZeroPad(voterAddress, 32)],
+        topics: [iface.getEventTopic('Voted'), hexZeroPad(voterAddress, 32)]
     })
 
     const votes = logs.map((log) => {
         const eventData = iface.parseLog({
             topics: log.topics,
-            data: log.data,
+            data: log.data
         }).args
 
         return {
             proposalOnChainId: BigNumber.from(eventData.pollId).toString(),
-            support: BigNumber.from(eventData.optionId).toString(),
+            support: BigNumber.from(eventData.optionId).toString()
         }
     })
 

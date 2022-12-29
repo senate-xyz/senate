@@ -1,5 +1,5 @@
 {
-    "extends": "@senate/tsconfig/base.json",
+    "extends": "@senate/config/ts/base.json",
     "compilerOptions": {
       "outDir": "dist",
       "esModuleInterop": true,

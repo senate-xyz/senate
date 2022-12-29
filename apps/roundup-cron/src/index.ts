@@ -3,7 +3,7 @@ import {
     type UserWithVotingAddresses,
     type Voter,
     RoundupNotificationType,
-    prisma,
+    prisma
 } from '@senate/database'
 
 import axios from 'axios'
@@ -59,20 +59,20 @@ const insertNotifications = async (
         const users = await prisma.user.findMany({
             where: {
                 email: {
-                    not: '',
+                    not: ''
                 },
                 userSettings: {
-                    dailyBulletinEmail: true,
+                    dailyBulletinEmail: true
                 },
                 subscriptions: {
                     some: {
-                        daoId: proposal.daoId,
-                    },
-                },
+                        daoId: proposal.daoId
+                    }
+                }
             },
             select: {
-                id: true,
-            },
+                id: true
+            }
         })
 
         await prisma
@@ -83,16 +83,16 @@ const insertNotifications = async (
                             proposalId_userId_type: {
                                 proposalId: proposal.id,
                                 userId: user.id,
-                                type: type,
-                            },
+                                type: type
+                            }
                         },
                         update: {},
                         create: {
                             userId: user.id,
                             proposalId: proposal.id,
                             daoId: proposal.daoId,
-                            type: type,
-                        },
+                            type: type
+                        }
                     })
                 })
             )
@@ -108,12 +108,12 @@ const addNewProposals = async () => {
     const proposals = await prisma.proposal.findMany({
         where: {
             timeCreated: {
-                gte: new Date(now - oneDay),
-            },
+                gte: new Date(now - oneDay)
+            }
         },
         orderBy: {
-            timeEnd: 'asc',
-        },
+            timeEnd: 'asc'
+        }
     })
 
     if (proposals) {
@@ -135,19 +135,19 @@ const addEndingProposals = async () => {
             AND: [
                 {
                     timeEnd: {
-                        lte: new Date(now + threeDays),
-                    },
+                        lte: new Date(now + threeDays)
+                    }
                 },
                 {
                     timeEnd: {
-                        gt: new Date(now),
-                    },
-                },
-            ],
+                        gt: new Date(now)
+                    }
+                }
+            ]
         },
         orderBy: {
-            timeEnd: 'asc',
-        },
+            timeEnd: 'asc'
+        }
     })
 
     if (proposals) {
@@ -169,19 +169,19 @@ const addPastProposals = async () => {
             AND: [
                 {
                     timeEnd: {
-                        lte: new Date(now),
-                    },
+                        lte: new Date(now)
+                    }
                 },
                 {
                     timeEnd: {
-                        gte: new Date(now - oneDay),
-                    },
-                },
-            ],
+                        gte: new Date(now - oneDay)
+                    }
+                }
+            ]
         },
         orderBy: {
-            timeEnd: 'desc',
-        },
+            timeEnd: 'desc'
+        }
     })
 
     if (proposals) {
@@ -207,15 +207,15 @@ const formatEmailTableData = async (
         const proposals = await prisma.notification.findMany({
             where: {
                 userId: user.id,
-                type: notificationType,
+                type: notificationType
             },
             include: {
                 proposal: {
                     include: {
-                        dao: true,
-                    },
-                },
-            },
+                        dao: true
+                    }
+                }
+            }
         })
 
         promises = proposals.map(async (notification) => {
@@ -227,7 +227,7 @@ const formatEmailTableData = async (
             const dateOptions: Intl.DateTimeFormatOptions = {
                 year: 'numeric',
                 month: 'short',
-                day: 'numeric',
+                day: 'numeric'
             }
 
             await delay(5000)
@@ -267,7 +267,7 @@ const formatEmailTableData = async (
                     undefined,
                     dateOptions
                 ),
-                countdownUrl: countdownUrl,
+                countdownUrl: countdownUrl
             }
         })
     } catch (error) {
@@ -301,7 +301,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
                 'Accept-Encoding': 'null',
-                Authorization: process.env.VOTING_COUNTDOWN_TOKEN,
+                Authorization: process.env.VOTING_COUNTDOWN_TOKEN
             },
             data: {
                 skin_id: 6,
@@ -325,9 +325,9 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
                 seconds: 'seconds',
                 advanced_params: {
                     separator_color: 'FFFFFF',
-                    labels_color: '000000',
-                },
-            },
+                    labels_color: '000000'
+                }
+            }
         })
 
         url = response.data.message.src
@@ -343,7 +343,7 @@ const sendRoundupEmails = async () => {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
-        day: 'numeric',
+        day: 'numeric'
     }
 
     const todaysDate = new Date(now).toLocaleDateString(undefined, dateOptions)
@@ -353,15 +353,15 @@ const sendRoundupEmails = async () => {
         const users = await prisma.user.findMany({
             where: {
                 email: {
-                    not: '',
+                    not: ''
                 },
                 userSettings: {
-                    dailyBulletinEmail: true,
-                },
+                    dailyBulletinEmail: true
+                }
             },
             include: {
-                voters: true,
-            },
+                voters: true
+            }
         })
         console.log(
             'Found ' + users.length + ' users with daily bulletin enabled.'
@@ -423,7 +423,7 @@ const sendRoundupEmails = async () => {
                         process.env.WEBAPP_URL +
                         '/assets/Icon/DiscordWhite.png',
                     githubIconUrl:
-                        process.env.WEBAPP_URL + '/assets/Icon/GithubWhite.png',
+                        process.env.WEBAPP_URL + '/assets/Icon/GithubWhite.png'
                 },
                 InlineCss: true,
                 From: 'info@senatelabs.xyz',
@@ -431,7 +431,7 @@ const sendRoundupEmails = async () => {
                 Bcc: process.env.ROUNDUP_BCC_EMAILS ?? '',
                 Tag: 'Daily Bulletin',
                 TrackOpens: true,
-                MessageStream: 'outbound',
+                MessageStream: 'outbound'
             })
 
             console.log(`Email sent to ${user.email}`, response)
@@ -452,8 +452,8 @@ const userVoted = async (
             where: {
                 voterAddress: voter.address,
                 daoId: daoId,
-                proposalId: proposalId,
-            },
+                proposalId: proposalId
+            }
         })
 
         if (vote) voted = true

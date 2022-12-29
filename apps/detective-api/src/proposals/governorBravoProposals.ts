@@ -5,7 +5,7 @@ import axios from 'axios'
 import { ethers } from 'ethers'
 
 const provider = new ethers.providers.JsonRpcProvider({
-    url: String(process.env.PROVIDER_URL),
+    url: String(process.env.PROVIDER_URL)
 })
 
 const logger = new Logger('BravoProposals')
@@ -29,7 +29,7 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
         const logs = await provider.getLogs({
             fromBlock: daoHandler.decoder['latestProposalBlock'],
             address: daoHandler.decoder['address'],
-            topics: [govBravoIface.getEventTopic('ProposalCreated')],
+            topics: [govBravoIface.getEventTopic('ProposalCreated')]
         })
 
         proposals = logs.map((log) => ({
@@ -37,8 +37,8 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
             txHash: log.transactionHash,
             eventData: govBravoIface.parseLog({
                 topics: log.topics,
-                data: log.data,
-            }).args,
+                data: log.data
+            }).args
         }))
 
         for (let i = 0; i < proposals.length; i++) {
@@ -75,19 +75,19 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
 
             await prisma.dAOHandler.update({
                 where: {
-                    id: daoHandler.id,
+                    id: daoHandler.id
                 },
                 data: {
-                    decoder: decoder,
-                },
+                    decoder: decoder
+                }
             })
 
             await prisma.proposal.upsert({
                 where: {
                     externalId_daoId: {
                         daoId: daoHandler.daoId,
-                        externalId: proposalOnChainId,
-                    },
+                        externalId: proposalOnChainId
+                    }
                 },
                 update: {},
                 create: {
@@ -100,8 +100,8 @@ export const updateGovernorBravoProposals = async (daoHandler: DAOHandler) => {
                     timeStart: new Date(votingStartsTimestamp * 1000),
                     timeCreated: new Date(proposalCreatedTimestamp * 1000),
                     data: {},
-                    url: proposalUrl,
-                },
+                    url: proposalUrl
+                }
             })
         }
     } catch (err) {

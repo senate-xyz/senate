@@ -16,8 +16,8 @@ export const updateSnapshotProposals = async (
 
     const currentProposalsCount = await prisma.proposal.count({
         where: {
-            daoHandlerId: daoHandler.id,
-        },
+            daoHandlerId: daoHandler.id
+        }
     })
 
     logger.log(`Searching snapshot proposals for ${daoName}`)
@@ -46,11 +46,11 @@ export const updateSnapshotProposals = async (
                   end
                   link
                 }
-              }`,
+              }`
                 }),
                 headers: {
-                    'content-type': 'application/json',
-                },
+                    'content-type': 'application/json'
+                }
             })
             .then((response) => {
                 return response.data
@@ -68,8 +68,8 @@ export const updateSnapshotProposals = async (
                         where: {
                             externalId_daoId: {
                                 daoId: daoHandler.daoId,
-                                externalId: proposal.id,
-                            },
+                                externalId: proposal.id
+                            }
                         },
                         update: {},
                         create: {
@@ -82,8 +82,8 @@ export const updateSnapshotProposals = async (
                             timeStart: new Date(proposal.start * 1000),
                             timeCreated: new Date(proposal.created * 1000),
                             data: {},
-                            url: proposal.link,
-                        },
+                            url: proposal.link
+                        }
                     })
                 )
             )

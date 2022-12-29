@@ -13,18 +13,18 @@ export const updateSnapshotVotes = async (
         where: {
             AND: [
                 { daoHandlerId: daoHandler.id },
-                { voterAddress: voterAddress },
-            ],
-        },
+                { voterAddress: voterAddress }
+            ]
+        }
     })
 
     const latestProposal = await prisma.proposal.findFirst({
         where: {
-            daoHandlerId: daoHandler.id,
+            daoHandlerId: daoHandler.id
         },
         orderBy: {
-            timeCreated: 'desc',
-        },
+            timeCreated: 'desc'
+        }
     })
 
     if (!latestProposal) return
@@ -58,11 +58,11 @@ export const updateSnapshotVotes = async (
     }
   }
 }
-`,
+`
                 }),
                 headers: {
-                    'content-type': 'application/json',
-                },
+                    'content-type': 'application/json'
+                }
             })
             .then((response) => {
                 if (response.status == 429) throw new Error('Too many requests')
@@ -83,8 +83,8 @@ export const updateSnapshotVotes = async (
                     where: {
                         externalId: vote.proposal.id,
                         daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id,
-                    },
+                        daoHandlerId: daoHandler.id
+                    }
                 })
 
                 if (!proposal) {
@@ -111,8 +111,8 @@ export const updateSnapshotVotes = async (
                     where: {
                         voterAddress: voterAddress,
                         voteDaoId: daoHandler.daoId,
-                        voteProposalId: proposal.id,
-                    },
+                        voteProposalId: proposal.id
+                    }
                 })
 
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -122,8 +122,8 @@ export const updateSnapshotVotes = async (
                             voterAddress_daoId_proposalId: {
                                 voterAddress: voterAddress,
                                 daoId: daoHandler.daoId,
-                                proposalId: proposal.id,
-                            },
+                                proposalId: proposal.id
+                            }
                         },
                         update: {
                             options: {
@@ -135,9 +135,9 @@ export const updateSnapshotVotes = async (
                                     optionName:
                                         vote.proposal.choices[
                                             vote.choice - 1
-                                        ] ?? 'No name',
-                                },
-                            },
+                                        ] ?? 'No name'
+                                }
+                            }
                         },
                         create: {
                             voterAddress: voterAddress,
@@ -153,10 +153,10 @@ export const updateSnapshotVotes = async (
                                     optionName:
                                         vote.proposal.choices[
                                             vote.choice - 1
-                                        ] ?? 'No name',
-                                },
-                            },
-                        },
+                                        ] ?? 'No name'
+                                }
+                            }
+                        }
                     })
                 }
             }
@@ -188,13 +188,13 @@ const getVotedOptions = (
                 optionName: proposalChoices[choices[i] - 1] ?? 'No name',
                 voteUserId: userId,
                 voteDaoId: daoId,
-                voteProposalId: proposalId,
+                voteProposalId: proposalId
             })
         }
     } else {
         options.push({
             option: String(choices),
-            optionName: proposalChoices[choices - 1] ?? 'No name',
+            optionName: proposalChoices[choices - 1] ?? 'No name'
         })
     }
 

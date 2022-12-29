@@ -20,13 +20,13 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                     const result = await siwe.verify({
                         signature: credentials?.signature || '',
                         domain: nextAuthUrl.host,
-                        nonce: await getCsrfToken({ req }),
+                        nonce: await getCsrfToken({ req })
                     })
 
                     if (result.success) {
                         const user = await prisma.user.upsert({
                             where: {
-                                name: siwe.address,
+                                name: siwe.address
                             },
                             create: {
                                 name: siwe.address,
@@ -35,32 +35,32 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                                 email: '',
                                 userSettings: {
                                     create: {
-                                        dailyBulletinEmail: true,
-                                    },
-                                },
+                                        dailyBulletinEmail: true
+                                    }
+                                }
                             },
                             update: {
                                 name: siwe.address,
-                                newUser: false,
-                            },
+                                newUser: false
+                            }
                         })
 
                         await prisma.voter.upsert({
                             where: {
-                                address: siwe.address,
+                                address: siwe.address
                             },
                             create: {
                                 address: siwe.address,
-                                users: { connect: { id: user.id } },
+                                users: { connect: { id: user.id } }
                             },
                             update: {
                                 address: siwe.address,
-                                users: { connect: { id: user.id } },
-                            },
+                                users: { connect: { id: user.id } }
+                            }
                         })
 
                         return {
-                            id: siwe.address,
+                            id: siwe.address
                         }
                     }
                     return null
@@ -72,16 +72,16 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                 message: {
                     label: 'Message',
                     placeholder: '0x0',
-                    type: 'text',
+                    type: 'text'
                 },
                 signature: {
                     label: 'Signature',
                     placeholder: '0x0',
-                    type: 'text',
-                },
+                    type: 'text'
+                }
             },
-            name: 'Ethereum',
-        }),
+            name: 'Ethereum'
+        })
     ]
 
     return {
@@ -91,14 +91,14 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                     session.user.name = token.sub
                 }
                 return session
-            },
+            }
         },
         providers,
         secret: process.env.NEXTAUTH_SECRET,
         session: {
-            strategy: 'jwt',
+            strategy: 'jwt'
         },
-        debug: true,
+        debug: true
     }
 }
 

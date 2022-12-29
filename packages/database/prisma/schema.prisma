@@ -139,7 +139,6 @@ model VoterHandler {
   lastRefreshTimestamp             DateTime      @default(dbgenerated("(FROM_UNIXTIME(0))"))
   lastChainVoteCreatedBlock        BigInt?       @default(0)
   lastSnapshotVoteCreatedTimestamp DateTime?     @default(dbgenerated("(FROM_UNIXTIME(0))"))
-  dAOId                            String
 
   @@unique([voterId, daoHandlerId])
 }

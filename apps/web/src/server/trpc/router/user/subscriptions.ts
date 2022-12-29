@@ -6,11 +6,11 @@ export const userSubscriptionsRouter = router({
         const user = await ctx.prisma.user
             .findFirstOrThrow({
                 where: {
-                    name: { equals: String(ctx.session?.user?.name) },
+                    name: { equals: String(ctx.session?.user?.name) }
                 },
                 select: {
-                    id: true,
-                },
+                    id: true
+                }
             })
             .catch(() => {
                 return { id: '0' }
@@ -20,40 +20,40 @@ export const userSubscriptionsRouter = router({
             where: {
                 subscriptions: {
                     some: {
-                        user: { is: user },
-                    },
-                },
+                        user: { is: user }
+                    }
+                }
             },
             orderBy: {
-                id: 'asc',
+                id: 'asc'
             },
             distinct: 'id',
             include: {
                 handlers: true,
                 subscriptions: {
                     where: {
-                        userId: { contains: user.id },
-                    },
-                },
-            },
+                        userId: { contains: user.id }
+                    }
+                }
+            }
         })
         return daosList
     }),
     subscribe: protectedProcedure
         .input(
             z.object({
-                daoId: z.string(),
+                daoId: z.string()
             })
         )
         .mutation(async ({ ctx, input }) => {
             const user = await ctx.prisma.user
                 .findFirstOrThrow({
                     where: {
-                        name: { equals: String(ctx.session?.user?.name) },
+                        name: { equals: String(ctx.session?.user?.name) }
                     },
                     select: {
-                        id: true,
-                    },
+                        id: true
+                    }
                 })
                 .catch(() => {
                     return { id: '0' }
@@ -64,14 +64,14 @@ export const userSubscriptionsRouter = router({
                     where: {
                         userId_daoId: {
                             userId: user.id,
-                            daoId: input.daoId,
-                        },
+                            daoId: input.daoId
+                        }
                     },
                     update: {},
                     create: {
                         userId: user.id,
-                        daoId: input.daoId,
-                    },
+                        daoId: input.daoId
+                    }
                 })
                 .then(() => {
                     return true
@@ -84,18 +84,18 @@ export const userSubscriptionsRouter = router({
     unsubscribe: protectedProcedure
         .input(
             z.object({
-                daoId: z.string(),
+                daoId: z.string()
             })
         )
         .mutation(async ({ ctx, input }) => {
             const user = await ctx.prisma.user
                 .findFirstOrThrow({
                     where: {
-                        name: { equals: String(ctx.session?.user?.name) },
+                        name: { equals: String(ctx.session?.user?.name) }
                     },
                     select: {
-                        id: true,
-                    },
+                        id: true
+                    }
                 })
                 .catch(() => {
                     return { id: '0' }
@@ -106,9 +106,9 @@ export const userSubscriptionsRouter = router({
                     where: {
                         userId_daoId: {
                             userId: user.id,
-                            daoId: input.daoId,
-                        },
-                    },
+                            daoId: input.daoId
+                        }
+                    }
                 })
                 .then(() => {
                     return true
@@ -116,5 +116,5 @@ export const userSubscriptionsRouter = router({
                 .catch(() => {
                     return false
                 })
-        }),
+        })
 })

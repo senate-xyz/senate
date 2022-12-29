@@ -1,5 +1,5 @@
 {
-    "extends": "@senate/tsconfig/nextjs.json",
+    "extends": "@senate/config/ts/nextjs.json",
     "include": [
         "next-env.d.ts",
         "modules.d.ts",

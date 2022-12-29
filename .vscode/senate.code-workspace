@@ -1,0 +1,54 @@
+{
+  "folders": [
+    {
+      "name": "✨ senate",
+      "path": ".."
+    },
+    {
+      "name": "🚀 @senate/detective-api",
+      "path": "../apps/detective-api"
+    },
+    {
+      "name": "🚀 @senate/refresher",
+      "path": "../apps/refresher"
+    },
+    {
+      "name": "🚀 @senate/roundup-cron",
+      "path": "../apps/roundup-cron"
+    },
+    {
+      "name": "🚀 @senate/web",
+      "path": "../apps/web"
+    },
+    {
+      "name": "⚙️ @senate/config",
+      "path": "../packages/config"
+    },
+    {
+      "name": "📦 @senate/database",
+      "path": "../packages/database"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true,
+      "source.fixAll.eslint": true
+    },
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "window.zoomLevel": 0
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "ms-vscode.vscode-typescript-next",
+      "esbenp.prettier-vscode",
+      "Prisma.prisma",
+      "bradlc.vscode-tailwindcss",
+      "folke.vscode-monorepo-workspace",
+      "VisualStudioExptTeam.vscodeintellicode",
+      "VisualStudioExptTeam.intellicode-api-usage-examples"
+    ]
+  }
+}

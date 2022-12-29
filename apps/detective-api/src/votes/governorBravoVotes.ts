@@ -5,7 +5,7 @@ import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 
 const provider = new ethers.providers.JsonRpcProvider({
-    url: String(process.env.PROVIDER_URL),
+    url: String(process.env.PROVIDER_URL)
 })
 
 type Vote = {
@@ -29,8 +29,8 @@ export const updateGovernorBravoVotes = async (
             await prisma.voterLatestVoteBlock.findFirst({
                 where: {
                     voterAddress: voterAddress,
-                    daoHandlerId: daoHandler.id,
-                },
+                    daoHandlerId: daoHandler.id
+                }
             })
 
         const latestVoteBlock = voterLatestVoteBlock
@@ -47,8 +47,8 @@ export const updateGovernorBravoVotes = async (
                 where: {
                     externalId: vote.proposalOnChainId,
                     daoId: daoHandler.daoId,
-                    daoHandlerId: daoHandler.id,
-                },
+                    daoHandlerId: daoHandler.id
+                }
             })
 
             if (!proposal) {
@@ -63,8 +63,8 @@ export const updateGovernorBravoVotes = async (
                 where: {
                     voterAddress: voterAddress,
                     voteDaoId: daoHandler.daoId,
-                    voteProposalId: proposal.id,
-                },
+                    voteProposalId: proposal.id
+                }
             })
 
             await prisma.vote.upsert({
@@ -72,16 +72,16 @@ export const updateGovernorBravoVotes = async (
                     voterAddress_daoId_proposalId: {
                         voterAddress: voterAddress,
                         daoId: daoHandler.daoId,
-                        proposalId: proposal.id,
-                    },
+                        proposalId: proposal.id
+                    }
                 },
                 update: {
                     options: {
                         create: {
                             option: vote.support,
-                            optionName: vote.support ? 'Yes' : 'No',
-                        },
-                    },
+                            optionName: vote.support ? 'Yes' : 'No'
+                        }
+                    }
                 },
                 create: {
                     voterAddress: voterAddress,
@@ -91,10 +91,10 @@ export const updateGovernorBravoVotes = async (
                     options: {
                         create: {
                             option: vote.support,
-                            optionName: vote.support ? 'Yes' : 'No',
-                        },
-                    },
-                },
+                            optionName: vote.support ? 'Yes' : 'No'
+                        }
+                    }
+                }
             })
         }
 
@@ -103,17 +103,17 @@ export const updateGovernorBravoVotes = async (
                 where: {
                     voterAddress_daoHandlerId: {
                         voterAddress: voterAddress,
-                        daoHandlerId: daoHandler.id,
-                    },
+                        daoHandlerId: daoHandler.id
+                    }
                 },
                 update: {
-                    latestVoteBlock: currentBlock,
+                    latestVoteBlock: currentBlock
                 },
                 create: {
                     voterAddress: voterAddress,
                     daoHandlerId: daoHandler.id,
-                    latestVoteBlock: currentBlock,
-                },
+                    latestVoteBlock: currentBlock
+                }
             })
         }
     } catch (err) {
@@ -140,19 +140,19 @@ const getVotes = async (
                 address: daoHandler.decoder['address'],
                 topics: [
                     govBravoIface.getEventTopic('VoteEmitted'),
-                    [hexZeroPad(voterAddress, 32)],
-                ],
+                    [hexZeroPad(voterAddress, 32)]
+                ]
             })
 
             votes = logs.map((log) => {
                 const eventData = govBravoIface.parseLog({
                     topics: log.topics,
-                    data: log.data,
+                    data: log.data
                 }).args
 
                 return {
                     proposalOnChainId: BigNumber.from(eventData.id).toString(),
-                    support: String(eventData.support),
+                    support: String(eventData.support)
                 }
             })
             break
@@ -163,8 +163,8 @@ const getVotes = async (
                 address: daoHandler.decoder['address'],
                 topics: [
                     govBravoIface.getEventTopic('VoteCast'),
-                    hexZeroPad(voterAddress, 32),
-                ],
+                    hexZeroPad(voterAddress, 32)
+                ]
             })
             break
     }

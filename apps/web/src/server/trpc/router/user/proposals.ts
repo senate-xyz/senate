@@ -5,23 +5,23 @@ export const userProposalsRouter = router({
     proposals: protectedProcedure.query(async ({ ctx }) => {
         const user = await ctx.prisma.user.findFirstOrThrow({
             where: {
-                name: { equals: String(ctx.session?.user?.name) },
+                name: { equals: String(ctx.session?.user?.name) }
             },
             select: {
                 id: true,
-                voters: true,
-            },
+                voters: true
+            }
         })
 
         const userSubscriptions = await ctx.prisma.subscription.findMany({
             where: {
                 AND: {
-                    userId: user?.id,
-                },
+                    userId: user?.id
+                }
             },
             select: {
-                daoId: true,
-            },
+                daoId: true
+            }
         })
 
         const userProposals = await ctx.prisma.proposal.findMany({
@@ -29,38 +29,38 @@ export const userProposalsRouter = router({
                 AND: [
                     {
                         daoId: {
-                            in: userSubscriptions.map((sub) => sub.daoId),
-                        },
+                            in: userSubscriptions.map((sub) => sub.daoId)
+                        }
                     },
                     {
                         data: {
                             path: '$.timeEnd',
-                            gte: Date.now() / 1000,
-                        },
-                    },
-                ],
+                            gte: Date.now() / 1000
+                        }
+                    }
+                ]
             },
             include: {
                 dao: {
                     include: {
                         handlers: {
                             select: {
-                                type: true,
-                            },
-                        },
-                    },
+                                type: true
+                            }
+                        }
+                    }
                 },
                 votes: {
                     where: {
                         voterAddress: {
-                            in: user.voters.map((voter) => voter.address),
-                        },
+                            in: user.voters.map((voter) => voter.address)
+                        }
                     },
                     include: {
-                        options: true,
-                    },
-                },
-            },
+                        options: true
+                    }
+                }
+            }
         })
 
         return userProposals
@@ -71,17 +71,17 @@ export const userProposalsRouter = router({
             z.object({
                 fromDao: z.string(),
                 endingIn: z.number(),
-                withVoteStatus: z.number(),
+                withVoteStatus: z.number()
             })
         )
         .query(async ({ input, ctx }) => {
             const user = await ctx.prisma.user.findFirstOrThrow({
                 where: {
-                    name: { equals: String(ctx.session?.user?.name) },
+                    name: { equals: String(ctx.session?.user?.name) }
                 },
                 include: {
-                    voters: true,
-                },
+                    voters: true
+                }
             })
 
             let voteStatusQuery
@@ -93,10 +93,10 @@ export const userProposalsRouter = router({
                                 voterAddress: {
                                     in: user.voters.map(
                                         (voter) => voter.address
-                                    ),
-                                },
-                            },
-                        },
+                                    )
+                                }
+                            }
+                        }
                     }
                     break
                 case 2:
@@ -106,10 +106,10 @@ export const userProposalsRouter = router({
                                 voterAddress: {
                                     in: user.voters.map(
                                         (voter) => voter.address
-                                    ),
-                                },
-                            },
-                        },
+                                    )
+                                }
+                            }
+                        }
                     }
                     break
                 default:
@@ -119,8 +119,8 @@ export const userProposalsRouter = router({
 
             const userSubscriptions = await ctx.prisma.subscription.findMany({
                 where: {
-                    userId: user.id,
-                },
+                    userId: user.id
+                }
             })
 
             const userProposals = await ctx.prisma.proposal.findMany({
@@ -132,39 +132,39 @@ export const userProposalsRouter = router({
                                     ? {
                                           in: userSubscriptions.map(
                                               (sub) => sub.daoId
-                                          ),
+                                          )
                                       }
-                                    : input.fromDao,
+                                    : input.fromDao
                         },
                         {
                             timeEnd: {
-                                lte: new Date(Date.now() + input.endingIn),
-                            },
+                                lte: new Date(Date.now() + input.endingIn)
+                            }
                         },
                         {
                             timeEnd: {
-                                gte: new Date(),
-                            },
+                                gte: new Date()
+                            }
                         },
-                        voteStatusQuery,
-                    ],
+                        voteStatusQuery
+                    ]
                 },
                 orderBy: {
-                    timeEnd: 'asc',
+                    timeEnd: 'asc'
                 },
                 include: {
                     dao: true,
                     votes: {
                         where: {
                             voterAddress: {
-                                in: user.voters.map((voter) => voter.address),
-                            },
+                                in: user.voters.map((voter) => voter.address)
+                            }
                         },
                         include: {
-                            options: true,
-                        },
-                    },
-                },
+                            options: true
+                        }
+                    }
+                }
             })
 
             return userProposals
@@ -175,17 +175,17 @@ export const userProposalsRouter = router({
             z.object({
                 fromDao: z.string(),
                 endingIn: z.number(),
-                withVoteStatus: z.number(),
+                withVoteStatus: z.number()
             })
         )
         .query(async ({ input, ctx }) => {
             const user = await ctx.prisma.user.findFirstOrThrow({
                 where: {
-                    name: { equals: String(ctx.session?.user?.name) },
+                    name: { equals: String(ctx.session?.user?.name) }
                 },
                 include: {
-                    voters: true,
-                },
+                    voters: true
+                }
             })
 
             let voteStatusQuery
@@ -197,10 +197,10 @@ export const userProposalsRouter = router({
                                 voterAddress: {
                                     in: user.voters.map(
                                         (voter) => voter.address
-                                    ),
-                                },
-                            },
-                        },
+                                    )
+                                }
+                            }
+                        }
                     }
                     break
                 case 2:
@@ -210,10 +210,10 @@ export const userProposalsRouter = router({
                                 voterAddress: {
                                     in: user.voters.map(
                                         (voter) => voter.address
-                                    ),
-                                },
-                            },
-                        },
+                                    )
+                                }
+                            }
+                        }
                     }
                     break
                 default:
@@ -223,8 +223,8 @@ export const userProposalsRouter = router({
 
             const userSubscriptions = await ctx.prisma.subscription.findMany({
                 where: {
-                    userId: user.id,
-                },
+                    userId: user.id
+                }
             })
 
             const userProposals = await ctx.prisma.proposal.findMany({
@@ -236,42 +236,42 @@ export const userProposalsRouter = router({
                                     ? {
                                           in: userSubscriptions.map(
                                               (sub) => sub.daoId
-                                          ),
+                                          )
                                       }
-                                    : input.fromDao,
+                                    : input.fromDao
                         },
                         {
                             timeEnd: {
-                                gte: new Date(Date.now() - input.endingIn),
-                            },
+                                gte: new Date(Date.now() - input.endingIn)
+                            }
                         },
                         {
                             timeEnd: {
-                                lt: new Date(Date.now()),
-                            },
+                                lt: new Date(Date.now())
+                            }
                         },
 
-                        voteStatusQuery,
-                    ],
+                        voteStatusQuery
+                    ]
                 },
                 orderBy: {
-                    timeEnd: 'desc',
+                    timeEnd: 'desc'
                 },
                 include: {
                     dao: true,
                     votes: {
                         where: {
                             voterAddress: {
-                                in: user.voters.map((voter) => voter.address),
-                            },
+                                in: user.voters.map((voter) => voter.address)
+                            }
                         },
                         include: {
-                            options: true,
-                        },
-                    },
-                },
+                            options: true
+                        }
+                    }
+                }
             })
 
             return userProposals
-        }),
+        })
 })

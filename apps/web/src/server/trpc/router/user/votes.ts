@@ -6,11 +6,11 @@ export const userVotesRouter = router({
         const user = await ctx.prisma.user
             .findFirstOrThrow({
                 where: {
-                    name: { equals: String(ctx.session?.user?.name) },
+                    name: { equals: String(ctx.session?.user?.name) }
                 },
                 select: {
-                    id: true,
-                },
+                    id: true
+                }
             })
             .catch(() => {
                 return { id: '0' }
@@ -19,20 +19,20 @@ export const userVotesRouter = router({
         const voters = await ctx.prisma.voter.findMany({
             where: {
                 users: {
-                    some: { id: user.id },
-                },
-            },
+                    some: { id: user.id }
+                }
+            }
         })
 
         await ctx.prisma.voterHandler.updateMany({
             where: {
                 voterId: {
-                    in: voters.map((voter) => voter.id),
-                },
+                    in: voters.map((voter) => voter.id)
+                }
             },
             data: {
-                refreshStatus: RefreshStatus.NEW,
-            },
+                refreshStatus: RefreshStatus.NEW
+            }
         })
-    }),
+    })
 })

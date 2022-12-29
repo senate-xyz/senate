@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "license": "MIT",
   "main": "index.js",
-  "files": [
-    "eslint.js"
-  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "eslint": "^8.30.0"
   },

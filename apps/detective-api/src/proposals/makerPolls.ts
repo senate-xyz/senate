@@ -4,7 +4,7 @@ import axios from 'axios'
 import { ethers } from 'ethers'
 
 const provider = new ethers.providers.JsonRpcProvider({
-    url: String(process.env.PROVIDER_URL),
+    url: String(process.env.PROVIDER_URL)
 })
 
 const logger = new Logger('MakerPollProposals')
@@ -24,8 +24,8 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
         const mkrPollVoteHandler = await prisma.dAOHandler.findFirst({
             where: {
                 daoId: daoHandler.daoId,
-                type: DAOHandlerType.MAKER_POLL_VOTE,
-            },
+                type: DAOHandlerType.MAKER_POLL_VOTE
+            }
         })
 
         if (!mkrPollVoteHandler) return
@@ -37,7 +37,7 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
         const logs = await provider.getLogs({
             fromBlock: daoHandler.decoder['latestProposalBlock'],
             address: daoHandler.decoder['address'],
-            topics: [pollingContractIface.getEventTopic('PollCreated')],
+            topics: [pollingContractIface.getEventTopic('PollCreated')]
         })
 
         proposals = logs.map((log) => ({
@@ -45,8 +45,8 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
             txHash: log.transactionHash,
             eventData: pollingContractIface.parseLog({
                 topics: log.topics,
-                data: log.data,
-            }).args,
+                data: log.data
+            }).args
         }))
 
         for (let i = 0; i < proposals.length; i++) {
@@ -71,19 +71,19 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
             decoder['latestProposalBlock'] = proposals[i].txBlock + 1
             await prisma.dAOHandler.update({
                 where: {
-                    id: daoHandler.id,
+                    id: daoHandler.id
                 },
                 data: {
-                    decoder: decoder,
-                },
+                    decoder: decoder
+                }
             })
 
             const proposal = await prisma.proposal.upsert({
                 where: {
                     externalId_daoId: {
                         daoId: daoHandler.daoId,
-                        externalId: proposalOnChainId,
-                    },
+                        externalId: proposalOnChainId
+                    }
                 },
                 update: {},
                 create: {
@@ -96,8 +96,8 @@ export const updateMakerPolls = async (daoHandler: DAOHandler) => {
                     timeStart: new Date(votingStartsTimestamp * 1000),
                     timeCreated: new Date(proposalCreatedTimestamp * 1000),
                     data: {},
-                    url: proposalUrl,
-                },
+                    url: proposalUrl
+                }
             })
 
             console.log('Inserted poll with id' + proposal.id)

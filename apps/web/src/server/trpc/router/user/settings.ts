@@ -7,8 +7,8 @@ export const userSettingsRouter = router({
 
         const user = await ctx.prisma.user.findFirstOrThrow({
             where: {
-                name: String(ctx.session?.user?.name),
-            },
+                name: String(ctx.session?.user?.name)
+            }
         })
         return user.email
     }),
@@ -16,7 +16,7 @@ export const userSettingsRouter = router({
     setEmail: protectedProcedure
         .input(
             z.object({
-                emailAddress: z.string().email(),
+                emailAddress: z.string().email()
             })
         )
         .mutation(async ({ ctx, input }) => {
@@ -24,14 +24,14 @@ export const userSettingsRouter = router({
 
             const user = await ctx.prisma.user.update({
                 where: {
-                    name: String(ctx.session?.user?.name),
+                    name: String(ctx.session?.user?.name)
                 },
                 data: {
-                    email: input.emailAddress,
+                    email: input.emailAddress
                 },
                 select: {
-                    email: true,
-                },
+                    email: true
+                }
             })
 
             return user.email
@@ -40,7 +40,7 @@ export const userSettingsRouter = router({
     setTerms: protectedProcedure
         .input(
             z.object({
-                value: z.boolean(),
+                value: z.boolean()
             })
         )
         .mutation(async ({ ctx, input }) => {
@@ -48,14 +48,14 @@ export const userSettingsRouter = router({
 
             const user = await ctx.prisma.user.update({
                 where: {
-                    name: String(ctx.session?.user?.name),
+                    name: String(ctx.session?.user?.name)
                 },
                 data: {
-                    acceptedTerms: input.value,
+                    acceptedTerms: input.value
                 },
                 select: {
-                    acceptedTerms: true,
-                },
+                    acceptedTerms: true
+                }
             })
 
             return user.acceptedTerms
@@ -64,7 +64,7 @@ export const userSettingsRouter = router({
     setNewUser: protectedProcedure
         .input(
             z.object({
-                value: z.boolean(),
+                value: z.boolean()
             })
         )
         .mutation(async ({ ctx, input }) => {
@@ -72,14 +72,14 @@ export const userSettingsRouter = router({
 
             const user = await ctx.prisma.user.update({
                 where: {
-                    name: String(ctx.session?.user?.name),
+                    name: String(ctx.session?.user?.name)
                 },
                 data: {
-                    newUser: input.value,
+                    newUser: input.value
                 },
                 select: {
-                    newUser: true,
-                },
+                    newUser: true
+                }
             })
 
             return user.newUser
@@ -90,11 +90,11 @@ export const userSettingsRouter = router({
 
         const user = await ctx.prisma.user.findFirst({
             where: {
-                name: { equals: String(ctx.session?.user?.name) },
+                name: { equals: String(ctx.session?.user?.name) }
             },
             select: {
-                newUser: true,
-            },
+                newUser: true
+            }
         })
 
         result = user?.newUser ?? false
@@ -105,11 +105,11 @@ export const userSettingsRouter = router({
     userSettings: protectedProcedure.query(async ({ ctx }) => {
         const user = await ctx.prisma.user.findFirst({
             where: {
-                name: { equals: String(ctx.session?.user?.name) },
+                name: { equals: String(ctx.session?.user?.name) }
             },
             select: {
-                userSettings: true,
-            },
+                userSettings: true
+            }
         })
         return user?.userSettings
     }),
@@ -117,7 +117,7 @@ export const userSettingsRouter = router({
     setDailyBulletin: protectedProcedure
         .input(
             z.object({
-                value: z.boolean(),
+                value: z.boolean()
             })
         )
         .mutation(async ({ ctx, input }) => {
@@ -125,22 +125,22 @@ export const userSettingsRouter = router({
 
             const user = await ctx.prisma.user.findFirst({
                 where: {
-                    name: { equals: String(ctx.session?.user?.name) },
+                    name: { equals: String(ctx.session?.user?.name) }
                 },
                 select: {
-                    id: true,
-                },
+                    id: true
+                }
             })
 
             const userSettings = await ctx.prisma.userSettings.upsert({
                 where: { userId: user?.id },
                 create: {
                     userId: user?.id ?? 'null',
-                    dailyBulletinEmail: input.value,
+                    dailyBulletinEmail: input.value
                 },
                 update: {
-                    dailyBulletinEmail: input.value,
-                },
+                    dailyBulletinEmail: input.value
+                }
             })
 
             return userSettings
@@ -153,17 +153,17 @@ export const userSettingsRouter = router({
             where: {
                 users: {
                     some: {
-                        name: { equals: String(ctx.session?.user?.name) },
-                    },
-                },
-            },
+                        name: { equals: String(ctx.session?.user?.name) }
+                    }
+                }
+            }
         })
         return proxyAddresses
     }),
     addVoter: protectedProcedure
         .input(
             z.object({
-                address: z.string().startsWith('0x').length(42),
+                address: z.string().startsWith('0x').length(42)
             })
         )
         .mutation(async ({ ctx, input }) => {
@@ -172,18 +172,18 @@ export const userSettingsRouter = router({
             await ctx.prisma.user
                 .update({
                     where: {
-                        name: String(ctx.session?.user?.name),
+                        name: String(ctx.session?.user?.name)
                     },
                     data: {
                         voters: {
                             connectOrCreate: {
                                 where: { address: input.address },
                                 create: {
-                                    address: input.address,
-                                },
-                            },
-                        },
-                    },
+                                    address: input.address
+                                }
+                            }
+                        }
+                    }
                 })
                 .then(() => {
                     return true
@@ -195,7 +195,7 @@ export const userSettingsRouter = router({
     removeVoter: protectedProcedure
         .input(
             z.object({
-                address: z.string(),
+                address: z.string()
             })
         )
         .mutation(async ({ ctx, input }) => {
@@ -204,15 +204,15 @@ export const userSettingsRouter = router({
             await ctx.prisma.user
                 .update({
                     where: {
-                        name: String(ctx.session?.user?.name),
+                        name: String(ctx.session?.user?.name)
                     },
                     data: {
                         voters: {
                             disconnect: {
-                                address: input.address,
-                            },
-                        },
-                    },
+                                address: input.address
+                            }
+                        }
+                    }
                 })
                 .then(() => {
                     return true
@@ -220,5 +220,5 @@ export const userSettingsRouter = router({
                 .catch(() => {
                     return false
                 })
-        }),
+        })
 })

@@ -1,3 +1,3 @@
 {
-    "extends": "@senate/tsconfig/node16.json"
+    "extends": "@senate/config/ts/node16.json"
 }
