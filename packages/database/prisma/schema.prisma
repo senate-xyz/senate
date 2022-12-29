@@ -33,10 +33,11 @@ model UserSettings {
 }
 
 model Voter {
-  id      String @id @default(cuid())
-  address String @unique
-  users   User[]
-  votes   Vote[]
+  id            String         @id @default(cuid())
+  address       String         @unique
+  users         User[]
+  votes         Vote[]
+  voterHandlers VoterHandler[]
 }
 
 model DAO {
@@ -61,6 +62,7 @@ model DAOHandler {
   daoId                                String
   dao                                  DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
   proposals                            Proposal[]
+  voterHandlers                        VoterHandler[]
 
   @@unique([daoId, type])
 }
@@ -133,14 +135,16 @@ model VoteOption {
 
 model VoterHandler {
   id                               String        @id @default(cuid())
+  voter                            Voter         @relation(fields: [voterId], references: [id], onDelete: Cascade)
   voterId                          String
-  daoHandlerId                     String
+  daoHandler                       DAOHandler    @relation(fields: [dAOHandlerId], references: [id], onDelete: Cascade)
   refreshStatus                    RefreshStatus @default(NEW)
   lastRefreshTimestamp             DateTime      @default(dbgenerated("(FROM_UNIXTIME(0))"))
   lastChainVoteCreatedBlock        BigInt?       @default(0)
   lastSnapshotVoteCreatedTimestamp DateTime?     @default(dbgenerated("(FROM_UNIXTIME(0))"))
+  dAOHandlerId                     String
 
-  @@unique([voterId, daoHandlerId])
+  @@unique([voterId, dAOHandlerId])
 }
 
 model Subscription {

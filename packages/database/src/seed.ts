@@ -908,35 +908,35 @@ const seedVoters = async () => {
         }
     })
 
-    if (user) {
-        for (const subscription of user.subscriptions) {
-            const dao = await prisma.dAO.findFirst({
-                where: {
-                    id: subscription.daoId
-                },
-                include: {
-                    handlers: true
-                }
-            })
+    if (!user) return
 
-            if (dao) {
-                for (const handler of dao.handlers) {
-                    for (const voter of user.voters) {
-                        await prisma.voterHandler.upsert({
-                            where: {
-                                voterId_daoHandlerId: {
-                                    voterId: voter.id,
-                                    daoHandlerId: handler.id
-                                }
-                            },
-                            update: {},
-                            create: {
-                                voterId: voter.id,
-                                daoHandlerId: handler.id
-                            }
-                        })
+    for (const subscription of user.subscriptions) {
+        const dao = await prisma.dAO.findFirst({
+            where: {
+                id: subscription.daoId
+            },
+            include: {
+                handlers: true
+            }
+        })
+
+        if (!dao) return
+
+        for (const handler of dao.handlers) {
+            for (const voter of user.voters) {
+                await prisma.voterHandler.upsert({
+                    where: {
+                        voterId_dAOHandlerId: {
+                            voterId: voter.id,
+                            dAOHandlerId: handler.id
+                        }
+                    },
+                    update: {},
+                    create: {
+                        voterId: voter.id,
+                        dAOHandlerId: handler.id
                     }
-                }
+                })
             }
         }
     }
