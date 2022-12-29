@@ -3,10 +3,12 @@ import { Prisma } from '@prisma/client'
 export * from './client'
 
 export {
+    type PrismaPromise,
     type Proposal,
     type Voter,
     type Subscription,
     RefreshStatus,
+    RefreshType,
     DAOHandlerType,
     RoundupNotificationType,
     type DAOHandler
