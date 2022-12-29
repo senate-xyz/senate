@@ -8,7 +8,8 @@ import {
 import fetch from 'node-fetch'
 import * as cron from 'node-cron'
 
-const DAOS_PROPOSALS_SNAPSHOT_INTERVAL = 1
+const DAOS_PROPOSALS_SNAPSHOT_INTERVAL = 1 // in minutes
+const DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE = 30 // in minutes
 
 const main = () => {
     console.log({ action: 'refresh_start' })
@@ -49,27 +50,26 @@ enum PROCESS_QUEUE {
 let processQueueState = PROCESS_QUEUE.NOT_RUNNING
 
 const processQueue = async () => {
-    if (processQueueState == PROCESS_QUEUE.RUNNING) return
-    processQueueState = PROCESS_QUEUE.RUNNING
+    await prisma.$transaction(async (tx) => {
+        if (processQueueState == PROCESS_QUEUE.RUNNING) return
+        processQueueState = PROCESS_QUEUE.RUNNING
 
-    console.log({ action: 'process_queue', details: 'start' })
-    const item = await prisma.refreshQueue.findFirst({
-        orderBy: { priority: 'desc' }
-    })
+        console.log({ action: 'process_queue', details: 'start' })
 
-    if (!item) {
-        console.log({ action: 'process_queue', details: 'empty queue' })
-        processQueueState = PROCESS_QUEUE.NOT_RUNNING
-        return
-    }
+        const item = await tx.refreshQueue.findFirst({
+            orderBy: { priority: 'desc' }
+        })
 
-    // make PD request and wait for result
-    // if result is ok
+        if (!item) {
+            console.log({ action: 'process_queue', details: 'empty queue' })
+            processQueueState = PROCESS_QUEUE.NOT_RUNNING
+            return
+        }
 
-    const txList: PrismaPromise<any>[] = []
+        // make PD request and wait for result
+        // if result is ok
 
-    txList.push(
-        prisma.dAOHandler.update({
+        await tx.dAOHandler.update({
             where: {
                 daoId_type: {
                     daoId: item.clientId,
@@ -81,23 +81,19 @@ const processQueue = async () => {
                 lastRefreshTimestamp: new Date()
             }
         })
-    )
 
-    txList.push(
-        prisma.refreshQueue.delete({
+        const refreshQueue = await tx.refreshQueue.delete({
             where: { id: item?.id }
         })
-    )
 
-    const [refreshQueue] = await prisma.$transaction(txList)
+        console.log({
+            action: 'process_queue',
+            details: 'remove item',
+            item: refreshQueue
+        })
 
-    console.log({
-        action: 'process_queue',
-        details: 'remove item',
-        item: refreshQueue
+        processQueueState = PROCESS_QUEUE.NOT_RUNNING
     })
-
-    processQueueState = PROCESS_QUEUE.NOT_RUNNING
 }
 
 const addSnapshotProposalsToQueue = async () => {
@@ -105,20 +101,43 @@ const addSnapshotProposalsToQueue = async () => {
         console.log({ action: 'snapshot_proposals_queue', details: 'start' })
         const snapshotDaos = await tx.dAO.findMany({
             where: {
-                handlers: {
-                    some: {
-                        type: DAOHandlerType.SNAPSHOT,
-                        refreshStatus: {
-                            in: [RefreshStatus.DONE, RefreshStatus.NEW]
-                        },
-                        lastRefreshTimestamp: {
-                            lt: new Date(
-                                Date.now() -
-                                    DAOS_PROPOSALS_SNAPSHOT_INTERVAL * 60 * 1000
-                            )
+                OR: [
+                    {
+                        //normal refresh interval
+                        handlers: {
+                            some: {
+                                type: DAOHandlerType.SNAPSHOT,
+                                refreshStatus: {
+                                    in: [RefreshStatus.DONE, RefreshStatus.NEW]
+                                },
+                                lastRefreshTimestamp: {
+                                    lt: new Date(
+                                        Date.now() -
+                                            DAOS_PROPOSALS_SNAPSHOT_INTERVAL *
+                                                60 *
+                                                1000
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    {
+                        //force refresh interval
+                        handlers: {
+                            some: {
+                                type: DAOHandlerType.SNAPSHOT,
+                                lastRefreshTimestamp: {
+                                    lt: new Date(
+                                        Date.now() -
+                                            DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE *
+                                                60 *
+                                                1000
+                                    )
+                                }
+                            }
                         }
                     }
-                }
+                ]
             },
             include: {
                 handlers: {
