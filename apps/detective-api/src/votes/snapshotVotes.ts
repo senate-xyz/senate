@@ -1,202 +1,204 @@
-import axios from 'axios'
-import { prisma, type DAOHandler } from '@senate/database'
-import { Logger, InternalServerErrorException } from '@nestjs/common'
+export {}
 
-const logger = new Logger('SnapshotVotes')
+// import axios from 'axios'
+// import { prisma, type DAOHandler } from '@senate/database'
+// import { Logger, InternalServerErrorException } from '@nestjs/common'
 
-export const updateSnapshotVotes = async (
-    daoHandler: DAOHandler,
-    voterAddress: string,
-    daoName: string
-) => {
-    const currentVotesCount = await prisma.vote.count({
-        where: {
-            AND: [
-                { daoHandlerId: daoHandler.id },
-                { voterAddress: voterAddress }
-            ]
-        }
-    })
+// const logger = new Logger('SnapshotVotes')
 
-    const latestProposal = await prisma.proposal.findFirst({
-        where: {
-            daoHandlerId: daoHandler.id
-        },
-        orderBy: {
-            timeCreated: 'desc'
-        }
-    })
+// export const updateSnapshotVotes = async (
+//     daoHandler: DAOHandler,
+//     voterAddress: string,
+//     daoName: string
+// ) => {
+//     const currentVotesCount = await prisma.vote.count({
+//         where: {
+//             AND: [
+//                 { daoHandlerId: daoHandler.id },
+//                 { voterAddress: voterAddress }
+//             ]
+//         }
+//     })
 
-    if (!latestProposal) return
+//     const latestProposal = await prisma.proposal.findFirst({
+//         where: {
+//             daoHandlerId: daoHandler.id
+//         },
+//         orderBy: {
+//             timeCreated: 'desc'
+//         }
+//     })
 
-    logger.log(`Updating Snapshot votes for ${voterAddress}`)
-    let votes
+//     if (!latestProposal) return
 
-    try {
-        votes = await axios
-            .get('https://hub.snapshot.org/graphql', {
-                method: 'POST',
-                data: JSON.stringify({
-                    query: ` {
-  votes(first: 1000, skip: ${currentVotesCount}, orderBy: "created", orderDirection: asc, where: {voter: "${voterAddress}", space: "${
-                        daoHandler.decoder['space']
-                    }", created_lt: ${
-                        latestProposal.timeCreated.valueOf() / 1000
-                    }}) {
-    id
-    voter
-    choice
-    proposal {
-      id
-      choices
-      title
-      body
-      created
-      start
-      end
-      link
-    }
-  }
-}
-`
-                }),
-                headers: {
-                    'content-type': 'application/json'
-                }
-            })
-            .then((response) => {
-                if (response.status == 429) throw new Error('Too many requests')
-                return response.data
-            })
-            .then((data) => {
-                return data.data.votes
-            })
-            .catch((e) => {
-                console.log(e)
-                return
-            })
+//     logger.log(`Updating Snapshot votes for ${voterAddress}`)
+//     let votes
 
-        //TODO support multiple choice vote
-        if (votes) {
-            for (const vote of votes) {
-                const proposal = await prisma.proposal.findFirst({
-                    where: {
-                        externalId: vote.proposal.id,
-                        daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id
-                    }
-                })
+//     try {
+//         votes = await axios
+//             .get('https://hub.snapshot.org/graphql', {
+//                 method: 'POST',
+//                 data: JSON.stringify({
+//                     query: ` {
+//   votes(first: 1000, skip: ${currentVotesCount}, orderBy: "created", orderDirection: asc, where: {voter: "${voterAddress}", space: "${
+//                         daoHandler.decoder['space']
+//                     }", created_lt: ${
+//                         latestProposal.timeCreated.valueOf() / 1000
+//                     }}) {
+//     id
+//     voter
+//     choice
+//     proposal {
+//       id
+//       choices
+//       title
+//       body
+//       created
+//       start
+//       end
+//       link
+//     }
+//   }
+// }
+// `
+//                 }),
+//                 headers: {
+//                     'content-type': 'application/json'
+//                 }
+//             })
+//             .then((response) => {
+//                 if (response.status == 429) throw new Error('Too many requests')
+//                 return response.data
+//             })
+//             .then((data) => {
+//                 return data.data.votes
+//             })
+//             .catch((e) => {
+//                 console.log(e)
+//                 return
+//             })
 
-                if (!proposal) {
-                    console.log(
-                        `Snapshot proposal with externalId ${vote.proposal.id} does not exist in DB`
-                    )
-                    continue
-                }
+//         //TODO support multiple choice vote
+//         if (votes) {
+//             for (const vote of votes) {
+//                 const proposal = await prisma.proposal.findFirst({
+//                     where: {
+//                         externalId: vote.proposal.id,
+//                         daoId: daoHandler.daoId,
+//                         daoHandlerId: daoHandler.id
+//                     }
+//                 })
 
-                if (!vote.proposal.id) {
-                    console.log('Bad proposal id')
-                    continue
-                }
+//                 if (!proposal) {
+//                     console.log(
+//                         `Snapshot proposal with externalId ${vote.proposal.id} does not exist in DB`
+//                     )
+//                     continue
+//                 }
 
-                const votedOptions = getVotedOptions(
-                    vote.choice,
-                    vote.proposal.choices,
-                    voterAddress,
-                    daoHandler.daoId,
-                    proposal.id
-                )
+//                 if (!vote.proposal.id) {
+//                     console.log('Bad proposal id')
+//                     continue
+//                 }
 
-                await prisma.voteOption.deleteMany({
-                    where: {
-                        voterAddress: voterAddress,
-                        voteDaoId: daoHandler.daoId,
-                        voteProposalId: proposal.id
-                    }
-                })
+//                 const votedOptions = getVotedOptions(
+//                     vote.choice,
+//                     vote.proposal.choices,
+//                     voterAddress,
+//                     daoHandler.daoId,
+//                     proposal.id
+//                 )
 
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                for (const votedOption of votedOptions) {
-                    await prisma.vote.upsert({
-                        where: {
-                            voterAddress_daoId_proposalId: {
-                                voterAddress: voterAddress,
-                                daoId: daoHandler.daoId,
-                                proposalId: proposal.id
-                            }
-                        },
-                        update: {
-                            options: {
-                                create: {
-                                    option:
-                                        vote.choice.length > 0
-                                            ? String(vote.choice[0])
-                                            : String(vote.choice),
-                                    optionName:
-                                        vote.proposal.choices[
-                                            vote.choice - 1
-                                        ] ?? 'No name'
-                                }
-                            }
-                        },
-                        create: {
-                            voterAddress: voterAddress,
-                            daoId: daoHandler.daoId,
-                            proposalId: proposal.id,
-                            daoHandlerId: daoHandler.id,
-                            options: {
-                                create: {
-                                    option:
-                                        vote.choice.length > 0
-                                            ? String(vote.choice[0])
-                                            : String(vote.choice),
-                                    optionName:
-                                        vote.proposal.choices[
-                                            vote.choice - 1
-                                        ] ?? 'No name'
-                                }
-                            }
-                        }
-                    })
-                }
-            }
-            console.log(
-                `updated ${votes.length} snapshot votes for ${voterAddress} in ${daoName}`
-            )
-        }
-    } catch (err) {
-        logger.error('Error while updating snapshot votes', err)
-        throw new InternalServerErrorException()
-    }
+//                 await prisma.voteOption.deleteMany({
+//                     where: {
+//                         voterAddress: voterAddress,
+//                         voteDaoId: daoHandler.daoId,
+//                         voteProposalId: proposal.id
+//                     }
+//                 })
 
-    console.log(`updated 0 snapshot votes for ${voterAddress} in ${daoName}`)
-}
+//                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//                 for (const votedOption of votedOptions) {
+//                     await prisma.vote.upsert({
+//                         where: {
+//                             voterAddress_daoId_proposalId: {
+//                                 voterAddress: voterAddress,
+//                                 daoId: daoHandler.daoId,
+//                                 proposalId: proposal.id
+//                             }
+//                         },
+//                         update: {
+//                             options: {
+//                                 create: {
+//                                     option:
+//                                         vote.choice.length > 0
+//                                             ? String(vote.choice[0])
+//                                             : String(vote.choice),
+//                                     optionName:
+//                                         vote.proposal.choices[
+//                                             vote.choice - 1
+//                                         ] ?? 'No name'
+//                                 }
+//                             }
+//                         },
+//                         create: {
+//                             voterAddress: voterAddress,
+//                             daoId: daoHandler.daoId,
+//                             proposalId: proposal.id,
+//                             daoHandlerId: daoHandler.id,
+//                             options: {
+//                                 create: {
+//                                     option:
+//                                         vote.choice.length > 0
+//                                             ? String(vote.choice[0])
+//                                             : String(vote.choice),
+//                                     optionName:
+//                                         vote.proposal.choices[
+//                                             vote.choice - 1
+//                                         ] ?? 'No name'
+//                                 }
+//                             }
+//                         }
+//                     })
+//                 }
+//             }
+//             console.log(
+//                 `updated ${votes.length} snapshot votes for ${voterAddress} in ${daoName}`
+//             )
+//         }
+//     } catch (err) {
+//         logger.error('Error while updating snapshot votes', err)
+//         throw new InternalServerErrorException()
+//     }
 
-const getVotedOptions = (
-    choices: [] | number,
-    proposalChoices: [],
-    userId: string,
-    daoId: string,
-    proposalId: string
-) => {
-    const options = []
+//     console.log(`updated 0 snapshot votes for ${voterAddress} in ${daoName}`)
+// }
 
-    if (Array.isArray(choices)) {
-        for (let i = 0; i < choices.length; i++) {
-            options.push({
-                option: String(choices[i]),
-                optionName: proposalChoices[choices[i] - 1] ?? 'No name',
-                voteUserId: userId,
-                voteDaoId: daoId,
-                voteProposalId: proposalId
-            })
-        }
-    } else {
-        options.push({
-            option: String(choices),
-            optionName: proposalChoices[choices - 1] ?? 'No name'
-        })
-    }
+// const getVotedOptions = (
+//     choices: [] | number,
+//     proposalChoices: [],
+//     userId: string,
+//     daoId: string,
+//     proposalId: string
+// ) => {
+//     const options = []
 
-    return options
-}
+//     if (Array.isArray(choices)) {
+//         for (let i = 0; i < choices.length; i++) {
+//             options.push({
+//                 option: String(choices[i]),
+//                 optionName: proposalChoices[choices[i] - 1] ?? 'No name',
+//                 voteUserId: userId,
+//                 voteDaoId: daoId,
+//                 voteProposalId: proposalId
+//             })
+//         }
+//     } else {
+//         options.push({
+//             option: String(choices),
+//             optionName: proposalChoices[choices - 1] ?? 'No name'
+//         })
+//     }
+
+//     return options
+// }

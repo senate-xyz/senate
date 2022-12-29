@@ -7,18 +7,24 @@ export class AppController {
 
     constructor(private readonly appService: AppService) {}
 
-    @Post('updateProposals')
-    async updateProposals(@Query('daoId') daoId: string) {
-        await this.appService.updateProposals(daoId)
-        return 'OK'
+    @Post('updateSnapshotProposals')
+    async updateProposals(
+        @Query('daoHandlerIds') daoHandlerIds: string[],
+        @Query('minCreatedAt') minCreatedAt: number
+    ) {
+        const response = await this.appService.updateSnapshotProposals(
+            daoHandlerIds,
+            minCreatedAt
+        )
+        return response
     }
 
-    @Post('updateVotes')
-    async updateVotes(
-        @Query('daoId') daoId: string,
-        @Query('voterAddress') voterAddress: string
-    ) {
-        await this.appService.updateVotes(daoId, voterAddress)
-        return 'OK'
-    }
+    // @Post('updateVotes')
+    // async updateVotes(
+    //     @Query('daoId') daoId: string,
+    //     @Query('voterAddress') voterAddress: string
+    // ) {
+    //     await this.appService.updateVotes(daoId, voterAddress)
+    //     return 'OK'
+    // }
 }

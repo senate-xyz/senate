@@ -1,174 +1,176 @@
-/*
-    @banteg's article on MakerDAO's governance was incredibly helpful in understanding
-    how to fetch executive proposals. Thank you ser!
+export {}
 
-    https://medium.com/@banteg/deep-dive-into-makerdao-governance-437c89493203
-*/
+// /*
+//     @banteg's article on MakerDAO's governance was incredibly helpful in understanding
+//     how to fetch executive proposals. Thank you ser!
 
-import { InternalServerErrorException, Logger } from '@nestjs/common'
-import { type DAOHandler, prisma } from '@senate/database'
-import axios from 'axios'
-import { ethers } from 'ethers'
+//     https://medium.com/@banteg/deep-dive-into-makerdao-governance-437c89493203
+// */
 
-const provider = new ethers.providers.JsonRpcProvider({
-    url: String(process.env.PROVIDER_URL)
-})
+// import { InternalServerErrorException, Logger } from '@nestjs/common'
+// import { type DAOHandler, prisma } from '@senate/database'
+// import axios from 'axios'
+// import { ethers } from 'ethers'
 
-const logger = new Logger('MakerExecutiveProposals')
+// const provider = new ethers.providers.JsonRpcProvider({
+//     url: String(process.env.PROVIDER_URL)
+// })
 
-export const updateMakerProposals = async (daoHandler: DAOHandler) => {
-    if (!daoHandler.decoder) {
-        console.log('Decoder nok.')
-        return
-    }
+// const logger = new Logger('MakerExecutiveProposals')
 
-    logger.log(
-        `Searching executive proposals from block ${daoHandler.decoder['latestProposalBlock']} ...`
-    )
-    let spellAddresses
+// export const updateMakerProposals = async (daoHandler: DAOHandler) => {
+//     if (!daoHandler.decoder) {
+//         console.log('Decoder nok.')
+//         return
+//     }
 
-    try {
-        const iface = new ethers.utils.Interface(daoHandler.decoder['abi'])
-        const chiefContract = new ethers.Contract(
-            daoHandler.decoder['address'],
-            daoHandler.decoder['abi'],
-            provider
-        )
+//     logger.log(
+//         `Searching executive proposals from block ${daoHandler.decoder['latestProposalBlock']} ...`
+//     )
+//     let spellAddresses
 
-        const voteMultipleActionsTopic =
-            '0xed08132900000000000000000000000000000000000000000000000000000000'
-        const voteSingleActionTopic =
-            '0xa69beaba00000000000000000000000000000000000000000000000000000000'
+//     try {
+//         const iface = new ethers.utils.Interface(daoHandler.decoder['abi'])
+//         const chiefContract = new ethers.Contract(
+//             daoHandler.decoder['address'],
+//             daoHandler.decoder['abi'],
+//             provider
+//         )
 
-        const latestBlock = await provider.getBlockNumber()
+//         const voteMultipleActionsTopic =
+//             '0xed08132900000000000000000000000000000000000000000000000000000000'
+//         const voteSingleActionTopic =
+//             '0xa69beaba00000000000000000000000000000000000000000000000000000000'
 
-        const logs = await provider.getLogs({
-            fromBlock: daoHandler.decoder['latestProposalBlock'],
-            address: daoHandler.decoder['address'],
-            topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
-        })
+//         const latestBlock = await provider.getBlockNumber()
 
-        const spellAddressesSet = new Set<string>()
-        for (let i = 0; i < logs.length; i++) {
-            console.log(
-                `[EXECUTIVE PROPOSAL] maker event ${i} out of ${logs.length}`
-            )
+//         const logs = await provider.getLogs({
+//             fromBlock: daoHandler.decoder['latestProposalBlock'],
+//             address: daoHandler.decoder['address'],
+//             topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
+//         })
 
-            const log = logs[i]
-            const eventArgs = iface.decodeEventLog('LogNote', log.data)
+//         const spellAddressesSet = new Set<string>()
+//         for (let i = 0; i < logs.length; i++) {
+//             console.log(
+//                 `[EXECUTIVE PROPOSAL] maker event ${i} out of ${logs.length}`
+//             )
 
-            const decodedFunctionData =
-                log.topics[0] === voteSingleActionTopic
-                    ? iface.decodeFunctionData('vote(bytes32)', eventArgs.fax)
-                    : iface.decodeFunctionData('vote(address[])', eventArgs.fax)
+//             const log = logs[i]
+//             const eventArgs = iface.decodeEventLog('LogNote', log.data)
 
-            const spells: string[] =
-                decodedFunctionData.yays !== undefined
-                    ? decodedFunctionData.yays
-                    : await getSlateYays(
-                          chiefContract,
-                          decodedFunctionData.slate
-                      )
+//             const decodedFunctionData =
+//                 log.topics[0] === voteSingleActionTopic
+//                     ? iface.decodeFunctionData('vote(bytes32)', eventArgs.fax)
+//                     : iface.decodeFunctionData('vote(address[])', eventArgs.fax)
 
-            spells.forEach((spell) => {
-                spellAddressesSet.add(spell)
-            })
-        }
+//             const spells: string[] =
+//                 decodedFunctionData.yays !== undefined
+//                     ? decodedFunctionData.yays
+//                     : await getSlateYays(
+//                           chiefContract,
+//                           decodedFunctionData.slate
+//                       )
 
-        spellAddresses = Array.from(spellAddressesSet)
+//             spells.forEach((spell) => {
+//                 spellAddressesSet.add(spell)
+//             })
+//         }
 
-        for (let i = 0; i < spellAddresses.length; i++) {
-            logger.log(`inserting spell address ${spellAddresses[i]}`)
+//         spellAddresses = Array.from(spellAddressesSet)
 
-            if (
-                spellAddresses[i] ==
-                '0x0000000000000000000000000000000000000000'
-            )
-                continue
+//         for (let i = 0; i < spellAddresses.length; i++) {
+//             logger.log(`inserting spell address ${spellAddresses[i]}`)
 
-            const response = await axios
-                .get(
-                    'https://vote.makerdao.com/api/executive/' +
-                        spellAddresses[i]
-                )
-                .catch(() => {
-                    return { status: 404, data: {} }
-                })
+//             if (
+//                 spellAddresses[i] ==
+//                 '0x0000000000000000000000000000000000000000'
+//             )
+//                 continue
 
-            if (!response.data || response.status == 404) {
-                logger.warn(
-                    `Maker API did not return any data for spell ${spellAddresses[i]}`
-                )
-                continue
-            }
+//             const response = await axios
+//                 .get(
+//                     'https://vote.makerdao.com/api/executive/' +
+//                         spellAddresses[i]
+//                 )
+//                 .catch(() => {
+//                     return { status: 404, data: {} }
+//                 })
 
-            await prisma.proposal
-                .upsert({
-                    where: {
-                        externalId_daoId: {
-                            daoId: daoHandler.daoId,
-                            externalId: spellAddresses[i]
-                        }
-                    },
-                    update: {},
-                    create: {
-                        externalId: spellAddresses[i],
-                        name: response.data.title,
-                        daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id,
-                        proposalType: ProposalType.MAKER_EXECUTIVE,
-                        timeEnd: new Date(response.data.spellData.expiration),
-                        timeStart: new Date(response.data.date),
-                        timeCreated: new Date(response.data.date),
-                        data: {},
-                        url:
-                            daoHandler.decoder['proposalUrl'] +
-                            spellAddresses[i]
-                    }
-                })
-                .then((proposal) =>
-                    logger.log(
-                        'inserted executive proposal with id ' + proposal.id
-                    )
-                )
-                .catch((e) => console.log(e))
-        }
+//             if (!response.data || response.status == 404) {
+//                 logger.warn(
+//                     `Maker API did not return any data for spell ${spellAddresses[i]}`
+//                 )
+//                 continue
+//             }
 
-        const decoder = daoHandler.decoder
-        decoder['latestProposalBlock'] = latestBlock
+//             await prisma.proposal
+//                 .upsert({
+//                     where: {
+//                         externalId_daoId: {
+//                             daoId: daoHandler.daoId,
+//                             externalId: spellAddresses[i]
+//                         }
+//                     },
+//                     update: {},
+//                     create: {
+//                         externalId: spellAddresses[i],
+//                         name: response.data.title,
+//                         daoId: daoHandler.daoId,
+//                         daoHandlerId: daoHandler.id,
+//                         proposalType: ProposalType.MAKER_EXECUTIVE,
+//                         timeEnd: new Date(response.data.spellData.expiration),
+//                         timeStart: new Date(response.data.date),
+//                         timeCreated: new Date(response.data.date),
+//                         data: {},
+//                         url:
+//                             daoHandler.decoder['proposalUrl'] +
+//                             spellAddresses[i]
+//                     }
+//                 })
+//                 .then((proposal) =>
+//                     logger.log(
+//                         'inserted executive proposal with id ' + proposal.id
+//                     )
+//                 )
+//                 .catch((e) => console.log(e))
+//         }
 
-        await prisma.dAOHandler.update({
-            where: {
-                id: daoHandler.id
-            },
-            data: {
-                decoder: decoder
-            }
-        })
-    } catch (err) {
-        logger.error('Error while updating maker executive proposals', err)
-        throw new InternalServerErrorException()
-    }
+//         const decoder = daoHandler.decoder
+//         decoder['latestProposalBlock'] = latestBlock
 
-    logger.log('\n\n')
-    logger.log(`inserted ${spellAddresses.length} maker executive proposals`)
-    logger.log('======================================================\n\n')
-}
+//         await prisma.dAOHandler.update({
+//             where: {
+//                 id: daoHandler.id
+//             },
+//             data: {
+//                 decoder: decoder
+//             }
+//         })
+//     } catch (err) {
+//         logger.error('Error while updating maker executive proposals', err)
+//         throw new InternalServerErrorException()
+//     }
 
-const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
-    const yays = []
-    let count = 0
+//     logger.log('\n\n')
+//     logger.log(`inserted ${spellAddresses.length} maker executive proposals`)
+//     logger.log('======================================================\n\n')
+// }
 
-    while (true) {
-        let spellAddress
-        try {
-            spellAddress = await chiefContract.slates(slate, count)
-            yays.push(spellAddress)
-            count++
-        } catch (err) {
-            break
-        }
-    }
+// const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
+//     const yays = []
+//     let count = 0
 
-    return yays
-}
+//     while (true) {
+//         let spellAddress
+//         try {
+//             spellAddress = await chiefContract.slates(slate, count)
+//             yays.push(spellAddress)
+//             count++
+//         } catch (err) {
+//             break
+//         }
+//     }
+
+//     return yays
+// }
