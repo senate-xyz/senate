@@ -1,6 +1,6 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common'
 import { prisma } from '@senate/database'
-import { DAOHandlerType, DAOHandler } from '@prisma/client'
+import { DAOHandler } from '@prisma/client'
 
 import axios from 'axios'
 
@@ -27,23 +27,27 @@ export const updateSnapshotProposals = async (
                 data: JSON.stringify({
                     query: `{
                 proposals (
-                  where: {
+                    first:1000,
+                    where: {
                     space_in: [${spacesArray.map((space) => `"${space}"`)}],
                     created_gt: ${Math.floor(minCreatedAt / 1000)}
-                  }
-                  orderBy: "created",
-                  orderDirection: asc
+                    },
+                    orderBy: "created",
+                    orderDirection: asc
                 ) {
-                  id
-                  title
-                  body
-                  created
-                  start
-                  end
-                  link
-                  space
+                    id
+                    title
+                    body
+                    created
+                    start
+                    end
+                    link
+                    space
+                    {
+                        id
+                    }
                 }
-              }`
+                }`
                 }),
                 headers: {
                     'content-type': 'application/json'
@@ -57,7 +61,9 @@ export const updateSnapshotProposals = async (
             })
 
         for (const [daoHandler, space] of daoHandlerToSnapshotSpaceMap) {
-            proposals = proposals.filter((proposal) => proposal.space === space)
+            proposals = proposals.filter(
+                (proposal) => proposal.space.id === space
+            )
             const response: string = await upsertSnapshotProposals(
                 daoHandler,
                 space,
