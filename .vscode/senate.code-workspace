@@ -46,7 +46,6 @@
       "esbenp.prettier-vscode",
       "Prisma.prisma",
       "bradlc.vscode-tailwindcss",
-      "folke.vscode-monorepo-workspace",
       "VisualStudioExptTeam.vscodeintellicode",
       "VisualStudioExptTeam.intellicode-api-usage-examples"
     ]
