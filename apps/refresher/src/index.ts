@@ -5,11 +5,12 @@ import {
     RefreshType
 } from '@senate/database'
 import * as cron from 'node-cron'
+import fetch from 'node-fetch'
 
-const DAOS_PROPOSALS_SNAPSHOT_INTERVAL = 2 // in minutes
+const DAOS_PROPOSALS_SNAPSHOT_INTERVAL = 10 // in minutes
 const DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE = 30 // in minutes
 
-const DAOS_VOTES_SNAPSHOT_INTERVAL = 1 // in minutes
+const DAOS_VOTES_SNAPSHOT_INTERVAL = 5 // in minutes
 const DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE = 30 // in minutes
 
 const main = () => {
@@ -20,9 +21,10 @@ const main = () => {
     })
 
     cron.schedule('*/10 * * * * *', async () => {
-        console.log({ action: 'populate_queue' })
+        console.log({ action: 'populate_queue', details: 'start' })
         addSnapshotProposalsToQueue()
         addDAOSnapshotVotesToQueue()
+        console.log({ action: 'populate_queue', details: 'end' })
     })
 }
 
@@ -33,65 +35,101 @@ enum PROCESS_QUEUE {
 let processQueueState = PROCESS_QUEUE.NOT_RUNNING
 
 const processQueue = async () => {
-    await prisma.$transaction(async (tx) => {
-        if (processQueueState == PROCESS_QUEUE.RUNNING) return
-        processQueueState = PROCESS_QUEUE.RUNNING
+    if (processQueueState == PROCESS_QUEUE.RUNNING) return
+    processQueueState = PROCESS_QUEUE.RUNNING
 
-        console.log({ action: 'process_queue', details: 'start' })
+    console.log({ action: 'process_queue', details: 'start' })
 
-        const item = await tx.refreshQueue.findFirst({
-            orderBy: { priority: 'desc' }
-        })
-
-        if (!item) {
-            console.log({ action: 'process_queue', details: 'empty queue' })
-            processQueueState = PROCESS_QUEUE.NOT_RUNNING
-            return
-        }
-
-        // make PD request and wait for result
-        // if result is ok
-
-        switch (item.refreshType) {
-            case RefreshType.DAOSNAPSHOTPROPOSALS:
-                await tx.dAOHandler.update({
-                    where: {
-                        daoId_type: {
-                            daoId: item.clientId,
-                            type: DAOHandlerType.SNAPSHOT
-                        }
-                    },
-                    data: {
-                        refreshStatus: RefreshStatus.DONE,
-                        lastRefreshTimestamp: new Date()
-                    }
-                })
-                break
-            case RefreshType.DAOSNAPSHOTVOTES: {
-                await tx.voterHandler.updateMany({
-                    where: {
-                        dAOHandlerId: item.clientId
-                    },
-                    data: {
-                        refreshStatus: RefreshStatus.DONE,
-                        lastRefreshTimestamp: new Date()
-                    }
-                })
-            }
-        }
-
-        const refreshQueue = await tx.refreshQueue.delete({
-            where: { id: item?.id }
-        })
-
-        console.log({
-            action: 'process_queue',
-            details: 'remove item',
-            item: refreshQueue
-        })
-
-        processQueueState = PROCESS_QUEUE.NOT_RUNNING
+    const item = await prisma.refreshQueue.findFirst({
+        orderBy: { priority: 'desc' }
     })
+
+    if (!item) {
+        console.log({ action: 'process_queue', details: 'empty queue' })
+        console.log({ action: 'process_queue', details: 'end' })
+        processQueueState = PROCESS_QUEUE.NOT_RUNNING
+        return
+    }
+
+    // make PD request and wait for result
+    // if result is ok
+
+    switch (item.refreshType) {
+        case RefreshType.DAOSNAPSHOTPROPOSALS:
+            const daoHandler = await prisma.dAOHandler.findFirst({
+                where: { id: item.clientId }
+            })
+            fetch(
+                `${
+                    process.env.DETECTIVE_URL
+                }/updateSnapshotProposals?daoHandlerIds=${
+                    item.clientId
+                }&minCreatedAt=${daoHandler?.lastSnapshotProposalCreatedTimestamp?.valueOf()}`,
+                {
+                    method: 'POST'
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    if (!data) return
+                    if (!Array.isArray(data)) return
+
+                    data.map(async (result) => {
+                        if (
+                            result.response == 'ok' &&
+                            item.clientId == result.daoHandlerId
+                        ) {
+                            const daoHandler = await prisma.dAOHandler.update({
+                                where: {
+                                    id: item.clientId
+                                },
+                                data: {
+                                    refreshStatus: RefreshStatus.DONE,
+                                    lastRefreshTimestamp: new Date(),
+                                    lastSnapshotProposalCreatedTimestamp:
+                                        new Date()
+                                }
+                            })
+                            console.log({
+                                action: 'process_queue',
+                                details: 'DAOSNAPSHOTPROPOSALS DONE',
+                                item: daoHandler
+                            })
+                        }
+                    })
+                    return
+                })
+                .catch((e) => {
+                    console.log(e)
+                })
+
+            break
+        case RefreshType.DAOSNAPSHOTVOTES: {
+            await prisma.voterHandler.updateMany({
+                where: {
+                    dAOHandlerId: item.clientId
+                },
+                data: {
+                    refreshStatus: RefreshStatus.DONE,
+                    lastRefreshTimestamp: new Date()
+                }
+            })
+            break
+        }
+    }
+
+    const refreshQueue = await prisma.refreshQueue.delete({
+        where: { id: item?.id }
+    })
+
+    console.log({
+        action: 'process_queue',
+        details: 'remove item',
+        item: refreshQueue
+    })
+
+    console.log({ action: 'process_queue', details: 'end' })
+    processQueueState = PROCESS_QUEUE.NOT_RUNNING
 }
 
 const addDAOSnapshotVotesToQueue = async () => {
@@ -233,77 +271,61 @@ const addSnapshotProposalsToQueue = async () => {
             action: 'snapshot_dao_proposals_queue',
             details: 'start'
         })
-        const snapshotDaos = await tx.dAO.findMany({
+        const snapshotDaoHandlers = await tx.dAOHandler.findMany({
             where: {
                 OR: [
                     {
                         //normal refresh interval
-                        handlers: {
-                            some: {
-                                AND: [
-                                    { type: DAOHandlerType.SNAPSHOT },
-                                    {
-                                        refreshStatus: {
-                                            in: [
-                                                RefreshStatus.DONE,
-                                                RefreshStatus.NEW
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        lastRefreshTimestamp: {
-                                            lt: new Date(
-                                                Date.now() -
-                                                    DAOS_PROPOSALS_SNAPSHOT_INTERVAL *
-                                                        60 *
-                                                        1000
-                                            )
-                                        }
-                                    }
-                                ]
+                        AND: [
+                            { type: DAOHandlerType.SNAPSHOT },
+                            {
+                                refreshStatus: {
+                                    in: [RefreshStatus.DONE, RefreshStatus.NEW]
+                                }
+                            },
+                            {
+                                lastRefreshTimestamp: {
+                                    lt: new Date(
+                                        Date.now() -
+                                            DAOS_PROPOSALS_SNAPSHOT_INTERVAL *
+                                                60 *
+                                                1000
+                                    )
+                                }
                             }
-                        }
+                        ]
                     },
                     {
                         //force refresh interval
-                        handlers: {
-                            some: {
-                                AND: [
-                                    { type: DAOHandlerType.SNAPSHOT },
-                                    {
-                                        refreshStatus: {
-                                            in: [RefreshStatus.PENDING]
-                                        }
-                                    },
-                                    {
-                                        lastRefreshTimestamp: {
-                                            lt: new Date(
-                                                Date.now() -
-                                                    DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE *
-                                                        60 *
-                                                        1000
-                                            )
-                                        }
-                                    }
-                                ]
+                        AND: [
+                            { type: DAOHandlerType.SNAPSHOT },
+                            {
+                                refreshStatus: {
+                                    in: [RefreshStatus.PENDING]
+                                }
+                            },
+                            {
+                                lastRefreshTimestamp: {
+                                    lt: new Date(
+                                        Date.now() -
+                                            DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE *
+                                                60 *
+                                                1000
+                                    )
+                                }
                             }
-                        }
+                        ]
                     }
                 ]
-            },
-            include: {
-                handlers: {
-                    where: {
-                        type: DAOHandlerType.SNAPSHOT
-                    }
-                }
             }
         })
+
+        console.log(snapshotDaoHandlers.length)
 
         console.log({
             action: 'snapshot_dao_proposals_queue',
             details: 'list of DAOs to be updated',
-            daos: snapshotDaos.map((dao) => dao.name)
+            daos: snapshotDaoHandlers.map((daoHandler) => daoHandler.daoId)
         })
 
         const previousPrio = (await tx.refreshQueue.findFirst({
@@ -322,9 +344,9 @@ const addSnapshotProposalsToQueue = async () => {
         })
 
         const queueRes = await tx.refreshQueue.createMany({
-            data: snapshotDaos.map((dao) => {
+            data: snapshotDaoHandlers.map((daoHandler) => {
                 return {
-                    clientId: dao.id,
+                    clientId: daoHandler.id,
                     refreshType: RefreshType.DAOSNAPSHOTPROPOSALS,
                     priority: Number(previousPrio.priority) + 1
                 }
@@ -339,7 +361,9 @@ const addSnapshotProposalsToQueue = async () => {
 
         const statusRes = await tx.dAOHandler.updateMany({
             where: {
-                id: { in: snapshotDaos.map((dao) => dao.handlers[0].id) }
+                id: {
+                    in: snapshotDaoHandlers.map((daoHandler) => daoHandler.id)
+                }
             },
             data: {
                 refreshStatus: RefreshStatus.PENDING
