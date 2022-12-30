@@ -99,8 +99,22 @@ const processQueue = async () => {
                     })
                     return
                 })
-                .catch((e) => {
-                    console.log(e)
+                .catch(async (e) => {
+                    const daoHandler = await prisma.dAOHandler.update({
+                        where: {
+                            id: item.clientId
+                        },
+                        data: {
+                            refreshStatus: RefreshStatus.NEW,
+                            lastRefreshTimestamp: new Date()
+                        }
+                    })
+                    console.log({
+                        action: 'process_queue',
+                        details: 'DAOSNAPSHOTPROPOSALS FAILED',
+                        item: daoHandler,
+                        error: e
+                    })
                 })
 
             break
