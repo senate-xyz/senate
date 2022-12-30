@@ -10,24 +10,24 @@ Table User {
   email String [not null, default: '']
   lastActive DateTime [default: `now()`, not null]
   sessionCount Int [not null, default: 0]
-  voters Voter [not null]
-  subscriptions Subscription [not null]
   notifications Notification [not null]
+  subscriptions Subscription [not null]
   userSettings UserSettings
+  voters Voter [not null]
 }
 
 Table UserSettings {
   id String [pk]
-  user User [not null]
   userId String [unique, not null]
   dailyBulletinEmail Boolean [not null, default: true]
+  user User [not null]
 }
 
 Table Voter {
   id String [pk]
   address String [unique, not null]
-  users User [not null]
   votes Vote [not null]
+  users User [not null]
   voterHandlers VoterHandler [not null]
 }
 
@@ -70,10 +70,10 @@ Table Proposal {
   timeStart DateTime [not null]
   timeEnd DateTime [not null]
   url String [not null]
+  notifications Notification [not null]
   daoHandler DAOHandler [not null]
   dao DAO [not null]
   votes Vote [not null]
-  notifications Notification [not null]
 
   indexes {
     (externalId, daoId) [unique]
@@ -82,12 +82,12 @@ Table Proposal {
 
 Table Notification {
   id String [pk]
-  user User [not null]
   userId String [not null]
-  proposal Proposal [not null]
   proposalId String [not null]
   daoId String [not null]
   type RoundupNotificationType [not null]
+  proposal Proposal [not null]
+  user User [not null]
 
   indexes {
     (proposalId, userId, type) [unique]
@@ -125,14 +125,14 @@ Table VoterHandler {
   voter Voter [not null]
   voterId String [not null]
   daoHandler DAOHandler [not null]
+  daoHandlerId String [not null]
   refreshStatus RefreshStatus [not null, default: 'NEW']
   lastRefreshTimestamp DateTime [not null]
   lastChainVoteCreatedBlock BigInt [default: 0]
   lastSnapshotVoteCreatedTimestamp DateTime
-  dAOHandlerId String [not null]
 
   indexes {
-    (voterId, dAOHandlerId) [unique]
+    (voterId, daoHandlerId) [unique]
   }
 }
 
@@ -157,7 +157,6 @@ Table RefreshQueue {
 }
 
 Table Config {
-  id String [pk]
   param String [unique, not null]
   value String [not null]
 }
@@ -206,9 +205,9 @@ Ref: Proposal.daoHandlerId > DAOHandler.id [delete: Cascade]
 
 Ref: Proposal.daoId > DAO.id [delete: Cascade]
 
-Ref: Notification.userId > User.id [delete: Cascade]
-
 Ref: Notification.proposalId > Proposal.id [delete: Cascade]
+
+Ref: Notification.userId > User.id [delete: Cascade]
 
 Ref: Vote.daoId > DAO.id [delete: Cascade]
 
@@ -220,7 +219,7 @@ Ref: VoteOption.(voterAddress, voteDaoId, voteProposalId) > Vote.(voterAddress, 
 
 Ref: VoterHandler.voterId > Voter.id [delete: Cascade]
 
-Ref: VoterHandler.dAOHandlerId > DAOHandler.id [delete: Cascade]
+Ref: VoterHandler.daoHandlerId > DAOHandler.id [delete: Cascade]
 
 Ref: Subscription.daoId > DAO.id [delete: Cascade]
 

@@ -607,144 +607,146 @@ const seedData = async () => {
         }
     })
 
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: aave.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: maker.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: balancer.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: optimism.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: elementFinance.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: oneInch.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: hop.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: safe.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: compound.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: synthetix.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: dydx.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: uniswap.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: ens.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: fwb.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: gnosis.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: indexCoop.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: paladin.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: sushi.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: instadapp.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: gitcoin.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: gearbox.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: euler.id
-        }
-    })
-    await prisma.subscription.create({
-        data: {
-            userId: seedUser.id,
-            daoId: aura.id
-        }
-    })
+    await prisma.$transaction([
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: aave.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: maker.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: balancer.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: optimism.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: elementFinance.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: oneInch.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: hop.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: safe.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: compound.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: synthetix.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: dydx.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: uniswap.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: ens.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: fwb.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: gnosis.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: indexCoop.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: paladin.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: sushi.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: instadapp.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: gitcoin.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: gearbox.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: euler.id
+            }
+        }),
+        prisma.subscription.create({
+            data: {
+                userId: seedUser.id,
+                daoId: aura.id
+            }
+        })
+    ])
 }
 
 const seedVoters = async () => {
@@ -878,25 +880,21 @@ const seedVoters = async () => {
         '0x3Ee958c1696B9500303E3E1e8a66C3fE966F97b4'
     ]
 
-    for (const voter of voters) {
-        await prisma.user.update({
-            where: {
-                name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
-            },
-            data: {
-                voters: {
-                    connectOrCreate: {
-                        where: {
-                            address: voter
-                        },
-                        create: {
-                            address: voter
+    await prisma.$transaction(
+        voters.map((voter) => {
+            return prisma.user.update({
+                where: { name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF' },
+                data: {
+                    voters: {
+                        connectOrCreate: {
+                            where: { address: voter },
+                            create: { address: voter }
                         }
                     }
                 }
-            }
+            })
         })
-    }
+    )
 
     const user = await prisma.user.findFirst({
         where: {
@@ -910,36 +908,37 @@ const seedVoters = async () => {
 
     if (!user) return
 
-    for (const subscription of user.subscriptions) {
-        const dao = await prisma.dAO.findFirst({
-            where: {
-                id: subscription.daoId
-            },
-            include: {
-                handlers: true
-            }
-        })
+    await prisma.$transaction(async (tx) => {
+        user.subscriptions.map(async (subscription) => {
+            const dao = await tx.dAO.findFirstOrThrow({
+                where: {
+                    id: subscription.daoId
+                },
+                select: {
+                    handlers: true
+                }
+            })
+            if (!dao || !dao.handlers.length) return
 
-        if (!dao) return
-
-        for (const handler of dao.handlers) {
-            for (const voter of user.voters) {
-                await prisma.voterHandler.upsert({
-                    where: {
-                        voterId_dAOHandlerId: {
+            dao.handlers.map((handler) => {
+                user.voters.map(async (voter) => {
+                    await tx.voterHandler.upsert({
+                        where: {
+                            voterId_daoHandlerId: {
+                                voterId: voter.id,
+                                daoHandlerId: handler.id
+                            }
+                        },
+                        update: {},
+                        create: {
                             voterId: voter.id,
-                            dAOHandlerId: handler.id
+                            daoHandlerId: handler.id
                         }
-                    },
-                    update: {},
-                    create: {
-                        voterId: voter.id,
-                        dAOHandlerId: handler.id
-                    }
+                    })
                 })
-            }
-        }
-    }
+            })
+        })
+    })
 }
 
 async function main() {

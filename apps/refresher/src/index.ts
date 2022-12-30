@@ -121,7 +121,7 @@ const processQueue = async () => {
         case RefreshType.DAOSNAPSHOTVOTES: {
             await prisma.voterHandler.updateMany({
                 where: {
-                    dAOHandlerId: item.clientId
+                    daoHandlerId: item.clientId
                 },
                 data: {
                     refreshStatus: RefreshStatus.DONE,
@@ -262,7 +262,7 @@ const addDAOSnapshotVotesToQueue = async () => {
 
         const statusRes = await tx.voterHandler.updateMany({
             where: {
-                dAOHandlerId: {
+                daoHandlerId: {
                     in: snapshotDaoHandlers.map((daoHandler) => daoHandler.id)
                 }
             },

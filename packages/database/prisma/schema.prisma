@@ -7,8 +7,9 @@ generator dbml {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model User {
@@ -19,33 +20,32 @@ model User {
   email         String         @default("")
   lastActive    DateTime       @default(now())
   sessionCount  Int            @default(0)
-  voters        Voter[]
-  subscriptions Subscription[]
   notifications Notification[]
+  subscriptions Subscription[]
   userSettings  UserSettings?
+  voters        Voter[]
 }
 
 model UserSettings {
   id                 String  @id @default(cuid())
-  user               User    @relation(fields: [userId], references: [id])
   userId             String  @unique
   dailyBulletinEmail Boolean @default(true)
+  user               User    @relation(fields: [userId], references: [id])
 }
 
 model Voter {
   id            String         @id @default(cuid())
   address       String         @unique
-  users         User[]
   votes         Vote[]
+  users         User[]
   voterHandlers VoterHandler[]
 }
 
 model DAO {
-  id       String       @id @default(cuid())
-  name     String       @unique
-  picture  String
-  handlers DAOHandler[]
-
+  id            String         @id @default(cuid())
+  name          String         @unique
+  picture       String
+  handlers      DAOHandler[]
   proposals     Proposal[]
   subscriptions Subscription[]
   votes         Vote[]
@@ -56,8 +56,8 @@ model DAOHandler {
   type                                 DAOHandlerType
   decoder                              Json
   lastChainProposalCreatedBlock        BigInt?        @default(0)
-  lastSnapshotProposalCreatedTimestamp DateTime?      @default(dbgenerated("(FROM_UNIXTIME(0))"))
-  lastRefreshTimestamp                 DateTime       @default(dbgenerated("(FROM_UNIXTIME(0))"))
+  lastSnapshotProposalCreatedTimestamp DateTime?      @default(dbgenerated("(from_unixtime(0))"))
+  lastRefreshTimestamp                 DateTime       @default(dbgenerated("(from_unixtime(0))"))
   refreshStatus                        RefreshStatus  @default(NEW)
   daoId                                String
   dao                                  DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
@@ -78,31 +78,28 @@ model Proposal {
   timeStart     DateTime
   timeEnd       DateTime
   url           String         @db.VarChar(1024)
+  notifications Notification[]
   daoHandler    DAOHandler     @relation(fields: [daoHandlerId], references: [id], onDelete: Cascade)
   dao           DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
   votes         Vote[]
-  notifications Notification[]
 
   @@unique([externalId, daoId])
-  @@index([daoId], map: "Proposal_daoId_fkey")
-}
-
-enum RoundupNotificationType {
-  NEW
-  ENDING_SOON
-  PAST
+  @@index([daoId])
+  @@index([daoHandlerId])
 }
 
 model Notification {
   id         String                  @id @default(cuid())
-  user       User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
-  proposal   Proposal                @relation(fields: [proposalId], references: [id], onDelete: Cascade)
   proposalId String
   daoId      String
   type       RoundupNotificationType
+  proposal   Proposal                @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  user       User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([proposalId, userId, type])
+  @@index([userId])
+  @@index([proposalId])
 }
 
 model Vote {
@@ -117,8 +114,8 @@ model Vote {
   options      VoteOption[]
 
   @@unique([voterAddress, daoId, proposalId])
-  @@index([daoId], map: "Vote_daoId_fkey")
-  @@index([proposalId], map: "Vote_proposalId_fkey")
+  @@index([proposalId])
+  @@index([daoId])
 }
 
 model VoteOption {
@@ -130,21 +127,22 @@ model VoteOption {
   voteProposalId String
   vote           Vote   @relation(fields: [voterAddress, voteDaoId, voteProposalId], references: [voterAddress, daoId, proposalId], onDelete: Cascade)
 
-  @@index([voterAddress, voteDaoId, voteProposalId], map: "VoteOption_voterAddress_voteDaoId_voteProposalId_fkey")
+  @@index([voterAddress, voteDaoId, voteProposalId])
 }
 
 model VoterHandler {
   id                               String        @id @default(cuid())
-  voter                            Voter         @relation(fields: [voterId], references: [id], onDelete: Cascade)
   voterId                          String
-  daoHandler                       DAOHandler    @relation(fields: [dAOHandlerId], references: [id], onDelete: Cascade)
+  daoHandlerId                     String
   refreshStatus                    RefreshStatus @default(NEW)
-  lastRefreshTimestamp             DateTime      @default(dbgenerated("(FROM_UNIXTIME(0))"))
+  lastRefreshTimestamp             DateTime      @default(dbgenerated("(from_unixtime(0))"))
   lastChainVoteCreatedBlock        BigInt?       @default(0)
-  lastSnapshotVoteCreatedTimestamp DateTime?     @default(dbgenerated("(FROM_UNIXTIME(0))"))
-  dAOHandlerId                     String
+  lastSnapshotVoteCreatedTimestamp DateTime?     @default(dbgenerated("(from_unixtime(0))"))
+  voter                            Voter         @relation(fields: [voterId], references: [id], onDelete: Cascade)
+  daoHandler                       DAOHandler    @relation(fields: [daoHandlerId], references: [id], onDelete: Cascade)
 
-  @@unique([voterId, dAOHandlerId])
+  @@unique([voterId, daoHandlerId])
+  @@index([daoHandlerId])
 }
 
 model Subscription {
@@ -156,7 +154,7 @@ model Subscription {
   user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, daoId])
-  @@index([daoId], map: "Subscription_daoId_fkey")
+  @@index([daoId])
 }
 
 model RefreshQueue {
@@ -167,9 +165,23 @@ model RefreshQueue {
 }
 
 model Config {
-  id    String @id @default(cuid())
   param String @unique
   value String
+}
+
+model UserToVoter {
+  A String
+  B String
+
+  @@unique([A, B], map: "_UserToVoter_AB_unique")
+  @@index([B], map: "_UserToVoter_B_index")
+  @@map("_UserToVoter")
+}
+
+enum RoundupNotificationType {
+  NEW
+  ENDING_SOON
+  PAST
 }
 
 enum DAOHandlerType {
