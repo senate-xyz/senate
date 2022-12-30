@@ -59,7 +59,7 @@ const processQueue = async () => {
             const daoHandler = await prisma.dAOHandler.findFirst({
                 where: { id: item.clientId }
             })
-            fetch(
+            await fetch(
                 `${
                     process.env.DETECTIVE_URL
                 }/updateSnapshotProposals?daoHandlerIds=${
