@@ -9,7 +9,7 @@ generator dbml {
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  relationMode = "foreignKeys"
 }
 
 model User {
@@ -23,7 +23,7 @@ model User {
   notifications Notification[]
   subscriptions Subscription[]
   userSettings  UserSettings?
-  voters        Voter[]
+  voters        Voter[]        @relation("UserToVoter")
 }
 
 model UserSettings {
@@ -37,8 +37,8 @@ model Voter {
   id            String         @id @default(cuid())
   address       String         @unique
   votes         Vote[]
-  users         User[]
   voterHandlers VoterHandler[]
+  users         User[]         @relation("UserToVoter")
 }
 
 model DAO {
@@ -138,8 +138,8 @@ model VoterHandler {
   lastRefreshTimestamp             DateTime      @default(dbgenerated("(from_unixtime(0))"))
   lastChainVoteCreatedBlock        BigInt?       @default(0)
   lastSnapshotVoteCreatedTimestamp DateTime?     @default(dbgenerated("(from_unixtime(0))"))
-  voter                            Voter         @relation(fields: [voterId], references: [id], onDelete: Cascade)
   daoHandler                       DAOHandler    @relation(fields: [daoHandlerId], references: [id], onDelete: Cascade)
+  voter                            Voter         @relation(fields: [voterId], references: [id], onDelete: Cascade)
 
   @@unique([voterId, daoHandlerId])
   @@index([daoHandlerId])
@@ -167,15 +167,6 @@ model RefreshQueue {
 model Config {
   param String @unique
   value String
-}
-
-model UserToVoter {
-  A String
-  B String
-
-  @@unique([A, B], map: "_UserToVoter_AB_unique")
-  @@index([B], map: "_UserToVoter_B_index")
-  @@map("_UserToVoter")
 }
 
 enum RoundupNotificationType {

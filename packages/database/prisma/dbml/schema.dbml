@@ -27,8 +27,8 @@ Table Voter {
   id String [pk]
   address String [unique, not null]
   votes Vote [not null]
-  users User [not null]
   voterHandlers VoterHandler [not null]
+  users User [not null]
 }
 
 Table DAO {
@@ -122,14 +122,14 @@ Table VoteOption {
 
 Table VoterHandler {
   id String [pk]
-  voter Voter [not null]
   voterId String [not null]
-  daoHandler DAOHandler [not null]
   daoHandlerId String [not null]
   refreshStatus RefreshStatus [not null, default: 'NEW']
   lastRefreshTimestamp DateTime [not null]
   lastChainVoteCreatedBlock BigInt [default: 0]
   lastSnapshotVoteCreatedTimestamp DateTime
+  daoHandler DAOHandler [not null]
+  voter Voter [not null]
 
   indexes {
     (voterId, daoHandlerId) [unique]
@@ -217,9 +217,9 @@ Ref: Vote.voterAddress > Voter.address [delete: Cascade]
 
 Ref: VoteOption.(voterAddress, voteDaoId, voteProposalId) > Vote.(voterAddress, daoId, proposalId) [delete: Cascade]
 
-Ref: VoterHandler.voterId > Voter.id [delete: Cascade]
-
 Ref: VoterHandler.daoHandlerId > DAOHandler.id [delete: Cascade]
+
+Ref: VoterHandler.voterId > Voter.id [delete: Cascade]
 
 Ref: Subscription.daoId > DAO.id [delete: Cascade]
 
