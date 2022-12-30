@@ -156,6 +156,12 @@ Table RefreshQueue {
   priority BigInt [not null]
 }
 
+Table Config {
+  id String [pk]
+  param String [unique, not null]
+  value String [not null]
+}
+
 Table UserToVoter {
   votersId String [ref: > Voter.id]
   usersId String [ref: > User.id]

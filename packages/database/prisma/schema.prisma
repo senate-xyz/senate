@@ -166,6 +166,12 @@ model RefreshQueue {
   priority    BigInt
 }
 
+model Config {
+  id    String @id @default(cuid())
+  param String @unique
+  value String
+}
+
 enum DAOHandlerType {
   AAVE_CHAIN
   COMPOUND_CHAIN
