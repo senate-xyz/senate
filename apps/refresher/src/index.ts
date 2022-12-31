@@ -76,8 +76,24 @@ const main = () => {
 
     cron.schedule('*/10 * * * * *', async () => {
         console.log({ action: 'populate_queue', details: 'start' })
+        console.log({
+            action: 'snapshot_dao_proposals_queue',
+            details: 'start'
+        })
         addSnapshotProposalsToQueue()
+        console.log({
+            action: 'snapshot_dao_proposals_queue',
+            details: 'end'
+        })
+        console.log({
+            action: 'snapshot_dao_votes_queue',
+            details: 'start'
+        })
         addDAOSnapshotVotesToQueue()
+        console.log({
+            action: 'snapshot_dao_votes_queue',
+            details: 'end'
+        })
         console.log({ action: 'populate_queue', details: 'end' })
     })
 }
@@ -202,11 +218,6 @@ const processQueue = async () => {
 
 const addDAOSnapshotVotesToQueue = async () => {
     await prisma.$transaction(async (tx) => {
-        console.log({
-            action: 'snapshot_dao_votes_queue',
-            details: 'start'
-        })
-
         const snapshotDaoHandlers = await tx.dAOHandler.findMany({
             where: {
                 OR: [
@@ -337,10 +348,6 @@ const addDAOSnapshotVotesToQueue = async () => {
 
 const addSnapshotProposalsToQueue = async () => {
     await prisma.$transaction(async (tx) => {
-        console.log({
-            action: 'snapshot_dao_proposals_queue',
-            details: 'start'
-        })
         const snapshotDaoHandlers = await tx.dAOHandler.findMany({
             where: {
                 OR: [
