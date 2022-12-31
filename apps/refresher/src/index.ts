@@ -283,6 +283,8 @@ const addDAOSnapshotVotesToQueue = async () => {
             daos: snapshotDaoHandlers.map((daoHandler) => daoHandler.dao.name)
         })
 
+        if (!snapshotDaoHandlers.length) return
+
         const previousPrio = (await tx.refreshQueue.findFirst({
             where: {
                 refreshType: RefreshType.DAOSNAPSHOTVOTES
@@ -388,13 +390,13 @@ const addSnapshotProposalsToQueue = async () => {
             }
         })
 
-        console.log(snapshotDaoHandlers.length)
-
         console.log({
             action: 'snapshot_dao_proposals_queue',
             details: 'list of DAOs to be updated',
             daos: snapshotDaoHandlers.map((daoHandler) => daoHandler.daoId)
         })
+
+        if (!snapshotDaoHandlers.length) return
 
         const previousPrio = (await tx.refreshQueue.findFirst({
             where: {
