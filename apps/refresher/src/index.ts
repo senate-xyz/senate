@@ -80,7 +80,7 @@ const main = () => {
             action: 'snapshot_dao_proposals_queue',
             details: 'start'
         })
-        addSnapshotProposalsToQueue()
+        await addSnapshotProposalsToQueue()
         console.log({
             action: 'snapshot_dao_proposals_queue',
             details: 'end'
@@ -89,7 +89,7 @@ const main = () => {
             action: 'snapshot_dao_votes_queue',
             details: 'start'
         })
-        addDAOSnapshotVotesToQueue()
+        await addDAOSnapshotVotesToQueue()
         console.log({
             action: 'snapshot_dao_votes_queue',
             details: 'end'
