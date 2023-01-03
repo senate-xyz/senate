@@ -10,14 +10,21 @@ export const updateSnapshotProposals = async (
     daoHandlerIds: string[],
     minCreatedAt: number
 ): Promise<Array<{ daoHandlerId: string; response: string }>> => {
+    logger.log({ action: 'updateSnapshotProposals', details: 'start' })
     const results: Array<{ daoHandlerId: string; response: string }> = []
 
     const daoHandlerToSnapshotSpaceMap: Map<DAOHandler, string> =
         await getSnapshotSpaces(daoHandlerIds)
     const spacesArray = Array.from(daoHandlerToSnapshotSpaceMap.values())
-    console.log('Spaces Array: ', spacesArray)
 
-    logger.log(`Searching snapshot proposals for spaces: ${spacesArray}`)
+    logger.log({
+        action: 'updateSnapshotProposals',
+        details: 'spaces_array',
+        item: spacesArray
+    })
+
+    logger.log({ action: 'updateSnapshotProposals', details: 'search' })
+
     let proposals
 
     try {
@@ -27,7 +34,6 @@ export const updateSnapshotProposals = async (
                 data: JSON.stringify({
                     query: `{
                 proposals (
-                    first:1000,
                     where: {
                     space_in: [${spacesArray.map((space) => `"${space}"`)}],
                     created_gt: ${Math.floor(minCreatedAt / 1000)}
@@ -75,7 +81,7 @@ export const updateSnapshotProposals = async (
         logger.error('Error while updating snapshot proposals', err)
         throw new InternalServerErrorException()
     }
-
+    logger.log({ action: 'updateSnapshotProposals', details: 'end' })
     return results
 }
 
@@ -110,13 +116,21 @@ const upsertSnapshotProposals = async (
             )
         )
         .then((res) => {
-            logger.log(
-                `upserted ${res.length} snapshot proposals for space ${space}`
-            )
+            logger.log({
+                action: 'updateSnapshotProposals',
+                details: 'upsert',
+                item: { count: res.length, space: space }
+            })
+
             return 'ok'
         })
         .catch((err) => {
-            logger.error('Error while upserting snapshot proposals', err)
+            logger.log({
+                action: 'updateSnapshotProposals',
+                details: 'upsert',
+                item: { err: err }
+            })
+
             return 'nok'
         })
 

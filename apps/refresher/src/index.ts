@@ -129,6 +129,15 @@ const processQueue = async () => {
             const daoHandler = await prisma.dAOHandler.findFirst({
                 where: { id: item.clientId }
             })
+            console.log({
+                action: 'process_queue',
+                details: 'DAOSNAPSHOTPROPOSALS REQUEST',
+                item: `${
+                    process.env.DETECTIVE_URL
+                }/updateSnapshotProposals?daoHandlerIds=${
+                    item.clientId
+                }&minCreatedAt=${daoHandler?.lastSnapshotProposalCreatedTimestamp?.valueOf()}`
+            })
             await fetch(
                 `${
                     process.env.DETECTIVE_URL
@@ -189,15 +198,108 @@ const processQueue = async () => {
 
             break
         case RefreshType.DAOSNAPSHOTVOTES: {
-            await prisma.voterHandler.updateMany({
+            const daoHandler = await prisma.dAOHandler.findFirst({
+                where: { id: item.clientId }
+            })
+
+            const voters = await prisma.voter.findMany({
                 where: {
-                    daoHandlerId: item.clientId
-                },
-                data: {
-                    refreshStatus: RefreshStatus.DONE,
-                    lastRefreshTimestamp: new Date()
+                    voterHandlers: {
+                        some: {
+                            daoHandlerId: daoHandler?.id
+                        }
+                    }
                 }
             })
+
+            console.log({
+                action: 'process_queue',
+                details: 'DAOSNAPSHOTVOTES REQUEST',
+                item: `${
+                    process.env.DETECTIVE_URL
+                }/updateSnapshotDaoVotes?daoHandlerId=${
+                    item.clientId
+                }&${voters.map((voter) => `voters=${voter.address}`)}`
+            })
+
+            await fetch(
+                `${
+                    process.env.DETECTIVE_URL
+                }/updateSnapshotDaoVotes?daoHandlerId=${
+                    item.clientId
+                }&${voters.map((voter) => `voters=${voter.address}`)}`,
+                {
+                    method: 'POST'
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    if (!data) return
+                    if (!Array.isArray(data)) return
+
+                    data.map(async (result) => {
+                        if ((result.response = 'ok')) {
+                            const voterHandler =
+                                await prisma.voterHandler.updateMany({
+                                    where: {
+                                        voter: {
+                                            address: result.voterId
+                                        }
+                                    },
+                                    data: {
+                                        refreshStatus: RefreshStatus.DONE,
+                                        lastRefreshTimestamp: new Date()
+                                    }
+                                })
+                            console.log({
+                                action: 'process_queue',
+                                details: 'DAOSNAPSHOTVOTES DONE',
+                                item: voterHandler
+                            })
+                        } else {
+                            const voterHandler =
+                                await prisma.voterHandler.updateMany({
+                                    where: {
+                                        voter: {
+                                            address: result.voterId
+                                        }
+                                    },
+                                    data: {
+                                        refreshStatus: RefreshStatus.NEW,
+                                        lastRefreshTimestamp: new Date()
+                                    }
+                                })
+                            console.log({
+                                action: 'process_queue',
+                                details: 'DAOSNAPSHOTVOTES FAILED FOR ONE',
+                                item: voterHandler
+                            })
+                        }
+                    })
+                    return
+                })
+                .catch(async (e) => {
+                    await prisma.voterHandler.updateMany({
+                        where: {
+                            voter: {
+                                address: {
+                                    in: voters.map((voter) => voter.address)
+                                }
+                            }
+                        },
+                        data: {
+                            refreshStatus: RefreshStatus.NEW,
+                            lastRefreshTimestamp: new Date()
+                        }
+                    })
+                    console.log({
+                        action: 'process_queue',
+                        details: 'DAOSNAPSHOTVOTES FAILED FOR ALL',
+                        item: daoHandler,
+                        error: e
+                    })
+                })
+
             break
         }
     }

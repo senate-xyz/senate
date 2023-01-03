@@ -5,6 +5,7 @@ import { Injectable, Logger } from '@nestjs/common'
 // import { updateMakerPolls } from './proposals/makerPolls'
 // import { updateMakerProposals } from './proposals/makerProposals'
 import { updateSnapshotProposals } from './proposals/snapshotProposals'
+import { updateSnapshotDaoVotes } from './votes/snapshotDaoVotes'
 // import { updateGovernorBravoVotes } from './votes/governorBravoVotes'
 // import { updateMakerPollVotes } from './votes/makerPollVotes'
 // import { updateMakerVotes } from './votes/makerVotes'
@@ -19,6 +20,13 @@ export class AppService {
         minCreatedAt: number
     ): Promise<Array<{ daoHandlerId: string; response: string }>> {
         return await updateSnapshotProposals(daoHandlerIds, minCreatedAt)
+    }
+
+    async updateSnapshotDaoVotes(
+        daoHandlerId: string,
+        voters: [string]
+    ): Promise<Array<{ voterAddress: string; response: string }>> {
+        return await updateSnapshotDaoVotes(daoHandlerId, voters)
     }
 
     // async updateProposals(daoId: string) {
