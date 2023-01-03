@@ -1,6 +1,6 @@
 import { Controller, Logger, Post, Query } from '@nestjs/common'
 import { AppService } from './app.service'
-import { DAOHandlerType } from '@senate/database'
+import { DAOHandlerType, prisma } from '@senate/database'
 
 @Controller('api')
 export class AppController {
