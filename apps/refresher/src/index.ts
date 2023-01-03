@@ -405,7 +405,7 @@ const addDAOSnapshotVotesToQueue = async () => {
             orderBy: { priority: 'desc' },
             take: 1,
             select: { priority: true }
-        })) ?? { priority: 50 } //default to 50
+        })) ?? { priority: 1 } //default to 1
 
         console.log({
             action: 'snapshot_dao_votes_queue',
@@ -514,7 +514,7 @@ const addSnapshotProposalsToQueue = async () => {
             orderBy: { priority: 'desc' },
             take: 1,
             select: { priority: true }
-        })) ?? { priority: 0 } //default to 0
+        })) ?? { priority: 50 } //default to 50
 
         console.log({
             action: 'snapshot_dao_proposals_queue',
