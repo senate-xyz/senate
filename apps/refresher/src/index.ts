@@ -70,7 +70,7 @@ const DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE = Number(
 const main = () => {
     console.log({ action: 'refresh_start' })
 
-    cron.schedule('*/5 * * * * *', async () => {
+    cron.schedule('*/1 * * * * *', async () => {
         await createVoterHandlers()
     })
 
@@ -112,7 +112,7 @@ const createVoterHandlers = async () => {
         details: 'start'
     })
 
-    if (voterHandlersCnt.length < voters.length * daoHandlers.length) {
+    if (voterHandlersCnt.length <= voters.length * daoHandlers.length) {
         console.log({
             action: 'createVoterHandlers',
             details: 'skip'
