@@ -112,7 +112,7 @@ const createVoterHandlers = async () => {
         details: 'start'
     })
 
-    if (voterHandlersCnt <= votersCnt * daoHandlersCnt) {
+    if (voterHandlersCnt >= votersCnt * daoHandlersCnt) {
         console.log({
             action: 'createVoterHandlers',
             details: 'skip'
