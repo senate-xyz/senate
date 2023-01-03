@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { router, protectedProcedure } from '../../trpc'
+import { RefreshStatus } from '@senate/database'
 
 export const userSubscriptionsRouter = router({
     subscribedDAOs: protectedProcedure.query(async ({ ctx }) => {
@@ -52,12 +53,32 @@ export const userSubscriptionsRouter = router({
                         name: { equals: String(ctx.session?.user?.name) }
                     },
                     select: {
-                        id: true
+                        id: true,
+                        voters: true
                     }
                 })
                 .catch(() => {
-                    return { id: '0' }
+                    return { id: '0', voters: [] }
                 })
+
+            const daoHandlers = await ctx.prisma.dAOHandler.findMany({
+                where: {
+                    daoId: input.daoId
+                }
+            })
+
+            for (const daoHandler of daoHandlers) {
+                await ctx.prisma.voterHandler.createMany({
+                    data: user.voters.map((voter) => {
+                        return {
+                            voterId: voter.id,
+                            daoHandlerId: daoHandler.id,
+                            refreshStatus: RefreshStatus.NEW
+                        }
+                    }),
+                    skipDuplicates: true
+                })
+            }
 
             await ctx.prisma.subscription
                 .upsert({
