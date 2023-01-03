@@ -70,6 +70,10 @@ const DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE = Number(
 const main = () => {
     console.log({ action: 'refresh_start' })
 
+    cron.schedule('*/5 * * * * *', async () => {
+        await createVoterHandlers()
+    })
+
     cron.schedule('*/1 * * * * *', async () => {
         processQueue()
     })
@@ -95,6 +99,43 @@ const main = () => {
             details: 'end'
         })
         console.log({ action: 'populate_queue', details: 'end' })
+    })
+}
+
+const createVoterHandlers = async () => {
+    const voters = await prisma.voter.findMany({})
+    const daoHandlers = await prisma.dAOHandler.findMany({})
+
+    const voterHandlersCnt = await prisma.voterHandler.findMany({})
+    console.log({
+        action: 'createVoterHandlers',
+        details: 'start'
+    })
+
+    if (voterHandlersCnt.length < voters.length * daoHandlers.length) {
+        console.log({
+            action: 'createVoterHandlers',
+            details: 'skip'
+        })
+        return
+    }
+
+    for (const voter of voters) {
+        await prisma.voterHandler.createMany({
+            data: daoHandlers.map((daoHandler) => {
+                return {
+                    daoHandlerId: daoHandler.id,
+                    voterId: voter.id,
+                    refreshStatus: RefreshStatus.NEW
+                }
+            }),
+            skipDuplicates: true
+        })
+    }
+
+    console.log({
+        action: 'createVoterHandlers',
+        details: 'end'
     })
 }
 

@@ -61,25 +61,6 @@ export const userSubscriptionsRouter = router({
                     return { id: '0', voters: [] }
                 })
 
-            const daoHandlers = await ctx.prisma.dAOHandler.findMany({
-                where: {
-                    daoId: input.daoId
-                }
-            })
-
-            for (const daoHandler of daoHandlers) {
-                await ctx.prisma.voterHandler.createMany({
-                    data: user.voters.map((voter) => {
-                        return {
-                            voterId: voter.id,
-                            daoHandlerId: daoHandler.id,
-                            refreshStatus: RefreshStatus.NEW
-                        }
-                    }),
-                    skipDuplicates: true
-                })
-            }
-
             await ctx.prisma.subscription
                 .upsert({
                     where: {

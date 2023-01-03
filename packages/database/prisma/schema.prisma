@@ -108,11 +108,11 @@ model Vote {
   proposalId   String
   daoId        String
   daoHandlerId String
+  choiceId     String   @default("0")
+  choice       String   @default("None")
   dao          DAO      @relation(fields: [daoId], references: [id], onDelete: Cascade)
   proposal     Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
   voter        Voter    @relation(fields: [voterAddress], references: [address], onDelete: Cascade)
-  choiceId     String   @default("0")
-  choice       String   @default("None")
 
   @@unique([voterAddress, daoId, proposalId])
   @@index([proposalId])

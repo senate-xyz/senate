@@ -936,41 +936,6 @@ const seedVoters = async () => {
             isolationLevel: 'ReadCommitted'
         }
     )
-
-    const user = await prisma.user.findFirst({
-        where: {
-            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
-        },
-        include: {
-            subscriptions: { include: { dao: { select: { handlers: true } } } },
-            voters: true
-        }
-    })
-
-    if (!user) return
-
-    console.log('Inserting voter handlers')
-
-    for (const sub of user.subscriptions) {
-        for (const handler of sub.dao.handlers) {
-            for (const vtr of user.voters) {
-                await prisma.voterHandler.upsert({
-                    where: {
-                        voterId_daoHandlerId: {
-                            voterId: vtr.id,
-                            daoHandlerId: handler.id
-                        }
-                    },
-                    update: {},
-                    create: {
-                        voterId: vtr.id,
-                        daoHandlerId: handler.id
-                    }
-                })
-                process.stdout.write('.')
-            }
-        }
-    }
 }
 
 async function main() {
