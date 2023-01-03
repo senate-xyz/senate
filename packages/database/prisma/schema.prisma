@@ -103,31 +103,20 @@ model Notification {
 }
 
 model Vote {
-  id           String       @id @default(cuid())
+  id           String   @id @default(cuid())
   voterAddress String
   proposalId   String
   daoId        String
   daoHandlerId String
-  dao          DAO          @relation(fields: [daoId], references: [id], onDelete: Cascade)
-  proposal     Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
-  voter        Voter        @relation(fields: [voterAddress], references: [address], onDelete: Cascade)
-  options      VoteOption[]
+  dao          DAO      @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  proposal     Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  voter        Voter    @relation(fields: [voterAddress], references: [address], onDelete: Cascade)
+  choiceId     String   @default("0")
+  choice       String   @default("None")
 
   @@unique([voterAddress, daoId, proposalId])
   @@index([proposalId])
   @@index([daoId])
-}
-
-model VoteOption {
-  id             String @id @default(cuid())
-  option         String
-  optionName     String @db.VarChar(1024)
-  voterAddress   String
-  voteDaoId      String
-  voteProposalId String
-  vote           Vote   @relation(fields: [voterAddress, voteDaoId, voteProposalId], references: [voterAddress, daoId, proposalId], onDelete: Cascade)
-
-  @@index([voterAddress, voteDaoId, voteProposalId])
 }
 
 model VoterHandler {

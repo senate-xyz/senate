@@ -23,9 +23,6 @@ export const publicRouter = router({
                 votes: {
                     where: {
                         voterAddress: ''
-                    },
-                    include: {
-                        options: true
                     }
                 }
             }

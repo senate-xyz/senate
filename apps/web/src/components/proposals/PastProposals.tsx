@@ -201,10 +201,7 @@ const PastProposal = (props: {
         AppRouter['user']['proposals']['filteredPastProposals']
     >[0]
 }) => {
-    const voted =
-        props.proposal.votes.map((vote) =>
-            vote.options.map((options) => options.optionName)
-        ).length > 0
+    const voted = props.proposal.votes.map((vote) => vote.choice).length > 0
 
     return (
         <tr

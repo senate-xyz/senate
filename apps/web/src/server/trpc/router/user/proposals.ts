@@ -55,9 +55,6 @@ export const userProposalsRouter = router({
                         voterAddress: {
                             in: user.voters.map((voter) => voter.address)
                         }
-                    },
-                    include: {
-                        options: true
                     }
                 }
             }
@@ -159,9 +156,6 @@ export const userProposalsRouter = router({
                             voterAddress: {
                                 in: user.voters.map((voter) => voter.address)
                             }
-                        },
-                        include: {
-                            options: true
                         }
                     }
                 }
@@ -264,9 +258,6 @@ export const userProposalsRouter = router({
                             voterAddress: {
                                 in: user.voters.map((voter) => voter.address)
                             }
-                        },
-                        include: {
-                            options: true
                         }
                     }
                 }

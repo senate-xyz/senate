@@ -103,21 +103,12 @@ Table Vote {
   dao DAO [not null]
   proposal Proposal [not null]
   voter Voter [not null]
-  options VoteOption [not null]
+  choiceId String [not null, default: '0']
+  choice String [not null, default: 'None']
 
   indexes {
     (voterAddress, daoId, proposalId) [unique]
   }
-}
-
-Table VoteOption {
-  id String [pk]
-  option String [not null]
-  optionName String [not null]
-  voterAddress String [not null]
-  voteDaoId String [not null]
-  voteProposalId String [not null]
-  vote Vote [not null]
 }
 
 Table VoterHandler {
@@ -214,8 +205,6 @@ Ref: Vote.daoId > DAO.id [delete: Cascade]
 Ref: Vote.proposalId > Proposal.id [delete: Cascade]
 
 Ref: Vote.voterAddress > Voter.address [delete: Cascade]
-
-Ref: VoteOption.(voterAddress, voteDaoId, voteProposalId) > Vote.(voterAddress, daoId, proposalId) [delete: Cascade]
 
 Ref: VoterHandler.daoHandlerId > DAOHandler.id [delete: Cascade]
 

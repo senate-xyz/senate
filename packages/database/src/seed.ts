@@ -950,32 +950,27 @@ const seedVoters = async () => {
     if (!user) return
 
     console.log('Inserting voter handlers')
-    await prisma.$transaction(
-        user.subscriptions
-            .map((subscription) =>
-                subscription.dao.handlers.map((handler) =>
-                    user.voters.map((voter) => {
-                        return prisma.voterHandler.upsert({
-                            where: {
-                                voterId_daoHandlerId: {
-                                    voterId: voter.id,
-                                    daoHandlerId: handler.id
-                                }
-                            },
-                            update: {},
-                            create: {
-                                voterId: voter.id,
-                                daoHandlerId: handler.id
-                            }
-                        })
-                    })
-                )
-            )
-            .flat(2),
-        {
-            isolationLevel: 'ReadCommitted'
+
+    for (const sub of user.subscriptions) {
+        for (const handler of sub.dao.handlers) {
+            for (const vtr of user.voters) {
+                await prisma.voterHandler.upsert({
+                    where: {
+                        voterId_daoHandlerId: {
+                            voterId: vtr.id,
+                            daoHandlerId: handler.id
+                        }
+                    },
+                    update: {},
+                    create: {
+                        voterId: vtr.id,
+                        daoHandlerId: handler.id
+                    }
+                })
+                process.stdout.write('.')
+            }
         }
-    )
+    }
 }
 
 async function main() {
