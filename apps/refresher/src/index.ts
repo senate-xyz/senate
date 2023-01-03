@@ -22,24 +22,10 @@ const main = async () => {
 
     cron.schedule('*/10 * * * * *', async () => {
         console.log({ action: 'populate_queue', details: 'start' })
-        console.log({
-            action: 'snapshot_dao_proposals_queue',
-            details: 'start'
-        })
+
         await addSnapshotProposalsToQueue()
-        console.log({
-            action: 'snapshot_dao_proposals_queue',
-            details: 'end'
-        })
-        console.log({
-            action: 'snapshot_dao_votes_queue',
-            details: 'start'
-        })
         await addSnapshotDaoVotes()
-        console.log({
-            action: 'snapshot_dao_votes_queue',
-            details: 'end'
-        })
+
         console.log({ action: 'populate_queue', details: 'end' })
     })
 }

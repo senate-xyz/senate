@@ -10,6 +10,10 @@ import {
 } from '../config'
 
 export const addSnapshotDaoVotes = async () => {
+    console.log({
+        action: 'snapshot_dao_votes_queue',
+        details: 'start'
+    })
     await prisma.$transaction(async (tx) => {
         const snapshotDaoHandlers = await tx.dAOHandler.findMany({
             where: {
@@ -87,7 +91,13 @@ export const addSnapshotDaoVotes = async () => {
             daos: snapshotDaoHandlers.map((daoHandler) => daoHandler.dao.name)
         })
 
-        if (!snapshotDaoHandlers.length) return
+        if (!snapshotDaoHandlers.length) {
+            console.log({
+                action: 'snapshot_dao_votes_queue',
+                details: 'skip'
+            })
+            return
+        }
 
         const previousPrio = (await tx.refreshQueue.findFirst({
             where: {
@@ -136,5 +146,9 @@ export const addSnapshotDaoVotes = async () => {
             details: 'status res',
             status: statusRes
         })
+    })
+    console.log({
+        action: 'snapshot_dao_votes_queue',
+        details: 'end'
     })
 }
