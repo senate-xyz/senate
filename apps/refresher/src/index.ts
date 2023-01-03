@@ -244,6 +244,9 @@ const processQueue = async () => {
                                     where: {
                                         voter: {
                                             address: result.voterId
+                                        },
+                                        daoHandler: {
+                                            type: DAOHandlerType.SNAPSHOT
                                         }
                                     },
                                     data: {
@@ -262,6 +265,9 @@ const processQueue = async () => {
                                     where: {
                                         voter: {
                                             address: result.voterId
+                                        },
+                                        daoHandler: {
+                                            type: DAOHandlerType.SNAPSHOT
                                         }
                                     },
                                     data: {
@@ -285,6 +291,9 @@ const processQueue = async () => {
                                 address: {
                                     in: voters.map((voter) => voter.address)
                                 }
+                            },
+                            daoHandler: {
+                                type: DAOHandlerType.SNAPSHOT
                             }
                         },
                         data: {
