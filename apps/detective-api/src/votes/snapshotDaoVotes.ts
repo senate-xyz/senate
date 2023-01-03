@@ -62,7 +62,7 @@ export const updateSnapshotDaoVotes = async (
     })
 
     try {
-        const votes = await axios
+        const res = await axios
             .get('https://hub.snapshot.org/graphql', {
                 method: 'POST',
                 data: JSON.stringify({
@@ -87,6 +87,11 @@ export const updateSnapshotDaoVotes = async (
                 })
                 return
             })
+
+        //sanitize
+        const votes = res.filter(
+            (vote) => vote.proposal != null && vote.proposal.id != null
+        )
 
         logger.log({
             action: 'updateSnapshotDaoVotes',
