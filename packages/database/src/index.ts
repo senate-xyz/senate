@@ -7,6 +7,7 @@ export {
     type Proposal,
     type Voter,
     type Subscription,
+    type RefreshQueue,
     RefreshStatus,
     RefreshType,
     DAOHandlerType,

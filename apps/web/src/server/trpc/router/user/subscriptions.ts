@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { router, protectedProcedure } from '../../trpc'
-import { RefreshStatus } from '@senate/database'
 
 export const userSubscriptionsRouter = router({
     subscribedDAOs: protectedProcedure.query(async ({ ctx }) => {

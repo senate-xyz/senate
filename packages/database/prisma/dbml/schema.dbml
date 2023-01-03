@@ -100,11 +100,11 @@ Table Vote {
   proposalId String [not null]
   daoId String [not null]
   daoHandlerId String [not null]
+  choiceId String [not null, default: '0']
+  choice String [not null, default: 'None']
   dao DAO [not null]
   proposal Proposal [not null]
   voter Voter [not null]
-  choiceId String [not null, default: '0']
-  choice String [not null, default: 'None']
 
   indexes {
     (voterAddress, daoId, proposalId) [unique]
