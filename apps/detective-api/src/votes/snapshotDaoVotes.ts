@@ -105,6 +105,15 @@ export const updateSnapshotDaoVotes = async (
                 }
             })
 
+            if (!proposal) {
+                logger.log({
+                    action: 'updateSnapshotDaoVotes',
+                    details: 'proposal not found',
+                    item: { id: snapshotProposalId }
+                })
+                continue
+            }
+
             await prisma.vote
                 .createMany({
                     data: votes
