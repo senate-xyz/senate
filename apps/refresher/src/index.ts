@@ -74,9 +74,9 @@ const main = () => {
         await createVoterHandlers()
     })
 
-    cron.schedule('*/1 * * * * *', async () => {
+    setInterval(async () => {
         processQueue()
-    })
+    }, 100)
 
     cron.schedule('*/10 * * * * *', async () => {
         console.log({ action: 'populate_queue', details: 'start' })
