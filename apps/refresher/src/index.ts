@@ -184,8 +184,7 @@ const processQueue = async () => {
                             id: item.clientId
                         },
                         data: {
-                            refreshStatus: RefreshStatus.NEW,
-                            lastRefreshTimestamp: new Date()
+                            refreshStatus: RefreshStatus.NEW
                         }
                     })
                     console.log({
@@ -304,8 +303,7 @@ const processQueue = async () => {
                             }
                         },
                         data: {
-                            refreshStatus: RefreshStatus.NEW,
-                            lastRefreshTimestamp: new Date()
+                            refreshStatus: RefreshStatus.NEW
                         }
                     })
                     console.log({
