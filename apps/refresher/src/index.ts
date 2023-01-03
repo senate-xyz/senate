@@ -103,22 +103,25 @@ const main = () => {
 }
 
 const createVoterHandlers = async () => {
-    const voters = await prisma.voter.findMany({})
-    const daoHandlers = await prisma.dAOHandler.findMany({})
+    const votersCnt = await prisma.voter.count({})
+    const daoHandlersCnt = await prisma.dAOHandler.count({})
+    const voterHandlersCnt = await prisma.voterHandler.count({})
 
-    const voterHandlersCnt = await prisma.voterHandler.findMany({})
     console.log({
         action: 'createVoterHandlers',
         details: 'start'
     })
 
-    if (voterHandlersCnt.length <= voters.length * daoHandlers.length) {
+    if (voterHandlersCnt <= votersCnt * daoHandlersCnt) {
         console.log({
             action: 'createVoterHandlers',
             details: 'skip'
         })
         return
     }
+
+    const voters = await prisma.voter.findMany({})
+    const daoHandlers = await prisma.dAOHandler.findMany({})
 
     for (const voter of voters) {
         await prisma.voterHandler.createMany({
