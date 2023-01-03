@@ -69,8 +69,8 @@ model DAOHandler {
 
 model Proposal {
   id            String         @id @default(cuid())
-  externalId    String         @unique
-  name          String         @db.VarChar(1024)
+  externalId    String
+  name          String         @db.VarChar(2048)
   daoId         String
   daoHandlerId  String
   data          Json

@@ -6,6 +6,8 @@ import { processSnapshotProposals } from './process/snapshotProposals'
 import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
+import { addChainProposalsToQueue } from './populate/addChainProposals'
+import { processChainProposals } from './process/chainProposals'
 
 const main = async () => {
     console.log({ action: 'refresh_start' })
@@ -18,13 +20,14 @@ const main = async () => {
 
     setInterval(async () => {
         processQueue()
-    }, 100)
+    }, 250)
 
     cron.schedule('*/10 * * * * *', async () => {
         console.log({ action: 'populate_queue', details: 'start' })
 
         await addSnapshotProposalsToQueue()
         await addSnapshotDaoVotes()
+        await addChainProposalsToQueue()
 
         console.log({ action: 'populate_queue', details: 'end' })
     })
@@ -55,11 +58,16 @@ const processQueue = async () => {
 
     switch (item.refreshType) {
         case RefreshType.DAOSNAPSHOTPROPOSALS:
-            await processSnapshotProposals(item)
+            processSnapshotProposals(item)
             break
 
         case RefreshType.DAOSNAPSHOTVOTES: {
-            await processSnapshotDaoVotes(item)
+            processSnapshotDaoVotes(item)
+            break
+        }
+
+        case RefreshType.DAOCHAINPROPOSALS: {
+            processChainProposals(item)
             break
         }
     }

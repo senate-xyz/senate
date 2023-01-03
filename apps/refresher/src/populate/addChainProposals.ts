@@ -5,23 +5,34 @@ import {
     prisma
 } from '@senate/database'
 import {
-    DAOS_PROPOSALS_SNAPSHOT_INTERVAL,
-    DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE
+    DAOS_PROPOSALS_CHAIN_INTERVAL,
+    DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE
 } from '../config'
 
-export const addSnapshotProposalsToQueue = async () => {
+export const addChainProposalsToQueue = async () => {
     console.log({
-        action: 'snapshot_dao_proposals_queue',
+        action: 'chain_proposals_queue',
         details: 'start'
     })
     await prisma.$transaction(async (tx) => {
-        const snapshotDaoHandlers = await tx.dAOHandler.findMany({
+        const daoHandlers = await tx.dAOHandler.findMany({
             where: {
                 OR: [
                     {
                         //normal refresh interval
                         AND: [
-                            { type: DAOHandlerType.SNAPSHOT },
+                            {
+                                type: {
+                                    in: [
+                                        DAOHandlerType.AAVE_CHAIN,
+                                        DAOHandlerType.COMPOUND_CHAIN,
+                                        DAOHandlerType.MAKER_EXECUTIVE,
+                                        DAOHandlerType.MAKER_POLL_CREATE,
+                                        DAOHandlerType.MAKER_POLL_VOTE,
+                                        DAOHandlerType.UNISWAP_CHAIN
+                                    ]
+                                }
+                            },
                             {
                                 refreshStatus: {
                                     in: [RefreshStatus.DONE, RefreshStatus.NEW]
@@ -31,7 +42,7 @@ export const addSnapshotProposalsToQueue = async () => {
                                 lastRefreshTimestamp: {
                                     lt: new Date(
                                         Date.now() -
-                                            DAOS_PROPOSALS_SNAPSHOT_INTERVAL *
+                                            DAOS_PROPOSALS_CHAIN_INTERVAL *
                                                 60 *
                                                 1000
                                     )
@@ -42,7 +53,18 @@ export const addSnapshotProposalsToQueue = async () => {
                     {
                         //force refresh interval
                         AND: [
-                            { type: DAOHandlerType.SNAPSHOT },
+                            {
+                                type: {
+                                    in: [
+                                        DAOHandlerType.AAVE_CHAIN,
+                                        DAOHandlerType.COMPOUND_CHAIN,
+                                        DAOHandlerType.MAKER_EXECUTIVE,
+                                        DAOHandlerType.MAKER_POLL_CREATE,
+                                        DAOHandlerType.MAKER_POLL_VOTE,
+                                        DAOHandlerType.UNISWAP_CHAIN
+                                    ]
+                                }
+                            },
                             {
                                 refreshStatus: {
                                     in: [RefreshStatus.PENDING]
@@ -52,7 +74,7 @@ export const addSnapshotProposalsToQueue = async () => {
                                 lastRefreshTimestamp: {
                                     lt: new Date(
                                         Date.now() -
-                                            DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE *
+                                            DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE *
                                                 60 *
                                                 1000
                                     )
@@ -65,14 +87,14 @@ export const addSnapshotProposalsToQueue = async () => {
         })
 
         console.log({
-            action: 'snapshot_dao_proposals_queue',
+            action: 'chain_proposals_queue',
             details: 'list of DAOs to be updated',
-            daos: snapshotDaoHandlers.map((daoHandler) => daoHandler.daoId)
+            daos: daoHandlers.map((daoHandler) => daoHandler.daoId)
         })
 
-        if (!snapshotDaoHandlers.length) {
+        if (!daoHandlers.length) {
             console.log({
-                action: 'snapshot_dao_proposals_queue',
+                action: 'chain_proposals_queue',
                 details: 'skip'
             })
             return
@@ -80,7 +102,7 @@ export const addSnapshotProposalsToQueue = async () => {
 
         const previousPrio = (await tx.refreshQueue.findFirst({
             where: {
-                refreshType: RefreshType.DAOSNAPSHOTPROPOSALS
+                refreshType: RefreshType.DAOCHAINPROPOSALS
             },
             orderBy: { priority: 'desc' },
             take: 1,
@@ -88,23 +110,23 @@ export const addSnapshotProposalsToQueue = async () => {
         })) ?? { priority: 50 } //default to 50
 
         console.log({
-            action: 'snapshot_dao_proposals_queue',
-            details: 'previous max priority for DAOSNAPSHOTPROPOSALS',
+            action: 'chain_proposals_queue',
+            details: 'previous max priority for DAOCHAINPROPOSALS',
             priority: previousPrio.priority
         })
 
         const queueRes = await tx.refreshQueue.createMany({
-            data: snapshotDaoHandlers.map((daoHandler) => {
+            data: daoHandlers.map((daoHandler) => {
                 return {
                     clientId: daoHandler.id,
-                    refreshType: RefreshType.DAOSNAPSHOTPROPOSALS,
+                    refreshType: RefreshType.DAOCHAINPROPOSALS,
                     priority: Number(previousPrio.priority) + 1
                 }
             })
         })
 
         console.log({
-            action: 'snapshot_dao_proposals_queue',
+            action: 'chain_proposals_queue',
             details: 'queue result',
             queue: queueRes
         })
@@ -112,7 +134,7 @@ export const addSnapshotProposalsToQueue = async () => {
         const statusRes = await tx.dAOHandler.updateMany({
             where: {
                 id: {
-                    in: snapshotDaoHandlers.map((daoHandler) => daoHandler.id)
+                    in: daoHandlers.map((daoHandler) => daoHandler.id)
                 }
             },
             data: {
@@ -122,13 +144,13 @@ export const addSnapshotProposalsToQueue = async () => {
         })
 
         console.log({
-            action: 'snapshot_dao_proposals_queue',
+            action: 'chain_proposals_queue',
             details: 'status res',
             status: statusRes
         })
     })
     console.log({
-        action: 'snapshot_dao_proposals_queue',
+        action: 'chain_proposals_queue',
         details: 'end'
     })
 }

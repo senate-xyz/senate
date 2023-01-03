@@ -66,15 +66,15 @@ const seedData = async () => {
                             abi: makerPollCreate.abi,
                             proposalUrl: 'https://vote.makerdao.com/polling/'
                         }
-                    },
-                    {
-                        type: DAOHandlerType.MAKER_POLL_VOTE,
-                        decoder: {
-                            address:
-                                '0xD3A9FE267852281a1e6307a1C37CDfD76d39b133',
-                            abi: makerPollVote.abi
-                        }
                     }
+                    // {
+                    //     type: DAOHandlerType.MAKER_POLL_VOTE,
+                    //     decoder: {
+                    //         address:
+                    //             '0xD3A9FE267852281a1e6307a1C37CDfD76d39b133',
+                    //         abi: makerPollVote.abi
+                    //     }
+                    // }
                 ]
             }
         }
@@ -210,7 +210,7 @@ const seedData = async () => {
                 create: [
                     {
                         type: DAOHandlerType.COMPOUND_CHAIN,
-                        lastChainProposalCreatedBlock: 10000000,
+                        lastChainProposalCreatedBlock: 0,
                         decoder: {
                             address:
                                 '0xc0Da02939E1441F497fd74F78cE7Decb17B66529',
@@ -918,6 +918,7 @@ const seedVoters = async () => {
     ]
 
     console.log('Inserting voters')
+
     await prisma.$transaction(
         voters.map((voter) => {
             return prisma.user.update({

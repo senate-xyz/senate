@@ -6,6 +6,11 @@ import { Injectable, Logger } from '@nestjs/common'
 // import { updateMakerProposals } from './proposals/makerProposals'
 import { updateSnapshotProposals } from './proposals/snapshotProposals'
 import { updateSnapshotDaoVotes } from './votes/snapshotDaoVotes'
+import { updateAaveChainProposals } from './proposals/aaveChainProposals'
+import { updateUniswapChainProposals } from './proposals/uniswapChainProposals'
+import { updateCompoundChainProposals } from './proposals/compoundChainProposals'
+import { updateMakerChainProposals } from './proposals/makerChainProposals'
+import { updateMakerChainPolls } from './proposals/makerChainPolls'
 // import { updateGovernorBravoVotes } from './votes/governorBravoVotes'
 // import { updateMakerPollVotes } from './votes/makerPollVotes'
 // import { updateMakerVotes } from './votes/makerVotes'
@@ -29,113 +34,38 @@ export class AppService {
         return await updateSnapshotDaoVotes(daoHandlerId, voters)
     }
 
-    // async updateProposals(daoId: string) {
-    //     const dao = await prisma.dAO
-    //         .findFirst({
-    //             where: {
-    //                 id: daoId
-    //             },
-    //             include: {
-    //                 handlers: true,
-    //                 subscriptions: true
-    //             }
-    //         })
-    //         .catch((err) => {
-    //             this.logger.error(err)
-    //             throw new InternalServerErrorException()
-    //         })
+    async updateAaveChainProposals(
+        daoHandlerId: string,
+        minBlockNumber: number
+    ): Promise<Array<{ daoHandlerId: string; response: string }>> {
+        return await updateAaveChainProposals(daoHandlerId, minBlockNumber)
+    }
 
-    //     if (!dao) {
-    //         throw new NotFoundException('DAO not found')
-    //     }
+    async updateCompoundChainProposals(
+        daoHandlerId: string,
+        minBlockNumber: number
+    ): Promise<Array<{ daoHandlerId: string; response: string }>> {
+        return await updateCompoundChainProposals(daoHandlerId, minBlockNumber)
+    }
 
-    //     for (const handler of dao.handlers) {
-    //         this.logger.log(
-    //             `Fetching proposals for ${dao.name}, handler: ${handler.type}.`
-    //         )
+    async updateUniswapChainProposals(
+        daoHandlerId: string,
+        minBlockNumber: number
+    ): Promise<Array<{ daoHandlerId: string; response: string }>> {
+        return await updateUniswapChainProposals(daoHandlerId, minBlockNumber)
+    }
 
-    //         switch (handler.type) {
-    //             case DAOHandlerType.SNAPSHOT:
-    //                 await updateSnapshotProposals(dao.name, handler)
-    //                 break
+    async updateMakerChainProposals(
+        daoHandlerId: string,
+        minBlockNumber: number
+    ): Promise<Array<{ daoHandlerId: string; response: string }>> {
+        return await updateMakerChainProposals(daoHandlerId, minBlockNumber)
+    }
 
-    //             case DAOHandlerType.AAVE_CHAIN ||
-    //                 DAOHandlerType.COMPOUND_CHAIN ||
-    //                 DAOHandlerType.UNISWAP_CHAIN:
-    //                 await updateGovernorBravoProposals(handler)
-    //                 break
-
-    //             case DAOHandlerType.MAKER_EXECUTIVE:
-    //                 await updateMakerProposals(handler)
-    //                 break
-
-    //             case DAOHandlerType.MAKER_POLL_CREATE:
-    //                 await updateMakerPolls(handler)
-    //                 break
-
-    //             default:
-    //                 break
-    //         }
-    //     }
-    // }
-
-    // async updateVotes(daoId: string, voterAddress: string) {
-    //     let dao
-
-    //     try {
-    //         dao = await prisma.dAO.findFirst({
-    //             where: {
-    //                 id: daoId
-    //             },
-    //             include: {
-    //                 handlers: true,
-    //                 subscriptions: true
-    //             }
-    //         })
-    //     } catch (err) {
-    //         console.log(err)
-    //         throw new InternalServerErrorException()
-    //     }
-
-    //     if (!dao) {
-    //         throw new NotFoundException('DAO not found')
-    //     }
-
-    //     this.logger.log(
-    //         `Updating votes for user ${voterAddress} in ${dao.name}`
-    //     )
-
-    //     for (const handler of dao.handlers) {
-    //         this.logger.log(
-    //             `Fetching votes for ${dao.name}, user ${voterAddress}, handler: ${handler.type}`
-    //         )
-
-    //         switch (handler.type) {
-    //             case DAOHandlerType.SNAPSHOT:
-    //                 await updateSnapshotVotes(handler, voterAddress, dao.name)
-    //                 break
-
-    //             case DAOHandlerType.AAVE_CHAIN ||
-    //                 DAOHandlerType.COMPOUND_CHAIN ||
-    //                 DAOHandlerType.UNISWAP_CHAIN:
-    //                 await updateGovernorBravoVotes(
-    //                     handler,
-    //                     voterAddress,
-    //                     dao.name
-    //                 )
-    //                 break
-
-    //             case DAOHandlerType.MAKER_EXECUTIVE:
-    //                 await updateMakerVotes(handler, voterAddress)
-    //                 break
-
-    //             case DAOHandlerType.MAKER_POLL_VOTE:
-    //                 await updateMakerPollVotes(handler, voterAddress)
-    //                 break
-
-    //             default:
-    //                 break
-    //         }
-    //     }
-    // }
+    async updateMakerChainPolls(
+        daoHandlerId: string,
+        minBlockNumber: number
+    ): Promise<Array<{ daoHandlerId: string; response: string }>> {
+        return await updateMakerChainPolls(daoHandlerId, minBlockNumber)
+    }
 }

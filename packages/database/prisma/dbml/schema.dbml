@@ -61,7 +61,7 @@ Table DAOHandler {
 
 Table Proposal {
   id String [pk]
-  externalId String [unique, not null]
+  externalId String [not null]
   name String [not null]
   daoId String [not null]
   daoHandlerId String [not null]

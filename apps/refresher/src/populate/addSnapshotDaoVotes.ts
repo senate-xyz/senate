@@ -137,7 +137,8 @@ export const addSnapshotDaoVotes = async () => {
                 }
             },
             data: {
-                refreshStatus: RefreshStatus.PENDING
+                refreshStatus: RefreshStatus.PENDING,
+                lastRefreshTimestamp: new Date()
             }
         })
 
