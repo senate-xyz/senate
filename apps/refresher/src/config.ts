@@ -1,5 +1,10 @@
 import { prisma } from '@senate/database'
 
+const DEFAULT_DAOS_PROPOSALS_SNAPSHOT_INTERVAL = 5,
+    DEFAULT_DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE = 15,
+    DEFAULT_DAOS_VOTES_SNAPSHOT_INTERVAL = 1,
+    DEFAULT_DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE = 5
+
 export let DAOS_PROPOSALS_SNAPSHOT_INTERVAL: number,
     DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE: number,
     DAOS_VOTES_SNAPSHOT_INTERVAL: number,
@@ -14,7 +19,7 @@ export const loadConfig = async () => {
                 },
                 create: {
                     param: 'DAOS_PROPOSALS_SNAPSHOT_INTERVAL',
-                    value: '10'
+                    value: String(DEFAULT_DAOS_PROPOSALS_SNAPSHOT_INTERVAL)
                 },
                 update: {}
             })
@@ -29,7 +34,9 @@ export const loadConfig = async () => {
                 },
                 create: {
                     param: 'DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE',
-                    value: '30'
+                    value: String(
+                        DEFAULT_DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE
+                    )
                 },
                 update: {}
             })
@@ -44,7 +51,7 @@ export const loadConfig = async () => {
                 },
                 create: {
                     param: 'DAOS_VOTES_SNAPSHOT_INTERVAL',
-                    value: '5'
+                    value: String(DEFAULT_DAOS_VOTES_SNAPSHOT_INTERVAL)
                 },
                 update: {}
             })
@@ -59,7 +66,7 @@ export const loadConfig = async () => {
                 },
                 create: {
                     param: 'DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE',
-                    value: '30'
+                    value: String(DEFAULT_DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE)
                 },
                 update: {}
             })
