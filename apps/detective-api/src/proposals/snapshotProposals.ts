@@ -90,36 +90,27 @@ const upsertSnapshotProposals = async (
     space: string,
     proposals: any[]
 ): Promise<string> => {
-    const result = await prisma
-        .$transaction(
-            proposals.map((proposal) =>
-                prisma.proposal.upsert({
-                    where: {
-                        externalId_daoId: {
-                            daoId: daoHandler.daoId,
-                            externalId: proposal.id
-                        }
-                    },
-                    update: {},
-                    create: {
-                        externalId: proposal.id,
-                        name: String(proposal.title),
-                        daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id,
-                        timeEnd: new Date(proposal.end * 1000),
-                        timeStart: new Date(proposal.start * 1000),
-                        timeCreated: new Date(proposal.created * 1000),
-                        data: {},
-                        url: proposal.link
-                    }
-                })
-            )
-        )
+    const result = await prisma.proposal
+        .createMany({
+            data: proposals.map((proposal) => {
+                return {
+                    externalId: proposal.id,
+                    name: String(proposal.title),
+                    daoId: daoHandler.daoId,
+                    daoHandlerId: daoHandler.id,
+                    timeEnd: new Date(proposal.end * 1000),
+                    timeStart: new Date(proposal.start * 1000),
+                    timeCreated: new Date(proposal.created * 1000),
+                    data: {},
+                    url: proposal.link
+                }
+            })
+        })
         .then((res) => {
             logger.log({
                 action: 'updateSnapshotProposals',
                 details: 'upsert',
-                item: { count: res.length, space: space }
+                item: { count: res.count, space: space }
             })
 
             return 'ok'

@@ -184,8 +184,7 @@ const processQueue = async () => {
                             id: item.clientId
                         },
                         data: {
-                            refreshStatus: RefreshStatus.NEW,
-                            lastRefreshTimestamp: new Date()
+                            refreshStatus: RefreshStatus.NEW
                         }
                     })
                     console.log({
@@ -218,7 +217,7 @@ const processQueue = async () => {
                 item: `${
                     process.env.DETECTIVE_URL
                 }/updateSnapshotDaoVotes?daoHandlerId=${
-                    item.clientId
+                    daoHandler?.id
                 }&${voters.map((voter) => `voters=${voter.address}`)}`
             })
 
@@ -271,8 +270,7 @@ const processQueue = async () => {
                                         }
                                     },
                                     data: {
-                                        refreshStatus: RefreshStatus.NEW,
-                                        lastRefreshTimestamp: new Date()
+                                        refreshStatus: RefreshStatus.NEW
                                     }
                                 })
                             console.log({
@@ -297,8 +295,7 @@ const processQueue = async () => {
                             }
                         },
                         data: {
-                            refreshStatus: RefreshStatus.NEW,
-                            lastRefreshTimestamp: new Date()
+                            refreshStatus: RefreshStatus.NEW
                         }
                     })
                     console.log({
