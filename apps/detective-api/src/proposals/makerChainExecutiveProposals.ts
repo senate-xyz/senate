@@ -16,7 +16,7 @@ const provider = new ethers.providers.JsonRpcProvider({
 
 const logger = new Logger('updateMakerChainProposals')
 
-export const updateMakerChainProposals = async (
+export const updateMakerChainExecutiveProposals = async (
     daoHandlerId: string,
     minBlockNumber: number
 ) => {
@@ -119,7 +119,18 @@ export const updateMakerChainProposals = async (
                             externalId: spellAddresses[i]
                         }
                     },
-                    update: {},
+                    update: {
+                        name: response.data.title.slice(0, 1024),
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id,
+                        timeEnd: new Date(response.data.spellData.expiration),
+                        timeStart: new Date(response.data.date),
+                        timeCreated: new Date(response.data.date),
+                        data: {},
+                        url:
+                            daoHandler.decoder['proposalUrl'] +
+                            spellAddresses[i]
+                    },
                     create: {
                         externalId: spellAddresses[i],
                         name: response.data.title.slice(0, 1024),

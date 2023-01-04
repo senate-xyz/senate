@@ -59,12 +59,13 @@ export class AppController {
                 )
                 break
             case DAOHandlerType.MAKER_EXECUTIVE:
-                response = await this.appService.updateMakerChainProposals(
-                    daoHandlerId,
-                    minBlockNumber
-                )
+                response =
+                    await this.appService.updateMakerChainExecutiveProposals(
+                        daoHandlerId,
+                        minBlockNumber
+                    )
                 break
-            case DAOHandlerType.MAKER_POLL_CREATE:
+            case DAOHandlerType.MAKER_POLL:
                 response = await this.appService.updateMakerChainPolls(
                     daoHandlerId,
                     minBlockNumber
@@ -82,12 +83,52 @@ export class AppController {
         //return response
     }
 
-    // @Post('updateVotes')
-    // async updateVotes(
-    //     @Query('daoId') daoId: string,
-    //     @Query('voterAddress') voterAddress: string
-    // ) {
-    //     await this.appService.updateVotes(daoId, voterAddress)
-    //     return 'OK'
-    // }
+    @Post('updateChainDaoVotes')
+    async updateChainDaoVotes(
+        @Query('daoHandlerId') daoHandlerId: string,
+        @Query('voters') voters: [string]
+    ) {
+        let response
+        const daoHandler = await prisma.dAOHandler.findFirst({
+            where: {
+                id: daoHandlerId
+            }
+        })
+
+        switch (daoHandler.type) {
+            case DAOHandlerType.AAVE_CHAIN:
+                response = await this.appService.updateAaveChainDaoVotes(
+                    daoHandlerId,
+                    voters
+                )
+                break
+            case DAOHandlerType.COMPOUND_CHAIN:
+                response = await this.appService.updateCompoundChainDaoVotes(
+                    daoHandlerId,
+                    voters
+                )
+                break
+            case DAOHandlerType.MAKER_EXECUTIVE:
+                response =
+                    await this.appService.updateMakerExecutiveChainDaoVotes(
+                        daoHandlerId,
+                        voters
+                    )
+                break
+            case DAOHandlerType.MAKER_POLL:
+                response = await this.appService.updateMakerPollChainDaoVotes(
+                    daoHandlerId,
+                    voters
+                )
+                break
+            case DAOHandlerType.UNISWAP_CHAIN:
+                response = await this.appService.updateUniswapChainDaoVotes(
+                    daoHandlerId,
+                    voters
+                )
+                break
+        }
+
+        return response
+    }
 }

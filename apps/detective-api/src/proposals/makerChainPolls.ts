@@ -36,12 +36,12 @@ export const updateMakerChainPolls = async (
 
     try {
         const pollingContractIface = new ethers.utils.Interface(
-            daoHandler.decoder['abi']
+            daoHandler.decoder['abi_create']
         )
 
         const logs = await provider.getLogs({
             fromBlock: Number(minBlockNumber),
-            address: daoHandler.decoder['address'],
+            address: daoHandler.decoder['address_create'],
             topics: [pollingContractIface.getEventTopic('PollCreated')]
         })
 
@@ -88,7 +88,16 @@ export const updateMakerChainPolls = async (
                             externalId: proposalOnChainId
                         }
                     },
-                    update: {},
+                    update: {
+                        name: String(title).slice(0, 1024),
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id,
+                        timeEnd: new Date(votingEndsTimestamp * 1000),
+                        timeStart: new Date(votingStartsTimestamp * 1000),
+                        timeCreated: new Date(proposalCreatedTimestamp * 1000),
+                        data: {},
+                        url: proposalUrl
+                    },
                     create: {
                         externalId: proposalOnChainId,
                         name: String(title).slice(0, 1024),

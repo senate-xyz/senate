@@ -94,6 +94,8 @@ export const updateAaveChainProposals = async (
                 },
                 update: {
                     name: String(title).slice(0, 1024),
+                    daoId: daoHandler.daoId,
+                    daoHandlerId: daoHandler.id,
                     timeEnd: new Date(votingEndsTimestamp * 1000),
                     timeStart: new Date(votingStartsTimestamp * 1000),
                     timeCreated: new Date(proposalCreatedTimestamp * 1000),

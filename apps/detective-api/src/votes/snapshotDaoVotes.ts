@@ -35,7 +35,7 @@ export const updateSnapshotDaoVotes = async (
         item: daoHandler
     })
 
-    const searchQuery = `{votes(first:100, skip: ${
+    const searchQuery = `{votes(first:1000, skip: ${
         daoHandler.dao.votes.length
     } orderBy: "created", orderDirection: asc, where: {voter_in: [${voters.map(
         (voter) => `"${voter}"`

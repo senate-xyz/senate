@@ -89,8 +89,7 @@ const FrontCard = (props: {
                             case 'AAVE_CHAIN':
                             case 'COMPOUND_CHAIN':
                             case 'UNISWAP_CHAIN':
-                            case 'MAKER_POLL_CREATE':
-                            case 'MAKER_POLL_VOTE':
+                            case 'MAKER_POLL':
                             case 'MAKER_EXECUTIVE':
                                 return (
                                     <Image

@@ -59,22 +59,17 @@ const seedData = async () => {
                         }
                     },
                     {
-                        type: DAOHandlerType.MAKER_POLL_CREATE,
+                        type: DAOHandlerType.MAKER_POLL,
                         decoder: {
-                            address:
+                            address_create:
                                 '0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d',
-                            abi: makerPollCreate.abi,
+                            address_vote:
+                                '0xD3A9FE267852281a1e6307a1C37CDfD76d39b133',
+                            abi_create: makerPollCreate.abi,
+                            abi_vote: makerPollVote.abi,
                             proposalUrl: 'https://vote.makerdao.com/polling/'
                         }
                     }
-                    // {
-                    //     type: DAOHandlerType.MAKER_POLL_VOTE,
-                    //     decoder: {
-                    //         address:
-                    //             '0xD3A9FE267852281a1e6307a1C37CDfD76d39b133',
-                    //         abi: makerPollVote.abi
-                    //     }
-                    // }
                 ]
             }
         }
@@ -91,8 +86,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'balancer.eth',
-                            proposalsCount: 0
+                            space: 'balancer.eth'
                         }
                     }
                 ]
@@ -111,8 +105,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'opcollective.eth',
-                            proposalsCount: 0
+                            space: 'opcollective.eth'
                         }
                     }
                 ]
@@ -131,8 +124,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'elfi.eth',
-                            proposalsCount: 0
+                            space: 'elfi.eth'
                         }
                     }
                 ]
@@ -151,8 +143,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: '1inch.eth',
-                            proposalsCount: 0
+                            space: '1inch.eth'
                         }
                     }
                 ]
@@ -171,8 +162,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'hop.eth',
-                            proposalsCount: 0
+                            space: 'hop.eth'
                         }
                     }
                 ]
@@ -191,8 +181,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'safe.eth',
-                            proposalsCount: 0
+                            space: 'safe.eth'
                         }
                     }
                 ]
@@ -222,8 +211,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'comp-vote.eth',
-                            proposalsCount: 0
+                            space: 'comp-vote.eth'
                         }
                     }
                 ]
@@ -242,8 +230,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'snxgov.eth',
-                            proposalsCount: 0
+                            space: 'snxgov.eth'
                         }
                     }
                 ]
@@ -262,8 +249,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'dydxgov.eth',
-                            proposalsCount: 0
+                            space: 'dydxgov.eth'
                         }
                     }
                 ]
@@ -285,15 +271,14 @@ const seedData = async () => {
                             address:
                                 '0x408ED6354d4973f66138C91495F2f2FCbd8724C3',
                             abi: uniswapGovBravo.abi,
-                            latestProposalBlock: 10000000,
+
                             proposalUrl: 'https://app.uniswap.org/#/vote/'
                         }
                     },
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'uniswap',
-                            proposalsCount: 0
+                            space: 'uniswap'
                         }
                     }
                 ]
@@ -312,8 +297,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'ens.eth',
-                            proposalsCount: 0
+                            space: 'ens.eth'
                         }
                     }
                 ]
@@ -332,8 +316,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'friendswithbenefits.eth',
-                            proposalsCount: 0
+                            space: 'friendswithbenefits.eth'
                         }
                     }
                 ]
@@ -352,8 +335,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'gnosis.eth',
-                            proposalsCount: 0
+                            space: 'gnosis.eth'
                         }
                     }
                 ]
@@ -375,8 +357,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'index-coop.eth',
-                            proposalsCount: 0
+                            space: 'index-coop.eth'
                         }
                     }
                 ]
@@ -395,8 +376,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'palvote.eth',
-                            proposalsCount: 0
+                            space: 'palvote.eth'
                         }
                     }
                 ]
@@ -415,8 +395,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'sushigov.eth',
-                            proposalsCount: 0
+                            space: 'sushigov.eth'
                         }
                     }
                 ]
@@ -435,8 +414,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'instadapp-gov.eth',
-                            proposalsCount: 0
+                            space: 'instadapp-gov.eth'
                         }
                     }
                 ]
@@ -475,8 +453,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'gearbox.eth',
-                            proposalsCount: 0
+                            space: 'gearbox.eth'
                         }
                     }
                 ]
@@ -495,8 +472,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'eulerdao.eth',
-                            proposalsCount: 0
+                            space: 'eulerdao.eth'
                         }
                     }
                 ]
@@ -515,8 +491,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'aurafinance.eth',
-                            proposalsCount: 0
+                            space: 'aurafinance.eth'
                         }
                     }
                 ]

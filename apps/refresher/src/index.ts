@@ -8,6 +8,11 @@ import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { processChainProposals } from './process/chainProposals'
+import { addChainDaoVotes } from './populate/addChainDaoVotes'
+import { processChainDaoVotes } from './process/chainDaoVotes'
+
+let INITIAL_RUN_CREATED_VOTE_HANDLERS = false
+let RUNNING_PROCESS_QUEUE = false
 
 const main = async () => {
     console.log({ action: 'refresh_start' })
@@ -16,32 +21,31 @@ const main = async () => {
     cron.schedule('*/1 * * * * *', async () => {
         await loadConfig()
         await createVoterHandlers()
+        INITIAL_RUN_CREATED_VOTE_HANDLERS = true
     })
 
     setInterval(async () => {
+        if (!INITIAL_RUN_CREATED_VOTE_HANDLERS) return
         processQueue()
     }, 250)
 
     cron.schedule('*/10 * * * * *', async () => {
+        if (!INITIAL_RUN_CREATED_VOTE_HANDLERS) return
+
         console.log({ action: 'populate_queue', details: 'start' })
 
         await addSnapshotProposalsToQueue()
         await addSnapshotDaoVotes()
         await addChainProposalsToQueue()
+        await addChainDaoVotes()
 
         console.log({ action: 'populate_queue', details: 'end' })
     })
 }
 
-enum PROCESS_QUEUE {
-    RUNNING,
-    NOT_RUNNING
-}
-let processQueueState = PROCESS_QUEUE.NOT_RUNNING
-
 const processQueue = async () => {
-    if (processQueueState == PROCESS_QUEUE.RUNNING) return
-    processQueueState = PROCESS_QUEUE.RUNNING
+    if (RUNNING_PROCESS_QUEUE == true) return
+    RUNNING_PROCESS_QUEUE = true
 
     console.log({ action: 'process_queue', details: 'start' })
 
@@ -52,7 +56,7 @@ const processQueue = async () => {
     if (!item) {
         console.log({ action: 'process_queue', details: 'empty queue' })
         console.log({ action: 'process_queue', details: 'end' })
-        processQueueState = PROCESS_QUEUE.NOT_RUNNING
+        RUNNING_PROCESS_QUEUE = false
         return
     }
 
@@ -70,6 +74,11 @@ const processQueue = async () => {
             processChainProposals(item)
             break
         }
+
+        case RefreshType.DAOCHAINVOTES: {
+            processChainDaoVotes(item)
+            break
+        }
     }
 
     const refreshQueue = await prisma.refreshQueue.delete({
@@ -83,7 +92,7 @@ const processQueue = async () => {
     })
 
     console.log({ action: 'process_queue', details: 'end' })
-    processQueueState = PROCESS_QUEUE.NOT_RUNNING
+    RUNNING_PROCESS_QUEUE = false
 }
 
 main()

@@ -6,6 +6,7 @@ export {
     type PrismaPromise,
     type Proposal,
     type Voter,
+    type Vote,
     type Subscription,
     type RefreshQueue,
     RefreshStatus,
