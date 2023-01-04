@@ -93,9 +93,19 @@ export const updateMakerChainPolls = async (
                     name: String(title).slice(0, 1024),
                     daoId: daoHandler.daoId,
                     daoHandlerId: daoHandler.id,
-                    timeEnd: new Date(votingEndsTimestamp * 1000),
-                    timeStart: new Date(votingStartsTimestamp * 1000),
-                    timeCreated: new Date(proposalCreatedTimestamp * 1000),
+                    timeEnd: isValidDate(new Date(votingEndsTimestamp * 1000))
+                        ? new Date(votingEndsTimestamp * 1000)
+                        : new Date(1),
+                    timeStart: isValidDate(
+                        new Date(votingStartsTimestamp * 1000)
+                    )
+                        ? new Date(votingStartsTimestamp * 1000)
+                        : new Date(1),
+                    timeCreated: isValidDate(
+                        new Date(proposalCreatedTimestamp * 1000)
+                    )
+                        ? new Date(proposalCreatedTimestamp * 1000)
+                        : new Date(1),
                     data: {},
                     url: proposalUrl
                 }
@@ -114,6 +124,9 @@ export const updateMakerChainPolls = async (
 
     return [{ daoHandlerId: daoHandlerId, response: 'ok' }]
 }
+
+const isValidDate = (dateObject) =>
+    new Date(dateObject).toString() !== 'Invalid Date'
 
 const formatTitle = (text: string): string => {
     const temp = text.split('summary:')[0].split('title: ')[1]
