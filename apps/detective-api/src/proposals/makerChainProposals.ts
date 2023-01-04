@@ -122,7 +122,7 @@ export const updateMakerChainProposals = async (
                     update: {},
                     create: {
                         externalId: spellAddresses[i],
-                        name: response.data.title,
+                        name: response.data.title.slice(0, 1024),
                         daoId: daoHandler.daoId,
                         daoHandlerId: daoHandler.id,
                         timeEnd: new Date(response.data.spellData.expiration),

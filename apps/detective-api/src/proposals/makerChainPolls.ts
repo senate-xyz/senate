@@ -90,7 +90,7 @@ export const updateMakerChainPolls = async (
                 update: {},
                 create: {
                     externalId: proposalOnChainId,
-                    name: String(title),
+                    name: String(title).slice(0, 1024),
                     daoId: daoHandler.daoId,
                     daoHandlerId: daoHandler.id,
                     timeEnd: new Date(votingEndsTimestamp * 1000),
