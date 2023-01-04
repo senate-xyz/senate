@@ -80,36 +80,31 @@ export const updateMakerChainPolls = async (
                 }
             })
 
-            const proposal = await prisma.proposal.upsert({
-                where: {
-                    externalId_daoId: {
+            const proposal = await prisma.proposal
+                .upsert({
+                    where: {
+                        externalId_daoId: {
+                            daoId: daoHandler.daoId,
+                            externalId: proposalOnChainId
+                        }
+                    },
+                    update: {},
+                    create: {
+                        externalId: proposalOnChainId,
+                        name: String(title).slice(0, 1024),
                         daoId: daoHandler.daoId,
-                        externalId: proposalOnChainId
+                        daoHandlerId: daoHandler.id,
+                        timeEnd: new Date(votingEndsTimestamp * 1000),
+                        timeStart: new Date(votingStartsTimestamp * 1000),
+                        timeCreated: new Date(proposalCreatedTimestamp * 1000),
+                        data: {},
+                        url: proposalUrl
                     }
-                },
-                update: {},
-                create: {
-                    externalId: proposalOnChainId,
-                    name: String(title).slice(0, 1024),
-                    daoId: daoHandler.daoId,
-                    daoHandlerId: daoHandler.id,
-                    timeEnd: isValidDate(new Date(votingEndsTimestamp * 1000))
-                        ? new Date(votingEndsTimestamp * 1000)
-                        : new Date(1),
-                    timeStart: isValidDate(
-                        new Date(votingStartsTimestamp * 1000)
-                    )
-                        ? new Date(votingStartsTimestamp * 1000)
-                        : new Date(1),
-                    timeCreated: isValidDate(
-                        new Date(proposalCreatedTimestamp * 1000)
-                    )
-                        ? new Date(proposalCreatedTimestamp * 1000)
-                        : new Date(1),
-                    data: {},
-                    url: proposalUrl
-                }
-            })
+                })
+                .catch((e) => {
+                    console.log(e)
+                    return { id: 0 }
+                })
 
             console.log('Inserted poll with id' + proposal.id)
         }
@@ -124,9 +119,6 @@ export const updateMakerChainPolls = async (
 
     return [{ daoHandlerId: daoHandlerId, response: 'ok' }]
 }
-
-const isValidDate = (dateObject) =>
-    new Date(dateObject).toString() !== 'Invalid Date'
 
 const formatTitle = (text: string): string => {
     const temp = text.split('summary:')[0].split('title: ')[1]
