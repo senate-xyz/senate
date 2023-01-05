@@ -17,7 +17,7 @@ export const updateSnapshotProposals = async (
 
     log_pd.log({
         level: 'info',
-        message: `New proposals update for ${daoHandlerToSnapshotSpaceMap[0].dao.name} - ${daoHandlerToSnapshotSpaceMap[0].type}`,
+        message: `New proposals update for ${spacesArray}}`,
         data: {
             daoHandlerId: daoHandlerToSnapshotSpaceMap[0],
             minCreatedAt: minCreatedAt
@@ -52,7 +52,7 @@ export const updateSnapshotProposals = async (
 
     log_pd.log({
         level: 'info',
-        message: `GraphQL query for ${daoHandlerToSnapshotSpaceMap[0].dao.name} - ${daoHandlerToSnapshotSpaceMap[0].type}`,
+        message: `GraphQL query for ${spacesArray}}`,
         data: {
             query: graphqlQuery
         }
@@ -78,7 +78,7 @@ export const updateSnapshotProposals = async (
             .catch(async (e) => {
                 log_pd.log({
                     level: 'error',
-                    message: `GraphQL error for ${daoHandlerToSnapshotSpaceMap[0].dao.name} - ${daoHandlerToSnapshotSpaceMap[0].type}`,
+                    message: `GraphQL error for ${spacesArray}}`,
                     data: {
                         error: e
                     }
@@ -100,7 +100,7 @@ export const updateSnapshotProposals = async (
     } catch (e) {
         log_pd.log({
             level: 'info',
-            message: `Could not update proposals for ${daoHandlerToSnapshotSpaceMap[0].dao.name} - ${daoHandlerToSnapshotSpaceMap[0].type}`,
+            message: `Could not update proposals for ${spacesArray}}`,
             data: {
                 error: e
             }
