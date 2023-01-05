@@ -13,7 +13,7 @@ const FrontCard = (props: {
     useEffect(() => {
         const fetch = async (url: string) => {
             const fac = new FastAverageColor()
-            fac.getColorAsync(url)
+            fac.getColorAsync(url + '.svg')
                 // eslint-disable-next-line promise/always-return
                 .then((color) => {
                     setBackgroundColor(`${color.hex}50`)
@@ -35,7 +35,7 @@ const FrontCard = (props: {
                 <Image
                     width='96'
                     height='96'
-                    src={props.dao.picture}
+                    src={props.dao.picture + '.svg'}
                     alt='dao logo'
                     data-testid='dao-picture'
                 />

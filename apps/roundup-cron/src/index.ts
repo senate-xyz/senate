@@ -256,7 +256,7 @@ const formatEmailTableData = async (
                         : notification.proposal.name,
                 proposalUrl: notification.proposal.url,
                 daoLogoUrl:
-                    process.env.WEBAPP_URL + notification.proposal.dao.picture,
+                    process.env.WEBAPP_URL + notification.proposal.dao.picture + '_small.png',
                 endHoursUTC: formatTwoDigit(
                     notification.proposal.timeEnd.getUTCHours()
                 ),

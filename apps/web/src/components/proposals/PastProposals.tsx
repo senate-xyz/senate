@@ -214,7 +214,7 @@ const PastProposal = (props: {
                         <Image
                             width={64}
                             height={64}
-                            src={props.proposal.dao.picture}
+                            src={props.proposal.dao.picture + '.svg'}
                             alt={props.proposal.dao.name}
                             data-testid='dao-picture'
                         />
