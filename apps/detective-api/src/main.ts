@@ -20,6 +20,7 @@ async function bootstrap() {
             {
                 event: 'start',
                 details: `detective-start`,
+                err: 'none',
                 item: { message: `Detective API running on port ${PORT}... ` }
             }
         ]
