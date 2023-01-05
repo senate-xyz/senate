@@ -190,14 +190,6 @@ export const updateMakerChainExecutiveProposals = async (
                         message: `Could not upsert new proposal for ${daoHandler.dao.name} - ${daoHandler.type}`,
                         data: { proposal: spellAddresses[i], error: e }
                     })
-                    await prisma.dAOHandler.update({
-                        where: {
-                            id: daoHandler.id
-                        },
-                        data: {
-                            lastChainProposalCreatedBlock: 0
-                        }
-                    })
                 })
         }
     } catch (e) {
