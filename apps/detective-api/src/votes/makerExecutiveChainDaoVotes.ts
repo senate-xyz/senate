@@ -1,12 +1,6 @@
 import { axiom } from '@senate/axiom'
-import {
-    DAOHandler,
-    DAOHandlerType,
-    RefreshStatus,
-    prisma
-} from '@senate/database'
+import { DAOHandler, DAOHandlerType, prisma } from '@senate/database'
 import { ethers } from 'ethers'
-import { hexZeroPad } from 'ethers/lib/utils'
 
 const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL)
@@ -34,7 +28,7 @@ export const updateMakerExecutiveChainDaoVotes = async (
         [
             {
                 event: 'updateMakerExecutiveChainDaoVotes',
-                details: `start`,
+                details: `run`,
                 item: { daoHandler: daoHandler, voters: voters }
             }
         ]
@@ -43,8 +37,8 @@ export const updateMakerExecutiveChainDaoVotes = async (
     const results = new Map()
 
     for (const voter of voters) {
-        results.set(voter, 'nok')
-        let votedSpells
+        results.set(voter, 'ok')
+        let votes
 
         const voterHandler = await prisma.voterHandler.findFirstOrThrow({
             where: {
@@ -77,39 +71,30 @@ export const updateMakerExecutiveChainDaoVotes = async (
             const latestVoteBlock = Number(voterLatestVoteBlock) ?? 0
             const currentBlock = await provider.getBlockNumber()
 
-            votedSpells = await getVotes(daoHandler, voter, latestVoteBlock)
+            votes = await getVotes(daoHandler, voter, latestVoteBlock)
 
-            if (!votedSpells) {
-                results.set(voter, 'ok')
+            if (!votes) {
                 continue
             }
 
-            for (const votedSpellAddress of votedSpells) {
+            for (const vote of votes) {
                 const proposal = await prisma.proposal.findFirst({
                     where: {
-                        externalId: votedSpellAddress,
+                        externalId: vote,
                         daoId: daoHandler.daoId,
                         daoHandlerId: daoHandler.id
                     }
                 })
 
                 if (!proposal) {
-                    await prisma.voterHandler.update({
-                        where: {
-                            id: voterHandler.id
-                        },
-                        data: {
-                            lastChainVoteCreatedBlock: 0,
-                            refreshStatus: RefreshStatus.NEW
-                        }
-                    })
+                    results.set(voter, 'nok')
                     await axiom.datasets.ingestEvents(
                         `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                         [
                             {
                                 event: 'updateMakerExecutiveChainDaoVotes',
                                 details: `update-voter`,
-                                err: `did not find proposal ${votedSpellAddress}`
+                                err: `did not find proposal ${vote}`
                             }
                         ]
                     )
@@ -157,18 +142,11 @@ export const updateMakerExecutiveChainDaoVotes = async (
                                 }
                             ]
                         )
+
                         return
                     })
                     .catch(async (e) => {
-                        await prisma.voterHandler.update({
-                            where: {
-                                id: voterHandler.id
-                            },
-                            data: {
-                                lastChainVoteCreatedBlock: 0,
-                                refreshStatus: RefreshStatus.NEW
-                            }
-                        })
+                        results.set(voter, 'nok')
                         await axiom.datasets.ingestEvents(
                             `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                             [
@@ -184,15 +162,6 @@ export const updateMakerExecutiveChainDaoVotes = async (
             }
         } catch (e) {
             results.set(voter, 'nok')
-            await prisma.voterHandler.update({
-                where: {
-                    id: voterHandler.id
-                },
-                data: {
-                    lastChainVoteCreatedBlock: 0,
-                    refreshStatus: RefreshStatus.NEW
-                }
-            })
             await axiom.datasets.ingestEvents(
                 `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                 [
@@ -205,7 +174,6 @@ export const updateMakerExecutiveChainDaoVotes = async (
             )
             console.log(e)
         }
-        results.set(voter, 'ok')
     }
 
     const resultsArray = Array.from(results, ([name, value]) => ({

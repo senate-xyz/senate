@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common'
 import { axiom } from '@senate/axiom'
-import { DAOHandlerType, prisma } from '@senate/database'
+import { DAOHandlerType, RefreshStatus, prisma } from '@senate/database'
 import axios from 'axios'
 
 export const updateSnapshotDaoVotes = async (
@@ -176,6 +176,11 @@ export const updateSnapshotDaoVotes = async (
                     return
                 })
                 .catch(async (e) => {
+                    votes
+                        .filter(
+                            (vote) => vote.proposal.id == snapshotProposalId
+                        )
+                        .map((vote) => results.set(vote.voter, 'nok'))
                     await axiom.datasets.ingestEvents(
                         `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                         [
@@ -187,11 +192,6 @@ export const updateSnapshotDaoVotes = async (
                         ]
                     )
                     console.log(e)
-                    votes
-                        .filter(
-                            (vote) => vote.proposal.id == snapshotProposalId
-                        )
-                        .map((vote) => results.set(vote.voter, 'nok'))
                 })
         }
     } catch (e) {

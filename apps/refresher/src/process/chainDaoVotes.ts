@@ -100,7 +100,8 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                     daoHandlerId: daoHandler?.id
                 },
                 data: {
-                    refreshStatus: RefreshStatus.NEW
+                    refreshStatus: RefreshStatus.NEW,
+                    lastChainVoteCreatedBlock: 0
                 }
             })
 

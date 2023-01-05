@@ -12,9 +12,6 @@
     ],
     "scripts": {
         "build": "tsup",
-        "prebuild": "npm run generate",
-        "predev": "npm run generate",
-        "studio": "prisma studio",
         "clean": "rimraf .turbo node_modules dist",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",

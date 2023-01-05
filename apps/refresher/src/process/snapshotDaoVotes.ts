@@ -84,7 +84,8 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                     daoHandlerId: daoHandler?.id
                 },
                 data: {
-                    refreshStatus: RefreshStatus.NEW
+                    refreshStatus: RefreshStatus.NEW,
+                    lastSnapshotVoteCreatedTimestamp: new Date(1)
                 }
             })
 
