@@ -1,5 +1,10 @@
 import { axiom } from '@senate/axiom'
-import { DAOHandler, DAOHandlerType, prisma } from '@senate/database'
+import {
+    DAOHandler,
+    DAOHandlerType,
+    RefreshStatus,
+    prisma
+} from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 
@@ -94,7 +99,8 @@ export const updateMakerPollChainDaoVotes = async (
                             id: voterHandler.id
                         },
                         data: {
-                            lastChainVoteCreatedBlock: 0
+                            lastChainVoteCreatedBlock: 0,
+                            refreshStatus: RefreshStatus.NEW
                         }
                     })
                     await axiom.datasets.ingestEvents(
@@ -159,7 +165,8 @@ export const updateMakerPollChainDaoVotes = async (
                                 id: voterHandler.id
                             },
                             data: {
-                                lastChainVoteCreatedBlock: 0
+                                lastChainVoteCreatedBlock: 0,
+                                refreshStatus: RefreshStatus.NEW
                             }
                         })
                         await axiom.datasets.ingestEvents(
@@ -182,7 +189,8 @@ export const updateMakerPollChainDaoVotes = async (
                     id: voterHandler.id
                 },
                 data: {
-                    lastChainVoteCreatedBlock: 0
+                    lastChainVoteCreatedBlock: 0,
+                    refreshStatus: RefreshStatus.NEW
                 }
             })
             await axiom.datasets.ingestEvents(
