@@ -52,9 +52,7 @@ export const addSnapshotProposalsToQueue = async () => {
                         AND: [
                             { type: DAOHandlerType.SNAPSHOT },
                             {
-                                refreshStatus: {
-                                    in: [RefreshStatus.PENDING]
-                                }
+                                refreshStatus: RefreshStatus.PENDING
                             },
                             {
                                 lastRefreshTimestamp: {

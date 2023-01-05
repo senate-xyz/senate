@@ -28,9 +28,8 @@ export const addSnapshotDaoVotes = async () => {
                                     some: {
                                         AND: [
                                             {
-                                                refreshStatus: {
-                                                    in: RefreshStatus.DONE
-                                                }
+                                                refreshStatus:
+                                                    RefreshStatus.DONE
                                             },
                                             {
                                                 lastRefreshTimestamp: {
@@ -56,9 +55,7 @@ export const addSnapshotDaoVotes = async () => {
                                     some: {
                                         AND: [
                                             {
-                                                refreshStatus: {
-                                                    in: RefreshStatus.NEW
-                                                }
+                                                refreshStatus: RefreshStatus.NEW
                                             }
                                         ]
                                     }
@@ -74,9 +71,8 @@ export const addSnapshotDaoVotes = async () => {
                                     some: {
                                         AND: [
                                             {
-                                                refreshStatus: {
-                                                    in: [RefreshStatus.PENDING]
-                                                }
+                                                refreshStatus:
+                                                    RefreshStatus.PENDING
                                             },
                                             {
                                                 lastRefreshTimestamp: {

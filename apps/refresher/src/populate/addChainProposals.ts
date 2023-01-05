@@ -83,9 +83,7 @@ export const addChainProposalsToQueue = async () => {
                                 }
                             },
                             {
-                                refreshStatus: {
-                                    in: [RefreshStatus.PENDING]
-                                }
+                                refreshStatus: RefreshStatus.PENDING
                             },
                             {
                                 lastRefreshTimestamp: {

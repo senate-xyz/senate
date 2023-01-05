@@ -75,9 +75,7 @@ export const addChainDaoVotes = async () => {
                                     some: {
                                         AND: [
                                             {
-                                                refreshStatus: {
-                                                    in: RefreshStatus.NEW
-                                                }
+                                                refreshStatus: RefreshStatus.NEW
                                             }
                                         ]
                                     }
@@ -103,9 +101,8 @@ export const addChainDaoVotes = async () => {
                                     some: {
                                         AND: [
                                             {
-                                                refreshStatus: {
-                                                    in: [RefreshStatus.PENDING]
-                                                }
+                                                refreshStatus:
+                                                    RefreshStatus.PENDING
                                             },
                                             {
                                                 lastRefreshTimestamp: {
