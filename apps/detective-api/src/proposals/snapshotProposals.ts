@@ -99,7 +99,7 @@ export const updateSnapshotProposals = async (
         }
     } catch (e) {
         log_pd.log({
-            level: 'info',
+            level: 'error',
             message: `Could not update proposals for ${spacesArray}}`,
             data: {
                 error: e
@@ -151,7 +151,6 @@ const upsertSnapshotProposals = async (
                     proposals: e
                 }
             })
-
             return 'nok'
         })
 

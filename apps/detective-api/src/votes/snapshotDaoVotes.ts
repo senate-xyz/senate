@@ -136,7 +136,20 @@ export const updateSnapshotDaoVotes = async (
                         }),
                     skipDuplicates: true
                 })
-                .then(async (res) => {
+                .then(async (r) => {
+                    log_pd.log({
+                        level: 'info',
+                        message: `Updated votes for ${votes
+                            .filter(
+                                (vote) => vote.proposal.id == snapshotProposalId
+                            )
+                            .map((vote) => vote.voter)} in ${
+                            daoHandler.dao.name
+                        } - ${daoHandler.type}`,
+                        data: {
+                            vote: r
+                        }
+                    })
                     return
                 })
                 .catch(async (e) => {
@@ -146,11 +159,29 @@ export const updateSnapshotDaoVotes = async (
                         )
                         .map((vote) => results.set(vote.voter, 'nok'))
 
-                    console.log(e)
+                    log_pd.log({
+                        level: 'error',
+                        message: `Could not update votes for ${votes
+                            .filter(
+                                (vote) => vote.proposal.id == snapshotProposalId
+                            )
+                            .map((vote) => vote.voter)} in ${
+                            daoHandler.dao.name
+                        } - ${daoHandler.type}`,
+                        data: {
+                            error: e
+                        }
+                    })
                 })
         }
     } catch (e) {
-        console.log(e)
+        log_pd.log({
+            level: 'error',
+            message: `Could not update votes for ${voters} in ${daoHandler.dao.name} - ${daoHandler.type}`,
+            data: {
+                error: e
+            }
+        })
         throw new InternalServerErrorException()
     }
 

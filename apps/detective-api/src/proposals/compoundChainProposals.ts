@@ -11,6 +11,7 @@ export const updateCompoundChainProposals = async (
     daoHandlerId: string,
     minBlockNumber: number
 ) => {
+    let response = 'ok'
     const daoHandler = await prisma.dAOHandler.findFirst({
         where: { id: daoHandlerId },
         include: { dao: true }
@@ -142,6 +143,7 @@ export const updateCompoundChainProposals = async (
                     return
                 })
                 .catch(async (e) => {
+                    response = 'nok'
                     log_pd.log({
                         level: 'error',
                         message: `Could not upsert new proposal for ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -158,6 +160,7 @@ export const updateCompoundChainProposals = async (
                 })
         }
     } catch (e) {
+        response = 'nok'
         log_pd.log({
             level: 'error',
             message: `Could not get new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -172,11 +175,11 @@ export const updateCompoundChainProposals = async (
         level: 'info',
         message: `Succesfully updated proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
         data: {
-            result: [{ daoHandlerId: daoHandlerId, response: 'ok' }]
+            result: [{ daoHandlerId: daoHandlerId, response: response }]
         }
     })
 
-    return [{ daoHandlerId: daoHandlerId, response: 'ok' }]
+    return [{ daoHandlerId: daoHandlerId, response: response }]
 }
 
 const formatTitle = (text: string): string => {

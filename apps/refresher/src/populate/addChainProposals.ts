@@ -162,7 +162,7 @@ export const addChainProposalsToQueue = async () => {
             })
             .catch((e) => {
                 log_ref.log({
-                    level: 'info',
+                    level: 'error',
                     message: `Failed to add to queue`,
                     data: {
                         error: e
@@ -194,7 +194,7 @@ export const addChainProposalsToQueue = async () => {
             })
             .catch((e) => {
                 log_ref.log({
-                    level: 'info',
+                    level: 'error',
                     message: `Failed to update refresh statuses`,
                     data: {
                         error: e
