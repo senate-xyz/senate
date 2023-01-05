@@ -193,7 +193,7 @@ export const updateCompoundChainDaoVotes = async (
             {
                 event: 'updateCompoundChainDaoVotes',
                 details: `success`,
-                item: { proposals: resultsArray, response: resultsArray }
+                item: { response: resultsArray }
             }
         ]
     )

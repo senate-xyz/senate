@@ -223,7 +223,7 @@ export const updateSnapshotDaoVotes = async (
             {
                 event: 'updateSnapshotDaoVotes',
                 details: `success`,
-                item: { proposals: resultsArray, response: resultsArray }
+                item: { response: resultsArray }
             }
         ]
     )

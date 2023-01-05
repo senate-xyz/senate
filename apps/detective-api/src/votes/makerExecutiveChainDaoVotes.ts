@@ -187,7 +187,7 @@ export const updateMakerExecutiveChainDaoVotes = async (
             {
                 event: 'updateMakerExecutiveChainDaoVotes',
                 details: `success`,
-                item: { proposals: resultsArray, response: resultsArray }
+                item: { response: resultsArray }
             }
         ]
     )

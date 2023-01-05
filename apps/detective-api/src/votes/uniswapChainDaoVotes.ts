@@ -193,7 +193,7 @@ export const updateUniswapChainDaoVotes = async (
             {
                 event: 'updateUniswapChainDaoVotes',
                 details: `success`,
-                item: { proposals: resultsArray, response: resultsArray }
+                item: { response: resultsArray }
             }
         ]
     )

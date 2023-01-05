@@ -188,7 +188,7 @@ export const updateMakerPollChainDaoVotes = async (
             {
                 event: 'updateMakerPollChainDaoVotes',
                 details: `success`,
-                item: { proposals: resultsArray, response: resultsArray }
+                item: { response: resultsArray }
             }
         ]
     )

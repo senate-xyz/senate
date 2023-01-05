@@ -104,7 +104,7 @@ export const updateUniswapChainProposals = async (
                     {
                         event: 'updateUniswapChainProposals',
                         details: `new-proposal`,
-                        proposal: proposals[i]
+                        item: { proposal: proposals[i] }
                     }
                 ]
             )

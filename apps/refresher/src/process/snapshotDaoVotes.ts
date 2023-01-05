@@ -59,7 +59,8 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.DONE,
-                    lastRefreshTimestamp: new Date()
+                    lastRefreshTimestamp: new Date(),
+                    lastSnapshotVoteCreatedTimestamp: new Date()
                 }
             })
 
