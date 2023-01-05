@@ -27,10 +27,7 @@ export const addSnapshotDaoVotes = async () => {
                                         AND: [
                                             {
                                                 refreshStatus: {
-                                                    in: [
-                                                        RefreshStatus.DONE,
-                                                        RefreshStatus.NEW
-                                                    ]
+                                                    in: RefreshStatus.DONE
                                                 }
                                             },
                                             {
@@ -41,6 +38,24 @@ export const addSnapshotDaoVotes = async () => {
                                                                 60 *
                                                                 1000
                                                     )
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        AND: [
+                            { type: DAOHandlerType.SNAPSHOT },
+                            {
+                                voterHandlers: {
+                                    some: {
+                                        AND: [
+                                            {
+                                                refreshStatus: {
+                                                    in: RefreshStatus.NEW
                                                 }
                                             }
                                         ]

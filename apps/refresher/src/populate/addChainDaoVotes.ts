@@ -36,12 +36,8 @@ export const addChainDaoVotes = async () => {
                                     some: {
                                         AND: [
                                             {
-                                                refreshStatus: {
-                                                    in: [
-                                                        RefreshStatus.DONE,
-                                                        RefreshStatus.NEW
-                                                    ]
-                                                }
+                                                refreshStatus:
+                                                    RefreshStatus.DONE
                                             },
                                             {
                                                 lastRefreshTimestamp: {
@@ -51,6 +47,34 @@ export const addChainDaoVotes = async () => {
                                                                 60 *
                                                                 1000
                                                     )
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        AND: [
+                            {
+                                type: {
+                                    in: [
+                                        DAOHandlerType.AAVE_CHAIN,
+                                        DAOHandlerType.COMPOUND_CHAIN,
+                                        DAOHandlerType.MAKER_EXECUTIVE,
+                                        DAOHandlerType.MAKER_POLL,
+                                        DAOHandlerType.UNISWAP_CHAIN
+                                    ]
+                                }
+                            },
+                            {
+                                voterHandlers: {
+                                    some: {
+                                        AND: [
+                                            {
+                                                refreshStatus: {
+                                                    in: RefreshStatus.NEW
                                                 }
                                             }
                                         ]
