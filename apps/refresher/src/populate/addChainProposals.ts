@@ -33,9 +33,7 @@ export const addChainProposalsToQueue = async () => {
                                 }
                             },
                             {
-                                refreshStatus: {
-                                    in: [RefreshStatus.DONE, RefreshStatus.NEW]
-                                }
+                                refreshStatus: RefreshStatus.DONE
                             },
                             {
                                 lastRefreshTimestamp: {
@@ -46,6 +44,25 @@ export const addChainProposalsToQueue = async () => {
                                                 1000
                                     )
                                 }
+                            }
+                        ]
+                    },
+                    {
+                        //normal refresh interval
+                        AND: [
+                            {
+                                type: {
+                                    in: [
+                                        DAOHandlerType.AAVE_CHAIN,
+                                        DAOHandlerType.COMPOUND_CHAIN,
+                                        DAOHandlerType.MAKER_EXECUTIVE,
+                                        DAOHandlerType.MAKER_POLL,
+                                        DAOHandlerType.UNISWAP_CHAIN
+                                    ]
+                                }
+                            },
+                            {
+                                refreshStatus: RefreshStatus.NEW
                             }
                         ]
                     },

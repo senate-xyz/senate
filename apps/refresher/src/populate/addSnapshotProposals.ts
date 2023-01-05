@@ -23,9 +23,7 @@ export const addSnapshotProposalsToQueue = async () => {
                         AND: [
                             { type: DAOHandlerType.SNAPSHOT },
                             {
-                                refreshStatus: {
-                                    in: [RefreshStatus.DONE, RefreshStatus.NEW]
-                                }
+                                refreshStatus: RefreshStatus.DONE
                             },
                             {
                                 lastRefreshTimestamp: {
@@ -36,6 +34,14 @@ export const addSnapshotProposalsToQueue = async () => {
                                                 1000
                                     )
                                 }
+                            }
+                        ]
+                    },
+                    {
+                        AND: [
+                            { type: DAOHandlerType.SNAPSHOT },
+                            {
+                                refreshStatus: RefreshStatus.NEW
                             }
                         ]
                     },
