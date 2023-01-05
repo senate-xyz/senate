@@ -29,8 +29,8 @@ const main = async () => {
         await loadConfig()
         await createVoterHandlers()
         await addSnapshotProposalsToQueue()
-        await addSnapshotDaoVotes()
         await addChainProposalsToQueue()
+        await addSnapshotDaoVotes()
         await addChainDaoVotes()
     })
 }

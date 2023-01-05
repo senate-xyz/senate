@@ -23,7 +23,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
 
     log_ref.log({
         level: 'info',
-        message: `Detective request`,
+        message: `Snapshot proposals detective request`,
         data: {
             url: proposalDetectiveReq
         }
@@ -35,7 +35,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
         .then(async (data) => {
             log_ref.log({
                 level: 'info',
-                message: `Detective response`,
+                message: `Snapshot proposals detective response`,
                 data: {
                     data: data
                 }
@@ -131,7 +131,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
         .catch(async (e) => {
             log_ref.log({
                 level: 'error',
-                message: `Proposal detective request failed`,
+                message: `Snapshot proposals detective request failed`,
                 data: {
                     error: e
                 }
