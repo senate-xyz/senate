@@ -256,7 +256,5 @@ const getVotes = async (
         }
     })
 
-    console.log(votes)
-
     return votes
 }

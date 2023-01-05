@@ -224,9 +224,6 @@ const getVotes = async (
     voterAddress: string,
     latestVoteBlock: number
 ): Promise<string[]> => {
-    if (!daoHandler.decoder) return []
-    if (!Array.isArray(daoHandler.decoder)) return []
-
     const iface = new ethers.utils.Interface(daoHandler.decoder['abi'])
     const chiefContract = new ethers.Contract(
         daoHandler.decoder['address'],
@@ -241,11 +238,6 @@ const getVotes = async (
     const voteSingleActionTopic =
         '0xa69beaba00000000000000000000000000000000000000000000000000000000'
     const voterAddressTopic = '0x' + '0'.repeat(24) + voterAddress.substring(2)
-    console.log('\n')
-    console.log(voterAddressTopic, voterAddressTopic.length)
-    const tmp = hexZeroPad(voterAddress, 32)
-    console.log(tmp, tmp.length)
-    console.log('\n')
 
     const logs = await provider.getLogs({
         fromBlock: latestVoteBlock,
