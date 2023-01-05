@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common'
+import { axiom } from '@senate/axiom'
 import { DAOHandler, DAOHandlerType, prisma } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
@@ -12,20 +12,11 @@ type Vote = {
     support: string
 }
 
-const logger = new Logger('updateUniswapChainDaoVotes')
-
 export const updateUniswapChainDaoVotes = async (
     daoHandlerId: string,
     voters: [string]
 ) => {
-    logger.log({ action: 'updateUniswapChainDaoVotes', details: 'start' })
     if (!Array.isArray(voters)) voters = [voters]
-
-    logger.log({
-        action: 'updateUniswapChainDaoVotes',
-        details: 'voters',
-        item: voters
-    })
 
     const daoHandler = await prisma.dAOHandler.findFirstOrThrow({
         where: { id: daoHandlerId, type: DAOHandlerType.UNISWAP_CHAIN },
@@ -38,11 +29,16 @@ export const updateUniswapChainDaoVotes = async (
         }
     })
 
-    logger.log({
-        action: 'updateUniswapChainDaoVotes',
-        details: 'daohandler',
-        item: daoHandler
-    })
+    await axiom.datasets.ingestEvents(
+        `proposal-detective-${process.env.DEPLOYMENT}`,
+        [
+            {
+                event: 'updateUniswapChainDaoVotes',
+                details: `run`,
+                item: { daoHandler: daoHandler, voters: voters }
+            }
+        ]
+    )
 
     const results = new Map()
 
@@ -63,14 +59,19 @@ export const updateUniswapChainDaoVotes = async (
 
         const voterLatestVoteBlock = voterHandler.lastChainVoteCreatedBlock
 
-        logger.log({
-            action: 'updateUniswapChainDaoVotes',
-            details: 'fetching voter',
-            item: {
-                voter: voter,
-                lastChainVoteCreatedBlock: voterLatestVoteBlock
-            }
-        })
+        await axiom.datasets.ingestEvents(
+            `proposal-detective-${process.env.DEPLOYMENT}`,
+            [
+                {
+                    event: 'updateUniswapChainDaoVotes',
+                    details: `update-voter`,
+                    item: {
+                        voter: voter,
+                        lastChainVoteCreatedBlock: voterLatestVoteBlock
+                    }
+                }
+            ]
+        )
 
         try {
             const latestVoteBlock = Number(voterLatestVoteBlock) ?? 0
@@ -93,9 +94,6 @@ export const updateUniswapChainDaoVotes = async (
                 })
 
                 if (!proposal) {
-                    logger.error(
-                        `GovBravo proposal with externalId ${vote.proposalOnChainId} does not exist in DB for daoId: ${daoHandler.daoId} & daoHandlerId: ${daoHandler.id}`
-                    )
                     await prisma.voterHandler.update({
                         where: {
                             id: voterHandler.id
@@ -104,10 +102,18 @@ export const updateUniswapChainDaoVotes = async (
                             lastChainVoteCreatedBlock: 0
                         }
                     })
-
-                    continue
+                    await axiom.datasets.ingestEvents(
+                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        [
+                            {
+                                event: 'updateUniswapChainDaoVotes',
+                                details: `update-voter`,
+                                err: `did not find proposal ${vote.proposalOnChainId}`
+                            }
+                        ]
+                    )
+                    break
                 }
-
                 await prisma.vote
                     .upsert({
                         where: {
@@ -131,11 +137,6 @@ export const updateUniswapChainDaoVotes = async (
                         }
                     })
                     .then(async (r) => {
-                        logger.log({
-                            action: 'updateUniswapChainDaoVotes',
-                            details: 'upsert vote',
-                            item: r
-                        })
                         await prisma.voterHandler.update({
                             where: {
                                 id: voterHandler.id
@@ -144,11 +145,41 @@ export const updateUniswapChainDaoVotes = async (
                                 lastChainVoteCreatedBlock: currentBlock
                             }
                         })
+                        await axiom.datasets.ingestEvents(
+                            'proposal-detective',
+                            [
+                                {
+                                    event: 'updateUniswapChainDaoVotes',
+                                    details: `update-voter`,
+                                    item: { vote: r }
+                                }
+                            ]
+                        )
                         return
                     })
+                    .catch(async (e) => {
+                        await prisma.voterHandler.update({
+                            where: {
+                                id: voterHandler.id
+                            },
+                            data: {
+                                lastChainVoteCreatedBlock: 0
+                            }
+                        })
+                        await axiom.datasets.ingestEvents(
+                            'proposal-detective',
+                            [
+                                {
+                                    event: 'updateUniswapChainDaoVotes',
+                                    details: `update-voter`,
+                                    err: JSON.stringify(e)
+                                }
+                            ]
+                        )
+                        console.log(e)
+                    })
             }
-        } catch (err) {
-            logger.error('Error while updating governor bravo votes', err)
+        } catch (e) {
             results.set(voter, 'nok')
             await prisma.voterHandler.update({
                 where: {
@@ -158,26 +189,37 @@ export const updateUniswapChainDaoVotes = async (
                     lastChainVoteCreatedBlock: 0
                 }
             })
+            await axiom.datasets.ingestEvents(
+                `proposal-detective-${process.env.DEPLOYMENT}`,
+                [
+                    {
+                        event: 'updateUniswapChainDaoVotes',
+                        details: `run`,
+                        err: JSON.stringify(e)
+                    }
+                ]
+            )
+            console.log(e)
         }
         results.set(voter, 'ok')
     }
-
-    logger.log({
-        action: 'updateUniswapChainDaoVotes',
-        details: 'voters',
-        item: voters
-    })
 
     const resultsArray = Array.from(results, ([name, value]) => ({
         voterAddress: name,
         response: value
     }))
 
-    logger.log({
-        action: 'updateUniswapChainDaoVotes',
-        details: 'result',
-        item: resultsArray
-    })
+    await axiom.datasets.ingestEvents(
+        `proposal-detective-${process.env.DEPLOYMENT}`,
+        [
+            {
+                event: 'updateUniswapChainDaoVotes',
+                details: `success`,
+                item: { proposals: resultsArray, response: resultsArray }
+            }
+        ]
+    )
+
     return resultsArray
 }
 

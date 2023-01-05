@@ -1,13 +1,11 @@
-import { InternalServerErrorException, Logger } from '@nestjs/common'
+import { InternalServerErrorException } from '@nestjs/common'
+import { axiom } from '@senate/axiom'
 import { prisma } from '@senate/database'
-import axios from 'axios'
 import { ethers } from 'ethers'
 
 const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL)
 })
-
-const logger = new Logger('updateUniswapChainProposals')
 
 export const updateUniswapChainProposals = async (
     daoHandlerId: string,
@@ -17,14 +15,45 @@ export const updateUniswapChainProposals = async (
         where: { id: daoHandlerId }
     })
 
-    if (!(await provider.blockNumber))
-        return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
+    await axiom.datasets.ingestEvents(
+        `proposal-detective-${process.env.DEPLOYMENT}`,
+        [
+            {
+                event: 'updateUniswapChainProposals',
+                details: `run`,
+                item: { daoHandler: daoHandler, minBlockNumber: minBlockNumber }
+            }
+        ]
+    )
 
-    if (!daoHandler.decoder) {
+    if (!(await provider.blockNumber)) {
+        await axiom.datasets.ingestEvents(
+            `proposal-detective-${process.env.DEPLOYMENT}`,
+            [
+                {
+                    event: 'updateUniswapChainProposals',
+                    details: `run`,
+                    err: 'could not get provider.blockNumber'
+                }
+            ]
+        )
         return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
     }
 
-    logger.log(`Searching from block ${minBlockNumber} ...`)
+    if (!daoHandler.decoder) {
+        await axiom.datasets.ingestEvents(
+            `proposal-detective-${process.env.DEPLOYMENT}`,
+            [
+                {
+                    event: 'updateUniswapChainProposals',
+                    details: `run`,
+                    err: 'could not get daoHandler decoder'
+                }
+            ]
+        )
+        return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
+    }
+
     let proposals
 
     try {
@@ -58,8 +87,7 @@ export const updateUniswapChainProposals = async (
             const votingEndsTimestamp =
                 proposalCreatedTimestamp +
                 (proposals[i].eventData.endBlock - proposals[i].txBlock) * 12
-            const title = await getProposalTitle(
-                daoHandler.decoder['address'],
+            const title = await formatTitle(
                 proposals[i].eventData.ipfsHash
                     ? proposals[i].eventData.ipfsHash
                     : proposals[i].eventData.description
@@ -70,79 +98,121 @@ export const updateUniswapChainProposals = async (
                 proposals[i].eventData.id
             ).toString()
 
-            console.log(proposalOnChainId)
-            console.log('Ipfs hash ', proposals[i].eventData.ipfsHash)
-            logger.log(
-                `Updating proposal ${proposalOnChainId}: ${title} with url ${proposalUrl}`
-            )
-            console.log('\n')
-
-            await prisma.dAOHandler.update({
-                where: {
-                    id: daoHandler.id
-                },
-                data: {
-                    lastChainProposalCreatedBlock: proposals[i].txBlock + 1
-                }
-            })
-
-            await prisma.proposal.upsert({
-                where: {
-                    externalId_daoId: {
-                        daoId: daoHandler.daoId,
-                        externalId: proposalOnChainId
+            await axiom.datasets.ingestEvents(
+                `proposal-detective-${process.env.DEPLOYMENT}`,
+                [
+                    {
+                        event: 'updateUniswapChainProposals',
+                        details: `new-proposal`,
+                        proposal: proposals[i]
                     }
-                },
-                update: {
-                    name: String(title).slice(0, 1024),
-                    daoId: daoHandler.daoId,
-                    daoHandlerId: daoHandler.id,
-                    timeEnd: new Date(votingEndsTimestamp * 1000),
-                    timeStart: new Date(votingStartsTimestamp * 1000),
-                    timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                    data: {},
-                    url: proposalUrl
-                },
-                create: {
-                    externalId: proposalOnChainId,
-                    name: String(title).slice(0, 1024),
-                    daoId: daoHandler.daoId,
-                    daoHandlerId: daoHandler.id,
-                    timeEnd: new Date(votingEndsTimestamp * 1000),
-                    timeStart: new Date(votingStartsTimestamp * 1000),
-                    timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                    data: {},
-                    url: proposalUrl
-                }
-            })
+                ]
+            )
+
+            await prisma.proposal
+                .upsert({
+                    where: {
+                        externalId_daoId: {
+                            daoId: daoHandler.daoId,
+                            externalId: proposalOnChainId
+                        }
+                    },
+                    update: {
+                        name: String(title).slice(0, 1024),
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id,
+                        timeEnd: new Date(votingEndsTimestamp * 1000),
+                        timeStart: new Date(votingStartsTimestamp * 1000),
+                        timeCreated: new Date(proposalCreatedTimestamp * 1000),
+                        data: {},
+                        url: proposalUrl
+                    },
+                    create: {
+                        externalId: proposalOnChainId,
+                        name: String(title).slice(0, 1024),
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id,
+                        timeEnd: new Date(votingEndsTimestamp * 1000),
+                        timeStart: new Date(votingStartsTimestamp * 1000),
+                        timeCreated: new Date(proposalCreatedTimestamp * 1000),
+                        data: {},
+                        url: proposalUrl
+                    }
+                })
+                .then(async (r) => {
+                    await prisma.dAOHandler.update({
+                        where: {
+                            id: daoHandler.id
+                        },
+                        data: {
+                            lastChainProposalCreatedBlock:
+                                proposals[i].txBlock + 1
+                        }
+                    })
+                    await axiom.datasets.ingestEvents(
+                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        [
+                            {
+                                event: 'updateUniswapChainProposals',
+                                details: `new-proposal`,
+                                item: { proposal: r }
+                            }
+                        ]
+                    )
+                    return
+                })
+                .catch(async (e) => {
+                    await prisma.dAOHandler.update({
+                        where: {
+                            id: daoHandler.id
+                        },
+                        data: {
+                            lastChainProposalCreatedBlock: 0
+                        }
+                    })
+                    await axiom.datasets.ingestEvents(
+                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        [
+                            {
+                                event: 'updateUniswapChainProposals',
+                                details: `new-proposal`,
+                                err: JSON.stringify(e)
+                            }
+                        ]
+                    )
+                    console.log(e)
+                })
         }
-    } catch (err) {
-        logger.error('Error while updating Gov Bravo Proposals', err)
+    } catch (e) {
+        await axiom.datasets.ingestEvents(
+            `proposal-detective-${process.env.DEPLOYMENT}`,
+            [
+                {
+                    event: 'updateUniswapChainProposals',
+                    details: `run`,
+                    err: JSON.stringify(e)
+                }
+            ]
+        )
+        console.log(e)
         throw new InternalServerErrorException()
     }
 
-    logger.log('\n\n')
-    logger.log(`inserted ${proposals.length} chain proposals`)
-    logger.log('======================================================\n\n')
+    await axiom.datasets.ingestEvents(
+        `proposal-detective-${process.env.DEPLOYMENT}`,
+        [
+            {
+                event: 'updateUniswapChainProposals',
+                details: `success`,
+                item: {
+                    proposals: proposals.length,
+                    response: [{ daoHandlerId: daoHandlerId, response: 'ok' }]
+                }
+            }
+        ]
+    )
 
     return [{ daoHandlerId: daoHandlerId, response: 'ok' }]
-}
-
-const fetchProposalInfoFromIPFS = async (
-    hexHash: string
-): Promise<{ title: string }> => {
-    let title
-    try {
-        const response = await axios.get(
-            process.env.IPFS_GATEWAY_URL + 'f01701220' + hexHash.substring(2)
-        )
-        title = response.data.title
-    } catch (error) {
-        title = 'Unknown'
-        console.error(error)
-    }
-
-    return title
 }
 
 const formatTitle = (text: string): string => {
@@ -158,16 +228,4 @@ const formatTitle = (text: string): string => {
     }
 
     return temp
-}
-
-const getProposalTitle = async (
-    daoAddress: string,
-    text: string
-): Promise<unknown> => {
-    if (daoAddress === '0xEC568fffba86c094cf06b22134B23074DFE2252c') {
-        // Aave
-        return await fetchProposalInfoFromIPFS(text)
-    } else {
-        return formatTitle(text)
-    }
 }

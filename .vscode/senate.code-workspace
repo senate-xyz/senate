@@ -27,6 +27,10 @@
     {
       "name": "📦 @senate/database",
       "path": "../packages/database"
+    },
+    {
+      "name": "📦 @senate/axiom",
+      "path": "../packages/axiom"
     }
   ],
   "settings": {

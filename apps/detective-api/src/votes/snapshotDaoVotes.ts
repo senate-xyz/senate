@@ -1,24 +1,16 @@
-import { InternalServerErrorException, Logger } from '@nestjs/common'
+import { InternalServerErrorException } from '@nestjs/common'
+import { axiom } from '@senate/axiom'
 import { DAOHandlerType, prisma } from '@senate/database'
 import axios from 'axios'
-
-const logger = new Logger('SnapshotDaoVotes')
 
 export const updateSnapshotDaoVotes = async (
     daoHandlerId: string,
     voters: [string]
 ) => {
-    logger.log({ action: 'updateSnapshotDaoVotes', details: 'start' })
     if (!Array.isArray(voters)) voters = [voters]
 
     const results = new Map()
     voters.map((voter) => results.set(voter, 'ok'))
-
-    logger.log({
-        action: 'updateSnapshotDaoVotes',
-        details: 'voters',
-        item: voters
-    })
 
     const daoHandler = await prisma.dAOHandler.findFirstOrThrow({
         where: { id: daoHandlerId, type: DAOHandlerType.SNAPSHOT },
@@ -29,11 +21,16 @@ export const updateSnapshotDaoVotes = async (
         }
     })
 
-    logger.log({
-        action: 'updateSnapshotDaoVotes',
-        details: 'daohandler',
-        item: daoHandler
-    })
+    await axiom.datasets.ingestEvents(
+        `proposal-detective-${process.env.DEPLOYMENT}`,
+        [
+            {
+                event: 'updateSnapshotDaoVotes',
+                details: `run`,
+                item: { daoHandler: daoHandler, voters: voters }
+            }
+        ]
+    )
 
     const searchQuery = `{votes(first:1000, skip: ${
         daoHandler.dao.votes.length
@@ -55,11 +52,17 @@ export const updateSnapshotDaoVotes = async (
                         }
                     }
                 }`
-    logger.log({
-        action: 'updateSnapshotDaoVotes',
-        details: 'search',
-        item: searchQuery
-    })
+
+    await axiom.datasets.ingestEvents(
+        `proposal-detective-${process.env.DEPLOYMENT}`,
+        [
+            {
+                event: 'updateSnapshotDaoVotes',
+                details: `run`,
+                item: { searchQuery: searchQuery }
+            }
+        ]
+    )
 
     try {
         const res = await axios
@@ -79,12 +82,18 @@ export const updateSnapshotDaoVotes = async (
             .then((data) => {
                 return data.data.votes
             })
-            .catch((e) => {
-                logger.log({
-                    action: 'updateSnapshotDaoVotes',
-                    details: 'search',
-                    item: { err: e }
-                })
+            .catch(async (e) => {
+                await axiom.datasets.ingestEvents(
+                    `proposal-detective-${process.env.DEPLOYMENT}`,
+                    [
+                        {
+                            event: 'updateSnapshotDaoVotes',
+                            details: `run`,
+                            err: JSON.stringify(e)
+                        }
+                    ]
+                )
+
                 return
             })
 
@@ -93,11 +102,16 @@ export const updateSnapshotDaoVotes = async (
             (vote) => vote.proposal != null && vote.proposal.id != null
         )
 
-        logger.log({
-            action: 'updateSnapshotDaoVotes',
-            details: 'result',
-            item: { count: votes.length }
-        })
+        await axiom.datasets.ingestEvents(
+            `proposal-detective-${process.env.DEPLOYMENT}`,
+            [
+                {
+                    event: 'updateSnapshotDaoVotes',
+                    details: `run`,
+                    item: { res: votes }
+                }
+            ]
+        )
 
         const proposalIds = [...new Set(votes.map((vote) => vote.proposal.id))]
 
@@ -111,11 +125,16 @@ export const updateSnapshotDaoVotes = async (
             })
 
             if (!proposal) {
-                logger.log({
-                    action: 'updateSnapshotDaoVotes',
-                    details: 'proposal not found',
-                    item: { id: snapshotProposalId }
-                })
+                await axiom.datasets.ingestEvents(
+                    `proposal-detective-${process.env.DEPLOYMENT}`,
+                    [
+                        {
+                            event: 'updateSnapshotDaoVotes',
+                            details: `update-voter`,
+                            err: `did not find proposal ${snapshotProposalId}`
+                        }
+                    ]
+                )
                 continue
             }
 
@@ -142,26 +161,32 @@ export const updateSnapshotDaoVotes = async (
                         }),
                     skipDuplicates: true
                 })
-                .then((res) => {
-                    logger.log({
-                        action: 'updateSnapshotDaoVotes',
-                        details: 'createMany',
-                        item: res
-                    })
+                .then(async (res) => {
+                    await axiom.datasets.ingestEvents(
+                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        [
+                            {
+                                event: 'updateSnapshotDaoVotes',
+                                details: `update-voters`,
+                                item: res
+                            }
+                        ]
+                    )
+
                     return
                 })
-                .catch((e) => {
-                    logger.log({
-                        action: 'updateSnapshotDaoVotes',
-                        details: 'createMany',
-                        item: {
-                            err: e,
-                            daoHandler: daoHandler,
-                            dao: daoHandler.dao,
-                            proposal: proposal
-                        }
-                    })
-
+                .catch(async (e) => {
+                    await axiom.datasets.ingestEvents(
+                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        [
+                            {
+                                event: 'updateSnapshotDaoVotes',
+                                details: `update-voters`,
+                                err: JSON.stringify(e)
+                            }
+                        ]
+                    )
+                    console.log(e)
                     votes
                         .filter(
                             (vote) => vote.proposal.id == snapshotProposalId
@@ -170,13 +195,17 @@ export const updateSnapshotDaoVotes = async (
                 })
         }
     } catch (e) {
-        logger.log({
-            action: 'updateSnapshotDaoVotes',
-            details: 'upsert',
-            item: {
-                err: e
-            }
-        })
+        await axiom.datasets.ingestEvents(
+            `proposal-detective-${process.env.DEPLOYMENT}`,
+            [
+                {
+                    event: 'updateSnapshotDaoVotes',
+                    details: `run`,
+                    err: JSON.stringify(e)
+                }
+            ]
+        )
+        console.log(e)
         throw new InternalServerErrorException()
     }
 
@@ -185,10 +214,16 @@ export const updateSnapshotDaoVotes = async (
         response: value
     }))
 
-    logger.log({
-        action: 'updateSnapshotDaoVotes',
-        details: 'result',
-        item: resultsArray
-    })
+    await axiom.datasets.ingestEvents(
+        `proposal-detective-${process.env.DEPLOYMENT}`,
+        [
+            {
+                event: 'updateSnapshotDaoVotes',
+                details: `success`,
+                item: { proposals: resultsArray, response: resultsArray }
+            }
+        ]
+    )
+
     return resultsArray
 }

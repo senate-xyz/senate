@@ -1,29 +1,34 @@
-import { InternalServerErrorException, Logger } from '@nestjs/common'
+import { InternalServerErrorException } from '@nestjs/common'
 import { prisma } from '@senate/database'
 import { DAOHandler } from '@prisma/client'
 
 import axios from 'axios'
-
-const logger = new Logger('SnapshotProposals')
+import { axiom } from '@senate/axiom'
 
 export const updateSnapshotProposals = async (
     daoHandlerIds: string[],
     minCreatedAt: number
 ): Promise<Array<{ daoHandlerId: string; response: string }>> => {
-    logger.log({ action: 'updateSnapshotProposals', details: 'start' })
     const results: Array<{ daoHandlerId: string; response: string }> = []
 
     const daoHandlerToSnapshotSpaceMap: Map<DAOHandler, string> =
         await getSnapshotSpaces(daoHandlerIds)
     const spacesArray = Array.from(daoHandlerToSnapshotSpaceMap.values())
 
-    logger.log({
-        action: 'updateSnapshotProposals',
-        details: 'spaces_array',
-        item: spacesArray
-    })
-
-    logger.log({ action: 'updateSnapshotProposals', details: 'search' })
+    await axiom.datasets.ingestEvents(
+        `proposal-detective-${process.env.DEPLOYMENT}`,
+        [
+            {
+                event: 'updateSnapshotProposals',
+                details: `run`,
+                item: {
+                    daoHandlers: daoHandlerIds,
+                    minCreatedAt: minCreatedAt,
+                    spaces: spacesArray
+                }
+            }
+        ]
+    )
 
     let proposals
 
@@ -66,6 +71,18 @@ export const updateSnapshotProposals = async (
             .then((data) => {
                 return data.data.proposals
             })
+            .catch(async (e) => {
+                await axiom.datasets.ingestEvents(
+                    `proposal-detective-${process.env.DEPLOYMENT}`,
+                    [
+                        {
+                            event: 'updateSnapshotProposals',
+                            details: `graphql`,
+                            err: JSON.stringify(e)
+                        }
+                    ]
+                )
+            })
 
         for (const [daoHandler, space] of daoHandlerToSnapshotSpaceMap) {
             proposals = proposals.filter(
@@ -78,11 +95,30 @@ export const updateSnapshotProposals = async (
             )
             results.push({ daoHandlerId: daoHandler.id, response: response })
         }
-    } catch (err) {
-        logger.error('Error while updating snapshot proposals', err)
+    } catch (e) {
+        await axiom.datasets.ingestEvents(
+            `proposal-detective-${process.env.DEPLOYMENT}`,
+            [
+                {
+                    event: 'updateSnapshotProposals',
+                    details: 'run',
+                    err: JSON.stringify(e)
+                }
+            ]
+        )
         throw new InternalServerErrorException()
     }
-    logger.log({ action: 'updateSnapshotProposals', details: 'end' })
+    await axiom.datasets.ingestEvents(
+        `proposal-detective-${process.env.DEPLOYMENT}`,
+        [
+            {
+                event: 'updateSnapshotProposals',
+                details: `success`,
+                item: { proposals: proposals.length, response: results }
+            }
+        ]
+    )
+
     return results
 }
 
@@ -108,21 +144,32 @@ const upsertSnapshotProposals = async (
             }),
             skipDuplicates: true
         })
-        .then((res) => {
-            logger.log({
-                action: 'updateSnapshotProposals',
-                details: 'upsert',
-                item: { count: res.count, space: space }
-            })
+        .then(async (r) => {
+            await axiom.datasets.ingestEvents(
+                `proposal-detective-${process.env.DEPLOYMENT}`,
+                [
+                    {
+                        event: 'updateSnapshotProposals',
+                        details: `new-proposal`,
+                        item: { proposal: r }
+                    }
+                ]
+            )
 
             return 'ok'
         })
-        .catch((err) => {
-            logger.log({
-                action: 'updateSnapshotProposals',
-                details: 'upsert',
-                item: { err: err }
-            })
+        .catch(async (e) => {
+            await axiom.datasets.ingestEvents(
+                `proposal-detective-${process.env.DEPLOYMENT}`,
+                [
+                    {
+                        event: 'updateSnapshotProposals',
+                        details: `new-proposal`,
+                        err: JSON.stringify(e)
+                    }
+                ]
+            )
+            console.log(e)
 
             return 'nok'
         })

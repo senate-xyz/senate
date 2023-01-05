@@ -1,5 +1,5 @@
 {
-    "name": "@senate/database",
+    "name": "@senate/axiom",
     "private": true,
     "version": "1.0.0",
     "license": "MIT",
@@ -27,13 +27,11 @@
         "prettier:fix": "prettier src --write"
     },
     "dependencies": {
-        "@prisma/client": "^4.8.0"
+        "@axiomhq/axiom-node": "^0.10.0"
     },
     "devDependencies": {
         "@senate/config": "*",
         "eslint": "^8.31.0",
-        "prisma": "^4.8.0",
-        "prisma-dbml-generator": "^0.10.0",
         "rimraf": "^3.0.2",
         "tsup": "^6.5.0",
         "tsx": "^3.12.1",

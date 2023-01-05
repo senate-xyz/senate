@@ -1,11 +1,9 @@
-import { Controller, Logger, Post, Query } from '@nestjs/common'
+import { Controller, Post, Query } from '@nestjs/common'
 import { AppService } from './app.service'
 import { DAOHandlerType, prisma } from '@senate/database'
 
 @Controller('api')
 export class AppController {
-    private readonly logger = new Logger(AppController.name)
-
     constructor(private readonly appService: AppService) {}
 
     @Post('updateSnapshotProposals')

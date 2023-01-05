@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 
 import { updateSnapshotProposals } from './proposals/snapshotProposals'
 import { updateSnapshotDaoVotes } from './votes/snapshotDaoVotes'
@@ -15,8 +15,6 @@ import { updateUniswapChainDaoVotes } from './votes/uniswapChainDaoVotes'
 
 @Injectable()
 export class AppService {
-    private readonly logger = new Logger(AppService.name)
-
     //SNAPSHOT PROPOSALS
 
     async updateSnapshotProposals(

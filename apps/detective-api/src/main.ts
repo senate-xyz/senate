@@ -1,16 +1,28 @@
-import { Logger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
+import { axiom } from '@senate/axiom'
 
 const PORT = process.env.PORT || 3100
 
 async function bootstrap() {
-    const logger = new Logger('Bootstrap')
+    ;(BigInt.prototype as any).toJSON = function () {
+        return this.toString()
+    }
 
     const app = await NestFactory.create(AppModule, {
         logger: console
     })
     await app.listen(PORT)
-    logger.log(`Detective API running on port ${PORT}... `)
+
+    await axiom.datasets.ingestEvents(
+        `proposal-detective-${process.env.DEPLOYMENT}`,
+        [
+            {
+                event: 'start',
+                details: `detective-start`,
+                item: { message: `Detective API running on port ${PORT}... ` }
+            }
+        ]
+    )
 }
 bootstrap()
