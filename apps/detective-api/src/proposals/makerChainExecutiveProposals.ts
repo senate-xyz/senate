@@ -77,6 +77,11 @@ export const updateMakerChainExecutiveProposals = async (
             const log = logs[i]
             const eventArgs = iface.decodeEventLog('LogNote', log.data)
 
+            log_pd.log({
+                level: 'log',
+                message: `Maker executive log ${i}`
+            })
+
             const decodedFunctionData =
                 log.topics[0] === voteSingleActionTopic
                     ? iface.decodeFunctionData('vote(bytes32)', eventArgs.fax)
@@ -231,7 +236,7 @@ const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
         } catch (e) {
             log_pd.log({
                 level: 'error',
-                message: `Could not get slays`,
+                message: `Could not get slates`,
                 data: {
                     error: e
                 }
