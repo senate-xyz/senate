@@ -147,7 +147,7 @@ export const updateCompoundChainDaoVotes = async (
                             }
                         })
                         await axiom.datasets.ingestEvents(
-                            'proposal-detective',
+                            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                             [
                                 {
                                     event: 'updateCompoundChainDaoVotes',
@@ -168,7 +168,7 @@ export const updateCompoundChainDaoVotes = async (
                             }
                         })
                         await axiom.datasets.ingestEvents(
-                            'proposal-detective',
+                            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                             [
                                 {
                                     event: 'updateCompoundChainDaoVotes',

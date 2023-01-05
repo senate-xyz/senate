@@ -148,7 +148,7 @@ export const updateAaveChainDaoVotes = async (
                             }
                         })
                         await axiom.datasets.ingestEvents(
-                            'proposal-detective',
+                            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                             [
                                 {
                                     event: 'updateAaveChainDaoVotes',
@@ -170,7 +170,7 @@ export const updateAaveChainDaoVotes = async (
                             }
                         })
                         await axiom.datasets.ingestEvents(
-                            'proposal-detective',
+                            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                             [
                                 {
                                     event: 'updateAaveChainDaoVotes',
@@ -240,7 +240,6 @@ const getVotes = async (
         address: daoHandler.decoder['address'],
         topics: [
             govBravoIface.getEventTopic('VoteEmitted'),
-            null,
             [hexZeroPad(voterAddress, 32)]
         ]
     })
@@ -256,6 +255,8 @@ const getVotes = async (
             support: String(eventData.support)
         }
     })
+
+    console.log(votes)
 
     return votes
 }

@@ -142,7 +142,7 @@ export const updateMakerExecutiveChainDaoVotes = async (
                             }
                         })
                         await axiom.datasets.ingestEvents(
-                            'proposal-detective',
+                            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                             [
                                 {
                                     event: 'updateMakerExecutiveChainDaoVotes',
@@ -163,7 +163,7 @@ export const updateMakerExecutiveChainDaoVotes = async (
                             }
                         })
                         await axiom.datasets.ingestEvents(
-                            'proposal-detective',
+                            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                             [
                                 {
                                     event: 'updateMakerExecutiveChainDaoVotes',

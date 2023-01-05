@@ -146,7 +146,7 @@ export const updateUniswapChainDaoVotes = async (
                             }
                         })
                         await axiom.datasets.ingestEvents(
-                            'proposal-detective',
+                            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                             [
                                 {
                                     event: 'updateUniswapChainDaoVotes',
@@ -167,7 +167,7 @@ export const updateUniswapChainDaoVotes = async (
                             }
                         })
                         await axiom.datasets.ingestEvents(
-                            'proposal-detective',
+                            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                             [
                                 {
                                     event: 'updateUniswapChainDaoVotes',
