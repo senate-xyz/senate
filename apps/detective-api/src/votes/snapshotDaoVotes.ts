@@ -1,5 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common'
-import { axiom } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
+
 import { DAOHandlerType, prisma } from '@senate/database'
 import axios from 'axios'
 
@@ -21,18 +22,16 @@ export const updateSnapshotDaoVotes = async (
         }
     })
 
-    await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-        [
-            {
-                event: 'updateSnapshotDaoVotes',
-                details: `run`,
-                item: { daoHandler: daoHandler, voters: voters }
-            }
-        ]
-    )
+    log_pd.log({
+        level: 'info',
+        message: `New votes update for ${daoHandler.dao.name} - ${daoHandler.type}`,
+        data: {
+            daoHandlerId: daoHandlerId,
+            voters: voters
+        }
+    })
 
-    const searchQuery = `{votes(first:1000, skip: ${
+    const graphqlQuery = `{votes(first:1000, skip: ${
         daoHandler.dao.votes.length
     } orderBy: "created", orderDirection: asc, where: {voter_in: [${voters.map(
         (voter) => `"${voter}"`
@@ -53,23 +52,20 @@ export const updateSnapshotDaoVotes = async (
                     }
                 }`
 
-    await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-        [
-            {
-                event: 'updateSnapshotDaoVotes',
-                details: `run`,
-                item: { searchQuery: searchQuery }
-            }
-        ]
-    )
+    log_pd.log({
+        level: 'info',
+        message: `GraphQL query for ${daoHandler.dao.name} - ${daoHandler.type}`,
+        data: {
+            query: graphqlQuery
+        }
+    })
 
     try {
         const res = await axios
             .get('https://hub.snapshot.org/graphql', {
                 method: 'POST',
                 data: JSON.stringify({
-                    query: searchQuery
+                    query: graphqlQuery
                 }),
                 headers: {
                     'content-type': 'application/json'
@@ -83,34 +79,19 @@ export const updateSnapshotDaoVotes = async (
                 return data.data.votes
             })
             .catch(async (e) => {
-                await axiom.datasets.ingestEvents(
-                    `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                    [
-                        {
-                            event: 'updateSnapshotDaoVotes',
-                            details: `run`,
-                            err: JSON.stringify(e)
-                        }
-                    ]
-                )
-
+                log_pd.log({
+                    level: 'error',
+                    message: `GraphQL error for ${daoHandler.dao.name} - ${daoHandler.type}`,
+                    data: {
+                        error: e
+                    }
+                })
                 return
             })
 
         //sanitize
         const votes = res.filter(
             (vote) => vote.proposal != null && vote.proposal.id != null
-        )
-
-        await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-            [
-                {
-                    event: 'updateSnapshotDaoVotes',
-                    details: `run`,
-                    item: { res: votes }
-                }
-            ]
         )
 
         const proposalIds = [...new Set(votes.map((vote) => vote.proposal.id))]
@@ -128,16 +109,7 @@ export const updateSnapshotDaoVotes = async (
                 votes
                     .filter((vote) => vote.proposal.id == snapshotProposalId)
                     .map((vote) => results.set(vote.voter.toLowerCase(), 'nok'))
-                await axiom.datasets.ingestEvents(
-                    `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                    [
-                        {
-                            event: 'updateSnapshotDaoVotes',
-                            details: `update-voter`,
-                            err: `did not find proposal ${snapshotProposalId}`
-                        }
-                    ]
-                )
+
                 continue
             }
 
@@ -165,17 +137,6 @@ export const updateSnapshotDaoVotes = async (
                     skipDuplicates: true
                 })
                 .then(async (res) => {
-                    await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                        [
-                            {
-                                event: 'updateSnapshotDaoVotes',
-                                details: `update-voters`,
-                                item: res
-                            }
-                        ]
-                    )
-
                     return
                 })
                 .catch(async (e) => {
@@ -184,30 +145,11 @@ export const updateSnapshotDaoVotes = async (
                             (vote) => vote.proposal.id == snapshotProposalId
                         )
                         .map((vote) => results.set(vote.voter, 'nok'))
-                    await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                        [
-                            {
-                                event: 'updateSnapshotDaoVotes',
-                                details: `update-voters`,
-                                err: JSON.stringify(e)
-                            }
-                        ]
-                    )
+
                     console.log(e)
                 })
         }
     } catch (e) {
-        await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-            [
-                {
-                    event: 'updateSnapshotDaoVotes',
-                    details: `run`,
-                    err: JSON.stringify(e)
-                }
-            ]
-        )
         console.log(e)
         throw new InternalServerErrorException()
     }
@@ -216,17 +158,6 @@ export const updateSnapshotDaoVotes = async (
         voterAddress: name,
         response: value
     }))
-
-    await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-        [
-            {
-                event: 'updateSnapshotDaoVotes',
-                details: `success`,
-                item: { response: resultsArray }
-            }
-        ]
-    )
 
     return resultsArray
 }

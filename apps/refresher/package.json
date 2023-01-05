@@ -25,6 +25,7 @@
     "dependencies": {
         "@senate/config": "*",
         "@senate/database": "*",
+        "@senate/axiom": "*",
         "node-cron": "^3.0.2",
         "node-fetch": "^3.3.0"
     },

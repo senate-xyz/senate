@@ -5,41 +5,33 @@ import { createVoterHandlers } from './createHandlers'
 import { processSnapshotProposals } from './process/snapshotProposals'
 import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
-import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
-import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { processChainProposals } from './process/chainProposals'
 import { addChainDaoVotes } from './populate/addChainDaoVotes'
 import { processChainDaoVotes } from './process/chainDaoVotes'
+import { addChainProposalsToQueue } from './populate/addChainProposals'
+import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
+import { log_ref } from '@senate/axiom'
 
-let INITIAL_RUN_CREATED_VOTE_HANDLERS = false
 let RUNNING_PROCESS_QUEUE = false
 
 const main = async () => {
-    console.log({ action: 'refresh_start' })
+    log_ref.log({
+        level: 'info',
+        message: `Refresher start`
+    })
     await loadConfig()
 
-    cron.schedule('*/1 * * * * *', async () => {
-        await loadConfig()
-        await createVoterHandlers()
-        INITIAL_RUN_CREATED_VOTE_HANDLERS = true
-    })
-
     setInterval(async () => {
-        if (!INITIAL_RUN_CREATED_VOTE_HANDLERS) return
         processQueue()
     }, 250)
 
     cron.schedule('*/10 * * * * *', async () => {
-        if (!INITIAL_RUN_CREATED_VOTE_HANDLERS) return
-
-        console.log({ action: 'populate_queue', details: 'start' })
-
+        await loadConfig()
+        await createVoterHandlers()
         await addSnapshotProposalsToQueue()
         await addSnapshotDaoVotes()
         await addChainProposalsToQueue()
         await addChainDaoVotes()
-
-        console.log({ action: 'populate_queue', details: 'end' })
     })
 }
 
@@ -47,18 +39,32 @@ const processQueue = async () => {
     if (RUNNING_PROCESS_QUEUE == true) return
     RUNNING_PROCESS_QUEUE = true
 
-    console.log({ action: 'process_queue', details: 'start' })
+    log_ref.log({
+        level: 'info',
+        message: `Process queue`
+    })
 
     const item = await prisma.refreshQueue.findFirst({
         orderBy: { priority: 'desc' }
     })
 
     if (!item) {
-        console.log({ action: 'process_queue', details: 'empty queue' })
-        console.log({ action: 'process_queue', details: 'end' })
+        log_ref.log({
+            level: 'info',
+            message: `Queue empty`
+        })
+
         RUNNING_PROCESS_QUEUE = false
         return
     }
+
+    log_ref.log({
+        level: 'info',
+        message: `Queue item`,
+        data: {
+            item: item
+        }
+    })
 
     switch (item.refreshType) {
         case RefreshType.DAOSNAPSHOTPROPOSALS:
@@ -81,17 +87,26 @@ const processQueue = async () => {
         }
     }
 
-    const refreshQueue = await prisma.refreshQueue.delete({
-        where: { id: item?.id }
-    })
+    await prisma.refreshQueue
+        .delete({
+            where: { id: item?.id }
+        })
+        .then((r) => {
+            log_ref.log({
+                level: 'info',
+                message: `Succesfully deleted queue item`,
+                data: { item: r }
+            })
+            return
+        })
+        .catch((e) => {
+            log_ref.log({
+                level: 'error',
+                message: `Failed to delete queue item`,
+                data: { error: e }
+            })
+        })
 
-    console.log({
-        action: 'process_queue',
-        details: 'remove item',
-        item: refreshQueue
-    })
-
-    console.log({ action: 'process_queue', details: 'end' })
     RUNNING_PROCESS_QUEUE = false
 }
 

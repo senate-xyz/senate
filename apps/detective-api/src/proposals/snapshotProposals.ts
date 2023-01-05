@@ -3,7 +3,7 @@ import { prisma } from '@senate/database'
 import { DAOHandler } from '@prisma/client'
 
 import axios from 'axios'
-import { axiom } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 
 export const updateSnapshotProposals = async (
     daoHandlerIds: string[],
@@ -15,29 +15,18 @@ export const updateSnapshotProposals = async (
         await getSnapshotSpaces(daoHandlerIds)
     const spacesArray = Array.from(daoHandlerToSnapshotSpaceMap.values())
 
-    await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-        [
-            {
-                event: 'updateSnapshotProposals',
-                details: `run`,
-                item: {
-                    daoHandlers: daoHandlerIds,
-                    minCreatedAt: minCreatedAt,
-                    spaces: spacesArray
-                }
-            }
-        ]
-    )
+    log_pd.log({
+        level: 'info',
+        message: `New proposals update for ${daoHandlerToSnapshotSpaceMap[0].dao.name} - ${daoHandlerToSnapshotSpaceMap[0].type}`,
+        data: {
+            daoHandlerId: daoHandlerToSnapshotSpaceMap[0],
+            minCreatedAt: minCreatedAt
+        }
+    })
 
     let proposals
 
-    try {
-        proposals = await axios
-            .get('https://hub.snapshot.org/graphql', {
-                method: 'POST',
-                data: JSON.stringify({
-                    query: `{
+    const graphqlQuery = `{
                 proposals (
                     first: 1000, 
                     where: {
@@ -60,6 +49,21 @@ export const updateSnapshotProposals = async (
                     }
                 }
                 }`
+
+    log_pd.log({
+        level: 'info',
+        message: `GraphQL query for ${daoHandlerToSnapshotSpaceMap[0].dao.name} - ${daoHandlerToSnapshotSpaceMap[0].type}`,
+        data: {
+            query: graphqlQuery
+        }
+    })
+
+    try {
+        proposals = await axios
+            .get('https://hub.snapshot.org/graphql', {
+                method: 'POST',
+                data: JSON.stringify({
+                    query: graphqlQuery
                 }),
                 headers: {
                     'content-type': 'application/json'
@@ -72,16 +76,14 @@ export const updateSnapshotProposals = async (
                 return data.data.proposals
             })
             .catch(async (e) => {
-                await axiom.datasets.ingestEvents(
-                    `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                    [
-                        {
-                            event: 'updateSnapshotProposals',
-                            details: `graphql`,
-                            err: JSON.stringify(e)
-                        }
-                    ]
-                )
+                log_pd.log({
+                    level: 'error',
+                    message: `GraphQL error for ${daoHandlerToSnapshotSpaceMap[0].dao.name} - ${daoHandlerToSnapshotSpaceMap[0].type}`,
+                    data: {
+                        error: e
+                    }
+                })
+                return
             })
 
         for (const [daoHandler, space] of daoHandlerToSnapshotSpaceMap) {
@@ -96,28 +98,15 @@ export const updateSnapshotProposals = async (
             results.push({ daoHandlerId: daoHandler.id, response: response })
         }
     } catch (e) {
-        await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-            [
-                {
-                    event: 'updateSnapshotProposals',
-                    details: 'run',
-                    err: JSON.stringify(e)
-                }
-            ]
-        )
+        log_pd.log({
+            level: 'info',
+            message: `Could not update proposals for ${daoHandlerToSnapshotSpaceMap[0].dao.name} - ${daoHandlerToSnapshotSpaceMap[0].type}`,
+            data: {
+                error: e
+            }
+        })
         throw new InternalServerErrorException()
     }
-    await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-        [
-            {
-                event: 'updateSnapshotProposals',
-                details: `success`,
-                item: { proposals: proposals.length, response: results }
-            }
-        ]
-    )
 
     return results
 }
@@ -145,31 +134,23 @@ const upsertSnapshotProposals = async (
             skipDuplicates: true
         })
         .then(async (r) => {
-            await axiom.datasets.ingestEvents(
-                `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                [
-                    {
-                        event: 'updateSnapshotProposals',
-                        details: `new-proposal`,
-                        item: { proposal: r }
-                    }
-                ]
-            )
-
+            log_pd.log({
+                level: 'info',
+                message: `Upserted proposals for ${daoHandler} - ${space}`,
+                data: {
+                    proposals: r
+                }
+            })
             return 'ok'
         })
         .catch(async (e) => {
-            await axiom.datasets.ingestEvents(
-                `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                [
-                    {
-                        event: 'updateSnapshotProposals',
-                        details: `new-proposal`,
-                        err: JSON.stringify(e)
-                    }
-                ]
-            )
-            console.log(e)
+            log_pd.log({
+                level: 'error',
+                message: `Could not upsert proposals proposals for ${daoHandler} - ${space}`,
+                data: {
+                    proposals: e
+                }
+            })
 
             return 'nok'
         })
@@ -185,7 +166,8 @@ const getSnapshotSpaces = async (
             id: {
                 in: daoHandlerIds
             }
-        }
+        },
+        include: { dao: true }
     })
 
     const map = new Map<DAOHandler, string>()

@@ -1,3 +1,4 @@
+import { log_ref } from '@senate/axiom'
 import { RefreshQueue, RefreshStatus, prisma } from '@senate/database'
 import fetch from 'node-fetch'
 
@@ -5,63 +6,167 @@ export const processChainProposals = async (item: RefreshQueue) => {
     const daoHandler = await prisma.dAOHandler.findFirst({
         where: { id: item.clientId }
     })
-    console.log({
-        action: 'process_queue',
-        details: 'DAOCHAINPROPOSALS REQUEST',
-        item: `${process.env.DETECTIVE_URL}/updateChainProposals?daoHandlerId=${
-            item.clientId
-        }&minBlockNumber=${daoHandler?.lastChainProposalCreatedBlock?.valueOf()}`
-    })
-    await fetch(
-        `${process.env.DETECTIVE_URL}/updateChainProposals?daoHandlerId=${
-            item.clientId
-        }&minBlockNumber=${daoHandler?.lastChainProposalCreatedBlock?.valueOf()}`,
-        {
-            method: 'POST'
+
+    log_ref.log({
+        level: 'info',
+        message: `Process dao chain proposals item`,
+        data: {
+            daoHandler: daoHandler
         }
-    )
+    })
+
+    const proposalDetectiveReq = `${
+        process.env.DETECTIVE_URL
+    }/updateChainProposals?daoHandlerId=${
+        item.clientId
+    }&minBlockNumber=${daoHandler?.lastChainProposalCreatedBlock?.valueOf()}`
+
+    log_ref.log({
+        level: 'info',
+        message: `Detective request`,
+        data: {
+            url: proposalDetectiveReq
+        }
+    })
+
+    await fetch(proposalDetectiveReq, {
+        method: 'POST'
+    })
         .then((response) => response.json())
-        .then((data) => {
+        .then(async (data) => {
+            log_ref.log({
+                level: 'info',
+                message: `Detective response`,
+                data: {
+                    data: data
+                }
+            })
+
             if (!data) return
             if (!Array.isArray(data)) return
 
-            data.map(async (result) => {
-                if (
-                    result.response == 'ok' &&
-                    item.clientId == result.daoHandlerId
-                ) {
-                    const daoHandler = await prisma.dAOHandler.update({
-                        where: {
-                            id: item.clientId
-                        },
+            await prisma.dAOHandler
+                .updateMany({
+                    where: {
+                        id: {
+                            in: data
+                                .filter((result) => result.response == 'ok')
+                                .map((result) => result.daoHandlerId)
+                        }
+                    },
+                    data: {
+                        refreshStatus: RefreshStatus.DONE,
+                        lastRefreshTimestamp: new Date()
+                    }
+                })
+                .then((r) => {
+                    log_ref.log({
+                        level: 'info',
+                        message: `Succesfully updated refresh status for ok responses`,
                         data: {
-                            refreshStatus: RefreshStatus.DONE,
-                            lastRefreshTimestamp: new Date()
+                            voters: data
+                                .filter((result) => result.response == 'ok')
+                                .map((result) => result.daoHandlerId),
+                            result: r
                         }
                     })
-                    console.log({
-                        action: 'process_queue',
-                        details: 'DAOCHAINPROPOSALS DONE',
-                        item: daoHandler
+                    return
+                })
+                .catch((e) => {
+                    log_ref.log({
+                        level: 'error',
+                        message: `Could not update refresh status for ok responses`,
+                        data: {
+                            voters: data
+                                .filter((result) => result.response == 'ok')
+                                .map((result) => result.daoHandlerId),
+                            error: e
+                        }
                     })
-                }
-            })
+                })
+
+            await prisma.dAOHandler
+                .updateMany({
+                    where: {
+                        id: {
+                            in: data
+                                .filter((result) => result.response == 'nok')
+                                .map((result) => result.daoHandlerId)
+                        }
+                    },
+                    data: {
+                        refreshStatus: RefreshStatus.NEW,
+                        lastRefreshTimestamp: new Date(1),
+                        lastChainProposalCreatedBlock: 0
+                    }
+                })
+                .then((r) => {
+                    log_ref.log({
+                        level: 'info',
+                        message: `Succesfully updated refresh status for nok responses`,
+                        data: {
+                            voters: data
+                                .filter((result) => result.response == 'nok')
+                                .map((result) => result.daoHandlerId),
+                            result: r
+                        }
+                    })
+                    return
+                })
+                .catch((e) => {
+                    log_ref.log({
+                        level: 'error',
+                        message: `Could not update refresh status for nok responses`,
+                        data: {
+                            voters: data
+                                .filter((result) => result.response == 'nok')
+                                .map((result) => result.daoHandlerId),
+                            error: e
+                        }
+                    })
+                })
+
             return
         })
         .catch(async (e) => {
-            const daoHandler = await prisma.dAOHandler.update({
-                where: {
-                    id: item.clientId
-                },
+            log_ref.log({
+                level: 'error',
+                message: `Proposal detective request failed`,
                 data: {
-                    refreshStatus: RefreshStatus.NEW
+                    error: e
                 }
             })
-            console.log({
-                action: 'process_queue',
-                details: 'DAOCHAINPROPOSALS FAILED',
-                item: daoHandler,
-                error: e
-            })
+
+            await prisma.dAOHandler
+                .update({
+                    where: {
+                        id: item.clientId
+                    },
+                    data: {
+                        refreshStatus: RefreshStatus.NEW
+                    }
+                }) // eslint-disable-next-line promise/no-nesting
+                .then((r) => {
+                    log_ref.log({
+                        level: 'info',
+                        message: `Succesfully forced refresh for all failed voters`,
+                        data: {
+                            daoHandlerId: item.clientId,
+                            result: r
+                        }
+                    })
+                    return
+                })
+                // eslint-disable-next-line promise/no-nesting
+                .catch((e) => {
+                    log_ref.log({
+                        level: 'error',
+                        message: `Failed to force refresh for all failed voters`,
+                        data: {
+                            daoHandlerId: item.clientId,
+                            error: e
+                        }
+                    })
+                })
         })
 }

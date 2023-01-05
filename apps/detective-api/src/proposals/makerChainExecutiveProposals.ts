@@ -6,7 +6,7 @@
 */
 
 import { InternalServerErrorException } from '@nestjs/common'
-import { axiom } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { prisma } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
@@ -20,45 +20,31 @@ export const updateMakerChainExecutiveProposals = async (
     minBlockNumber: number
 ) => {
     const daoHandler = await prisma.dAOHandler.findFirst({
-        where: { id: daoHandlerId }
+        where: { id: daoHandlerId },
+        include: { dao: true }
+    })
+    log_pd.log({
+        level: 'info',
+        message: `New proposals update for ${daoHandler.dao.name} - ${daoHandler.type}`,
+        data: {
+            daoHandlerId: daoHandlerId,
+            minBlockNumber: minBlockNumber
+        }
     })
 
-    await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-        [
-            {
-                event: 'updateMakerChainExecutiveProposals',
-                details: `run`,
-                item: { daoHandler: daoHandler, minBlockNumber: minBlockNumber }
-            }
-        ]
-    )
-
     if (!(await provider.blockNumber)) {
-        await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-            [
-                {
-                    event: 'updateMakerChainExecutiveProposals',
-                    details: `run`,
-                    err: 'could not get provider.blockNumber'
-                }
-            ]
-        )
+        log_pd.log({
+            level: 'error',
+            message: 'Could not get blockNumber. Node provider offline?'
+        })
         return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
     }
 
     if (!daoHandler.decoder) {
-        await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-            [
-                {
-                    event: 'updateMakerChainExecutiveProposals',
-                    details: `run`,
-                    err: 'could not get daoHandler decoder'
-                }
-            ]
-        )
+        log_pd.log({
+            level: 'error',
+            message: 'Could not get daoHandler decoder'
+        })
         return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
     }
 
@@ -87,10 +73,6 @@ export const updateMakerChainExecutiveProposals = async (
 
         const spellAddressesSet = new Set<string>()
         for (let i = 0; i < logs.length; i++) {
-            console.log(
-                `[EXECUTIVE PROPOSAL] maker event ${i} out of ${logs.length}`
-            )
-
             const log = logs[i]
             const eventArgs = iface.decodeEventLog('LogNote', log.data)
 
@@ -114,18 +96,15 @@ export const updateMakerChainExecutiveProposals = async (
 
         spellAddresses = Array.from(spellAddressesSet)
 
-        for (let i = 0; i < spellAddresses.length; i++) {
-            await axiom.datasets.ingestEvents(
-                `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                [
-                    {
-                        event: 'updateMakerChainExecutiveProposals',
-                        details: `new-proposal`,
-                        item: { proposal: spellAddresses[i] }
-                    }
-                ]
-            )
+        log_pd.log({
+            level: 'info',
+            message: `Got proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
+            data: {
+                spellAddresses: spellAddresses
+            }
+        })
 
+        for (let i = 0; i < spellAddresses.length; i++) {
             if (
                 spellAddresses[i] ==
                 '0x0000000000000000000000000000000000000000'
@@ -142,17 +121,6 @@ export const updateMakerChainExecutiveProposals = async (
                 })
 
             if (!response.data || response.status == 404) {
-                await axiom.datasets.ingestEvents(
-                    `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                    [
-                        {
-                            event: 'updateMakerChainExecutiveProposals',
-                            details: `new-proposal`,
-                            err: `Maker API did not return any data for spell ${spellAddresses[i]}`
-                        }
-                    ]
-                )
-
                 continue
             }
 
@@ -191,6 +159,13 @@ export const updateMakerChainExecutiveProposals = async (
                     }
                 })
                 .then(async (r) => {
+                    log_pd.log({
+                        level: 'info',
+                        message: `Upserted new proposal for ${daoHandler.dao.name} - ${daoHandler.type}`,
+                        data: {
+                            proposal: r
+                        }
+                    })
                     await prisma.dAOHandler.update({
                         where: {
                             id: daoHandler.id
@@ -199,19 +174,15 @@ export const updateMakerChainExecutiveProposals = async (
                             lastChainProposalCreatedBlock: latestBlock
                         }
                     })
-                    await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                        [
-                            {
-                                event: 'updateMakerChainExecutiveProposals',
-                                details: `new-proposal`,
-                                item: { proposal: r }
-                            }
-                        ]
-                    )
+
                     return
                 })
                 .catch(async (e) => {
+                    log_pd.log({
+                        level: 'error',
+                        message: `Could not upsert new proposal for ${daoHandler.dao.name} - ${daoHandler.type}`,
+                        data: { proposal: spellAddresses[i], error: e }
+                    })
                     await prisma.dAOHandler.update({
                         where: {
                             id: daoHandler.id
@@ -220,47 +191,26 @@ export const updateMakerChainExecutiveProposals = async (
                             lastChainProposalCreatedBlock: 0
                         }
                     })
-                    await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                        [
-                            {
-                                event: 'updateMakerChainExecutiveProposals',
-                                details: `new-proposal`,
-                                err: JSON.stringify(e)
-                            }
-                        ]
-                    )
-                    console.log(e)
                 })
         }
     } catch (e) {
-        await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-            [
-                {
-                    event: 'updateMakerChainExecutiveProposals',
-                    details: `run`,
-                    err: JSON.stringify(e)
-                }
-            ]
-        )
-        console.log(e)
+        log_pd.log({
+            level: 'error',
+            message: `Could not get new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
+            data: {
+                error: e
+            }
+        })
         throw new InternalServerErrorException()
     }
 
-    await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-        [
-            {
-                event: 'updateMakerChainExecutiveProposals',
-                details: `success`,
-                item: {
-                    proposals: spellAddresses.length,
-                    response: [{ daoHandlerId: daoHandlerId, response: 'ok' }]
-                }
-            }
-        ]
-    )
+    log_pd.log({
+        level: 'info',
+        message: `Succesfully updated proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
+        data: {
+            result: [{ daoHandlerId: daoHandlerId, response: 'ok' }]
+        }
+    })
 
     return [{ daoHandlerId: daoHandlerId, response: 'ok' }]
 }
@@ -276,17 +226,13 @@ const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
             yays.push(spellAddress)
             count++
         } catch (e) {
-            await axiom.datasets.ingestEvents(
-                `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                [
-                    {
-                        event: 'updateMakerChainExecutiveProposals',
-                        details: `getslates`,
-                        err: JSON.stringify(e)
-                    }
-                ]
-            )
-            console.log(e)
+            log_pd.log({
+                level: 'error',
+                message: `Could not get slays`,
+                data: {
+                    error: e
+                }
+            })
             break
         }
     }

@@ -1,6 +1,7 @@
 import { Controller, Post, Query } from '@nestjs/common'
 import { AppService } from './app.service'
 import { DAOHandlerType, prisma } from '@senate/database'
+import { log_pd } from '@senate/axiom'
 
 @Controller('api')
 export class AppController {
@@ -11,10 +12,27 @@ export class AppController {
         @Query('daoHandlerIds') daoHandlerIds: string[],
         @Query('minCreatedAt') minCreatedAt: number
     ) {
+        log_pd.log({
+            level: 'info',
+            message: `/updateSnapshotProposals request`,
+            data: {
+                daoHandlerIds: daoHandlerIds,
+                minCreatedAt: minCreatedAt
+            }
+        })
+
         const response = await this.appService.updateSnapshotProposals(
             daoHandlerIds,
             minCreatedAt
         )
+
+        log_pd.log({
+            level: 'info',
+            message: `/updateSnapshotProposals response`,
+            data: {
+                response: response
+            }
+        })
         return response
     }
 
@@ -23,10 +41,27 @@ export class AppController {
         @Query('daoHandlerId') daoHandlerId: string,
         @Query('voters') voters: [string]
     ) {
+        log_pd.log({
+            level: 'info',
+            message: `/updateSnapshotDaoVotes request`,
+            data: {
+                daoHandlerId: daoHandlerId,
+                voters: voters
+            }
+        })
+
         const response = await this.appService.updateSnapshotDaoVotes(
             daoHandlerId,
             voters
         )
+
+        log_pd.log({
+            level: 'info',
+            message: `/updateSnapshotProposals response`,
+            data: {
+                response: response
+            }
+        })
         return response
     }
 
@@ -35,6 +70,15 @@ export class AppController {
         @Query('daoHandlerId') daoHandlerId: string,
         @Query('minBlockNumber') minBlockNumber: number
     ) {
+        log_pd.log({
+            level: 'info',
+            message: `/updateChainProposals request`,
+            data: {
+                daoHandlerId: daoHandlerId,
+                minBlockNumber: minBlockNumber
+            }
+        })
+
         let response = [{ daoHandlerId: daoHandlerId, response: 'nok' }]
 
         const daoHandler = await prisma.dAOHandler.findFirst({
@@ -77,8 +121,14 @@ export class AppController {
                 break
         }
 
+        log_pd.log({
+            level: 'info',
+            message: `/updateChainProposals response`,
+            data: {
+                response: response
+            }
+        })
         return response
-        //return response
     }
 
     @Post('updateChainDaoVotes')
@@ -86,7 +136,17 @@ export class AppController {
         @Query('daoHandlerId') daoHandlerId: string,
         @Query('voters') voters: [string]
     ) {
+        log_pd.log({
+            level: 'info',
+            message: `/updateChainDaoVotes request`,
+            data: {
+                daoHandlerId: daoHandlerId,
+                voters: voters
+            }
+        })
+
         let response
+
         const daoHandler = await prisma.dAOHandler.findFirst({
             where: {
                 id: daoHandlerId
@@ -126,6 +186,14 @@ export class AppController {
                 )
                 break
         }
+
+        log_pd.log({
+            level: 'info',
+            message: `/updateChainDaoVotes response`,
+            data: {
+                response: response
+            }
+        })
 
         return response
     }

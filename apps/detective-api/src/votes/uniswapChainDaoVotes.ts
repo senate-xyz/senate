@@ -1,4 +1,4 @@
-import { axiom } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { DAOHandler, DAOHandlerType, prisma } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
@@ -29,16 +29,14 @@ export const updateUniswapChainDaoVotes = async (
         }
     })
 
-    await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-        [
-            {
-                event: 'updateUniswapChainDaoVotes',
-                details: `run`,
-                item: { daoHandler: daoHandler, voters: voters }
-            }
-        ]
-    )
+    log_pd.log({
+        level: 'info',
+        message: `New votes update for ${daoHandler.dao.name} - ${daoHandler.type}`,
+        data: {
+            daoHandlerId: daoHandlerId,
+            voters: voters
+        }
+    })
 
     const results = new Map()
 
@@ -59,20 +57,6 @@ export const updateUniswapChainDaoVotes = async (
 
         const voterLatestVoteBlock = voterHandler.lastChainVoteCreatedBlock
 
-        await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-            [
-                {
-                    event: 'updateUniswapChainDaoVotes',
-                    details: `update-voter`,
-                    item: {
-                        voter: voter,
-                        lastChainVoteCreatedBlock: voterLatestVoteBlock
-                    }
-                }
-            ]
-        )
-
         try {
             const latestVoteBlock = Number(voterLatestVoteBlock) ?? 0
             const currentBlock = await provider.getBlockNumber()
@@ -80,6 +64,10 @@ export const updateUniswapChainDaoVotes = async (
             votes = await getVotes(daoHandler, voter, latestVoteBlock)
 
             if (!votes) {
+                log_pd.log({
+                    level: 'info',
+                    message: `Nothing to update for ${voter} in ${daoHandler.dao.name} - ${daoHandler.type}`
+                })
                 continue
             }
 
@@ -94,16 +82,14 @@ export const updateUniswapChainDaoVotes = async (
 
                 if (!proposal) {
                     results.set(voter, 'nok')
-                    await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                        [
-                            {
-                                event: 'updateUniswapChainDaoVotes',
-                                details: `update-voter`,
-                                err: `did not find proposal ${vote.proposalOnChainId}`
-                            }
-                        ]
-                    )
+                    log_pd.log({
+                        level: 'error',
+                        message: `Missing proposal for ${voter} in ${daoHandler.dao.name} - ${daoHandler.type}`,
+                        data: {
+                            daoHandlerId: daoHandlerId,
+                            proposalOnChainId: vote.proposalOnChainId
+                        }
+                    })
                     break
                 }
 
@@ -130,6 +116,13 @@ export const updateUniswapChainDaoVotes = async (
                         }
                     })
                     .then(async (r) => {
+                        log_pd.log({
+                            level: 'info',
+                            message: `Updated vote for ${voter} in ${daoHandler.dao.name} - ${daoHandler.type}`,
+                            data: {
+                                vote: r
+                            }
+                        })
                         await prisma.voterHandler.update({
                             where: {
                                 id: voterHandler.id
@@ -138,47 +131,35 @@ export const updateUniswapChainDaoVotes = async (
                                 lastChainVoteCreatedBlock: currentBlock
                             }
                         })
-                        await axiom.datasets.ingestEvents(
-                            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                            [
-                                {
-                                    event: 'updateUniswapChainDaoVotes',
-                                    details: `update-voter`,
-                                    item: { vote: r }
-                                }
-                            ]
-                        )
 
                         return
                     })
                     .catch(async (e) => {
                         results.set(voter, 'nok')
-                        await axiom.datasets.ingestEvents(
-                            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                            [
-                                {
-                                    event: 'updateUniswapChainDaoVotes',
-                                    details: `update-voter`,
-                                    err: JSON.stringify(e)
-                                }
-                            ]
-                        )
-                        console.log(e)
+                        log_pd.log({
+                            level: 'error',
+                            message: `Could not update vote for ${voter} in ${daoHandler.dao.name} - ${daoHandler.type}`,
+                            data: {
+                                error: e,
+                                voterAddress: voter,
+                                daoId: daoHandler.daoId,
+                                proposalId: proposal.id,
+                                daoHandlerId: daoHandler.id,
+                                choiceId: vote.support,
+                                choice: vote.support ? 'Yes' : 'No'
+                            }
+                        })
                     })
             }
         } catch (e) {
             results.set(voter, 'nok')
-            await axiom.datasets.ingestEvents(
-                `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                [
-                    {
-                        event: 'updateUniswapChainDaoVotes',
-                        details: `run`,
-                        err: JSON.stringify(e)
-                    }
-                ]
-            )
-            console.log(e)
+            log_pd.log({
+                level: 'error',
+                message: `Could not update votes for ${voter} in ${daoHandler.dao.name} - ${daoHandler.type}`,
+                data: {
+                    error: e
+                }
+            })
         }
     }
 
@@ -187,16 +168,13 @@ export const updateUniswapChainDaoVotes = async (
         response: value
     }))
 
-    await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-        [
-            {
-                event: 'updateUniswapChainDaoVotes',
-                details: `success`,
-                item: { response: resultsArray }
-            }
-        ]
-    )
+    log_pd.log({
+        level: 'info',
+        message: `Succesfully updated votes for ${daoHandler.dao.name} - ${daoHandler.type}`,
+        data: {
+            result: resultsArray
+        }
+    })
 
     return resultsArray
 }

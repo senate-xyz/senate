@@ -8,12 +8,14 @@ import {
     DAOS_VOTES_CHAIN_INTERVAL,
     DAOS_VOTES_CHAIN_INTERVAL_FORCE
 } from '../config'
+import { log_ref } from '@senate/axiom'
 
 export const addChainDaoVotes = async () => {
-    console.log({
-        action: 'chain_dao_votes_queue',
-        details: 'start'
+    log_ref.log({
+        level: 'info',
+        message: `Add new dao chain votes to queue`
     })
+
     await prisma.$transaction(async (tx) => {
         const daoHandlers = await tx.dAOHandler.findMany({
             where: {
@@ -129,19 +131,22 @@ export const addChainDaoVotes = async () => {
             }
         })
 
-        console.log({
-            action: 'chain_dao_votes_queue',
-            details: 'list of DAOs to be updated',
-            daos: daoHandlers.map((daoHandler) => daoHandler.dao.name)
-        })
-
         if (!daoHandlers.length) {
-            console.log({
-                action: 'chain_dao_votes_queue',
-                details: 'skip'
+            log_ref.log({
+                level: 'info',
+                message: `Nothing to update`
             })
             return
         }
+
+        log_ref.log({
+            level: 'info',
+            message: `List of DAOs to be added to queue`,
+            data: {
+                item: daoHandlers,
+                daos: daoHandlers.map((daoHandler) => daoHandler.dao.name)
+            }
+        })
 
         const previousPrio = (await tx.refreshQueue.findFirst({
             where: {
@@ -152,48 +157,74 @@ export const addChainDaoVotes = async () => {
             select: { priority: true }
         })) ?? { priority: 1 } //default to 1
 
-        console.log({
-            action: 'chain_dao_votes_queue',
-            details: 'previous max priority for DAOCHAINVOTES',
-            priority: previousPrio.priority
-        })
-
-        const queueRes = await tx.refreshQueue.createMany({
-            data: daoHandlers.map((daoHandler) => {
-                return {
-                    clientId: daoHandler.id,
-                    refreshType: RefreshType.DAOCHAINVOTES,
-                    priority: Number(previousPrio.priority) + 1
-                }
-            })
-        })
-
-        console.log({
-            action: 'chain_dao_votes_queue',
-            details: 'queue result',
-            queue: queueRes
-        })
-
-        const statusRes = await tx.voterHandler.updateMany({
-            where: {
-                daoHandlerId: {
-                    in: daoHandlers.map((daoHandler) => daoHandler.id)
-                }
-            },
+        log_ref.log({
+            level: 'info',
+            message: `Previous max priority`,
             data: {
-                refreshStatus: RefreshStatus.PENDING,
-                lastRefreshTimestamp: new Date()
+                priority: previousPrio.priority
             }
         })
 
-        console.log({
-            action: 'chain_dao_votes_queue',
-            details: 'status res',
-            status: statusRes
-        })
-    })
-    console.log({
-        action: 'chain_dao_votes_queue',
-        details: 'end'
+        await tx.refreshQueue
+            .createMany({
+                data: daoHandlers.map((daoHandler) => {
+                    return {
+                        clientId: daoHandler.id,
+                        refreshType: RefreshType.DAOCHAINVOTES,
+                        priority: Number(previousPrio.priority) + 1
+                    }
+                })
+            })
+            .then((r) => {
+                log_ref.log({
+                    level: 'info',
+                    message: `Succesfully added to queue`,
+                    data: {
+                        item: r
+                    }
+                })
+                return
+            })
+            .catch((e) => {
+                log_ref.log({
+                    level: 'info',
+                    message: `Failed to add to queue`,
+                    data: {
+                        error: e
+                    }
+                })
+            })
+
+        await tx.voterHandler
+            .updateMany({
+                where: {
+                    daoHandlerId: {
+                        in: daoHandlers.map((daoHandler) => daoHandler.id)
+                    }
+                },
+                data: {
+                    refreshStatus: RefreshStatus.PENDING,
+                    lastRefreshTimestamp: new Date()
+                }
+            })
+            .then((r) => {
+                log_ref.log({
+                    level: 'info',
+                    message: `Succesfully updated refresh statuses`,
+                    data: {
+                        item: r
+                    }
+                })
+                return
+            })
+            .catch((e) => {
+                log_ref.log({
+                    level: 'info',
+                    message: `Failed to update refresh statuses`,
+                    data: {
+                        error: e
+                    }
+                })
+            })
     })
 }

@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common'
-import { axiom } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { prisma } from '@senate/database'
 import { ethers } from 'ethers'
 
@@ -12,45 +12,31 @@ export const updateCompoundChainProposals = async (
     minBlockNumber: number
 ) => {
     const daoHandler = await prisma.dAOHandler.findFirst({
-        where: { id: daoHandlerId }
+        where: { id: daoHandlerId },
+        include: { dao: true }
+    })
+    log_pd.log({
+        level: 'info',
+        message: `New proposals update for ${daoHandler.dao.name} - ${daoHandler.type}`,
+        data: {
+            daoHandlerId: daoHandlerId,
+            minBlockNumber: minBlockNumber
+        }
     })
 
-    await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-        [
-            {
-                event: 'updateCompoundChainProposals',
-                details: `run`,
-                item: { daoHandler: daoHandler, minBlockNumber: minBlockNumber }
-            }
-        ]
-    )
-
     if (!(await provider.blockNumber)) {
-        await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-            [
-                {
-                    event: 'updateCompoundChainProposals',
-                    details: `run`,
-                    err: 'could not get provider.blockNumber'
-                }
-            ]
-        )
+        log_pd.log({
+            level: 'error',
+            message: 'Could not get blockNumber. Node provider offline?'
+        })
         return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
     }
 
     if (!daoHandler.decoder) {
-        await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-            [
-                {
-                    event: 'updateCompoundChainProposals',
-                    details: `run`,
-                    err: 'could not get daoHandler decoder'
-                }
-            ]
-        )
+        log_pd.log({
+            level: 'error',
+            message: 'Could not get daoHandler decoder'
+        })
         return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
     }
     let proposals
@@ -75,6 +61,14 @@ export const updateCompoundChainProposals = async (
             }).args
         }))
 
+        log_pd.log({
+            level: 'info',
+            message: `Got proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
+            data: {
+                proposals: proposals
+            }
+        })
+
         for (let i = 0; i < proposals.length; i++) {
             const proposalCreatedTimestamp = (
                 await provider.getBlock(proposals[i].txBlock)
@@ -96,17 +90,6 @@ export const updateCompoundChainProposals = async (
             const proposalOnChainId = Number(
                 proposals[i].eventData.id
             ).toString()
-
-            await axiom.datasets.ingestEvents(
-                `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                [
-                    {
-                        event: 'updateCompoundChainProposals',
-                        details: `new-proposal`,
-                        item: { proposal: proposals[i] }
-                    }
-                ]
-            )
 
             await prisma.proposal
                 .upsert({
@@ -139,6 +122,13 @@ export const updateCompoundChainProposals = async (
                     }
                 })
                 .then(async (r) => {
+                    log_pd.log({
+                        level: 'info',
+                        message: `Upserted new proposal for ${daoHandler.dao.name} - ${daoHandler.type}`,
+                        data: {
+                            proposal: r
+                        }
+                    })
                     await prisma.dAOHandler.update({
                         where: {
                             id: daoHandler.id
@@ -148,19 +138,15 @@ export const updateCompoundChainProposals = async (
                                 proposals[i].txBlock + 1
                         }
                     })
-                    await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                        [
-                            {
-                                event: 'updateCompoundChainProposals',
-                                details: `new-proposal`,
-                                item: { proposal: r }
-                            }
-                        ]
-                    )
+
                     return
                 })
                 .catch(async (e) => {
+                    log_pd.log({
+                        level: 'error',
+                        message: `Could not upsert new proposal for ${daoHandler.dao.name} - ${daoHandler.type}`,
+                        data: { proposal: proposals[i], error: e }
+                    })
                     await prisma.dAOHandler.update({
                         where: {
                             id: daoHandler.id
@@ -169,47 +155,26 @@ export const updateCompoundChainProposals = async (
                             lastChainProposalCreatedBlock: 0
                         }
                     })
-                    await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-                        [
-                            {
-                                event: 'updateCompoundChainProposals',
-                                details: `new-proposal`,
-                                err: JSON.stringify(e)
-                            }
-                        ]
-                    )
-                    console.log(e)
                 })
         }
     } catch (e) {
-        await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-            [
-                {
-                    event: 'updateCompoundChainProposals',
-                    details: `run`,
-                    err: JSON.stringify(e)
-                }
-            ]
-        )
-        console.log(e)
+        log_pd.log({
+            level: 'error',
+            message: `Could not get new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
+            data: {
+                error: e
+            }
+        })
         throw new InternalServerErrorException()
     }
 
-    await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
-        [
-            {
-                event: 'updateCompoundChainProposals',
-                details: `success`,
-                item: {
-                    proposals: proposals.length,
-                    response: [{ daoHandlerId: daoHandlerId, response: 'ok' }]
-                }
-            }
-        ]
-    )
+    log_pd.log({
+        level: 'info',
+        message: `Succesfully updated proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
+        data: {
+            result: [{ daoHandlerId: daoHandlerId, response: 'ok' }]
+        }
+    })
 
     return [{ daoHandlerId: daoHandlerId, response: 'ok' }]
 }
