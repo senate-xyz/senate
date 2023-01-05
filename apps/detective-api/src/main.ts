@@ -15,7 +15,7 @@ async function bootstrap() {
     await app.listen(PORT)
 
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'start',

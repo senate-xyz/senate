@@ -17,7 +17,7 @@ export const updateAaveChainProposals = async (
     })
 
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'updateAaveChainProposals',
@@ -29,7 +29,7 @@ export const updateAaveChainProposals = async (
 
     if (!(await provider.blockNumber)) {
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateAaveChainProposals',
@@ -43,7 +43,7 @@ export const updateAaveChainProposals = async (
 
     if (!daoHandler.decoder) {
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateAaveChainProposals',
@@ -101,7 +101,7 @@ export const updateAaveChainProposals = async (
             ).toString()
 
             await axiom.datasets.ingestEvents(
-                `proposal-detective-${process.env.DEPLOYMENT}`,
+                `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                 [
                     {
                         event: 'updateAaveChainProposals',
@@ -152,7 +152,7 @@ export const updateAaveChainProposals = async (
                         }
                     })
                     await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                         [
                             {
                                 event: 'updateAaveChainProposals',
@@ -173,7 +173,7 @@ export const updateAaveChainProposals = async (
                         }
                     })
                     await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                         [
                             {
                                 event: 'updateAaveChainProposals',
@@ -187,7 +187,7 @@ export const updateAaveChainProposals = async (
         }
     } catch (e) {
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateAaveChainProposals',
@@ -202,7 +202,7 @@ export const updateAaveChainProposals = async (
     }
 
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'updateAaveChainProposals',
@@ -230,7 +230,7 @@ const fetchProposalInfoFromIPFS = async (
     } catch (e) {
         title = 'Unknown'
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateAaveChainProposals',
@@ -250,7 +250,7 @@ const formatTitle = async (text: string): Promise<string> => {
 
     if (!temp) {
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateAaveChainProposals',

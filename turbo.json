@@ -29,7 +29,7 @@
         "REFRESHER_FORCE_INTERVAL",
         "AXIOM_TOKEN",
         "AXIOM_ORG_ID",
-        "DEPLOYMENT"
+        "AXIOM_DEPLOYMENT"
       ]
     },
     "start": {},

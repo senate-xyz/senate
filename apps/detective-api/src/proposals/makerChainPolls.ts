@@ -24,7 +24,7 @@ export const updateMakerChainPolls = async (
     })
 
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'updateMakerChainPolls',
@@ -36,7 +36,7 @@ export const updateMakerChainPolls = async (
 
     if (!(await provider.blockNumber)) {
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateMakerChainPolls',
@@ -50,7 +50,7 @@ export const updateMakerChainPolls = async (
 
     if (!daoHandler.decoder) {
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateMakerChainPolls',
@@ -102,7 +102,7 @@ export const updateMakerChainPolls = async (
             ).toString()
 
             await axiom.datasets.ingestEvents(
-                `proposal-detective-${process.env.DEPLOYMENT}`,
+                `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                 [
                     {
                         event: 'updateMakerChainPolls',
@@ -153,7 +153,7 @@ export const updateMakerChainPolls = async (
                         }
                     })
                     await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                         [
                             {
                                 event: 'updateMakerChainPolls',
@@ -174,7 +174,7 @@ export const updateMakerChainPolls = async (
                         }
                     })
                     await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                         [
                             {
                                 event: 'updateMakerChainPolls',
@@ -189,7 +189,7 @@ export const updateMakerChainPolls = async (
         }
     } catch (e) {
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateMakerChainPolls',
@@ -202,7 +202,7 @@ export const updateMakerChainPolls = async (
         throw new InternalServerErrorException()
     }
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'updateMakerChainPolls',
@@ -232,7 +232,7 @@ const getProposalTitle = async (url: string): Promise<unknown> => {
     } catch (e) {
         title = 'Unknown'
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateMakerChainPolls',

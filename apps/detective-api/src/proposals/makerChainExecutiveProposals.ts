@@ -24,7 +24,7 @@ export const updateMakerChainExecutiveProposals = async (
     })
 
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'updateMakerChainExecutiveProposals',
@@ -36,7 +36,7 @@ export const updateMakerChainExecutiveProposals = async (
 
     if (!(await provider.blockNumber)) {
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateMakerChainExecutiveProposals',
@@ -50,7 +50,7 @@ export const updateMakerChainExecutiveProposals = async (
 
     if (!daoHandler.decoder) {
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateMakerChainExecutiveProposals',
@@ -116,7 +116,7 @@ export const updateMakerChainExecutiveProposals = async (
 
         for (let i = 0; i < spellAddresses.length; i++) {
             await axiom.datasets.ingestEvents(
-                `proposal-detective-${process.env.DEPLOYMENT}`,
+                `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                 [
                     {
                         event: 'updateMakerChainExecutiveProposals',
@@ -143,7 +143,7 @@ export const updateMakerChainExecutiveProposals = async (
 
             if (!response.data || response.status == 404) {
                 await axiom.datasets.ingestEvents(
-                    `proposal-detective-${process.env.DEPLOYMENT}`,
+                    `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                     [
                         {
                             event: 'updateMakerChainExecutiveProposals',
@@ -200,7 +200,7 @@ export const updateMakerChainExecutiveProposals = async (
                         }
                     })
                     await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                         [
                             {
                                 event: 'updateMakerChainExecutiveProposals',
@@ -221,7 +221,7 @@ export const updateMakerChainExecutiveProposals = async (
                         }
                     })
                     await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                         [
                             {
                                 event: 'updateMakerChainExecutiveProposals',
@@ -235,7 +235,7 @@ export const updateMakerChainExecutiveProposals = async (
         }
     } catch (e) {
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateMakerChainExecutiveProposals',
@@ -249,7 +249,7 @@ export const updateMakerChainExecutiveProposals = async (
     }
 
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'updateMakerChainExecutiveProposals',
@@ -277,7 +277,7 @@ const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
             count++
         } catch (e) {
             await axiom.datasets.ingestEvents(
-                `proposal-detective-${process.env.DEPLOYMENT}`,
+                `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                 [
                     {
                         event: 'updateMakerChainExecutiveProposals',

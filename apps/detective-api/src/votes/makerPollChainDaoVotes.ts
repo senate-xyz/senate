@@ -25,7 +25,7 @@ export const updateMakerPollChainDaoVotes = async (
     })
 
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'updateMakerPollChainDaoVotes',
@@ -55,7 +55,7 @@ export const updateMakerPollChainDaoVotes = async (
         const voterLatestVoteBlock = voterHandler.lastChainVoteCreatedBlock
 
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateMakerPollChainDaoVotes',
@@ -98,7 +98,7 @@ export const updateMakerPollChainDaoVotes = async (
                         }
                     })
                     await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                         [
                             {
                                 event: 'updateMakerPollChainDaoVotes',
@@ -186,7 +186,7 @@ export const updateMakerPollChainDaoVotes = async (
                 }
             })
             await axiom.datasets.ingestEvents(
-                `proposal-detective-${process.env.DEPLOYMENT}`,
+                `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                 [
                     {
                         event: 'updateMakerPollChainDaoVotes',
@@ -206,7 +206,7 @@ export const updateMakerPollChainDaoVotes = async (
     }))
 
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'updateMakerPollChainDaoVotes',

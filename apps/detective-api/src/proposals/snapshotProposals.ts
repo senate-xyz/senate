@@ -16,7 +16,7 @@ export const updateSnapshotProposals = async (
     const spacesArray = Array.from(daoHandlerToSnapshotSpaceMap.values())
 
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'updateSnapshotProposals',
@@ -73,7 +73,7 @@ export const updateSnapshotProposals = async (
             })
             .catch(async (e) => {
                 await axiom.datasets.ingestEvents(
-                    `proposal-detective-${process.env.DEPLOYMENT}`,
+                    `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                     [
                         {
                             event: 'updateSnapshotProposals',
@@ -97,7 +97,7 @@ export const updateSnapshotProposals = async (
         }
     } catch (e) {
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateSnapshotProposals',
@@ -109,7 +109,7 @@ export const updateSnapshotProposals = async (
         throw new InternalServerErrorException()
     }
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'updateSnapshotProposals',
@@ -146,7 +146,7 @@ const upsertSnapshotProposals = async (
         })
         .then(async (r) => {
             await axiom.datasets.ingestEvents(
-                `proposal-detective-${process.env.DEPLOYMENT}`,
+                `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                 [
                     {
                         event: 'updateSnapshotProposals',
@@ -160,7 +160,7 @@ const upsertSnapshotProposals = async (
         })
         .catch(async (e) => {
             await axiom.datasets.ingestEvents(
-                `proposal-detective-${process.env.DEPLOYMENT}`,
+                `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                 [
                     {
                         event: 'updateSnapshotProposals',

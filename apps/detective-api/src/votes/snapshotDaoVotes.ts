@@ -22,7 +22,7 @@ export const updateSnapshotDaoVotes = async (
     })
 
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'updateSnapshotDaoVotes',
@@ -54,7 +54,7 @@ export const updateSnapshotDaoVotes = async (
                 }`
 
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'updateSnapshotDaoVotes',
@@ -84,7 +84,7 @@ export const updateSnapshotDaoVotes = async (
             })
             .catch(async (e) => {
                 await axiom.datasets.ingestEvents(
-                    `proposal-detective-${process.env.DEPLOYMENT}`,
+                    `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                     [
                         {
                             event: 'updateSnapshotDaoVotes',
@@ -103,7 +103,7 @@ export const updateSnapshotDaoVotes = async (
         )
 
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateSnapshotDaoVotes',
@@ -126,7 +126,7 @@ export const updateSnapshotDaoVotes = async (
 
             if (!proposal) {
                 await axiom.datasets.ingestEvents(
-                    `proposal-detective-${process.env.DEPLOYMENT}`,
+                    `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                     [
                         {
                             event: 'updateSnapshotDaoVotes',
@@ -163,7 +163,7 @@ export const updateSnapshotDaoVotes = async (
                 })
                 .then(async (res) => {
                     await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                         [
                             {
                                 event: 'updateSnapshotDaoVotes',
@@ -177,7 +177,7 @@ export const updateSnapshotDaoVotes = async (
                 })
                 .catch(async (e) => {
                     await axiom.datasets.ingestEvents(
-                        `proposal-detective-${process.env.DEPLOYMENT}`,
+                        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
                         [
                             {
                                 event: 'updateSnapshotDaoVotes',
@@ -196,7 +196,7 @@ export const updateSnapshotDaoVotes = async (
         }
     } catch (e) {
         await axiom.datasets.ingestEvents(
-            `proposal-detective-${process.env.DEPLOYMENT}`,
+            `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
             [
                 {
                     event: 'updateSnapshotDaoVotes',
@@ -215,7 +215,7 @@ export const updateSnapshotDaoVotes = async (
     }))
 
     await axiom.datasets.ingestEvents(
-        `proposal-detective-${process.env.DEPLOYMENT}`,
+        `proposal-detective-${process.env.AXIOM_DEPLOYMENT}`,
         [
             {
                 event: 'updateSnapshotDaoVotes',
