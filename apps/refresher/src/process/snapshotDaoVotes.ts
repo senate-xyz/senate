@@ -31,16 +31,12 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
         }
     })
 
-    let votesReq = ''
+    let votersReq = ''
 
-    voters.map((voter) => (votesReq += `voters=${voter.address}&`))
-    votesReq.slice(0, -1)
+    voters.map((voter) => (votersReq += `voters=${voter.address}&`))
+    votersReq.slice(0, -1)
 
-    const proposalDetectiveReq = `${
-        process.env.DETECTIVE_URL
-    }/updateChainProposals?daoHandlerId=${
-        item.clientId
-    }&minBlockNumber=${daoHandler?.lastChainProposalCreatedBlock?.valueOf()}`
+    const proposalDetectiveReq = `${process.env.DETECTIVE_URL}/updateSnapshotDaoVotes?daoHandlerId=${daoHandler?.id}&${votersReq}`
 
     log_ref.log({
         level: 'info',
