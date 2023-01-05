@@ -78,7 +78,7 @@ export const updateMakerChainExecutiveProposals = async (
             const eventArgs = iface.decodeEventLog('LogNote', log.data)
 
             log_pd.log({
-                level: 'log',
+                level: 'info',
                 message: `Maker executive log ${i}`
             })
 
