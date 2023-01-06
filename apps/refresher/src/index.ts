@@ -17,7 +17,7 @@ let RUNNING_PROCESS_QUEUE = false
 const main = async () => {
     log_ref.log({
         level: 'info',
-        message: `Refresher start`
+        message: `Started refresher`
     })
     await loadConfig()
 
