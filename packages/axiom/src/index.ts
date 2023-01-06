@@ -6,6 +6,7 @@ declare global {
     var logger: Logger | undefined
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const logger =
     global.logger ||
     createLogger({
