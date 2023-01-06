@@ -7,7 +7,7 @@ export default function NavBar() {
 
     return (
         <div className='flex min-h-screen min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black'>
-            <Link href='/' className='mt-10 mb-20'>
+            <Link href='/' className='my-[4rem]'>
                 <Image
                     src='/assets/Senate_Logo/64/White.svg'
                     width={64}
@@ -104,17 +104,18 @@ export default function NavBar() {
                     />
                 </Link>
 
-                <Link href='https://github.com/senate-xyz/senate'>
+                <Link href='https://discord.gg/shtxfNqazd'>
                     <Image
-                        src='/assets/Icon/Github.svg'
+                        src='/assets/Icon/DiscordWhite.svg'
                         alt='twitter'
                         width={24}
                         height={24}
                     />
                 </Link>
-                <Link href='https://discord.gg/bxCCkwtP'>
+
+                <Link href='https://github.com/senate-xyz/senate'>
                     <Image
-                        src='/assets/Icon/DiscordWhite.svg'
+                        src='/assets/Icon/Github.svg'
                         alt='twitter'
                         width={24}
                         height={24}

@@ -5,9 +5,9 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Matter'],
-            },
-        },
+                sans: ['Matter', { fontFeatureSettings: '"salt", "ss01"' }]
+            }
+        }
     },
-    plugins: [],
+    plugins: []
 }
