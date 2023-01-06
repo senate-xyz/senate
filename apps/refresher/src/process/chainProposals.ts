@@ -23,7 +23,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
 
     log_ref.log({
         level: 'info',
-        message: `Detective request`,
+        message: `Chain proposals detective request`,
         data: {
             url: proposalDetectiveReq
         }
@@ -36,7 +36,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
         .then(async (data) => {
             log_ref.log({
                 level: 'info',
-                message: `Detective response`,
+                message: `Chain proposals detective response`,
                 data: {
                     data: data
                 }
@@ -131,7 +131,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
         .catch(async (e) => {
             log_ref.log({
                 level: 'error',
-                message: `Proposal detective request failed`,
+                message: `Chain proposals detective request failed`,
                 data: {
                     error: e
                 }

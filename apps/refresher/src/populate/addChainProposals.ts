@@ -83,9 +83,7 @@ export const addChainProposalsToQueue = async () => {
                                 }
                             },
                             {
-                                refreshStatus: {
-                                    in: [RefreshStatus.PENDING]
-                                }
+                                refreshStatus: RefreshStatus.PENDING
                             },
                             {
                                 lastRefreshTimestamp: {
@@ -162,7 +160,7 @@ export const addChainProposalsToQueue = async () => {
             })
             .catch((e) => {
                 log_ref.log({
-                    level: 'info',
+                    level: 'error',
                     message: `Failed to add to queue`,
                     data: {
                         error: e
@@ -194,7 +192,7 @@ export const addChainProposalsToQueue = async () => {
             })
             .catch((e) => {
                 log_ref.log({
-                    level: 'info',
+                    level: 'error',
                     message: `Failed to update refresh statuses`,
                     data: {
                         error: e

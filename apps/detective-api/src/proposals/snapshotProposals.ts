@@ -99,7 +99,7 @@ export const updateSnapshotProposals = async (
         }
     } catch (e) {
         log_pd.log({
-            level: 'info',
+            level: 'error',
             message: `Could not update proposals for ${spacesArray}}`,
             data: {
                 error: e
@@ -136,7 +136,7 @@ const upsertSnapshotProposals = async (
         .then(async (r) => {
             log_pd.log({
                 level: 'info',
-                message: `Upserted proposals for ${daoHandler} - ${space}`,
+                message: `Upserted proposals for ${space}`,
                 data: {
                     proposals: r
                 }
@@ -146,12 +146,11 @@ const upsertSnapshotProposals = async (
         .catch(async (e) => {
             log_pd.log({
                 level: 'error',
-                message: `Could not upsert proposals proposals for ${daoHandler} - ${space}`,
+                message: `Could not upsert proposals proposals for ${space}`,
                 data: {
                     proposals: e
                 }
             })
-
             return 'nok'
         })
 

@@ -19,6 +19,7 @@ export const updateMakerChainExecutiveProposals = async (
     daoHandlerId: string,
     minBlockNumber: number
 ) => {
+    let response = 'ok'
     const daoHandler = await prisma.dAOHandler.findFirst({
         where: { id: daoHandlerId },
         include: { dao: true }
@@ -76,6 +77,11 @@ export const updateMakerChainExecutiveProposals = async (
             const log = logs[i]
             const eventArgs = iface.decodeEventLog('LogNote', log.data)
 
+            log_pd.log({
+                level: 'info',
+                message: `Maker executive log ${i}`
+            })
+
             const decodedFunctionData =
                 log.topics[0] === voteSingleActionTopic
                     ? iface.decodeFunctionData('vote(bytes32)', eventArgs.fax)
@@ -111,7 +117,7 @@ export const updateMakerChainExecutiveProposals = async (
             )
                 continue
 
-            const response = await axios
+            const res = await axios
                 .get(
                     'https://vote.makerdao.com/api/executive/' +
                         spellAddresses[i]
@@ -120,7 +126,7 @@ export const updateMakerChainExecutiveProposals = async (
                     return { status: 404, data: {} }
                 })
 
-            if (!response.data || response.status == 404) {
+            if (!res.data || res.status == 404) {
                 continue
             }
 
@@ -133,12 +139,12 @@ export const updateMakerChainExecutiveProposals = async (
                         }
                     },
                     update: {
-                        name: response.data.title.slice(0, 1024),
+                        name: res.data.title.slice(0, 1024),
                         daoId: daoHandler.daoId,
                         daoHandlerId: daoHandler.id,
-                        timeEnd: new Date(response.data.spellData.expiration),
-                        timeStart: new Date(response.data.date),
-                        timeCreated: new Date(response.data.date),
+                        timeEnd: new Date(res.data.spellData.expiration),
+                        timeStart: new Date(res.data.date),
+                        timeCreated: new Date(res.data.date),
                         data: {},
                         url:
                             daoHandler.decoder['proposalUrl'] +
@@ -146,12 +152,12 @@ export const updateMakerChainExecutiveProposals = async (
                     },
                     create: {
                         externalId: spellAddresses[i],
-                        name: response.data.title.slice(0, 1024),
+                        name: res.data.title.slice(0, 1024),
                         daoId: daoHandler.daoId,
                         daoHandlerId: daoHandler.id,
-                        timeEnd: new Date(response.data.spellData.expiration),
-                        timeStart: new Date(response.data.date),
-                        timeCreated: new Date(response.data.date),
+                        timeEnd: new Date(res.data.spellData.expiration),
+                        timeStart: new Date(res.data.date),
+                        timeCreated: new Date(res.data.date),
                         data: {},
                         url:
                             daoHandler.decoder['proposalUrl'] +
@@ -178,22 +184,16 @@ export const updateMakerChainExecutiveProposals = async (
                     return
                 })
                 .catch(async (e) => {
+                    response = 'nok'
                     log_pd.log({
                         level: 'error',
                         message: `Could not upsert new proposal for ${daoHandler.dao.name} - ${daoHandler.type}`,
                         data: { proposal: spellAddresses[i], error: e }
                     })
-                    await prisma.dAOHandler.update({
-                        where: {
-                            id: daoHandler.id
-                        },
-                        data: {
-                            lastChainProposalCreatedBlock: 0
-                        }
-                    })
                 })
         }
     } catch (e) {
+        response = 'nok'
         log_pd.log({
             level: 'error',
             message: `Could not get new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -208,11 +208,11 @@ export const updateMakerChainExecutiveProposals = async (
         level: 'info',
         message: `Succesfully updated proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
         data: {
-            result: [{ daoHandlerId: daoHandlerId, response: 'ok' }]
+            result: [{ daoHandlerId: daoHandlerId, response: response }]
         }
     })
 
-    return [{ daoHandlerId: daoHandlerId, response: 'ok' }]
+    return [{ daoHandlerId: daoHandlerId, response: response }]
 }
 
 const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
@@ -226,13 +226,6 @@ const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
             yays.push(spellAddress)
             count++
         } catch (e) {
-            log_pd.log({
-                level: 'error',
-                message: `Could not get slays`,
-                data: {
-                    error: e
-                }
-            })
             break
         }
     }

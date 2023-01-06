@@ -31,14 +31,16 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
         }
     })
 
-    let proposalDetectiveReq = ''
+    let votersReq = ''
 
-    voters.map((voter) => (proposalDetectiveReq += `voters=${voter.address}&`))
-    proposalDetectiveReq.slice(0, -1)
+    voters.map((voter) => (votersReq += `voters=${voter.address}&`))
+    votersReq.slice(0, -1)
+
+    const proposalDetectiveReq = `${process.env.DETECTIVE_URL}/updateChainDaoVotes?daoHandlerId=${daoHandler?.id}&${votersReq}`
 
     log_ref.log({
         level: 'info',
-        message: `Detective request`,
+        message: `Chain votes detective request`,
         data: {
             url: proposalDetectiveReq
         }
@@ -51,7 +53,7 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
         .then(async (data) => {
             log_ref.log({
                 level: 'info',
-                message: `Detective response`,
+                message: `Chain votes detective response`,
                 data: {
                     data: data
                 }
@@ -176,7 +178,7 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
         .catch(async (e) => {
             log_ref.log({
                 level: 'error',
-                message: `Proposal detective request failed`,
+                message: `Chain votes detective request failed`,
                 data: {
                     error: e
                 }

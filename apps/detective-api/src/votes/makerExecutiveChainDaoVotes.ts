@@ -237,13 +237,6 @@ const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
             yays.push(spellAddress)
             count++
         } catch (e) {
-            log_pd.log({
-                level: 'error',
-                message: `Could not get slates yays for ${slate}`,
-                data: {
-                    error: e
-                }
-            })
             break
         }
     }

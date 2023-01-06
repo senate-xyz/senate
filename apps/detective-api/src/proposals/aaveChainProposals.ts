@@ -12,6 +12,7 @@ export const updateAaveChainProposals = async (
     daoHandlerId: string,
     minBlockNumber: number
 ) => {
+    let response = 'ok'
     const daoHandler = await prisma.dAOHandler.findFirst({
         where: { id: daoHandlerId },
         include: { dao: true }
@@ -144,22 +145,16 @@ export const updateAaveChainProposals = async (
                     return
                 })
                 .catch(async (e) => {
+                    response = 'nok'
                     log_pd.log({
                         level: 'error',
                         message: `Could not upsert new proposal for ${daoHandler.dao.name} - ${daoHandler.type}`,
                         data: { proposal: proposals[i], error: e }
                     })
-                    await prisma.dAOHandler.update({
-                        where: {
-                            id: daoHandler.id
-                        },
-                        data: {
-                            lastChainProposalCreatedBlock: 0
-                        }
-                    })
                 })
         }
     } catch (e) {
+        response = 'nok'
         log_pd.log({
             level: 'error',
             message: `Could not get new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -174,11 +169,11 @@ export const updateAaveChainProposals = async (
         level: 'info',
         message: `Succesfully updated proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
         data: {
-            result: [{ daoHandlerId: daoHandlerId, response: 'ok' }]
+            result: [{ daoHandlerId: daoHandlerId, response: response }]
         }
     })
 
-    return [{ daoHandlerId: daoHandlerId, response: 'ok' }]
+    return [{ daoHandlerId: daoHandlerId, response: response }]
 }
 
 const fetchProposalInfoFromIPFS = async (

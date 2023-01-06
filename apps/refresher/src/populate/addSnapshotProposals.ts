@@ -52,9 +52,7 @@ export const addSnapshotProposalsToQueue = async () => {
                         AND: [
                             { type: DAOHandlerType.SNAPSHOT },
                             {
-                                refreshStatus: {
-                                    in: [RefreshStatus.PENDING]
-                                }
+                                refreshStatus: RefreshStatus.PENDING
                             },
                             {
                                 lastRefreshTimestamp: {
@@ -111,7 +109,7 @@ export const addSnapshotProposalsToQueue = async () => {
             }
         })
 
-        const queueRes = await tx.refreshQueue
+        await tx.refreshQueue
             .createMany({
                 data: snapshotDaoHandlers.map((daoHandler) => {
                     return {
@@ -133,7 +131,7 @@ export const addSnapshotProposalsToQueue = async () => {
             })
             .catch((e) => {
                 log_ref.log({
-                    level: 'info',
+                    level: 'error',
                     message: `Failed to add to queue`,
                     data: {
                         error: e
@@ -141,7 +139,7 @@ export const addSnapshotProposalsToQueue = async () => {
                 })
             })
 
-        const statusRes = await tx.dAOHandler
+        await tx.dAOHandler
             .updateMany({
                 where: {
                     id: {
@@ -157,7 +155,7 @@ export const addSnapshotProposalsToQueue = async () => {
             })
             .then((r) => {
                 log_ref.log({
-                    level: 'info',
+                    level: 'error',
                     message: `Succesfully updated refresh statuses`,
                     data: {
                         item: r
