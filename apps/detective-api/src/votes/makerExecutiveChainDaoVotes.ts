@@ -1,4 +1,4 @@
-import { log_pd } from '@senate/axiom'
+import { log_node, log_pd } from '@senate/axiom'
 import { DAOHandler, DAOHandlerType, prisma } from '@senate/database'
 import { ethers } from 'ethers'
 
@@ -54,6 +54,12 @@ export const updateMakerExecutiveChainDaoVotes = async (
         try {
             const latestVoteBlock = Number(voterLatestVoteBlock) ?? 0
             const currentBlock = await provider.getBlockNumber()
+
+            log_node.log({
+                level: 'info',
+                message: `getBlockNumber`,
+                data: {}
+            })
 
             votes = await getVotes(daoHandler, voter, latestVoteBlock)
 
@@ -203,6 +209,19 @@ const getVotes = async (
         ]
     })
 
+    log_node.log({
+        level: 'info',
+        message: `getLogs`,
+        data: {
+            fromBlock: latestVoteBlock,
+            address: daoHandler.decoder['address'],
+            topics: [
+                [voteMultipleActionsTopic, voteSingleActionTopic],
+                voterAddressTopic
+            ]
+        }
+    })
+
     const spellAddressesSet = new Set<string>()
     for (let i = 0; i < logs.length; i++) {
         const log = logs[i]
@@ -234,6 +253,15 @@ const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
         let spellAddress
         try {
             spellAddress = await chiefContract.slates(slate, count)
+            log_node.log({
+                level: 'info',
+                message: `slates`,
+                data: {
+                    function: JSON.stringify(chiefContract.slates),
+                    slate: slate,
+                    count: count
+                }
+            })
             yays.push(spellAddress)
             count++
         } catch (e) {

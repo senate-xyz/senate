@@ -6,7 +6,7 @@
 */
 
 import { InternalServerErrorException } from '@nestjs/common'
-import { log_pd } from '@senate/axiom'
+import { log_pd, log_node } from '@senate/axiom'
 import { prisma } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
@@ -33,14 +33,6 @@ export const updateMakerChainPolls = async (
         }
     })
 
-    if (!(await provider.blockNumber)) {
-        log_pd.log({
-            level: 'error',
-            message: 'Could not get blockNumber. Node provider offline?'
-        })
-        return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
-    }
-
     if (!daoHandler.decoder) {
         log_pd.log({
             level: 'error',
@@ -48,7 +40,6 @@ export const updateMakerChainPolls = async (
         })
         return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
     }
-
     let proposals
 
     try {
@@ -60,6 +51,16 @@ export const updateMakerChainPolls = async (
             fromBlock: Number(minBlockNumber),
             address: daoHandler.decoder['address_create'],
             topics: [pollingContractIface.getEventTopic('PollCreated')]
+        })
+
+        log_node.log({
+            level: 'info',
+            message: `getLogs`,
+            data: {
+                fromBlock: Number(minBlockNumber),
+                address: daoHandler.decoder['address_create'],
+                topics: [pollingContractIface.getEventTopic('PollCreated')]
+            }
         })
 
         proposals = logs.map((log) => ({

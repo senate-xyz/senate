@@ -6,7 +6,7 @@
 */
 
 import { InternalServerErrorException } from '@nestjs/common'
-import { log_pd } from '@senate/axiom'
+import { log_pd, log_node } from '@senate/axiom'
 import { prisma } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
@@ -32,14 +32,6 @@ export const updateMakerChainExecutiveProposals = async (
             minBlockNumber: minBlockNumber
         }
     })
-
-    if (!(await provider.blockNumber)) {
-        log_pd.log({
-            level: 'error',
-            message: 'Could not get blockNumber. Node provider offline?'
-        })
-        return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
-    }
 
     if (!daoHandler.decoder) {
         log_pd.log({
@@ -70,6 +62,16 @@ export const updateMakerChainExecutiveProposals = async (
             fromBlock: Number(minBlockNumber),
             address: daoHandler.decoder['address'],
             topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
+        })
+
+        log_node.log({
+            level: 'info',
+            message: `getLogs`,
+            data: {
+                fromBlock: Number(minBlockNumber),
+                address: daoHandler.decoder['address'],
+                topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
+            }
         })
 
         const spellAddressesSet = new Set<string>()
@@ -223,6 +225,16 @@ const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
         let spellAddress
         try {
             spellAddress = await chiefContract.slates(slate, count)
+            log_node.log({
+                level: 'info',
+                message: `slates`,
+                data: {
+                    function: JSON.stringify(chiefContract.slates),
+                    slate: slate,
+                    count: count
+                }
+            })
+
             yays.push(spellAddress)
             count++
         } catch (e) {

@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common'
-import { log_pd } from '@senate/axiom'
+import { log_pd, log_node } from '@senate/axiom'
 import { prisma } from '@senate/database'
 import { ethers } from 'ethers'
 
@@ -25,14 +25,6 @@ export const updateCompoundChainProposals = async (
         }
     })
 
-    if (!(await provider.blockNumber)) {
-        log_pd.log({
-            level: 'error',
-            message: 'Could not get blockNumber. Node provider offline?'
-        })
-        return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
-    }
-
     if (!daoHandler.decoder) {
         log_pd.log({
             level: 'error',
@@ -53,6 +45,15 @@ export const updateCompoundChainProposals = async (
             topics: [govBravoIface.getEventTopic('ProposalCreated')]
         })
 
+        log_node.log({
+            level: 'info',
+            message: `getLogs`,
+            data: {
+                fromBlock: Number(minBlockNumber),
+                address: daoHandler.decoder['address'],
+                topics: [govBravoIface.getEventTopic('ProposalCreated')]
+            }
+        })
         proposals = logs.map((log) => ({
             txBlock: log.blockNumber,
             txHash: log.transactionHash,
@@ -75,6 +76,13 @@ export const updateCompoundChainProposals = async (
                 await provider.getBlock(proposals[i].txBlock)
             ).timestamp
 
+            log_node.log({
+                level: 'info',
+                message: `getBlock`,
+                data: {
+                    block: proposals[i].txBlock
+                }
+            })
             const votingStartsTimestamp =
                 proposalCreatedTimestamp +
                 (proposals[i].eventData.startBlock - proposals[i].txBlock) * 12

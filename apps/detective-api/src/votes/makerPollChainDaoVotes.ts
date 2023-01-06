@@ -1,4 +1,4 @@
-import { log_pd } from '@senate/axiom'
+import { log_node, log_pd } from '@senate/axiom'
 import { DAOHandler, DAOHandlerType, prisma } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
@@ -55,6 +55,12 @@ export const updateMakerPollChainDaoVotes = async (
         try {
             const latestVoteBlock = Number(voterLatestVoteBlock) ?? 0
             const currentBlock = await provider.getBlockNumber()
+
+            log_node.log({
+                level: 'info',
+                message: `getBlockNumber`,
+                data: {}
+            })
 
             votes = await getVotes(daoHandler, voter, latestVoteBlock)
 
@@ -186,6 +192,16 @@ const getVotes = async (
         fromBlock: latestVoteBlock,
         address: daoHandler.decoder['address_vote'],
         topics: [iface.getEventTopic('Voted'), hexZeroPad(voterAddress, 32)]
+    })
+
+    log_node.log({
+        level: 'info',
+        message: `getLogs`,
+        data: {
+            fromBlock: latestVoteBlock,
+            address: daoHandler.decoder['address_vote'],
+            topics: [iface.getEventTopic('Voted'), hexZeroPad(voterAddress, 32)]
+        }
     })
 
     const votes = logs.map((log) => {
