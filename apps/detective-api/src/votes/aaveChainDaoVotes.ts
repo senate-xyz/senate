@@ -107,7 +107,7 @@ export const updateAaveChainDaoVotes = async (
                             id: voterHandler.id
                         },
                         data: {
-                            lastChainVoteCreatedBlock: latestVoteBlock + 100
+                            lastChainVoteCreatedBlock: currentBlock
                         }
                     })
                     return
@@ -162,7 +162,6 @@ const getVotes = async (
 
     logs = await provider.getLogs({
         fromBlock: latestVoteBlock,
-        toBlock: Number(latestVoteBlock) + 100,
         address: daoHandler.decoder['address'],
         topics: [
             govBravoIface.getEventTopic('VoteEmitted'),
@@ -175,7 +174,6 @@ const getVotes = async (
         message: `getLogs`,
         data: {
             fromBlock: latestVoteBlock,
-            toBlock: Number(latestVoteBlock) + 100,
             address: daoHandler.decoder['address'],
             topics: [
                 govBravoIface.getEventTopic('VoteEmitted'),

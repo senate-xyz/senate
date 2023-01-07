@@ -50,7 +50,6 @@ export const updateMakerChainPolls = async (
 
         const logs = await provider.getLogs({
             fromBlock: Number(minBlockNumber),
-            toBlock: Number(minBlockNumber) + 100,
             address: daoHandler.decoder['address_create'],
             topics: [pollingContractIface.getEventTopic('PollCreated')]
         })
@@ -60,7 +59,6 @@ export const updateMakerChainPolls = async (
             message: `getLogs`,
             data: {
                 fromBlock: Number(minBlockNumber),
-                toBlock: Number(minBlockNumber) + 100,
                 address: daoHandler.decoder['address_create'],
                 topics: [pollingContractIface.getEventTopic('PollCreated')]
             }
@@ -122,7 +120,8 @@ export const updateMakerChainPolls = async (
             })
             .then(async (r) => {
                 const lastChainProposalCreatedBlock =
-                    Number(minBlockNumber) + 100
+                    Math.max(...proposals.map((proposal) => proposal.txBlock)) +
+                    1
 
                 log_pd.log({
                     level: 'info',

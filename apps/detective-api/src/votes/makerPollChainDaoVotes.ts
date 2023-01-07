@@ -101,7 +101,7 @@ export const updateMakerPollChainDaoVotes = async (
                             id: voterHandler.id
                         },
                         data: {
-                            lastChainVoteCreatedBlock: latestVoteBlock + 100
+                            lastChainVoteCreatedBlock: currentBlock
                         }
                     })
                     return
@@ -156,7 +156,6 @@ const getVotes = async (
 
     const logs = await provider.getLogs({
         fromBlock: latestVoteBlock,
-        toBlock: latestVoteBlock + 100,
         address: daoHandler.decoder['address_vote'],
         topics: [iface.getEventTopic('Voted'), hexZeroPad(voterAddress, 32)]
     })
@@ -166,7 +165,6 @@ const getVotes = async (
         message: `getLogs`,
         data: {
             fromBlock: latestVoteBlock,
-            toBlock: latestVoteBlock + 100,
             address: daoHandler.decoder['address_vote'],
             topics: [iface.getEventTopic('Voted'), hexZeroPad(voterAddress, 32)]
         }

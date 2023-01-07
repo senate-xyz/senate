@@ -56,9 +56,10 @@ export const updateMakerChainExecutiveProposals = async (
         const voteSingleActionTopic =
             '0xa69beaba00000000000000000000000000000000000000000000000000000000'
 
+        const latestBlock = await provider.getBlockNumber()
+
         const logs = await provider.getLogs({
             fromBlock: Number(minBlockNumber),
-            toBlock: Number(minBlockNumber) + 100,
             address: daoHandler.decoder['address'],
             topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
         })
@@ -68,7 +69,6 @@ export const updateMakerChainExecutiveProposals = async (
             message: `getLogs`,
             data: {
                 fromBlock: Number(minBlockNumber),
-                toBlock: Number(minBlockNumber) + 100,
                 address: daoHandler.decoder['address'],
                 topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
             }
@@ -148,7 +148,8 @@ export const updateMakerChainExecutiveProposals = async (
             })
             .then(async (r) => {
                 const lastChainProposalCreatedBlock =
-                    Number(minBlockNumber) + 100
+                    Math.max(...proposals.map((proposal) => proposal.txBlock)) +
+                    1
 
                 log_pd.log({
                     level: 'info',

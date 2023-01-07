@@ -42,7 +42,6 @@ export const updateCompoundChainProposals = async (
 
         const logs = await provider.getLogs({
             fromBlock: Number(minBlockNumber),
-            toBlock: Number(minBlockNumber) + 100,
             address: daoHandler.decoder['address'],
             topics: [govBravoIface.getEventTopic('ProposalCreated')]
         })
@@ -52,7 +51,6 @@ export const updateCompoundChainProposals = async (
             message: `getLogs`,
             data: {
                 fromBlock: Number(minBlockNumber),
-                toBlock: Number(minBlockNumber) + 100,
                 address: daoHandler.decoder['address'],
                 topics: [govBravoIface.getEventTopic('ProposalCreated')]
             }
@@ -126,7 +124,8 @@ export const updateCompoundChainProposals = async (
             })
             .then(async (r) => {
                 const lastChainProposalCreatedBlock =
-                    Number(minBlockNumber) + 100
+                    Math.max(...proposals.map((proposal) => proposal.txBlock)) +
+                    1
 
                 log_pd.log({
                     level: 'info',
