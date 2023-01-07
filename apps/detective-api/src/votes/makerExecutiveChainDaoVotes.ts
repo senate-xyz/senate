@@ -129,7 +129,7 @@ export const updateMakerExecutiveChainDaoVotes = async (
                                 id: voterHandler.id
                             },
                             data: {
-                                lastChainVoteCreatedBlock: currentBlock
+                                lastChainVoteCreatedBlock: latestVoteBlock + 100
                             }
                         })
 
@@ -202,6 +202,7 @@ const getVotes = async (
 
     const logs = await provider.getLogs({
         fromBlock: latestVoteBlock,
+        toBlock: latestVoteBlock + 100,
         address: daoHandler.decoder['address'],
         topics: [
             [voteMultipleActionsTopic, voteSingleActionTopic],
@@ -214,6 +215,7 @@ const getVotes = async (
         message: `getLogs`,
         data: {
             fromBlock: latestVoteBlock,
+            toBlock: latestVoteBlock + 100,
             address: daoHandler.decoder['address'],
             topics: [
                 [voteMultipleActionsTopic, voteSingleActionTopic],

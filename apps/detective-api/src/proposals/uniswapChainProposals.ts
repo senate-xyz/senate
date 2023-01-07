@@ -42,6 +42,7 @@ export const updateUniswapChainProposals = async (
 
         const logs = await provider.getLogs({
             fromBlock: Number(minBlockNumber),
+            toBlock: Number(minBlockNumber) + 100,
             address: daoHandler.decoder['address'],
             topics: [govBravoIface.getEventTopic('ProposalCreated')]
         })
@@ -51,6 +52,7 @@ export const updateUniswapChainProposals = async (
             message: `getLogs`,
             data: {
                 fromBlock: Number(minBlockNumber),
+                toBlock: Number(minBlockNumber) + 100,
                 address: daoHandler.decoder['address'],
                 topics: [govBravoIface.getEventTopic('ProposalCreated')]
             }
@@ -125,8 +127,7 @@ export const updateUniswapChainProposals = async (
             })
             .then(async (r) => {
                 const lastChainProposalCreatedBlock =
-                    Math.max(...proposals.map((proposal) => proposal.txBlock)) +
-                    1
+                    Number(minBlockNumber) + 100
 
                 log_pd.log({
                     level: 'info',

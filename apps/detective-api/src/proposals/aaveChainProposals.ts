@@ -43,6 +43,7 @@ export const updateAaveChainProposals = async (
 
         const logs = await provider.getLogs({
             fromBlock: Number(minBlockNumber),
+            toBlock: Number(minBlockNumber) + 300,
             address: daoHandler.decoder['address'],
             topics: [govBravoIface.getEventTopic('ProposalCreated')]
         })
@@ -52,6 +53,7 @@ export const updateAaveChainProposals = async (
             message: `getLogs`,
             data: {
                 fromBlock: Number(minBlockNumber),
+                toBlock: Number(minBlockNumber) + 300,
                 address: daoHandler.decoder['address'],
                 topics: [govBravoIface.getEventTopic('ProposalCreated')]
             }
@@ -76,9 +78,7 @@ export const updateAaveChainProposals = async (
 
         const prismaData = await Promise.all(
             proposals.map(async (proposal) => {
-                const proposalCreatedTimestamp = (
-                    await provider.getBlock(proposal.txBlock)
-                ).timestamp
+                const proposalCreatedTimestamp = Number(minBlockNumber) + 100
 
                 log_node.log({
                     level: 'info',
@@ -126,8 +126,7 @@ export const updateAaveChainProposals = async (
             })
             .then(async (r) => {
                 const lastChainProposalCreatedBlock =
-                    Math.max(...proposals.map((proposal) => proposal.txBlock)) +
-                    1
+                    Number(minBlockNumber) + 100
 
                 log_pd.log({
                     level: 'info',
