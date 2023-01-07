@@ -56,6 +56,13 @@ export const addSnapshotDaoVotes = async () => {
                                         AND: [
                                             {
                                                 refreshStatus: RefreshStatus.NEW
+                                            },
+                                            {
+                                                lastRefreshTimestamp: {
+                                                    lt: new Date(
+                                                        Date.now() - 10 * 1000
+                                                    )
+                                                }
                                             }
                                         ]
                                     }

@@ -1,5 +1,5 @@
 import { log_node, log_pd } from '@senate/axiom'
-import { DAOHandler, DAOHandlerType, prisma } from '@senate/database'
+import { DAOHandler, DAOHandlerType, Proposal, prisma } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 
@@ -10,6 +10,7 @@ const provider = new ethers.providers.JsonRpcProvider({
 type Vote = {
     proposalOnChainId: string
     support: string
+    proposal: Proposal
 }
 
 export const updateCompoundChainDaoVotes = async (
@@ -77,86 +78,51 @@ export const updateCompoundChainDaoVotes = async (
                 continue
             }
 
-            for (const vote of votes) {
-                const proposal = await prisma.proposal.findFirst({
-                    where: {
-                        externalId: vote.proposalOnChainId,
-                        daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id
-                    }
-                })
+            const prismaData = votes.map((vote) => {
+                return {
+                    voterAddress: voter,
+                    daoId: daoHandler.daoId,
+                    proposalId: vote.proposal.id,
+                    daoHandlerId: daoHandler.id,
+                    choiceId: vote.support,
+                    choice: vote.support ? 'Yes' : 'No'
+                }
+            })
 
-                if (!proposal) {
+            await prisma.vote
+                .createMany({
+                    data: prismaData,
+                    skipDuplicates: true
+                })
+                .then(async (r) => {
+                    log_pd.log({
+                        level: 'info',
+                        message: `Updated votes for ${voter} in ${daoHandler.dao.name} - ${daoHandler.type}`,
+                        data: {
+                            vote: r
+                        }
+                    })
+                    await prisma.voterHandler.update({
+                        where: {
+                            id: voterHandler.id
+                        },
+                        data: {
+                            lastChainVoteCreatedBlock: currentBlock
+                        }
+                    })
+                    return
+                })
+                .catch(async (e) => {
                     results.set(voter, 'nok')
                     log_pd.log({
                         level: 'error',
-                        message: `Missing proposal for ${voter} in ${daoHandler.dao.name} - ${daoHandler.type}`,
+                        message: `Could not update votes for ${voter} in ${daoHandler.dao.name} - ${daoHandler.type}`,
                         data: {
-                            daoHandlerId: daoHandlerId,
-                            proposalOnChainId: vote.proposalOnChainId
+                            error: e,
+                            votes: votes
                         }
                     })
-                    break
-                }
-
-                await prisma.vote
-                    .upsert({
-                        where: {
-                            voterAddress_daoId_proposalId: {
-                                voterAddress: voter,
-                                daoId: daoHandler.daoId,
-                                proposalId: proposal.id
-                            }
-                        },
-                        update: {
-                            choiceId: vote.support,
-                            choice: vote.support ? 'Yes' : 'No'
-                        },
-                        create: {
-                            voterAddress: voter,
-                            daoId: daoHandler.daoId,
-                            proposalId: proposal.id,
-                            daoHandlerId: daoHandler.id,
-                            choiceId: vote.support,
-                            choice: vote.support ? 'Yes' : 'No'
-                        }
-                    })
-                    .then(async (r) => {
-                        log_pd.log({
-                            level: 'info',
-                            message: `Updated vote for ${voter} in ${daoHandler.dao.name} - ${daoHandler.type}`,
-                            data: {
-                                vote: r
-                            }
-                        })
-                        await prisma.voterHandler.update({
-                            where: {
-                                id: voterHandler.id
-                            },
-                            data: {
-                                lastChainVoteCreatedBlock: currentBlock
-                            }
-                        })
-
-                        return
-                    })
-                    .catch(async (e) => {
-                        results.set(voter, 'nok')
-                        log_pd.log({
-                            level: 'error',
-                            message: `Could not update vote for ${voter} in ${daoHandler.dao.name} - ${daoHandler.type}`,
-                            data: {
-                                error: e,
-                                voterAddress: voter,
-                                daoId: daoHandler.daoId,
-                                proposalId: proposal.id,
-                                daoHandlerId: daoHandler.id,
-                                choiceId: vote.support,
-                                choice: vote.support ? 'Yes' : 'No'
-                            }
-                        })
-                    })
-            }
+                })
         } catch (e) {
             results.set(voter, 'nok')
             log_pd.log({
@@ -216,17 +182,32 @@ const getVotes = async (
         }
     })
 
-    const votes = logs.map((log) => {
-        const eventData = govBravoIface.parseLog({
-            topics: log.topics,
-            data: log.data
-        }).args
+    const votes = await Promise.all(
+        logs.map(async (log) => {
+            const eventData = govBravoIface.parseLog({
+                topics: log.topics,
+                data: log.data
+            }).args
 
-        return {
-            proposalOnChainId: BigNumber.from(eventData.proposalId).toString(),
-            support: String(eventData.support)
-        }
-    })
+            const proposal = await prisma.proposal.findFirst({
+                where: {
+                    externalId: BigNumber.from(eventData.proposalId).toString(),
+                    daoId: daoHandler.daoId,
+                    daoHandlerId: daoHandler.id
+                }
+            })
+
+            if (!proposal) return
+
+            return {
+                proposalOnChainId: BigNumber.from(
+                    eventData.proposalId
+                ).toString(),
+                support: String(eventData.support),
+                proposal: proposal
+            }
+        })
+    )
 
     return votes
 }

@@ -72,9 +72,6 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                                     .map((result) => result.voterAddress)
                             }
                         },
-                        daoHandler: {
-                            type: DAOHandlerType.SNAPSHOT
-                        },
                         daoHandlerId: daoHandler?.id
                     },
                     data: {
@@ -120,9 +117,6 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                                     )
                                     .map((result) => result.voterAddress)
                             }
-                        },
-                        daoHandler: {
-                            type: DAOHandlerType.SNAPSHOT
                         },
                         daoHandlerId: daoHandler?.id
                     },
@@ -176,9 +170,7 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                                 in: voters.map((voter) => voter.address)
                             }
                         },
-                        daoHandler: {
-                            type: DAOHandlerType.SNAPSHOT
-                        }
+                        daoHandlerId: daoHandler?.id
                     },
                     data: {
                         refreshStatus: RefreshStatus.NEW

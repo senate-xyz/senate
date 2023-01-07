@@ -64,7 +64,16 @@ export const addChainProposalsToQueue = async () => {
                                 }
                             },
                             {
-                                refreshStatus: RefreshStatus.NEW
+                                AND: [
+                                    {
+                                        refreshStatus: RefreshStatus.NEW
+                                    },
+                                    {
+                                        lastRefreshTimestamp: {
+                                            lt: new Date(Date.now() - 10 * 1000)
+                                        }
+                                    }
+                                ]
                             }
                         ]
                     },

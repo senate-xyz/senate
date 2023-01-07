@@ -28,9 +28,9 @@ const main = async () => {
     cron.schedule('*/10 * * * * *', async () => {
         await loadConfig()
         await createVoterHandlers()
-        await addSnapshotProposalsToQueue()
+        //await addSnapshotProposalsToQueue()
         await addChainProposalsToQueue()
-        await addSnapshotDaoVotes()
+        //await addSnapshotDaoVotes()
         await addChainDaoVotes()
     })
 }

@@ -43,7 +43,16 @@ export const addSnapshotProposalsToQueue = async () => {
                         AND: [
                             { type: DAOHandlerType.SNAPSHOT },
                             {
-                                refreshStatus: RefreshStatus.NEW
+                                AND: [
+                                    {
+                                        refreshStatus: RefreshStatus.NEW
+                                    },
+                                    {
+                                        lastRefreshTimestamp: {
+                                            lt: new Date(Date.now() - 10 * 1000)
+                                        }
+                                    }
+                                ]
                             }
                         ]
                     },

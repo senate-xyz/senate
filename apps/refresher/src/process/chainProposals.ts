@@ -149,7 +149,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
                 .then((r) => {
                     log_ref.log({
                         level: 'info',
-                        message: `Succesfully forced refresh for all failed voters`,
+                        message: `Succesfully forced refresh for all failed daos`,
                         data: {
                             daoHandlerId: item.clientId,
                             result: r
@@ -161,7 +161,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
                 .catch((e) => {
                     log_ref.log({
                         level: 'error',
-                        message: `Failed to force refresh for all failed voters`,
+                        message: `Failed to force refresh for all failed daos`,
                         data: {
                             daoHandlerId: item.clientId,
                             error: e

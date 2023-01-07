@@ -1,11 +1,22 @@
-import { Controller, Post, Query } from '@nestjs/common'
+import { Controller, Get, Post, Query } from '@nestjs/common'
 import { AppService } from './app.service'
 import { DAOHandlerType, prisma } from '@senate/database'
 import { log_pd } from '@senate/axiom'
+import { ethers } from 'ethers'
+
+const provider = new ethers.providers.JsonRpcProvider({
+    url: String(process.env.PROVIDER_URL)
+})
 
 @Controller('api')
 export class AppController {
     constructor(private readonly appService: AppService) {}
+
+    @Get('block')
+    async block() {
+        const block = await provider.getBlock(await provider.blockNumber)
+        return { block: block, timestamp: new Date() }
+    }
 
     @Post('updateSnapshotProposals')
     async updateSnapshotProposals(

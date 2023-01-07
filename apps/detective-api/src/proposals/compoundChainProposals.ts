@@ -32,6 +32,7 @@ export const updateCompoundChainProposals = async (
         })
         return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
     }
+
     let proposals
 
     try {
@@ -54,6 +55,7 @@ export const updateCompoundChainProposals = async (
                 topics: [govBravoIface.getEventTopic('ProposalCreated')]
             }
         })
+
         proposals = logs.map((log) => ({
             txBlock: log.blockNumber,
             txHash: log.transactionHash,
@@ -71,94 +73,89 @@ export const updateCompoundChainProposals = async (
             }
         })
 
-        for (let i = 0; i < proposals.length; i++) {
-            const proposalCreatedTimestamp = (
-                await provider.getBlock(proposals[i].txBlock)
-            ).timestamp
+        const prismaData = await Promise.all(
+            proposals.map(async (proposal) => {
+                const proposalCreatedTimestamp = (
+                    await provider.getBlock(proposal.txBlock)
+                ).timestamp
 
-            log_node.log({
-                level: 'info',
-                message: `getBlock`,
-                data: {
-                    block: proposals[i].txBlock
-                }
-            })
-            const votingStartsTimestamp =
-                proposalCreatedTimestamp +
-                (proposals[i].eventData.startBlock - proposals[i].txBlock) * 12
-            const votingEndsTimestamp =
-                proposalCreatedTimestamp +
-                (proposals[i].eventData.endBlock - proposals[i].txBlock) * 12
-            const title = await formatTitle(
-                proposals[i].eventData.ipfsHash
-                    ? proposals[i].eventData.ipfsHash
-                    : proposals[i].eventData.description
-            )
-            const proposalUrl =
-                daoHandler.decoder['proposalUrl'] + proposals[i].eventData.id
-            const proposalOnChainId = Number(
-                proposals[i].eventData.id
-            ).toString()
-
-            await prisma.proposal
-                .upsert({
-                    where: {
-                        externalId_daoId: {
-                            daoId: daoHandler.daoId,
-                            externalId: proposalOnChainId
-                        }
-                    },
-                    update: {
-                        name: String(title).slice(0, 1024),
-                        daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id,
-                        timeEnd: new Date(votingEndsTimestamp * 1000),
-                        timeStart: new Date(votingStartsTimestamp * 1000),
-                        timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                        data: {},
-                        url: proposalUrl
-                    },
-                    create: {
-                        externalId: proposalOnChainId,
-                        name: String(title).slice(0, 1024),
-                        daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id,
-                        timeEnd: new Date(votingEndsTimestamp * 1000),
-                        timeStart: new Date(votingStartsTimestamp * 1000),
-                        timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                        data: {},
-                        url: proposalUrl
+                log_node.log({
+                    level: 'info',
+                    message: `getBlock`,
+                    data: {
+                        block: proposal.txBlock
                     }
                 })
-                .then(async (r) => {
-                    log_pd.log({
-                        level: 'info',
-                        message: `Upserted new proposal for ${daoHandler.dao.name} - ${daoHandler.type}`,
-                        data: {
-                            proposal: r
-                        }
-                    })
-                    await prisma.dAOHandler.update({
-                        where: {
-                            id: daoHandler.id
-                        },
-                        data: {
-                            lastChainProposalCreatedBlock:
-                                proposals[i].txBlock + 1
-                        }
-                    })
+                const votingStartsTimestamp =
+                    proposalCreatedTimestamp +
+                    (proposal.eventData.startBlock - proposal.txBlock) * 12
+                const votingEndsTimestamp =
+                    proposalCreatedTimestamp +
+                    (proposal.eventData.endBlock - proposal.txBlock) * 12
+                const title = await formatTitle(
+                    proposal.eventData.ipfsHash
+                        ? proposal.eventData.ipfsHash
+                        : proposal.eventData.description
+                )
+                const proposalUrl =
+                    daoHandler.decoder['proposalUrl'] + proposal.eventData.id
+                const proposalOnChainId = Number(
+                    proposal.eventData.id
+                ).toString()
 
-                    return
+                return {
+                    externalId: proposalOnChainId,
+                    name: String(title).slice(0, 1024),
+                    daoId: daoHandler.daoId,
+                    daoHandlerId: daoHandler.id,
+                    timeEnd: new Date(votingEndsTimestamp * 1000),
+                    timeStart: new Date(votingStartsTimestamp * 1000),
+                    timeCreated: new Date(proposalCreatedTimestamp * 1000),
+                    data: {},
+                    url: proposalUrl
+                }
+            })
+        )
+
+        await prisma.proposal
+            .createMany({
+                data: prismaData,
+                skipDuplicates: true
+            })
+            .then(async (r) => {
+                const lastChainProposalCreatedBlock =
+                    Math.max(...proposals.map((proposal) => proposal.txBlock)) +
+                    1
+
+                log_pd.log({
+                    level: 'info',
+                    message: `Upserted new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
+                    data: {
+                        proposals: r,
+                        lastChainProposalCreatedBlock:
+                            lastChainProposalCreatedBlock
+                    }
                 })
-                .catch(async (e) => {
-                    response = 'nok'
-                    log_pd.log({
-                        level: 'error',
-                        message: `Could not upsert new proposal for ${daoHandler.dao.name} - ${daoHandler.type}`,
-                        data: { proposal: proposals[i], error: e }
-                    })
+                await prisma.dAOHandler.update({
+                    where: {
+                        id: daoHandler.id
+                    },
+                    data: {
+                        lastChainProposalCreatedBlock:
+                            lastChainProposalCreatedBlock
+                    }
                 })
-        }
+
+                return
+            })
+            .catch(async (e) => {
+                response = 'nok'
+                log_pd.log({
+                    level: 'error',
+                    message: `Could not upsert new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
+                    data: { proposals: proposals, error: e }
+                })
+            })
     } catch (e) {
         response = 'nok'
         log_pd.log({

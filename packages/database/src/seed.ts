@@ -916,8 +916,7 @@ const seedVoters = async () => {
 
 async function main() {
     await seedData()
-
-    // await seedVoters()
+    await seedVoters()
 }
 
 main()

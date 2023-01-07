@@ -19,23 +19,23 @@ export const addChainDaoVotes = async () => {
     await prisma.$transaction(async (tx) => {
         const daoHandlers = await tx.dAOHandler.findMany({
             where: {
-                OR: [
+                AND: [
                     {
-                        AND: [
-                            {
-                                type: {
-                                    in: [
-                                        DAOHandlerType.AAVE_CHAIN,
-                                        DAOHandlerType.COMPOUND_CHAIN,
-                                        DAOHandlerType.MAKER_EXECUTIVE,
-                                        DAOHandlerType.MAKER_POLL,
-                                        DAOHandlerType.UNISWAP_CHAIN
-                                    ]
-                                }
-                            },
-                            {
-                                voterHandlers: {
-                                    some: {
+                        type: {
+                            in: [
+                                DAOHandlerType.AAVE_CHAIN,
+                                DAOHandlerType.COMPOUND_CHAIN,
+                                DAOHandlerType.MAKER_EXECUTIVE,
+                                DAOHandlerType.MAKER_POLL,
+                                DAOHandlerType.UNISWAP_CHAIN
+                            ]
+                        }
+                    },
+                    {
+                        voterHandlers: {
+                            some: {
+                                OR: [
+                                    {
                                         AND: [
                                             {
                                                 refreshStatus:
@@ -52,53 +52,8 @@ export const addChainDaoVotes = async () => {
                                                 }
                                             }
                                         ]
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        AND: [
-                            {
-                                type: {
-                                    in: [
-                                        DAOHandlerType.AAVE_CHAIN,
-                                        DAOHandlerType.COMPOUND_CHAIN,
-                                        DAOHandlerType.MAKER_EXECUTIVE,
-                                        DAOHandlerType.MAKER_POLL,
-                                        DAOHandlerType.UNISWAP_CHAIN
-                                    ]
-                                }
-                            },
-                            {
-                                voterHandlers: {
-                                    some: {
-                                        AND: [
-                                            {
-                                                refreshStatus: RefreshStatus.NEW
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        AND: [
-                            {
-                                type: {
-                                    in: [
-                                        DAOHandlerType.AAVE_CHAIN,
-                                        DAOHandlerType.COMPOUND_CHAIN,
-                                        DAOHandlerType.MAKER_EXECUTIVE,
-                                        DAOHandlerType.MAKER_POLL,
-                                        DAOHandlerType.UNISWAP_CHAIN
-                                    ]
-                                }
-                            },
-                            {
-                                voterHandlers: {
-                                    some: {
+                                    },
+                                    {
                                         AND: [
                                             {
                                                 refreshStatus:
@@ -115,10 +70,24 @@ export const addChainDaoVotes = async () => {
                                                 }
                                             }
                                         ]
+                                    },
+                                    {
+                                        AND: [
+                                            {
+                                                refreshStatus: RefreshStatus.NEW
+                                            },
+                                            {
+                                                lastRefreshTimestamp: {
+                                                    lt: new Date(
+                                                        Date.now() - 10 * 1000
+                                                    )
+                                                }
+                                            }
+                                        ]
                                     }
-                                }
+                                ]
                             }
-                        ]
+                        }
                     }
                 ]
             },

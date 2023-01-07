@@ -72,17 +72,6 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                                     .map((result) => result.voterAddress)
                             }
                         },
-                        daoHandler: {
-                            type: {
-                                in: [
-                                    DAOHandlerType.AAVE_CHAIN,
-                                    DAOHandlerType.COMPOUND_CHAIN,
-                                    DAOHandlerType.MAKER_EXECUTIVE,
-                                    DAOHandlerType.MAKER_POLL,
-                                    DAOHandlerType.UNISWAP_CHAIN
-                                ]
-                            }
-                        },
                         daoHandlerId: daoHandler?.id
                     },
                     data: {
@@ -126,17 +115,6 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                                         (result) => result.response == 'nok'
                                     )
                                     .map((result) => result.voterAddress)
-                            }
-                        },
-                        daoHandler: {
-                            type: {
-                                in: [
-                                    DAOHandlerType.AAVE_CHAIN,
-                                    DAOHandlerType.COMPOUND_CHAIN,
-                                    DAOHandlerType.MAKER_EXECUTIVE,
-                                    DAOHandlerType.MAKER_POLL,
-                                    DAOHandlerType.UNISWAP_CHAIN
-                                ]
                             }
                         },
                         daoHandlerId: daoHandler?.id
@@ -192,17 +170,7 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                                 in: voters.map((voter) => voter.address)
                             }
                         },
-                        daoHandler: {
-                            type: {
-                                in: [
-                                    DAOHandlerType.AAVE_CHAIN,
-                                    DAOHandlerType.COMPOUND_CHAIN,
-                                    DAOHandlerType.MAKER_EXECUTIVE,
-                                    DAOHandlerType.MAKER_POLL,
-                                    DAOHandlerType.UNISWAP_CHAIN
-                                ]
-                            }
-                        }
+                        daoHandlerId: daoHandler?.id
                     },
                     data: {
                         refreshStatus: RefreshStatus.NEW
