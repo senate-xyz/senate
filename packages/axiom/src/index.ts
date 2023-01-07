@@ -87,7 +87,7 @@ loggers.add('bulletin', {
 loggers.add('node', {
     format: format.combine(
         format.json(),
-        format.label({ label: 'bulletin' }),
+        format.label({ label: 'node' }),
         format.timestamp({
             format: 'YYYY-MM-DD HH:mm:ss'
         }),
