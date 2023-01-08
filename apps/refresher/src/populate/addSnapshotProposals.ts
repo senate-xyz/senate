@@ -164,7 +164,7 @@ export const addSnapshotProposalsToQueue = async () => {
             })
             .then((r) => {
                 log_ref.log({
-                    level: 'error',
+                    level: 'info',
                     message: `Succesfully updated refresh statuses`,
                     data: {
                         item: r
@@ -174,7 +174,7 @@ export const addSnapshotProposalsToQueue = async () => {
             })
             .catch((e) => {
                 log_ref.log({
-                    level: 'info',
+                    level: 'error',
                     message: `Failed to update refresh statuses`,
                     data: {
                         error: e
