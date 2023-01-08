@@ -125,7 +125,9 @@ export const updateMakerChainPolls = async (
                     !moment(
                         new Date(proposalCreatedTimestamp * 1000),
                         ISO_8601
-                    ).isValid()
+                    ).isValid() ||
+                    new Date(votingEndsTimestamp * 1000).toString() ==
+                        '+051535-06-26T02:46:17.000Z'
                 )
                     return
 
