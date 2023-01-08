@@ -86,7 +86,6 @@ const formatTitle = (text: string): string => {
     const temp = text.split('\n')[0]
 
     if (!temp) {
-        console.log(text)
         return 'Title unavailable'
     }
 

@@ -38,7 +38,8 @@ export const updateChainDaoVotes = async (
         include: {
             dao: {
                 include: {
-                    votes: { where: { daoHandlerId: daoHandlerId } }
+                    votes: { where: { daoHandlerId: daoHandlerId } },
+                    proposals: { where: { daoHandlerId: daoHandlerId } }
                 }
             }
         }
@@ -57,6 +58,15 @@ export const updateChainDaoVotes = async (
 
     for (const voterAddress of voters) {
         results.set(voterAddress, 'ok')
+
+        if (daoHandler.dao.proposals.length == 0) {
+            log_pd.log({
+                level: 'info',
+                message: `Nothing to update for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
+                data: { reason: 'No proposals for this DAO' }
+            })
+            continue
+        }
 
         const voterHandler = await prisma.voterHandler.findFirstOrThrow({
             where: {

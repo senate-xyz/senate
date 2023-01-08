@@ -19,92 +19,41 @@ export const addChainProposalsToQueue = async () => {
     await prisma.$transaction(async (tx) => {
         const daoHandlers = await tx.dAOHandler.findMany({
             where: {
+                type: {
+                    in: [
+                        DAOHandlerType.AAVE_CHAIN,
+                        DAOHandlerType.COMPOUND_CHAIN,
+                        DAOHandlerType.MAKER_EXECUTIVE,
+                        DAOHandlerType.MAKER_POLL,
+                        DAOHandlerType.UNISWAP_CHAIN
+                    ]
+                },
                 OR: [
                     {
-                        //normal refresh interval
-                        AND: [
-                            {
-                                type: {
-                                    in: [
-                                        DAOHandlerType.AAVE_CHAIN,
-                                        DAOHandlerType.COMPOUND_CHAIN,
-                                        DAOHandlerType.MAKER_EXECUTIVE,
-                                        DAOHandlerType.MAKER_POLL,
-                                        DAOHandlerType.UNISWAP_CHAIN
-                                    ]
-                                }
-                            },
-                            {
-                                refreshStatus: RefreshStatus.DONE
-                            },
-                            {
-                                lastRefreshTimestamp: {
-                                    lt: new Date(
-                                        Date.now() -
-                                            DAOS_PROPOSALS_CHAIN_INTERVAL *
-                                                60 *
-                                                1000
-                                    )
-                                }
-                            }
-                        ]
+                        refreshStatus: RefreshStatus.DONE,
+                        lastRefreshTimestamp: {
+                            lt: new Date(
+                                Date.now() -
+                                    DAOS_PROPOSALS_CHAIN_INTERVAL * 60 * 1000
+                            )
+                        }
                     },
                     {
-                        //normal refresh interval
-                        AND: [
-                            {
-                                type: {
-                                    in: [
-                                        DAOHandlerType.AAVE_CHAIN,
-                                        DAOHandlerType.COMPOUND_CHAIN,
-                                        DAOHandlerType.MAKER_EXECUTIVE,
-                                        DAOHandlerType.MAKER_POLL,
-                                        DAOHandlerType.UNISWAP_CHAIN
-                                    ]
-                                }
-                            },
-                            {
-                                AND: [
-                                    {
-                                        refreshStatus: RefreshStatus.NEW
-                                    },
-                                    {
-                                        lastRefreshTimestamp: {
-                                            lt: new Date(Date.now() - 60 * 1000)
-                                        }
-                                    }
-                                ]
-                            }
-                        ]
+                        refreshStatus: RefreshStatus.PENDING,
+                        lastRefreshTimestamp: {
+                            lt: new Date(
+                                Date.now() -
+                                    DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE *
+                                        60 *
+                                        1000
+                            )
+                        }
                     },
                     {
-                        //force refresh interval
-                        AND: [
-                            {
-                                type: {
-                                    in: [
-                                        DAOHandlerType.AAVE_CHAIN,
-                                        DAOHandlerType.COMPOUND_CHAIN,
-                                        DAOHandlerType.MAKER_EXECUTIVE,
-                                        DAOHandlerType.MAKER_POLL,
-                                        DAOHandlerType.UNISWAP_CHAIN
-                                    ]
-                                }
-                            },
-                            {
-                                refreshStatus: RefreshStatus.PENDING
-                            },
-                            {
-                                lastRefreshTimestamp: {
-                                    lt: new Date(
-                                        Date.now() -
-                                            DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE *
-                                                60 *
-                                                1000
-                                    )
-                                }
-                            }
-                        ]
+                        refreshStatus: RefreshStatus.NEW,
+                        lastRefreshTimestamp: {
+                            lt: new Date(Date.now() - 15 * 1000)
+                        }
                     }
                 ]
             },

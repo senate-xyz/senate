@@ -26,6 +26,7 @@ export const makerExecutiveProposals = async (
         address: daoHandler.decoder['address'],
         topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
     })
+
     log_node.log({
         level: 'info',
         message: `getLogs`,
