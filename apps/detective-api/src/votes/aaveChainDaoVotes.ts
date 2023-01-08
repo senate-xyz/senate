@@ -3,6 +3,10 @@ import { DAOHandler, DAOHandlerType, Proposal, prisma } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 
+const senateProvider = new ethers.providers.JsonRpcProvider({
+    url: String(process.env.SENATE_NODE_URL)
+})
+
 const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL)
 })
@@ -160,14 +164,24 @@ const getVotes = async (
 
     let logs = []
 
-    logs = await provider.getLogs({
-        fromBlock: latestVoteBlock,
-        address: daoHandler.decoder['address'],
-        topics: [
-            govBravoIface.getEventTopic('VoteEmitted'),
-            [hexZeroPad(voterAddress, 32)]
-        ]
-    })
+    if (latestVoteBlock < (await provider.blockNumber) - 120)
+        logs = await provider.getLogs({
+            fromBlock: latestVoteBlock,
+            address: daoHandler.decoder['address'],
+            topics: [
+                govBravoIface.getEventTopic('VoteEmitted'),
+                [hexZeroPad(voterAddress, 32)]
+            ]
+        })
+    else
+        logs = await senateProvider.getLogs({
+            fromBlock: latestVoteBlock,
+            address: daoHandler.decoder['address'],
+            topics: [
+                govBravoIface.getEventTopic('VoteEmitted'),
+                [hexZeroPad(voterAddress, 32)]
+            ]
+        })
 
     log_node.log({
         level: 'info',

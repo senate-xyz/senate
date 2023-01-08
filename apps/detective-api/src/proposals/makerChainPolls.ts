@@ -15,6 +15,10 @@ const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL)
 })
 
+const senateProvider = new ethers.providers.JsonRpcProvider({
+    url: String(process.env.SENATE_NODE_URL)
+})
+
 export const updateMakerChainPolls = async (
     daoHandlerId: string,
     minBlockNumber: number
@@ -48,11 +52,19 @@ export const updateMakerChainPolls = async (
             daoHandler.decoder['abi_create']
         )
 
-        const logs = await provider.getLogs({
-            fromBlock: Number(minBlockNumber),
-            address: daoHandler.decoder['address_create'],
-            topics: [pollingContractIface.getEventTopic('PollCreated')]
-        })
+        let logs
+        if (minBlockNumber < (await provider.blockNumber) - 120)
+            logs = await provider.getLogs({
+                fromBlock: Number(minBlockNumber),
+                address: daoHandler.decoder['address_create'],
+                topics: [pollingContractIface.getEventTopic('PollCreated')]
+            })
+        else
+            logs = await senateProvider.getLogs({
+                fromBlock: Number(minBlockNumber),
+                address: daoHandler.decoder['address_create'],
+                topics: [pollingContractIface.getEventTopic('PollCreated')]
+            })
 
         log_node.log({
             level: 'info',

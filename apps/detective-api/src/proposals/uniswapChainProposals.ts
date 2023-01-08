@@ -7,6 +7,10 @@ const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL)
 })
 
+const senateProvider = new ethers.providers.JsonRpcProvider({
+    url: String(process.env.SENATE_NODE_URL)
+})
+
 export const updateUniswapChainProposals = async (
     daoHandlerId: string,
     minBlockNumber: number
@@ -39,12 +43,19 @@ export const updateUniswapChainProposals = async (
         const govBravoIface = new ethers.utils.Interface(
             daoHandler.decoder['abi']
         )
-
-        const logs = await provider.getLogs({
-            fromBlock: Number(minBlockNumber),
-            address: daoHandler.decoder['address'],
-            topics: [govBravoIface.getEventTopic('ProposalCreated')]
-        })
+        let logs
+        if (minBlockNumber < (await provider.blockNumber) - 120)
+            logs = await provider.getLogs({
+                fromBlock: Number(minBlockNumber),
+                address: daoHandler.decoder['address'],
+                topics: [govBravoIface.getEventTopic('ProposalCreated')]
+            })
+        else
+            logs = await senateProvider.getLogs({
+                fromBlock: Number(minBlockNumber),
+                address: daoHandler.decoder['address'],
+                topics: [govBravoIface.getEventTopic('ProposalCreated')]
+            })
 
         log_node.log({
             level: 'info',
