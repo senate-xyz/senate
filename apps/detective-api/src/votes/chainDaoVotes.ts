@@ -69,41 +69,46 @@ export const updateChainDaoVotes = async (
             }
         })
 
-        let result: Result, provider
-        const lastVoteBlock =
-            Number(voterHandler.lastChainVoteCreatedBlock) ?? 0
-        const currentBlock = await senateProvider.getBlockNumber()
-
-        log_node.log({
-            level: 'info',
-            message: `getBlockNumber`,
-            data: {}
-        })
-        if (lastVoteBlock < currentBlock - 120) {
-            provider = infuraProvider
-            log_pd.log({
-                level: 'info',
-                message: `Using Infura provider for votes ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
-                data: {
-                    daoHandlerId: daoHandlerId,
-                    lastVoteBlock: lastVoteBlock,
-                    provider: 'Infura'
-                }
-            })
-        } else {
-            provider = senateProvider
-            log_pd.log({
-                level: 'info',
-                message: `Using Senate provider for votes ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
-                data: {
-                    daoHandlerId: daoHandlerId,
-                    lastVoteBlock: lastVoteBlock,
-                    provider: 'Senate'
-                }
-            })
-        }
-
         try {
+            let result: Result, provider, currentBlock, senateOnline
+            try {
+                currentBlock = await senateProvider.getBlockNumber()
+                senateOnline = true
+            } catch (e) {
+                currentBlock = await infuraProvider.getBlockNumber()
+            }
+            const lastVoteBlock =
+                Number(voterHandler.lastChainVoteCreatedBlock) ?? 0
+
+            log_node.log({
+                level: 'info',
+                message: `getBlockNumber`,
+                data: {}
+            })
+            if (lastVoteBlock < currentBlock - 120 || !senateOnline) {
+                provider = infuraProvider
+                log_pd.log({
+                    level: 'info',
+                    message: `Using Infura provider for votes ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
+                    data: {
+                        daoHandlerId: daoHandlerId,
+                        lastVoteBlock: lastVoteBlock,
+                        provider: 'Infura'
+                    }
+                })
+            } else {
+                provider = senateProvider
+                log_pd.log({
+                    level: 'info',
+                    message: `Using Senate provider for votes ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
+                    data: {
+                        daoHandlerId: daoHandlerId,
+                        lastVoteBlock: lastVoteBlock,
+                        provider: 'Senate'
+                    }
+                })
+            }
+
             switch (daoHandler.type) {
                 case 'AAVE_CHAIN':
                     result = await getAaveVotes(

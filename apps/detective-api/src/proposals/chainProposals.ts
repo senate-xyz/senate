@@ -57,42 +57,47 @@ export const updateChainProposals = async (
         return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
     }
 
-    let result: Result, provider
-    const currentBlock = await senateProvider.getBlockNumber()
-
-    log_pd.log({
-        level: 'info',
-        message: `Current block`,
-        data: {
-            currentBlock: currentBlock
-        }
-    })
-
-    if (minBlockNumber < currentBlock - 120) {
-        provider = infuraProvider
-        log_pd.log({
-            level: 'info',
-            message: `Using Infura provider for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
-            data: {
-                daoHandlerId: daoHandlerId,
-                minBlockNumber: minBlockNumber,
-                provider: 'Infura'
-            }
-        })
-    } else {
-        provider = senateProvider
-        log_pd.log({
-            level: 'info',
-            message: `Using Senate provider for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
-            data: {
-                daoHandlerId: daoHandlerId,
-                minBlockNumber: minBlockNumber,
-                provider: 'Senate'
-            }
-        })
-    }
-
     try {
+        let result: Result, provider, currentBlock, senateOnline
+        try {
+            currentBlock = await senateProvider.getBlockNumber()
+            senateOnline = true
+        } catch (e) {
+            currentBlock = await infuraProvider.getBlockNumber()
+        }
+
+        log_pd.log({
+            level: 'info',
+            message: `Current block`,
+            data: {
+                currentBlock: currentBlock
+            }
+        })
+
+        if (minBlockNumber < currentBlock - 120 || !senateOnline) {
+            provider = infuraProvider
+            log_pd.log({
+                level: 'info',
+                message: `Using Infura provider for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+                data: {
+                    daoHandlerId: daoHandlerId,
+                    minBlockNumber: minBlockNumber,
+                    provider: 'Infura'
+                }
+            })
+        } else {
+            provider = senateProvider
+            log_pd.log({
+                level: 'info',
+                message: `Using Senate provider for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+                data: {
+                    daoHandlerId: daoHandlerId,
+                    minBlockNumber: minBlockNumber,
+                    provider: 'Senate'
+                }
+            })
+        }
+
         switch (daoHandler.type) {
             case 'AAVE_CHAIN':
                 result = await aaveProposals(
