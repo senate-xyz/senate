@@ -52,7 +52,10 @@ export const getAaveVotes = async (
                 })
 
                 //missing proposal, force sync from infura
-                if (!proposal) newLastVoteBlock = 0
+                if (!proposal) {
+                    newLastVoteBlock = 0
+                    return
+                }
 
                 return {
                     voterAddress: voterAddress,
