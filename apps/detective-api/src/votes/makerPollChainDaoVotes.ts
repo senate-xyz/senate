@@ -58,7 +58,7 @@ export const updateMakerPollChainDaoVotes = async (
 
         try {
             const latestVoteBlock = Number(voterLatestVoteBlock) ?? 0
-            const currentBlock = await provider.getBlockNumber()
+            const currentBlock = await provider.blockNumber
 
             log_node.log({
                 level: 'info',

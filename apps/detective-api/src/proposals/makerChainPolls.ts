@@ -46,6 +46,7 @@ export const updateMakerChainPolls = async (
     }
 
     let proposals
+    const currentBlock = await senateProvider.blockNumber
 
     try {
         const pollingContractIface = new ethers.utils.Interface(
@@ -131,17 +132,12 @@ export const updateMakerChainPolls = async (
                 skipDuplicates: true
             })
             .then(async (r) => {
-                const lastChainProposalCreatedBlock =
-                    Math.max(...proposals.map((proposal) => proposal.txBlock)) +
-                    1
-
                 log_pd.log({
                     level: 'info',
                     message: `Upserted new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
                     data: {
                         proposals: r,
-                        lastChainProposalCreatedBlock:
-                            lastChainProposalCreatedBlock
+                        lastChainProposalCreatedBlock: currentBlock
                     }
                 })
                 await prisma.dAOHandler.update({
@@ -149,8 +145,7 @@ export const updateMakerChainPolls = async (
                         id: daoHandler.id
                     },
                     data: {
-                        lastChainProposalCreatedBlock:
-                            lastChainProposalCreatedBlock
+                        lastChainProposalCreatedBlock: currentBlock
                     }
                 })
 

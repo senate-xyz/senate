@@ -46,6 +46,7 @@ export const updateMakerChainExecutiveProposals = async (
     }
 
     let proposals
+    const currentBlock = await senateProvider.blockNumber
 
     try {
         const iface = new ethers.utils.Interface(daoHandler.decoder['abi'])
@@ -59,8 +60,6 @@ export const updateMakerChainExecutiveProposals = async (
             '0xed08132900000000000000000000000000000000000000000000000000000000'
         const voteSingleActionTopic =
             '0xa69beaba00000000000000000000000000000000000000000000000000000000'
-
-        const latestBlock = await provider.getBlockNumber()
 
         let logs
         if (minBlockNumber < (await provider.blockNumber) - 120)
@@ -159,17 +158,12 @@ export const updateMakerChainExecutiveProposals = async (
                 skipDuplicates: true
             })
             .then(async (r) => {
-                const lastChainProposalCreatedBlock =
-                    Math.max(...proposals.map((proposal) => proposal.txBlock)) +
-                    1
-
                 log_pd.log({
                     level: 'info',
                     message: `Upserted new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
                     data: {
                         proposals: r,
-                        lastChainProposalCreatedBlock:
-                            lastChainProposalCreatedBlock
+                        lastChainProposalCreatedBlock: currentBlock
                     }
                 })
                 await prisma.dAOHandler.update({
@@ -177,8 +171,7 @@ export const updateMakerChainExecutiveProposals = async (
                         id: daoHandler.id
                     },
                     data: {
-                        lastChainProposalCreatedBlock:
-                            lastChainProposalCreatedBlock
+                        lastChainProposalCreatedBlock: currentBlock
                     }
                 })
 
