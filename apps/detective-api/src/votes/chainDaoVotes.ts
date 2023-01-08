@@ -147,6 +147,14 @@ export const updateChainDaoVotes = async (
                     break
             }
 
+            if (!result.votes) {
+                log_pd.log({
+                    level: 'info',
+                    message: `Nothing to update for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`
+                })
+                continue
+            }
+
             log_pd.log({
                 level: 'info',
                 message: `Updating votes for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
