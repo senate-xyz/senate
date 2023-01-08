@@ -19,77 +19,49 @@ export const addChainDaoVotes = async () => {
     await prisma.$transaction(async (tx) => {
         const daoHandlers = await tx.dAOHandler.findMany({
             where: {
-                AND: [
-                    {
-                        type: {
-                            in: [
-                                DAOHandlerType.AAVE_CHAIN,
-                                DAOHandlerType.COMPOUND_CHAIN,
-                                DAOHandlerType.MAKER_EXECUTIVE,
-                                DAOHandlerType.MAKER_POLL,
-                                DAOHandlerType.UNISWAP_CHAIN
-                            ]
-                        }
-                    },
-                    {
-                        voterHandlers: {
-                            some: {
-                                OR: [
-                                    {
-                                        AND: [
-                                            {
-                                                refreshStatus:
-                                                    RefreshStatus.DONE
-                                            },
-                                            {
-                                                lastRefreshTimestamp: {
-                                                    lt: new Date(
-                                                        Date.now() -
-                                                            DAOS_VOTES_CHAIN_INTERVAL *
-                                                                60 *
-                                                                1000
-                                                    )
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        AND: [
-                                            {
-                                                refreshStatus:
-                                                    RefreshStatus.PENDING
-                                            },
-                                            {
-                                                lastRefreshTimestamp: {
-                                                    lt: new Date(
-                                                        Date.now() -
-                                                            DAOS_VOTES_CHAIN_INTERVAL_FORCE *
-                                                                60 *
-                                                                1000
-                                                    )
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        AND: [
-                                            {
-                                                refreshStatus: RefreshStatus.NEW
-                                            },
-                                            {
-                                                lastRefreshTimestamp: {
-                                                    lt: new Date(
-                                                        Date.now() - 15 * 1000
-                                                    )
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ]
+                type: {
+                    in: [
+                        DAOHandlerType.AAVE_CHAIN,
+                        DAOHandlerType.COMPOUND_CHAIN,
+                        DAOHandlerType.MAKER_EXECUTIVE,
+                        DAOHandlerType.MAKER_POLL,
+                        DAOHandlerType.UNISWAP_CHAIN
+                    ]
+                },
+                voterHandlers: {
+                    some: {
+                        OR: [
+                            {
+                                refreshStatus: RefreshStatus.DONE,
+                                lastRefreshTimestamp: {
+                                    lt: new Date(
+                                        Date.now() -
+                                            DAOS_VOTES_CHAIN_INTERVAL *
+                                                60 *
+                                                1000
+                                    )
+                                }
+                            },
+                            {
+                                refreshStatus: RefreshStatus.PENDING,
+                                lastRefreshTimestamp: {
+                                    lt: new Date(
+                                        Date.now() -
+                                            DAOS_VOTES_CHAIN_INTERVAL_FORCE *
+                                                60 *
+                                                1000
+                                    )
+                                }
+                            },
+                            {
+                                refreshStatus: RefreshStatus.NEW,
+                                lastRefreshTimestamp: {
+                                    lt: new Date(Date.now() - 15 * 1000)
+                                }
                             }
-                        }
+                        ]
                     }
-                ]
+                }
             },
             include: {
                 voterHandlers: true,
