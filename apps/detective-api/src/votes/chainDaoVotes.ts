@@ -214,7 +214,8 @@ export const updateChainDaoVotes = async (
                 message: `Could not update votes for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
                 data: {
                     location: 'try wrap',
-                    error: e
+                    error: e,
+                    errorString: String(e)
                 }
             })
         }
