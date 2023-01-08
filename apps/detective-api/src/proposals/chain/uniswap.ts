@@ -49,7 +49,6 @@ export const uniswapProposals = async (
                         block: arg.txBlock
                     }
                 })
-
                 const votingStartsTimestamp =
                     proposalCreatedTimestamp +
                     (arg.eventData.startBlock - arg.txBlock) * 12
@@ -84,36 +83,6 @@ export const uniswapProposals = async (
     return { proposals, lastBlock }
 }
 
-const fetchProposalInfoFromIPFS = async (
-    hexHash: string
-): Promise<{ title: string }> => {
-    let title
-    try {
-        const response = await axios.get(
-            process.env.IPFS_GATEWAY_URL + 'f01701220' + hexHash.substring(2)
-        )
-        title = response.data.title
-    } catch (e) {
-        title = 'Unknown'
-
-        log_pd.log({
-            level: 'error',
-            message: `Could not get proposal title`,
-            data: {
-                hexHash: hexHash,
-                url:
-                    process.env.IPFS_GATEWAY_URL +
-                    'f01701220' +
-                    hexHash.substring(2),
-
-                error: e
-            }
-        })
-    }
-
-    return title
-}
-
 const formatTitle = async (text: string): Promise<string> => {
     const temp = text.split('\n')[0]
 
@@ -126,16 +95,4 @@ const formatTitle = async (text: string): Promise<string> => {
     }
 
     return temp
-}
-
-const getProposalTitle = async (
-    daoAddress: string,
-    text: string
-): Promise<unknown> => {
-    if (daoAddress === '0xEC568fffba86c094cf06b22134B23074DFE2252c') {
-        // Aave
-        return await fetchProposalInfoFromIPFS(text)
-    } else {
-        return formatTitle(text)
-    }
 }
