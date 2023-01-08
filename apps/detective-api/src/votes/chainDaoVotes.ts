@@ -138,7 +138,7 @@ export const updateChainDaoVotes = async (
                     )
                     break
                 case 'UNISWAP_CHAIN':
-                    result = await await getUniswapVotes(
+                    result = await getUniswapVotes(
                         provider,
                         daoHandler,
                         voterAddress,
@@ -147,7 +147,7 @@ export const updateChainDaoVotes = async (
                     break
             }
 
-            if (!result.votes) {
+            if (!result.votes.length) {
                 log_pd.log({
                     level: 'info',
                     message: `Nothing to update for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -168,7 +168,7 @@ export const updateChainDaoVotes = async (
                 level: 'info',
                 message: `Updating votes for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
                 data: {
-                    vote: result.votes
+                    votes: result.votes
                 }
             })
 

@@ -1,5 +1,5 @@
 import { log_node } from '@senate/axiom'
-import { DAOHandler } from '@senate/database'
+import { DAOHandler, prisma } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 
