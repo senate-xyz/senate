@@ -201,6 +201,7 @@ export const updateChainDaoVotes = async (
                         level: 'error',
                         message: `Could not update votes for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
                         data: {
+                            location: 'prisma createMany',
                             error: e,
                             votes: result.votes
                         }
@@ -212,6 +213,7 @@ export const updateChainDaoVotes = async (
                 level: 'error',
                 message: `Could not update votes for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
                 data: {
+                    location: 'try wrap',
                     error: e
                 }
             })
