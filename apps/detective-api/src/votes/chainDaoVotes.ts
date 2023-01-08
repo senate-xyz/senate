@@ -147,6 +147,14 @@ export const updateChainDaoVotes = async (
                     break
             }
 
+            log_pd.log({
+                level: 'info',
+                message: `Updating votes for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
+                data: {
+                    vote: result.votes
+                }
+            })
+
             await prisma.vote
                 .createMany({
                     data: result.votes,
