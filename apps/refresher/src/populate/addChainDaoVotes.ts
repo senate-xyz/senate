@@ -79,7 +79,7 @@ export const addChainDaoVotes = async () => {
                                             {
                                                 lastRefreshTimestamp: {
                                                     lt: new Date(
-                                                        Date.now() - 60 * 1000
+                                                        Date.now() - 15 * 1000
                                                     )
                                                 }
                                             }

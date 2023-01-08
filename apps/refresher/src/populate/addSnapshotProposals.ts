@@ -19,29 +19,28 @@ export const addSnapshotProposalsToQueue = async () => {
     await prisma.$transaction(async (tx) => {
         const snapshotDaoHandlers = await tx.dAOHandler.findMany({
             where: {
-                OR: [
+                AND: [
+                    { type: DAOHandlerType.SNAPSHOT },
                     {
-                        //normal refresh interval
-                        AND: [
-                            { type: DAOHandlerType.SNAPSHOT },
+                        OR: [
                             {
-                                refreshStatus: RefreshStatus.DONE
+                                AND: [
+                                    { type: DAOHandlerType.SNAPSHOT },
+                                    {
+                                        refreshStatus: RefreshStatus.DONE
+                                    },
+                                    {
+                                        lastRefreshTimestamp: {
+                                            lt: new Date(
+                                                Date.now() -
+                                                    DAOS_PROPOSALS_SNAPSHOT_INTERVAL *
+                                                        60 *
+                                                        1000
+                                            )
+                                        }
+                                    }
+                                ]
                             },
-                            {
-                                lastRefreshTimestamp: {
-                                    lt: new Date(
-                                        Date.now() -
-                                            DAOS_PROPOSALS_SNAPSHOT_INTERVAL *
-                                                60 *
-                                                1000
-                                    )
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        AND: [
-                            { type: DAOHandlerType.SNAPSHOT },
                             {
                                 AND: [
                                     {
@@ -49,19 +48,10 @@ export const addSnapshotProposalsToQueue = async () => {
                                     },
                                     {
                                         lastRefreshTimestamp: {
-                                            lt: new Date(Date.now() - 60 * 1000)
+                                            lt: new Date(Date.now() - 15 * 1000)
                                         }
                                     }
                                 ]
-                            }
-                        ]
-                    },
-                    {
-                        //force refresh interval
-                        AND: [
-                            { type: DAOHandlerType.SNAPSHOT },
-                            {
-                                refreshStatus: RefreshStatus.PENDING
                             },
                             {
                                 lastRefreshTimestamp: {

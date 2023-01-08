@@ -19,49 +19,53 @@ export const addChainProposalsToQueue = async () => {
     await prisma.$transaction(async (tx) => {
         const daoHandlers = await tx.dAOHandler.findMany({
             where: {
-                OR: [
+                AND: [
                     {
-                        //normal refresh interval
-                        AND: [
-                            {
-                                type: {
-                                    in: [
-                                        DAOHandlerType.AAVE_CHAIN,
-                                        DAOHandlerType.COMPOUND_CHAIN,
-                                        DAOHandlerType.MAKER_EXECUTIVE,
-                                        DAOHandlerType.MAKER_POLL,
-                                        DAOHandlerType.UNISWAP_CHAIN
-                                    ]
-                                }
-                            },
-                            {
-                                refreshStatus: RefreshStatus.DONE
-                            },
-                            {
-                                lastRefreshTimestamp: {
-                                    lt: new Date(
-                                        Date.now() -
-                                            DAOS_PROPOSALS_CHAIN_INTERVAL *
-                                                60 *
-                                                1000
-                                    )
-                                }
-                            }
-                        ]
+                        type: {
+                            in: [
+                                DAOHandlerType.AAVE_CHAIN,
+                                DAOHandlerType.COMPOUND_CHAIN,
+                                DAOHandlerType.MAKER_EXECUTIVE,
+                                DAOHandlerType.MAKER_POLL,
+                                DAOHandlerType.UNISWAP_CHAIN
+                            ]
+                        }
                     },
                     {
-                        //normal refresh interval
-                        AND: [
+                        OR: [
                             {
-                                type: {
-                                    in: [
-                                        DAOHandlerType.AAVE_CHAIN,
-                                        DAOHandlerType.COMPOUND_CHAIN,
-                                        DAOHandlerType.MAKER_EXECUTIVE,
-                                        DAOHandlerType.MAKER_POLL,
-                                        DAOHandlerType.UNISWAP_CHAIN
-                                    ]
-                                }
+                                AND: [
+                                    {
+                                        refreshStatus: RefreshStatus.DONE
+                                    },
+                                    {
+                                        lastRefreshTimestamp: {
+                                            lt: new Date(
+                                                Date.now() -
+                                                    DAOS_PROPOSALS_CHAIN_INTERVAL *
+                                                        60 *
+                                                        1000
+                                            )
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                AND: [
+                                    {
+                                        refreshStatus: RefreshStatus.PENDING
+                                    },
+                                    {
+                                        lastRefreshTimestamp: {
+                                            lt: new Date(
+                                                Date.now() -
+                                                    DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE *
+                                                        60 *
+                                                        1000
+                                            )
+                                        }
+                                    }
+                                ]
                             },
                             {
                                 AND: [
@@ -70,39 +74,10 @@ export const addChainProposalsToQueue = async () => {
                                     },
                                     {
                                         lastRefreshTimestamp: {
-                                            lt: new Date(Date.now() - 60 * 1000)
+                                            lt: new Date(Date.now() - 15 * 1000)
                                         }
                                     }
                                 ]
-                            }
-                        ]
-                    },
-                    {
-                        //force refresh interval
-                        AND: [
-                            {
-                                type: {
-                                    in: [
-                                        DAOHandlerType.AAVE_CHAIN,
-                                        DAOHandlerType.COMPOUND_CHAIN,
-                                        DAOHandlerType.MAKER_EXECUTIVE,
-                                        DAOHandlerType.MAKER_POLL,
-                                        DAOHandlerType.UNISWAP_CHAIN
-                                    ]
-                                }
-                            },
-                            {
-                                refreshStatus: RefreshStatus.PENDING
-                            },
-                            {
-                                lastRefreshTimestamp: {
-                                    lt: new Date(
-                                        Date.now() -
-                                            DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE *
-                                                60 *
-                                                1000
-                                    )
-                                }
                             }
                         ]
                     }

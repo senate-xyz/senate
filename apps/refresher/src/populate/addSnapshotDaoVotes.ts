@@ -19,13 +19,13 @@ export const addSnapshotDaoVotes = async () => {
     await prisma.$transaction(async (tx) => {
         const snapshotDaoHandlers = await tx.dAOHandler.findMany({
             where: {
-                OR: [
+                AND: [
+                    { type: DAOHandlerType.SNAPSHOT },
                     {
-                        AND: [
-                            { type: DAOHandlerType.SNAPSHOT },
-                            {
-                                voterHandlers: {
-                                    some: {
+                        voterHandlers: {
+                            some: {
+                                OR: [
+                                    {
                                         AND: [
                                             {
                                                 refreshStatus:
@@ -42,40 +42,8 @@ export const addSnapshotDaoVotes = async () => {
                                                 }
                                             }
                                         ]
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        AND: [
-                            { type: DAOHandlerType.SNAPSHOT },
-                            {
-                                voterHandlers: {
-                                    some: {
-                                        AND: [
-                                            {
-                                                refreshStatus: RefreshStatus.NEW
-                                            },
-                                            {
-                                                lastRefreshTimestamp: {
-                                                    lt: new Date(
-                                                        Date.now() - 60 * 1000
-                                                    )
-                                                }
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        AND: [
-                            { type: DAOHandlerType.SNAPSHOT },
-                            {
-                                voterHandlers: {
-                                    some: {
+                                    },
+                                    {
                                         AND: [
                                             {
                                                 refreshStatus:
@@ -92,10 +60,24 @@ export const addSnapshotDaoVotes = async () => {
                                                 }
                                             }
                                         ]
+                                    },
+                                    {
+                                        AND: [
+                                            {
+                                                refreshStatus: RefreshStatus.NEW
+                                            },
+                                            {
+                                                lastRefreshTimestamp: {
+                                                    lt: new Date(
+                                                        Date.now() - 15 * 1000
+                                                    )
+                                                }
+                                            }
+                                        ]
                                     }
-                                }
+                                ]
                             }
-                        ]
+                        }
                     }
                 ]
             },
@@ -104,6 +86,7 @@ export const addSnapshotDaoVotes = async () => {
                 dao: true
             }
         })
+
         if (!snapshotDaoHandlers.length) {
             log_ref.log({
                 level: 'info',
