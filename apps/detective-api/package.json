@@ -29,11 +29,12 @@
         "@nestjs/common": "^9.2.1",
         "@nestjs/core": "^9.2.1",
         "@nestjs/platform-express": "^9.2.1",
+        "@senate/axiom": "*",
         "@senate/config": "*",
         "@senate/database": "*",
-        "@senate/axiom": "*",
         "axios": "^1.2.2",
         "ethers": "^5.7.2",
+        "moment": "^2.29.4",
         "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",
         "rxjs": "^7.8.0"

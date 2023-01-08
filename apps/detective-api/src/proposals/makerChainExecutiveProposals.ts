@@ -10,6 +10,7 @@ import { log_pd, log_node } from '@senate/axiom'
 import { prisma } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
+import moment, { ISO_8601 } from 'moment'
 
 const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL)
@@ -137,6 +138,16 @@ export const updateMakerChainExecutiveProposals = async (
                 if (!res.data || res.status == 404) {
                     return
                 }
+
+                if (
+                    !moment(
+                        new Date(res.data.spellData.expiration),
+                        ISO_8601
+                    ).isValid() ||
+                    !moment(new Date(res.data.date), ISO_8601).isValid() ||
+                    !moment(new Date(res.data.date), ISO_8601).isValid()
+                )
+                    return
 
                 return {
                     externalId: proposal,

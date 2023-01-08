@@ -10,6 +10,7 @@ import { log_pd, log_node } from '@senate/axiom'
 import { prisma } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
+import moment, { ISO_8601 } from 'moment'
 
 const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL)
@@ -111,6 +112,22 @@ export const updateMakerChainPolls = async (
                 const proposalOnChainId = Number(
                     proposal.eventData.pollId
                 ).toString()
+
+                if (
+                    !moment(
+                        new Date(votingEndsTimestamp * 1000),
+                        ISO_8601
+                    ).isValid() ||
+                    !moment(
+                        new Date(votingStartsTimestamp * 1000),
+                        ISO_8601
+                    ).isValid() ||
+                    !moment(
+                        new Date(proposalCreatedTimestamp * 1000),
+                        ISO_8601
+                    ).isValid()
+                )
+                    return
 
                 return {
                     externalId: proposalOnChainId,
