@@ -1,6 +1,7 @@
 import { log_ref } from '@senate/axiom'
 import { RefreshQueue, RefreshStatus, prisma } from '@senate/database'
 import fetch from 'node-fetch'
+import { DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE } from '../config'
 
 export const processSnapshotProposals = async (item: RefreshQueue) => {
     const daoHandler = await prisma.dAOHandler.findFirst({
@@ -28,8 +29,16 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
             url: proposalDetectiveReq
         }
     })
+
+    const controller = new AbortController()
+    const signal = controller.signal
+    setTimeout(() => {
+        controller.abort()
+    }, DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000)
+
     await fetch(proposalDetectiveReq, {
-        method: 'POST'
+        method: 'POST',
+        signal: signal
     })
         .then((response) => response.json())
         .then(async (data) => {
