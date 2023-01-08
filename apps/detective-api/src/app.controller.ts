@@ -92,45 +92,10 @@ export class AppController {
 
         let response = [{ daoHandlerId: daoHandlerId, response: 'nok' }]
 
-        const daoHandler = await prisma.dAOHandler.findFirst({
-            where: {
-                id: daoHandlerId
-            }
-        })
-
-        switch (daoHandler.type) {
-            case DAOHandlerType.AAVE_CHAIN:
-                response = await this.appService.updateAaveChainProposals(
-                    daoHandlerId,
-                    minBlockNumber
-                )
-                break
-            case DAOHandlerType.COMPOUND_CHAIN:
-                response = await this.appService.updateCompoundChainProposals(
-                    daoHandlerId,
-                    minBlockNumber
-                )
-                break
-            case DAOHandlerType.MAKER_EXECUTIVE:
-                response =
-                    await this.appService.updateMakerChainExecutiveProposals(
-                        daoHandlerId,
-                        minBlockNumber
-                    )
-                break
-            case DAOHandlerType.MAKER_POLL:
-                response = await this.appService.updateMakerChainPolls(
-                    daoHandlerId,
-                    minBlockNumber
-                )
-                break
-            case DAOHandlerType.UNISWAP_CHAIN:
-                response = await this.appService.updateUniswapChainProposals(
-                    daoHandlerId,
-                    minBlockNumber
-                )
-                break
-        }
+        response = await this.appService.updateChainProposals(
+            daoHandlerId,
+            minBlockNumber
+        )
 
         log_pd.log({
             level: 'info',
@@ -156,47 +121,10 @@ export class AppController {
             }
         })
 
-        let response
-
-        const daoHandler = await prisma.dAOHandler.findFirst({
-            where: {
-                id: daoHandlerId
-            }
-        })
-
-        switch (daoHandler.type) {
-            case DAOHandlerType.AAVE_CHAIN:
-                response = await this.appService.updateAaveChainDaoVotes(
-                    daoHandlerId,
-                    voters
-                )
-                break
-            case DAOHandlerType.COMPOUND_CHAIN:
-                response = await this.appService.updateCompoundChainDaoVotes(
-                    daoHandlerId,
-                    voters
-                )
-                break
-            case DAOHandlerType.MAKER_EXECUTIVE:
-                response =
-                    await this.appService.updateMakerExecutiveChainDaoVotes(
-                        daoHandlerId,
-                        voters
-                    )
-                break
-            case DAOHandlerType.MAKER_POLL:
-                response = await this.appService.updateMakerPollChainDaoVotes(
-                    daoHandlerId,
-                    voters
-                )
-                break
-            case DAOHandlerType.UNISWAP_CHAIN:
-                response = await this.appService.updateUniswapChainDaoVotes(
-                    daoHandlerId,
-                    voters
-                )
-                break
-        }
+        const response = await this.appService.updateChainDaoVotes(
+            daoHandlerId,
+            voters
+        )
 
         log_pd.log({
             level: 'info',

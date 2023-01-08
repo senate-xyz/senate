@@ -44,7 +44,7 @@ CREATE TABLE `DAO` (
 -- CreateTable
 CREATE TABLE `DAOHandler` (
     `id` VARCHAR(191) NOT NULL,
-    `type` ENUM('AAVE_CHAIN', 'COMPOUND_CHAIN', 'UNISWAP_CHAIN', 'MAKER_EXECUTIVE', 'MAKER_POLL_CREATE', 'MAKER_POLL_VOTE', 'SNAPSHOT') NOT NULL,
+    `type` ENUM('AAVE_CHAIN', 'COMPOUND_CHAIN', 'UNISWAP_CHAIN', 'MAKER_EXECUTIVE', 'MAKER_POLL', 'SNAPSHOT') NOT NULL,
     `decoder` JSON NOT NULL,
     `lastChainProposalCreatedBlock` BIGINT NULL DEFAULT 0,
     `lastSnapshotProposalCreatedTimestamp` DATETIME(3) NULL DEFAULT (from_unixtime(0)),
@@ -60,7 +60,7 @@ CREATE TABLE `DAOHandler` (
 CREATE TABLE `Proposal` (
     `id` VARCHAR(191) NOT NULL,
     `externalId` VARCHAR(191) NOT NULL,
-    `name` VARCHAR(1024) NOT NULL,
+    `name` VARCHAR(2048) NOT NULL,
     `daoId` VARCHAR(191) NOT NULL,
     `daoHandlerId` VARCHAR(191) NOT NULL,
     `data` JSON NOT NULL,
@@ -69,7 +69,6 @@ CREATE TABLE `Proposal` (
     `timeEnd` DATETIME(3) NOT NULL,
     `url` VARCHAR(1024) NOT NULL,
 
-    UNIQUE INDEX `Proposal_externalId_key`(`externalId`),
     INDEX `Proposal_daoId_idx`(`daoId`),
     INDEX `Proposal_daoHandlerId_idx`(`daoHandlerId`),
     UNIQUE INDEX `Proposal_externalId_daoId_key`(`externalId`, `daoId`),
@@ -97,23 +96,12 @@ CREATE TABLE `Vote` (
     `proposalId` VARCHAR(191) NOT NULL,
     `daoId` VARCHAR(191) NOT NULL,
     `daoHandlerId` VARCHAR(191) NOT NULL,
+    `choiceId` VARCHAR(191) NOT NULL DEFAULT '0',
+    `choice` VARCHAR(191) NOT NULL DEFAULT 'None',
 
     INDEX `Vote_proposalId_idx`(`proposalId`),
     INDEX `Vote_daoId_idx`(`daoId`),
     UNIQUE INDEX `Vote_voterAddress_daoId_proposalId_key`(`voterAddress`, `daoId`, `proposalId`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `VoteOption` (
-    `id` VARCHAR(191) NOT NULL,
-    `option` VARCHAR(191) NOT NULL,
-    `optionName` VARCHAR(1024) NOT NULL,
-    `voterAddress` VARCHAR(191) NOT NULL,
-    `voteDaoId` VARCHAR(191) NOT NULL,
-    `voteProposalId` VARCHAR(191) NOT NULL,
-
-    INDEX `VoteOption_voterAddress_voteDaoId_voteProposalId_idx`(`voterAddress`, `voteDaoId`, `voteProposalId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -197,9 +185,6 @@ ALTER TABLE `Vote` ADD CONSTRAINT `Vote_proposalId_fkey` FOREIGN KEY (`proposalI
 
 -- AddForeignKey
 ALTER TABLE `Vote` ADD CONSTRAINT `Vote_voterAddress_fkey` FOREIGN KEY (`voterAddress`) REFERENCES `Voter`(`address`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `VoteOption` ADD CONSTRAINT `VoteOption_voterAddress_voteDaoId_voteProposalId_fkey` FOREIGN KEY (`voterAddress`, `voteDaoId`, `voteProposalId`) REFERENCES `Vote`(`voterAddress`, `daoId`, `proposalId`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `VoterHandler` ADD CONSTRAINT `VoterHandler_daoHandlerId_fkey` FOREIGN KEY (`daoHandlerId`) REFERENCES `DAOHandler`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

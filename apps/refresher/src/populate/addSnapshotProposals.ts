@@ -49,7 +49,7 @@ export const addSnapshotProposalsToQueue = async () => {
                                     },
                                     {
                                         lastRefreshTimestamp: {
-                                            lt: new Date(Date.now() - 10 * 1000)
+                                            lt: new Date(Date.now() - 60 * 1000)
                                         }
                                     }
                                 ]

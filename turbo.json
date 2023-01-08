@@ -30,7 +30,8 @@
         "AXIOM_TOKEN",
         "AXIOM_ORG_ID",
         "AXIOM_DATASET",
-        "SENATE_NODE_URL"
+        "SENATE_NODE_URL",
+        "INFURA_NODE_URL"
       ]
     },
     "start": {},
