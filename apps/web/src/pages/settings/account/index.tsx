@@ -5,14 +5,14 @@ const SettingsContainer = () => {
     const AccountSettingsNOSRR = dynamic(
         import('./../../../components/settings/account/AccountSettings'),
         {
-            ssr: false,
+            ssr: false
         }
     )
 
     return (
-        <div className="flex flex-row">
+        <div className='flex flex-row'>
             <DashboardHeader
-                title="Settings"
+                title='Settings'
                 component={<AccountSettingsNOSRR />}
             />
         </div>

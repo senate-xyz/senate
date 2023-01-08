@@ -1,108 +1,66 @@
-import { prisma } from '@senate/database'
 import { z } from 'zod'
-import { RefreshStatus } from '@senate/common-types'
-
 import { router, publicProcedure } from '../trpc'
 
 export const publicRouter = router({
-    proposals: publicProcedure.query(async () => {
-        const userProposals = await prisma.proposal.findMany({
+    proposals: publicProcedure.query(async ({ ctx }) => {
+        const userProposals = await ctx.prisma.proposal.findMany({
             where: {
                 data: {
                     path: '$.timeEnd',
-                    gte: Date.now() / 1000,
-                },
+                    gte: Date.now() / 1000
+                }
             },
             include: {
                 dao: {
                     include: {
                         handlers: {
                             select: {
-                                type: true,
-                            },
-                        },
-                    },
+                                type: true
+                            }
+                        }
+                    }
                 },
                 votes: {
                     where: {
-                        voterAddress: '',
-                    },
-                    include: {
-                        options: true,
-                    },
-                },
-            },
+                        voterAddress: ''
+                    }
+                }
+            }
         })
 
         return userProposals
     }),
-    daos: publicProcedure.query(async () => {
-        const daosList = await prisma.dAO.findMany({
+    daos: publicProcedure.query(async ({ ctx }) => {
+        const daosList = await ctx.prisma.dAO.findMany({
             where: {},
             orderBy: {
-                id: 'asc',
+                id: 'asc'
             },
             distinct: 'id',
             include: {
                 handlers: true,
                 subscriptions: {
-                    take: 0, //needed in order to maintain type safety
-                },
-            },
+                    take: 0 //needed in order to maintain type safety
+                }
+            }
         })
         return daosList
     }),
-    refreshDao: publicProcedure
-        .input(
-            z.object({
-                daoId: z.string(),
-            })
-        )
-        .mutation(async ({ input }) => {
-            await prisma.dAO
-                .update({
-                    where: {
-                        id: input.daoId,
-                    },
-                    data: {
-                        refreshStatus: RefreshStatus.NEW,
-                    },
-                })
-                .then(() => {
-                    return true
-                })
-                .catch(() => {
-                    return false
-                })
-        }),
-    refreshStatus: publicProcedure
-        .input(
-            z.object({
-                daoId: z.string(),
-            })
-        )
-        .query(async ({ input }) => {
-            return await prisma.dAO.findFirst({
-                where: {
-                    id: input.daoId,
-                },
-            })
-        }),
     activeProposalsForDao: publicProcedure
         .input(
             z.object({
-                daoId: z.string(),
+                daoId: z.string()
             })
         )
-        .query(async ({ input }) => {
-            return await prisma.proposal.findMany({
+        .query(async ({ ctx, input }) => {
+            return await ctx.prisma.proposal.findMany({
                 where: {
                     AND: [
                         {
-                            daoId: input.daoId,
-                        },
-                    ],
-                },
+                            daoId: input.daoId
+                        }
+                    ]
+                }
             })
-        }),
+        })
 })

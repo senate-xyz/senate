@@ -5,14 +5,14 @@ const SettingsContainer = () => {
     const ProxySettingsNOSRR = dynamic(
         import('./../../../components/settings/proxy/ProxySettings'),
         {
-            ssr: false,
+            ssr: false
         }
     )
 
     return (
-        <div className="flex flex-row">
+        <div className='flex flex-row'>
             <DashboardHeader
-                title="Settings"
+                title='Settings'
                 component={<ProxySettingsNOSRR />}
             />
         </div>

@@ -8,11 +8,11 @@ const restricted = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (session) {
         res.send({
-            content: 'pong',
+            content: 'pong'
         })
     } else {
         res.send({
-            error: 'You must be signed in to view the protected content on this page.',
+            error: 'You must be signed in to view the protected content on this page.'
         })
     }
 }

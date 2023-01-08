@@ -3,7 +3,8 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["dist/**", ".next/**"],
+      "cache": false
     },
     "*": {
       "env": [
@@ -25,7 +26,12 @@
         "ROUNDUP_BCC_EMAILS",
         "ROUNDUP_CRON_INTERVAL",
         "REFRESHER_INTERVAL",
-        "REFRESHER_FORCE_INTERVAL"
+        "REFRESHER_FORCE_INTERVAL",
+        "AXIOM_TOKEN",
+        "AXIOM_ORG_ID",
+        "AXIOM_DATASET",
+        "SENATE_NODE_URL",
+        "INFURA_NODE_URL"
       ]
     },
     "start": {},

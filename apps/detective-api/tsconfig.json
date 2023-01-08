@@ -1,5 +1,5 @@
 {
-    "extends": "@senate/tsconfig/nest.json",
+    "extends": "@senate/config/ts/nest.json",
     "exclude": ["node_modules", "test", "dist", "**/*spec.ts"],
     "compilerOptions": { "outDir": "./dist" }
 }

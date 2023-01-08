@@ -1,78 +1,78 @@
-import { prisma } from '@senate/database'
 import { z } from 'zod'
-import { router, publicProcedure } from '../../trpc'
+import { router, protectedProcedure } from '../../trpc'
 
 export const userSubscriptionsRouter = router({
-    subscribedDAOs: publicProcedure.query(async ({ ctx }) => {
-        const user = await prisma.user
+    subscribedDAOs: protectedProcedure.query(async ({ ctx }) => {
+        const user = await ctx.prisma.user
             .findFirstOrThrow({
                 where: {
-                    name: { equals: String(ctx.session?.user?.name) },
+                    name: { equals: String(ctx.session?.user?.name) }
                 },
                 select: {
-                    id: true,
-                },
+                    id: true
+                }
             })
             .catch(() => {
                 return { id: '0' }
             })
 
-        const daosList = await prisma.dAO.findMany({
+        const daosList = await ctx.prisma.dAO.findMany({
             where: {
                 subscriptions: {
                     some: {
-                        user: { is: user },
-                    },
-                },
+                        user: { is: user }
+                    }
+                }
             },
             orderBy: {
-                id: 'asc',
+                id: 'asc'
             },
             distinct: 'id',
             include: {
                 handlers: true,
                 subscriptions: {
                     where: {
-                        userId: { contains: user.id },
-                    },
-                },
-            },
+                        userId: { contains: user.id }
+                    }
+                }
+            }
         })
         return daosList
     }),
-    subscribe: publicProcedure
+    subscribe: protectedProcedure
         .input(
             z.object({
-                daoId: z.string(),
+                daoId: z.string()
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const user = await prisma.user
+            const user = await ctx.prisma.user
                 .findFirstOrThrow({
                     where: {
-                        name: { equals: String(ctx.session?.user?.name) },
+                        name: { equals: String(ctx.session?.user?.name) }
                     },
                     select: {
                         id: true,
-                    },
+                        voters: true
+                    }
                 })
                 .catch(() => {
-                    return { id: '0' }
+                    return { id: '0', voters: [] }
                 })
 
-            await prisma.subscription
+            await ctx.prisma.subscription
                 .upsert({
                     where: {
                         userId_daoId: {
                             userId: user.id,
-                            daoId: input.daoId,
-                        },
+                            daoId: input.daoId
+                        }
                     },
                     update: {},
                     create: {
                         userId: user.id,
-                        daoId: input.daoId,
-                    },
+                        daoId: input.daoId
+                    }
                 })
                 .then(() => {
                     return true
@@ -82,34 +82,34 @@ export const userSubscriptionsRouter = router({
                 })
         }),
 
-    unsubscribe: publicProcedure
+    unsubscribe: protectedProcedure
         .input(
             z.object({
-                daoId: z.string(),
+                daoId: z.string()
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const user = await prisma.user
+            const user = await ctx.prisma.user
                 .findFirstOrThrow({
                     where: {
-                        name: { equals: String(ctx.session?.user?.name) },
+                        name: { equals: String(ctx.session?.user?.name) }
                     },
                     select: {
-                        id: true,
-                    },
+                        id: true
+                    }
                 })
                 .catch(() => {
                     return { id: '0' }
                 })
 
-            await prisma.subscription
+            await ctx.prisma.subscription
                 .delete({
                     where: {
                         userId_daoId: {
                             userId: user.id,
-                            daoId: input.daoId,
-                        },
-                    },
+                            daoId: input.daoId
+                        }
+                    }
                 })
                 .then(() => {
                     return true
@@ -117,5 +117,5 @@ export const userSubscriptionsRouter = router({
                 .catch(() => {
                     return false
                 })
-        }),
+        })
 })

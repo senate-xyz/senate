@@ -1,6 +1,11 @@
-import { RoundupNotificationType } from '@prisma/client'
-import { Proposal, UserWithVotingAddresses, Voter } from '@senate/common-types'
-import { prisma } from '@senate/database'
+import {
+    type Proposal,
+    type UserWithVotingAddresses,
+    type Voter,
+    RoundupNotificationType,
+    prisma
+} from '@senate/database'
+
 import axios from 'axios'
 import { config } from 'dotenv'
 import { schedule } from 'node-cron'
@@ -13,8 +18,9 @@ const threeDays = 259200000
 const oneDay = 86400000
 const now: number = Date.now()
 
-const delay = (ms: number) : Promise<any> => {
-    return new Promise(resolve => setTimeout(resolve, ms));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const delay = (ms: number): Promise<any> => {
+    return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
@@ -53,20 +59,20 @@ const insertNotifications = async (
         const users = await prisma.user.findMany({
             where: {
                 email: {
-                    not: '',
+                    not: ''
                 },
                 userSettings: {
-                    dailyBulletinEmail: true,
+                    dailyBulletinEmail: true
                 },
                 subscriptions: {
                     some: {
-                        daoId: proposal.daoId,
-                    },
-                },
+                        daoId: proposal.daoId
+                    }
+                }
             },
             select: {
-                id: true,
-            },
+                id: true
+            }
         })
 
         await prisma
@@ -77,16 +83,16 @@ const insertNotifications = async (
                             proposalId_userId_type: {
                                 proposalId: proposal.id,
                                 userId: user.id,
-                                type: type,
-                            },
+                                type: type
+                            }
                         },
                         update: {},
                         create: {
                             userId: user.id,
                             proposalId: proposal.id,
                             daoId: proposal.daoId,
-                            type: type,
-                        },
+                            type: type
+                        }
                     })
                 })
             )
@@ -102,12 +108,12 @@ const addNewProposals = async () => {
     const proposals = await prisma.proposal.findMany({
         where: {
             timeCreated: {
-                gte: new Date(now - oneDay),
-            },
+                gte: new Date(now - oneDay)
+            }
         },
         orderBy: {
-            timeEnd: 'asc',
-        },
+            timeEnd: 'asc'
+        }
     })
 
     if (proposals) {
@@ -129,19 +135,19 @@ const addEndingProposals = async () => {
             AND: [
                 {
                     timeEnd: {
-                        lte: new Date(now + threeDays),
-                    },
+                        lte: new Date(now + threeDays)
+                    }
                 },
                 {
                     timeEnd: {
-                        gt: new Date(now),
-                    },
-                },
-            ],
+                        gt: new Date(now)
+                    }
+                }
+            ]
         },
         orderBy: {
-            timeEnd: 'asc',
-        },
+            timeEnd: 'asc'
+        }
     })
 
     if (proposals) {
@@ -163,19 +169,19 @@ const addPastProposals = async () => {
             AND: [
                 {
                     timeEnd: {
-                        lte: new Date(now),
-                    },
+                        lte: new Date(now)
+                    }
                 },
                 {
                     timeEnd: {
-                        gte: new Date(now - oneDay),
-                    },
-                },
-            ],
+                        gte: new Date(now - oneDay)
+                    }
+                }
+            ]
         },
         orderBy: {
-            timeEnd: 'desc',
-        },
+            timeEnd: 'desc'
+        }
     })
 
     if (proposals) {
@@ -194,23 +200,24 @@ const formatEmailTableData = async (
     notificationType: RoundupNotificationType
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
-    let promises: Promise<any>[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let promises: Promise<any>[] = []
 
     try {
         const proposals = await prisma.notification.findMany({
             where: {
                 userId: user.id,
-                type: notificationType,
+                type: notificationType
             },
             include: {
                 proposal: {
                     include: {
-                        dao: true,
-                    },
-                },
-            },
+                        dao: true
+                    }
+                }
+            }
         })
-    
+
         promises = proposals.map(async (notification) => {
             const voted = await userVoted(
                 user.voters,
@@ -220,26 +227,26 @@ const formatEmailTableData = async (
             const dateOptions: Intl.DateTimeFormatOptions = {
                 year: 'numeric',
                 month: 'short',
-                day: 'numeric',
+                day: 'numeric'
             }
-    
-            await delay(5000);
+
+            await delay(5000)
             const countdownUrl = await generateCountdownGifUrl(
                 notification.proposal.timeEnd
             )
-    
+
             const votingStatus = voted
                 ? 'Voted'
                 : notificationType == RoundupNotificationType.PAST
                 ? "Didn't vote"
                 : 'Not voted yet'
-    
+
             const votingStatusIconUrl = voted
                 ? process.env.WEBAPP_URL + '/assets/Icon/Voted.png'
                 : notificationType == RoundupNotificationType.PAST
                 ? process.env.WEBAPP_URL + '/assets/Icon/DidntVote.png'
                 : process.env.WEBAPP_URL + '/assets/Icon/NotVotedYet.png'
-    
+
             return {
                 votingStatus: votingStatus,
                 votingStatusIconUrl: votingStatusIconUrl,
@@ -249,7 +256,9 @@ const formatEmailTableData = async (
                         : notification.proposal.name,
                 proposalUrl: notification.proposal.url,
                 daoLogoUrl:
-                    process.env.WEBAPP_URL + notification.proposal.dao.picture,
+                    process.env.WEBAPP_URL +
+                    notification.proposal.dao.picture +
+                    '_small.png',
                 endHoursUTC: formatTwoDigit(
                     notification.proposal.timeEnd.getUTCHours()
                 ),
@@ -260,13 +269,12 @@ const formatEmailTableData = async (
                     undefined,
                     dateOptions
                 ),
-                countdownUrl: countdownUrl,
+                countdownUrl: countdownUrl
             }
         })
-    } catch(error) {
+    } catch (error) {
         console.error(error)
     }
-    
 
     return Promise.all(promises)
 }
@@ -295,7 +303,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
                 'Accept-Encoding': 'null',
-                Authorization: process.env.VOTING_COUNTDOWN_TOKEN,
+                Authorization: process.env.VOTING_COUNTDOWN_TOKEN
             },
             data: {
                 skin_id: 6,
@@ -319,14 +327,14 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
                 seconds: 'seconds',
                 advanced_params: {
                     separator_color: 'FFFFFF',
-                    labels_color: '000000',
-                },
-            },
+                    labels_color: '000000'
+                }
+            }
         })
 
         url = response.data.message.src
     } catch (error) {
-        console.error("Failed to generate countdown gif: ", error)
+        console.error('Failed to generate countdown gif: ', error)
     }
 
     return url
@@ -337,32 +345,34 @@ const sendRoundupEmails = async () => {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
-        day: 'numeric',
+        day: 'numeric'
     }
-    
+
     const todaysDate = new Date(now).toLocaleDateString(undefined, dateOptions)
 
     try {
-        console.log("Searching for users with daily bulletin enabled...")
+        console.log('Searching for users with daily bulletin enabled...')
         const users = await prisma.user.findMany({
             where: {
                 email: {
-                    not: '',
+                    not: ''
                 },
                 userSettings: {
-                    dailyBulletinEmail: true,
-                },
+                    dailyBulletinEmail: true
+                }
             },
             include: {
-                voters: true,
-            },
+                voters: true
+            }
         })
-        console.log("Found " + users.length + " users with daily bulletin enabled.")
-    
+        console.log(
+            'Found ' + users.length + ' users with daily bulletin enabled.'
+        )
+
         for (const user of users) {
             if (!user.email) continue
-            console.log('Sending email to ' + user.email);
-    
+            console.log('Sending email to ' + user.email)
+
             const endingSoonProposalsData = await formatEmailTableData(
                 user,
                 RoundupNotificationType.ENDING_SOON
@@ -372,47 +382,50 @@ const sendRoundupEmails = async () => {
                 user,
                 RoundupNotificationType.NEW
             )
-            
+
             const pastProposalsData = await formatEmailTableData(
                 user,
                 RoundupNotificationType.PAST
             )
-    
+
             const to: string =
                 process.env.EXEC_ENV === 'PROD'
                     ? String(user.email)
                     : String(process.env.TEST_EMAIL)
-    
+
             const response = await client.sendEmailWithTemplate({
                 TemplateAlias: 'daily-bulletin',
                 TemplateModel: {
                     senateLogoUrl:
-                        process.env.WEBAPP_URL + '/assets/Senate_Logo/64/White.png',
+                        process.env.WEBAPP_URL +
+                        '/assets/Senate_Logo/64/White.png',
                     todaysDate: todaysDate,
                     endingSoonProposals: endingSoonProposalsData,
                     endingSoonProposalsTableCssClass:
                         endingSoonProposalsData.length > 0 ? 'show' : 'hide',
                     endingSoonProposalsNoDataBoxCssClass:
                         endingSoonProposalsData.length > 0 ? 'hide' : 'show',
-    
+
                     newProposals: newProposalsData,
                     newProposalsTableCssClass:
                         newProposalsData.length > 0 ? 'show' : 'hide',
                     newProposalsNoDataBoxCssClass:
                         newProposalsData.length > 0 ? 'hide' : 'show',
-    
+
                     pastProposals: pastProposalsData,
                     pastProposalsTableCssClass:
                         pastProposalsData.length > 0 ? 'show' : 'hide',
                     pastProposalsNoDataBoxCssClass:
                         pastProposalsData.length > 0 ? 'hide' : 'show',
-    
+
                     twitterIconUrl:
-                        process.env.WEBAPP_URL + '/assets/Icon/TwitterWhite.png',
+                        process.env.WEBAPP_URL +
+                        '/assets/Icon/TwitterWhite.png',
                     discordIconUrl:
-                        process.env.WEBAPP_URL + '/assets/Icon/DiscordWhite.png',
+                        process.env.WEBAPP_URL +
+                        '/assets/Icon/DiscordWhite.png',
                     githubIconUrl:
-                        process.env.WEBAPP_URL + '/assets/Icon/GithubWhite.png',
+                        process.env.WEBAPP_URL + '/assets/Icon/GithubWhite.png'
                 },
                 InlineCss: true,
                 From: 'info@senatelabs.xyz',
@@ -420,16 +433,14 @@ const sendRoundupEmails = async () => {
                 Bcc: process.env.ROUNDUP_BCC_EMAILS ?? '',
                 Tag: 'Daily Bulletin',
                 TrackOpens: true,
-                MessageStream: 'outbound',
+                MessageStream: 'outbound'
             })
-    
+
             console.log(`Email sent to ${user.email}`, response)
         }
-
     } catch (error) {
         console.error(error)
     }
-
 }
 
 const userVoted = async (
@@ -443,8 +454,8 @@ const userVoted = async (
             where: {
                 voterAddress: voter.address,
                 daoId: daoId,
-                proposalId: proposalId,
-            },
+                proposalId: proposalId
+            }
         })
 
         if (vote) voted = true

@@ -1,129 +1,44 @@
-import {
-    Injectable,
-    InternalServerErrorException,
-    Logger,
-    NotFoundException,
-} from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 
-import { DAOHandlerType } from '@prisma/client'
-import { updateGovernorBravoProposals } from './proposals/governorBravoProposals'
-import { updateMakerPolls } from './proposals/makerPolls'
-import { updateMakerProposals } from './proposals/makerProposals'
 import { updateSnapshotProposals } from './proposals/snapshotProposals'
-import { updateGovernorBravoVotes } from './votes/governorBravoVotes'
-import { updateMakerPollVotes } from './votes/makerPollVotes'
-import { updateMakerVotes } from './votes/makerVotes'
-import { updateSnapshotVotes } from './votes/snapshotVotes'
-
-import { prisma } from '@senate/database'
+import { updateSnapshotDaoVotes } from './votes/snapshotDaoVotes'
+import { updateChainProposals } from './proposals/chainProposals'
+import { updateChainDaoVotes } from './votes/chainDaoVotes'
 
 @Injectable()
 export class AppService {
-    private readonly logger = new Logger(AppService.name)
+    //SNAPSHOT PROPOSALS
 
-    async updateProposals(daoId: string) {
-        const dao = await prisma.dAO
-            .findFirst({
-                where: {
-                    id: daoId,
-                },
-                include: {
-                    handlers: true,
-                    subscriptions: true,
-                },
-            })
-            .catch((err) => {
-                this.logger.error(err)
-                throw new InternalServerErrorException()
-            })
-
-        if (!dao) {
-            throw new NotFoundException('DAO not found')
-        }
-
-        for (const handler of dao.handlers) {
-            this.logger.log(
-                `Fetching proposals for ${dao.name}, handler: ${handler.type}.`
-            )
-
-            switch (handler.type) {
-                case DAOHandlerType.SNAPSHOT:
-                    await updateSnapshotProposals(dao.name, handler)
-                    break
-
-                case DAOHandlerType.BRAVO1 || DAOHandlerType.BRAVO2:
-                    await updateGovernorBravoProposals(handler)
-                    break
-
-                case DAOHandlerType.MAKER_EXECUTIVE:
-                    await updateMakerProposals(handler)
-                    break
-
-                case DAOHandlerType.MAKER_POLL_CREATE:
-                    await updateMakerPolls(handler)
-                    break
-
-                default:
-                    break
-            }
-        }
+    async updateSnapshotProposals(
+        daoHandlerIds: string[],
+        minCreatedAt: number
+    ): Promise<Array<{ daoHandlerId: string; response: string }>> {
+        return await updateSnapshotProposals(daoHandlerIds, minCreatedAt)
     }
 
-    async updateVotes(daoId: string, voterAddress: string) {
-        let dao
+    //SNAPSHOT VOTES
+    async updateSnapshotDaoVotes(
+        daoHandlerId: string,
+        voters: [string]
+    ): Promise<Array<{ voterAddress: string; response: string }>> {
+        return await updateSnapshotDaoVotes(daoHandlerId, voters)
+    }
 
-        try {
-            dao = await prisma.dAO.findFirst({
-                where: {
-                    id: daoId,
-                },
-                include: {
-                    handlers: true,
-                    subscriptions: true,
-                },
-            })
-        } catch (err) {
-            console.log(err)
-            throw new InternalServerErrorException()
-        }
+    //CHAIN PROPOSALS
 
-        if (!dao) {
-            throw new NotFoundException('DAO not found')
-        }
+    async updateChainProposals(
+        daoHandlerId: string,
+        minBlockNumber: number
+    ): Promise<Array<{ daoHandlerId: string; response: string }>> {
+        return await updateChainProposals(daoHandlerId, minBlockNumber)
+    }
 
-        this.logger.log(
-            `Updating votes for user ${voterAddress} in ${dao.name}`
-        )
+    //CHAIN VOTES
 
-        for (const handler of dao.handlers) {
-            this.logger.log(
-                `Fetching votes for ${dao.name}, user ${voterAddress}, handler: ${handler.type}`
-            )
-
-            switch (handler.type) {
-                case DAOHandlerType.SNAPSHOT:
-                    await updateSnapshotVotes(handler, voterAddress, dao.name)
-                    break
-
-                case DAOHandlerType.BRAVO1 || DAOHandlerType.BRAVO2:
-                    await updateGovernorBravoVotes(
-                        handler,
-                        voterAddress,
-                        dao.name
-                    )
-                    break
-
-                case DAOHandlerType.MAKER_EXECUTIVE:
-                    await updateMakerVotes(handler, voterAddress)
-                    break
-
-                case DAOHandlerType.MAKER_POLL_VOTE:
-                    await updateMakerPollVotes(handler, voterAddress)
-                    break
-
-                default:
-                    break
-            }
-        }
+    async updateChainDaoVotes(
+        daoHandlerId: string,
+        voters: [string]
+    ): Promise<Array<{ voterAddress: string; response: string }>> {
+        return await updateChainDaoVotes(daoHandlerId, voters)
     }
 }

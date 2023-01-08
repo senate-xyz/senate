@@ -1,3 +1,0 @@
-{
-    "extends": "@senate/tsconfig/node16.json"
-}

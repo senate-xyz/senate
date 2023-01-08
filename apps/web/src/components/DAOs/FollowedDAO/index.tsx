@@ -14,7 +14,7 @@ export const FollowedDAO = (props: {
     const [showMenu, setShowMenu] = useState(false)
 
     return (
-        <div className="h-[320px] w-[240px]">
+        <div className='h-[320px] w-[240px]'>
             {showMenu ? (
                 <BackCard
                     dao={props.dao}

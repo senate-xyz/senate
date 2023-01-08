@@ -10,7 +10,7 @@ export const userRouter = router({
     proposals: userProposalsRouter,
     subscriptions: userSubscriptionsRouter,
     settings: userSettingsRouter,
-    votes: userVotesRouter,
+    votes: userVotesRouter
 })
 
 // export type definition of API

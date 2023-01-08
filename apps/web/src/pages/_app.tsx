@@ -5,11 +5,10 @@ import '../styles/globals.css'
 import '@rainbow-me/rainbowkit/styles.css'
 import type { GetSiweMessageOptions } from '@rainbow-me/rainbowkit-siwe-next-auth'
 import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth'
-
 import {
     darkTheme,
     getDefaultWallets,
-    RainbowKitProvider,
+    RainbowKitProvider
 } from '@rainbow-me/rainbowkit'
 import { mainnet, configureChains, createClient, WagmiConfig } from 'wagmi'
 import { infuraProvider } from 'wagmi/providers/infura'
@@ -22,30 +21,30 @@ const { chains, provider } = configureChains(
     [mainnet],
     [
         infuraProvider({
-            apiKey: process.env.NEXT_PUBLIC_PROVIDER_URL ?? 'missing_key',
+            apiKey: process.env.NEXT_PUBLIC_PROVIDER_URL ?? 'missing_key'
         }),
-        publicProvider(),
+        publicProvider()
     ]
 )
 
 const { connectors } = getDefaultWallets({
     appName: 'Senate',
-    chains,
+    chains
 })
 
 const wagmiClient = createClient({
     autoConnect: true,
     connectors,
-    provider,
+    provider
 })
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
-    statement: 'Sign in to Senate',
+    statement: 'Sign in to Senate'
 })
 
 const MyApp: AppType<{ session: Session | null }> = ({
     Component,
-    pageProps: { session, ...pageProps },
+    pageProps: { session, ...pageProps }
 }) => {
     return (
         <>
@@ -60,24 +59,24 @@ const MyApp: AppType<{ session: Session | null }> = ({
                                 accentColor: '#262626',
                                 accentColorForeground: 'white',
                                 borderRadius: 'medium',
-                                overlayBlur: 'small',
+                                overlayBlur: 'small'
                             })}
                         >
                             <Head>
                                 <title>Senate</title>
                                 <link
-                                    rel="icon"
-                                    type="image/png"
-                                    sizes="64x64"
-                                    href="/assets/Senate_Logo/64/Black.svg"
+                                    rel='icon'
+                                    type='image/png'
+                                    sizes='64x64'
+                                    href='/assets/Senate_Logo/64/Black.svg'
                                 />
                                 <meta
-                                    name="viewport"
-                                    content="initial-scale=1.0, width=device-width"
+                                    name='viewport'
+                                    content='initial-scale=1.0, width=device-width'
                                 />
                             </Head>
 
-                            <Script id="howuku">
+                            <Script id='howuku'>
                                 {`(function(t,r,a,c,k){
                                 c=['track','identify','converted'],t.o=t._init||{},
                                 c.map(function(n){return t.o[n]=t.o[n]||function(){(t.o[n].q=t.o[n].q||[]).push(arguments);};}),t._init=t.o,
@@ -85,8 +84,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
                                 r.getElementsByTagName("head")[0].appendChild(k);
                                 })(window, document, "9mv6yAGkYDZV0BJEzlN34O");`}
                             </Script>
-                            <Script src="https://api.buildbetter.app/v1/widget/index.js" />
-                            <Script id="feedback">
+                            <Script src='https://api.buildbetter.app/v1/widget/index.js' />
+                            <Script id='feedback'>
                                 {`function start() {
                                 if (
                                     window.hasOwnProperty("BuildBetter") &&

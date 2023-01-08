@@ -7,7 +7,7 @@ import { userRouter } from './user/user'
 export const appRouter = router({
     public: publicRouter,
     tracker: trackerRouter,
-    user: userRouter,
+    user: userRouter
 })
 
 // export type definition of API

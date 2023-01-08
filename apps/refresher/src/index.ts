@@ -1,237 +1,113 @@
-import { prisma } from '@senate/database'
-import { RefreshStatus, Subscription } from '@senate/common-types'
-import fetch from 'node-fetch'
+import { prisma, RefreshType } from '@senate/database'
 import * as cron from 'node-cron'
+import { loadConfig } from './config'
+import { createVoterHandlers } from './createHandlers'
+import { processSnapshotProposals } from './process/snapshotProposals'
+import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
+import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
+import { processChainProposals } from './process/chainProposals'
+import { addChainDaoVotes } from './populate/addChainDaoVotes'
+import { processChainDaoVotes } from './process/chainDaoVotes'
+import { addChainProposalsToQueue } from './populate/addChainProposals'
+import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
+import { log_ref } from '@senate/axiom'
 
-const main = () => {
-    console.log('Refresher start')
+let RUNNING_PROCESS_QUEUE = false
 
-    cron.schedule('*/30 * * * * *', async () => {
-        console.log('Running refresher')
-        refreshDaos()
-        refreshUsers()
+const main = async () => {
+    log_ref.log({
+        level: 'info',
+        message: `Started refresher`
     })
+    await loadConfig()
 
-    cron.schedule(
-        process.env.REFRESHER_INTERVAL ?? '*/10 * * * *',
-        async () => {
-            console.log('Auto refresh request')
-            await autoRefreshRequest()
-        }
-    )
+    setInterval(async () => {
+        processQueue()
+    }, 500)
 
-    cron.schedule(
-        process.env.REFRESHER_FORCE_INTERVAL ?? '5 */3 * * *',
-        async () => {
-            console.log('Auto force refresh request')
-            await autoForceRefreshRequest()
-        }
-    )
-}
-
-const autoRefreshRequest = async () => {
-    await prisma.dAO.updateMany({
-        where: {
-            refreshStatus: RefreshStatus.DONE,
-        },
-        data: {
-            refreshStatus: RefreshStatus.NEW,
-        },
-    })
-    await prisma.voter.updateMany({
-        where: {
-            refreshStatus: RefreshStatus.DONE,
-        },
-        data: {
-            refreshStatus: RefreshStatus.NEW,
-        },
+    cron.schedule('*/10 * * * * *', async () => {
+        await loadConfig()
+        await createVoterHandlers()
+        await addSnapshotProposalsToQueue()
+        await addChainProposalsToQueue()
+        await addSnapshotDaoVotes()
+        await addChainDaoVotes()
     })
 }
 
-const autoForceRefreshRequest = async () => {
-    await prisma.dAO.updateMany({
-        where: {
-            refreshStatus: RefreshStatus.PENDING,
-        },
-        data: {
-            refreshStatus: RefreshStatus.NEW,
-        },
-    })
-    await prisma.voter.updateMany({
-        where: {
-            refreshStatus: RefreshStatus.PENDING,
-        },
-        data: {
-            refreshStatus: RefreshStatus.NEW,
-        },
-    })
-}
-const refreshDaos = async () => {
-    console.log('Refresh DAOs')
+const processQueue = async () => {
+    if (RUNNING_PROCESS_QUEUE == true) return
+    RUNNING_PROCESS_QUEUE = true
 
-    const daos = await prisma.dAO.findMany({
-        where: {
-            refreshStatus: RefreshStatus.NEW,
-        },
-        orderBy: {
-            lastRefresh: 'asc',
-        },
-        take: 1,
+    log_ref.log({
+        level: 'info',
+        message: `Process queue`
     })
 
-    if (!daos.length) {
-        console.log('No DAOs to refresh.')
+    const item = await prisma.refreshQueue.findFirst({
+        orderBy: { priority: 'desc' }
+    })
+
+    if (!item) {
+        log_ref.log({
+            level: 'info',
+            message: `Queue empty`
+        })
+
+        RUNNING_PROCESS_QUEUE = false
         return
-    } else console.log(`Refreshing ${daos.length} DAOs`)
-
-    for (let i = 0; i < daos.length; i++) {
-        const dao = daos[i]
-
-        await prisma.dAO.update({
-            where: {
-                id: dao.id,
-            },
-            data: {
-                refreshStatus: RefreshStatus.PENDING,
-            },
-        })
-
-        console.log(
-            `Refresh - PENDING - ${dao.name} (${dao.id}) at ${dao.lastRefresh}`
-        )
-
-        await new Promise((resolve) => setTimeout(resolve, 100))
-
-        fetch(`${process.env.DETECTIVE_URL}/updateProposals?daoId=${dao.id}`, {
-            method: 'POST',
-        })
-            .then(async (res) => {
-                if (res.ok) {
-                    console.log(
-                        `Refresh - DONE - ${dao.name} (${dao.id}) at ${dao.lastRefresh}`
-                    )
-                    await prisma.dAO.update({
-                        where: {
-                            id: dao.id,
-                        },
-                        data: {
-                            refreshStatus: RefreshStatus.DONE,
-                            lastRefresh: new Date(),
-                        },
-                    })
-                }
-                return
-            })
-            .catch((e) => {
-                console.log(e)
-            })
     }
-}
 
-const refreshUsers = async () => {
-    console.log('Refresh Voters')
-
-    const voters = await prisma.voter.findMany({
-        where: {
-            refreshStatus: RefreshStatus.NEW,
-        },
-        orderBy: {
-            lastRefresh: 'asc',
-        },
-        take: 1,
+    log_ref.log({
+        level: 'info',
+        message: `Queue item`,
+        data: {
+            item: item
+        }
     })
 
-    if (!voters.length) {
-        console.log('No users to refresh.')
-        return
-    } else console.log(`Refreshing ${voters.length} voters`)
+    switch (item.refreshType) {
+        case RefreshType.DAOSNAPSHOTPROPOSALS:
+            processSnapshotProposals(item)
+            break
 
-    for (let i = 0; i < voters.length; i++) {
-        const voter = voters[i]
-
-        if (!voter.address) continue
-
-        console.log(`Refresh voter: ${voter.address} (${voter.id})`)
-
-        const users = await prisma.user.findMany({
-            where: {
-                voters: {
-                    some: {
-                        id: voter.id,
-                    },
-                },
-            },
-            include: {
-                subscriptions: true,
-            },
-        })
-
-        const subs = users.map((user) => user.subscriptions)
-
-        let totalSubs: Subscription[] = []
-
-        for (const sub of subs) {
-            totalSubs = [...sub]
+        case RefreshType.DAOSNAPSHOTVOTES: {
+            processSnapshotDaoVotes(item)
+            break
         }
 
-        if (totalSubs.length) {
-            await prisma.voter.update({
-                where: {
-                    id: voter.id,
-                },
-                data: {
-                    refreshStatus: RefreshStatus.PENDING,
-                },
-            })
-        } else {
-            //nothing to update
-            await prisma.voter.update({
-                where: {
-                    id: voter.id,
-                },
-                data: {
-                    refreshStatus: RefreshStatus.DONE,
-                    lastRefresh: new Date(),
-                },
-            })
+        case RefreshType.DAOCHAINPROPOSALS: {
+            processChainProposals(item)
+            break
         }
 
-        for (let i = 0; i < totalSubs.length; i++) {
-            const sub = totalSubs[i]
-            console.log(
-                `Refresh - PENDING - voter ${voter.address} - daoId ${sub.daoId} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
-            )
-
-            await new Promise((resolve) => setTimeout(resolve, 100))
-
-            fetch(
-                `${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`,
-                {
-                    method: 'POST',
-                }
-            )
-                .then(async (res) => {
-                    if (res.ok) {
-                        console.log(
-                            `Refresh - DONE -  voter ${voter.address} - ${sub.daoId} -> ${process.env.DETECTIVE_URL}/updateVotes?daoId=${sub.daoId}&voterAddress=${voter.address}`
-                        )
-                        await prisma.voter.update({
-                            where: {
-                                id: voter.id,
-                            },
-                            data: {
-                                refreshStatus: RefreshStatus.DONE,
-                                lastRefresh: new Date(),
-                            },
-                        })
-                    }
-                    return
-                })
-                .catch((e) => {
-                    console.log(e)
-                })
+        case RefreshType.DAOCHAINVOTES: {
+            processChainDaoVotes(item)
+            break
         }
     }
+
+    await prisma.refreshQueue
+        .delete({
+            where: { id: item?.id }
+        })
+        .then((r) => {
+            log_ref.log({
+                level: 'info',
+                message: `Succesfully deleted queue item`,
+                data: { item: r }
+            })
+            return
+        })
+        .catch((e) => {
+            log_ref.log({
+                level: 'error',
+                message: `Failed to delete queue item`,
+                data: { error: e }
+            })
+        })
+
+    RUNNING_PROCESS_QUEUE = false
 }
 
 main()

@@ -81,7 +81,7 @@ const Home: NextPage = () => {
 
     if (router.isReady) router.push('/daos')
     return (
-        <div className="min-h-screen w-full bg-black">
+        <div className='min-h-screen w-full bg-black'>
             {/* <Header />
             <Mid />
             <Footer /> */}

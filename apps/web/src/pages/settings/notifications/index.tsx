@@ -7,14 +7,14 @@ const SettingsContainer = () => {
             './../../../components/settings/notifications/NotificationSettings'
         ),
         {
-            ssr: false,
+            ssr: false
         }
     )
 
     return (
-        <div className="flex flex-row">
+        <div className='flex flex-row'>
             <DashboardHeader
-                title="Settings"
+                title='Settings'
                 component={<NotificationSettingsNOSRR />}
             />
         </div>
