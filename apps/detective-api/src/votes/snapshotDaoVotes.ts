@@ -2,7 +2,6 @@ import { InternalServerErrorException } from '@nestjs/common'
 import { log_pd } from '@senate/axiom'
 
 import { DAOHandlerType, prisma } from '@senate/database'
-import axios from 'axios'
 import superagent from 'superagent'
 
 export const updateSnapshotDaoVotes = async (

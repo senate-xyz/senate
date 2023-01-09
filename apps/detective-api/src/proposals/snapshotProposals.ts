@@ -1,8 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common'
 import { prisma } from '@senate/database'
 import { DAOHandler } from '@prisma/client'
-
-import axios from 'axios'
 import { log_pd } from '@senate/axiom'
 import superagent from 'superagent'
 
