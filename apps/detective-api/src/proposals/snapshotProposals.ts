@@ -69,6 +69,9 @@ export const updateSnapshotProposals = async (
                     'content-type': 'application/json'
                 }
             })
+            .then((response) => {
+                return response.data
+            })
             .then((data) => {
                 return data.data.proposals
             })

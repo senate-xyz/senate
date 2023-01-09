@@ -71,6 +71,9 @@ export const updateSnapshotDaoVotes = async (
                     'content-type': 'application/json'
                 }
             })
+            .then((response) => {
+                return response.data
+            })
             .then((data) => {
                 return data.data.votes
             })
