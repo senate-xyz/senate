@@ -4,6 +4,13 @@ import { prisma } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
 
+const GATEWAY_URLS = [
+    'https://cloudflare-ipfs.com/ipfs/',
+    'https://ipfs.io/ipfs/',
+    'https://ipfs.infura.io/ipfs/',
+    'https://gateway.pinata.cloud/ipfs/',
+];
+
 const provider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.PROVIDER_URL)
 })
@@ -177,30 +184,54 @@ export const updateAaveChainProposals = async (
 }
 
 const fetchProposalInfoFromIPFS = async (
-    hexHash: string
+    hexHash: string,
+    gatewayIndex: number,
+    retriesLeft: number
 ): Promise<{ title: string }> => {
     let title
     try {
         const response = await axios.get(
-            process.env.IPFS_GATEWAY_URL + 'f01701220' + hexHash.substring(2)
+            GATEWAY_URLS[gatewayIndex] + 'f01701220' + hexHash.substring(2)
         )
         title = response.data.title
     } catch (e) {
-        title = 'Unknown'
+        if (retriesLeft > 0) {
+            log_pd.log({
+                level: 'warn',
+                message: `Could not get proposal title. Retries left: ${retriesLeft}`,
+                data: {
+                    hexHash: hexHash,
+                    url:
+                        process.env.IPFS_GATEWAY_URL +
+                        'f01701220' +
+                        hexHash.substring(2),
 
-        log_pd.log({
-            level: 'error',
-            message: `Could not get proposal title`,
-            data: {
-                hexHash: hexHash,
-                url:
-                    process.env.IPFS_GATEWAY_URL +
-                    'f01701220' +
-                    hexHash.substring(2),
+                    error: e
+                }
+            })
 
-                error: e
-            }
-        })
+            return fetchProposalInfoFromIPFS(
+                hexHash,
+                (gatewayIndex + 1) % GATEWAY_URLS.length,
+                retriesLeft - 1
+            )
+        } else {
+            title = 'Could not get proposal title'
+
+            log_pd.log({
+                level: 'error',
+                message: `Could not get proposal title`,
+                data: {
+                    hexHash: hexHash,
+                    url:
+                        process.env.IPFS_GATEWAY_URL +
+                        'f01701220' +
+                        hexHash.substring(2),
+
+                    error: e
+                }
+            })
+        }
     }
 
     return title
@@ -226,7 +257,7 @@ const getProposalTitle = async (
 ): Promise<unknown> => {
     if (daoAddress === '0xEC568fffba86c094cf06b22134B23074DFE2252c') {
         // Aave
-        return await fetchProposalInfoFromIPFS(text)
+        return await fetchProposalInfoFromIPFS(text, 0, 12)
     } else {
         return formatTitle(text)
     }
