@@ -69,6 +69,8 @@ export const updateSnapshotProposals = async (
                     level: 'warn',
                     message: `Retry GraphQL query for ${spacesArray}}`,
                     data: {
+                        retries: counter,
+                        axiosConfig: config,
                         query: graphqlQuery
                     }
                 })

@@ -71,6 +71,8 @@ export const updateSnapshotDaoVotes = async (
                     level: 'warn',
                     message: `Retry GraphQL query for ${daoHandler.dao.name} - ${daoHandler.type}`,
                     data: {
+                        retries: counter,
+                        axiosConfig: config,
                         query: graphqlQuery
                     }
                 })
