@@ -1,6 +1,5 @@
-import { log_node, log_pd } from '@senate/axiom'
+import { log_node } from '@senate/axiom'
 import { DAOHandler } from '@senate/database'
-import axios from 'axios'
 import { ethers } from 'ethers'
 
 export const uniswapProposals = async (

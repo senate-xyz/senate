@@ -84,7 +84,7 @@ export const getMakerExecutiveVotes = async (
                             level: 'warn',
                             message: `Proposal does not exist while updating votes for ${voterAddress} in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
                             data: {
-                                proposal: proposal
+                                externalId: vote
                             }
                         })
                         newLastVoteBlock = 0

@@ -60,7 +60,9 @@ export const getUniswapVotes = async (
                             level: 'warn',
                             message: `Proposal does not exist while updating votes for ${voterAddress} in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
                             data: {
-                                proposal: proposal
+                                externalId: BigNumber.from(
+                                    eventData.proposalId
+                                ).toString()
                             }
                         })
                         newLastVoteBlock = 0
