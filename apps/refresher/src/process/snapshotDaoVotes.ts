@@ -1,6 +1,7 @@
 import { log_ref } from '@senate/axiom'
 import { prisma, RefreshQueue, RefreshStatus } from '@senate/database'
-import axios from 'axios'
+import superagent from 'superagent'
+import { DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE } from '../config'
 
 export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
     const daoHandler = await prisma.dAOHandler.findFirst({
@@ -41,9 +42,29 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
         }
     })
 
-    await axios
+    let tries = 0
+    await superagent
         .post(proposalDetectiveReq)
-        .then(async (response) => response.data)
+        .type('application/json')
+        .timeout({
+            deadline: DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000
+        })
+        .retry(3, (err, res) => {
+            tries++
+            if (tries > 1)
+                log_ref.log({
+                    level: 'warn',
+                    message: `Retry Snapshot votes setective request`,
+                    data: {
+                        url: proposalDetectiveReq,
+                        error: err,
+                        res: res
+                    }
+                })
+            if (err) return true
+            if (res.status == 201) return false
+        })
+        .then(async (response) => response.body)
         .then(async (data) => {
             log_ref.log({
                 level: 'info',

@@ -28,7 +28,7 @@
         "@senate/database": "*",
         "axios": "^1.2.2",
         "node-cron": "^3.0.2",
-        "node-fetch": "^3.3.0"
+        "superagent": "^8.0.6"
     },
     "devDependencies": {
         "@types/node-cron": "^3.0.7",

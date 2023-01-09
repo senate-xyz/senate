@@ -4,6 +4,7 @@ import { DAOHandler } from '@prisma/client'
 
 import axios from 'axios'
 import { log_pd } from '@senate/axiom'
+import superagent from 'superagent'
 
 export const updateSnapshotProposals = async (
     daoHandlerIds: string[],
@@ -52,30 +53,50 @@ export const updateSnapshotProposals = async (
 
     log_pd.log({
         level: 'info',
-        message: `GraphQL query for ${spacesArray}}`,
+        message: `GraphQL query for ${spacesArray}`,
         data: {
             query: graphqlQuery
         }
     })
 
     try {
-        proposals = await axios
-            .get('https://hub.snapshot.org/graphql', {
-                method: 'POST',
-                data: JSON.stringify({
-                    query: graphqlQuery
-                }),
-                headers: {
-                    'content-type': 'application/json'
-                }
+        let tries = 0
+        proposals = await superagent
+            .get('https://hub.snapshot.org/graphql')
+            .query({
+                query: graphqlQuery
+            })
+            .timeout({
+                response: 5000,
+                deadline: 30000
+            })
+            .retry(3, (err, res) => {
+                tries++
+                if (tries > 1)
+                    log_pd.log({
+                        level: 'warn',
+                        message: `Retry GraphQL query for ${spacesArray}`,
+                        data: {
+                            query: graphqlQuery,
+                            error: err,
+                            res: res
+                        }
+                    })
             })
             .then((response) => {
-                return response.data.data.proposals
+                log_pd.log({
+                    level: 'info',
+                    message: `GraphQL query response for ${spacesArray}`,
+                    data: {
+                        response: response
+                    }
+                })
+                return response.body.data.proposals
             })
             .catch(async (e) => {
                 log_pd.log({
                     level: 'error',
-                    message: `GraphQL error for ${spacesArray}}`,
+                    message: `GraphQL error for ${spacesArray}`,
                     data: {
                         error: e
                     }
@@ -97,7 +118,7 @@ export const updateSnapshotProposals = async (
     } catch (e) {
         log_pd.log({
             level: 'error',
-            message: `Could not update proposals for ${spacesArray}}`,
+            message: `Could not update proposals for ${spacesArray}`,
             data: {
                 error: e
             }
