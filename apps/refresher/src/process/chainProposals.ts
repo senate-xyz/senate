@@ -31,6 +31,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
 
     await axios
         .post(proposalDetectiveReq)
+        .then(async (response) => response.data)
         .then(async (data) => {
             log_ref.log({
                 level: 'info',

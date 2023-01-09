@@ -72,10 +72,7 @@ export const updateSnapshotDaoVotes = async (
                 }
             })
             .then((response) => {
-                return response.data
-            })
-            .then((data) => {
-                return data.data.votes
+                return response.data.data.votes
             })
             .catch(async (e) => {
                 log_pd.log({

@@ -70,10 +70,7 @@ export const updateSnapshotProposals = async (
                 }
             })
             .then((response) => {
-                return response.data
-            })
-            .then((data) => {
-                return data.data.proposals
+                return response.data.data.proposals
             })
             .catch(async (e) => {
                 log_pd.log({
