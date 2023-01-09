@@ -78,8 +78,8 @@ export const updateSnapshotProposals = async (
                         message: `Retry GraphQL query for ${spacesArray}`,
                         data: {
                             query: graphqlQuery,
-                            error: err,
-                            res: res
+                            error: JSON.stringify(err),
+                            res: JSON.stringify(res)
                         }
                     })
             })
@@ -88,7 +88,7 @@ export const updateSnapshotProposals = async (
                     level: 'info',
                     message: `GraphQL query response for ${spacesArray}`,
                     data: {
-                        response: response
+                        response: JSON.stringify(response)
                     }
                 })
                 return response.body.data.proposals
@@ -98,7 +98,7 @@ export const updateSnapshotProposals = async (
                     level: 'error',
                     message: `GraphQL error for ${spacesArray}`,
                     data: {
-                        error: e
+                        error: JSON.stringify(e)
                     }
                 })
                 return

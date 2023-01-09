@@ -45,8 +45,8 @@ export const processChainProposals = async (item: RefreshQueue) => {
                     message: `Retry Chain dao proposals detective request`,
                     data: {
                         url: proposalDetectiveReq,
-                        error: err,
-                        res: res
+                        error: JSON.stringify(err),
+                        res: JSON.stringify(res)
                     }
                 })
             if (err) return true

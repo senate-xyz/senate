@@ -80,8 +80,8 @@ export const updateSnapshotDaoVotes = async (
                         message: `Retry GraphQL query for ${daoHandler.dao.name} - ${daoHandler.type}`,
                         data: {
                             query: graphqlQuery,
-                            error: err,
-                            res: res
+                            error: JSON.stringify(err),
+                            res: JSON.stringify(res)
                         }
                     })
             })
@@ -90,7 +90,7 @@ export const updateSnapshotDaoVotes = async (
                     level: 'info',
                     message: `GraphQL query response for ${daoHandler.dao.name} - ${daoHandler.type}`,
                     data: {
-                        response: response
+                        response: JSON.stringify(response)
                     }
                 })
                 return response.body.data.votes
@@ -100,7 +100,7 @@ export const updateSnapshotDaoVotes = async (
                     level: 'error',
                     message: `GraphQL error for ${daoHandler.dao.name} - ${daoHandler.type}`,
                     data: {
-                        error: e
+                        error: JSON.stringify(e)
                     }
                 })
                 return

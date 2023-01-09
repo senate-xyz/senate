@@ -45,8 +45,8 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                     message: `Retry Snapshot proposals detective request`,
                     data: {
                         url: proposalDetectiveReq,
-                        error: err,
-                        res: res
+                        error: JSON.stringify(err),
+                        res: JSON.stringify(res)
                     }
                 })
             if (err) return true
