@@ -1,12 +1,6 @@
 import { log_ref } from '@senate/axiom'
-import {
-    DAOHandlerType,
-    prisma,
-    RefreshQueue,
-    RefreshStatus
-} from '@senate/database'
-import fetch from 'node-fetch'
-import { DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE } from '../config'
+import { prisma, RefreshQueue, RefreshStatus } from '@senate/database'
+import axios from 'axios'
 
 export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
     const daoHandler = await prisma.dAOHandler.findFirst({
@@ -47,17 +41,30 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
         }
     })
 
-    const controller = new AbortController()
-    const signal = controller.signal
-    setTimeout(() => {
-        controller.abort()
-    }, DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000)
-
-    await fetch(proposalDetectiveReq, {
-        method: 'POST',
-        signal: signal
+    const MAX_RETRIES = 3
+    let counter = 0
+    axios.interceptors.response.use(null, (error) => {
+        const config = error.config
+        if (counter < MAX_RETRIES) {
+            counter++
+            log_ref.log({
+                level: 'warn',
+                message: `Retry snapshot votes setective request`,
+                data: {
+                    retries: counter,
+                    axiosConfig: config,
+                    url: proposalDetectiveReq
+                }
+            })
+            return new Promise((resolve) => {
+                resolve(axios(config))
+            })
+        }
+        return Promise.reject(error)
     })
-        .then((response) => response.json())
+
+    await axios
+        .post(proposalDetectiveReq)
         .then(async (data) => {
             log_ref.log({
                 level: 'info',
@@ -166,6 +173,7 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                 level: 'error',
                 message: `Snapshot votes detective request failed`,
                 data: {
+                    url: proposalDetectiveReq,
                     error: e
                 }
             })

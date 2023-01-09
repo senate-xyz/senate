@@ -1,12 +1,6 @@
 import { log_ref } from '@senate/axiom'
-import {
-    DAOHandlerType,
-    prisma,
-    RefreshQueue,
-    RefreshStatus
-} from '@senate/database'
-import fetch from 'node-fetch'
-import { DAOS_VOTES_CHAIN_INTERVAL_FORCE } from '../config'
+import { prisma, RefreshQueue, RefreshStatus } from '@senate/database'
+import axios from 'axios'
 
 export const processChainDaoVotes = async (item: RefreshQueue) => {
     const daoHandler = await prisma.dAOHandler.findFirst({
@@ -41,27 +35,40 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
 
     log_ref.log({
         level: 'info',
-        message: `Chain votes detective request`,
+        message: `Chain dao votes detective request`,
         data: {
             url: proposalDetectiveReq
         }
     })
 
-    const controller = new AbortController()
-    const signal = controller.signal
-    setTimeout(() => {
-        controller.abort()
-    }, DAOS_VOTES_CHAIN_INTERVAL_FORCE * 60 * 1000 - 5000)
-
-    await fetch(proposalDetectiveReq, {
-        method: 'POST',
-        signal: signal
+    const MAX_RETRIES = 3
+    let counter = 0
+    axios.interceptors.response.use(null, (error) => {
+        const config = error.config
+        if (counter < MAX_RETRIES) {
+            counter++
+            log_ref.log({
+                level: 'warn',
+                message: `Retry dao chain votes detective request`,
+                data: {
+                    retries: counter,
+                    axiosConfig: config,
+                    url: proposalDetectiveReq
+                }
+            })
+            return new Promise((resolve) => {
+                resolve(axios(config))
+            })
+        }
+        return Promise.reject(error)
     })
-        .then((response) => response.json())
+
+    await axios
+        .post(proposalDetectiveReq)
         .then(async (data) => {
             log_ref.log({
                 level: 'info',
-                message: `Chain votes detective response`,
+                message: `Chain dao votes detective response`,
                 data: {
                     data: data
                 }
@@ -164,8 +171,9 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
         .catch(async (e) => {
             log_ref.log({
                 level: 'error',
-                message: `Chain votes detective request failed`,
+                message: `Chain dao votes detective request failed`,
                 data: {
+                    url: proposalDetectiveReq,
                     error: e
                 }
             })

@@ -1,7 +1,6 @@
 import { log_ref } from '@senate/axiom'
 import { RefreshQueue, RefreshStatus, prisma } from '@senate/database'
-import fetch from 'node-fetch'
-import { DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE } from '../config'
+import axios from 'axios'
 
 export const processSnapshotProposals = async (item: RefreshQueue) => {
     const daoHandler = await prisma.dAOHandler.findFirst({
@@ -30,17 +29,28 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
         }
     })
 
-    const controller = new AbortController()
-    const signal = controller.signal
-    setTimeout(() => {
-        controller.abort()
-    }, DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000)
-
-    await fetch(proposalDetectiveReq, {
-        method: 'POST',
-        signal: signal
+    const MAX_RETRIES = 3
+    let counter = 0
+    axios.interceptors.response.use(null, (error) => {
+        const config = error.config
+        if (counter < MAX_RETRIES) {
+            counter++
+                level: 'warn',
+                message: `Retry snapshot proposals detective request`,
+                data: {
+                    retries: counter,
+                    axiosConfig: config,
+                    url: proposalDetectiveReq
+                }
+            })
+            return new Promise((resolve) => {
+                resolve(axios(config))
+            })
+        }
+        return Promise.reject(error)
     })
-        .then((response) => response.json())
+    await axios
+        .post(proposalDetectiveReq)
         .then(async (data) => {
             log_ref.log({
                 level: 'info',
@@ -142,6 +152,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                 level: 'error',
                 message: `Snapshot proposals detective request failed`,
                 data: {
+                    url: proposalDetectiveReq,
                     error: e
                 }
             })

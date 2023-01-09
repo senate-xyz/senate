@@ -23,9 +23,10 @@
         "prettier:fix": "prettier src --write"
     },
     "dependencies": {
+        "@senate/axiom": "*",
         "@senate/config": "*",
         "@senate/database": "*",
-        "@senate/axiom": "*",
+        "axios": "^1.2.2",
         "node-cron": "^3.0.2",
         "node-fetch": "^3.3.0"
     },
