@@ -37,37 +37,39 @@ export const getCompoundVotes = async (
 
     const votes =
         (await Promise.all(
-            logs.map(async (log) => {
-                const eventData = govBravoIface.parseLog({
-                    topics: log.topics,
-                    data: log.data
-                }).args
+            logs
+                .map(async (log) => {
+                    const eventData = govBravoIface.parseLog({
+                        topics: log.topics,
+                        data: log.data
+                    }).args
 
-                const proposal = await prisma.proposal.findFirst({
-                    where: {
-                        externalId: BigNumber.from(
-                            eventData.proposalId
-                        ).toString(),
+                    const proposal = await prisma.proposal.findFirst({
+                        where: {
+                            externalId: BigNumber.from(
+                                eventData.proposalId
+                            ).toString(),
+                            daoId: daoHandler.daoId,
+                            daoHandlerId: daoHandler.id
+                        }
+                    })
+
+                    //missing proposal, force sync from infura
+                    if (!proposal) {
+                        newLastVoteBlock = 0
+                        return
+                    }
+
+                    return {
+                        voterAddress: voterAddress,
                         daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id
+                        proposalId: proposal.id,
+                        daoHandlerId: daoHandler.id,
+                        choiceId: String(eventData.support),
+                        choice: String(eventData.support) ? 'Yes' : 'No'
                     }
                 })
-
-                //missing proposal, force sync from infura
-                if (!proposal) {
-                    newLastVoteBlock = 0
-                    return
-                }
-
-                return {
-                    voterAddress: voterAddress,
-                    daoId: daoHandler.daoId,
-                    proposalId: proposal.id,
-                    daoHandlerId: daoHandler.id,
-                    choiceId: String(eventData.support),
-                    choice: String(eventData.support) ? 'Yes' : 'No'
-                }
-            })
+                .filter((n) => n)
         )) ?? []
 
     return { votes, newLastVoteBlock }

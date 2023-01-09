@@ -38,39 +38,43 @@ export const makerPolls = async (
 
     const proposals =
         (await Promise.all(
-            args.map(async (arg) => {
-                const proposalCreatedTimestamp = Number(
-                    arg.eventData.blockCreated
-                )
+            args
+                .map(async (arg) => {
+                    const proposalCreatedTimestamp = Number(
+                        arg.eventData.blockCreated
+                    )
 
-                const votingStartsTimestamp = Number(arg.eventData.startDate)
-                const votingEndsTimestamp = Number(arg.eventData.endDate)
-                const title =
-                    (await getProposalTitle(arg.eventData.url)) ?? 'Unknown'
-                const proposalUrl =
-                    daoHandler.decoder['proposalUrl'] +
-                    arg.eventData.multiHash.substring(0, 7)
-                const proposalOnChainId = Number(
-                    arg.eventData.pollId
-                ).toString()
+                    const votingStartsTimestamp = Number(
+                        arg.eventData.startDate
+                    )
+                    const votingEndsTimestamp = Number(arg.eventData.endDate)
+                    const title =
+                        (await getProposalTitle(arg.eventData.url)) ?? 'Unknown'
+                    const proposalUrl =
+                        daoHandler.decoder['proposalUrl'] +
+                        arg.eventData.multiHash.substring(0, 7)
+                    const proposalOnChainId = Number(
+                        arg.eventData.pollId
+                    ).toString()
 
-                if (
-                    proposalOnChainId == '1' //we know for sure this is a bad proposal
-                )
-                    return
+                    if (
+                        proposalOnChainId == '1' //we know for sure this is a bad proposal
+                    )
+                        return
 
-                return {
-                    externalId: proposalOnChainId,
-                    name: String(title).slice(0, 1024),
-                    daoId: daoHandler.daoId,
-                    daoHandlerId: daoHandler.id,
-                    timeEnd: new Date(votingEndsTimestamp * 1000),
-                    timeStart: new Date(votingStartsTimestamp * 1000),
-                    timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                    data: {},
-                    url: proposalUrl
-                }
-            })
+                    return {
+                        externalId: proposalOnChainId,
+                        name: String(title).slice(0, 1024),
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id,
+                        timeEnd: new Date(votingEndsTimestamp * 1000),
+                        timeStart: new Date(votingStartsTimestamp * 1000),
+                        timeCreated: new Date(proposalCreatedTimestamp * 1000),
+                        data: {},
+                        url: proposalUrl
+                    }
+                })
+                .filter((n) => n)
         )) ?? []
 
     const lastBlock = (await provider.getBlockNumber()) ?? 0

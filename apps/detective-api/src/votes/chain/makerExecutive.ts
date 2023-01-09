@@ -68,30 +68,32 @@ export const getMakerExecutiveVotes = async (
 
     const votes =
         (await Promise.all(
-            intermediaryVotes.map(async (vote) => {
-                const proposal = await prisma.proposal.findFirst({
-                    where: {
-                        externalId: vote,
+            intermediaryVotes
+                .map(async (vote) => {
+                    const proposal = await prisma.proposal.findFirst({
+                        where: {
+                            externalId: vote,
+                            daoId: daoHandler.daoId,
+                            daoHandlerId: daoHandler.id
+                        }
+                    })
+
+                    //missing proposal, force sync from infura
+                    if (!proposal) {
+                        newLastVoteBlock = 0
+                        return
+                    }
+
+                    return {
+                        voterAddress: voterAddress,
                         daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id
+                        proposalId: proposal.id,
+                        daoHandlerId: daoHandler.id,
+                        choiceId: '1',
+                        choice: 'Yes'
                     }
                 })
-
-                //missing proposal, force sync from infura
-                if (!proposal) {
-                    newLastVoteBlock = 0
-                    return
-                }
-
-                return {
-                    voterAddress: voterAddress,
-                    daoId: daoHandler.daoId,
-                    proposalId: proposal.id,
-                    daoHandlerId: daoHandler.id,
-                    choiceId: '1',
-                    choice: 'Yes'
-                }
-            })
+                .filter((n) => n)
         )) ?? []
 
     return { votes, newLastVoteBlock }

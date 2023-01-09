@@ -32,37 +32,41 @@ export const getMakerPollVotes = async (
 
     const votes =
         (await Promise.all(
-            logs.map(async (log) => {
-                const eventData = iface.parseLog({
-                    topics: log.topics,
-                    data: log.data
-                }).args
+            logs
+                .map(async (log) => {
+                    const eventData = iface.parseLog({
+                        topics: log.topics,
+                        data: log.data
+                    }).args
 
-                const proposal = await prisma.proposal.findFirst({
-                    where: {
-                        externalId: BigNumber.from(eventData.pollId).toString(),
+                    const proposal = await prisma.proposal.findFirst({
+                        where: {
+                            externalId: BigNumber.from(
+                                eventData.pollId
+                            ).toString(),
+                            daoId: daoHandler.daoId,
+                            daoHandlerId: daoHandler.id
+                        }
+                    })
+
+                    //missing proposal, force sync from infura
+                    if (!proposal) {
+                        newLastVoteBlock = 0
+                        return
+                    }
+
+                    return {
+                        voterAddress: voterAddress,
                         daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id
+                        proposalId: proposal.id,
+                        daoHandlerId: daoHandler.id,
+                        choiceId: BigNumber.from(eventData.optionId).toString(),
+                        choice: BigNumber.from(eventData.optionId).toString()
+                            ? 'Yes'
+                            : 'No'
                     }
                 })
-
-                //missing proposal, force sync from infura
-                if (!proposal) {
-                    newLastVoteBlock = 0
-                    return
-                }
-
-                return {
-                    voterAddress: voterAddress,
-                    daoId: daoHandler.daoId,
-                    proposalId: proposal.id,
-                    daoHandlerId: daoHandler.id,
-                    choiceId: BigNumber.from(eventData.optionId).toString(),
-                    choice: BigNumber.from(eventData.optionId).toString()
-                        ? 'Yes'
-                        : 'No'
-                }
-            })
+                .filter((n) => n)
         )) ?? []
 
     return { votes, newLastVoteBlock }
