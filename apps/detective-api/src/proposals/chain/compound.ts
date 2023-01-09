@@ -78,7 +78,7 @@ export const compoundProposals = async (
                         url: proposalUrl
                     }
                 })
-                .filter((n) => n)
+                .filter((n) => n != null)
         )) ?? []
 
     const lastBlock = (await provider.getBlockNumber()) ?? 0

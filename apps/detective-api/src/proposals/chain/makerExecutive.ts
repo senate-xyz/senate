@@ -98,7 +98,7 @@ export const makerExecutiveProposals = async (
                         url: daoHandler.decoder['proposalUrl'] + proposal
                     }
                 })
-                .filter((n) => n)
+                .filter((n) => n != null)
         )) ?? []
 
     const lastBlock = (await provider.getBlockNumber()) ?? 0

@@ -69,7 +69,7 @@ export const getCompoundVotes = async (
                         choice: String(eventData.support) ? 'Yes' : 'No'
                     }
                 })
-                .filter((n) => n)
+                .filter((n) => n != null)
         )) ?? []
 
     return { votes, newLastVoteBlock }

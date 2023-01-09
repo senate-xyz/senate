@@ -66,7 +66,7 @@ export const getMakerPollVotes = async (
                             : 'No'
                     }
                 })
-                .filter((n) => n)
+                .filter((n) => n != null)
         )) ?? []
 
     return { votes, newLastVoteBlock }

@@ -93,7 +93,7 @@ export const getMakerExecutiveVotes = async (
                         choice: 'Yes'
                     }
                 })
-                .filter((n) => n)
+                .filter((n) => n != null)
         )) ?? []
 
     return { votes, newLastVoteBlock }
