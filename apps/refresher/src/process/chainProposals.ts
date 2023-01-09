@@ -29,27 +29,6 @@ export const processChainProposals = async (item: RefreshQueue) => {
         }
     })
 
-    const MAX_RETRIES = 3
-    let counter = 0
-    axios.interceptors.response.use(null, (error) => {
-        const config = error.config
-        if (counter < MAX_RETRIES) {
-            counter++
-            log_ref.log({
-                level: 'warn',
-                message: `Retry chain dao proposals detective request`,
-                data: {
-                    retries: counter,
-                    axiosConfig: config,
-                    url: proposalDetectiveReq
-                }
-            })
-            return new Promise((resolve) => {
-                resolve(axios(config))
-            })
-        }
-        return Promise.reject(error)
-    })
     await axios
         .post(proposalDetectiveReq)
         .then(async (data) => {

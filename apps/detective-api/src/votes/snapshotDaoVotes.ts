@@ -61,27 +61,6 @@ export const updateSnapshotDaoVotes = async (
     })
 
     try {
-        const MAX_RETRIES = 3
-        let counter = 0
-        axios.interceptors.response.use(null, (error) => {
-            const config = error.config
-            if (counter < MAX_RETRIES) {
-                counter++
-                log_pd.log({
-                    level: 'warn',
-                    message: `Retry GraphQL query for ${daoHandler.dao.name} - ${daoHandler.type}`,
-                    data: {
-                        retries: counter,
-                        axiosConfig: config,
-                        query: graphqlQuery
-                    }
-                })
-                return new Promise((resolve) => {
-                    resolve(axios(config))
-                })
-            }
-            return Promise.reject(error)
-        })
         const res = await axios
             .get('https://hub.snapshot.org/graphql', {
                 method: 'POST',
@@ -91,10 +70,6 @@ export const updateSnapshotDaoVotes = async (
                 headers: {
                     'content-type': 'application/json'
                 }
-            })
-            .then((response) => {
-                if (response.status == 429) throw new Error('Too many requests')
-                return response.data
             })
             .then((data) => {
                 return data.data.votes

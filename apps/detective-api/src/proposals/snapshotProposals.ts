@@ -59,27 +59,6 @@ export const updateSnapshotProposals = async (
     })
 
     try {
-        const MAX_RETRIES = 3
-        let counter = 0
-        axios.interceptors.response.use(null, (error) => {
-            const config = error.config
-            if (counter < MAX_RETRIES) {
-                counter++
-                log_pd.log({
-                    level: 'warn',
-                    message: `Retry GraphQL query for ${spacesArray}}`,
-                    data: {
-                        retries: counter,
-                        axiosConfig: config,
-                        query: graphqlQuery
-                    }
-                })
-                return new Promise((resolve) => {
-                    resolve(axios(config))
-                })
-            }
-            return Promise.reject(error)
-        })
         proposals = await axios
             .get('https://hub.snapshot.org/graphql', {
                 method: 'POST',
@@ -89,9 +68,6 @@ export const updateSnapshotProposals = async (
                 headers: {
                     'content-type': 'application/json'
                 }
-            })
-            .then((response) => {
-                return response.data
             })
             .then((data) => {
                 return data.data.proposals
