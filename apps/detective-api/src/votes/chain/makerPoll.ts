@@ -1,4 +1,4 @@
-import { log_node } from '@senate/axiom'
+import { log_node, log_pd } from '@senate/axiom'
 import { DAOHandler, prisma } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
@@ -51,6 +51,13 @@ export const getMakerPollVotes = async (
 
                     //missing proposal, force sync from infura
                     if (!proposal) {
+                        log_pd.log({
+                            level: 'warn',
+                            message: `Proposal does not exist while updating votes for ${voterAddress} in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
+                            data: {
+                                proposal: proposal
+                            }
+                        })
                         newLastVoteBlock = 0
                         return
                     }

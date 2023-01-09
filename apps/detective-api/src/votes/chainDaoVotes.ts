@@ -197,7 +197,8 @@ export const updateChainDaoVotes = async (
                         level: 'info',
                         message: `Updated votes for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
                         data: {
-                            vote: r
+                            vote: r,
+                            newLastVoteBlock: result.newLastVoteBlock
                         }
                     })
                     await prisma.voterHandler.update({
