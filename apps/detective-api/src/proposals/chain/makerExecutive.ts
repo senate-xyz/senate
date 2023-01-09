@@ -65,9 +65,9 @@ export const makerExecutiveProposals = async (
     const spellAddressesArray = Array.from(spellAddressesSet)
 
     const proposals =
-        (await Promise.all(
-            spellAddressesArray
-                .map(async (proposal) => {
+        (
+            await Promise.all(
+                spellAddressesArray.map(async (proposal) => {
                     if (
                         proposal == '0x0000000000000000000000000000000000000000'
                     )
@@ -98,8 +98,8 @@ export const makerExecutiveProposals = async (
                         url: daoHandler.decoder['proposalUrl'] + proposal
                     }
                 })
-                .filter((n) => n != null)
-        )) ?? []
+            )
+        ).filter((n) => n) ?? []
 
     const lastBlock = (await provider.getBlockNumber()) ?? 0
 

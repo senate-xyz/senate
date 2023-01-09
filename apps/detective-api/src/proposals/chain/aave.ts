@@ -36,9 +36,9 @@ export const aaveProposals = async (
     }))
 
     const proposals =
-        (await Promise.all(
-            args
-                .map(async (arg) => {
+        (
+            await Promise.all(
+                args.map(async (arg) => {
                     const proposalCreatedTimestamp = (
                         await provider.getBlock(arg.txBlock)
                     ).timestamp
@@ -80,8 +80,8 @@ export const aaveProposals = async (
                         url: proposalUrl
                     }
                 })
-                .filter((n) => n != null)
-        )) ?? []
+            )
+        ).filter((n) => n) ?? []
 
     const lastBlock = (await provider.getBlockNumber()) ?? 0
 

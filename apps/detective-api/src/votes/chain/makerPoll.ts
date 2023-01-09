@@ -31,9 +31,9 @@ export const getMakerPollVotes = async (
     let newLastVoteBlock = (await provider.getBlockNumber()) ?? 0
 
     const votes =
-        (await Promise.all(
-            logs
-                .map(async (log) => {
+        (
+            await Promise.all(
+                logs.map(async (log) => {
                     const eventData = iface.parseLog({
                         topics: log.topics,
                         data: log.data
@@ -66,8 +66,8 @@ export const getMakerPollVotes = async (
                             : 'No'
                     }
                 })
-                .filter((n) => n != null)
-        )) ?? []
+            )
+        ).filter((n) => n) ?? []
 
     return { votes, newLastVoteBlock }
 }

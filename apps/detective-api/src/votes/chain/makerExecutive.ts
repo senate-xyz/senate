@@ -67,9 +67,9 @@ export const getMakerExecutiveVotes = async (
     let newLastVoteBlock = (await provider.getBlockNumber()) ?? 0
 
     const votes =
-        (await Promise.all(
-            intermediaryVotes
-                .map(async (vote) => {
+        (
+            await Promise.all(
+                intermediaryVotes.map(async (vote) => {
                     const proposal = await prisma.proposal.findFirst({
                         where: {
                             externalId: vote,
@@ -93,8 +93,8 @@ export const getMakerExecutiveVotes = async (
                         choice: 'Yes'
                     }
                 })
-                .filter((n) => n != null)
-        )) ?? []
+            )
+        ).filter((n) => n) ?? []
 
     return { votes, newLastVoteBlock }
 }

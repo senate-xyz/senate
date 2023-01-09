@@ -37,9 +37,9 @@ export const makerPolls = async (
     }))
 
     const proposals =
-        (await Promise.all(
-            args
-                .map(async (arg) => {
+        (
+            await Promise.all(
+                args.map(async (arg) => {
                     const proposalCreatedTimestamp = Number(
                         arg.eventData.blockCreated
                     )
@@ -74,8 +74,8 @@ export const makerPolls = async (
                         url: proposalUrl
                     }
                 })
-                .filter((n) => n != null)
-        )) ?? []
+            )
+        ).filter((n) => n) ?? []
 
     const lastBlock = (await provider.getBlockNumber()) ?? 0
 

@@ -36,9 +36,9 @@ export const getAaveVotes = async (
     let newLastVoteBlock = (await provider.getBlockNumber()) ?? 0
 
     const votes =
-        (await Promise.all(
-            logs
-                .map(async (log) => {
+        (
+            await Promise.all(
+                logs.map(async (log) => {
                     const eventData = govBravoIface.parseLog({
                         topics: log.topics,
                         data: log.data
@@ -67,8 +67,8 @@ export const getAaveVotes = async (
                         choice: String(eventData.support) ? 'Yes' : 'No'
                     }
                 })
-                .filter((n) => n != null)
-        )) ?? []
+            )
+        ).filter((n) => n) ?? []
 
     return { votes, newLastVoteBlock }
 }
