@@ -80,6 +80,11 @@ export const getMakerExecutiveVotes = async (
 
                     //missing proposal, force sync from infura
                     if (!proposal) {
+                        if (
+                            vote != '0x0000000000000000000000000000000000000000' //except this one because we know it's a bad proposal and will always trigger reset
+                        )
+                            newLastVoteBlock = 0
+
                         log_pd.log({
                             level: 'warn',
                             message: `Proposal does not exist while updating votes for ${voterAddress} in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
@@ -87,7 +92,7 @@ export const getMakerExecutiveVotes = async (
                                 externalId: vote
                             }
                         })
-                        newLastVoteBlock = 0
+
                         return
                     }
 
