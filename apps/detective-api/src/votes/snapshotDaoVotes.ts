@@ -61,6 +61,18 @@ export const updateSnapshotDaoVotes = async (
     })
 
     try {
+        const MAX_RETRIES = 3
+        let counter = 0
+        axios.interceptors.response.use(null, (error) => {
+            const config = error.config
+            if (counter < MAX_RETRIES) {
+                counter++
+                return new Promise((resolve) => {
+                    resolve(axios(config))
+                })
+            }
+            return Promise.reject(error)
+        })
         const res = await axios
             .get('https://hub.snapshot.org/graphql', {
                 method: 'POST',

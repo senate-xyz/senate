@@ -4,6 +4,7 @@ import { DAOHandler } from '@prisma/client'
 
 import axios from 'axios'
 import { log_pd } from '@senate/axiom'
+import axiosRetry from 'axios-retry'
 
 export const updateSnapshotProposals = async (
     daoHandlerIds: string[],
@@ -59,6 +60,18 @@ export const updateSnapshotProposals = async (
     })
 
     try {
+        const MAX_RETRIES = 3
+        let counter = 0
+        axios.interceptors.response.use(null, (error) => {
+            const config = error.config
+            if (counter < MAX_RETRIES) {
+                counter++
+                return new Promise((resolve) => {
+                    resolve(axios(config))
+                })
+            }
+            return Promise.reject(error)
+        })
         proposals = await axios
             .get('https://hub.snapshot.org/graphql', {
                 method: 'POST',
