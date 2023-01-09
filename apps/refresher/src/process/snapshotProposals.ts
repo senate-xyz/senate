@@ -35,6 +35,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
         const config = error.config
         if (counter < MAX_RETRIES) {
             counter++
+            log_ref.log({
                 level: 'warn',
                 message: `Retry snapshot proposals detective request`,
                 data: {
