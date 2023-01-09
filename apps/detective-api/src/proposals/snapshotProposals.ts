@@ -4,7 +4,6 @@ import { DAOHandler } from '@prisma/client'
 
 import axios from 'axios'
 import { log_pd } from '@senate/axiom'
-import axiosRetry from 'axios-retry'
 
 export const updateSnapshotProposals = async (
     daoHandlerIds: string[],
@@ -66,6 +65,13 @@ export const updateSnapshotProposals = async (
             const config = error.config
             if (counter < MAX_RETRIES) {
                 counter++
+                log_pd.log({
+                    level: 'warn',
+                    message: `Retry GraphQL query for ${spacesArray}}`,
+                    data: {
+                        query: graphqlQuery
+                    }
+                })
                 return new Promise((resolve) => {
                     resolve(axios(config))
                 })

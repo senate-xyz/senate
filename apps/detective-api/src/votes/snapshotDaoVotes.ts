@@ -67,6 +67,13 @@ export const updateSnapshotDaoVotes = async (
             const config = error.config
             if (counter < MAX_RETRIES) {
                 counter++
+                log_pd.log({
+                    level: 'warn',
+                    message: `Retry GraphQL query for ${daoHandler.dao.name} - ${daoHandler.type}`,
+                    data: {
+                        query: graphqlQuery
+                    }
+                })
                 return new Promise((resolve) => {
                     resolve(axios(config))
                 })
