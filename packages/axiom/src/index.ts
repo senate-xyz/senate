@@ -1,31 +1,8 @@
 import { WinstonTransport as AxiomTransport } from '@axiomhq/axiom-node'
-import { Logger, createLogger, format, transports, loggers } from 'winston'
-
-declare global {
-    // eslint-disable-next-line no-var
-    var logger: Logger | undefined
+import { format, transports, loggers } from 'winston'
+;(BigInt.prototype as any).toJSON = function () {
+    return this.toString()
 }
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const logger =
-    global.logger ||
-    createLogger({
-        format: format.combine(
-            format.json(),
-            format.timestamp({
-                format: 'YYYY-MM-DD HH:mm:ss'
-            }),
-            format.ms()
-        ),
-        transports: [
-            new AxiomTransport({
-                dataset: process.env.AXIOM_DATASET,
-                token: process.env.AXIOM_TOKEN,
-                orgId: process.env.AXIOM_ORG_ID
-            }),
-            new transports.Console()
-        ]
-    })
 
 loggers.add('proposal-detective', {
     format: format.combine(

@@ -1,6 +1,6 @@
 import { log_ref } from '@senate/axiom'
 import { RefreshQueue, RefreshStatus, prisma } from '@senate/database'
-import fetch from 'node-fetch'
+import superagent from 'superagent'
 import { DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE } from '../config'
 
 export const processSnapshotProposals = async (item: RefreshQueue) => {
@@ -30,17 +30,29 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
         }
     })
 
-    const controller = new AbortController()
-    const signal = controller.signal
-    setTimeout(() => {
-        controller.abort()
-    }, DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000)
-
-    await fetch(proposalDetectiveReq, {
-        method: 'POST',
-        signal: signal
-    })
-        .then((response) => response.json())
+    let tries = 0
+    await superagent
+        .post(proposalDetectiveReq)
+        .type('application/json')
+        .timeout({
+            deadline: DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000
+        })
+        .retry(3, (err, res) => {
+            tries++
+            if (tries > 1)
+                log_ref.log({
+                    level: 'warn',
+                    message: `Retry Snapshot proposals detective request`,
+                    data: {
+                        url: proposalDetectiveReq,
+                        error: JSON.stringify(err),
+                        res: JSON.stringify(res)
+                    }
+                })
+            if (err) return true
+            if (res.status == 201) return false
+        })
+        .then(async (response) => response.body)
         .then(async (data) => {
             log_ref.log({
                 level: 'info',
@@ -142,6 +154,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                 level: 'error',
                 message: `Snapshot proposals detective request failed`,
                 data: {
+                    url: proposalDetectiveReq,
                     error: e
                 }
             })

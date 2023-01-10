@@ -35,47 +35,51 @@ export const compoundProposals = async (
     }))
 
     const proposals =
-        (await Promise.all(
-            args.map(async (arg) => {
-                const proposalCreatedTimestamp = (
-                    await provider.getBlock(arg.txBlock)
-                ).timestamp
+        (
+            await Promise.all(
+                args.map(async (arg) => {
+                    const proposalCreatedTimestamp = (
+                        await provider.getBlock(arg.txBlock)
+                    ).timestamp
 
-                log_node.log({
-                    level: 'info',
-                    message: `getBlock`,
-                    data: {
-                        block: arg.txBlock
+                    log_node.log({
+                        level: 'info',
+                        message: `getBlock`,
+                        data: {
+                            block: arg.txBlock
+                        }
+                    })
+                    const votingStartsTimestamp =
+                        proposalCreatedTimestamp +
+                        (arg.eventData.startBlock - arg.txBlock) * 12
+                    const votingEndsTimestamp =
+                        proposalCreatedTimestamp +
+                        (arg.eventData.endBlock - arg.txBlock) * 12
+                    const title = await formatTitle(
+                        arg.eventData.ipfsHash
+                            ? arg.eventData.ipfsHash
+                            : arg.eventData.description
+                    )
+                    const proposalUrl =
+                        daoHandler.decoder['proposalUrl'] + arg.eventData.id
+                    const proposalOnChainId = Number(
+                        arg.eventData.id
+                    ).toString()
+
+                    return {
+                        externalId: proposalOnChainId,
+                        name: String(title).slice(0, 1024),
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id,
+                        timeEnd: new Date(votingEndsTimestamp * 1000),
+                        timeStart: new Date(votingStartsTimestamp * 1000),
+                        timeCreated: new Date(proposalCreatedTimestamp * 1000),
+                        data: {},
+                        url: proposalUrl
                     }
                 })
-                const votingStartsTimestamp =
-                    proposalCreatedTimestamp +
-                    (arg.eventData.startBlock - arg.txBlock) * 12
-                const votingEndsTimestamp =
-                    proposalCreatedTimestamp +
-                    (arg.eventData.endBlock - arg.txBlock) * 12
-                const title = await formatTitle(
-                    arg.eventData.ipfsHash
-                        ? arg.eventData.ipfsHash
-                        : arg.eventData.description
-                )
-                const proposalUrl =
-                    daoHandler.decoder['proposalUrl'] + arg.eventData.id
-                const proposalOnChainId = Number(arg.eventData.id).toString()
-
-                return {
-                    externalId: proposalOnChainId,
-                    name: String(title).slice(0, 1024),
-                    daoId: daoHandler.daoId,
-                    daoHandlerId: daoHandler.id,
-                    timeEnd: new Date(votingEndsTimestamp * 1000),
-                    timeStart: new Date(votingStartsTimestamp * 1000),
-                    timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                    data: {},
-                    url: proposalUrl
-                }
-            })
-        )) ?? []
+            )
+        ).filter((n) => n) ?? []
 
     const lastBlock = (await provider.getBlockNumber()) ?? 0
 

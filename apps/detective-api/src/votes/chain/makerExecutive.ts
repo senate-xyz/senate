@@ -1,4 +1,4 @@
-import { log_node } from '@senate/axiom'
+import { log_node, log_pd } from '@senate/axiom'
 import { DAOHandler, prisma } from '@senate/database'
 import { ethers } from 'ethers'
 
@@ -67,32 +67,46 @@ export const getMakerExecutiveVotes = async (
     let newLastVoteBlock = (await provider.getBlockNumber()) ?? 0
 
     const votes =
-        (await Promise.all(
-            intermediaryVotes.map(async (vote) => {
-                const proposal = await prisma.proposal.findFirst({
-                    where: {
-                        externalId: vote,
+        (
+            await Promise.all(
+                intermediaryVotes.map(async (vote) => {
+                    const proposal = await prisma.proposal.findFirst({
+                        where: {
+                            externalId: vote,
+                            daoId: daoHandler.daoId,
+                            daoHandlerId: daoHandler.id
+                        }
+                    })
+
+                    //missing proposal, force sync from infura
+                    if (!proposal) {
+                        if (
+                            vote != '0x0000000000000000000000000000000000000000' //except this one because we know it's a bad proposal and will always trigger reset
+                        )
+                            newLastVoteBlock = 0
+
+                        log_pd.log({
+                            level: 'warn',
+                            message: `Proposal does not exist while updating votes for ${voterAddress} in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
+                            data: {
+                                externalId: vote
+                            }
+                        })
+
+                        return
+                    }
+
+                    return {
+                        voterAddress: voterAddress,
                         daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id
+                        proposalId: proposal.id,
+                        daoHandlerId: daoHandler.id,
+                        choiceId: '1',
+                        choice: 'Yes'
                     }
                 })
-
-                //missing proposal, force sync from infura
-                if (!proposal) {
-                    newLastVoteBlock = 0
-                    return
-                }
-
-                return {
-                    voterAddress: voterAddress,
-                    daoId: daoHandler.daoId,
-                    proposalId: proposal.id,
-                    daoHandlerId: daoHandler.id,
-                    choiceId: '1',
-                    choice: 'Yes'
-                }
-            })
-        )) ?? []
+            )
+        ).filter((n) => n) ?? []
 
     return { votes, newLastVoteBlock }
 }

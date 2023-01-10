@@ -2,7 +2,7 @@ import { InternalServerErrorException } from '@nestjs/common'
 import { log_pd } from '@senate/axiom'
 
 import { DAOHandlerType, prisma } from '@senate/database'
-import axios from 'axios'
+import superagent from 'superagent'
 
 export const updateSnapshotDaoVotes = async (
     daoHandlerId: string,
@@ -61,29 +61,45 @@ export const updateSnapshotDaoVotes = async (
     })
 
     try {
-        const res = await axios
-            .get('https://hub.snapshot.org/graphql', {
-                method: 'POST',
-                data: JSON.stringify({
-                    query: graphqlQuery
-                }),
-                headers: {
-                    'content-type': 'application/json'
-                }
+        let tries = 0
+        const res = await superagent
+            .get('https://hub.snapshot.org/graphql')
+            .query({
+                query: graphqlQuery
+            })
+            .timeout({
+                response: 5000,
+                deadline: 30000
+            })
+            .retry(3, (err, res) => {
+                tries++
+                if (tries > 1)
+                    log_pd.log({
+                        level: 'warn',
+                        message: `Retry GraphQL query for ${daoHandler.dao.name} - ${daoHandler.type}`,
+                        data: {
+                            query: graphqlQuery,
+                            error: JSON.stringify(err),
+                            res: JSON.stringify(res)
+                        }
+                    })
             })
             .then((response) => {
-                if (response.status == 429) throw new Error('Too many requests')
-                return response.data
-            })
-            .then((data) => {
-                return data.data.votes
+                log_pd.log({
+                    level: 'info',
+                    message: `GraphQL query response for ${daoHandler.dao.name} - ${daoHandler.type}`,
+                    data: {
+                        response: JSON.stringify(response)
+                    }
+                })
+                return response.body.data.votes
             })
             .catch(async (e) => {
                 log_pd.log({
                     level: 'error',
                     message: `GraphQL error for ${daoHandler.dao.name} - ${daoHandler.type}`,
                     data: {
-                        error: e
+                        error: JSON.stringify(e)
                     }
                 })
                 return

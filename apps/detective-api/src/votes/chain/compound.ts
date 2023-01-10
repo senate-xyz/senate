@@ -1,4 +1,4 @@
-import { log_node } from '@senate/axiom'
+import { log_node, log_pd } from '@senate/axiom'
 import { DAOHandler, prisma } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
@@ -36,39 +36,50 @@ export const getCompoundVotes = async (
     let newLastVoteBlock = (await provider.getBlockNumber()) ?? 0
 
     const votes =
-        (await Promise.all(
-            logs.map(async (log) => {
-                const eventData = govBravoIface.parseLog({
-                    topics: log.topics,
-                    data: log.data
-                }).args
+        (
+            await Promise.all(
+                logs.map(async (log) => {
+                    const eventData = govBravoIface.parseLog({
+                        topics: log.topics,
+                        data: log.data
+                    }).args
 
-                const proposal = await prisma.proposal.findFirst({
-                    where: {
-                        externalId: BigNumber.from(
-                            eventData.proposalId
-                        ).toString(),
+                    const proposal = await prisma.proposal.findFirst({
+                        where: {
+                            externalId: BigNumber.from(
+                                eventData.proposalId
+                            ).toString(),
+                            daoId: daoHandler.daoId,
+                            daoHandlerId: daoHandler.id
+                        }
+                    })
+
+                    //missing proposal, force sync from infura
+                    if (!proposal) {
+                        log_pd.log({
+                            level: 'warn',
+                            message: `Proposal does not exist while updating votes for ${voterAddress} in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
+                            data: {
+                                externalId: BigNumber.from(
+                                    eventData.id
+                                ).toString()
+                            }
+                        })
+                        newLastVoteBlock = 0
+                        return
+                    }
+
+                    return {
+                        voterAddress: voterAddress,
                         daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id
+                        proposalId: proposal.id,
+                        daoHandlerId: daoHandler.id,
+                        choiceId: String(eventData.support),
+                        choice: String(eventData.support) ? 'Yes' : 'No'
                     }
                 })
-
-                //missing proposal, force sync from infura
-                if (!proposal) {
-                    newLastVoteBlock = 0
-                    return
-                }
-
-                return {
-                    voterAddress: voterAddress,
-                    daoId: daoHandler.daoId,
-                    proposalId: proposal.id,
-                    daoHandlerId: daoHandler.id,
-                    choiceId: String(eventData.support),
-                    choice: String(eventData.support) ? 'Yes' : 'No'
-                }
-            })
-        )) ?? []
+            )
+        ).filter((n) => n) ?? []
 
     return { votes, newLastVoteBlock }
 }

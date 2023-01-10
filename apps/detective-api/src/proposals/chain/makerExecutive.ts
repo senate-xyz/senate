@@ -2,7 +2,6 @@ import { log_node, log_pd } from '@senate/axiom'
 import { DAOHandler } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
-import moment, { ISO_8601 } from 'moment'
 
 export const makerExecutiveProposals = async (
     provider: ethers.providers.JsonRpcProvider,
@@ -65,34 +64,41 @@ export const makerExecutiveProposals = async (
     const spellAddressesArray = Array.from(spellAddressesSet)
 
     const proposals =
-        (await Promise.all(
-            spellAddressesArray.map(async (proposal) => {
-                if (proposal == '0x0000000000000000000000000000000000000000')
-                    return
+        (
+            await Promise.all(
+                spellAddressesArray.map(async (proposal) => {
+                    if (
+                        proposal == '0x0000000000000000000000000000000000000000'
+                    )
+                        return
 
-                const res = await axios
-                    .get('https://vote.makerdao.com/api/executive/' + proposal)
-                    .catch(() => {
-                        return { status: 404, data: {} }
-                    })
+                    const res = await axios
+                        .get(
+                            'https://vote.makerdao.com/api/executive/' +
+                                proposal
+                        )
+                        .catch(() => {
+                            return { status: 404, data: {} }
+                        })
 
-                if (!res.data || res.status == 404) {
-                    return
-                }
+                    if (!res.data || res.status == 404) {
+                        return
+                    }
 
-                return {
-                    externalId: proposal,
-                    name: res.data.title.slice(0, 1024),
-                    daoId: daoHandler.daoId,
-                    daoHandlerId: daoHandler.id,
-                    timeEnd: new Date(res.data.spellData.expiration),
-                    timeStart: new Date(res.data.date),
-                    timeCreated: new Date(res.data.date),
-                    data: {},
-                    url: daoHandler.decoder['proposalUrl'] + proposal
-                }
-            })
-        )) ?? []
+                    return {
+                        externalId: proposal,
+                        name: res.data.title.slice(0, 1024),
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id,
+                        timeEnd: new Date(res.data.spellData.expiration),
+                        timeStart: new Date(res.data.date),
+                        timeCreated: new Date(res.data.date),
+                        data: {},
+                        url: daoHandler.decoder['proposalUrl'] + proposal
+                    }
+                })
+            )
+        ).filter((n) => n) ?? []
 
     const lastBlock = (await provider.getBlockNumber()) ?? 0
 
