@@ -1,24 +1,24 @@
 {
   "folders": [
     {
-      "name": "✨ senate",
+      "name": "📂 root",
       "path": ".."
     },
     {
-      "name": "🚀 @senate/detective-api",
-      "path": "../apps/detective-api"
+      "name": "🚀 @senate/detective",
+      "path": "../apps/detective"
     },
     {
       "name": "🚀 @senate/refresher",
       "path": "../apps/refresher"
     },
     {
-      "name": "🚀 @senate/roundup-cron",
-      "path": "../apps/roundup-cron"
+      "name": "🚀 @senate/bulletin",
+      "path": "../apps/bulletin"
     },
     {
-      "name": "🚀 @senate/web",
-      "path": "../apps/web"
+      "name": "🌐 @senate/senate",
+      "path": "../apps/senate"
     },
     {
       "name": "⚙️ @senate/config",
