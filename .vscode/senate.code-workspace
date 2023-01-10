@@ -13,8 +13,8 @@
       "path": "../apps/refresher"
     },
     {
-      "name": "🚀 @senate/roundup-cron",
-      "path": "../apps/roundup-cron"
+      "name": "🚀 @senate/bulletin",
+      "path": "../apps/bulletin"
     },
     {
       "name": "🚀 @senate/web",
