@@ -1,7 +1,8 @@
 {
     "$schema": "https://railway.app/railway.schema.json",
     "build": {
-        "builder": "NIXPACKS"
+        "builder": "NIXPACKS",
+        "watchPatterns": ["app/refresher", "packages/**"]
     },
     "deploy": {
         "startCommand": "yarn start:refresher",
