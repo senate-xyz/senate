@@ -3,62 +3,62 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"],
       "cache": false
     },
     "*": {
       "env": [
         "NODE_ENV",
+        "EXEC_ENV",
+        "PORT",
+
+        "WEB_URL",
         "NEXTAUTH_SECRET",
         "NEXTAUTH_URL",
-        "VERCEL_URL",
-        "PROVIDER_URL",
         "NEXT_PUBLIC_PROVIDER_URL",
-        "PORT",
+
         "DETECTIVE_URL",
+        "IPFS_GATEWAY_URL",
+
+        "BULLETIN_ENABLE",
+        "BULLETIN_BCC_EMAILS",
+        "BULLETIN_CRON_INTERVAL",
+        "TEST_EMAIL",
         "POSTMARK_TOKEN",
         "VOTING_COUNTDOWN_TOKEN",
-        "ROUNDUP_ENABLE",
-        "IPFS_GATEWAY_URL",
-        "WEBAPP_URL",
-        "EXEC_ENV",
-        "TEST_EMAIL",
-        "ROUNDUP_BCC_EMAILS",
-        "ROUNDUP_CRON_INTERVAL",
-        "REFRESHER_INTERVAL",
-        "REFRESHER_FORCE_INTERVAL",
+
+        "SENATE_NODE_URL",
+        "INFURA_NODE_URL",
+
         "AXIOM_TOKEN",
         "AXIOM_ORG_ID",
-        "AXIOM_DATASET",
-        "SENATE_NODE_URL",
-        "INFURA_NODE_URL"
+        "AXIOM_DATASET"
       ]
     },
     "start": {},
-    "start:web": {},
+    "start:senate": {},
     "start:detective": {},
     "start:refresher": {},
-    "start:roundup": {},
+    "start:bulletin": {},
+
     "dev": {},
-    "dev:web": {},
+    "dev:senate": {},
     "dev:detective": {},
     "dev:refresher": {},
-    "dev:roundup": {},
+    "dev:bulletin": {},
+
     "test:web": { "cache": false },
     "test:e2e": { "cache": false },
-    "db:migrate:deploy": {},
+
     "db:push": { "cache": false },
     "db:seed": { "cache": false },
-    "refresher:start": {},
-    "refresher:dev": {},
-    "generate": { "cache": false },
+    "db:generate": { "cache": false },
+
     "lint": { "cache": false },
     "lint:fix": { "cache": false },
+
     "prettier": { "cache": false },
     "prettier:fix": { "cache": false },
-    "storybook": {},
-    "build-storybook": {},
-    "clean": { "cache": false },
-    "chromatic": {}
+
+    "clean": { "cache": false }
   }
 }
