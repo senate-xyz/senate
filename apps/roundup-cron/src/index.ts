@@ -16,7 +16,6 @@ config()
 const client = new ServerClient(process.env.POSTMARK_TOKEN ?? 'Missing Token')
 const threeDays = 259200000
 const oneDay = 86400000
-const now: number = Date.now()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const delay = (ms: number): Promise<any> => {
@@ -108,7 +107,7 @@ const addNewProposals = async () => {
     const proposals = await prisma.proposal.findMany({
         where: {
             timeCreated: {
-                gte: new Date(now - oneDay)
+                gte: new Date(Date.now() - oneDay)
             }
         },
         orderBy: {
@@ -135,12 +134,12 @@ const addEndingProposals = async () => {
             AND: [
                 {
                     timeEnd: {
-                        lte: new Date(now + threeDays)
+                        lte: new Date(Date.now() + threeDays)
                     }
                 },
                 {
                     timeEnd: {
-                        gt: new Date(now)
+                        gt: new Date(Date.now())
                     }
                 }
             ]
@@ -169,12 +168,12 @@ const addPastProposals = async () => {
             AND: [
                 {
                     timeEnd: {
-                        lte: new Date(now)
+                        lte: new Date(Date.now())
                     }
                 },
                 {
                     timeEnd: {
-                        gte: new Date(now - oneDay)
+                        gte: new Date(Date.now() - oneDay)
                     }
                 }
             ]
@@ -348,7 +347,7 @@ const sendRoundupEmails = async () => {
         day: 'numeric'
     }
 
-    const todaysDate = new Date(now).toLocaleDateString(undefined, dateOptions)
+    const todaysDate = new Date(Date.now()).toLocaleDateString(undefined, dateOptions)
 
     try {
         console.log('Searching for users with daily bulletin enabled...')
