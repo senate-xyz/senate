@@ -11,7 +11,7 @@ import {
     RainbowKitProvider
 } from '@rainbow-me/rainbowkit'
 import { mainnet, configureChains, createClient, WagmiConfig } from 'wagmi'
-import { infuraProvider } from 'wagmi/providers/infura'
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { publicProvider } from 'wagmi/providers/public'
 import { trpc } from '../utils/trpc'
 import Head from 'next/head'
@@ -20,8 +20,10 @@ import Script from 'next/script'
 const { chains, provider } = configureChains(
     [mainnet],
     [
-        infuraProvider({
-            apiKey: process.env.NEXT_PUBLIC_PROVIDER_URL ?? 'missing_key'
+        jsonRpcProvider({
+            rpc: () => ({
+                http: process.env.NEXT_PUBLIC_PROVIDER_URL ?? 'missing_key'
+            })
         }),
         publicProvider()
     ]
