@@ -130,5 +130,3 @@ packages/database/prisma/db.sqlite
 
 /apps/web/tests/e2e/screenshots
 /apps/web/tests/e2e/videos
-
-my.secrets

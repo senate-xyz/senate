@@ -1,5 +1,7 @@
 {
   "name": "senate",
+  "author": "Senate",
+  "description": "Da best decentralised governance facilitation tool",
   "private": true,
   "license": "MIT",
   "workspaces": [
@@ -12,37 +14,38 @@
   },
   "scripts": {
     "build": "turbo run build",
+    "build:senate": "turbo run build:senate",
+    "build:detective": "turbo run build:detective",
+    "build:refresher": "turbo run build:refresher",
+    "build:bulletin": "turbo run build:bulletin",
     "start": "turbo run start",
-    "start:web": "turbo run start:web",
+    "start:senate": "turbo run start:senate",
     "start:detective": "turbo run start:detective",
     "start:refresher": "turbo run start:refresher",
-    "start:roundup": "turbo run start:roundup",
+    "start:bulletin": "turbo run start:bulletin",
     "dev": "turbo run dev --parallel",
-    "dev:web": "turbo run dev:web",
+    "dev:senate": "turbo run dev:senate",
     "dev:detective": "turbo run dev:detective",
     "dev:refresher": "turbo run dev:refresher",
-    "dev:roundup": "turbo run dev:roundup",
-    "test:web": "turbo run test:web",
+    "dev:bulletin": "turbo run dev:bulletin",
+    "test:senate": "turbo run test:senate",
     "test:e2e": "turbo run test:e2e",
-    "db:migrate:deploy": "turbo run db:migrate:deploy",
     "db:push": "turbo run db:push",
     "db:seed": "turbo run db:seed",
-    "refresher:start": "turbo run refresher:start",
-    "refresher:dev": "turbo run refresher:dev",
-    "generate": "turbo run generate",
-    "storybook": "turbo run storybook",
-    "build-storybook": "turbo run build-storybook",
-    "chromatic": "turbo run chromatic",
-    "clean": "turbo run clean",
+    "db:generate": "turbo run db:generate",
+    "clean": "turbo run clean && rimraf node_modules",
     "prettier": "turbo run prettier",
     "prettier:fix": "turbo run prettier:fix",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix"
   },
   "devDependencies": {
-    "prettier": "^2.8.1",
-    "tsx": "^3.12.1",
+    "prettier": "^2.8.2",
+    "tsx": "^3.12.2",
     "turbo": "latest"
   },
-  "packageManager": "yarn@1.22.19"
+  "packageManager": "yarn@1.22.19",
+  "dependencies": {
+    "rimraf": "^3.0.2"
+  }
 }
