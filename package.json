@@ -14,6 +14,10 @@
   },
   "scripts": {
     "build": "turbo run build",
+    "build:senate": "turbo run build:senate",
+    "build:detective": "turbo run build:detective",
+    "build:refresher": "turbo run build:refresher",
+    "build:bulletin": "turbo run build:bulletin",
     "start": "turbo run start",
     "start:senate": "turbo run start:senate",
     "start:detective": "turbo run start:detective",

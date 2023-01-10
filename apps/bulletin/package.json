@@ -8,6 +8,7 @@
     "main": "index.js",
     "scripts": {
         "build": "tsup",
+        "build:bulletin": "tsup",
         "start": "tsup && node dist/index.js",
         "dev": "tsup && node dist/index.js",
         "start:mailman": "tsup && node dist/index.js",

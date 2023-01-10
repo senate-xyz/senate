@@ -16,6 +16,7 @@
         "build": "tsup",
         "start": "tsup && node dist/index.js",
         "dev": "tsup && node dist/index.js",
+        "build:refresher": "tsup",
         "start:refresher": "tsup && node dist/index.js",
         "dev:refresher": "tsup && node dist/index.js",
         "clean": "rimraf .turbo node_modules dist",

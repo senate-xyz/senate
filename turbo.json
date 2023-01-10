@@ -4,6 +4,11 @@
     "build": {
       "dependsOn": ["^build"]
     },
+    "build:senate": { "dependsOn": ["^build"] },
+    "build:detective": { "dependsOn": ["^build"] },
+    "build:refresher": { "dependsOn": ["^build"] },
+    "build:bulletin": { "dependsOn": ["^build"] },
+
     "*": {
       "env": [
         "NODE_ENV",

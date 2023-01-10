@@ -8,6 +8,7 @@
     "scripts": {
         "postinstall": "prisma generate",
         "build": "next build",
+        "build:senate": "next build",
         "synpress": "synpress open --configFile=synpress.config.ts",
         "test:e2e": "synpress run --configFile=synpress.config.ts",
         "test": "start-server-and-test dev http://localhost:3000 test:e2e",
