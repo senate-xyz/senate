@@ -30,7 +30,9 @@ const main = async () => {
             level: 'info',
             message: 'Prisma metrics',
             data: {
-                metrics: await prisma.$metrics.json()
+                counters: (await prisma.$metrics.json()).counters,
+                gauges: (await prisma.$metrics.json()).gauges,
+                histograms: (await prisma.$metrics.json()).histograms
             }
         })
         await loadConfig()
