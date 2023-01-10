@@ -3,7 +3,7 @@
     "build": {
         "builder": "NIXPACKS",
         "buildCommand": "yarn build:refresher",
-        "watchPatterns": ["apps/refresher/**", "packages/**"]
+        "watchPatterns": ["apps/refresher", "packages/**"]
     },
     "deploy": {
         "startCommand": "yarn start:refresher",

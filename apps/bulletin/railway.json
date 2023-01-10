@@ -3,7 +3,7 @@
     "build": {
         "builder": "NIXPACKS",
         "buildCommand": "yarn build:bulletin",
-        "watchPatterns": ["apps/bulletin/**", "packages/**"]
+        "watchPatterns": ["apps/bulletin", "packages/**"]
     },
     "deploy": {
         "startCommand": "yarn start:bulletin",
