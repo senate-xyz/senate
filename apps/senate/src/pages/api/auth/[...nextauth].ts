@@ -19,7 +19,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
 
                     const result = await siwe.verify({
                         signature: credentials?.signature || '',
-                        domain: nextAuthUrl.host,
+                        domain: nextAuthUrl.hostname,
                         nonce: await getCsrfToken({ req })
                     })
 
