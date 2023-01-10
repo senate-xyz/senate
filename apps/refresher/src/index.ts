@@ -26,6 +26,13 @@ const main = async () => {
     }, 500)
 
     cron.schedule('*/10 * * * * *', async () => {
+        log_ref.log({
+            level: 'info',
+            message: 'Prisma metrics',
+            data: {
+                metrics: await prisma.$metrics.json()
+            }
+        })
         await loadConfig()
         await createVoterHandlers()
         await addSnapshotProposalsToQueue()
