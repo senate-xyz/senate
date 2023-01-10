@@ -3,7 +3,7 @@
     "build": {
         "builder": "NIXPACKS",
         "buildCommand": "yarn build:detective",
-        "watchPatterns": ["apps/detective", "packages/**"]
+        "watchPatterns": ["apps/detective/**", "packages/**"]
     },
     "deploy": {
         "startCommand": "yarn start:detective",
