@@ -1,10 +1,11 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
 export const NavBar = () => {
     const pathname = usePathname()
-
     return (
         <div className='flex min-h-screen min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black'>
             <Link href='/' className='my-[4rem]'>

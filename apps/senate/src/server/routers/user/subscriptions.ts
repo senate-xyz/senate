@@ -40,6 +40,13 @@ export const userSubscriptionsRouter = router({
                         where: {
                             userId: { contains: user.id }
                         }
+                    },
+                    proposals: {
+                        where: {
+                            timeEnd: {
+                                gt: new Date()
+                            }
+                        }
                     }
                 }
             })
