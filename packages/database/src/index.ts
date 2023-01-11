@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client'
 export * from './client'
 
 export {
+    type PrismaClient,
     type PrismaPromise,
     type Proposal,
     type Voter,

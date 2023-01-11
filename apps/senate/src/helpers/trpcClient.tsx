@@ -1,5 +1,5 @@
 import { createTRPCReact, httpBatchLink } from '@trpc/react-query'
-import type { TrpcAppRouter } from '../server/trpc/routers/trpcAppRouter'
+import type { TrpcAppRouter } from '../server/routers/trpcAppRouter'
 import superjson from 'superjson'
 
 const getBaseUrl = (): string => {

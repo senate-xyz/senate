@@ -2,11 +2,11 @@ import { initTRPC, TRPCError } from '@trpc/server'
 
 import { type Context } from './context'
 
-export const t = initTRPC.context<Context>().create()
+const tc = initTRPC.context<Context>().create()
 
-export const router = t.router
+export const router = tc.router
 
-const isAuthed = t.middleware(({ ctx, next }) => {
+const isAuthed = tc.middleware(({ ctx, next }) => {
     if (!ctx.session || !ctx.session.user) {
         throw new TRPCError({ code: 'UNAUTHORIZED' })
     }
@@ -17,5 +17,5 @@ const isAuthed = t.middleware(({ ctx, next }) => {
     })
 })
 
-export const publicProcedure = t.procedure
-export const protectedProcedure = t.procedure.use(isAuthed)
+export const publicProcedure = tc.procedure
+export const protectedProcedure = tc.procedure.use(isAuthed)

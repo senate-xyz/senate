@@ -32,4 +32,3 @@ import { IBackOffOptions, backOff } from 'exponential-backoff'
 // )
 
 export const prisma = new PrismaClient()
-export const prismaNextjs = new PrismaClient()

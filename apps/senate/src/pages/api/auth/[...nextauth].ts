@@ -4,7 +4,7 @@ import { SiweMessage } from 'siwe'
 import { getCsrfToken } from 'next-auth/react'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { IncomingMessage } from 'http'
-import { prismaNextjs } from '@senate/database'
+import { prisma } from '@senate/database'
 
 export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     const providers = [
@@ -37,7 +37,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                     })
 
                     if (result.success) {
-                        const user = await prismaNextjs.user.upsert({
+                        const user = await prisma.user.upsert({
                             where: {
                                 name: siwe.address
                             },
@@ -61,7 +61,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                             }
                         })
 
-                        await prismaNextjs.voter.upsert({
+                        await prisma.voter.upsert({
                             where: {
                                 address: siwe.address
                             },
@@ -104,7 +104,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
         secret: process.env.NEXTAUTH_SECRET,
         events: {
             async signIn(message) {
-                await prismaNextjs.user.update({
+                await prisma.user.update({
                     where: {
                         name: String(message.user.id)
                     },
@@ -115,7 +115,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                 })
             },
             async session(message) {
-                await prismaNextjs.user.update({
+                await prisma.user.update({
                     where: {
                         name: String(message.session.user?.name)
                     },

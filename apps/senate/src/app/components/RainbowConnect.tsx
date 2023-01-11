@@ -46,21 +46,21 @@ const getSiweMessageOptions: GetSiweMessageOptions = () => ({
 })
 
 const RainbowConnectButton = () => {
-    const session = useSession()
-    const newUser = trpc.user.settings.isNewUser.useQuery(void 0, {
-        context: appQueryContext
-    })
+    // const session = useSession()
+    // const newUser = trpc.user.settings.isNewUser.useQuery(void 0, {
+    //     context: appQueryContext
+    // })
 
-    if (newUser.data) {
-        if (newUser.data.newUser && session.status == 'authenticated') {
-            router.push('/new-user')
-        }
-    }
+    // if (newUser.data) {
+    //     if (newUser.data.newUser && session.status == 'authenticated') {
+    //         router.push('/new-user')
+    //     }
+    // }
 
-    useEffect(() => {
-        newUser.refetch()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [session])
+    // useEffect(() => {
+    //     newUser.refetch()
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [session])
 
     return <ConnectButton showBalance={false} />
 }
