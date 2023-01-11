@@ -94,6 +94,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
             maxAge: 600
         },
         callbacks: {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             async session({ session, token }: { session: any; token: any }) {
                 session.address = token.sub
                 session.user.name = token.sub
