@@ -113,20 +113,15 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                     }
                 })
             },
-            async signOut(message) {
-                console.log(message)
-            },
-            async createUser(message) {
-                console.log(message)
-            },
-            async updateUser(message) {
-                console.log(message)
-            },
-            async linkAccount(message) {
-                console.log(message)
-            },
             async session(message) {
-                console.log(message)
+                await prisma.user.update({
+                    where: {
+                        name: String(message.session.user?.name)
+                    },
+                    data: {
+                        lastActive: new Date()
+                    }
+                })
             }
         }
     }
