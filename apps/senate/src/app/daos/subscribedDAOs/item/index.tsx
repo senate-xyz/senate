@@ -1,17 +1,15 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { FastAverageColor } from 'fast-average-color'
-import { trpc } from '../../../../helpers/trpcClient'
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { withClientWrappers } from '../../../../helpers/WithClientWrappers'
-import { appQueryContext } from '../../../../helpers/appQueryClient'
 
 export const SubscribedDAOComponent = (props: {
     daoId: string
     daoName: string
     daoPicture: string
+    bgColor: string | undefined
     daoHandlers: string[]
     activeProposals: number
 }) => {
@@ -21,22 +19,6 @@ export const SubscribedDAOComponent = (props: {
 
     const [showMenu, setShowMenu] = useState(false)
     const [getDailyEmails, setDailyEmails] = useState(true)
-    const [backgroundColor, setBackgroundColor] = useState('#4e4e4e')
-
-    useEffect(() => {
-        const fetch = async (url: string) => {
-            const fac = new FastAverageColor()
-            fac.getColorAsync(url + '.svg')
-                // eslint-disable-next-line promise/always-return
-                .then((color) => {
-                    setBackgroundColor(`${color.hex}50`)
-                })
-                .catch((e) => {
-                    console.log(e)
-                })
-        }
-        fetch(props.daoPicture)
-    }, [props.daoPicture])
 
     return (
         <div className='h-[320px] w-[240px]'>
@@ -104,7 +86,7 @@ export const SubscribedDAOComponent = (props: {
                 </div>
             ) : (
                 <div
-                    style={{ backgroundColor: backgroundColor }}
+                    style={{ backgroundColor: props.bgColor }}
                     className='relative flex h-full w-full flex-col rounded text-sm font-bold text-white shadow'
                     data-testid='daocard-followed-front'
                 >
