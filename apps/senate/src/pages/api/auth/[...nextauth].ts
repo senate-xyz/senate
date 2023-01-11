@@ -6,7 +6,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { IncomingMessage } from 'http'
 import { prisma } from '@senate/database'
 
-export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
+export function getAuthOptions(req?: IncomingMessage): NextAuthOptions {
     const providers = [
         Credentials({
             name: 'Ethereum',

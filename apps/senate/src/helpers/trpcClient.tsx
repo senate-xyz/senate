@@ -3,19 +3,13 @@ import type { TrpcAppRouter } from '../server/routers/trpcAppRouter'
 import superjson from 'superjson'
 
 const getBaseUrl = (): string => {
-    if (typeof window !== 'undefined')
-        // browser should use relative path
-        return ''
+    if (typeof window !== 'undefined') return ''
+
+    if (process.env.WEB_URL) return `https://${process.env.WEB_URL}`
 
     if (process.env.WEB_URL)
-        // reference for vercel.com
-        return `https://${process.env.WEB_URL}`
-
-    if (process.env.WEB_URL)
-        // reference for render.com
         return `http://${process.env.WEB_URL}:${process.env.PORT}`
 
-    // assume localhost
     return `http://localhost:${process.env.PORT ?? 3000}`
 }
 export const trpc = createTRPCReact<TrpcAppRouter>()

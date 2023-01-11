@@ -1,8 +1,14 @@
 import { initTRPC, TRPCError } from '@trpc/server'
+import superjson from 'superjson'
 
 import { type Context } from './context'
 
-const tc = initTRPC.context<Context>().create()
+const tc = initTRPC.context<Context>().create({
+    transformer: superjson,
+    errorFormatter({ shape }) {
+        return shape
+    }
+})
 
 export const router = tc.router
 

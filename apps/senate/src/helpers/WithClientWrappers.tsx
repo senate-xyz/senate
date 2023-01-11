@@ -15,7 +15,6 @@ export const ClientWrappers: FC<{ children: ReactNode }> = (props) => {
                 client={appQueryClient}
                 context={appQueryContext}
             >
-                {/* hydrate allows options.context, but the typing does'nt support it */}
                 {props.children}
             </QueryClientProvider>
         </trpc.Provider>
