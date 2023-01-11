@@ -85,7 +85,7 @@ export const userSettingsRouter = router({
             return user.newUser
         }),
 
-    newUser: protectedProcedure.query(async ({ ctx }) => {
+    isNewUser: protectedProcedure.query(async ({ ctx }) => {
         let result = false
 
         const user = await ctx.prisma.user.findFirst({
