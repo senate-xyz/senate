@@ -1,4 +1,3 @@
-import SubscribedDAO from './item/page'
 import { serverQuery } from '../../../helpers/trpcHelpers'
 import { unstable_getServerSession } from 'next-auth/next'
 import { getAuthOptions } from '../../../pages/api/auth/[...nextauth]'
@@ -20,14 +19,20 @@ const getData = async () => {
     )
 }
 
-export const UnsubscribedDAOs = async () => {
+export default async function UnsubscribedDAOs() {
     const unsubscribedDAOs = await getData()
 
     return (
         <main>
             {unsubscribedDAOs.map((unsubscribedDAO, index) => {
-                return <SubscribedDAO key={index} dao={unsubscribedDAO.name} />
+                return (
+                    <UnsubscribedDAO key={index} dao={unsubscribedDAO.name} />
+                )
             })}
         </main>
     )
+}
+
+const UnsubscribedDAO = (props: { dao: string }) => {
+    return <main>{props.dao}</main>
 }

@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
-import { SubscribedDAOs } from './subscribedDAOs/page'
-import { UnsubscribedDAOs } from './unsubscribedDAOs/page'
+import SubscribedDAOs from './subscribedDAOs/page'
+import UnsubscribedDAOs from './unsubscribedDAOs/page'
 import Loading from './subscribedDAOs/loading'
 
 export default async function Home() {

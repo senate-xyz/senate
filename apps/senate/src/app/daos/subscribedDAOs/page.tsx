@@ -1,4 +1,3 @@
-import SubscribedDAO from './item/page'
 import { serverQuery } from '../../../helpers/trpcHelpers'
 import { unstable_getServerSession } from 'next-auth/next'
 import { getAuthOptions } from '../../../pages/api/auth/[...nextauth]'
@@ -11,7 +10,7 @@ const getData = async () => {
     })
 }
 
-export const SubscribedDAOs = async () => {
+export default async function SubscribedDAOs() {
     const subscribedDAOs = await getData()
 
     return (
@@ -21,4 +20,8 @@ export const SubscribedDAOs = async () => {
             })}
         </main>
     )
+}
+
+const SubscribedDAO = (props: { dao: string }) => {
+    return <main>{props.dao}</main>
 }
