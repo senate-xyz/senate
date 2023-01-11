@@ -74,29 +74,6 @@ export const UnsubscribedDAO = (props: {
                                     <div className="peer h-6 w-11 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
                                 </label>
                             </div>
-                            {/* <p>Get daily emails about:</p>
-                    <div className="flex w-full flex-row items-center justify-between gap-2">
-                        <p>New Proposals</p>
-                        <label className="relative inline-flex cursor-pointer items-center bg-gray-700">
-                            <input
-                                type="checkbox"
-                                checked={true}
-                                className="peer sr-only"
-                            />
-                            <div className="peer h-6 w-11 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5  after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-gray-500 peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
-                        </label>
-                    </div>
-                    <div className="flex w-full flex-row items-center justify-between gap-2">
-                        <p>Proposal ending soon</p>
-                        <label className="relative inline-flex cursor-pointer items-center bg-gray-700">
-                            <input
-                                type="checkbox"
-                                checked={true}
-                                className="peer sr-only"
-                            />
-                            <div className="peer h-6 w-11 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5  after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-gray-500 peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
-                        </label>
-                    </div> */}
                         </div>
 
                         <button
