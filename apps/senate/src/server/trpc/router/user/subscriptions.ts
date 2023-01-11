@@ -3,7 +3,7 @@ import { router, protectedProcedure } from '../../trpc'
 
 export const userSubscriptionsRouter = router({
     subscribedDAOs: protectedProcedure.query(async ({ ctx }) => {
-        const user = await ctx.prisma.user
+        const user = await ctx.prismaNextjs.user
             .findFirstOrThrow({
                 where: {
                     name: { equals: String(ctx.session?.user?.name) }
@@ -16,7 +16,7 @@ export const userSubscriptionsRouter = router({
                 return { id: '0' }
             })
 
-        const daosList = await ctx.prisma.dAO.findMany({
+        const daosList = await ctx.prismaNextjs.dAO.findMany({
             where: {
                 subscriptions: {
                     some: {
@@ -46,7 +46,7 @@ export const userSubscriptionsRouter = router({
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const user = await ctx.prisma.user
+            const user = await ctx.prismaNextjs.user
                 .findFirstOrThrow({
                     where: {
                         name: { equals: String(ctx.session?.user?.name) }
@@ -60,7 +60,7 @@ export const userSubscriptionsRouter = router({
                     return { id: '0', voters: [] }
                 })
 
-            await ctx.prisma.subscription
+            await ctx.prismaNextjs.subscription
                 .upsert({
                     where: {
                         userId_daoId: {
@@ -89,7 +89,7 @@ export const userSubscriptionsRouter = router({
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const user = await ctx.prisma.user
+            const user = await ctx.prismaNextjs.user
                 .findFirstOrThrow({
                     where: {
                         name: { equals: String(ctx.session?.user?.name) }
@@ -102,7 +102,7 @@ export const userSubscriptionsRouter = router({
                     return { id: '0' }
                 })
 
-            await ctx.prisma.subscription
+            await ctx.prismaNextjs.subscription
                 .delete({
                     where: {
                         userId_daoId: {

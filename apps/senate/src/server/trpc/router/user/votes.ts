@@ -3,7 +3,7 @@ import { router, protectedProcedure } from '../../trpc'
 
 export const userVotesRouter = router({
     refreshVotes: protectedProcedure.mutation(async ({ ctx }) => {
-        const user = await ctx.prisma.user
+        const user = await ctx.prismaNextjs.user
             .findFirstOrThrow({
                 where: {
                     name: { equals: String(ctx.session?.user?.name) }
@@ -16,7 +16,7 @@ export const userVotesRouter = router({
                 return { id: '0' }
             })
 
-        const voters = await ctx.prisma.voter.findMany({
+        const voters = await ctx.prismaNextjs.voter.findMany({
             where: {
                 users: {
                     some: { id: user.id }
@@ -24,7 +24,7 @@ export const userVotesRouter = router({
             }
         })
 
-        await ctx.prisma.voterHandler.updateMany({
+        await ctx.prismaNextjs.voterHandler.updateMany({
             where: {
                 voterId: {
                     in: voters.map((voter) => voter.id)

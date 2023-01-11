@@ -3,7 +3,7 @@ import { router, protectedProcedure } from '../../trpc'
 
 export const userProposalsRouter = router({
     proposals: protectedProcedure.query(async ({ ctx }) => {
-        const user = await ctx.prisma.user.findFirstOrThrow({
+        const user = await ctx.prismaNextjs.user.findFirstOrThrow({
             where: {
                 name: { equals: String(ctx.session?.user?.name) }
             },
@@ -13,7 +13,7 @@ export const userProposalsRouter = router({
             }
         })
 
-        const userSubscriptions = await ctx.prisma.subscription.findMany({
+        const userSubscriptions = await ctx.prismaNextjs.subscription.findMany({
             where: {
                 AND: {
                     userId: user?.id
@@ -24,7 +24,7 @@ export const userProposalsRouter = router({
             }
         })
 
-        const userProposals = await ctx.prisma.proposal.findMany({
+        const userProposals = await ctx.prismaNextjs.proposal.findMany({
             where: {
                 AND: [
                     {
@@ -72,7 +72,7 @@ export const userProposalsRouter = router({
             })
         )
         .query(async ({ input, ctx }) => {
-            const user = await ctx.prisma.user.findFirstOrThrow({
+            const user = await ctx.prismaNextjs.user.findFirstOrThrow({
                 where: {
                     name: { equals: String(ctx.session?.user?.name) }
                 },
@@ -114,13 +114,14 @@ export const userProposalsRouter = router({
                     break
             }
 
-            const userSubscriptions = await ctx.prisma.subscription.findMany({
-                where: {
-                    userId: user.id
-                }
-            })
+            const userSubscriptions =
+                await ctx.prismaNextjs.subscription.findMany({
+                    where: {
+                        userId: user.id
+                    }
+                })
 
-            const userProposals = await ctx.prisma.proposal.findMany({
+            const userProposals = await ctx.prismaNextjs.proposal.findMany({
                 where: {
                     AND: [
                         {
@@ -173,7 +174,7 @@ export const userProposalsRouter = router({
             })
         )
         .query(async ({ input, ctx }) => {
-            const user = await ctx.prisma.user.findFirstOrThrow({
+            const user = await ctx.prismaNextjs.user.findFirstOrThrow({
                 where: {
                     name: { equals: String(ctx.session?.user?.name) }
                 },
@@ -215,13 +216,14 @@ export const userProposalsRouter = router({
                     break
             }
 
-            const userSubscriptions = await ctx.prisma.subscription.findMany({
-                where: {
-                    userId: user.id
-                }
-            })
+            const userSubscriptions =
+                await ctx.prismaNextjs.subscription.findMany({
+                    where: {
+                        userId: user.id
+                    }
+                })
 
-            const userProposals = await ctx.prisma.proposal.findMany({
+            const userProposals = await ctx.prismaNextjs.proposal.findMany({
                 where: {
                     AND: [
                         {

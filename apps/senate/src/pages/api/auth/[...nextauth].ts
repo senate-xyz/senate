@@ -4,7 +4,7 @@ import { SiweMessage } from 'siwe'
 import { getCsrfToken } from 'next-auth/react'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { IncomingMessage } from 'http'
-import { prisma } from '@senate/database'
+import { prismaNextjs } from '@senate/database'
 
 export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     const providers = [
@@ -37,7 +37,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                     })
 
                     if (result.success) {
-                        const user = await prisma.user.upsert({
+                        const user = await prismaNextjs.user.upsert({
                             where: {
                                 name: siwe.address
                             },
@@ -61,7 +61,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                             }
                         })
 
-                        await prisma.voter.upsert({
+                        await prismaNextjs.voter.upsert({
                             where: {
                                 address: siwe.address
                             },
@@ -104,9 +104,9 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
         secret: process.env.NEXTAUTH_SECRET,
         events: {
             async signIn(message) {
-                await prisma.user.update({
+                await prismaNextjs.user.update({
                     where: {
-                        name: String(message.user.name)
+                        name: String(message.user.id)
                     },
                     data: {
                         lastActive: new Date(),
@@ -115,7 +115,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                 })
             },
             async session(message) {
-                await prisma.user.update({
+                await prismaNextjs.user.update({
                     where: {
                         name: String(message.session.user?.name)
                     },
