@@ -1832,7 +1832,7 @@
     penpal "3.0.7"
     pocket-js-core "0.0.3"
 
-"@prisma/client@^4.8.1":
+"@prisma/client@latest":
   version "4.8.1"
   resolved "https://registry.yarnpkg.com/@prisma/client/-/client-4.8.1.tgz#51c16488dfac4e74a275a2753bf20262a65f2a2b"
   integrity sha512-d4xhZhETmeXK/yZ7K0KcVOzEfI5YKGGEr4F5SBV04/MU4ncN/HcE28sy3e4Yt8UFW0ZuImKFQJE+9rWt9WbGSQ==
@@ -8666,6 +8666,11 @@ expect@^29.0.0, expect@^29.3.1:
     jest-message-util "^29.3.1"
     jest-util "^29.3.1"
 
+exponential-backoff@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/exponential-backoff/-/exponential-backoff-3.1.0.tgz#9409c7e579131f8bd4b32d7d8094a911040f2e68"
+  integrity sha512-oBuz5SYz5zzyuHINoe9ooePwSu0xApKWgeNzok4hZ5YKXFh9zrQBEM15CXqoZkJJPuI2ArvqjPQd8UKJA753XA==
+
 express@4.18.2, express@^4.14.0, express@^4.17.3:
   version "4.18.2"
   resolved "https://registry.yarnpkg.com/express/-/express-4.18.2.tgz#3fabe08296e930c796c19e3c516979386ba9fd59"
@@ -13435,7 +13440,7 @@ prisma-dbml-generator@^0.10.0:
     "@prisma/generator-helper" "4.6.1"
     "@prisma/internals" "4.6.1"
 
-prisma@^4.8.1:
+prisma@latest:
   version "4.8.1"
   resolved "https://registry.yarnpkg.com/prisma/-/prisma-4.8.1.tgz#ef93cd908809b7d02e9f4bead5eea7733ba50c68"
   integrity sha512-ZMLnSjwulIeYfaU1O6/LF6PEJzxN5par5weykxMykS9Z6ara/j76JH3Yo2AH3bgJbPN4Z6NeCK9s5fDkzf33cg==
