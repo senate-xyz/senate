@@ -12,6 +12,7 @@ export default async function Home() {
                         <p className='mb-4 w-full text-[36px] font-medium text-white'>
                             Your DAOs
                         </p>
+
                         <div className='w-full'>
                             <Suspense fallback={<Loading />}>
                                 {/* @ts-expect-error Server Component */}
