@@ -26,13 +26,11 @@ export const UnsubscribedDAO = (props: {
                     className={`relative flex h-full w-full flex-col rounded bg-black text-sm font-bold text-white shadow ${
                         isMutating ? 'opacity-50' : 'opacity-100'
                     }`}
-                    data-testid='daocard-followed-back'
                 >
                     <div className='flex w-full flex-row justify-between px-4 pt-4'>
                         <p>Notifications</p>
                         <div
                             className='cursor-pointer'
-                            data-testid='close-menu'
                             onClick={() => {
                                 setShowMenu(false)
                             }}
@@ -42,11 +40,10 @@ export const UnsubscribedDAO = (props: {
                                 height='32'
                                 src='/assets/Icon/Close.svg'
                                 alt='close button'
-                                data-testid='daocard-followed-closemenu'
                             />
                         </div>
                     </div>
-                    <div className='flex h-full w-full flex-col items-center justify-between'>
+                    <div className='flex w-full grow flex-col items-center justify-between'>
                         <div className='flex w-full flex-col items-center gap-2 px-3 pt-5'>
                             <div className='flex w-full flex-row items-center justify-between gap-2'>
                                 <p>Get daily emails</p>
@@ -65,8 +62,7 @@ export const UnsubscribedDAO = (props: {
                         </div>
                     </div>
                     <button
-                        className='h-[56px] w-full bg-white text-xl font-bold text-black'
-                        data-testid='subscribe'
+                        className='h-14 w-full bg-white text-xl font-bold text-black'
                         onClick={async () => {
                             setIsFetching(true)
                             await fetch('/api/user/subscriptions/subscribe', {
@@ -94,28 +90,18 @@ export const UnsubscribedDAO = (props: {
                 <div
                     style={{ backgroundColor: props.bgColor }}
                     className='relative flex h-full w-full flex-col rounded text-sm font-bold text-white shadow'
-                    data-testid='daocard-unfollowed-front'
                 >
-                    <div className='flex h-full flex-col items-center justify-end px-6 pb-6'>
+                    <div className='flex grow flex-col items-center justify-end px-6 pb-6'>
                         <Image
                             width='96'
                             height='96'
                             src={props.daoPicture + '.svg'}
                             alt='dao logo'
-                            data-testid='dao-picture'
                         />
-
-                        <div
-                            className='pt-6 text-center text-[36px] font-thin leading-8'
-                            data-testid='dao-name'
-                        >
+                        <div className='pt-6 text-center text-[36px] font-thin leading-8'>
                             {props.daoName}
                         </div>
-
-                        <div
-                            className='flex flex-row gap-4 pt-6 opacity-50'
-                            data-testid='dao-handlers'
-                        >
+                        <div className='flex flex-row gap-4 pt-6 opacity-50'>
                             {props.daoHandlers.map((handler, index: number) => {
                                 switch (handler) {
                                     case 'SNAPSHOT':
@@ -126,7 +112,6 @@ export const UnsubscribedDAO = (props: {
                                                 height='24'
                                                 src='/assets/Chain/Snapshot/On_Dark.svg'
                                                 alt='snapshot proposals'
-                                                data-testid='dao-handler-snapshot'
                                             />
                                         )
                                     case 'AAVE_CHAIN':
@@ -141,7 +126,6 @@ export const UnsubscribedDAO = (props: {
                                                 height='24'
                                                 src='/assets/Chain/Ethereum/On_Dark.svg'
                                                 alt='chain proposals'
-                                                data-testid='dao-handler-chain'
                                             />
                                         )
                                 }
@@ -149,11 +133,10 @@ export const UnsubscribedDAO = (props: {
                         </div>
                     </div>
                     <button
-                        className='h-[56px] w-full bg-white text-xl font-bold text-black'
+                        className='h-14 w-full bg-white text-xl font-bold text-black'
                         onClick={() => {
                             setShowMenu(true)
                         }}
-                        data-testid='open-menu'
                     >
                         Subscribe
                     </button>
