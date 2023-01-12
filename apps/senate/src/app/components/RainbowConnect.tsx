@@ -6,7 +6,7 @@ import {
     darkTheme,
     getDefaultWallets
 } from '@rainbow-me/rainbowkit'
-import { SessionProvider } from 'next-auth/react'
+import { SessionProvider, useSession } from 'next-auth/react'
 import type { GetSiweMessageOptions } from '@rainbow-me/rainbowkit-siwe-next-auth'
 import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth'
 import {
@@ -65,12 +65,12 @@ const RainbowConnectButton = () => {
     //     // eslint-disable-next-line react-hooks/exhaustive-deps
     // }, [session])
 
-    const { address } = useAccount()
     const router = useRouter()
+    const session = useSession()
 
     useEffect(() => {
         router.refresh()
-    }, [address])
+    }, [session])
 
     return <ConnectButton showBalance={false} />
 }
