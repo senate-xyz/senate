@@ -23,6 +23,19 @@ const delay = (ms: number): Promise<any> => {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+interface EmailTemplateRow {
+    votingStatus: string,
+    votingStatusIconUrl: string,
+    proposalName: string,
+    proposalUrl: string,
+    daoLogoUrl: string,
+    daoName: string,
+    endHoursUTC: string,
+    endMinutesUTC: string,
+    endDateString: string,
+    countdownUrl: string,
+}
+
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
 schedule(
     String(process.env.BULLETIN_CRON_INTERVAL) ?? '* * 31 2 *',
@@ -95,7 +108,7 @@ const clearNotificationsTable = async () => {
     
 }
 
-const fetchUsersToBeNotified = async (proposal: Proposal, type: RoundupNotificationType) => {
+const fetchUsersToBeNotifiedForProposal = async (proposal: Proposal, type: RoundupNotificationType) => {
     try {
         const users = await prisma.user.findMany({
             where: {
@@ -107,7 +120,8 @@ const fetchUsersToBeNotified = async (proposal: Proposal, type: RoundupNotificat
                 },
                 subscriptions: {
                     some: {
-                        daoId: proposal.daoId
+                        daoId: proposal.daoId,
+                        notificationsEnabled: true,
                     }
                 }
             },
@@ -150,7 +164,7 @@ const insertNotifications = async (
         for (const proposal of proposals) {
 
             //Get users which should be notified
-            const users = await fetchUsersToBeNotified(proposal, type)
+            const users = await fetchUsersToBeNotifiedForProposal(proposal, type)
     
             //Insert notifications
             await prisma.$transaction(
@@ -323,97 +337,63 @@ const fetchPastProposals = async () => {
      
 }
 
-const formatEmailTableData = async (
-    user: UserWithVotingAddresses,
-    notificationType: RoundupNotificationType
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any> => {
+const formatEmailTableData = async (user: UserWithVotingAddresses, notificationType: RoundupNotificationType): Promise<EmailTemplateRow[]> => {
     try {
-        const dateOptions: Intl.DateTimeFormatOptions = {
+        const dateOptions : Intl.DateTimeFormatOptions = {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
         }
 
         const proposals = await prisma.notification.findMany({
-            where: {
-                userId: user.id,
-                type: notificationType
-            },
-            include: {
-                proposal: {
-                    include: {
-                        dao: true
-                    }
-                }
-            }
-        })
+            where: { userId: user.id, type: notificationType },
+            include: { proposal: { include: { dao: true } } }
+        });
 
         const promises = proposals.map(async (notification) => {
-            const voted = await userVoted(
-                user.voters,
-                notification.proposalId,
-                notification.daoId
-            )
+            const [voted, countdownUrl] = await Promise.all([
+                userVoted(user.voters, notification.proposalId, notification.daoId),
+                generateCountdownGifUrl(notification.proposal.timeEnd)
+            ]);
 
-            await delay(5000)
-            //TODO: Retry if failed
-            const countdownUrl = await generateCountdownGifUrl(
-                notification.proposal.timeEnd
-            )
+            const votingStatus = voted ?
+                'Voted' :
+                notificationType === RoundupNotificationType.PAST ?
+                    "Didn't vote" :
+                    'Not voted yet';
 
-            const votingStatus = voted
-                ? 'Voted'
-                : notificationType == RoundupNotificationType.PAST
-                ? "Didn't vote"
-                : 'Not voted yet'
-
-            const votingStatusIconUrl = voted
-                ? process.env.WEBAPP_URL + '/assets/Icon/Voted.png'
-                : notificationType == RoundupNotificationType.PAST
-                ? process.env.WEBAPP_URL + '/assets/Icon/DidntVote.png'
-                : process.env.WEBAPP_URL + '/assets/Icon/NotVotedYet.png'
+            const votingStatusIconUrl = voted ?
+                `${process.env.WEB_URL}/assets/Icon/Voted.png` :
+                notificationType === RoundupNotificationType.PAST ?
+                    `${process.env.WEB_URL}/assets/Icon/DidntVote.png` :
+                    `${process.env.WEB_URL}/assets/Icon/NotVotedYet.png`;
 
             return {
-                votingStatus: votingStatus,
-                votingStatusIconUrl: votingStatusIconUrl,
-                proposalName:
-                    notification.proposal.name.length > 100
-                        ? notification.proposal.name.substring(0, 100) + '...'
-                        : notification.proposal.name,
-                proposalUrl: notification.proposal.url,
-                daoLogoUrl:
-                    process.env.WEB_URL +
-                    notification.proposal.dao.picture +
-                    '_small.png',
-                endHoursUTC: formatTwoDigit(
-                    notification.proposal.timeEnd.getUTCHours()
-                ),
-                endMinutesUTC: formatTwoDigit(
-                    notification.proposal.timeEnd.getUTCMinutes()
-                ),
-                endDateString: notification.proposal.timeEnd.toLocaleDateString(
-                    undefined,
-                    dateOptions
-                ),
-                countdownUrl: countdownUrl
-            }
-        })
+                votingStatus,
+                votingStatusIconUrl: encodeURI(votingStatusIconUrl),
+                proposalName: notification.proposal.name.length > 100 ?
+                    `${notification.proposal.name.substring(0, 100)}...` :
+                    notification.proposal.name,
+                proposalUrl: encodeURI(notification.proposal.url),
+                daoLogoUrl: encodeURI(`${process.env.WEB_URL}${notification.proposal.dao.picture}_small.png`),
+                daoName: notification.proposal.dao.name,
+                endHoursUTC: formatTwoDigit(notification.proposal.timeEnd.getUTCHours()),
+                endMinutesUTC: formatTwoDigit(notification.proposal.timeEnd.getUTCMinutes()),
+                endDateString: notification.proposal.timeEnd.toLocaleDateString(undefined, dateOptions),
+                countdownUrl: encodeURI(countdownUrl)
+            };
+        });
 
-        return Promise.all(promises)
+        return Promise.all(promises);
     } catch (error) {
         log_bul.log({
             level: 'error',
             message: 'Could not format email table data',
-            data: {
-                error: error,
-                user: user,
-                notificationType: notificationType
-            }
-        })
-        throw new Error('Could not format email table data')
+            data: { error, user, notificationType }
+        });
+        throw new Error('Could not format email table data');
     }
-}
+};
 
 const formatTwoDigit = (timeUnit: number): string => {
     const timeUnitStr = timeUnit.toString()
@@ -429,6 +409,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
         const minutesUTC = formatTwoDigit(endTime.getUTCMinutes())
         const endTimeString = `${yearUTC}-${monthUTC}-${dateUTC} ${hoursUTC}:${minutesUTC}:00`
 
+        await delay(5000);
         const response = await axios({
             url: 'https://countdownmail.com/api/create',
             method: 'post',
@@ -490,7 +471,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
     }
 }
 
-const fetchUsersWithDailyBulletinEnabled = async (): Promise<UserWithVotingAddresses[]> => {
+const fetchUsersToBeNotified = async (): Promise<UserWithVotingAddresses[]> => {
     try {
         const users = await prisma.user.findMany({
             where: {
@@ -499,6 +480,11 @@ const fetchUsersWithDailyBulletinEnabled = async (): Promise<UserWithVotingAddre
                 },
                 userSettings: {
                     dailyBulletinEmail: true
+                },
+                subscriptions: {
+                    some: {
+                        notificationsEnabled: true,
+                    }
                 }
             },
             include: {
@@ -538,7 +524,7 @@ const sendDailyBulletin = async () => {
 
     try {
         
-        const users = await fetchUsersWithDailyBulletinEnabled()
+        const users = await fetchUsersToBeNotified()
 
         for (const user of users) {
             if (!user.email) continue
@@ -567,8 +553,8 @@ const sendDailyBulletin = async () => {
                 TemplateAlias: 'daily-bulletin',
                 TemplateModel: {
                     senateLogoUrl:
-                        process.env.WEB_URL +
-                        '/assets/Senate_Logo/64/White.png',
+                        encodeURI(process.env.WEB_URL +
+                        '/assets/Senate_Logo/64/White.png'),
                     todaysDate: todaysDate,
                     endingSoonProposals: endingSoonProposalsData,
                     endingSoonProposalsTableCssClass:
@@ -589,11 +575,11 @@ const sendDailyBulletin = async () => {
                         pastProposalsData.length > 0 ? 'hide' : 'show',
 
                     twitterIconUrl:
-                        process.env.WEB_URL + '/assets/Icon/TwitterWhite.png',
+                        encodeURI(process.env.WEB_URL + '/assets/Icon/TwitterWhite.png'),
                     discordIconUrl:
-                        process.env.WEB_URL + '/assets/Icon/DiscordWhite.png',
+                        encodeURI(process.env.WEB_URL + '/assets/Icon/DiscordWhite.png'),
                     githubIconUrl:
-                        process.env.WEB_URL + '/assets/Icon/GithubWhite.png'
+                        encodeURI(process.env.WEB_URL + '/assets/Icon/GithubWhite.png')
                 },
                 InlineCss: true,
                 From: 'info@senatelabs.xyz',
