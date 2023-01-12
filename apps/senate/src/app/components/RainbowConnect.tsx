@@ -67,9 +67,10 @@ const RainbowConnectButton = () => {
 
     const { address } = useAccount()
     const router = useRouter()
+
     useEffect(() => {
         router.refresh()
-    }, [address, router])
+    }, [address])
 
     return <ConnectButton showBalance={false} />
 }

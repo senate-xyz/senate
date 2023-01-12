@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export const SubscribedDAO = (props: {
     daoId: string
@@ -12,15 +13,20 @@ export const SubscribedDAO = (props: {
     daoHandlers: string[]
     activeProposals: number
 }) => {
-    // const unsubscribe = trpc.user.subscriptions.unsubscribe.useMutation({
-    //     context: appQueryContext
-    // })
-
     const [showMenu, setShowMenu] = useState(false)
     const [getDailyEmails, setDailyEmails] = useState(true)
 
+    const router = useRouter()
+    const [isPending, startTransition] = useTransition()
+    const [isFetching, setIsFetching] = useState(false)
+    const isMutating = isFetching || isPending
+
     return (
-        <div className='h-[320px] w-[240px]'>
+        <div
+            className={`h-[320px] w-[240px] ${
+                isMutating ? 'opacity-50' : 'opacity-100'
+            }`}
+        >
             {showMenu ? (
                 <div
                     className='flex h-full w-full cursor-pointer flex-col rounded bg-black text-sm font-bold text-white shadow'
@@ -63,19 +69,28 @@ export const SubscribedDAO = (props: {
                         </div>
 
                         <button
-                            className='h-20 w-full bg-white text-xl font-bold text-black'
+                            className='h-[56px] w-full bg-white text-xl font-bold text-black'
                             data-testid='unsubscribe'
-                            onClick={() => {
-                                // unsubscribe.mutate(
-                                //     {
-                                //         daoId: props.daoId
-                                //     },
-                                //     {
-                                //         onSuccess() {
-                                //             setShowMenu(false)
-                                //         }
-                                //     }
-                                // )
+                            onClick={async () => {
+                                setIsFetching(true)
+                                await fetch(
+                                    '/api/user/subscriptions/unsubscribe',
+                                    {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            daoId: props.daoId
+                                        })
+                                    }
+                                )
+                                setIsFetching(false)
+                                setShowMenu(false)
+
+                                startTransition(() => {
+                                    router.refresh()
+                                })
                             }}
                         >
                             Unsubscribe
