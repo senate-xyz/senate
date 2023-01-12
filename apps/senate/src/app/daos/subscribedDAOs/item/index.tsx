@@ -22,14 +22,12 @@ export const SubscribedDAO = (props: {
     const isMutating = isFetching || isPending
 
     return (
-        <div
-            className={`h-[320px] w-[240px] ${
-                isMutating ? 'opacity-50' : 'opacity-100'
-            }`}
-        >
+        <div className='h-[320px] w-[240px]'>
             {showMenu ? (
                 <div
-                    className='flex h-full w-full cursor-pointer flex-col rounded bg-black text-sm font-bold text-white shadow'
+                    className={`relative flex h-full w-full flex-col rounded bg-black text-sm font-bold text-white shadow ${
+                        isMutating ? 'opacity-50' : 'opacity-100'
+                    }`}
                     data-testid='daocard-followed-back'
                 >
                     <div className='flex w-full flex-row justify-between px-4 pt-4'>
@@ -67,35 +65,31 @@ export const SubscribedDAO = (props: {
                                 </label>
                             </div>
                         </div>
-
-                        <button
-                            className='h-[56px] w-full bg-white text-xl font-bold text-black'
-                            data-testid='unsubscribe'
-                            onClick={async () => {
-                                setIsFetching(true)
-                                await fetch(
-                                    '/api/user/subscriptions/unsubscribe',
-                                    {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify({
-                                            daoId: props.daoId
-                                        })
-                                    }
-                                )
-                                setIsFetching(false)
-                                setShowMenu(false)
-
-                                startTransition(() => {
-                                    router.refresh()
-                                })
-                            }}
-                        >
-                            Unsubscribe
-                        </button>
                     </div>
+                    <button
+                        className='h-[56px] w-full bg-white text-xl font-bold text-black'
+                        data-testid='unsubscribe'
+                        onClick={async () => {
+                            setIsFetching(true)
+                            await fetch('/api/user/subscriptions/unsubscribe', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    daoId: props.daoId
+                                })
+                            })
+                            setIsFetching(false)
+
+                            startTransition(() => {
+                                router.refresh()
+                                setShowMenu(false)
+                            })
+                        }}
+                    >
+                        Unsubscribe
+                    </button>
                 </div>
             ) : (
                 <div
@@ -127,17 +121,15 @@ export const SubscribedDAO = (props: {
                             alt='dao logo'
                             data-testid='dao-picture'
                         />
-
                         <div
-                            className='pt-6 text-center text-[36px] font-light leading-8'
+                            className='pt-6 text-center text-[36px] font-thin leading-8'
                             data-testid='dao-name'
                         >
                             {props.daoName}
                         </div>
-
                         <div
                             className='flex flex-row gap-4 pt-6 opacity-50'
-                            data-testid='dao-handler'
+                            data-testid='dao-handlers'
                         >
                             {props.daoHandlers.map((handler, index: number) => {
                                 switch (handler) {

@@ -1,6 +1,7 @@
 import { prisma } from '@senate/database'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { getSession } from 'next-auth/react'
+import { unstable_getServerSession } from 'next-auth'
+import { authOptions } from '../../auth/[...nextauth]'
 
 export default async function handle(
     req: NextApiRequest,
@@ -8,7 +9,7 @@ export default async function handle(
 ) {
     const { daoId } = req.body
 
-    const session = await getSession({ req })
+    const session = await unstable_getServerSession(req, res, authOptions())
 
     const user = await prisma.user
         .findFirstOrThrow({
