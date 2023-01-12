@@ -10,7 +10,9 @@ export const UnsubscribedDAO = (props: {
     bgColor: string | undefined
     daoHandlers: string[]
 }) => {
-    // const subscribe = trpc.user.subscriptions.subscribe.useMutation()
+    // const subscribe = trpc.user.subscriptions.subscribe.useMutation({
+    //     context: appQueryContext
+    // })
 
     const [showMenu, setShowMenu] = useState(false)
 
@@ -20,28 +22,29 @@ export const UnsubscribedDAO = (props: {
         <div className='h-[320px] w-[240px]'>
             {showMenu ? (
                 <div
-                    className='flex h-full w-full flex-col items-center justify-between rounded bg-black text-sm font-bold text-white shadow'
-                    data-testid='daocard-unfollowed-back'
+                    className='flex h-full w-full cursor-pointer flex-col rounded bg-black text-sm font-bold text-white shadow'
+                    data-testid='daocard-followed-back'
                 >
+                    <div className='flex w-full flex-row justify-between px-4 pt-4'>
+                        <p>Notifications</p>
+                        <div
+                            className='cursor-pointer'
+                            data-testid='close-menu'
+                            onClick={() => {
+                                setShowMenu(false)
+                            }}
+                        >
+                            <Image
+                                width='32'
+                                height='32'
+                                src='/assets/Icon/Close.svg'
+                                alt='close button'
+                                data-testid='daocard-followed-closemenu'
+                            />
+                        </div>
+                    </div>
                     <div className='flex h-full w-full flex-col items-center justify-between'>
-                        <div className='flex flex-col items-center gap-6 pt-5'>
-                            <div className='flex w-full flex-row justify-between'>
-                                <p>Notifications</p>
-                                <div
-                                    className='cursor-pointer'
-                                    onClick={() => {
-                                        setShowMenu(false)
-                                    }}
-                                    data-testid='close-menu'
-                                >
-                                    <Image
-                                        width='32'
-                                        height='32'
-                                        src='/assets/Icon/Close.svg'
-                                        alt='close button'
-                                    />
-                                </div>
-                            </div>
+                        <div className='flex w-full flex-col items-center gap-2 px-3 pt-5'>
                             <div className='flex w-full flex-row items-center justify-between gap-2'>
                                 <p>Get daily emails</p>
                                 <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
@@ -60,6 +63,7 @@ export const UnsubscribedDAO = (props: {
 
                         <button
                             className='h-20 w-full bg-white text-xl font-bold text-black'
+                            data-testid='subscribe'
                             onClick={() => {
                                 // subscribe.mutate(
                                 //     {
@@ -72,7 +76,6 @@ export const UnsubscribedDAO = (props: {
                                 //     }
                                 // )
                             }}
-                            data-testid='subscribe'
                         >
                             Confirm
                         </button>

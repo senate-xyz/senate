@@ -3,9 +3,8 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { withClientWrappers } from '../../../../helpers/WithClientWrappers'
 
-export const SubscribedDAOComponent = (props: {
+export const SubscribedDAO = (props: {
     daoId: string
     daoName: string
     daoPicture: string
@@ -46,8 +45,7 @@ export const SubscribedDAOComponent = (props: {
                         </div>
                     </div>
                     <div className='flex h-full w-full flex-col items-center justify-between'>
-                        <div className='flex flex-col items-center gap-2 pt-5'>
-                            <div className='flex w-full flex-row justify-between'></div>
+                        <div className='flex w-full flex-col items-center gap-2 px-3 pt-5'>
                             <div className='flex w-full flex-row items-center justify-between gap-2'>
                                 <p>Get daily emails</p>
                                 <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
@@ -182,5 +180,3 @@ export const SubscribedDAOComponent = (props: {
         </div>
     )
 }
-
-export const SubscribedDAO = withClientWrappers(SubscribedDAOComponent)

@@ -6,17 +6,20 @@ import {
     darkTheme,
     getDefaultWallets
 } from '@rainbow-me/rainbowkit'
-import router from 'next/router'
-import { SessionProvider, useSession } from 'next-auth/react'
-import { useEffect } from 'react'
-import { trpc } from '../../helpers/trpcClient'
+import { SessionProvider } from 'next-auth/react'
 import type { GetSiweMessageOptions } from '@rainbow-me/rainbowkit-siwe-next-auth'
 import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth'
-import { configureChains, mainnet, createClient, WagmiConfig } from 'wagmi'
+import {
+    configureChains,
+    mainnet,
+    createClient,
+    WagmiConfig,
+    useAccount
+} from 'wagmi'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { publicProvider } from 'wagmi/providers/public'
-import { appQueryContext } from '../../helpers/appQueryClient'
-import { withClientWrappers } from '../../helpers/WithClientWrappers'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const { chains, provider } = configureChains(
     [mainnet],
@@ -62,10 +65,16 @@ const RainbowConnectButton = () => {
     //     // eslint-disable-next-line react-hooks/exhaustive-deps
     // }, [session])
 
+    const { address } = useAccount()
+    const router = useRouter()
+    useEffect(() => {
+        router.refresh()
+    }, [address, router])
+
     return <ConnectButton showBalance={false} />
 }
 
-const RainbowConnectWrapper = () => {
+export const RainbowConnect = () => {
     return (
         <>
             <WagmiConfig client={wagmiClient}>
@@ -90,5 +99,3 @@ const RainbowConnectWrapper = () => {
         </>
     )
 }
-
-export const RainbowConnect = withClientWrappers(RainbowConnectWrapper)

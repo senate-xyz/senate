@@ -1,19 +1,53 @@
-import { serverQuery } from '../../../helpers/trpcHelpers'
 import { unstable_getServerSession } from 'next-auth/next'
-import { getAuthOptions } from '../../../pages/api/auth/[...nextauth]'
+import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import { SubscribedDAO } from './item'
 import { getAverageColor } from 'fast-average-color-node'
+import { prisma } from '@senate/database'
 
-const getData = async () => {
-    const session = await unstable_getServerSession(getAuthOptions())
+const getSubscribedDAOs = async () => {
+    const session = await unstable_getServerSession(authOptions())
     const userAddress = session?.user?.name ?? ''
-    return await serverQuery.user.subscriptions.subscribedDAOs({
-        userAddress: userAddress
+
+    const user = await prisma.user
+        .findFirstOrThrow({
+            where: {
+                name: { equals: userAddress }
+            },
+            select: {
+                id: true
+            }
+        })
+        .catch(() => {
+            return { id: '0' }
+        })
+
+    const daosList = await prisma.dAO.findMany({
+        where: {
+            subscriptions: {
+                some: {
+                    user: { is: user }
+                }
+            }
+        },
+        orderBy: {
+            id: 'asc'
+        },
+        distinct: 'id',
+        include: {
+            handlers: true,
+            subscriptions: {
+                where: {
+                    userId: { contains: user.id }
+                }
+            },
+            proposals: { where: { timeEnd: { gt: new Date() } } }
+        }
     })
+    return daosList
 }
 
 export default async function SubscribedDAOs() {
-    const subscribedDAOs = await getData()
+    const subscribedDAOs = await getSubscribedDAOs()
 
     const backgroundColors = await Promise.all(
         subscribedDAOs.map(async (dao) => {
