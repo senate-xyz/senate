@@ -109,7 +109,9 @@ const getProposals = async (from: string, end: number, voted: number) => {
             proposalTitle: proposal.name,
             proposalLink: proposal.url,
             timeEnd: proposal.timeEnd,
-            voted: proposal.votes.map((vote: any) => vote.choice).length > 0
+            voted: user
+                ? proposal.votes.map((vote: any) => vote.choice).length > 0
+                : 0
         }
     })
     return result
