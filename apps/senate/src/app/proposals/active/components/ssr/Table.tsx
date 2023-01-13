@@ -12,7 +12,7 @@ const getProposals = async (from: string, end: number, voted: number) => {
 
     const session = await unstable_getServerSession(authOptions())
 
-    const user = await prisma.user.findFirstOrThrow({
+    const user = await prisma.user.findFirst({
         where: {
             name: { equals: String(session?.user?.name) }
         },
@@ -28,7 +28,7 @@ const getProposals = async (from: string, end: number, voted: number) => {
                 votes: {
                     none: {
                         voterAddress: {
-                            in: user.voters.map((voter) => voter.address)
+                            in: user?.voters.map((voter) => voter.address)
                         }
                     }
                 }
@@ -40,7 +40,7 @@ const getProposals = async (from: string, end: number, voted: number) => {
                 votes: {
                     some: {
                         voterAddress: {
-                            in: user.voters.map((voter) => voter.address)
+                            in: user?.voters.map((voter) => voter.address)
                         }
                     }
                 }
@@ -53,7 +53,7 @@ const getProposals = async (from: string, end: number, voted: number) => {
 
     const userSubscriptions = await prisma.subscription.findMany({
         where: {
-            userId: user.id
+            userId: user?.id
         }
     })
 
@@ -95,7 +95,7 @@ const getProposals = async (from: string, end: number, voted: number) => {
             votes: {
                 where: {
                     voterAddress: {
-                        in: user.voters.map((voter) => voter.address)
+                        in: user?.voters.map((voter) => voter.address)
                     }
                 }
             }
