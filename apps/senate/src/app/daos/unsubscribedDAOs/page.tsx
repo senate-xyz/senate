@@ -1,6 +1,6 @@
 import { unstable_getServerSession } from 'next-auth/next'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
-import { UnsubscribedDAO } from './item'
+import { UnsubscribedDAO } from './components/csr'
 import { getAverageColor } from 'fast-average-color-node'
 import { prisma } from '@senate/database'
 

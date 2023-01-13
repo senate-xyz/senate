@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import '../styles/globals.css'
 import '@rainbow-me/rainbowkit/styles.css'
-import { NavBar } from './components/NavBar'
+import { NavBar } from './components/csr/NavBar'
 
 export default function RootLayout({
     children

@@ -1,4 +1,4 @@
-import { RainbowConnect } from '../components/RainbowConnect'
+import { RainbowConnect } from '../components/csr/RainbowConnect'
 
 export default function RootLayout({
     children
