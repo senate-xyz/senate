@@ -268,12 +268,13 @@ const PastProposal = (props: {
                             data-testid='proposal-not-voted'
                         >
                             <Image
-                                src='/assets/Icon/NotVotedYet.svg'
+                                src='/assets/Icon/DidntVote.svg'
                                 alt='voted'
                                 width={32}
                                 height={32}
                             />
-                            <div className='text-[18px]'>Not Voted Yet</div>
+
+                            <div className='text-[18px]'>Didn&apos;t Vote</div>
                         </div>
                     )}
                 </div>
