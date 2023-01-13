@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import InnerTable from '../ssr/Table'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 const endingInOptions: { name: string; time: number }[] = [

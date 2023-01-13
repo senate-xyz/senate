@@ -2,7 +2,7 @@ import { prisma } from '@senate/database'
 import { unstable_getServerSession } from 'next-auth'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import { Filters } from './components/csr/Filters'
-import Table from './components/ssr/Table'
+import Table from './table/page'
 
 const getSubscribedDAOs = async () => {
     const session = await unstable_getServerSession(authOptions())

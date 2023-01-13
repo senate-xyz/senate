@@ -1,10 +1,10 @@
-import useSWR from 'swr'
 import Image from 'next/image'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { unstable_getServerSession } from 'next-auth'
-import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
+
 import { prisma } from '@senate/database'
+import { authOptions } from '../../../../pages/api/auth/[...nextauth]'
 dayjs.extend(relativeTime)
 
 const getProposals = async (from: string, end: number, voted: number) => {
@@ -21,7 +21,6 @@ const getProposals = async (from: string, end: number, voted: number) => {
         }
     })
 
-    console.log(voted)
     let voteStatusQuery
     switch (Number(voted)) {
         case 0:
@@ -126,44 +125,43 @@ export default async function Table(params?: {
     )
 
     return (
-        <div className='mt-[16px] flex flex-col'>
-            {proposals.length ? (
-                <table
-                    className='w-full table-auto border-separate border-spacing-y-[4px] text-left'
-                    data-testid='table'
-                >
-                    <thead className='h-[56px] bg-black text-white'>
-                        <tr>
-                            <th className='w-[200px] pl-[16px] font-normal'>
-                                DAO
-                            </th>
-                            <th className='font-normal'>Proposal Title</th>
-                            <th className='w-[200px]  font-normal'>Ends in</th>
-                            <th className='w-[200px] text-center font-normal'>
-                                Vote status
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {proposals.map((proposal: any, index: number) => (
-                            <ActiveProposal
-                                data-testid={`proposal-${index}`}
-                                key={index}
-                                proposal={proposal}
-                            />
-                        ))}
-                    </tbody>
-                </table>
-            ) : (
-                <div data-testid='no-proposals'>
-                    No active proposals for current selection
-                </div>
-            )}
-        </div>
+        <table
+            className='w-full table-auto border-separate border-spacing-y-[4px] text-left'
+            data-testid='table'
+        >
+            <thead className='h-[56px] bg-black text-white'>
+                <tr>
+                    <th className='w-[200px] pl-[16px] font-normal'>DAO</th>
+                    <th className='font-normal'>Proposal Title</th>
+                    <th className='w-[200px]  font-normal'>Ends in</th>
+                    <th className='w-[200px] text-center font-normal'>
+                        Vote status
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {proposals.map((proposal: any, index: number) => (
+                    <ActiveProposal
+                        data-testid={`proposal-${index}`}
+                        key={index}
+                        proposal={proposal}
+                    />
+                ))}
+            </tbody>
+        </table>
     )
 }
 
-const ActiveProposal = (props: { proposal: any }) => {
+const ActiveProposal = (props: {
+    proposal: {
+        daoName: string
+        daoPicture: string
+        proposalTitle: string
+        proposalLink: string
+        timeEnd: Date
+        voted: boolean
+    }
+}) => {
     return (
         <tr
             className='h-[96px] w-full items-center justify-evenly bg-[#121212] text-[#EDEDED]'
