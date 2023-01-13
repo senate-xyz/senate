@@ -1,7 +1,8 @@
 import { prisma } from '@senate/database'
 import { unstable_getServerSession } from 'next-auth'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
-import { OuterTable } from './components/csr/OuterTable'
+import { Filters } from './components/csr/Filters'
+import Table from './components/ssr/Table'
 
 const getSubscribedDAOs = async () => {
     const session = await unstable_getServerSession(authOptions())
@@ -53,7 +54,9 @@ export default async function Home() {
 
     return (
         <div>
-            <OuterTable subscriptions={subscripions} />
+            <Filters subscriptions={subscripions} />
+            {/* @ts-expect-error Server Component */}
+            <Table />
         </div>
     )
 }

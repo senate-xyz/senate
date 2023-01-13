@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import InnerTable from './InnerTable'
+import InnerTable from '../ssr/Table'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 const endingInOptions: { name: string; time: number }[] = [
@@ -29,41 +29,37 @@ const endingInOptions: { name: string; time: number }[] = [
 
 const voteStatus: { id: number; name: string }[] = [
     {
+        id: -1,
+        name: 'Any'
+    },
+    {
         id: 0,
-        name: 'Any status'
+        name: 'Not voted on'
     },
     {
         id: 1,
         name: 'Voted on'
-    },
-    {
-        id: 2,
-        name: 'Not voted on'
     }
 ]
 
-export const OuterTable = (props: {
+export const Filters = (props: {
     subscriptions: { id: string; name: string }[]
 }) => {
     const searchParams = useSearchParams()
     const router = useRouter()
-    const [from, setFrom] = useState('any')
-    const [endingIn, setEndingIn] = useState(365 * 24 * 60 * 60 * 1000)
-    const [withVoteStatus, setWithVoteStatus] = useState(0)
+    const [from, setFrom] = useState('0')
+    const [end, setEnd] = useState(365 * 24 * 60 * 60 * 1000)
+    const [voted, setVoted] = useState(-1)
 
     useEffect(() => {
-        setFrom(String(searchParams.get('fromDAO') ?? 'any'))
-        setEndingIn(
-            Number(searchParams.get('endingIn') ?? 365 * 24 * 60 * 60 * 1000)
-        )
-        setWithVoteStatus(Number(searchParams.get('withVoteStatus') ?? 0))
+        setFrom(String(searchParams.get('from') ?? '0'))
+        setEnd(Number(searchParams.get('end') ?? 365 * 24 * 60 * 60 * 1000))
+        setVoted(Number(searchParams.get('voted') ?? -1))
     }, [searchParams])
 
     useEffect(() => {
-        router.push(
-            `/proposals/active?fromDAO=${from}&endingIn=${endingIn}&withVoteStatus=${withVoteStatus}&active=true`
-        )
-    }, [from, endingIn, withVoteStatus])
+        router.push(`/proposals/active?from=${from}&end=${end}&voted=${voted}`)
+    }, [from, end, voted])
 
     return (
         <div className='mt-[16px] flex flex-col'>
@@ -71,20 +67,20 @@ export const OuterTable = (props: {
                 <div className='flex h-[38px] w-[300px] flex-row items-center'>
                     <label
                         className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
-                        htmlFor='fromDao'
+                        htmlFor='from'
                     >
                         From
                     </label>
                     <select
                         className='h-full w-full text-black'
-                        id='fromDao'
+                        id='from'
                         onChange={(e) => {
                             setFrom(e.target.value)
                         }}
                         value={from}
                         data-testid='from-selector'
                     >
-                        <option key='any' value='any'>
+                        <option key='0' value='0'>
                             Any
                         </option>
                         {props.subscriptions.map((sub) => {
@@ -104,17 +100,17 @@ export const OuterTable = (props: {
                 <div className='flex h-[38px] w-[300px] flex-row items-center'>
                     <label
                         className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
-                        htmlFor='endingIn'
+                        htmlFor='end'
                     >
                         <div>Ending in</div>
                     </label>
                     <select
                         className='h-full w-full text-black'
-                        id='endingIn'
+                        id='end'
                         onChange={(e) => {
-                            setEndingIn(Number(e.target.value))
+                            setEnd(Number(e.target.value))
                         }}
-                        value={endingIn}
+                        value={end}
                         data-testid='ending-selector'
                     >
                         {endingInOptions.map((endingIn) => {
@@ -134,17 +130,17 @@ export const OuterTable = (props: {
                 <div className='flex h-[38px] w-[300px] flex-row items-center'>
                     <label
                         className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
-                        htmlFor='voteStatus'
+                        htmlFor='voted'
                     >
                         <div>With Vote Status of</div>
                     </label>
                     <select
                         className='h-full w-full text-black'
-                        id='voteStatus'
+                        id='voted'
                         onChange={(e) => {
-                            setWithVoteStatus(Number(e.target.value))
+                            setVoted(Number(e.target.value))
                         }}
-                        value={withVoteStatus}
+                        value={voted}
                         data-testid='status-selector'
                     >
                         {voteStatus.map((status) => {
@@ -161,11 +157,6 @@ export const OuterTable = (props: {
                     </select>
                 </div>
             </div>
-            <InnerTable
-                from={from}
-                endingIn={endingIn}
-                withVoteStatus={withVoteStatus}
-            />
         </div>
     )
 }

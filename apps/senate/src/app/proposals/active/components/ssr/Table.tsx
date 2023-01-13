@@ -2,25 +2,132 @@ import useSWR from 'swr'
 import Image from 'next/image'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { unstable_getServerSession } from 'next-auth'
+import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
+import { prisma } from '@senate/database'
 dayjs.extend(relativeTime)
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+const getProposals = async (from: string, end: number, voted: number) => {
+    const active = true
 
-export default function InnerTable(props: {
-    from: string
-    endingIn: number
-    withVoteStatus: number
+    const session = await unstable_getServerSession(authOptions())
+
+    const user = await prisma.user.findFirstOrThrow({
+        where: {
+            name: { equals: String(session?.user?.name) }
+        },
+        include: {
+            voters: true
+        }
+    })
+
+    console.log(voted)
+    let voteStatusQuery
+    switch (Number(voted)) {
+        case 0:
+            voteStatusQuery = {
+                votes: {
+                    none: {
+                        voterAddress: {
+                            in: user.voters.map((voter) => voter.address)
+                        }
+                    }
+                }
+            }
+
+            break
+        case 1:
+            voteStatusQuery = {
+                votes: {
+                    some: {
+                        voterAddress: {
+                            in: user.voters.map((voter) => voter.address)
+                        }
+                    }
+                }
+            }
+            break
+        default:
+            voteStatusQuery = {}
+            break
+    }
+
+    const userSubscriptions = await prisma.subscription.findMany({
+        where: {
+            userId: user.id
+        }
+    })
+
+    const userProposals = await prisma.proposal.findMany({
+        where: {
+            AND: [
+                {
+                    daoId:
+                        from == '0'
+                            ? {
+                                  in: userSubscriptions.map((sub) => sub.daoId)
+                              }
+                            : String(from)
+                },
+                {
+                    timeEnd: Boolean(active)
+                        ? {
+                              lte: new Date(Date.now() + Number(end))
+                          }
+                        : { gte: new Date(Date.now() - Number(end)) }
+                },
+                {
+                    timeEnd: Boolean(active)
+                        ? {
+                              gte: new Date()
+                          }
+                        : {
+                              lt: new Date()
+                          }
+                },
+                voteStatusQuery
+            ]
+        },
+        orderBy: {
+            timeEnd: Boolean(active) ? 'asc' : 'desc'
+        },
+        include: {
+            dao: true,
+            votes: {
+                where: {
+                    voterAddress: {
+                        in: user.voters.map((voter) => voter.address)
+                    }
+                }
+            }
+        }
+    })
+
+    const result = userProposals.map((proposal) => {
+        return {
+            daoName: proposal.dao.name,
+            daoPicture: proposal.dao.picture,
+            proposalTitle: proposal.name,
+            proposalLink: proposal.url,
+            timeEnd: proposal.timeEnd,
+            voted: proposal.votes.map((vote: any) => vote.choice).length > 0
+        }
+    })
+    return result
+}
+
+export default async function Table(params?: {
+    searchParams?: { from: string; end: number; voted: number }
 }) {
-    const proposals = useSWR(
-        [
-            `/api/user/proposals?from=${props.from}&endingIn=${props.endingIn}&withVoteStatus=${props.withVoteStatus}&active=true`
-        ],
-        fetcher
+    const proposals = await getProposals(
+        params?.searchParams?.from ?? '0',
+        params?.searchParams?.end ?? 365 * 24 * 60 * 60 * 1000,
+        params?.searchParams?.voted ?? -1
     )
 
     return (
         <div className='mt-[16px] flex flex-col'>
-            {proposals.data?.length ? (
+            {proposals.length ? (
                 <table
                     className='w-full table-auto border-separate border-spacing-y-[4px] text-left'
                     data-testid='table'
@@ -38,7 +145,7 @@ export default function InnerTable(props: {
                         </tr>
                     </thead>
                     <tbody>
-                        {proposals.data?.map((proposal: any, index: number) => (
+                        {proposals.map((proposal: any, index: number) => (
                             <ActiveProposal
                                 data-testid={`proposal-${index}`}
                                 key={index}

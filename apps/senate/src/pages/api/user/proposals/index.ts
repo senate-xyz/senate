@@ -7,7 +7,7 @@ export default async function handle(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    const { from, endingIn, withVoteStatus, active } = req.query
+    const { from, end, voted, active } = req.query
 
     const session = await unstable_getServerSession(req, res, authOptions())
 
@@ -20,23 +20,25 @@ export default async function handle(
         }
     })
 
+    console.log(voted)
     let voteStatusQuery
-    switch (Number(withVoteStatus)) {
-        case 1:
+    switch (Number(voted)) {
+        case 0:
             voteStatusQuery = {
                 votes: {
-                    some: {
+                    none: {
                         voterAddress: {
                             in: user.voters.map((voter) => voter.address)
                         }
                     }
                 }
             }
+
             break
-        case 2:
+        case 1:
             voteStatusQuery = {
                 votes: {
-                    none: {
+                    some: {
                         voterAddress: {
                             in: user.voters.map((voter) => voter.address)
                         }
@@ -60,7 +62,7 @@ export default async function handle(
             AND: [
                 {
                     daoId:
-                        from == 'any'
+                        from == '0'
                             ? {
                                   in: userSubscriptions.map((sub) => sub.daoId)
                               }
@@ -69,9 +71,9 @@ export default async function handle(
                 {
                     timeEnd: Boolean(active)
                         ? {
-                              lte: new Date(Date.now() + Number(endingIn))
+                              lte: new Date(Date.now() + Number(end))
                           }
-                        : { gte: new Date(Date.now() - Number(endingIn)) }
+                        : { gte: new Date(Date.now() - Number(end)) }
                 },
                 {
                     timeEnd: Boolean(active)
