@@ -9,7 +9,7 @@ export const Header = (props: { title: string }) => {
 
     return (
         <div
-            className='absolute h-full min-h-screen w-full'
+            className='absolute h-full w-11/12'
             onWheel={() => {
                 if (window.scrollY > 35) {
                     setHeaderHeight('h-[96px]')
@@ -21,7 +21,7 @@ export const Header = (props: { title: string }) => {
             }}
         >
             <div
-                className={`fixed z-10 flex ${headerHeight} w-full items-center justify-between border border-x-0 border-t-0 border-[#545454] bg-black px-10 transition-all`}
+                className={`fixed z-10 flex w-full ${headerHeight} items-center justify-between border border-x-0 border-t-0 border-[#545454] bg-black px-10 transition-all`}
             >
                 <h1
                     className={`${titleSize} font-extrabold text-white transition`}

@@ -5,8 +5,8 @@ import Loading from './subscribedDAOs/loading'
 
 export default async function Home() {
     return (
-        <main className='w-full text-white'>
-            <div className='flex grow flex-col bg-[#1E1B20] p-5'>
+        <main className='text-white'>
+            <div className='flex grow flex-col p-5'>
                 <div className='w-full'>
                     <div className='w-full p-10'>
                         <p className='mb-4 w-full text-[36px] font-medium text-white'>
