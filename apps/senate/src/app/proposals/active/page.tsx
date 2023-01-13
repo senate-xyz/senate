@@ -2,7 +2,7 @@ import { prisma } from '@senate/database'
 import { unstable_getServerSession } from 'next-auth'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import { Filters } from './components/csr/Filters'
-import Table from './table/page'
+import Table from './components/ssr/Table'
 
 const getSubscribedDAOs = async () => {
     const session = await unstable_getServerSession(authOptions())
@@ -45,12 +45,11 @@ const getSubscribedDAOs = async () => {
     })
     return daosList
 }
-export default async function Home(params?: {
-    searchParams?: {
-        from: string
-        end: number
-        voted: number
-    }
+export default async function Home({
+    searchParams
+}: {
+    params: { slug: string }
+    searchParams?: { from: string; end: number; voted: number }
 }) {
     const subscribedDAOs = await getSubscribedDAOs()
 
@@ -63,9 +62,9 @@ export default async function Home(params?: {
             <Filters subscriptions={subscripions} />
             {/* @ts-expect-error Server Component */}
             <Table
-                from={params?.searchParams?.from}
-                end={params?.searchParams?.end}
-                voted={params?.searchParams?.voted}
+                from={searchParams?.from}
+                end={searchParams?.end}
+                voted={searchParams?.voted}
             />
         </div>
     )

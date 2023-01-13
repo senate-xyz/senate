@@ -9,13 +9,7 @@ import {
 import { SessionProvider, useSession } from 'next-auth/react'
 import type { GetSiweMessageOptions } from '@rainbow-me/rainbowkit-siwe-next-auth'
 import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth'
-import {
-    configureChains,
-    mainnet,
-    createClient,
-    WagmiConfig,
-    useAccount
-} from 'wagmi'
+import { configureChains, mainnet, createClient, WagmiConfig } from 'wagmi'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { publicProvider } from 'wagmi/providers/public'
 import { useEffect } from 'react'

@@ -1,11 +1,11 @@
 import Image from 'next/image'
-import dayjs from 'dayjs'
+import dayjs, { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { unstable_getServerSession } from 'next-auth'
 
 import { prisma } from '@senate/database'
-import { authOptions } from '../../../../pages/api/auth/[...nextauth]'
-dayjs.extend(relativeTime)
+import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
+extend(relativeTime)
 
 const getProposals = async (from: string, end: number, voted: number) => {
     const active = true
@@ -127,30 +127,32 @@ export default async function Table(props: {
     )
 
     return (
-        <table
-            className='w-full table-auto border-separate border-spacing-y-[4px] text-left'
-            data-testid='table'
-        >
-            <thead className='h-[56px] bg-black text-white'>
-                <tr>
-                    <th className='w-[200px] pl-[16px] font-normal'>DAO</th>
-                    <th className='font-normal'>Proposal Title</th>
-                    <th className='w-[200px]  font-normal'>Ends in</th>
-                    <th className='w-[200px] text-center font-normal'>
-                        Vote status
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {proposals.map((proposal: any, index: number) => (
-                    <ActiveProposal
-                        data-testid={`proposal-${index}`}
-                        key={index}
-                        proposal={proposal}
-                    />
-                ))}
-            </tbody>
-        </table>
+        <div className='mt-[16px] flex flex-col'>
+            <table
+                className='w-full table-auto border-separate border-spacing-y-[4px] text-left'
+                data-testid='table'
+            >
+                <thead className='h-[56px] bg-black text-white'>
+                    <tr>
+                        <th className='w-[200px] pl-[16px] font-normal'>DAO</th>
+                        <th className='font-normal'>Proposal Title</th>
+                        <th className='w-[200px]  font-normal'>Ends in</th>
+                        <th className='w-[200px] text-center font-normal'>
+                            Vote status
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {proposals.map((proposal: any, index: number) => (
+                        <ActiveProposal
+                            data-testid={`proposal-${index}`}
+                            key={index}
+                            proposal={proposal}
+                        />
+                    ))}
+                </tbody>
+            </table>
+        </div>
     )
 }
 
