@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import InnerTable from './InnerTable'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const endingInOptions: { name: string; time: number }[] = [
     {
@@ -44,9 +45,25 @@ const voteStatus: { id: number; name: string }[] = [
 export const OuterTable = (props: {
     subscriptions: { id: string; name: string }[]
 }) => {
+    const searchParams = useSearchParams()
+    const router = useRouter()
     const [from, setFrom] = useState('any')
     const [endingIn, setEndingIn] = useState(365 * 24 * 60 * 60 * 1000)
     const [withVoteStatus, setWithVoteStatus] = useState(0)
+
+    useEffect(() => {
+        setFrom(String(searchParams.get('fromDAO') ?? 'any'))
+        setEndingIn(
+            Number(searchParams.get('endingIn') ?? 365 * 24 * 60 * 60 * 1000)
+        )
+        setWithVoteStatus(Number(searchParams.get('withVoteStatus') ?? 0))
+    }, [searchParams])
+
+    useEffect(() => {
+        router.push(
+            `/proposals/active?fromDAO=${from}&endingIn=${endingIn}&withVoteStatus=${withVoteStatus}&active=true`
+        )
+    }, [from, endingIn, withVoteStatus])
 
     return (
         <div className='mt-[16px] flex flex-col'>
