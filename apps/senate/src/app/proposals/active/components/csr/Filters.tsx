@@ -6,23 +6,23 @@ import { useRouter, useSearchParams } from 'next/navigation'
 const endingInOptions: { name: string; time: number }[] = [
     {
         name: 'Any day',
-        time: 365 * 24 * 60 * 60 * 1000
+        time: 365
     },
     {
         name: '7 days',
-        time: 7 * 24 * 60 * 60 * 1000
+        time: 7
     },
     {
         name: '5 days',
-        time: 5 * 24 * 60 * 60 * 1000
+        time: 5
     },
     {
         name: '3 days',
-        time: 3 * 24 * 60 * 60 * 1000
+        time: 3
     },
     {
         name: '1 days',
-        time: 1 * 24 * 60 * 60 * 1000
+        time: 1
     }
 ]
 
@@ -47,12 +47,12 @@ export const Filters = (props: {
     const searchParams = useSearchParams()
     const router = useRouter()
     const [from, setFrom] = useState('0')
-    const [end, setEnd] = useState(365 * 24 * 60 * 60 * 1000)
+    const [end, setEnd] = useState(365)
     const [voted, setVoted] = useState(-1)
 
     useEffect(() => {
         setFrom(String(searchParams.get('from') ?? '0'))
-        setEnd(Number(searchParams.get('end') ?? 365 * 24 * 60 * 60 * 1000))
+        setEnd(Number(searchParams.get('end') ?? 365))
         setVoted(Number(searchParams.get('voted') ?? -1))
     }, [searchParams])
 

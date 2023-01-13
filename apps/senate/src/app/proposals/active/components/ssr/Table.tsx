@@ -3,7 +3,7 @@ import dayjs, { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { unstable_getServerSession } from 'next-auth'
 
-import { prisma } from '@senate/database'
+import { Vote, prisma } from '@senate/database'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
 extend(relativeTime)
 
@@ -71,9 +71,15 @@ const getProposals = async (from: string, end: number, voted: number) => {
                 {
                     timeEnd: Boolean(active)
                         ? {
-                              lte: new Date(Date.now() + Number(end))
+                              lte: new Date(
+                                  Date.now() + Number(end * 24 * 60 * 60 * 1000)
+                              )
                           }
-                        : { gte: new Date(Date.now() - Number(end)) }
+                        : {
+                              gte: new Date(
+                                  Date.now() - Number(end * 24 * 60 * 60 * 1000)
+                              )
+                          }
                 },
                 {
                     timeEnd: Boolean(active)
@@ -110,7 +116,7 @@ const getProposals = async (from: string, end: number, voted: number) => {
             proposalLink: proposal.url,
             timeEnd: proposal.timeEnd,
             voted: user
-                ? proposal.votes.map((vote: any) => vote.choice).length > 0
+                ? proposal.votes.map((vote: Vote) => vote.choice).length > 0
                 : 0
         }
     })
@@ -124,7 +130,7 @@ export default async function Table(props: {
 }) {
     const proposals = await getProposals(
         props.from ?? '0',
-        props.end ?? 365 * 24 * 60 * 60 * 1000,
+        props.end ?? 365,
         props.voted ?? -1
     )
 
