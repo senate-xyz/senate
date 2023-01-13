@@ -196,7 +196,7 @@ const ActiveProposal = (props: { proposal: any }) => {
                     data-testid='proposal-url'
                 >
                     <div
-                        className='text-[18px] font-normal'
+                        className='pr-5 text-[18px] font-normal'
                         data-testid='proposal-name'
                     >
                         {props.proposal.proposalTitle}
