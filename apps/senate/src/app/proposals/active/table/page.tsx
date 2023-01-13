@@ -116,9 +116,9 @@ const getProposals = async (from: string, end: number, voted: number) => {
 }
 
 export default async function Table(props: {
-    from: string
-    end: number
-    voted: number
+    from?: string
+    end?: number
+    voted?: number
 }) {
     const proposals = await getProposals(
         props.from ?? '0',

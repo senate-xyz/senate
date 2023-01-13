@@ -45,8 +45,8 @@ const getSubscribedDAOs = async () => {
     })
     return daosList
 }
-export default async function Home(params: {
-    searchParams: {
+export default async function Home(params?: {
+    searchParams?: {
         from: string
         end: number
         voted: number
@@ -63,9 +63,9 @@ export default async function Home(params: {
             <Filters subscriptions={subscripions} />
             {/* @ts-expect-error Server Component */}
             <Table
-                from={params.searchParams.from}
-                end={params.searchParams.end}
-                voted={params.searchParams.voted}
+                from={params?.searchParams?.from}
+                end={params?.searchParams?.end}
+                voted={params?.searchParams?.voted}
             />
         </div>
     )
