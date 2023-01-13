@@ -115,13 +115,15 @@ const getProposals = async (from: string, end: number, voted: number) => {
     return result
 }
 
-export default async function Table(params?: {
-    searchParams?: { from: string; end: number; voted: number }
+export default async function Table(props: {
+    from: string
+    end: number
+    voted: number
 }) {
     const proposals = await getProposals(
-        params?.searchParams?.from ?? '0',
-        params?.searchParams?.end ?? 365 * 24 * 60 * 60 * 1000,
-        params?.searchParams?.voted ?? -1
+        props.from ?? '0',
+        props.end ?? 365 * 24 * 60 * 60 * 1000,
+        props.voted ?? -1
     )
 
     return (

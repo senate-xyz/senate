@@ -45,7 +45,13 @@ const getSubscribedDAOs = async () => {
     })
     return daosList
 }
-export default async function Home() {
+export default async function Home(params: {
+    searchParams: {
+        from: string
+        end: number
+        voted: number
+    }
+}) {
     const subscribedDAOs = await getSubscribedDAOs()
 
     const subscripions = subscribedDAOs.map((subDAO) => {
@@ -56,7 +62,11 @@ export default async function Home() {
         <div>
             <Filters subscriptions={subscripions} />
             {/* @ts-expect-error Server Component */}
-            <Table />
+            <Table
+                from={params.searchParams.from}
+                end={params.searchParams.end}
+                voted={params.searchParams.voted}
+            />
         </div>
     )
 }
