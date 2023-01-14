@@ -7,15 +7,16 @@ export const Header = (props: { title: string }) => {
     const [headerHeight, setHeaderHeight] = useState('h-[192px]')
     const [titleSize, setTitleSize] = useState('text-[78px]')
 
-    window.addEventListener('wheel', () => {
-        if (window.scrollY > 0) {
-            setHeaderHeight('h-[96px]')
-            setTitleSize('text-[52px]')
-        } else {
-            setHeaderHeight('h-[192px]')
-            setTitleSize('text-[78px]')
-        }
-    })
+    if (typeof window != 'undefined')
+        window.addEventListener('wheel', () => {
+            if (window.scrollY > 0) {
+                setHeaderHeight('h-[96px]')
+                setTitleSize('text-[52px]')
+            } else {
+                setHeaderHeight('h-[192px]')
+                setTitleSize('text-[78px]')
+            }
+        })
 
     return (
         <div
