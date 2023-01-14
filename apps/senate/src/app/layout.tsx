@@ -26,8 +26,8 @@ export default function RootLayout({
                         </Link>
                         .
                     </div>
-                    <div className='flex h-full min-h-screen w-full flex-row'>
-                        <div className='fixed z-20'>
+                    <div className='z-10 flex h-full min-h-screen w-full flex-row'>
+                        <div className='fixed'>
                             <NavBar />
                         </div>
                         <div className='w-full'>{children}</div>
