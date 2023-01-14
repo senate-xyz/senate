@@ -26,17 +26,17 @@ const endingInOptions: { name: string; time: number }[] = [
     }
 ]
 
-const voteStatus: { id: number; name: string }[] = [
+const voteStatus: { id: string; name: string }[] = [
     {
-        id: -1,
+        id: 'any',
         name: 'Any'
     },
     {
-        id: 0,
+        id: 'no',
         name: 'Not voted on'
     },
     {
-        id: 1,
+        id: 'yes',
         name: 'Voted on'
     }
 ]
@@ -46,14 +46,14 @@ export const Filters = (props: {
 }) => {
     const searchParams = useSearchParams()
     const router = useRouter()
-    const [from, setFrom] = useState('0')
+    const [from, setFrom] = useState('any')
     const [end, setEnd] = useState(365)
-    const [voted, setVoted] = useState(-1)
+    const [voted, setVoted] = useState('any')
 
     useEffect(() => {
-        setFrom(String(searchParams.get('from') ?? '0'))
+        setFrom(String(searchParams.get('from') ?? 'any'))
         setEnd(Number(searchParams.get('end') ?? 365))
-        setVoted(Number(searchParams.get('voted') ?? -1))
+        setVoted(String(searchParams.get('voted') ?? 'any'))
     }, [searchParams])
 
     useEffect(() => {
@@ -79,7 +79,7 @@ export const Filters = (props: {
                         value={from}
                         data-testid='from-selector'
                     >
-                        <option key='0' value='0'>
+                        <option key='any' value='any'>
                             Any
                         </option>
                         {props.subscriptions.map((sub) => {
@@ -137,7 +137,7 @@ export const Filters = (props: {
                         className='h-full w-full text-black'
                         id='voted'
                         onChange={(e) => {
-                            setVoted(Number(e.target.value))
+                            setVoted(String(e.target.value))
                         }}
                         value={voted}
                         data-testid='status-selector'

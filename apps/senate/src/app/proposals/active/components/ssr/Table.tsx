@@ -7,7 +7,7 @@ import { Vote, prisma } from '@senate/database'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
 extend(relativeTime)
 
-const getProposals = async (from: string, end: number, voted: number) => {
+const getProposals = async (from: string, end: number, voted: string) => {
     const active = true
 
     const session = await unstable_getServerSession(authOptions())
@@ -22,8 +22,8 @@ const getProposals = async (from: string, end: number, voted: number) => {
     })
 
     let voteStatusQuery
-    switch (Number(voted)) {
-        case 0:
+    switch (String(voted)) {
+        case 'no':
             voteStatusQuery = {
                 votes: {
                     none: {
@@ -35,7 +35,7 @@ const getProposals = async (from: string, end: number, voted: number) => {
             }
 
             break
-        case 1:
+        case 'yes':
             voteStatusQuery = {
                 votes: {
                     some: {
@@ -62,7 +62,7 @@ const getProposals = async (from: string, end: number, voted: number) => {
             AND: [
                 {
                     daoId:
-                        from == '0'
+                        from == 'any'
                             ? {
                                   in: userSubscriptions.map((sub) => sub.daoId)
                               }
@@ -117,7 +117,7 @@ const getProposals = async (from: string, end: number, voted: number) => {
             timeEnd: proposal.timeEnd,
             voted: user
                 ? proposal.votes.map((vote: Vote) => vote.choice).length > 0
-                : 0
+                : false
         }
     })
     return result
@@ -126,12 +126,12 @@ const getProposals = async (from: string, end: number, voted: number) => {
 export default async function Table(props: {
     from?: string
     end?: number
-    voted?: number
+    voted?: string
 }) {
     const proposals = await getProposals(
-        props.from ?? '0',
+        props.from ?? 'any',
         props.end ?? 365,
-        props.voted ?? -1
+        props.voted ?? 'any'
     )
 
     return (
@@ -151,13 +151,25 @@ export default async function Table(props: {
                     </tr>
                 </thead>
                 <tbody>
-                    {proposals.map((proposal: any, index: number) => (
-                        <ActiveProposal
-                            data-testid={`proposal-${index}`}
-                            key={index}
-                            proposal={proposal}
-                        />
-                    ))}
+                    {proposals.map(
+                        (
+                            proposal: {
+                                daoName: string
+                                daoPicture: string
+                                proposalTitle: string
+                                proposalLink: string
+                                timeEnd: Date
+                                voted: boolean
+                            },
+                            index: number
+                        ) => (
+                            <ActiveProposal
+                                data-testid={`proposal-${index}`}
+                                key={index}
+                                proposal={proposal}
+                            />
+                        )
+                    )}
                 </tbody>
             </table>
         </div>
