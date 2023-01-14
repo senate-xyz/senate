@@ -8,7 +8,7 @@ import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
 extend(relativeTime)
 
 const getProposals = async (from: string, end: number, voted: string) => {
-    const active = true
+    const active = false
 
     const session = await unstable_getServerSession(authOptions())
 
@@ -130,7 +130,7 @@ export default async function Table(props: {
 }) {
     const proposals = await getProposals(
         props.from ?? 'any',
-        props.end ?? 365,
+        props.end ?? 1,
         props.voted ?? 'any'
     )
 

@@ -64,7 +64,7 @@ const RainbowConnectButton = () => {
 
     useEffect(() => {
         router.refresh()
-    }, [session])
+    }, [router, session])
 
     return <ConnectButton showBalance={false} />
 }

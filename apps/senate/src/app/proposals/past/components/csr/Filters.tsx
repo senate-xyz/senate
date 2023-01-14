@@ -5,24 +5,20 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 const endOptions: { name: string; time: number }[] = [
     {
-        name: 'Any day',
-        time: 365
+        name: 'Last 24 hours',
+        time: 1
     },
     {
-        name: '7 days',
+        name: 'Last 7 days',
         time: 7
     },
     {
-        name: '5 days',
-        time: 5
+        name: 'Last 30 days',
+        time: 30
     },
     {
-        name: '3 days',
-        time: 3
-    },
-    {
-        name: '1 days',
-        time: 1
+        name: 'Last 90 days',
+        time: 90
     }
 ]
 
@@ -47,17 +43,17 @@ export const Filters = (props: {
     const searchParams = useSearchParams()
     const router = useRouter()
     const [from, setFrom] = useState('any')
-    const [end, setEnd] = useState(365)
+    const [end, setEnd] = useState(1)
     const [voted, setVoted] = useState('any')
 
     useEffect(() => {
         setFrom(String(searchParams.get('from') ?? 'any'))
-        setEnd(Number(searchParams.get('end') ?? 365))
+        setEnd(Number(searchParams.get('end') ?? 1))
         setVoted(String(searchParams.get('voted') ?? 'any'))
     }, [searchParams])
 
     useEffect(() => {
-        router.push(`/proposals/active?from=${from}&end=${end}&voted=${voted}`)
+        router.push(`/proposals/past?from=${from}&end=${end}&voted=${voted}`)
     }, [from, end, voted, router])
 
     return (
@@ -96,7 +92,7 @@ export const Filters = (props: {
                         className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
                         htmlFor='end'
                     >
-                        <div>Ending in</div>
+                        <div>Ended on</div>
                     </label>
                     <select
                         className='h-full w-full text-black'

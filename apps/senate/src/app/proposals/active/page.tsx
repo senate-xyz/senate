@@ -49,7 +49,7 @@ export default async function Home({
     searchParams
 }: {
     params: { slug: string }
-    searchParams?: { from: string; end: number; voted: number }
+    searchParams?: { from: string; end: number; voted: string }
 }) {
     const subscribedDAOs = await getSubscribedDAOs()
 
