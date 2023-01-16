@@ -31,14 +31,26 @@ export const updateSnapshotDaoVotes = async (
         }
     })
 
-    const graphqlQuery = `{votes(first:1000, skip: ${
-        daoHandler.dao.votes.length
-    } orderBy: "created", orderDirection: asc, where: {voter_in: [${voters.map(
+    const lastCreated = await prisma.voterHandler.findFirst({
+        where: {
+            daoHandlerId: daoHandler.id
+        },
+        orderBy: {
+            lastSnapshotVoteCreatedTimestamp: 'desc'
+        }
+    })
+
+    const graphqlQuery = `{votes(first:1000, orderBy: "created", orderDirection: asc, where: {voter_in: [${voters.map(
         (voter) => `"${voter}"`
-    )}], space: "${daoHandler.decoder['space']}"}) {
+    )}], space: "${daoHandler.decoder['space']}", created_gt: ${
+        lastCreated.lastSnapshotVoteCreatedTimestamp
+            ? lastCreated.lastSnapshotVoteCreatedTimestamp.valueOf() / 1000
+            : 0
+    }}) {
                     id
                     voter
                     choice
+                    created
                     proposal {
                         id
                         choices
@@ -118,6 +130,9 @@ export const updateSnapshotDaoVotes = async (
                     externalId: snapshotProposalId,
                     daoId: daoHandler.daoId,
                     daoHandlerId: daoHandler.id
+                },
+                include: {
+                    votes: true
                 }
             })
 
@@ -128,6 +143,12 @@ export const updateSnapshotDaoVotes = async (
 
                 continue
             }
+
+            if (
+                votes.filter((vote) => vote.proposal.id == snapshotProposalId)
+                    .length == proposal.votes.length
+            )
+                continue
 
             await prisma.vote
                 .createMany({
@@ -166,6 +187,7 @@ export const updateSnapshotDaoVotes = async (
                             vote: r
                         }
                     })
+
                     return
                 })
                 .catch(async (e) => {
@@ -190,6 +212,17 @@ export const updateSnapshotDaoVotes = async (
                     })
                 })
         }
+
+        await prisma.voterHandler.updateMany({
+            where: {
+                voter: { address: { in: voters } }
+            },
+            data: {
+                lastSnapshotVoteCreatedTimestamp: new Date(
+                    Math.min(...votes.map((vote) => vote.created)) * 1000
+                )
+            }
+        })
     } catch (e) {
         log_pd.log({
             level: 'error',
