@@ -37,7 +37,7 @@ const UserAddress = () => {
     )
 }
 
-async function updateUser(url: string, { arg }: any) {
+async function updateUserEmail(url: string, { arg }: any) {
     await fetch(url, {
         method: 'POST',
         body: JSON.stringify(arg)
@@ -51,7 +51,7 @@ const UserEmail = () => {
     const { data, error } = useSWR('/api/user/settings/account/email', fetcher)
     const { trigger } = useSWRMutation(
         '/api/user/settings/account/email',
-        updateUser
+        updateUserEmail
     )
 
     useEffect(() => {
