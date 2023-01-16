@@ -130,6 +130,9 @@ export const updateSnapshotDaoVotes = async (
                     externalId: snapshotProposalId,
                     daoId: daoHandler.daoId,
                     daoHandlerId: daoHandler.id
+                },
+                include: {
+                    votes: true
                 }
             })
 
@@ -140,6 +143,12 @@ export const updateSnapshotDaoVotes = async (
 
                 continue
             }
+
+            if (
+                votes.filter((vote) => vote.proposal.id == snapshotProposalId)
+                    .length == proposal.votes.length
+            )
+                continue
 
             await prisma.vote
                 .createMany({
