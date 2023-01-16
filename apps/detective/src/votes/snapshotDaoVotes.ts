@@ -166,6 +166,15 @@ export const updateSnapshotDaoVotes = async (
                             vote: r
                         }
                     })
+
+                    await prisma.voterHandler.updateMany({
+                        where: {
+                            voter: { address: { in: voters } }
+                        },
+                        data: {
+                            lastSnapshotVoteCreatedTimestamp: new Date()
+                        }
+                    })
                     return
                 })
                 .catch(async (e) => {
