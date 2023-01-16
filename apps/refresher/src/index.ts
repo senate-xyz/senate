@@ -76,9 +76,9 @@ const main = async () => {
         await loadConfig()
         await createVoterHandlers()
         await addSnapshotProposalsToQueue()
-        //await addChainProposalsToQueue()
+        await addChainProposalsToQueue()
         await addSnapshotDaoVotes()
-        //await addChainDaoVotes()
+        await addChainDaoVotes()
     })
 }
 
