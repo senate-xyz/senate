@@ -6,7 +6,7 @@ import { useEffect } from 'react'
 
 const RainbowConnect = () => {
     const session = useSession()
-    const newUser = trpc.user.settings.newUser.useQuery()
+    const newUser = trpc.user.settings.isNewUser.useQuery()
 
     if (newUser.data) {
         if (newUser.data.newUser && session.status == 'authenticated') {

@@ -1,5 +1,5 @@
 import { SessionProvider } from 'next-auth/react'
-import type { AppType } from 'next/app'
+import type { AppProps } from 'next/app'
 import type { Session } from 'next-auth'
 import '../styles/globals.css'
 import '@rainbow-me/rainbowkit/styles.css'
@@ -44,14 +44,19 @@ const getSiweMessageOptions: GetSiweMessageOptions = () => ({
     statement: 'Sign in to Senate'
 })
 
-const MyApp: AppType<{ session: Session | null }> = ({
+const MyApp = ({
     Component,
-    pageProps: { session, ...pageProps }
-}) => {
+    pageProps
+}: AppProps<{
+    session: Session
+}>) => {
     return (
         <>
             <WagmiConfig client={wagmiClient}>
-                <SessionProvider refetchInterval={0} session={session}>
+                <SessionProvider
+                    refetchInterval={60}
+                    session={pageProps.session}
+                >
                     <RainbowKitSiweNextAuthProvider
                         getSiweMessageOptions={getSiweMessageOptions}
                     >

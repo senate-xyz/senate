@@ -10,27 +10,29 @@ export const trackerRouter = router({
             })
         )
         .query(async ({ ctx, input }) => {
-            const userProposalsVoted = await ctx.prisma.proposal.findMany({
-                where: {
-                    votes: {
-                        some: {
-                            voterAddress: {
-                                in: input.addresses
+            const userProposalsVoted = await ctx.prismaNextjs.proposal.findMany(
+                {
+                    where: {
+                        votes: {
+                            some: {
+                                voterAddress: {
+                                    in: input.addresses
+                                }
                             }
                         }
-                    }
-                },
-                include: {
-                    dao: true,
-                    votes: {
-                        where: {
-                            voterAddress: {
-                                in: input.addresses
+                    },
+                    include: {
+                        dao: true,
+                        votes: {
+                            where: {
+                                voterAddress: {
+                                    in: input.addresses
+                                }
                             }
                         }
                     }
                 }
-            })
+            )
 
             return userProposalsVoted
         })

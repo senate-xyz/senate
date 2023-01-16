@@ -3,7 +3,7 @@ import { router, publicProcedure } from '../trpc'
 
 export const publicRouter = router({
     proposals: publicProcedure.query(async ({ ctx }) => {
-        const userProposals = await ctx.prisma.proposal.findMany({
+        const userProposals = await ctx.prismaNextjs.proposal.findMany({
             where: {
                 data: {
                     path: '$.timeEnd',
@@ -31,7 +31,7 @@ export const publicRouter = router({
         return userProposals
     }),
     daos: publicProcedure.query(async ({ ctx }) => {
-        const daosList = await ctx.prisma.dAO.findMany({
+        const daosList = await ctx.prismaNextjs.dAO.findMany({
             where: {},
             orderBy: {
                 id: 'asc'
@@ -53,7 +53,7 @@ export const publicRouter = router({
             })
         )
         .query(async ({ ctx, input }) => {
-            return await ctx.prisma.proposal.findMany({
+            return await ctx.prismaNextjs.proposal.findMany({
                 where: {
                     AND: [
                         {

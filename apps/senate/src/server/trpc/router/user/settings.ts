@@ -5,7 +5,7 @@ export const userSettingsRouter = router({
     email: protectedProcedure.query(async ({ ctx }) => {
         if (!ctx.session) return
 
-        const user = await ctx.prisma.user.findFirstOrThrow({
+        const user = await ctx.prismaNextjs.user.findFirstOrThrow({
             where: {
                 name: String(ctx.session?.user?.name)
             }
@@ -22,7 +22,7 @@ export const userSettingsRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            const user = await ctx.prisma.user.update({
+            const user = await ctx.prismaNextjs.user.update({
                 where: {
                     name: String(ctx.session?.user?.name)
                 },
@@ -46,7 +46,7 @@ export const userSettingsRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            const user = await ctx.prisma.user.update({
+            const user = await ctx.prismaNextjs.user.update({
                 where: {
                     name: String(ctx.session?.user?.name)
                 },
@@ -70,7 +70,7 @@ export const userSettingsRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            const user = await ctx.prisma.user.update({
+            const user = await ctx.prismaNextjs.user.update({
                 where: {
                     name: String(ctx.session?.user?.name)
                 },
@@ -85,10 +85,10 @@ export const userSettingsRouter = router({
             return user.newUser
         }),
 
-    newUser: protectedProcedure.query(async ({ ctx }) => {
+    isNewUser: protectedProcedure.query(async ({ ctx }) => {
         let result = false
 
-        const user = await ctx.prisma.user.findFirst({
+        const user = await ctx.prismaNextjs.user.findFirst({
             where: {
                 name: { equals: String(ctx.session?.user?.name) }
             },
@@ -103,7 +103,7 @@ export const userSettingsRouter = router({
     }),
 
     userSettings: protectedProcedure.query(async ({ ctx }) => {
-        const user = await ctx.prisma.user.findFirst({
+        const user = await ctx.prismaNextjs.user.findFirst({
             where: {
                 name: { equals: String(ctx.session?.user?.name) }
             },
@@ -123,7 +123,7 @@ export const userSettingsRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            const user = await ctx.prisma.user.findFirst({
+            const user = await ctx.prismaNextjs.user.findFirst({
                 where: {
                     name: { equals: String(ctx.session?.user?.name) }
                 },
@@ -132,7 +132,7 @@ export const userSettingsRouter = router({
                 }
             })
 
-            const userSettings = await ctx.prisma.userSettings.upsert({
+            const userSettings = await ctx.prismaNextjs.userSettings.upsert({
                 where: { userId: user?.id },
                 create: {
                     userId: user?.id ?? 'null',
@@ -149,7 +149,7 @@ export const userSettingsRouter = router({
     voters: protectedProcedure.query(async ({ ctx }) => {
         if (!ctx.session) return
 
-        const proxyAddresses = await ctx.prisma.voter.findMany({
+        const proxyAddresses = await ctx.prismaNextjs.voter.findMany({
             where: {
                 users: {
                     some: {
@@ -169,7 +169,7 @@ export const userSettingsRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            await ctx.prisma.user
+            await ctx.prismaNextjs.user
                 .update({
                     where: {
                         name: String(ctx.session?.user?.name)
@@ -201,7 +201,7 @@ export const userSettingsRouter = router({
         .mutation(async ({ ctx, input }) => {
             if (!ctx.session) return
 
-            await ctx.prisma.user
+            await ctx.prismaNextjs.user
                 .update({
                     where: {
                         name: String(ctx.session?.user?.name)
