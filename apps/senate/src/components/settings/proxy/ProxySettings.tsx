@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { trpc } from '../../../utils/trpc'
 import { useProvider } from 'wagmi'
+import { Voter } from '@senate/database'
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
@@ -64,7 +65,7 @@ const ProxySettings = () => {
 
                     <div className='mt-12 flex flex-col gap-6'>
                         {voters.data &&
-                            voters.data.map((voter) => {
+                            voters.data.map((voter: Voter) => {
                                 return (
                                     <div
                                         key={voter.address}

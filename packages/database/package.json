@@ -28,13 +28,13 @@
         "prettier:fix": "prettier src --write"
     },
     "dependencies": {
-        "@prisma/client": "latest",
+        "@prisma/client": "4.9.0",
         "exponential-backoff": "^3.1.0"
     },
     "devDependencies": {
         "@senate/config": "*",
-        "eslint": "^8.31.0",
-        "prisma": "latest",
+        "eslint": "^8.32.0",
+        "prisma": "4.9.0",
         "prisma-dbml-generator": "^0.10.0",
         "tsup": "^6.5.0",
         "typescript": "^4.9.4"

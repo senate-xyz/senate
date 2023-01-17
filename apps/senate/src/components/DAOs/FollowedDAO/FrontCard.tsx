@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import type { DAOType } from '@senate/database'
+import type { DAOType, Proposal } from '@senate/database'
 import { trpc } from '../../../utils/trpc'
 import { useEffect, useState } from 'react'
 import { FastAverageColor } from 'fast-average-color'
@@ -107,7 +107,8 @@ const FrontCard = (props: {
                 <div
                     className={
                         activeProposalsForDao.data?.filter(
-                            (proposal) => proposal.timeEnd > new Date()
+                            (proposal: Proposal) =>
+                                proposal.timeEnd > new Date()
                         ).length
                             ? 'cursor-pointer pt-6 pb-1 text-[15px] font-thin underline decoration-from-font underline-offset-2'
                             : 'pt-6 pb-1 text-[15px] font-thin'
@@ -115,14 +116,15 @@ const FrontCard = (props: {
                     data-testid='dao-proposals-count'
                 >
                     {activeProposalsForDao.data?.filter(
-                        (proposal) => proposal.timeEnd > new Date()
+                        (proposal: Proposal) => proposal.timeEnd > new Date()
                     ).length ? (
                         <Link
                             href={`/proposals/active?fromFilter=${props.dao.id}`}
                         >
                             {activeProposalsForDao.data
                                 ?.filter(
-                                    (proposal) => proposal.timeEnd > new Date()
+                                    (proposal: Proposal) =>
+                                        proposal.timeEnd > new Date()
                                 )
                                 .length.toString() + ' Active Proposals'}
                         </Link>
