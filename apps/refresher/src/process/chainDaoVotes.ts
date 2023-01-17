@@ -136,7 +136,7 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                     },
                     data: {
                         refreshStatus: RefreshStatus.NEW,
-                        lastRefreshTimestamp: new Date(1),
+                        lastRefreshTimestamp: new Date(0),
                         lastChainVoteCreatedBlock: 0
                     }
                 })
@@ -189,7 +189,9 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                         daoHandlerId: daoHandler?.id
                     },
                     data: {
-                        refreshStatus: RefreshStatus.NEW
+                        refreshStatus: RefreshStatus.NEW,
+                        lastRefreshTimestamp: new Date(0),
+                        lastChainVoteCreatedBlock: 0
                     }
                 })
                 // eslint-disable-next-line promise/no-nesting

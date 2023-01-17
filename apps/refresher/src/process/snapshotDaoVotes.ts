@@ -136,7 +136,8 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                     },
                     data: {
                         refreshStatus: RefreshStatus.NEW,
-                        lastSnapshotVoteCreatedTimestamp: new Date(1)
+                        lastRefreshTimestamp: new Date(0),
+                        lastSnapshotVoteCreatedTimestamp: new Date(0)
                     }
                 })
                 .then((r) => {
@@ -188,7 +189,9 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                         daoHandlerId: daoHandler?.id
                     },
                     data: {
-                        refreshStatus: RefreshStatus.NEW
+                        refreshStatus: RefreshStatus.NEW,
+                        lastRefreshTimestamp: new Date(0),
+                        lastSnapshotVoteCreatedTimestamp: new Date(0)
                     }
                 }) // eslint-disable-next-line promise/no-nesting
                 .then((r) => {
