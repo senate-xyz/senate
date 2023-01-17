@@ -164,7 +164,6 @@ export const updateSnapshotDaoVotes = async (
                     level: 'info',
                     message: 'No new votes, skipping insert'
                 })
-
                 continue
             }
 
@@ -233,12 +232,14 @@ export const updateSnapshotDaoVotes = async (
 
         await prisma.voterHandler.updateMany({
             where: {
-                voter: { address: { in: voters } }
+                voter: { address: { in: voters } },
+                daoHandlerId: daoHandler.id
             },
             data: {
                 lastSnapshotVoteCreatedTimestamp: new Date(
                     Math.min(...votes.map((vote) => vote.created)) * 1000
-                )
+                ),
+                lastChainVoteCreatedBlock: 0
             }
         })
     } catch (e) {

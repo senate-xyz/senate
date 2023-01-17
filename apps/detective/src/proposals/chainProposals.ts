@@ -74,7 +74,7 @@ export const updateChainProposals = async (
             }
         })
 
-        if (minBlockNumber < currentBlock - 120 || !senateOnline) {
+        if (minBlockNumber < currentBlock - 50 || !senateOnline) {
             provider = infuraProvider
             log_pd.log({
                 level: 'info',
@@ -160,7 +160,8 @@ export const updateChainProposals = async (
                         id: daoHandler.id
                     },
                     data: {
-                        lastChainProposalCreatedBlock: result.lastBlock
+                        lastChainProposalCreatedBlock: result.lastBlock,
+                        lastSnapshotProposalCreatedTimestamp: new Date(0)
                     }
                 })
 

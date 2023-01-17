@@ -90,12 +90,15 @@ export const updateChainDaoVotes = async (
             const lastVoteBlock =
                 Number(voterHandler.lastChainVoteCreatedBlock) ?? 0
 
-            log_node.log({
+            log_pd.log({
                 level: 'info',
-                message: `getBlockNumber`,
-                data: {}
+                message: `Current block`,
+                data: {
+                    currentBlock: currentBlock
+                }
             })
-            if (lastVoteBlock < currentBlock - 120 || !senateOnline) {
+
+            if (lastVoteBlock < currentBlock - 50 || !senateOnline) {
                 provider = infuraProvider
                 log_pd.log({
                     level: 'info',
@@ -206,7 +209,8 @@ export const updateChainDaoVotes = async (
                             id: voterHandler.id
                         },
                         data: {
-                            lastChainVoteCreatedBlock: result.newLastVoteBlock
+                            lastChainVoteCreatedBlock: result.newLastVoteBlock,
+                            lastSnapshotVoteCreatedTimestamp: new Date(0)
                         }
                     })
                     return

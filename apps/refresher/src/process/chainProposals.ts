@@ -35,6 +35,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
         .post(proposalDetectiveReq)
         .type('application/json')
         .timeout({
+            response: DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000 - 5000,
             deadline: DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000 - 5000
         })
         .retry(3, (err, res) => {
@@ -116,8 +117,9 @@ export const processChainProposals = async (item: RefreshQueue) => {
                     },
                     data: {
                         refreshStatus: RefreshStatus.NEW,
-                        lastRefreshTimestamp: new Date(1),
-                        lastChainProposalCreatedBlock: 0
+                        lastRefreshTimestamp: new Date(0),
+                        lastChainProposalCreatedBlock: 0,
+                        lastSnapshotProposalCreatedTimestamp: new Date(0)
                     }
                 })
                 .then((r) => {
@@ -164,7 +166,10 @@ export const processChainProposals = async (item: RefreshQueue) => {
                         id: item.clientId
                     },
                     data: {
-                        refreshStatus: RefreshStatus.NEW
+                        refreshStatus: RefreshStatus.NEW,
+                        lastRefreshTimestamp: new Date(0),
+                        lastChainProposalCreatedBlock: 0,
+                        lastSnapshotProposalCreatedTimestamp: new Date(0)
                     }
                 }) // eslint-disable-next-line promise/no-nesting
                 .then((r) => {

@@ -47,6 +47,7 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
         .post(proposalDetectiveReq)
         .type('application/json')
         .timeout({
+            response: DAOS_VOTES_CHAIN_INTERVAL_FORCE * 60 * 1000 - 5000,
             deadline: DAOS_VOTES_CHAIN_INTERVAL_FORCE * 60 * 1000 - 5000
         })
         .retry(3, (err, res) => {
@@ -136,8 +137,9 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                     },
                     data: {
                         refreshStatus: RefreshStatus.NEW,
-                        lastRefreshTimestamp: new Date(1),
-                        lastChainVoteCreatedBlock: 0
+                        lastRefreshTimestamp: new Date(0),
+                        lastChainVoteCreatedBlock: 0,
+                        lastSnapshotVoteCreatedTimestamp: new Date(0)
                     }
                 })
                 .then((r) => {
@@ -189,7 +191,10 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                         daoHandlerId: daoHandler?.id
                     },
                     data: {
-                        refreshStatus: RefreshStatus.NEW
+                        refreshStatus: RefreshStatus.NEW,
+                        lastRefreshTimestamp: new Date(0),
+                        lastChainVoteCreatedBlock: 0,
+                        lastSnapshotVoteCreatedTimestamp: new Date(0)
                     }
                 })
                 // eslint-disable-next-line promise/no-nesting

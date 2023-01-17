@@ -151,9 +151,18 @@ const upsertSnapshotProposals = async (
         .then(async (r) => {
             log_pd.log({
                 level: 'info',
-                message: `Upserted proposals for ${space}`,
+                message: `Upserted new proposals for ${space}`,
                 data: {
                     proposals: r
+                }
+            })
+            await prisma.dAOHandler.update({
+                where: {
+                    id: daoHandler.id
+                },
+                data: {
+                    lastChainProposalCreatedBlock: 0,
+                    lastSnapshotProposalCreatedTimestamp: new Date()
                 }
             })
             return 'ok'
