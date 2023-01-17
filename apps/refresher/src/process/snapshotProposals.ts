@@ -39,6 +39,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
             deadline: DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000
         })
         .retry(3, (err, res) => {
+            if (res.status == 201) return false
             tries++
             if (tries > 1)
                 log_ref.log({
@@ -51,7 +52,6 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                     }
                 })
             if (err) return true
-            if (res.status == 201) return false
         })
         .then(async (response) => response.body)
         .then(async (data) => {
