@@ -74,7 +74,7 @@ export const updateChainProposals = async (
             }
         })
 
-        if (minBlockNumber < currentBlock - 120 || !senateOnline) {
+        if (minBlockNumber < currentBlock - 50 || !senateOnline) {
             provider = infuraProvider
             log_pd.log({
                 level: 'info',
