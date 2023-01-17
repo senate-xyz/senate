@@ -9,7 +9,7 @@ generator dbml {
 
 datasource db {
   provider     = "mysql"
-  url          = env("MYSQL_URL")
+  url          = env("DATABASE_URL")
   relationMode = "foreignKeys"
 }
 
