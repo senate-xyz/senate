@@ -28,6 +28,7 @@
         "prettier:fix": "prettier src --write"
     },
     "dependencies": {
+        "@senate/axiom": "*",
         "@prisma/client": "4.9.0",
         "exponential-backoff": "^3.1.0"
     },
