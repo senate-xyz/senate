@@ -47,6 +47,7 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
         .post(proposalDetectiveReq)
         .type('application/json')
         .timeout({
+            response: DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000,
             deadline: DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000
         })
         .retry(3, (err, res) => {
