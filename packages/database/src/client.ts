@@ -32,9 +32,13 @@ function RetryTransactions(options?: Partial<IBackOffOptions>) {
     )
 }
 
-export const prisma = new PrismaClient().$extends(
-    RetryTransactions({
-        jitter: 'full',
-        numOfAttempts: 5
-    })
-)
+const globalForPrisma = global as unknown as { prisma: PrismaClient }
+
+export const prisma =
+    globalForPrisma.prisma ||
+    new PrismaClient().$extends(
+        RetryTransactions({
+            jitter: 'full',
+            numOfAttempts: 3
+        })
+    )
