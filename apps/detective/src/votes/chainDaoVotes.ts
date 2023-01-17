@@ -206,7 +206,8 @@ export const updateChainDaoVotes = async (
                             id: voterHandler.id
                         },
                         data: {
-                            lastChainVoteCreatedBlock: result.newLastVoteBlock
+                            lastChainVoteCreatedBlock: result.newLastVoteBlock,
+                            lastSnapshotVoteCreatedTimestamp: new Date(0)
                         }
                     })
                     return

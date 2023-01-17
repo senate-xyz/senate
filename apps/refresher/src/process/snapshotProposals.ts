@@ -76,8 +76,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                     },
                     data: {
                         refreshStatus: RefreshStatus.DONE,
-                        lastRefreshTimestamp: new Date(),
-                        lastSnapshotProposalCreatedTimestamp: new Date()
+                        lastRefreshTimestamp: new Date()
                     }
                 })
                 .then((r) => {
@@ -117,8 +116,9 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                     },
                     data: {
                         refreshStatus: RefreshStatus.NEW,
-                        lastRefreshTimestamp: new Date(1),
-                        lastSnapshotProposalCreatedTimestamp: new Date(1)
+                        lastRefreshTimestamp: new Date(0),
+                        lastChainProposalCreatedBlock: 0,
+                        lastSnapshotProposalCreatedTimestamp: new Date(0)
                     }
                 })
                 .then((r) => {
@@ -165,7 +165,10 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                         id: item.clientId
                     },
                     data: {
-                        refreshStatus: RefreshStatus.NEW
+                        refreshStatus: RefreshStatus.NEW,
+                        lastRefreshTimestamp: new Date(0),
+                        lastChainProposalCreatedBlock: 0,
+                        lastSnapshotProposalCreatedTimestamp: new Date(0)
                     }
                 }) // eslint-disable-next-line promise/no-nesting
                 .then((r) => {

@@ -221,7 +221,8 @@ export const updateSnapshotDaoVotes = async (
             data: {
                 lastSnapshotVoteCreatedTimestamp: new Date(
                     Math.min(...votes.map((vote) => vote.created)) * 1000
-                )
+                ),
+                lastChainVoteCreatedBlock: 0
             }
         })
     } catch (e) {

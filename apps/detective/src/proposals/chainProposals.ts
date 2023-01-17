@@ -160,7 +160,8 @@ export const updateChainProposals = async (
                         id: daoHandler.id
                     },
                     data: {
-                        lastChainProposalCreatedBlock: result.lastBlock
+                        lastChainProposalCreatedBlock: result.lastBlock,
+                        lastSnapshotProposalCreatedTimestamp: new Date(0)
                     }
                 })
 
