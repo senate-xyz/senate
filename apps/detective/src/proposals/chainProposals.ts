@@ -126,49 +126,55 @@ export const updateChainProposals = async (
                 break
         }
 
-        log_pd.log({
-            level: 'info',
-            message: `Got proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
-            data: {
-                count: result.proposals.length,
-                lastBlock: result.lastBlock
-            }
-        })
+        if (minBlockNumber == result.lastBlock) {
+            log_pd.log({
+                level: 'info',
+                message: `No new proposals. Skip ${daoHandler.dao.name} - ${daoHandler.type}`
+            })
+        } else {
+            log_pd.log({
+                level: 'info',
+                message: `Got proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
+                data: {
+                    proposals: result.proposals,
+                    lastBlock: result.lastBlock
+                }
+            })
 
-        await prisma.proposal
-            .createMany({
-                data: result.proposals,
-                skipDuplicates: true
-            })
-            .then(async (r) => {
-                log_pd.log({
-                    level: 'info',
-                    message: `Upserted new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
-                    data: {
-                        count: r.count,
-                        lastChainProposalCreatedBlock: result.lastBlock
-                    }
+            await prisma.proposal
+                .createMany({
+                    data: result.proposals,
+                    skipDuplicates: true
                 })
-                await prisma.dAOHandler.update({
-                    where: {
-                        id: daoHandler.id
-                    },
-                    data: {
-                        lastChainProposalCreatedBlock: result.lastBlock,
-                        lastSnapshotProposalCreatedTimestamp: new Date(0)
-                    }
+                .then(async (r) => {
+                    log_pd.log({
+                        level: 'info',
+                        message: `Upserted new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
+                        data: {
+                            proposals: r,
+                            lastChainProposalCreatedBlock: result.lastBlock
+                        }
+                    })
+                    await prisma.dAOHandler.update({
+                        where: {
+                            id: daoHandler.id
+                        },
+                        data: {
+                            lastChainProposalCreatedBlock: result.lastBlock,
+                            lastSnapshotProposalCreatedTimestamp: new Date(0)
+                        }
+                    })
+                    return
                 })
-
-                return
-            })
-            .catch(async (e) => {
-                response = 'nok'
-                log_pd.log({
-                    level: 'error',
-                    message: `Could not upsert new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
-                    data: { proposals: result.proposals, error: e }
+                .catch(async (e) => {
+                    response = 'nok'
+                    log_pd.log({
+                        level: 'error',
+                        message: `Could not upsert new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
+                        data: { proposals: result.proposals, error: e }
+                    })
                 })
-            })
+        }
     } catch (e) {
         response = 'nok'
         log_pd.log({

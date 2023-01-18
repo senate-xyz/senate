@@ -1,4 +1,4 @@
-import { log_node, log_pd } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { DAOHandler } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
@@ -19,6 +19,7 @@ export const aaveProposals = async (
 
     const logs = await provider.getLogs({
         fromBlock: Number(minBlockNumber),
+        toBlock: Number(minBlockNumber + 1000000),
         address: daoHandler.decoder['address'],
         topics: [govBravoIface.getEventTopic('ProposalCreated')]
     })
@@ -70,7 +71,7 @@ export const aaveProposals = async (
             )
         ).filter((n) => n) ?? []
 
-    const lastBlock = (await provider.getBlockNumber()) ?? 0
+    const lastBlock = Math.max(...logs.map((log) => log.blockNumber)) ?? 0
 
     return { proposals, lastBlock }
 }

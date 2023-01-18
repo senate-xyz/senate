@@ -24,6 +24,7 @@ export const makerExecutiveProposals = async (
 
     const logs = await provider.getLogs({
         fromBlock: Number(minBlockNumber),
+        toBlock: Number(minBlockNumber + 1000000),
         address: daoHandler.decoder['address'],
         topics: [[VOTE_MULTIPLE_ACTIONS_TOPIC, VOTE_SINGE_ACTION_TOPIC]]
     })
