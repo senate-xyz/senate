@@ -9,6 +9,8 @@ export {
     type Vote,
     type Subscription,
     type RefreshQueue,
+    type DAO,
+    type Notification,
     RefreshStatus,
     RefreshType,
     DAOHandlerType,

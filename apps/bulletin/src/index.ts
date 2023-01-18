@@ -2,6 +2,8 @@ import {
     type Proposal,
     type UserWithVotingAddresses,
     type Voter,
+    type DAO,
+    type Notification,
     RoundupNotificationType,
     prisma
 } from '@senate/database'
@@ -11,6 +13,7 @@ import { config } from 'dotenv'
 import { schedule } from 'node-cron'
 import { ServerClient } from 'postmark'
 import { log_bul } from '@senate/axiom'
+import superagent from 'superagent'
 
 config()
 
@@ -23,17 +26,23 @@ const delay = (ms: number): Promise<any> => {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+const emailProposalEndDateStringFormat: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+}
+
 interface EmailTemplateRow {
-    votingStatus: string,
-    votingStatusIconUrl: string,
-    proposalName: string,
-    proposalUrl: string,
-    daoLogoUrl: string,
-    daoName: string,
-    endHoursUTC: string,
-    endMinutesUTC: string,
-    endDateString: string,
-    countdownUrl: string,
+    votingStatus: string
+    votingStatusIconUrl: string
+    proposalName: string
+    proposalUrl: string
+    daoLogoUrl: string
+    daoName: string
+    endHoursUTC: string
+    endMinutesUTC: string
+    endDateString: string
+    countdownUrl: string
 }
 
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
@@ -55,15 +64,20 @@ schedule(
         try {
             await clearNotificationsTable()
 
-            const newProposals = await fetchNewProposals();
+            const newProposals = await fetchNewProposals()
             await insertNotifications(newProposals, RoundupNotificationType.NEW)
 
-            const endingProposals = await fetchEndingProposals();
-            await insertNotifications(endingProposals, RoundupNotificationType.ENDING_SOON)
+            const endingProposals = await fetchEndingProposals()
+            await insertNotifications(
+                endingProposals,
+                RoundupNotificationType.ENDING_SOON
+            )
 
-            const pastProposals = await fetchPastProposals();
-            await insertNotifications(pastProposals, RoundupNotificationType.PAST)
-
+            const pastProposals = await fetchPastProposals()
+            await insertNotifications(
+                pastProposals,
+                RoundupNotificationType.PAST
+            )
         } catch (error) {
             log_bul.log({
                 level: 'error',
@@ -73,7 +87,6 @@ schedule(
                 }
             })
             errorsDetected = true
-
         } finally {
             if (errorsDetected) {
                 await sendSorryPlsEmail()
@@ -81,7 +94,6 @@ schedule(
                 await sendDailyBulletin()
             }
         }
-        
     }
 )
 
@@ -91,7 +103,7 @@ const clearNotificationsTable = async () => {
 
         log_bul.log({
             level: 'info',
-            message: 'Cleared notifications table',
+            message: 'Cleared notifications table'
         })
     } catch (error) {
         log_bul.log({
@@ -103,12 +115,12 @@ const clearNotificationsTable = async () => {
         })
         throw new Error('Could not clear notifications table')
     }
-    
-
-    
 }
 
-const fetchUsersToBeNotifiedForProposal = async (proposal: Proposal, type: RoundupNotificationType) => {
+const fetchUsersToBeNotifiedForProposal = async (
+    proposal: Proposal,
+    type: RoundupNotificationType
+) => {
     try {
         const users = await prisma.user.findMany({
             where: {
@@ -121,7 +133,7 @@ const fetchUsersToBeNotifiedForProposal = async (proposal: Proposal, type: Round
                 subscriptions: {
                     some: {
                         daoId: proposal.daoId,
-                        notificationsEnabled: true,
+                        notificationsEnabled: true
                     }
                 }
             },
@@ -140,7 +152,7 @@ const fetchUsersToBeNotifiedForProposal = async (proposal: Proposal, type: Round
             }
         })
 
-        return users 
+        return users
     } catch (error) {
         log_bul.log({
             level: 'error',
@@ -153,7 +165,6 @@ const fetchUsersToBeNotifiedForProposal = async (proposal: Proposal, type: Round
         })
         throw new Error('Could not fetch users to be notified')
     }
-
 }
 
 const insertNotifications = async (
@@ -162,30 +173,32 @@ const insertNotifications = async (
 ) => {
     try {
         for (const proposal of proposals) {
-
             //Get users which should be notified
-            const users = await fetchUsersToBeNotifiedForProposal(proposal, type)
-    
+            const users = await fetchUsersToBeNotifiedForProposal(
+                proposal,
+                type
+            )
+
             //Insert notifications
             await prisma.$transaction(
-                    users.map((user) => {
-                        return prisma.notification.upsert({
-                            where: {
-                                proposalId_userId_type: {
-                                    proposalId: proposal.id,
-                                    userId: user.id,
-                                    type: type
-                                }
-                            },
-                            update: {},
-                            create: {
-                                userId: user.id,
+                users.map((user) => {
+                    return prisma.notification.upsert({
+                        where: {
+                            proposalId_userId_type: {
                                 proposalId: proposal.id,
-                                daoId: proposal.daoId,
+                                userId: user.id,
                                 type: type
                             }
-                        })
+                        },
+                        update: {},
+                        create: {
+                            userId: user.id,
+                            proposalId: proposal.id,
+                            daoId: proposal.daoId,
+                            type: type
+                        }
                     })
+                })
             )
         }
 
@@ -197,7 +210,6 @@ const insertNotifications = async (
                 count: proposals.length
             }
         })
-
     } catch (error) {
         log_bul.log({
             level: 'error',
@@ -209,7 +221,6 @@ const insertNotifications = async (
 
         throw new Error('Could not insert notifications')
     }
-    
 }
 
 const fetchNewProposals = async () => {
@@ -233,8 +244,7 @@ const fetchNewProposals = async () => {
             }
         })
 
-        return proposals 
-    
+        return proposals
     } catch (error) {
         log_bul.log({
             level: 'error',
@@ -246,7 +256,6 @@ const fetchNewProposals = async () => {
 
         throw new Error('Could not fetch new proposals')
     }
-    
 }
 
 const fetchEndingProposals = async () => {
@@ -290,7 +299,6 @@ const fetchEndingProposals = async () => {
         })
         throw new Error('Could not fetch ending proposals')
     }
-    
 }
 
 const fetchPastProposals = async () => {
@@ -334,66 +342,90 @@ const fetchPastProposals = async () => {
         })
         throw new Error('Could not fetch past proposals')
     }
-     
 }
 
-const formatEmailTableData = async (user: UserWithVotingAddresses, notificationType: RoundupNotificationType): Promise<EmailTemplateRow[]> => {
+const formatEmailTableData = async (
+    user: UserWithVotingAddresses,
+    notificationType: RoundupNotificationType
+): Promise<EmailTemplateRow[]> => {
     try {
-        const dateOptions : Intl.DateTimeFormatOptions = {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        }
-
-        const proposals = await prisma.notification.findMany({
+        const notifications = await prisma.notification.findMany({
             where: { userId: user.id, type: notificationType },
             include: { proposal: { include: { dao: true } } }
-        });
+        })
 
-        const promises = proposals.map(async (notification) => {
-            const [voted, countdownUrl] = await Promise.all([
-                userVoted(user.voters, notification.proposalId, notification.daoId),
-                generateCountdownGifUrl(notification.proposal.timeEnd)
-            ]);
+        const tableRows: EmailTemplateRow[] = []
 
-            const votingStatus = voted ?
-                'Voted' :
-                notificationType === RoundupNotificationType.PAST ?
-                    "Didn't vote" :
-                    'Not voted yet';
+        for (const notification of notifications) {
+            tableRows.push(await formatEmailTemplateRow(notification, user))
+        }
 
-            const votingStatusIconUrl = voted ?
-                `${process.env.WEB_URL}/assets/Icon/Voted.png` :
-                notificationType === RoundupNotificationType.PAST ?
-                    `${process.env.WEB_URL}/assets/Icon/DidntVote.png` :
-                    `${process.env.WEB_URL}/assets/Icon/NotVotedYet.png`;
-
-            return {
-                votingStatus,
-                votingStatusIconUrl: encodeURI(votingStatusIconUrl),
-                proposalName: notification.proposal.name.length > 100 ?
-                    `${notification.proposal.name.substring(0, 100)}...` :
-                    notification.proposal.name,
-                proposalUrl: encodeURI(notification.proposal.url),
-                daoLogoUrl: encodeURI(`${process.env.WEB_URL}${notification.proposal.dao.picture}_small.png`),
-                daoName: notification.proposal.dao.name,
-                endHoursUTC: formatTwoDigit(notification.proposal.timeEnd.getUTCHours()),
-                endMinutesUTC: formatTwoDigit(notification.proposal.timeEnd.getUTCMinutes()),
-                endDateString: notification.proposal.timeEnd.toLocaleDateString(undefined, dateOptions),
-                countdownUrl: encodeURI(countdownUrl)
-            };
-        });
-
-        return Promise.all(promises);
+        return tableRows
     } catch (error) {
         log_bul.log({
             level: 'error',
             message: 'Could not format email table data',
             data: { error, user, notificationType }
-        });
-        throw new Error('Could not format email table data');
+        })
+        throw new Error('Could not format email table data')
     }
-};
+}
+
+const formatEmailTemplateRow = async (
+    notification: Notification & { proposal: Proposal & { dao: DAO } },
+    user: UserWithVotingAddresses
+): Promise<EmailTemplateRow> => {
+    const voted = await userVoted(
+        user.voters,
+        notification.proposalId,
+        notification.daoId
+    )
+
+    let countdownUrl = ''
+    for (let i = 0; i < 70; i++) {
+        console.log(i)
+        countdownUrl = await generateCountdownGifUrl(
+            notification.proposal.timeEnd
+        )
+    }
+
+    const votingStatus = voted
+        ? 'Voted'
+        : notification.type === RoundupNotificationType.PAST
+        ? "Didn't vote"
+        : 'Not voted yet'
+
+    const votingStatusIconUrl = voted
+        ? `${process.env.WEB_URL}/assets/Icon/Voted.png`
+        : notification.type === RoundupNotificationType.PAST
+        ? `${process.env.WEB_URL}/assets/Icon/DidntVote.png`
+        : `${process.env.WEB_URL}/assets/Icon/NotVotedYet.png`
+
+    return {
+        votingStatus,
+        votingStatusIconUrl: encodeURI(votingStatusIconUrl),
+        proposalName:
+            notification.proposal.name.length > 100
+                ? `${notification.proposal.name.substring(0, 100)}...`
+                : notification.proposal.name,
+        proposalUrl: encodeURI(notification.proposal.url),
+        daoLogoUrl: encodeURI(
+            `${process.env.WEB_URL}${notification.proposal.dao.picture}_small.png`
+        ),
+        daoName: notification.proposal.dao.name,
+        endHoursUTC: formatTwoDigit(
+            notification.proposal.timeEnd.getUTCHours()
+        ),
+        endMinutesUTC: formatTwoDigit(
+            notification.proposal.timeEnd.getUTCMinutes()
+        ),
+        endDateString: notification.proposal.timeEnd.toLocaleDateString(
+            undefined,
+            emailProposalEndDateStringFormat
+        ),
+        countdownUrl: encodeURI(countdownUrl)
+    }
+}
 
 const formatTwoDigit = (timeUnit: number): string => {
     const timeUnitStr = timeUnit.toString()
@@ -409,44 +441,72 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
         const minutesUTC = formatTwoDigit(endTime.getUTCMinutes())
         const endTimeString = `${yearUTC}-${monthUTC}-${dateUTC} ${hoursUTC}:${minutesUTC}:00`
 
-        await delay(5000);
-        const response = await axios({
-            url: 'https://countdownmail.com/api/create',
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-                'Accept-Encoding': 'null',
-                Authorization: process.env.VOTING_COUNTDOWN_TOKEN
-            },
-            data: {
-                skin_id: 6,
-                name: 'Voting countdown',
-                time_end: endTimeString,
-                time_zone: 'UTC',
-                font_family: 'Roboto-Medium',
-                label_font_family: 'RobotoCondensed-Light',
-                color_primary: '000000',
-                color_text: '000000',
-                color_bg: 'FFFFFF',
-                transparent: '0',
-                font_size: 26,
-                label_font_size: 8,
-                expired_mes_on: 1,
-                expired_mes: 'Proposal Ended',
-                day: '1',
-                days: 'days',
-                hours: 'hours',
-                minutes: 'minutes',
-                seconds: 'seconds',
-                advanced_params: {
-                    separator_color: 'FFFFFF',
-                    labels_color: '000000'
+        let retries = 10
+        let response = null
+        while (retries) {
+            try {
+                response = await axios({
+                    url: 'https://countdownmail.com/api/create',
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        'Accept-Encoding': 'null',
+                        Authorization: process.env.VOTING_COUNTDOWN_TOKEN
+                    },
+                    data: {
+                        skin_id: 6,
+                        name: 'Voting countdown',
+                        time_end: endTimeString,
+                        time_zone: 'UTC',
+                        font_family: 'Roboto-Medium',
+                        label_font_family: 'RobotoCondensed-Light',
+                        color_primary: '000000',
+                        color_text: '000000',
+                        color_bg: 'FFFFFF',
+                        transparent: '0',
+                        font_size: 26,
+                        label_font_size: 8,
+                        expired_mes_on: 1,
+                        expired_mes: 'Proposal Ended',
+                        day: '1',
+                        days: 'days',
+                        hours: 'hours',
+                        minutes: 'minutes',
+                        seconds: 'seconds',
+                        advanced_params: {
+                            separator_color: 'FFFFFF',
+                            labels_color: '000000'
+                        }
+                    }
+                })
+                // console.log('SUCCESS')
+                // console.log(JSON.stringify(response))
+                break
+            } catch (err) {
+                retries--
+                if (!retries) {
+                    throw err
                 }
-            }
-        })
 
-        if (!response || !response.data  || !response.data.message || !response.data.message.src) {
+                log_bul.log({
+                    level: 'warn',
+                    message:
+                        'Coundownmail request failed. Retrying to generate countdown gif',
+                    data: {
+                        retriesLeft: retries
+                    }
+                })
+                await new Promise((resolve) => setTimeout(resolve, 10000))
+            }
+        }
+
+        if (
+            !response ||
+            !response.data ||
+            !response.data.message ||
+            !response.data.message.src
+        ) {
             log_bul.log({
                 level: 'error',
                 message: 'Could not find gif URL in response',
@@ -483,7 +543,7 @@ const fetchUsersToBeNotified = async (): Promise<UserWithVotingAddresses[]> => {
                 },
                 subscriptions: {
                     some: {
-                        notificationsEnabled: true,
+                        notificationsEnabled: true
                     }
                 }
             },
@@ -491,7 +551,7 @@ const fetchUsersToBeNotified = async (): Promise<UserWithVotingAddresses[]> => {
                 voters: true
             }
         })
-        
+
         log_bul.log({
             level: 'info',
             message: 'Fetched users with daily bulletin enabled',
@@ -511,7 +571,6 @@ const fetchUsersToBeNotified = async (): Promise<UserWithVotingAddresses[]> => {
     }
 }
 
-
 const sendDailyBulletin = async () => {
     const dateOptions: Intl.DateTimeFormatOptions = {
         weekday: 'long',
@@ -520,10 +579,12 @@ const sendDailyBulletin = async () => {
         day: 'numeric'
     }
 
-    const todaysDate = new Date(Date.now()).toLocaleDateString(undefined, dateOptions)
+    const todaysDate = new Date(Date.now()).toLocaleDateString(
+        undefined,
+        dateOptions
+    )
 
     try {
-        
         const users = await fetchUsersToBeNotified()
 
         for (const user of users) {
@@ -552,9 +613,9 @@ const sendDailyBulletin = async () => {
             const response = await client.sendEmailWithTemplate({
                 TemplateAlias: 'daily-bulletin',
                 TemplateModel: {
-                    senateLogoUrl:
-                        encodeURI(process.env.WEB_URL +
-                        '/assets/Senate_Logo/64/White.png'),
+                    senateLogoUrl: encodeURI(
+                        process.env.WEB_URL + '/assets/Senate_Logo/64/White.png'
+                    ),
                     todaysDate: todaysDate,
                     endingSoonProposals: endingSoonProposalsData,
                     endingSoonProposalsTableCssClass:
@@ -574,12 +635,15 @@ const sendDailyBulletin = async () => {
                     pastProposalsNoDataBoxCssClass:
                         pastProposalsData.length > 0 ? 'hide' : 'show',
 
-                    twitterIconUrl:
-                        encodeURI(process.env.WEB_URL + '/assets/Icon/TwitterWhite.png'),
-                    discordIconUrl:
-                        encodeURI(process.env.WEB_URL + '/assets/Icon/DiscordWhite.png'),
-                    githubIconUrl:
-                        encodeURI(process.env.WEB_URL + '/assets/Icon/GithubWhite.png')
+                    twitterIconUrl: encodeURI(
+                        process.env.WEB_URL + '/assets/Icon/TwitterWhite.png'
+                    ),
+                    discordIconUrl: encodeURI(
+                        process.env.WEB_URL + '/assets/Icon/DiscordWhite.png'
+                    ),
+                    githubIconUrl: encodeURI(
+                        process.env.WEB_URL + '/assets/Icon/GithubWhite.png'
+                    )
                 },
                 InlineCss: true,
                 From: 'info@senatelabs.xyz',
@@ -594,7 +658,7 @@ const sendDailyBulletin = async () => {
                 level: 'info',
                 message: 'Sent daily bulletin to user',
                 data: {
-                    email: user.email,
+                    email: user.email
                 }
             })
         }
@@ -611,7 +675,10 @@ const sendDailyBulletin = async () => {
 
 // TO BE IMPLEMENTED
 const sendSorryPlsEmail = async () => {
-
+    log_bul.log({
+        level: 'info',
+        message: 'Sending fallback email to users'
+    })
 }
 
 const userVoted = async (
@@ -644,5 +711,4 @@ const userVoted = async (
         })
         throw Error('Could not check if user voted')
     }
-    
 }
