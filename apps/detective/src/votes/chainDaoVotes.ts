@@ -1,4 +1,4 @@
-import { log_node, log_pd } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import { getAaveVotes } from './chain/aave'
@@ -16,6 +16,8 @@ const senateProvider = new ethers.providers.JsonRpcProvider({
 })
 
 interface Result {
+    voterAddress: string
+    success: boolean
     votes: {
         voterAddress: string
         daoId: string
@@ -24,7 +26,6 @@ interface Result {
         choiceId: string
         choice: string
     }[]
-    newLastVoteBlock: number
 }
 
 export const updateChainDaoVotes = async (
@@ -32,6 +33,9 @@ export const updateChainDaoVotes = async (
     voters: [string]
 ) => {
     if (!Array.isArray(voters)) voters = [voters]
+
+    const result = new Map()
+    voters.map((voter) => result.set(voter, 'nok'))
 
     const daoHandler = await prisma.dAOHandler.findFirstOrThrow({
         where: { id: daoHandlerId },
@@ -54,200 +58,197 @@ export const updateChainDaoVotes = async (
         }
     })
 
-    const results = new Map()
-
-    for (const voterAddress of voters) {
-        results.set(voterAddress, 'ok')
-
-        if (daoHandler.dao.proposals.length == 0) {
-            log_pd.log({
-                level: 'info',
-                message: `Nothing to update for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
-                data: { reason: 'No proposals for this DAO' }
-            })
-            continue
+    const voterHandlers = await prisma.voterHandler.findMany({
+        where: {
+            daoHandlerId: daoHandlerId,
+            voter: {
+                address: { in: voters }
+            }
+        },
+        include: {
+            voter: true
         }
+    })
 
-        const voterHandler = await prisma.voterHandler.findFirstOrThrow({
-            where: {
-                daoHandlerId: daoHandlerId,
-                voter: {
-                    is: {
-                        address: voterAddress
-                    }
-                }
-            }
-        })
+    const voterAddresses = voterHandlers.map(
+        (voterHandler) => voterHandler.voter.address
+    )
 
-        try {
-            let result: Result, provider, currentBlock, senateOnline
-            try {
-                currentBlock = await senateProvider.getBlockNumber()
-                senateOnline = true
-            } catch (e) {
-                currentBlock = await infuraProvider.getBlockNumber()
-            }
-            const lastVoteBlock =
-                Number(voterHandler.lastChainVoteCreatedBlock) ?? 0
+    const lastVoteBlock = Math.min(
+        ...voterHandlers.map((voterHandler) =>
+            Number(voterHandler.lastChainVoteCreatedBlock)
+        )
+    )
 
-            log_pd.log({
-                level: 'info',
-                message: `Current block`,
-                data: {
-                    currentBlock: currentBlock
-                }
-            })
+    let results: Result[] = [],
+        currentBlock: number
 
-            if (lastVoteBlock < currentBlock - 50 || !senateOnline) {
-                provider = infuraProvider
-                log_pd.log({
-                    level: 'info',
-                    message: `Using Infura provider for votes ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
-                    data: {
-                        daoHandlerId: daoHandlerId,
-                        lastVoteBlock: lastVoteBlock,
-                        provider: 'Infura'
-                    }
-                })
-            } else {
-                provider = senateProvider
-                log_pd.log({
-                    level: 'info',
-                    message: `Using Senate provider for votes ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
-                    data: {
-                        daoHandlerId: daoHandlerId,
-                        lastVoteBlock: lastVoteBlock,
-                        provider: 'Senate'
-                    }
-                })
-            }
-
-            switch (daoHandler.type) {
-                case 'AAVE_CHAIN':
-                    result = await getAaveVotes(
-                        provider,
-                        daoHandler,
-                        voterAddress,
-                        lastVoteBlock
-                    )
-                    break
-                case 'COMPOUND_CHAIN':
-                    result = await getCompoundVotes(
-                        provider,
-                        daoHandler,
-                        voterAddress,
-                        lastVoteBlock
-                    )
-                    break
-                case 'MAKER_EXECUTIVE':
-                    result = await getMakerExecutiveVotes(
-                        provider,
-                        daoHandler,
-                        voterAddress,
-                        lastVoteBlock
-                    )
-                    break
-                case 'MAKER_POLL':
-                    result = await getMakerPollVotes(
-                        provider,
-                        daoHandler,
-                        voterAddress,
-                        lastVoteBlock
-                    )
-                    break
-                case 'UNISWAP_CHAIN':
-                    result = await getUniswapVotes(
-                        provider,
-                        daoHandler,
-                        voterAddress,
-                        lastVoteBlock
-                    )
-                    break
-            }
-
-            if (
-                !result.votes.length ||
-                result.newLastVoteBlock == lastVoteBlock
-            ) {
-                log_pd.log({
-                    level: 'info',
-                    message: `Nothing to update for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
-                    data: { lastChainVoteCreatedBlock: result.newLastVoteBlock }
-                })
-                continue
-            }
-
-            log_pd.log({
-                level: 'info',
-                message: `Updating votes for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
-                data: {
-                    votes: result.votes
-                }
-            })
-
-            await prisma.vote
-                .createMany({
-                    data: result.votes,
-                    skipDuplicates: true
-                })
-                .then(async (r) => {
-                    log_pd.log({
-                        level: 'info',
-                        message: `Updated votes for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
-                        data: {
-                            vote: r,
-                            newLastVoteBlock: result.newLastVoteBlock
-                        }
-                    })
-                    await prisma.voterHandler.update({
-                        where: {
-                            id: voterHandler.id
-                        },
-                        data: {
-                            lastChainVoteCreatedBlock: result.newLastVoteBlock,
-                            lastSnapshotVoteCreatedTimestamp: new Date(0)
-                        }
-                    })
-                    return
-                })
-                .catch(async (e) => {
-                    results.set(voterAddress, 'nok')
-                    log_pd.log({
-                        level: 'error',
-                        message: `Could not update votes for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
-                        data: {
-                            location: 'prisma createMany',
-                            error: e,
-                            votes: result.votes
-                        }
-                    })
-                })
-        } catch (e) {
-            results.set(voterAddress, 'nok')
-            log_pd.log({
-                level: 'error',
-                message: `Could not update votes for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
-                data: {
-                    location: 'try wrap',
-                    error: e,
-                    errorString: String(e)
-                }
-            })
-        }
+    try {
+        currentBlock = await senateProvider.getBlockNumber()
+    } catch (e) {
+        currentBlock = await infuraProvider.getBlockNumber()
     }
 
-    const resultsArray = Array.from(results, ([name, value]) => ({
-        voterAddress: name,
-        response: value
-    }))
+    const fromBlock = Math.max(lastVoteBlock, 0)
+    const toBlock =
+        currentBlock - fromBlock > 1000000 ? fromBlock + 1000000 : currentBlock
+
+    const provider =
+        currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
+
+    log_pd.log({
+        level: 'info',
+        message: `Search interval for ${voterAddresses} - ${daoHandler.dao.name} - ${daoHandler.type}`,
+        data: {
+            currentBlock: currentBlock,
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            provider: provider.connection.url
+        }
+    })
+
+    switch (daoHandler.type) {
+        case 'AAVE_CHAIN':
+            results = await getAaveVotes(
+                provider,
+                daoHandler,
+                voterAddresses,
+                fromBlock,
+                toBlock
+            )
+            break
+        case 'COMPOUND_CHAIN':
+            results = await getCompoundVotes(
+                provider,
+                daoHandler,
+                voterAddresses,
+                fromBlock,
+                toBlock
+            )
+            break
+        case 'MAKER_EXECUTIVE':
+            results = await getMakerExecutiveVotes(
+                provider,
+                daoHandler,
+                voterAddresses,
+                fromBlock,
+                toBlock
+            )
+            break
+        case 'MAKER_POLL':
+            results = await getMakerPollVotes(
+                provider,
+                daoHandler,
+                voterAddresses,
+                fromBlock,
+                toBlock
+            )
+            break
+        case 'UNISWAP_CHAIN':
+            results = await getUniswapVotes(
+                provider,
+                daoHandler,
+                voterAddresses,
+                fromBlock,
+                toBlock
+            )
+            break
+    }
+
+    results
+        .filter((res) => res.success)
+        .map((res) => {
+            result.set(res.voterAddress, 'ok')
+        })
+
+    await prisma.voterHandler.updateMany({
+        where: {
+            voter: {
+                address: {
+                    in: results
+                        .filter((res) => !res.success)
+                        .map((res) => res.voterAddress)
+                }
+            },
+            daoHandlerId: daoHandler.id
+        },
+        data: {
+            lastChainVoteCreatedBlock: fromBlock,
+            lastSnapshotVoteCreatedTimestamp: new Date(0)
+        }
+    })
+
+    await prisma.voterHandler.updateMany({
+        where: {
+            voter: {
+                address: {
+                    in: results
+                        .filter((res) => res.success && !res.votes)
+                        .map((res) => res.voterAddress)
+                }
+            },
+            daoHandlerId: daoHandler.id
+        },
+        data: {
+            lastChainVoteCreatedBlock: toBlock,
+            lastSnapshotVoteCreatedTimestamp: new Date(0)
+        }
+    })
+
+    await prisma.vote
+        .createMany({
+            data: results.map((res) => res.votes).flat(2),
+            skipDuplicates: true
+        })
+        .then(async (r) => {
+            log_pd.log({
+                level: 'info',
+                message: `Updated votes for ${voterAddresses} in ${daoHandler.dao.name} - ${daoHandler.type}`,
+                data: {
+                    vote: r,
+                    newLastVoteBlock: toBlock
+                }
+            })
+            await prisma.voterHandler.updateMany({
+                where: {
+                    voter: {
+                        address: {
+                            in: results
+                                .filter((res) => res.success && res.votes)
+                                .map((res) => res.voterAddress)
+                        }
+                    },
+                    daoHandlerId: daoHandler.id
+                },
+                data: {
+                    lastChainVoteCreatedBlock: toBlock,
+                    lastSnapshotVoteCreatedTimestamp: new Date(0)
+                }
+            })
+            return
+        })
+        .catch(async (e) => {
+            log_pd.log({
+                level: 'error',
+                message: `Could not update votes for ${voterAddresses} in ${daoHandler.dao.name} - ${daoHandler.type}`,
+                data: {
+                    location: 'prisma createMany',
+                    error: e
+                }
+            })
+        })
 
     log_pd.log({
         level: 'info',
         message: `Succesfully updated votes for ${daoHandler.dao.name} - ${daoHandler.type}`,
         data: {
-            result: resultsArray
+            result: result
         }
     })
+    const resultsArray = Array.from(result, ([name, value]) => ({
+        voterAddress: name,
+        response: value
+    }))
 
     return resultsArray
 }

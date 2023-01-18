@@ -6,7 +6,8 @@ import { ethers } from 'ethers'
 export const makerExecutiveProposals = async (
     provider: ethers.providers.JsonRpcProvider,
     daoHandler: DAOHandler,
-    minBlockNumber: number
+    fromBlock: number,
+    toBlock: number
 ) => {
     const iface = new ethers.utils.Interface(daoHandler.decoder['abi'])
     const chiefContract = new ethers.Contract(
@@ -21,8 +22,8 @@ export const makerExecutiveProposals = async (
         '0xa69beaba00000000000000000000000000000000000000000000000000000000'
 
     const logs = await provider.getLogs({
-        fromBlock: Number(minBlockNumber),
-        toBlock: Number(minBlockNumber + 1000000),
+        fromBlock: fromBlock,
+        toBlock: toBlock,
         address: daoHandler.decoder['address'],
         topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
     })
@@ -31,8 +32,8 @@ export const makerExecutiveProposals = async (
         level: 'info',
         message: `getLogs`,
         data: {
-            fromBlock: Number(minBlockNumber),
-            toBlock: Number(minBlockNumber + 1000000),
+            fromBlock: fromBlock,
+            toBlock: toBlock,
             address: daoHandler.decoder['address'],
             topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
         }
@@ -102,11 +103,7 @@ export const makerExecutiveProposals = async (
             )
         ).filter((n) => n) ?? []
 
-    const lastBlock =
-        Math.max(...logs.map((log) => log.blockNumber)) ??
-        minBlockNumber + 1000000
-
-    return { proposals, lastBlock }
+    return proposals
 }
 
 const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {

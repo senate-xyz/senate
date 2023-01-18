@@ -6,18 +6,20 @@ import { hexZeroPad } from 'ethers/lib/utils'
 export const getUniswapVotes = async (
     provider: ethers.providers.JsonRpcProvider,
     daoHandler: DAOHandler,
-    voterAddress: string,
-    lastVoteBlock: number
+    voterAddresses: string[],
+    fromBlock: number,
+    toBlock: number
 ) => {
+    const success = true
     const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
 
     const logs = await provider.getLogs({
-        fromBlock: Number(lastVoteBlock),
-        toBlock: Number(lastVoteBlock + 1000000),
+        fromBlock: fromBlock,
+        toBlock: toBlock,
         address: daoHandler.decoder['address'],
         topics: [
             govBravoIface.getEventTopic('VoteCast'),
-            [hexZeroPad(voterAddress, 32)]
+            voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
         ]
     })
 
@@ -25,65 +27,91 @@ export const getUniswapVotes = async (
         level: 'info',
         message: `getLogs`,
         data: {
-            fromBlock: Number(lastVoteBlock),
-            toBlock: Number(lastVoteBlock + 1000000),
+            fromBlock: fromBlock,
+            toBlock: toBlock,
             address: daoHandler.decoder['address'],
             topics: [
                 govBravoIface.getEventTopic('VoteCast'),
-                [hexZeroPad(voterAddress, 32)]
+                voterAddresses.map((voterAddress) =>
+                    hexZeroPad(voterAddress, 32)
+                )
             ]
         }
     })
 
-    let newLastVoteBlock =
-        Math.max(...logs.map((log) => log.blockNumber)) ??
-        lastVoteBlock + 1000000
+    const result = await Promise.all(
+        voterAddresses.map((voterAddress) => {
+            return getVotesForVoter(logs, daoHandler, voterAddress)
+        })
+    )
 
+    return result
+}
+
+export const getVotesForVoter = async (
+    logs,
+    daoHandler,
+    voterAddress: string
+) => {
+    let success = true
+    const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
     const votes =
         (
             await Promise.all(
                 logs.map(async (log) => {
-                    const eventData = govBravoIface.parseLog({
-                        topics: log.topics,
-                        data: log.data
-                    }).args
+                    try {
+                        const eventData = govBravoIface.parseLog({
+                            topics: log.topics,
+                            data: log.data
+                        }).args
 
-                    const proposal = await prisma.proposal.findFirst({
-                        where: {
-                            externalId: BigNumber.from(
-                                eventData.proposalId
-                            ).toString(),
-                            daoId: daoHandler.daoId,
-                            daoHandlerId: daoHandler.id
-                        }
-                    })
+                        if (String(eventData.voter) != voterAddress) return
 
-                    //missing proposal, force sync from infura
-                    if (!proposal) {
-                        log_pd.log({
-                            level: 'warn',
-                            message: `Proposal does not exist while updating votes for ${voterAddress} in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
-                            data: {
+                        const proposal = await prisma.proposal.findFirst({
+                            where: {
                                 externalId: BigNumber.from(
                                     eventData.proposalId
-                                ).toString()
+                                ).toString(),
+                                daoId: daoHandler.daoId,
+                                daoHandlerId: daoHandler.id
                             }
                         })
-                        newLastVoteBlock = 0
-                        return
-                    }
 
-                    return {
-                        voterAddress: voterAddress,
-                        daoId: daoHandler.daoId,
-                        proposalId: proposal.id,
-                        daoHandlerId: daoHandler.id,
-                        choiceId: String(eventData.support),
-                        choice: String(eventData.support) ? 'Yes' : 'No'
+                        if (!proposal) {
+                            log_pd.log({
+                                level: 'warn',
+                                message: `Proposal does not exist while updating votes in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
+                                data: {
+                                    externalId: BigNumber.from(
+                                        eventData.id
+                                    ).toString()
+                                }
+                            })
+                            success = false
+                            return
+                        }
+
+                        return {
+                            voterAddress: voterAddress,
+                            daoId: daoHandler.daoId,
+                            proposalId: proposal.id,
+                            daoHandlerId: daoHandler.id,
+                            choiceId: String(eventData.support),
+                            choice: String(eventData.support) ? 'Yes' : 'No'
+                        }
+                    } catch (e) {
+                        log_pd.log({
+                            level: 'error',
+                            message: `Get votes error for ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
+                            data: {
+                                error: e
+                            }
+                        })
+                        success = false
                     }
                 })
             )
         ).filter((n) => n) ?? []
 
-    return { votes, newLastVoteBlock }
+    return { success, votes, voterAddress }
 }

@@ -122,7 +122,9 @@ export const updateSnapshotProposals = async (
                 error: e
             }
         })
-        throw new InternalServerErrorException()
+        for (const daoHandlerId of daoHandlerIds) {
+            results.push({ daoHandlerId: daoHandlerId, response: 'nok' })
+        }
     }
 
     return results

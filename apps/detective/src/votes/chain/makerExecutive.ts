@@ -1,32 +1,27 @@
 import { log_node, log_pd } from '@senate/axiom'
 import { DAOHandler, prisma } from '@senate/database'
 import { ethers } from 'ethers'
+import { hexZeroPad } from 'ethers/lib/utils'
 
 export const getMakerExecutiveVotes = async (
     provider: ethers.providers.JsonRpcProvider,
     daoHandler: DAOHandler,
-    voterAddress: string,
-    lastVoteBlock: number
+    voterAddresses: string[],
+    fromBlock: number,
+    toBlock: number
 ) => {
-    const iface = new ethers.utils.Interface(daoHandler.decoder['abi'])
-    const chiefContract = new ethers.Contract(
-        daoHandler.decoder['address'],
-        daoHandler.decoder['abi'],
-        provider
-    )
     const voteMultipleActionsTopic =
         '0xed08132900000000000000000000000000000000000000000000000000000000'
     const voteSingleActionTopic =
         '0xa69beaba00000000000000000000000000000000000000000000000000000000'
-    const voterAddressTopic = '0x' + '0'.repeat(24) + voterAddress.substring(2)
 
     const logs = await provider.getLogs({
-        fromBlock: Number(lastVoteBlock),
-        toBlock: Number(lastVoteBlock + 1000000),
+        fromBlock: fromBlock,
+        toBlock: toBlock,
         address: daoHandler.decoder['address'],
         topics: [
             [voteMultipleActionsTopic, voteSingleActionTopic],
-            voterAddressTopic
+            voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
         ]
     })
 
@@ -34,16 +29,43 @@ export const getMakerExecutiveVotes = async (
         level: 'info',
         message: `getLogs`,
         data: {
-            fromBlock: Number(lastVoteBlock),
-            toBlock: Number(lastVoteBlock + 1000000),
+            fromBlock: fromBlock,
+            toBlock: toBlock,
             address: daoHandler.decoder['address'],
             topics: [
                 [voteMultipleActionsTopic, voteSingleActionTopic],
-                voterAddressTopic
+                voterAddresses.map((voterAddress) =>
+                    hexZeroPad(voterAddress, 32)
+                )
             ]
         }
     })
 
+    const result = await Promise.all(
+        voterAddresses.map((voterAddress) => {
+            return getVotesForVoter(logs, daoHandler, voterAddress, provider)
+        })
+    )
+
+    return result
+}
+
+export const getVotesForVoter = async (
+    logs,
+    daoHandler,
+    voterAddress: string,
+    provider
+) => {
+    let success = true
+
+    const voteSingleActionTopic =
+        '0xa69beaba00000000000000000000000000000000000000000000000000000000'
+    const iface = new ethers.utils.Interface(daoHandler.decoder['abi'])
+    const chiefContract = new ethers.Contract(
+        daoHandler.decoder['address'],
+        daoHandler.decoder['abi'],
+        provider
+    )
     const spellAddressesSet = new Set<string>()
     for (let i = 0; i < logs.length; i++) {
         const log = logs[i]
@@ -65,54 +87,61 @@ export const getMakerExecutiveVotes = async (
     }
 
     const intermediaryVotes = Array.from(spellAddressesSet)
-
-    let newLastVoteBlock =
-        Math.max(...logs.map((log) => log.blockNumber)) ??
-        lastVoteBlock + 1000000
-
     const votes =
         (
             await Promise.all(
                 intermediaryVotes.map(async (vote) => {
-                    const proposal = await prisma.proposal.findFirst({
-                        where: {
-                            externalId: vote,
-                            daoId: daoHandler.daoId,
-                            daoHandlerId: daoHandler.id
-                        }
-                    })
-
-                    //missing proposal, force sync from infura
-                    if (!proposal) {
-                        if (
-                            vote != '0x0000000000000000000000000000000000000000' //except this one because we know it's a bad proposal and will always trigger reset
-                        )
-                            newLastVoteBlock = 0
-
-                        log_pd.log({
-                            level: 'warn',
-                            message: `Proposal does not exist while updating votes for ${voterAddress} in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
-                            data: {
-                                externalId: vote
+                    try {
+                        const proposal = await prisma.proposal.findFirst({
+                            where: {
+                                externalId: vote,
+                                daoId: daoHandler.daoId,
+                                daoHandlerId: daoHandler.id
                             }
                         })
 
-                        return
-                    }
+                        //missing proposal, force sync from infura
+                        if (!proposal) {
+                            if (
+                                vote !=
+                                '0x0000000000000000000000000000000000000000' //except this one because we know it's a bad proposal and will always trigger reset
+                            )
+                                success = false
 
-                    return {
-                        voterAddress: voterAddress,
-                        daoId: daoHandler.daoId,
-                        proposalId: proposal.id,
-                        daoHandlerId: daoHandler.id,
-                        choiceId: '1',
-                        choice: 'Yes'
+                            log_pd.log({
+                                level: 'warn',
+                                message: `Proposal does not exist while updating votes for ${voterAddress} in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
+                                data: {
+                                    externalId: vote
+                                }
+                            })
+
+                            return
+                        }
+
+                        return {
+                            voterAddress: voterAddress,
+                            daoId: daoHandler.daoId,
+                            proposalId: proposal.id,
+                            daoHandlerId: daoHandler.id,
+                            choiceId: '1',
+                            choice: 'Yes'
+                        }
+                    } catch (e) {
+                        log_pd.log({
+                            level: 'error',
+                            message: `Get votes error for ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
+                            data: {
+                                error: e
+                            }
+                        })
+                        success = false
                     }
                 })
             )
         ).filter((n) => n) ?? []
 
-    return { votes, newLastVoteBlock }
+    return { success, votes, voterAddress }
 }
 
 const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
