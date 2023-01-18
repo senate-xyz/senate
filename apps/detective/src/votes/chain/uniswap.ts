@@ -12,7 +12,8 @@ export const getUniswapVotes = async (
     const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
 
     const logs = await provider.getLogs({
-        fromBlock: lastVoteBlock,
+        fromBlock: Number(lastVoteBlock),
+        toBlock: Number(lastVoteBlock + 1000000),
         address: daoHandler.decoder['address'],
         topics: [
             govBravoIface.getEventTopic('VoteCast'),
@@ -24,7 +25,8 @@ export const getUniswapVotes = async (
         level: 'info',
         message: `getLogs`,
         data: {
-            fromBlock: lastVoteBlock,
+            fromBlock: Number(lastVoteBlock),
+            toBlock: Number(lastVoteBlock + 1000000),
             address: daoHandler.decoder['address'],
             topics: [
                 govBravoIface.getEventTopic('VoteCast'),
@@ -33,7 +35,7 @@ export const getUniswapVotes = async (
         }
     })
 
-    let newLastVoteBlock = (await provider.getBlockNumber()) ?? 0
+    let newLastVoteBlock = Math.max(...logs.map((log) => log.blockNumber)) ?? 0
 
     const votes =
         (

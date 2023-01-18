@@ -165,19 +165,14 @@ export const updateChainDaoVotes = async (
                     break
             }
 
-            if (!result.votes.length) {
+            if (
+                !result.votes.length ||
+                result.newLastVoteBlock == lastVoteBlock
+            ) {
                 log_pd.log({
                     level: 'info',
                     message: `Nothing to update for ${voterAddress} in ${daoHandler.dao.name} - ${daoHandler.type}`,
                     data: { lastChainVoteCreatedBlock: result.newLastVoteBlock }
-                })
-                await prisma.voterHandler.update({
-                    where: {
-                        id: voterHandler.id
-                    },
-                    data: {
-                        lastChainVoteCreatedBlock: result.newLastVoteBlock
-                    }
                 })
                 continue
             }

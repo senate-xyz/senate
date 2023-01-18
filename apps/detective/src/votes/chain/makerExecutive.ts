@@ -21,7 +21,8 @@ export const getMakerExecutiveVotes = async (
     const voterAddressTopic = '0x' + '0'.repeat(24) + voterAddress.substring(2)
 
     const logs = await provider.getLogs({
-        fromBlock: lastVoteBlock,
+        fromBlock: Number(lastVoteBlock),
+        toBlock: Number(lastVoteBlock + 1000000),
         address: daoHandler.decoder['address'],
         topics: [
             [voteMultipleActionsTopic, voteSingleActionTopic],
@@ -33,7 +34,8 @@ export const getMakerExecutiveVotes = async (
         level: 'info',
         message: `getLogs`,
         data: {
-            fromBlock: lastVoteBlock,
+            fromBlock: Number(lastVoteBlock),
+            toBlock: Number(lastVoteBlock + 1000000),
             address: daoHandler.decoder['address'],
             topics: [
                 [voteMultipleActionsTopic, voteSingleActionTopic],
@@ -64,7 +66,7 @@ export const getMakerExecutiveVotes = async (
 
     const intermediaryVotes = Array.from(spellAddressesSet)
 
-    let newLastVoteBlock = (await provider.getBlockNumber()) ?? 0
+    let newLastVoteBlock = Math.max(...logs.map((log) => log.blockNumber)) ?? 0
 
     const votes =
         (

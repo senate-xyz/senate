@@ -22,6 +22,7 @@ export const makerExecutiveProposals = async (
 
     const logs = await provider.getLogs({
         fromBlock: Number(minBlockNumber),
+        toBlock: Number(minBlockNumber + 1000000),
         address: daoHandler.decoder['address'],
         topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
     })
@@ -31,6 +32,7 @@ export const makerExecutiveProposals = async (
         message: `getLogs`,
         data: {
             fromBlock: Number(minBlockNumber),
+            toBlock: Number(minBlockNumber + 1000000),
             address: daoHandler.decoder['address'],
             topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
         }
@@ -100,7 +102,7 @@ export const makerExecutiveProposals = async (
             )
         ).filter((n) => n) ?? []
 
-    const lastBlock = (await provider.getBlockNumber()) ?? 0
+    const lastBlock = Math.max(...logs.map((log) => log.blockNumber)) ?? 0
 
     return { proposals, lastBlock }
 }

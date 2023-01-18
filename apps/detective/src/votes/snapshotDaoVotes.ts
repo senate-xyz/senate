@@ -150,18 +150,6 @@ export const updateSnapshotDaoVotes = async (
                 votes.filter((vote) => vote.proposal.id == snapshotProposalId)
                     .length == proposal.votes.length
             ) {
-                await prisma.voterHandler.updateMany({
-                    where: {
-                        voter: { address: { in: voters } }
-                    },
-                    data: {
-                        lastSnapshotVoteCreatedTimestamp: new Date(
-                            Math.min(...votes.map((vote) => vote.created)) *
-                                1000
-                        )
-                    }
-                })
-
                 log_pd.log({
                     level: 'info',
                     message: 'No new votes, skipping insert'

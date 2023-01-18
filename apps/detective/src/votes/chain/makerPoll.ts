@@ -13,7 +13,8 @@ export const getMakerPollVotes = async (
         JSON.parse(daoHandler.decoder['abi_vote'])
     )
     const logs = await provider.getLogs({
-        fromBlock: lastVoteBlock,
+        fromBlock: Number(lastVoteBlock),
+        toBlock: Number(lastVoteBlock + 1000000),
         address: daoHandler.decoder['address_vote'],
         topics: [iface.getEventTopic('Voted'), hexZeroPad(voterAddress, 32)]
     })
@@ -22,13 +23,14 @@ export const getMakerPollVotes = async (
         level: 'info',
         message: `getLogs`,
         data: {
-            fromBlock: lastVoteBlock,
+            fromBlock: Number(lastVoteBlock),
+            toBlock: Number(lastVoteBlock + 1000000),
             address: daoHandler.decoder['address_vote'],
             topics: [iface.getEventTopic('Voted'), hexZeroPad(voterAddress, 32)]
         }
     })
 
-    let newLastVoteBlock = (await provider.getBlockNumber()) ?? 0
+    let newLastVoteBlock = Math.max(...logs.map((log) => log.blockNumber)) ?? 0
 
     const votes =
         (
