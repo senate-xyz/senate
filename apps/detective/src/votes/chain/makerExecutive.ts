@@ -66,7 +66,9 @@ export const getMakerExecutiveVotes = async (
 
     const intermediaryVotes = Array.from(spellAddressesSet)
 
-    let newLastVoteBlock = Math.max(...logs.map((log) => log.blockNumber)) ?? 0
+    let newLastVoteBlock =
+        Math.max(...logs.map((log) => log.blockNumber)) ??
+        lastVoteBlock + 1000000
 
     const votes =
         (
