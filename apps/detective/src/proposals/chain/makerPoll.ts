@@ -77,7 +77,9 @@ export const makerPolls = async (
             )
         ).filter((n) => n) ?? []
 
-    const lastBlock = Math.max(...logs.map((log) => log.blockNumber)) ?? 0
+    const lastBlock =
+        Math.max(...logs.map((log) => log.blockNumber)) ??
+        minBlockNumber + 1000000
 
     return { proposals, lastBlock }
 }
