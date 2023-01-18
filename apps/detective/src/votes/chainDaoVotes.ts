@@ -1,5 +1,5 @@
 import { log_pd } from '@senate/axiom'
-import { prisma } from '@senate/database'
+import { DAOHandlerType, prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import { getAaveVotes } from './chain/aave'
 import { getMakerExecutiveVotes } from './chain/makerExecutive'
@@ -89,9 +89,14 @@ export const updateChainDaoVotes = async (
         currentBlock = await infuraProvider.getBlockNumber()
     }
 
+    const blockBatch =
+        daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE ? 100000 : 1000000 //maker is really slow so we refresh 100k batches
+
     const fromBlock = Math.max(lastVoteBlock, 0)
     const toBlock =
-        currentBlock - fromBlock > 1000000 ? fromBlock + 1000000 : currentBlock
+        currentBlock - fromBlock > blockBatch
+            ? fromBlock + blockBatch
+            : currentBlock
 
     const provider =
         currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
