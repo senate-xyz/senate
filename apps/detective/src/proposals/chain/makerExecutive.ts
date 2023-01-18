@@ -13,7 +13,8 @@ const ONE_MONTH_MS = 1000 * 60 * 60 * 24 * 30
 export const makerExecutiveProposals = async (
     provider: ethers.providers.JsonRpcProvider,
     daoHandler: DAOHandler,
-    minBlockNumber: number
+    fromBlock: number,
+    toBlock: number
 ) => {
     const iface = new ethers.utils.Interface(daoHandler.decoder['abi'])
     const chiefContract = new ethers.Contract(
@@ -23,8 +24,8 @@ export const makerExecutiveProposals = async (
     )
 
     const logs = await provider.getLogs({
-        fromBlock: Number(minBlockNumber),
-        toBlock: Number(minBlockNumber + 1000000),
+        fromBlock: fromBlock,
+        toBlock: toBlock,
         address: daoHandler.decoder['address'],
         topics: [[VOTE_MULTIPLE_ACTIONS_TOPIC, VOTE_SINGE_ACTION_TOPIC]]
     })
@@ -56,9 +57,7 @@ export const makerExecutiveProposals = async (
         })
     )
 
-    const lastBlock = (await provider.getBlockNumber()) ?? minBlockNumber
-
-    return { proposals, lastBlock }
+    return proposals
 }
 
 const getProposalData = async (spellAddress: string) => {

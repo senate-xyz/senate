@@ -6,14 +6,15 @@ import { ethers } from 'ethers'
 export const makerPolls = async (
     provider: ethers.providers.JsonRpcProvider,
     daoHandler: DAOHandler,
-    minBlockNumber: number
+    fromBlock: number,
+    toBlock: number
 ) => {
     const pollingContractIface = new ethers.utils.Interface(
         daoHandler.decoder['abi_create']
     )
     const logs = await provider.getLogs({
-        fromBlock: Number(minBlockNumber),
-        toBlock: Number(minBlockNumber + 1000000),
+        fromBlock: fromBlock,
+        toBlock: toBlock,
         address: daoHandler.decoder['address_create'],
         topics: [pollingContractIface.getEventTopic('PollCreated')]
     })
@@ -22,8 +23,8 @@ export const makerPolls = async (
         level: 'info',
         message: `getLogs`,
         data: {
-            fromBlock: Number(minBlockNumber),
-            toBlock: Number(minBlockNumber + 1000000),
+            fromBlock: fromBlock,
+            toBlock: toBlock,
             address: daoHandler.decoder['address_create'],
             topics: [pollingContractIface.getEventTopic('PollCreated')]
         }
@@ -77,11 +78,7 @@ export const makerPolls = async (
             )
         ).filter((n) => n) ?? []
 
-    const lastBlock =
-        Math.max(...logs.map((log) => log.blockNumber)) ??
-        minBlockNumber + 1000000
-
-    return { proposals, lastBlock }
+    return proposals
 }
 
 const formatTitle = (text: string): string => {

@@ -13,13 +13,14 @@ const IPFS_GATEWAY_URLS = [
 export const aaveProposals = async (
     provider: ethers.providers.JsonRpcProvider,
     daoHandler: DAOHandler,
-    minBlockNumber: number
+    fromBlock: number,
+    toBlock: number
 ) => {
     const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
 
     const logs = await provider.getLogs({
-        fromBlock: Number(minBlockNumber),
-        toBlock: Number(minBlockNumber + 1000000),
+        fromBlock: fromBlock,
+        toBlock: toBlock,
         address: daoHandler.decoder['address'],
         topics: [govBravoIface.getEventTopic('ProposalCreated')]
     })
@@ -71,11 +72,7 @@ export const aaveProposals = async (
             )
         ).filter((n) => n) ?? []
 
-    const lastBlock =
-        Math.max(...logs.map((log) => log.blockNumber)) ??
-        minBlockNumber + 1000000
-
-    return { proposals, lastBlock }
+    return proposals
 }
 
 const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
