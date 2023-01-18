@@ -106,7 +106,7 @@ export const getVotesForVoter = async (
                                 vote !=
                                 '0x0000000000000000000000000000000000000000' //except this one because we know it's a bad proposal and will always trigger reset
                             )
-                                success = false
+                                success = true
 
                             log_pd.log({
                                 level: 'warn',
@@ -116,6 +116,7 @@ export const getVotesForVoter = async (
                                 }
                             })
 
+                            success = false
                             return
                         }
 
