@@ -68,6 +68,7 @@ export const updateSnapshotProposals = async (
                 deadline: 30000
             })
             .retry(3, (err, res) => {
+                if (res.status == 200) return false
                 tries++
                 if (tries > 1)
                     log_pd.log({
@@ -79,6 +80,7 @@ export const updateSnapshotProposals = async (
                             res: JSON.stringify(res)
                         }
                     })
+                if (err) return true
             })
             .then((response) => {
                 log_pd.log({
