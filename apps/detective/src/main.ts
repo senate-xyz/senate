@@ -6,8 +6,7 @@ const PORT = process.env.PORT || 3100
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule)
-    const server = await app.listen(PORT)
-    server.setTimeout(1800000)
+    await app.listen(PORT)
 
     log_pd.log({
         level: 'info',
