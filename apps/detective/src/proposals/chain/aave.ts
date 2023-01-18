@@ -3,6 +3,13 @@ import { DAOHandler } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
 
+const IPFS_GATEWAY_URLS = [
+    'https://ipfs.io/ipfs/',
+    'https://ipfs.infura.io/ipfs/',
+    'https://cloudflare-ipfs.com/ipfs/',
+    'https://gateway.pinata.cloud/ipfs/'
+]
+
 export const aaveProposals = async (
     provider: ethers.providers.JsonRpcProvider,
     daoHandler: DAOHandler,
@@ -56,11 +63,8 @@ export const aaveProposals = async (
                     const votingEndsTimestamp =
                         proposalCreatedTimestamp +
                         (arg.eventData.endBlock - arg.txBlock) * 12
-                    const title = await getProposalTitle(
-                        daoHandler.decoder['address'],
+                    const title = await fetchTitleFromIPFS(
                         arg.eventData.ipfsHash
-                            ? arg.eventData.ipfsHash
-                            : arg.eventData.description
                     )
                     const proposalUrl =
                         daoHandler.decoder['proposalUrl'] + arg.eventData.id
@@ -88,58 +92,58 @@ export const aaveProposals = async (
     return { proposals, lastBlock }
 }
 
-const fetchProposalInfoFromIPFS = async (
-    hexHash: string
-): Promise<{ title: string }> => {
-    let title
+const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
+    let title = 'Unknown'
     try {
-        const response = await axios.get(
-            process.env.IPFS_GATEWAY_URL + 'f01701220' + hexHash.substring(2)
-        )
-        title = response.data.title
-    } catch (e) {
-        title = 'Unknown'
+        let retries = 12
+        let gatewayIndex = 0
+        while (retries) {
+            try {
+                const response = await axios.get(
+                    IPFS_GATEWAY_URLS[gatewayIndex] +
+                        'f01701220' +
+                        hexHash.substring(2)
+                )
 
+                if (!response || !response.data || !response.data.title) {
+                    log_pd.log({
+                        level: 'error',
+                        message: `Could not find proposal title in response`,
+                        data: {
+                            response: response
+                        }
+                    })
+                }
+
+                title = response.data.title
+                break
+            } catch (e) {
+                retries--
+
+                if (!retries) {
+                    throw e
+                }
+
+                gatewayIndex = (gatewayIndex + 1) % IPFS_GATEWAY_URLS.length
+
+                log_pd.log({
+                    level: 'warn',
+                    message: `Failed fetching proposal data from ${IPFS_GATEWAY_URLS[gatewayIndex]}. Retrying...`,
+                    data: {}
+                })
+            }
+        }
+    } catch (e) {
         log_pd.log({
             level: 'error',
             message: `Could not get proposal title`,
             data: {
                 hexHash: hexHash,
-                url:
-                    process.env.IPFS_GATEWAY_URL +
-                    'f01701220' +
-                    hexHash.substring(2),
-
+                url: IPFS_GATEWAY_URLS[0] + 'f01701220' + hexHash.substring(2),
                 error: e
             }
         })
     }
 
     return title
-}
-
-const formatTitle = async (text: string): Promise<string> => {
-    const temp = text.split('\n')[0]
-
-    if (!temp) {
-        return 'Title unavailable'
-    }
-
-    if (temp[0] === '#') {
-        return temp.substring(2)
-    }
-
-    return temp
-}
-
-const getProposalTitle = async (
-    daoAddress: string,
-    text: string
-): Promise<unknown> => {
-    if (daoAddress === '0xEC568fffba86c094cf06b22134B23074DFE2252c') {
-        // Aave
-        return await fetchProposalInfoFromIPFS(text)
-    } else {
-        return formatTitle(text)
-    }
 }
