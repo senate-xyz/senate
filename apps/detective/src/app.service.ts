@@ -8,7 +8,6 @@ import { updateChainDaoVotes } from './votes/chainDaoVotes'
 @Injectable()
 export class AppService {
     //SNAPSHOT PROPOSALS
-
     async updateSnapshotProposals(
         daoHandlerIds: string[],
         minCreatedAt: number
@@ -19,13 +18,12 @@ export class AppService {
     //SNAPSHOT VOTES
     async updateSnapshotDaoVotes(
         daoHandlerId: string,
-        voters: [string]
+        voters: string[]
     ): Promise<Array<{ voterAddress: string; response: string }>> {
         return await updateSnapshotDaoVotes(daoHandlerId, voters)
     }
 
     //CHAIN PROPOSALS
-
     async updateChainProposals(
         daoHandlerId: string,
         minBlockNumber: number
@@ -34,10 +32,9 @@ export class AppService {
     }
 
     //CHAIN VOTES
-
     async updateChainDaoVotes(
         daoHandlerId: string,
-        voters: [string]
+        voters: string[]
     ): Promise<Array<{ voterAddress: string; response: string }>> {
         return await updateChainDaoVotes(daoHandlerId, voters)
     }

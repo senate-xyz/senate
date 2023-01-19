@@ -18,17 +18,6 @@ export const aaveProposals = async (
         topics: [govBravoIface.getEventTopic('ProposalCreated')]
     })
 
-    log_node.log({
-        level: 'info',
-        message: `getLogs`,
-        data: {
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            address: daoHandler.decoder['address'],
-            topics: [govBravoIface.getEventTopic('ProposalCreated')]
-        }
-    })
-
     const args = logs.map((log) => ({
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
@@ -46,13 +35,6 @@ export const aaveProposals = async (
                         await provider.getBlock(arg.txBlock)
                     ).timestamp
 
-                    log_node.log({
-                        level: 'info',
-                        message: `getBlock`,
-                        data: {
-                            block: arg.txBlock
-                        }
-                    })
                     const votingStartsTimestamp =
                         proposalCreatedTimestamp +
                         (arg.eventData.startBlock - arg.txBlock) * 12
@@ -100,20 +82,6 @@ const fetchProposalInfoFromIPFS = async (
         title = response.data.title
     } catch (e) {
         title = 'Unknown'
-
-        log_pd.log({
-            level: 'error',
-            message: `Could not get proposal title`,
-            data: {
-                hexHash: hexHash,
-                url:
-                    process.env.IPFS_GATEWAY_URL +
-                    'f01701220' +
-                    hexHash.substring(2),
-
-                error: e
-            }
-        })
     }
 
     return title

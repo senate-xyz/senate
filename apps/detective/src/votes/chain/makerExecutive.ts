@@ -25,22 +25,6 @@ export const getMakerExecutiveVotes = async (
         ]
     })
 
-    log_node.log({
-        level: 'info',
-        message: `getLogs`,
-        data: {
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            address: daoHandler.decoder['address'],
-            topics: [
-                [voteMultipleActionsTopic, voteSingleActionTopic],
-                voterAddresses.map((voterAddress) =>
-                    hexZeroPad(voterAddress, 32)
-                )
-            ]
-        }
-    })
-
     const result = await Promise.all(
         voterAddresses.map((voterAddress) => {
             return getVotesForVoter(logs, daoHandler, voterAddress, provider)
@@ -108,14 +92,6 @@ export const getVotesForVoter = async (
                             )
                                 success = true
 
-                            log_pd.log({
-                                level: 'warn',
-                                message: `Proposal does not exist while updating votes for ${voterAddress} in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
-                                data: {
-                                    externalId: vote
-                                }
-                            })
-
                             success = false
                             return
                         }
@@ -129,13 +105,6 @@ export const getVotesForVoter = async (
                             choice: 'Yes'
                         }
                     } catch (e) {
-                        log_pd.log({
-                            level: 'error',
-                            message: `Get votes error for ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
-                            data: {
-                                error: e
-                            }
-                        })
                         success = false
                     }
                 })

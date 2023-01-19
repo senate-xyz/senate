@@ -28,17 +28,6 @@ export const makerExecutiveProposals = async (
         topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
     })
 
-    log_node.log({
-        level: 'info',
-        message: `getLogs`,
-        data: {
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            address: daoHandler.decoder['address'],
-            topics: [[voteMultipleActionsTopic, voteSingleActionTopic]]
-        }
-    })
-
     const spellAddressesSet = new Set<string>()
     for (let i = 0; i < logs.length; i++) {
         const log = logs[i]

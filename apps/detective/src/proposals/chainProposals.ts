@@ -36,20 +36,8 @@ export const updateChainProposals = async (
         where: { id: daoHandlerId },
         include: { dao: true }
     })
-    log_pd.log({
-        level: 'info',
-        message: `New proposals update for ${daoHandler.dao.name} - ${daoHandler.type}`,
-        data: {
-            daoHandlerId: daoHandlerId,
-            minBlockNumber: minBlockNumber
-        }
-    })
 
     if (!daoHandler.decoder) {
-        log_pd.log({
-            level: 'error',
-            message: 'Could not get daoHandler decoder'
-        })
         return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
     }
 
@@ -73,17 +61,6 @@ export const updateChainProposals = async (
 
         const provider =
             currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
-
-        log_pd.log({
-            level: 'info',
-            message: `Search interval for ${daoHandler.dao.name} - ${daoHandler.type}`,
-            data: {
-                currentBlock: currentBlock,
-                fromBlock: fromBlock,
-                toBlock: toBlock,
-                provider: provider.connection.url
-            }
-        })
 
         switch (daoHandler.type) {
             case 'AAVE_CHAIN':
@@ -129,10 +106,6 @@ export const updateChainProposals = async (
         }
 
         if (!result.length && toBlock == currentBlock) {
-            log_pd.log({
-                level: 'info',
-                message: `No new proposals. Skip insert ${daoHandler.dao.name} - ${daoHandler.type}`
-            })
             await prisma.dAOHandler.update({
                 where: {
                     id: daoHandler.id
@@ -143,28 +116,12 @@ export const updateChainProposals = async (
                 }
             })
         } else {
-            log_pd.log({
-                level: 'info',
-                message: `Got proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
-                data: {
-                    proposals: result
-                }
-            })
-
             await prisma.proposal
                 .createMany({
                     data: result,
                     skipDuplicates: true
                 })
                 .then(async (r) => {
-                    log_pd.log({
-                        level: 'info',
-                        message: `Upserted new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
-                        data: {
-                            proposals: r,
-                            lastChainProposalCreatedBlock: toBlock
-                        }
-                    })
                     await prisma.dAOHandler.update({
                         where: {
                             id: daoHandler.id
@@ -176,33 +133,10 @@ export const updateChainProposals = async (
                     })
                     return
                 })
-                .catch(async (e) => {
-                    response = 'nok'
-                    log_pd.log({
-                        level: 'error',
-                        message: `Could not upsert new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
-                        data: { proposals: result, error: e }
-                    })
-                })
         }
     } catch (e) {
         response = 'nok'
-        log_pd.log({
-            level: 'error',
-            message: `Could not get new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
-            data: {
-                error: e
-            }
-        })
     }
-
-    log_pd.log({
-        level: 'info',
-        message: `Succesfully updated proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
-        data: {
-            result: [{ daoHandlerId: daoHandlerId, response: response }]
-        }
-    })
 
     return [{ daoHandlerId: daoHandlerId, response: response }]
 }

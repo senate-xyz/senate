@@ -19,17 +19,6 @@ export const makerPolls = async (
         topics: [pollingContractIface.getEventTopic('PollCreated')]
     })
 
-    log_node.log({
-        level: 'info',
-        message: `getLogs`,
-        data: {
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            address: daoHandler.decoder['address_create'],
-            topics: [pollingContractIface.getEventTopic('PollCreated')]
-        }
-    })
-
     const args = logs.map((log) => ({
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
@@ -96,14 +85,6 @@ const getProposalTitle = async (url: string): Promise<unknown> => {
         title = formatTitle(response.data)
     } catch (e) {
         title = 'Unknown'
-        log_pd.log({
-            level: 'error',
-            message: `Could not get proposal title`,
-            data: {
-                url: url,
-                error: e
-            }
-        })
     }
 
     return title
