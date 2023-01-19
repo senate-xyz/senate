@@ -11,7 +11,8 @@ loggers.add('proposal-detective', {
         format.timestamp({
             format: 'YYYY-MM-DD HH:mm:ss'
         }),
-        format.ms()
+        format.ms(),
+        format.errors({ stack: true })
     ),
     transports: [
         new AxiomTransport({
@@ -30,7 +31,8 @@ loggers.add('refresher', {
         format.timestamp({
             format: 'YYYY-MM-DD HH:mm:ss'
         }),
-        format.ms()
+        format.ms(),
+        format.errors({ stack: true })
     ),
     transports: [
         new AxiomTransport({
@@ -49,7 +51,8 @@ loggers.add('bulletin', {
         format.timestamp({
             format: 'YYYY-MM-DD HH:mm:ss'
         }),
-        format.ms()
+        format.ms(),
+        format.errors({ stack: true })
     ),
     transports: [
         new AxiomTransport({
@@ -68,7 +71,8 @@ loggers.add('node', {
         format.timestamp({
             format: 'YYYY-MM-DD HH:mm:ss'
         }),
-        format.ms()
+        format.ms(),
+        format.errors({ stack: true })
     ),
     transports: [
         new AxiomTransport({
@@ -87,7 +91,8 @@ loggers.add('prisma', {
         format.timestamp({
             format: 'YYYY-MM-DD HH:mm:ss'
         }),
-        format.ms()
+        format.ms(),
+        format.errors({ stack: true })
     ),
     transports: [
         new AxiomTransport({

@@ -22,22 +22,6 @@ export const getCompoundVotes = async (
         ]
     })
 
-    log_node.log({
-        level: 'info',
-        message: `getLogs`,
-        data: {
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            address: daoHandler.decoder['address'],
-            topics: [
-                govBravoIface.getEventTopic('VoteCast'),
-                voterAddresses.map((voterAddress) =>
-                    hexZeroPad(voterAddress, 32)
-                )
-            ]
-        }
-    })
-
     const result = await Promise.all(
         voterAddresses.map((voterAddress) => {
             return getVotesForVoter(logs, daoHandler, voterAddress)
@@ -77,15 +61,6 @@ export const getVotesForVoter = async (
                         })
 
                         if (!proposal) {
-                            log_pd.log({
-                                level: 'warn',
-                                message: `Proposal does not exist while updating votes in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
-                                data: {
-                                    externalId: BigNumber.from(
-                                        eventData.id
-                                    ).toString()
-                                }
-                            })
                             success = false
                             return
                         }
@@ -99,13 +74,6 @@ export const getVotesForVoter = async (
                             choice: String(eventData.support) ? 'Yes' : 'No'
                         }
                     } catch (e) {
-                        log_pd.log({
-                            level: 'error',
-                            message: `Get votes error for ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
-                            data: {
-                                error: e
-                            }
-                        })
                         success = false
                     }
                 })

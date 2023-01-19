@@ -1,4 +1,3 @@
-import { InternalServerErrorException } from '@nestjs/common'
 import { prisma, DAOHandler } from '@senate/database'
 import { log_pd } from '@senate/axiom'
 import superagent from 'superagent'
@@ -13,20 +12,11 @@ export const updateSnapshotProposals = async (
         await getSnapshotSpaces(daoHandlerIds)
     const spacesArray = Array.from(daoHandlerToSnapshotSpaceMap.values())
 
-    log_pd.log({
-        level: 'info',
-        message: `New proposals update for ${spacesArray}}`,
-        data: {
-            daoHandlerId: daoHandlerToSnapshotSpaceMap[0],
-            minCreatedAt: minCreatedAt
-        }
-    })
-
     let proposals
 
     const graphqlQuery = `{
                 proposals (
-                    first: 1000, 
+                    first: 100, 
                     where: {
                     space_in: [${spacesArray.map((space) => `"${space}"`)}],
                     created_gt: ${Math.floor(minCreatedAt / 1000)}
@@ -48,16 +38,7 @@ export const updateSnapshotProposals = async (
                 }
                 }`
 
-    log_pd.log({
-        level: 'info',
-        message: `GraphQL query for ${spacesArray}`,
-        data: {
-            query: graphqlQuery
-        }
-    })
-
     try {
-        let tries = 0
         proposals = await superagent
             .get('https://hub.snapshot.org/graphql')
             .query({
@@ -69,37 +50,12 @@ export const updateSnapshotProposals = async (
             })
             .retry(3, (err, res) => {
                 if (res.status == 200) return false
-                tries++
-                if (tries > 1)
-                    log_pd.log({
-                        level: 'warn',
-                        message: `Retry GraphQL query for ${spacesArray}`,
-                        data: {
-                            query: graphqlQuery,
-                            error: JSON.stringify(err),
-                            res: JSON.stringify(res)
-                        }
-                    })
                 if (err) return true
             })
             .then((response) => {
-                log_pd.log({
-                    level: 'info',
-                    message: `GraphQL query response for ${spacesArray}`,
-                    data: {
-                        response: JSON.stringify(response)
-                    }
-                })
                 return response.body.data.proposals
             })
             .catch(async (e) => {
-                log_pd.log({
-                    level: 'error',
-                    message: `GraphQL error for ${spacesArray}`,
-                    data: {
-                        error: JSON.stringify(e)
-                    }
-                })
                 return
             })
 
@@ -115,13 +71,6 @@ export const updateSnapshotProposals = async (
             results.push({ daoHandlerId: daoHandler.id, response: response })
         }
     } catch (e) {
-        log_pd.log({
-            level: 'error',
-            message: `Could not update proposals for ${spacesArray}`,
-            data: {
-                error: e
-            }
-        })
         for (const daoHandlerId of daoHandlerIds) {
             results.push({ daoHandlerId: daoHandlerId, response: 'nok' })
         }
@@ -153,13 +102,6 @@ const upsertSnapshotProposals = async (
             skipDuplicates: true
         })
         .then(async (r) => {
-            log_pd.log({
-                level: 'info',
-                message: `Upserted new proposals for ${space}`,
-                data: {
-                    proposals: r
-                }
-            })
             await prisma.dAOHandler.update({
                 where: {
                     id: daoHandler.id
@@ -172,13 +114,6 @@ const upsertSnapshotProposals = async (
             return 'ok'
         })
         .catch(async (e) => {
-            log_pd.log({
-                level: 'error',
-                message: `Could not upsert proposals proposals for ${space}`,
-                data: {
-                    proposals: e
-                }
-            })
             return 'nok'
         })
 

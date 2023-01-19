@@ -10,7 +10,6 @@ export const getUniswapVotes = async (
     fromBlock: number,
     toBlock: number
 ) => {
-    const success = true
     const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
 
     const logs = await provider.getLogs({
@@ -21,22 +20,6 @@ export const getUniswapVotes = async (
             govBravoIface.getEventTopic('VoteCast'),
             voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
         ]
-    })
-
-    log_node.log({
-        level: 'info',
-        message: `getLogs`,
-        data: {
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            address: daoHandler.decoder['address'],
-            topics: [
-                govBravoIface.getEventTopic('VoteCast'),
-                voterAddresses.map((voterAddress) =>
-                    hexZeroPad(voterAddress, 32)
-                )
-            ]
-        }
     })
 
     const result = await Promise.all(
@@ -78,15 +61,6 @@ export const getVotesForVoter = async (
                         })
 
                         if (!proposal) {
-                            log_pd.log({
-                                level: 'warn',
-                                message: `Proposal does not exist while updating votes in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
-                                data: {
-                                    externalId: BigNumber.from(
-                                        eventData.id
-                                    ).toString()
-                                }
-                            })
                             success = false
                             return
                         }

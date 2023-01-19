@@ -17,17 +17,6 @@ export const uniswapProposals = async (
         topics: [govBravoIface.getEventTopic('ProposalCreated')]
     })
 
-    log_node.log({
-        level: 'info',
-        message: `getLogs`,
-        data: {
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            address: daoHandler.decoder['address'],
-            topics: [govBravoIface.getEventTopic('ProposalCreated')]
-        }
-    })
-
     const args = logs.map((log) => ({
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
@@ -45,13 +34,6 @@ export const uniswapProposals = async (
                         await provider.getBlock(arg.txBlock)
                     ).timestamp
 
-                    log_node.log({
-                        level: 'info',
-                        message: `getBlock`,
-                        data: {
-                            block: arg.txBlock
-                        }
-                    })
                     const votingStartsTimestamp =
                         proposalCreatedTimestamp +
                         (arg.eventData.startBlock - arg.txBlock) * 12

@@ -150,7 +150,8 @@ model Subscription {
 model RefreshQueue {
   id          String      @id @default(cuid())
   refreshType RefreshType
-  clientId    String
+  handlerId   String
+  args        Json
   priority    BigInt
 }
 
