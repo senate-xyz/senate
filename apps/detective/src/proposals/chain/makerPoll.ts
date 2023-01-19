@@ -50,16 +50,14 @@ export const makerPolls = async (
                     const votingEndsTimestamp = Number(arg.eventData.endDate)
                     const title =
                         (await getProposalTitle(arg.eventData.url)) ?? 'Unknown'
-                    const proposalUrl =
-                        daoHandler.decoder['proposalUrl'] +
-                        arg.eventData.multiHash.substring(0, 7)
                     const proposalOnChainId = Number(
                         arg.eventData.pollId
                     ).toString()
+                    const proposalUrl =
+                        daoHandler.decoder['proposalUrl'] + proposalOnChainId
 
-                    if (
-                        proposalOnChainId == '1' //we know for sure this is a bad proposal
-                    )
+                    if (proposalOnChainId == '1')
+                        //we know for sure this is a bad proposal
                         return
 
                     return {

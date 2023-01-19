@@ -66,14 +66,6 @@ export const updateChainProposals = async (
             currentBlock = await infuraProvider.getBlockNumber()
         }
 
-        log_pd.log({
-            level: 'info',
-            message: `Current block`,
-            data: {
-                currentBlock: currentBlock
-            }
-        })
-
         if (minBlockNumber < currentBlock - 50 || !senateOnline) {
             provider = infuraProvider
             log_pd.log({
@@ -81,6 +73,7 @@ export const updateChainProposals = async (
                 message: `Using Infura provider for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
                 data: {
                     daoHandlerId: daoHandlerId,
+                    currentBlock: currentBlock,
                     minBlockNumber: minBlockNumber,
                     provider: 'Infura'
                 }
@@ -92,6 +85,7 @@ export const updateChainProposals = async (
                 message: `Using Senate provider for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
                 data: {
                     daoHandlerId: daoHandlerId,
+                    currentBlock: currentBlock,
                     minBlockNumber: minBlockNumber,
                     provider: 'Senate'
                 }

@@ -23,16 +23,6 @@ export const aaveProposals = async (
         topics: [govBravoIface.getEventTopic('ProposalCreated')]
     })
 
-    // log_node.log({
-    //     level: 'info',
-    //     message: `getLogs`,
-    //     data: {
-    //         fromBlock: Number(minBlockNumber),
-    //         address: daoHandler.decoder['address'],
-    //         topics: [govBravoIface.getEventTopic('ProposalCreated')]
-    //     }
-    // })
-
     const args = logs.map((log) => ({
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
@@ -50,13 +40,6 @@ export const aaveProposals = async (
                         await provider.getBlock(arg.txBlock)
                     ).timestamp
 
-                    log_node.log({
-                        level: 'info',
-                        message: `getBlock`,
-                        data: {
-                            block: arg.txBlock
-                        }
-                    })
                     const votingStartsTimestamp =
                         proposalCreatedTimestamp +
                         (arg.eventData.startBlock - arg.txBlock) * 12
@@ -105,7 +88,7 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
                         hexHash.substring(2)
                 )
 
-                if (!response || !response.data || !response.data.title) {
+                if (!response.data || !response.data.title) {
                     log_pd.log({
                         level: 'error',
                         message: `Could not find proposal title in response`,
@@ -125,7 +108,6 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
                 }
 
                 gatewayIndex = (gatewayIndex + 1) % IPFS_GATEWAY_URLS.length
-                console.log('UPDATED GATEWAY INDEX: ', gatewayIndex)
 
                 log_pd.log({
                     level: 'warn',
