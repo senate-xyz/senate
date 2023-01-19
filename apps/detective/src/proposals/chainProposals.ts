@@ -1,4 +1,3 @@
-import { log_pd } from '@senate/axiom'
 import { DAOHandlerType, prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import { aaveProposals } from './chain/aave'

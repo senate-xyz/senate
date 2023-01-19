@@ -1,8 +1,14 @@
-import { log_node, log_pd } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { DAOHandler } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
 import { min } from 'rxjs'
+
+const VOTE_MULTIPLE_ACTIONS_TOPIC =
+    '0xed08132900000000000000000000000000000000000000000000000000000000'
+const VOTE_SINGE_ACTION_TOPIC =
+    '0xa69beaba00000000000000000000000000000000000000000000000000000000'
+const ONE_MONTH_MS = 1000 * 60 * 60 * 24 * 30
 
 const VOTE_MULTIPLE_ACTIONS_TOPIC =
     '0xed08132900000000000000000000000000000000000000000000000000000000'

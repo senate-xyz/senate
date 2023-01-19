@@ -108,7 +108,6 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
                 }
 
                 gatewayIndex = (gatewayIndex + 1) % IPFS_GATEWAY_URLS.length
-                console.log('UPDATED GATEWAY INDEX: ', gatewayIndex)
 
                 log_pd.log({
                     level: 'warn',
