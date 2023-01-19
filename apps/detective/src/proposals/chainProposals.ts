@@ -136,7 +136,7 @@ export const updateChainProposals = async (
             level: 'info',
             message: `Got proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
             data: {
-                proposals: result.proposals,
+                count: result.proposals.length,
                 lastBlock: result.lastBlock
             }
         })
@@ -151,7 +151,7 @@ export const updateChainProposals = async (
                     level: 'info',
                     message: `Upserted new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
                     data: {
-                        proposals: r,
+                        count: r.count,
                         lastChainProposalCreatedBlock: result.lastBlock
                     }
                 })

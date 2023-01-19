@@ -23,15 +23,15 @@ export const aaveProposals = async (
         topics: [govBravoIface.getEventTopic('ProposalCreated')]
     })
 
-    log_node.log({
-        level: 'info',
-        message: `getLogs`,
-        data: {
-            fromBlock: Number(minBlockNumber),
-            address: daoHandler.decoder['address'],
-            topics: [govBravoIface.getEventTopic('ProposalCreated')]
-        }
-    })
+    // log_node.log({
+    //     level: 'info',
+    //     message: `getLogs`,
+    //     data: {
+    //         fromBlock: Number(minBlockNumber),
+    //         address: daoHandler.decoder['address'],
+    //         topics: [govBravoIface.getEventTopic('ProposalCreated')]
+    //     }
+    // })
 
     const args = logs.map((log) => ({
         txBlock: log.blockNumber,
@@ -110,7 +110,7 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
                         level: 'error',
                         message: `Could not find proposal title in response`,
                         data: {
-                            response: response
+                            responseData: response.data
                         }
                     })
                 }
@@ -125,11 +125,14 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
                 }
 
                 gatewayIndex = (gatewayIndex + 1) % IPFS_GATEWAY_URLS.length
+                console.log('UPDATED GATEWAY INDEX: ', gatewayIndex)
 
                 log_pd.log({
                     level: 'warn',
                     message: `Failed fetching proposal data from ${IPFS_GATEWAY_URLS[gatewayIndex]}. Retrying...`,
-                    data: {}
+                    data: {
+                        retriesLeft: retries
+                    }
                 })
             }
         }
