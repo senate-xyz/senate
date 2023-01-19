@@ -105,35 +105,22 @@ export const updateChainProposals = async (
                 break
         }
 
-        if (!result.length && toBlock == currentBlock) {
-            await prisma.dAOHandler.update({
-                where: {
-                    id: daoHandler.id
-                },
-                data: {
-                    lastChainProposalCreatedBlock: toBlock,
-                    lastSnapshotProposalCreatedTimestamp: new Date(0)
-                }
+        if (result.length || toBlock != currentBlock) {
+            await prisma.proposal.createMany({
+                data: result,
+                skipDuplicates: true
             })
-        } else {
-            await prisma.proposal
-                .createMany({
-                    data: result,
-                    skipDuplicates: true
-                })
-                .then(async (r) => {
-                    await prisma.dAOHandler.update({
-                        where: {
-                            id: daoHandler.id
-                        },
-                        data: {
-                            lastChainProposalCreatedBlock: toBlock,
-                            lastSnapshotProposalCreatedTimestamp: new Date(0)
-                        }
-                    })
-                    return
-                })
         }
+
+        await prisma.dAOHandler.update({
+            where: {
+                id: daoHandler.id
+            },
+            data: {
+                lastChainProposalCreatedBlock: toBlock,
+                lastSnapshotProposalCreatedTimestamp: new Date(0)
+            }
+        })
     } catch (e) {
         response = 'nok'
     }
