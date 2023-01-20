@@ -11,11 +11,12 @@ import {
 } from '../config'
 import { bin } from 'd3-array'
 import { thresholdsTime } from '../utils'
+import { log_ref } from '@senate/axiom'
 
 export const addSnapshotDaoVotes = async () => {
     await prisma.$transaction(
         async (tx) => {
-            const daoHandlers = await tx.dAOHandler.findMany({
+            let daoHandlers = await tx.dAOHandler.findMany({
                 where: {
                     type: DAOHandlerType.SNAPSHOT,
                     voterHandlers: {
@@ -54,10 +55,17 @@ export const addSnapshotDaoVotes = async () => {
                     }
                 },
                 include: {
-                    voterHandlers: { include: { voter: true } },
-                    dao: true
+                    voterHandlers: {
+                        include: { voter: true }
+                    },
+                    dao: true,
+                    proposals: true
                 }
             })
+
+            daoHandlers = daoHandlers.filter(
+                (daoHandlers) => daoHandlers.proposals.length
+            )
 
             if (!daoHandlers.length) {
                 return
@@ -82,46 +90,70 @@ export const addSnapshotDaoVotes = async () => {
                             )
                     )
 
-                    const voteTimestampBuckets = bin<number, Date>().thresholds(
-                        thresholdsTime(10)
-                    )(voteTimestamps)
+                    const voteTimestampBuckets = bin<number, Date>()
+                        .domain([new Date(0), new Date(Date.now() + 5000)])
+                        .thresholds(thresholdsTime(10))(voteTimestamps)
 
-                    return voteTimestampBuckets.map((bucket) => {
-                        const bucketMax = Number(bucket['x1'])
-                        const bucketMin = Number(bucket['x0'])
+                    const refreshItemsDao = voteTimestampBuckets
+                        .map((bucket) => {
+                            const bucketMax = Number(bucket['x1'])
+                            const bucketMin = Number(bucket['x0'])
 
-                        const votershandlers = daoHandler.voterHandlers.filter(
-                            (voterHandler) =>
-                                Number(
-                                    voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
-                                ) >= bucketMin &&
-                                Number(
-                                    voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
-                                ) <= bucketMax
-                        )
-
-                        voterHandlersRefreshed = [
-                            ...voterHandlersRefreshed,
-                            ...votershandlers
-                        ]
-
-                        return {
-                            handlerId: daoHandler.id,
-                            refreshType: RefreshType.DAOSNAPSHOTVOTES,
-                            args: {
-                                voters: votershandlers.map(
-                                    (voter) => voter.voter.address
+                            const votershandlers =
+                                daoHandler.voterHandlers.filter(
+                                    (voterHandler) =>
+                                        Number(
+                                            voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
+                                        ) >= bucketMin &&
+                                        Number(
+                                            voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
+                                        ) < bucketMax
                                 )
-                            },
-                            priority: Number(previousPrio.priority) + 1
+
+                            voterHandlersRefreshed = [
+                                ...voterHandlersRefreshed,
+                                ...votershandlers
+                            ]
+
+                            return {
+                                bucket: `[${new Date(
+                                    bucketMin
+                                ).toUTCString()}, ${new Date(
+                                    bucketMax
+                                ).toUTCString()}] - ${
+                                    votershandlers.length
+                                } items`,
+                                query: {
+                                    handlerId: daoHandler.id,
+                                    refreshType: RefreshType.DAOSNAPSHOTVOTES,
+                                    args: {
+                                        voters: votershandlers.map(
+                                            (vhandler) => vhandler.voter.address
+                                        )
+                                    },
+                                    priority: Number(previousPrio.priority) + 1
+                                }
+                            }
+                        })
+                        .filter((el) => el.query.args.voters.length)
+
+                    log_ref.log({
+                        level: 'info',
+                        message: `Added items to queue`,
+                        data: {
+                            dao: daoHandler.dao.name,
+                            type: RefreshType.DAOSNAPSHOTVOTES,
+                            noOfBuckets: refreshItemsDao.length,
+                            items: refreshItemsDao
                         }
                     })
+
+                    return refreshItemsDao
                 })
                 .flat(2)
-                .filter((el) => el.args.voters.length)
 
             await tx.refreshQueue.createMany({
-                data: refreshEntries
+                data: refreshEntries.map((q) => q.query)
             })
 
             await tx.voterHandler.updateMany({
