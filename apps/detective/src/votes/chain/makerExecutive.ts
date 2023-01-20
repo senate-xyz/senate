@@ -84,18 +84,6 @@ export const getVotesForVoter = async (
                             }
                         })
 
-                        //missing proposal, force sync from infura
-                        if (!proposal) {
-                            if (
-                                vote !=
-                                '0x0000000000000000000000000000000000000000' //except this one because we know it's a bad proposal and will always trigger reset
-                            )
-                                success = true
-
-                            success = false
-                            return
-                        }
-
                         return {
                             voterAddress: voterAddress,
                             daoId: daoHandler.daoId,
@@ -105,13 +93,6 @@ export const getVotesForVoter = async (
                             choice: 'Yes'
                         }
                     } catch (e) {
-                        log_pd.log({
-                            level: 'error',
-                            message: `Get votes error for ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
-                            data: {
-                                error: e
-                            }
-                        })
                         console.log(e)
                         success = false
                     }
@@ -130,15 +111,6 @@ const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
         let spellAddress
         try {
             spellAddress = await chiefContract.slates(slate, count)
-            log_node.log({
-                level: 'info',
-                message: `slates`,
-                data: {
-                    function: JSON.stringify(chiefContract.slates),
-                    slate: slate,
-                    count: count
-                }
-            })
             yays.push(spellAddress)
             count++
         } catch (e) {
