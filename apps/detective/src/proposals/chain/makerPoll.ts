@@ -32,21 +32,23 @@ export const makerPolls = async (
         (
             await Promise.all(
                 args.map(async (arg) => {
+                    const proposalOnChainId = Number(
+                        arg.eventData.pollId
+                    ).toString()
+
+                    const proposalUrl =
+                        daoHandler.decoder['proposalUrl'] + proposalOnChainId
                     const proposalCreatedTimestamp = Number(
                         arg.eventData.blockCreated
                     )
-
                     const votingStartsTimestamp = Number(
                         arg.eventData.startDate
                     )
                     const votingEndsTimestamp = Number(arg.eventData.endDate)
-                    const title =
-                        (await getProposalTitle(arg.eventData.url)) ?? 'Unknown'
-                    const proposalOnChainId = Number(
-                        arg.eventData.pollId
-                    ).toString()
-                    const proposalUrl =
-                        daoHandler.decoder['proposalUrl'] + proposalOnChainId
+                    const title = await getProposalTitle(
+                        arg.eventData.url,
+                        proposalOnChainId
+                    )
 
                     if (proposalOnChainId == '1')
                         //we know for sure this is a bad proposal
@@ -76,14 +78,41 @@ const formatTitle = (text: string): string => {
     return temp
 }
 
-const getProposalTitle = async (url: string): Promise<unknown> => {
-    let title
+const getProposalTitle = async (
+    url: string,
+    onChainId: string
+): Promise<string> => {
+    let response
+
     try {
-        const response = await axios.get(url)
-        title = formatTitle(response.data)
+        let retriesLeft = 5
+        while (retriesLeft) {
+            try {
+                response = await axios.get(url)
+                break
+            } catch (err) {
+                retriesLeft--
+                if (!retriesLeft) throw err
+
+                await new Promise((resolve) =>
+                    setTimeout(
+                        resolve,
+                        calculateExponentialBackoffTimeInMs(retriesLeft)
+                    )
+                )
+            }
+        }
     } catch (e) {
-        title = 'Unknown'
+        log_pd.log({
+            level: 'warn',
+            message: `Error fetching title for Maker poll ${onChainId}`,
+            data: {}
+        })
     }
 
-    return title
+    return response.data ? formatTitle(response.data) : 'Unknown'
+}
+
+const calculateExponentialBackoffTimeInMs = (retriesLeft: number) => {
+    return 1000 * Math.pow(2, 5 - retriesLeft)
 }
