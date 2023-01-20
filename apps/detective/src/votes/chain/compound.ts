@@ -74,6 +74,7 @@ export const getVotesForVoter = async (
                             choice: String(eventData.support) ? 'Yes' : 'No'
                         }
                     } catch (e) {
+                        console.log(e)
                         success = false
                     }
                 })

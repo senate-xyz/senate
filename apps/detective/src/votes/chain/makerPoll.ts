@@ -83,6 +83,7 @@ export const getVotesForVoter = async (
                                 : 'No'
                         }
                     } catch (e) {
+                        console.log(e)
                         success = false
                     }
                 })

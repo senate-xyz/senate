@@ -105,6 +105,14 @@ export const getVotesForVoter = async (
                             choice: 'Yes'
                         }
                     } catch (e) {
+                        log_pd.log({
+                            level: 'error',
+                            message: `Get votes error for ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
+                            data: {
+                                error: e
+                            }
+                        })
+                        console.log(e)
                         success = false
                     }
                 })
