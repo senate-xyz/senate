@@ -1,4 +1,3 @@
-import { log_ref } from '@senate/axiom'
 import { RefreshStatus, prisma } from '@senate/database'
 
 export const createVoterHandlers = async () => {
@@ -7,7 +6,7 @@ export const createVoterHandlers = async () => {
     const voterHandlersCnt = await prisma.voterHandler.count({})
 
     if (voterHandlersCnt >= votersCnt * daoHandlersCnt) {
-        return
+        return true
     }
 
     const voters = await prisma.voter.findMany({})
@@ -25,4 +24,6 @@ export const createVoterHandlers = async () => {
             skipDuplicates: true
         })
     }
+
+    return true
 }

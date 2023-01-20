@@ -60,14 +60,23 @@ export const makerExecutiveProposals = async (
 }
 
 const getProposalData = async (spellAddress: string) => {
-    let response
+    let response = {
+        title: 'Unknown',
+        spellData: {
+            expiration: new Date(0)
+        },
+        date: new Date(0)
+    }
     try {
         let retriesLeft = 5
         while (retriesLeft) {
             try {
-                response = await axios.get(
-                    'https://vote.makerdao.com/api/executive/' + spellAddress
-                )
+                response = (
+                    await axios.get(
+                        'https://vote.makerdao.com/api/executive/' +
+                            spellAddress
+                    )
+                ).data
 
                 break
             } catch (err) {
@@ -90,7 +99,7 @@ const getProposalData = async (spellAddress: string) => {
         })
     }
 
-    return response.data
+    return response
 }
 
 const calculateExponentialBackoffTimeInMs = (retriesLeft: number) => {

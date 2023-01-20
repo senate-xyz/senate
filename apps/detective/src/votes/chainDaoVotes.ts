@@ -6,6 +6,7 @@ import { getMakerExecutiveVotes } from './chain/makerExecutive'
 import { getUniswapVotes } from './chain/uniswap'
 import { getMakerPollVotes } from './chain/makerPoll'
 import { getCompoundVotes } from './chain/compound'
+import superagent from 'superagent'
 
 const infuraProvider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.INFURA_NODE_URL)
@@ -38,7 +39,8 @@ export const updateChainDaoVotes = async (
     const daoHandler = await prisma.dAOHandler.findFirstOrThrow({
         where: { id: daoHandlerId },
         include: {
-            dao: true
+            dao: true,
+            proposals: true
         }
     })
 
@@ -50,6 +52,20 @@ export const updateChainDaoVotes = async (
             }
         }
     })
+
+    const firstProposalTimestamp = Math.floor(
+        Math.min(...daoHandler.proposals.map((p) => p.timeCreated.valueOf())) /
+            1000
+    )
+
+    const firstProposalBlock = await superagent
+        .get(`https://coins.llama.fi/block/ethereum/${firstProposalTimestamp}`)
+        .then((response) => {
+            return JSON.parse(response.text).height
+        })
+        .catch(() => {
+            return 0
+        })
 
     const lastVoteBlock = Math.min(
         ...voterHandlers.map((voterHandler) =>
@@ -66,97 +82,122 @@ export const updateChainDaoVotes = async (
         currentBlock = await infuraProvider.getBlockNumber()
     }
 
-    const blockBatch =
-        daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE ? 100000 : 1000000 //maker is really slow so we refresh 100k batches
+    let blockBatchSize = Math.floor(40000000 / voters.length)
+    if (daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE)
+        blockBatchSize = Math.floor(blockBatchSize / 10)
 
-    const fromBlock = Math.max(lastVoteBlock, 0)
+    let fromBlock = Math.max(lastVoteBlock, 0)
+
+    if (fromBlock < firstProposalBlock) fromBlock = firstProposalBlock
+
     let toBlock =
-        currentBlock - fromBlock > blockBatch
-            ? fromBlock + blockBatch
+        currentBlock - fromBlock > blockBatchSize
+            ? fromBlock + blockBatchSize
             : currentBlock
 
     if (toBlock > daoHandler.lastChainProposalCreatedBlock)
         toBlock = Number(daoHandler.lastChainProposalCreatedBlock)
 
-    const provider =
+    const provider: ethers.providers.JsonRpcProvider =
         currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
 
-    switch (daoHandler.type) {
-        case 'AAVE_CHAIN':
-            results = await getAaveVotes(
-                provider,
-                daoHandler,
-                voters,
-                fromBlock,
-                toBlock
-            )
-            break
-        case 'COMPOUND_CHAIN':
-            results = await getCompoundVotes(
-                provider,
-                daoHandler,
-                voters,
-                fromBlock,
-                toBlock
-            )
-            break
-        case 'MAKER_EXECUTIVE':
-            results = await getMakerExecutiveVotes(
-                provider,
-                daoHandler,
-                voters,
-                fromBlock,
-                toBlock
-            )
-            break
-        case 'MAKER_POLL':
-            results = await getMakerPollVotes(
-                provider,
-                daoHandler,
-                voters,
-                fromBlock,
-                toBlock
-            )
-            break
-        case 'UNISWAP_CHAIN':
-            results = await getUniswapVotes(
-                provider,
-                daoHandler,
-                voters,
-                fromBlock,
-                toBlock
-            )
-            break
-    }
+    log_pd.log({
+        level: 'info',
+        message: `Search interval for ${daoHandler.dao.name} - ${daoHandler.type}`,
+        data: {
+            currentBlock: currentBlock,
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            provider: provider.connection.url
+        }
+    })
 
-    const successfulResults = results.filter((res) => res.success)
+    try {
+        switch (daoHandler.type) {
+            case 'AAVE_CHAIN':
+                results = await getAaveVotes(
+                    provider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'COMPOUND_CHAIN':
+                results = await getCompoundVotes(
+                    provider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'MAKER_EXECUTIVE':
+                results = await getMakerExecutiveVotes(
+                    provider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'MAKER_POLL':
+                results = await getMakerPollVotes(
+                    provider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'UNISWAP_CHAIN':
+                results = await getUniswapVotes(
+                    provider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
+                break
+        }
 
-    await prisma.vote
-        .createMany({
-            data: successfulResults.map((res) => res.votes).flat(2),
-            skipDuplicates: true
-        })
-        .then(async (r) => {
-            successfulResults.map((res) => {
-                result.set(res.voterAddress, 'ok')
+        const successfulResults = results.filter((res) => res.success)
+
+        await prisma.vote
+            .createMany({
+                data: successfulResults.map((res) => res.votes).flat(2),
+                skipDuplicates: true
             })
+            .then(async () => {
+                successfulResults.map((res) => {
+                    result.set(res.voterAddress, 'ok')
+                })
 
-            await prisma.voterHandler.updateMany({
-                where: {
-                    voter: {
-                        address: {
-                            in: successfulResults.map((res) => res.voterAddress)
-                        }
+                await prisma.voterHandler.updateMany({
+                    where: {
+                        voter: {
+                            address: {
+                                in: successfulResults.map(
+                                    (res) => res.voterAddress
+                                )
+                            }
+                        },
+                        daoHandlerId: daoHandler.id
                     },
-                    daoHandlerId: daoHandler.id
-                },
-                data: {
-                    lastChainVoteCreatedBlock: toBlock,
-                    lastSnapshotVoteCreatedTimestamp: new Date(0)
-                }
+                    data: {
+                        lastChainVoteCreatedBlock: toBlock,
+                        lastSnapshotVoteCreatedTimestamp: new Date(0)
+                    }
+                })
+                return
             })
-            return
+    } catch (e) {
+        log_pd.log({
+            level: 'warn',
+            message: `Error fetching votes for ${daoHandler.dao.name}`,
+            error: e
         })
+    }
 
     const resultsArray = Array.from(result, ([name, value]) => ({
         voterAddress: name,

@@ -9,10 +9,10 @@ import { updateChainDaoVotes } from './votes/chainDaoVotes'
 export class AppService {
     //SNAPSHOT PROPOSALS
     async updateSnapshotProposals(
-        daoHandlerIds: string[],
+        daoHandlerId: string,
         minCreatedAt: number
     ): Promise<Array<{ daoHandlerId: string; response: string }>> {
-        return await updateSnapshotProposals(daoHandlerIds, minCreatedAt)
+        return await updateSnapshotProposals(daoHandlerId, minCreatedAt)
     }
 
     //SNAPSHOT VOTES

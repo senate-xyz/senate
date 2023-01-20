@@ -88,7 +88,7 @@ const getProposalTitle = async (
         let retriesLeft = 5
         while (retriesLeft) {
             try {
-                response = await axios.get(url)
+                response = await (await axios.get(url)).data
                 break
             } catch (err) {
                 retriesLeft--
@@ -110,7 +110,7 @@ const getProposalTitle = async (
         })
     }
 
-    return response.data ? formatTitle(response.data) : 'Unknown'
+    return response ? formatTitle(response) : 'Unknown'
 }
 
 const calculateExponentialBackoffTimeInMs = (retriesLeft: number) => {

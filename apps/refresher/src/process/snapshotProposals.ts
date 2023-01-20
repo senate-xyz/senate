@@ -9,7 +9,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
 
     const proposalDetectiveReq = `${
         process.env.DETECTIVE_URL
-    }/updateSnapshotProposals?daoHandlerIds=${
+    }/updateSnapshotProposals?daoHandlerId=${
         item.handlerId
     }&minCreatedAt=${daoHandler?.lastSnapshotProposalCreatedTimestamp?.valueOf()}`
 

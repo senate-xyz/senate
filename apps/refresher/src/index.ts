@@ -19,7 +19,6 @@ const main = async () => {
         level: 'info',
         message: `Started refresher`
     })
-    await loadConfig()
 
     setInterval(async () => {
         processQueue()
@@ -75,13 +74,15 @@ const main = async () => {
         })
         await loadConfig()
 
-        await createVoterHandlers()
+        const handlersCreated = await createVoterHandlers()
 
-        await addSnapshotProposalsToQueue()
-        await addSnapshotDaoVotes()
+        if (handlersCreated) {
+            await addSnapshotProposalsToQueue()
+            await addSnapshotDaoVotes()
 
-        //await addChainProposalsToQueue()
-        //await addChainDaoVotes()
+            await addChainProposalsToQueue()
+            await addChainDaoVotes()
+        }
     })
 }
 

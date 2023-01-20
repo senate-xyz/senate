@@ -81,11 +81,11 @@ export class AppController {
 
     @Post('updateSnapshotProposals')
     async updateSnapshotProposals(
-        @Query('daoHandlerIds') daoHandlerIds: string[],
+        @Query('daoHandlerId') daoHandlerId: string,
         @Query('minCreatedAt') minCreatedAt: number
     ) {
         const response = await this.appService.updateSnapshotProposals(
-            daoHandlerIds,
+            daoHandlerId,
             minCreatedAt
         )
 

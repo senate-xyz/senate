@@ -10,11 +10,12 @@ import {
     DAOS_VOTES_CHAIN_INTERVAL_FORCE
 } from '../config'
 import { bin } from 'd3-array'
+import { log_ref } from '@senate/axiom'
 
 export const addChainDaoVotes = async () => {
     await prisma.$transaction(
         async (tx) => {
-            const daoHandlers = await tx.dAOHandler.findMany({
+            let daoHandlers = await tx.dAOHandler.findMany({
                 where: {
                     type: {
                         in: [
@@ -61,10 +62,17 @@ export const addChainDaoVotes = async () => {
                     }
                 },
                 include: {
-                    voterHandlers: { include: { voter: true } },
-                    dao: true
+                    voterHandlers: {
+                        include: { voter: true }
+                    },
+                    dao: true,
+                    proposals: true
                 }
             })
+
+            daoHandlers = daoHandlers.filter(
+                (daoHandlers) => daoHandlers.proposals.length
+            )
 
             if (!daoHandlers.length) {
                 return
@@ -87,45 +95,64 @@ export const addChainDaoVotes = async () => {
                             Number(voterHandler.lastChainVoteCreatedBlock)
                     )
 
-                    const voteTimestampBuckets =
-                        bin().thresholds(10)(voteTimestamps)
+                    const voteTimestampBuckets = bin()
+                        .domain([0, 17000000])
+                        .thresholds(10)(voteTimestamps)
 
-                    return voteTimestampBuckets.map((bucket) => {
-                        const bucketMax = Number(bucket['x1'])
-                        const bucketMin = Number(bucket['x0'])
+                    const refreshItemsDao = voteTimestampBuckets
+                        .map((bucket) => {
+                            const bucketMax = Number(bucket['x1'])
+                            const bucketMin = Number(bucket['x0'])
 
-                        const votershandlers = daoHandler.voterHandlers.filter(
-                            (voterHandler) =>
-                                Number(
-                                    voterHandler.lastChainVoteCreatedBlock
-                                ) >= bucketMin &&
-                                Number(
-                                    voterHandler.lastChainVoteCreatedBlock
-                                ) <= bucketMax
-                        )
-
-                        voterHandlersRefreshed = [
-                            ...voterHandlersRefreshed,
-                            ...votershandlers
-                        ]
-
-                        return {
-                            handlerId: daoHandler.id,
-                            refreshType: RefreshType.DAOCHAINVOTES,
-                            args: {
-                                voters: votershandlers.map(
-                                    (voter) => voter.voter.address
+                            const votershandlers =
+                                daoHandler.voterHandlers.filter(
+                                    (voterHandler) =>
+                                        Number(
+                                            voterHandler.lastChainVoteCreatedBlock
+                                        ) >= bucketMin &&
+                                        Number(
+                                            voterHandler.lastChainVoteCreatedBlock
+                                        ) < bucketMax
                                 )
-                            },
-                            priority: Number(previousPrio.priority) + 1
+
+                            voterHandlersRefreshed = [
+                                ...voterHandlersRefreshed,
+                                ...votershandlers
+                            ]
+
+                            return {
+                                bucket: `[${bucketMin}, ${bucketMax}] - ${votershandlers.length} items`,
+                                query: {
+                                    handlerId: daoHandler.id,
+                                    refreshType: RefreshType.DAOCHAINVOTES,
+                                    args: {
+                                        voters: votershandlers.map(
+                                            (vhandler) => vhandler.voter.address
+                                        )
+                                    },
+                                    priority: Number(previousPrio.priority) + 1
+                                }
+                            }
+                        })
+                        .filter((el) => el.query.args.voters.length)
+
+                    log_ref.log({
+                        level: 'info',
+                        message: `Added items to queue`,
+                        data: {
+                            dao: daoHandler.dao.name,
+                            type: RefreshType.DAOCHAINVOTES,
+                            noOfBuckets: refreshItemsDao.length,
+                            items: refreshItemsDao
                         }
                     })
+
+                    return refreshItemsDao
                 })
                 .flat(2)
-                .filter((el) => el.args.voters.length)
 
             await tx.refreshQueue.createMany({
-                data: refreshEntries
+                data: refreshEntries.map((q) => q.query)
             })
 
             await tx.voterHandler.updateMany({

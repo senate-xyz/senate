@@ -5,6 +5,7 @@ import { compoundProposals } from './chain/compound'
 import { makerExecutiveProposals } from './chain/makerExecutive'
 import { makerPolls } from './chain/makerPoll'
 import { uniswapProposals } from './chain/uniswap'
+import { log_pd } from '@senate/axiom'
 
 interface Result {
     externalId: string
@@ -49,17 +50,28 @@ export const updateChainProposals = async (
             currentBlock = await infuraProvider.getBlockNumber()
         }
 
-        const blockBatch =
-            daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE ? 100000 : 1000000 //maker is really slow so we refresh 100k batches
+        const blockBatchSize =
+            daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE ? 500000 : 5000000
 
         const fromBlock = Math.max(minBlockNumber, 0)
         const toBlock =
-            currentBlock - fromBlock > blockBatch
-                ? fromBlock + blockBatch
+            currentBlock - fromBlock > blockBatchSize
+                ? fromBlock + blockBatchSize
                 : currentBlock
 
-        const provider =
+        const provider: ethers.providers.JsonRpcProvider =
             currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
+
+        log_pd.log({
+            level: 'info',
+            message: `Search interval for ${daoHandler.dao.name} - ${daoHandler.type}`,
+            data: {
+                currentBlock: currentBlock,
+                fromBlock: fromBlock,
+                toBlock: toBlock,
+                provider: provider.connection.url
+            }
+        })
 
         switch (daoHandler.type) {
             case 'AAVE_CHAIN':
@@ -122,6 +134,12 @@ export const updateChainProposals = async (
         })
     } catch (e) {
         response = 'nok'
+        console.log(e)
+        log_pd.log({
+            level: 'warn',
+            message: `Error fetching proposals for ${daoHandler.dao.name}`,
+            error: e
+        })
     }
 
     return [{ daoHandlerId: daoHandlerId, response: response }]

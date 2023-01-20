@@ -32,6 +32,11 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
             if (!data) return
             if (!Array.isArray(data)) return
 
+            console.log(
+                data
+                    .filter((result) => result.response == 'nok')
+                    .map((r) => r.response)
+            )
             await prisma.voterHandler.updateMany({
                 where: {
                     voter: {
