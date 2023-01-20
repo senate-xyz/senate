@@ -2,20 +2,16 @@ import {
     DAOHandlerType,
     RefreshStatus,
     RefreshType,
+    VoterHandler,
     prisma
 } from '@senate/database'
 import {
     DAOS_VOTES_CHAIN_INTERVAL,
     DAOS_VOTES_CHAIN_INTERVAL_FORCE
 } from '../config'
-import { log_ref } from '@senate/axiom'
+import { bin } from 'd3-array'
 
 export const addChainDaoVotes = async () => {
-    log_ref.log({
-        level: 'info',
-        message: `Add new dao chain votes to queue`
-    })
-
     await prisma.$transaction(
         async (tx) => {
             const daoHandlers = await tx.dAOHandler.findMany({
@@ -65,27 +61,14 @@ export const addChainDaoVotes = async () => {
                     }
                 },
                 include: {
-                    voterHandlers: true,
+                    voterHandlers: { include: { voter: true } },
                     dao: true
                 }
             })
 
             if (!daoHandlers.length) {
-                log_ref.log({
-                    level: 'info',
-                    message: `Nothing to update`
-                })
                 return
             }
-
-            log_ref.log({
-                level: 'info',
-                message: `List of DAOs to be added to queue`,
-                data: {
-                    item: daoHandlers,
-                    daos: daoHandlers.map((daoHandler) => daoHandler.dao.name)
-                }
-            })
 
             const previousPrio = (await tx.refreshQueue.findFirst({
                 where: {
@@ -96,75 +79,62 @@ export const addChainDaoVotes = async () => {
                 select: { priority: true }
             })) ?? { priority: 1 }
 
-            log_ref.log({
-                level: 'info',
-                message: `Previous max priority`,
-                data: {
-                    priority: previousPrio.priority
-                }
-            })
+            let voterHandlersRefreshed: VoterHandler[] = []
+            const refreshEntries = daoHandlers
+                .map((daoHandler) => {
+                    const voteTimestamps = daoHandler.voterHandlers.map(
+                        (voterHandler) =>
+                            Number(voterHandler.lastChainVoteCreatedBlock)
+                    )
 
-            await tx.refreshQueue
-                .createMany({
-                    data: daoHandlers.map((daoHandler) => {
+                    const voteTimestampBuckets =
+                        bin().thresholds(10)(voteTimestamps)
+
+                    return voteTimestampBuckets.map((bucket) => {
+                        const bucketMax = Number(bucket['x1'])
+                        const bucketMin = Number(bucket['x0'])
+
+                        const votershandlers = daoHandler.voterHandlers.filter(
+                            (voterHandler) =>
+                                Number(
+                                    voterHandler.lastChainVoteCreatedBlock
+                                ) >= bucketMin &&
+                                Number(
+                                    voterHandler.lastChainVoteCreatedBlock
+                                ) <= bucketMax
+                        )
+
+                        voterHandlersRefreshed = [
+                            ...voterHandlersRefreshed,
+                            ...votershandlers
+                        ]
+
                         return {
-                            clientId: daoHandler.id,
+                            handlerId: daoHandler.id,
                             refreshType: RefreshType.DAOCHAINVOTES,
+                            args: {
+                                voters: votershandlers.map(
+                                    (voter) => voter.voter.address
+                                )
+                            },
                             priority: Number(previousPrio.priority) + 1
                         }
                     })
                 })
-                .then((r) => {
-                    log_ref.log({
-                        level: 'info',
-                        message: `Succesfully added to queue`,
-                        data: {
-                            item: r
-                        }
-                    })
-                    return
-                })
-                .catch((e) => {
-                    log_ref.log({
-                        level: 'error',
-                        message: `Failed to add to queue`,
-                        data: {
-                            error: e
-                        }
-                    })
-                })
+                .flat(2)
+                .filter((el) => el.args.voters.length)
 
-            await tx.voterHandler
-                .updateMany({
-                    where: {
-                        daoHandlerId: {
-                            in: daoHandlers.map((daoHandler) => daoHandler.id)
-                        }
-                    },
-                    data: {
-                        refreshStatus: RefreshStatus.PENDING,
-                        lastRefreshTimestamp: new Date()
-                    }
-                })
-                .then((r) => {
-                    log_ref.log({
-                        level: 'info',
-                        message: `Succesfully updated refresh statuses`,
-                        data: {
-                            item: r
-                        }
-                    })
-                    return
-                })
-                .catch((e) => {
-                    log_ref.log({
-                        level: 'error',
-                        message: `Failed to update refresh statuses`,
-                        data: {
-                            error: e
-                        }
-                    })
-                })
+            await tx.refreshQueue.createMany({
+                data: refreshEntries
+            })
+
+            await tx.voterHandler.updateMany({
+                where: { id: { in: voterHandlersRefreshed.map((v) => v.id) } },
+                data: {
+                    refreshStatus: RefreshStatus.PENDING,
+                    lastRefreshTimestamp: new Date()
+                }
+            })
         },
         {
             maxWait: 20000,

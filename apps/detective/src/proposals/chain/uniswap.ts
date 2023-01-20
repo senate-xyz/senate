@@ -5,24 +5,16 @@ import { ethers } from 'ethers'
 export const uniswapProposals = async (
     provider: ethers.providers.JsonRpcProvider,
     daoHandler: DAOHandler,
-    minBlockNumber: number
+    fromBlock: number,
+    toBlock: number
 ) => {
     const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
 
     const logs = await provider.getLogs({
-        fromBlock: Number(minBlockNumber),
+        fromBlock: fromBlock,
+        toBlock: toBlock,
         address: daoHandler.decoder['address'],
         topics: [govBravoIface.getEventTopic('ProposalCreated')]
-    })
-
-    log_node.log({
-        level: 'info',
-        message: `getLogs`,
-        data: {
-            fromBlock: Number(minBlockNumber),
-            address: daoHandler.decoder['address'],
-            topics: [govBravoIface.getEventTopic('ProposalCreated')]
-        }
     })
 
     const args = logs.map((log) => ({
@@ -42,13 +34,6 @@ export const uniswapProposals = async (
                         await provider.getBlock(arg.txBlock)
                     ).timestamp
 
-                    log_node.log({
-                        level: 'info',
-                        message: `getBlock`,
-                        data: {
-                            block: arg.txBlock
-                        }
-                    })
                     const votingStartsTimestamp =
                         proposalCreatedTimestamp +
                         (arg.eventData.startBlock - arg.txBlock) * 12
@@ -81,9 +66,7 @@ export const uniswapProposals = async (
             )
         ).filter((n) => n) ?? []
 
-    const lastBlock = (await provider.getBlockNumber()) ?? 0
-
-    return { proposals, lastBlock }
+    return proposals
 }
 
 const formatTitle = async (text: string): Promise<string> => {

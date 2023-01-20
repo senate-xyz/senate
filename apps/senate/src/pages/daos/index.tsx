@@ -59,10 +59,10 @@ const DAOs = () => {
                         {allDAOs.data ? (
                             allDAOs.data
                                 .filter(
-                                    (dao) =>
+                                    (dao: DAOType) =>
                                         !followingDAOs.data
                                             ?.map(
-                                                (followedDAO) =>
+                                                (followedDAO: DAOType) =>
                                                     followedDAO.name
                                             )
                                             .includes(dao.name)

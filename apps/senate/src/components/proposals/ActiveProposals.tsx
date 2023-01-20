@@ -6,6 +6,7 @@ import { trpc } from '../../utils/trpc'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import { DAOType, Vote } from '@senate/database'
 
 const endingInOptions: { name: string; time: number }[] = [
     {
@@ -97,7 +98,7 @@ export const ActiveProposals = () => {
                         <option key='any' value='any'>
                             Any
                         </option>
-                        {followingDAOs.data?.map((followingDAO) => {
+                        {followingDAOs.data?.map((followingDAO: DAOType) => {
                             return (
                                 <option
                                     key={followingDAO.id}
@@ -191,7 +192,12 @@ export const ActiveProposals = () => {
                         </thead>
                         <tbody>
                             {filteredActiveProposals.data?.map(
-                                (proposal, index) => (
+                                (
+                                    proposal: inferProcedureOutput<
+                                        AppRouter['user']['proposals']['filteredActiveProposals']
+                                    >[0],
+                                    index: number
+                                ) => (
                                     <ActiveProposal
                                         data-testid={`proposal-${index}`}
                                         key={index}
@@ -216,7 +222,8 @@ const ActiveProposal = (props: {
         AppRouter['user']['proposals']['filteredActiveProposals']
     >[0]
 }) => {
-    const voted = props.proposal.votes.map((vote) => vote.choice).length > 0
+    const voted =
+        props.proposal.votes.map((vote: Vote) => vote.choice).length > 0
 
     return (
         <tr

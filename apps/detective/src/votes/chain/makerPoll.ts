@@ -6,77 +6,88 @@ import { hexZeroPad } from 'ethers/lib/utils'
 export const getMakerPollVotes = async (
     provider: ethers.providers.JsonRpcProvider,
     daoHandler: DAOHandler,
-    voterAddress: string,
-    lastVoteBlock: number
+    voterAddresses: string[],
+    fromBlock: number,
+    toBlock: number
 ) => {
     const iface = new ethers.utils.Interface(
         JSON.parse(daoHandler.decoder['abi_vote'])
     )
     const logs = await provider.getLogs({
-        fromBlock: lastVoteBlock,
+        fromBlock: fromBlock,
+        toBlock: toBlock,
         address: daoHandler.decoder['address_vote'],
-        topics: [iface.getEventTopic('Voted'), hexZeroPad(voterAddress, 32)]
+        topics: [
+            iface.getEventTopic('Voted'),
+            voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
+        ]
     })
 
-    log_node.log({
-        level: 'info',
-        message: `getLogs`,
-        data: {
-            fromBlock: lastVoteBlock,
-            address: daoHandler.decoder['address_vote'],
-            topics: [iface.getEventTopic('Voted'), hexZeroPad(voterAddress, 32)]
-        }
-    })
+    const result = await Promise.all(
+        voterAddresses.map((voterAddress) => {
+            return getVotesForVoter(logs, daoHandler, voterAddress)
+        })
+    )
 
-    let newLastVoteBlock = (await provider.getBlockNumber()) ?? 0
+    return result
+}
 
+export const getVotesForVoter = async (
+    logs,
+    daoHandler,
+    voterAddress: string
+) => {
+    let success = true
+    const iface = new ethers.utils.Interface(
+        JSON.parse(daoHandler.decoder['abi_vote'])
+    )
     const votes =
         (
             await Promise.all(
                 logs.map(async (log) => {
-                    const eventData = iface.parseLog({
-                        topics: log.topics,
-                        data: log.data
-                    }).args
+                    try {
+                        const eventData = iface.parseLog({
+                            topics: log.topics,
+                            data: log.data
+                        }).args
 
-                    const proposal = await prisma.proposal.findFirst({
-                        where: {
-                            externalId: BigNumber.from(
-                                eventData.pollId
-                            ).toString(),
-                            daoId: daoHandler.daoId,
-                            daoHandlerId: daoHandler.id
-                        }
-                    })
+                        if (String(eventData.voter) != voterAddress) return
 
-                    //missing proposal, force sync from infura
-                    if (!proposal) {
-                        log_pd.log({
-                            level: 'warn',
-                            message: `Proposal does not exist while updating votes for ${voterAddress} in ${daoHandler.id} - ${daoHandler.type}. Resetting newLastVoteBlock.`,
-                            data: {
+                        const proposal = await prisma.proposal.findFirst({
+                            where: {
                                 externalId: BigNumber.from(
                                     eventData.pollId
-                                ).toString()
+                                ).toString(),
+                                daoId: daoHandler.daoId,
+                                daoHandlerId: daoHandler.id
                             }
                         })
-                        newLastVoteBlock = 0
-                        return
-                    }
 
-                    return {
-                        voterAddress: voterAddress,
-                        daoId: daoHandler.daoId,
-                        proposalId: proposal.id,
-                        daoHandlerId: daoHandler.id,
-                        choiceId: BigNumber.from(eventData.optionId).toString(),
-                        choice: BigNumber.from(eventData.optionId).toString()
-                            ? 'Yes'
-                            : 'No'
+                        if (!proposal) {
+                            success = false
+                            return
+                        }
+
+                        return {
+                            voterAddress: voterAddress,
+                            daoId: daoHandler.daoId,
+                            proposalId: proposal.id,
+                            daoHandlerId: daoHandler.id,
+                            choiceId: BigNumber.from(
+                                eventData.optionId
+                            ).toString(),
+                            choice: BigNumber.from(
+                                eventData.optionId
+                            ).toString()
+                                ? 'Yes'
+                                : 'No'
+                        }
+                    } catch (e) {
+                        success = false
                     }
                 })
             )
         ).filter((n) => n) ?? []
 
-    return { votes, newLastVoteBlock }
+    return { success, votes, voterAddress }
 }
