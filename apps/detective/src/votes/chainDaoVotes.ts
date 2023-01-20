@@ -163,16 +163,16 @@ export const updateChainDaoVotes = async (
 
         const successfulResults = results.filter((res) => res.success)
 
+        successfulResults.map((res) => {
+            result.set(res.voterAddress, 'ok')
+        })
+
         await prisma.vote
             .createMany({
                 data: successfulResults.map((res) => res.votes).flat(2),
                 skipDuplicates: true
             })
             .then(async () => {
-                successfulResults.map((res) => {
-                    result.set(res.voterAddress, 'ok')
-                })
-
                 await prisma.voterHandler.updateMany({
                     where: {
                         voter: {
