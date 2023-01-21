@@ -12,6 +12,7 @@ export {
     type RefreshQueue,
     type DAO,
     type Notification,
+    type User,
     RefreshStatus,
     RefreshType,
     DAOHandlerType,
