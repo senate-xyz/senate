@@ -54,8 +54,11 @@ export const updateChainDaoVotes = async (
     })
 
     const firstProposalTimestamp = Math.floor(
-        Math.min(...daoHandler.proposals.map((p) => p.timeCreated.valueOf())) /
-            1000
+        Math.min(
+            ...daoHandler.proposals
+                .filter((p) => p.timeCreated.valueOf() > 0)
+                .map((p) => p.timeCreated.valueOf())
+        ) / 1000
     )
 
     const firstProposalBlock = await superagent
