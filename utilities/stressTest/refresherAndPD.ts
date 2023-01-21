@@ -104,7 +104,6 @@ async function getSnapshotVoters(space: string): Promise<Array<string>> {
 }
 
 async function bootstrapStressTestUserWithSubscriptions(): Promise<User> {
-  //   let stressTestUser: User;
   try {
     const stressTestUser: User = await createStressTestUser();
     const daos = await fetchDaos();
@@ -126,10 +125,7 @@ async function bootstrapStressTestUserWithSubscriptions(): Promise<User> {
 
     return stressTestUser;
   } catch (error) {
-    console.log(
-      "Failed bootstrapping stress test user with subscriptions",
-      error
-    );
+    console.log("Failed bootstrapping stress test user with subscriptions");
     throw error;
   }
 }
