@@ -72,7 +72,8 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                 dao: daoHandler.dao.name,
                 daoHandler: daoHandler.id,
                 type: RefreshType.DAOSNAPSHOTPROPOSALS,
-                request: proposalDetectiveReq
+                request: proposalDetectiveReq,
+                response: data
             })
 
             return

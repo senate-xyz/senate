@@ -52,6 +52,7 @@ export const updateSnapshotDaoVotes = async (
                     }
                 }`
 
+    let votes
     try {
         const res = await superagent
             .get('https://hub.snapshot.org/graphql')
@@ -71,7 +72,7 @@ export const updateSnapshotDaoVotes = async (
             })
 
         //sanitize
-        const votes = res.filter(
+        votes = res.filter(
             (vote) => vote.proposal != null && vote.proposal.id != null
         )
 
@@ -152,9 +153,10 @@ export const updateSnapshotDaoVotes = async (
             created_gt: lastVoteCreated
                 ? Math.floor(lastVoteCreated.valueOf() / 1000)
                 : 0,
-            voters: voters,
             space: daoHandler.decoder['space'],
+            voters: voters,
             query: graphqlQuery,
+            votes: votes,
             error: e
         })
     }
@@ -172,9 +174,10 @@ export const updateSnapshotDaoVotes = async (
         created_gt: lastVoteCreated
             ? Math.floor(lastVoteCreated.valueOf() / 1000)
             : 0,
-        voters: voters,
         space: daoHandler.decoder['space'],
+        voters: voters,
         query: graphqlQuery,
+        votes: votes,
         response: res
     })
 

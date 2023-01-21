@@ -41,7 +41,7 @@ export const updateChainProposals = async (
         return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
     }
 
-    let result: Result[], currentBlock: number
+    let proposals: Result[], currentBlock: number
 
     try {
         currentBlock = await senateProvider.getBlockNumber()
@@ -64,7 +64,7 @@ export const updateChainProposals = async (
     try {
         switch (daoHandler.type) {
             case 'AAVE_CHAIN':
-                result = await aaveProposals(
+                proposals = await aaveProposals(
                     provider,
                     daoHandler,
                     fromBlock,
@@ -72,7 +72,7 @@ export const updateChainProposals = async (
                 )
                 break
             case 'COMPOUND_CHAIN':
-                result = await compoundProposals(
+                proposals = await compoundProposals(
                     provider,
                     daoHandler,
                     fromBlock,
@@ -80,7 +80,7 @@ export const updateChainProposals = async (
                 )
                 break
             case 'MAKER_EXECUTIVE':
-                result = await makerExecutiveProposals(
+                proposals = await makerExecutiveProposals(
                     provider,
                     daoHandler,
                     fromBlock,
@@ -88,7 +88,7 @@ export const updateChainProposals = async (
                 )
                 break
             case 'MAKER_POLL':
-                result = await makerPolls(
+                proposals = await makerPolls(
                     provider,
                     daoHandler,
                     fromBlock,
@@ -96,7 +96,7 @@ export const updateChainProposals = async (
                 )
                 break
             case 'UNISWAP_CHAIN':
-                result = await uniswapProposals(
+                proposals = await uniswapProposals(
                     provider,
                     daoHandler,
                     fromBlock,
@@ -105,9 +105,9 @@ export const updateChainProposals = async (
                 break
         }
 
-        if (result.length || toBlock != currentBlock) {
+        if (proposals.length || toBlock != currentBlock) {
             await prisma.proposal.createMany({
-                data: result,
+                data: proposals,
                 skipDuplicates: true
             })
         }
@@ -133,6 +133,7 @@ export const updateChainProposals = async (
             fromBlock: fromBlock,
             toBlock: toBlock,
             provider: provider.connection.url,
+            proposals: proposals,
             error: e
         })
     }
@@ -148,6 +149,7 @@ export const updateChainProposals = async (
         fromBlock: fromBlock,
         toBlock: toBlock,
         provider: provider.connection.url,
+        proposals: proposals,
         response: res
     })
 

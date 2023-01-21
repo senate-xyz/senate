@@ -80,7 +80,8 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                 daoHandler: daoHandler.id,
                 type: RefreshType.DAOCHAINVOTES,
                 voters: voters,
-                request: proposalDetectiveReq
+                request: proposalDetectiveReq,
+                response: data
             })
 
             return

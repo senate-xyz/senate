@@ -76,7 +76,7 @@ export const updateChainDaoVotes = async (
         )
     )
 
-    let results: Result[] = [],
+    let votes: Result[] = [],
         currentBlock: number
 
     try {
@@ -112,7 +112,7 @@ export const updateChainDaoVotes = async (
     try {
         switch (daoHandler.type) {
             case 'AAVE_CHAIN':
-                results = await getAaveVotes(
+                votes = await getAaveVotes(
                     provider,
                     daoHandler,
                     voters,
@@ -121,7 +121,7 @@ export const updateChainDaoVotes = async (
                 )
                 break
             case 'COMPOUND_CHAIN':
-                results = await getCompoundVotes(
+                votes = await getCompoundVotes(
                     provider,
                     daoHandler,
                     voters,
@@ -130,7 +130,7 @@ export const updateChainDaoVotes = async (
                 )
                 break
             case 'MAKER_EXECUTIVE':
-                results = await getMakerExecutiveVotes(
+                votes = await getMakerExecutiveVotes(
                     provider,
                     daoHandler,
                     voters,
@@ -139,7 +139,7 @@ export const updateChainDaoVotes = async (
                 )
                 break
             case 'MAKER_POLL':
-                results = await getMakerPollVotes(
+                votes = await getMakerPollVotes(
                     provider,
                     daoHandler,
                     voters,
@@ -148,7 +148,7 @@ export const updateChainDaoVotes = async (
                 )
                 break
             case 'UNISWAP_CHAIN':
-                results = await getUniswapVotes(
+                votes = await getUniswapVotes(
                     provider,
                     daoHandler,
                     voters,
@@ -158,7 +158,7 @@ export const updateChainDaoVotes = async (
                 break
         }
 
-        const successfulResults = results.filter((res) => res.success)
+        const successfulResults = votes.filter((res) => res.success)
 
         await prisma.vote
             .createMany({
@@ -198,6 +198,7 @@ export const updateChainDaoVotes = async (
             fromBlock: fromBlock,
             toBlock: toBlock,
             voters: voters,
+            votes: votes,
             provider: provider.connection.url,
             error: e
         })
@@ -217,6 +218,7 @@ export const updateChainDaoVotes = async (
         fromBlock: fromBlock,
         toBlock: toBlock,
         voters: voters,
+        votes: votes,
         provider: provider.connection.url,
         response: res
     })

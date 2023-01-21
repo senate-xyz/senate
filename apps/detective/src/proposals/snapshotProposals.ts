@@ -97,6 +97,7 @@ export const updateSnapshotProposals = async (
             sourceType: 'SNAPSHOT',
             created_gt: Math.floor(minCreatedAt / 1000),
             query: graphqlQuery,
+            proposals: proposals,
             error: e
         })
     }
@@ -110,6 +111,7 @@ export const updateSnapshotProposals = async (
         sourceType: 'SNAPSHOT',
         created_gt: Math.floor(minCreatedAt / 1000),
         query: graphqlQuery,
+        proposals: proposals,
         response: res
     })
 

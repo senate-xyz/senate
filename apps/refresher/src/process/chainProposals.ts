@@ -72,7 +72,8 @@ export const processChainProposals = async (item: RefreshQueue) => {
                 dao: daoHandler.dao.name,
                 daoHandler: daoHandler.id,
                 type: RefreshType.DAOCHAINPROPOSALS,
-                request: proposalDetectiveReq
+                request: proposalDetectiveReq,
+                response: data
             })
 
             return
