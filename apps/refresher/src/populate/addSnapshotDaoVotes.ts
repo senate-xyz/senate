@@ -2,23 +2,21 @@ import {
     DAOHandlerType,
     RefreshStatus,
     RefreshType,
+    VoterHandler,
     prisma
 } from '@senate/database'
 import {
     DAOS_VOTES_SNAPSHOT_INTERVAL,
     DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE
 } from '../config'
+import { bin } from 'd3-array'
+import { thresholdsTime } from '../utils'
 import { log_ref } from '@senate/axiom'
 
 export const addSnapshotDaoVotes = async () => {
-    log_ref.log({
-        level: 'info',
-        message: `Add new dao snapshot votes to queue`
-    })
-
     await prisma.$transaction(
         async (tx) => {
-            const snapshotDaoHandlers = await tx.dAOHandler.findMany({
+            let daoHandlers = await tx.dAOHandler.findMany({
                 where: {
                     type: DAOHandlerType.SNAPSHOT,
                     voterHandlers: {
@@ -57,29 +55,21 @@ export const addSnapshotDaoVotes = async () => {
                     }
                 },
                 include: {
-                    voterHandlers: true,
-                    dao: true
+                    voterHandlers: {
+                        include: { voter: true }
+                    },
+                    dao: true,
+                    proposals: true
                 }
             })
 
-            if (!snapshotDaoHandlers.length) {
-                log_ref.log({
-                    level: 'info',
-                    message: `Nothing to update`
-                })
+            daoHandlers = daoHandlers.filter(
+                (daoHandlers) => daoHandlers.proposals.length
+            )
+
+            if (!daoHandlers.length) {
                 return
             }
-
-            log_ref.log({
-                level: 'info',
-                message: `List of DAOs to be added to queue`,
-                data: {
-                    item: snapshotDaoHandlers,
-                    daos: snapshotDaoHandlers.map(
-                        (daoHandler) => daoHandler.dao.name
-                    )
-                }
-            })
 
             const previousPrio = (await tx.refreshQueue.findFirst({
                 where: {
@@ -90,77 +80,88 @@ export const addSnapshotDaoVotes = async () => {
                 select: { priority: true }
             })) ?? { priority: 1 }
 
-            log_ref.log({
-                level: 'info',
-                message: `Previous max priority`,
-                data: {
-                    priority: previousPrio.priority
-                }
+            let voterHandlersRefreshed: VoterHandler[] = []
+            const refreshEntries = daoHandlers
+                .map((daoHandler) => {
+                    const voteTimestamps = daoHandler.voterHandlers.map(
+                        (voterHandler) =>
+                            Number(
+                                voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
+                            )
+                    )
+
+                    const voteTimestampBuckets = bin<number, Date>()
+                        .domain([new Date(0), new Date(Date.now() + 5000)])
+                        .thresholds(thresholdsTime(10))(voteTimestamps)
+
+                    const refreshItemsDao = voteTimestampBuckets
+                        .map((bucket) => {
+                            const bucketMax = Number(bucket['x1'])
+                            const bucketMin = Number(bucket['x0'])
+
+                            const votershandlers =
+                                daoHandler.voterHandlers.filter(
+                                    (voterHandler) =>
+                                        Number(
+                                            voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
+                                        ) >= bucketMin &&
+                                        Number(
+                                            voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
+                                        ) < bucketMax
+                                )
+
+                            voterHandlersRefreshed = [
+                                ...voterHandlersRefreshed,
+                                ...votershandlers
+                            ]
+
+                            return {
+                                bucket: `[${new Date(
+                                    bucketMin
+                                ).toUTCString()}, ${new Date(
+                                    bucketMax
+                                ).toUTCString()}] - ${
+                                    votershandlers.length
+                                } items`,
+                                query: {
+                                    handlerId: daoHandler.id,
+                                    refreshType: RefreshType.DAOSNAPSHOTVOTES,
+                                    args: {
+                                        voters: votershandlers.map(
+                                            (vhandler) => vhandler.voter.address
+                                        )
+                                    },
+                                    priority: Number(previousPrio.priority) + 1
+                                }
+                            }
+                        })
+                        .filter((el) => el.query.args.voters.length)
+
+                    log_ref.log({
+                        level: 'info',
+                        message: `Added refresh items to queue`,
+                        dao: daoHandler.dao.name,
+                        daoHandler: daoHandler.id,
+                        type: RefreshType.DAOSNAPSHOTVOTES,
+                        noOfBuckets: refreshItemsDao.length,
+                        items: refreshItemsDao
+                    })
+
+                    return refreshItemsDao
+                })
+                .flat(2)
+
+            await tx.refreshQueue.createMany({
+                data: refreshEntries.map((q) => q.query)
             })
 
-            await tx.refreshQueue
-                .createMany({
-                    data: snapshotDaoHandlers.map((daoHandler) => {
-                        return {
-                            clientId: daoHandler.id,
-                            refreshType: RefreshType.DAOSNAPSHOTVOTES,
-                            priority: Number(previousPrio.priority) + 1
-                        }
-                    })
-                })
-                .then((r) => {
-                    log_ref.log({
-                        level: 'info',
-                        message: `Succesfully added to queue`,
-                        data: {
-                            item: r
-                        }
-                    })
-                    return
-                })
-                .catch((e) => {
-                    log_ref.log({
-                        level: 'error',
-                        message: `Failed to add to queue`,
-                        data: {
-                            error: e
-                        }
-                    })
-                })
-
-            await tx.voterHandler
-                .updateMany({
-                    where: {
-                        daoHandlerId: {
-                            in: snapshotDaoHandlers.map(
-                                (daoHandler) => daoHandler.id
-                            )
-                        }
-                    },
-                    data: {
-                        refreshStatus: RefreshStatus.PENDING,
-                        lastRefreshTimestamp: new Date()
-                    }
-                })
-                .then((r) => {
-                    log_ref.log({
-                        level: 'info',
-                        message: `Succesfully updated refresh statuses`,
-                        data: {
-                            item: r
-                        }
-                    })
-                    return
-                })
-                .catch((e) => {
-                    log_ref.log({
-                        level: 'error',
-                        message: `Failed to update refresh statuses`,
-                        data: {
-                            error: e
-                        }
-                    })
-                })
+            await tx.voterHandler.updateMany({
+                where: { id: { in: voterHandlersRefreshed.map((v) => v.id) } },
+                data: {
+                    refreshStatus: RefreshStatus.PENDING,
+                    lastRefreshTimestamp: new Date()
+                }
+            })
         },
         {
             maxWait: 20000,

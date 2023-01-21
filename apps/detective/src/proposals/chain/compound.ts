@@ -1,28 +1,20 @@
-import { log_node } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { DAOHandler } from '@senate/database'
 import { ethers } from 'ethers'
 
 export const compoundProposals = async (
     provider: ethers.providers.JsonRpcProvider,
     daoHandler: DAOHandler,
-    minBlockNumber: number
+    fromBlock: number,
+    toBlock: number
 ) => {
     const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
 
     const logs = await provider.getLogs({
-        fromBlock: Number(minBlockNumber),
+        fromBlock: fromBlock,
+        toBlock: toBlock,
         address: daoHandler.decoder['address'],
         topics: [govBravoIface.getEventTopic('ProposalCreated')]
-    })
-
-    log_node.log({
-        level: 'info',
-        message: `getLogs`,
-        data: {
-            fromBlock: Number(minBlockNumber),
-            address: daoHandler.decoder['address'],
-            topics: [govBravoIface.getEventTopic('ProposalCreated')]
-        }
     })
 
     const args = logs.map((log) => ({
@@ -42,13 +34,6 @@ export const compoundProposals = async (
                         await provider.getBlock(arg.txBlock)
                     ).timestamp
 
-                    log_node.log({
-                        level: 'info',
-                        message: `getBlock`,
-                        data: {
-                            block: arg.txBlock
-                        }
-                    })
                     const votingStartsTimestamp =
                         proposalCreatedTimestamp +
                         (arg.eventData.startBlock - arg.txBlock) * 12
@@ -81,15 +66,18 @@ export const compoundProposals = async (
             )
         ).filter((n) => n) ?? []
 
-    const lastBlock = (await provider.getBlockNumber()) ?? 0
-
-    return { proposals, lastBlock }
+    return proposals
 }
 
 const formatTitle = (text: string): string => {
     const temp = text.split('\n')[0]
 
     if (!temp) {
+        log_pd.log({
+            level: 'warn',
+            message: `Could not get proposal title`,
+            text: text
+        })
         return 'Title unavailable'
     }
 

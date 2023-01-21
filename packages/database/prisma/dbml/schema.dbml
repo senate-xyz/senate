@@ -143,7 +143,8 @@ Table Subscription {
 Table RefreshQueue {
   id String [pk]
   refreshType RefreshType [not null]
-  clientId String [not null]
+  handlerId String [not null]
+  args Json [not null]
   priority BigInt [not null]
 }
 

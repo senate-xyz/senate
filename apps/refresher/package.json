@@ -5,6 +5,7 @@
     "author": "Senate",
     "private": true,
     "license": "MIT",
+    "type": "module",
     "main": "./dist/index",
     "typings": "./dist/index",
     "module": "./dist/index.mjs",
@@ -29,10 +30,14 @@
         "@senate/axiom": "*",
         "@senate/config": "*",
         "@senate/database": "*",
+        "d3-array": "^3.2.2",
+        "d3-scale": "^4.0.2",
         "node-cron": "^3.0.2",
-        "superagent": "^8.0.6"
+        "superagent": "^8.0.8"
     },
     "devDependencies": {
+        "@types/d3-array": "^3.0.4",
+        "@types/d3-scale": "^4.0.3",
         "@types/node-cron": "^3.0.7",
         "tsup": "^6.5.0",
         "typescript": "^4.9.4"

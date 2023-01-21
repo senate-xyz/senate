@@ -1,4 +1,4 @@
-import { log_node, log_pd } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { DAOHandler } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
@@ -6,25 +6,17 @@ import { ethers } from 'ethers'
 export const makerPolls = async (
     provider: ethers.providers.JsonRpcProvider,
     daoHandler: DAOHandler,
-    minBlockNumber: number
+    fromBlock: number,
+    toBlock: number
 ) => {
     const pollingContractIface = new ethers.utils.Interface(
         daoHandler.decoder['abi_create']
     )
     const logs = await provider.getLogs({
-        fromBlock: Number(minBlockNumber),
+        fromBlock: fromBlock,
+        toBlock: toBlock,
         address: daoHandler.decoder['address_create'],
         topics: [pollingContractIface.getEventTopic('PollCreated')]
-    })
-
-    log_node.log({
-        level: 'info',
-        message: `getLogs`,
-        data: {
-            fromBlock: Number(minBlockNumber),
-            address: daoHandler.decoder['address_create'],
-            topics: [pollingContractIface.getEventTopic('PollCreated')]
-        }
     })
 
     const args = logs.map((log) => ({
@@ -40,26 +32,26 @@ export const makerPolls = async (
         (
             await Promise.all(
                 args.map(async (arg) => {
-                    const proposalCreatedTimestamp = Number(
-                        arg.eventData.blockCreated
-                    )
-
-                    const votingStartsTimestamp = Number(
-                        arg.eventData.startDate
-                    )
-                    const votingEndsTimestamp = Number(arg.eventData.endDate)
-                    const title =
-                        (await getProposalTitle(arg.eventData.url)) ?? 'Unknown'
-                    const proposalUrl =
-                        daoHandler.decoder['proposalUrl'] +
-                        arg.eventData.multiHash.substring(0, 7)
                     const proposalOnChainId = Number(
                         arg.eventData.pollId
                     ).toString()
 
-                    if (
-                        proposalOnChainId == '1' //we know for sure this is a bad proposal
+                    const proposalUrl =
+                        daoHandler.decoder['proposalUrl'] + proposalOnChainId
+                    const proposalCreatedTimestamp = Number(
+                        arg.eventData.blockCreated
                     )
+                    const votingStartsTimestamp = Number(
+                        arg.eventData.startDate
+                    )
+                    const votingEndsTimestamp = Number(arg.eventData.endDate)
+                    const title = await getProposalTitle(
+                        arg.eventData.url,
+                        proposalOnChainId
+                    )
+
+                    if (proposalOnChainId == '1')
+                        //we know for sure this is a bad proposal
                         return
 
                     return {
@@ -77,9 +69,7 @@ export const makerPolls = async (
             )
         ).filter((n) => n) ?? []
 
-    const lastBlock = (await provider.getBlockNumber()) ?? 0
-
-    return { proposals, lastBlock }
+    return proposals
 }
 
 const formatTitle = (text: string): string => {
@@ -88,22 +78,40 @@ const formatTitle = (text: string): string => {
     return temp
 }
 
-const getProposalTitle = async (url: string): Promise<unknown> => {
-    let title
+const getProposalTitle = async (
+    url: string,
+    onChainId: string
+): Promise<string> => {
+    let response
+
     try {
-        const response = await axios.get(url)
-        title = formatTitle(response.data)
-    } catch (e) {
-        title = 'Unknown'
-        log_pd.log({
-            level: 'error',
-            message: `Could not get proposal title`,
-            data: {
-                url: url,
-                error: e
+        let retriesLeft = 5
+        while (retriesLeft) {
+            try {
+                response = await (await axios.get(url)).data
+                break
+            } catch (err) {
+                retriesLeft--
+                if (!retriesLeft) throw err
+
+                await new Promise((resolve) =>
+                    setTimeout(
+                        resolve,
+                        calculateExponentialBackoffTimeInMs(retriesLeft)
+                    )
+                )
             }
+        }
+    } catch (e) {
+        log_pd.log({
+            level: 'warn',
+            message: `Error fetching title for Maker poll ${onChainId}`
         })
     }
 
-    return title
+    return response ? formatTitle(response) : 'Unknown'
+}
+
+const calculateExponentialBackoffTimeInMs = (retriesLeft: number) => {
+    return 1000 * Math.pow(2, 5 - retriesLeft)
 }
