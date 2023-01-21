@@ -98,7 +98,10 @@ export const updateChainDaoVotes = async (
             ? fromBlock + blockBatchSize
             : currentBlock
 
-    if (toBlock > daoHandler.lastChainProposalCreatedBlock)
+    if (
+        toBlock > daoHandler.lastChainProposalCreatedBlock &&
+        toBlock != currentBlock
+    )
         toBlock = Number(daoHandler.lastChainProposalCreatedBlock)
 
     const provider: ethers.providers.JsonRpcProvider =
