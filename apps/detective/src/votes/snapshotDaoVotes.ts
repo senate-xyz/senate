@@ -139,9 +139,10 @@ export const updateSnapshotDaoVotes = async (
             }
         })
     } catch (e) {
+        console.log(e)
         log_pd.log({
-            level: 'warn',
-            message: `Error fetching votes for ${daoHandler.dao.name}`,
+            level: 'error',
+            message: `Error fetching proposals for ${daoHandler.dao.name}`,
             error: e
         })
     }

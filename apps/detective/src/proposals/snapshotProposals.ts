@@ -91,7 +91,7 @@ export const updateSnapshotProposals = async (
     } catch (e) {
         response = 'nok'
         log_pd.log({
-            level: 'warn',
+            level: 'error',
             message: `Error fetching proposals for ${daoHandler.dao.name}`,
             error: e
         })

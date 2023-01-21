@@ -12,6 +12,7 @@ loggers.add('proposal-detective', {
             format: 'YYYY-MM-DD HH:mm:ss'
         }),
         format.ms(),
+        format.metadata(),
         format.errors({ stack: true })
     ),
     transports: [
@@ -32,6 +33,7 @@ loggers.add('refresher', {
             format: 'YYYY-MM-DD HH:mm:ss'
         }),
         format.ms(),
+        format.metadata(),
         format.errors({ stack: true })
     ),
     transports: [
@@ -52,6 +54,7 @@ loggers.add('bulletin', {
             format: 'YYYY-MM-DD HH:mm:ss'
         }),
         format.ms(),
+        format.metadata(),
         format.errors({ stack: true })
     ),
     transports: [
@@ -72,6 +75,7 @@ loggers.add('node', {
             format: 'YYYY-MM-DD HH:mm:ss'
         }),
         format.ms(),
+        format.metadata(),
         format.errors({ stack: true })
     ),
     transports: [
@@ -92,6 +96,7 @@ loggers.add('prisma', {
             format: 'YYYY-MM-DD HH:mm:ss'
         }),
         format.ms(),
+        format.metadata(),
         format.errors({ stack: true })
     ),
     transports: [

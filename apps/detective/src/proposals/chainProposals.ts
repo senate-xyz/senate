@@ -64,7 +64,7 @@ export const updateChainProposals = async (
 
         log_pd.log({
             level: 'info',
-            message: `Search interval for ${daoHandler.dao.name} - ${daoHandler.type}`,
+            message: `Search interval for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
             data: {
                 currentBlock: currentBlock,
                 fromBlock: fromBlock,
@@ -136,7 +136,7 @@ export const updateChainProposals = async (
         response = 'nok'
         console.log(e)
         log_pd.log({
-            level: 'warn',
+            level: 'error',
             message: `Error fetching proposals for ${daoHandler.dao.name}`,
             error: e
         })
