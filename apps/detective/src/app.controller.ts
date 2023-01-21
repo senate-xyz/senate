@@ -21,9 +21,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         log_pd.log({
             level: 'error',
             message: `AllExceptionsFilter`,
-            data: {
-                exception: exception
-            }
+            error: exception
         })
 
         // In certain situations `httpAdapter` might not be available in the

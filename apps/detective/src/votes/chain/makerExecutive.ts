@@ -1,4 +1,4 @@
-import { log_node, log_pd } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { DAOHandler, prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
@@ -93,7 +93,12 @@ export const getVotesForVoter = async (
                             choice: 'Yes'
                         }
                     } catch (e) {
-                        console.log(e)
+                        log_pd.log({
+                            level: 'error',
+                            message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
+                            logs: logs,
+                            error: e
+                        })
                         success = false
                     }
                 })

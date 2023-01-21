@@ -90,11 +90,9 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
 
                 if (!response.data || !response.data.title) {
                     log_pd.log({
-                        level: 'error',
+                        level: 'warn',
                         message: `Could not find proposal title in response`,
-                        data: {
-                            responseData: response.data
-                        }
+                        responseData: response.data
                     })
                 }
 
@@ -112,21 +110,17 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
                 log_pd.log({
                     level: 'warn',
                     message: `Failed fetching proposal data from ${IPFS_GATEWAY_URLS[gatewayIndex]}. Retrying...`,
-                    data: {
-                        retriesLeft: retries
-                    }
+                    retriesLeft: retries
                 })
             }
         }
     } catch (e) {
         log_pd.log({
-            level: 'error',
+            level: 'warn',
             message: `Could not get proposal title`,
-            data: {
-                hexHash: hexHash,
-                url: IPFS_GATEWAY_URLS[0] + 'f01701220' + hexHash.substring(2),
-                error: e
-            }
+            hexHash: hexHash,
+            url: IPFS_GATEWAY_URLS[0] + 'f01701220' + hexHash.substring(2),
+            error: e
         })
     }
 

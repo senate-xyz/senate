@@ -94,8 +94,7 @@ const getProposalData = async (spellAddress: string) => {
     } catch (err) {
         log_pd.log({
             level: 'warn',
-            message: `Error fetching Maker executive proposal data for ${spellAddress}`,
-            data: {}
+            message: `Error fetching Maker executive proposal data for ${spellAddress}`
         })
     }
 
@@ -133,11 +132,6 @@ async function getSpellAddressArrayFromLogs(
     for (let i = 0; i < logs.length; i++) {
         const log = logs[i]
         const eventArgs = iface.decodeEventLog('LogNote', log.data)
-
-        log_pd.log({
-            level: 'info',
-            message: `Maker executive log ${i}`
-        })
 
         const decodedFunctionData =
             log.topics[0] === VOTE_SINGE_ACTION_TOPIC

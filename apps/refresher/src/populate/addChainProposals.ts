@@ -8,6 +8,7 @@ import {
     DAOS_PROPOSALS_CHAIN_INTERVAL,
     DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE
 } from '../config'
+import { log_ref } from '@senate/axiom'
 
 export const addChainProposalsToQueue = async () => {
     await prisma.$transaction(
@@ -71,6 +72,16 @@ export const addChainProposalsToQueue = async () => {
                 take: 1,
                 select: { priority: true }
             })) ?? { priority: 50 }
+
+            daoHandlers.map((daoHandler) =>
+                log_ref.log({
+                    level: 'info',
+                    message: `Added refresh items to queue`,
+                    dao: daoHandler.dao.name,
+                    daoHandler: daoHandler.id,
+                    type: RefreshType.DAOCHAINPROPOSALS
+                })
+            )
 
             await tx.refreshQueue.createMany({
                 data: daoHandlers.map((daoHandler) => {

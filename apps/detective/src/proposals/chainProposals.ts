@@ -31,7 +31,7 @@ export const updateChainProposals = async (
     daoHandlerId: string,
     minBlockNumber: number
 ) => {
-    let response = 'ok'
+    let response = 'nok'
     const daoHandler = await prisma.dAOHandler.findFirst({
         where: { id: daoHandlerId },
         include: { dao: true }
@@ -41,38 +41,27 @@ export const updateChainProposals = async (
         return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
     }
 
+    let result: Result[], currentBlock: number
+
     try {
-        let result: Result[], currentBlock: number
+        currentBlock = await senateProvider.getBlockNumber()
+    } catch (e) {
+        currentBlock = await infuraProvider.getBlockNumber()
+    }
 
-        try {
-            currentBlock = await senateProvider.getBlockNumber()
-        } catch (e) {
-            currentBlock = await infuraProvider.getBlockNumber()
-        }
+    const blockBatchSize =
+        daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE ? 100000 : 1000000
 
-        const blockBatchSize =
-            daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE ? 500000 : 5000000
+    const fromBlock = Math.max(minBlockNumber, 0)
+    const toBlock =
+        currentBlock - fromBlock > blockBatchSize
+            ? fromBlock + blockBatchSize
+            : currentBlock
 
-        const fromBlock = Math.max(minBlockNumber, 0)
-        const toBlock =
-            currentBlock - fromBlock > blockBatchSize
-                ? fromBlock + blockBatchSize
-                : currentBlock
+    const provider: ethers.providers.JsonRpcProvider =
+        currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
 
-        const provider: ethers.providers.JsonRpcProvider =
-            currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
-
-        log_pd.log({
-            level: 'info',
-            message: `Search interval for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
-            data: {
-                currentBlock: currentBlock,
-                fromBlock: fromBlock,
-                toBlock: toBlock,
-                provider: provider.connection.url
-            }
-        })
-
+    try {
         switch (daoHandler.type) {
             case 'AAVE_CHAIN':
                 result = await aaveProposals(
@@ -132,15 +121,35 @@ export const updateChainProposals = async (
                 lastSnapshotProposalCreatedTimestamp: new Date(0)
             }
         })
+
+        response = 'ok'
     } catch (e) {
-        response = 'nok'
-        console.log(e)
         log_pd.log({
             level: 'error',
-            message: `Error fetching proposals for ${daoHandler.dao.name}`,
+            message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+            searchType: 'PROPOSALS',
+            sourceType: 'CHAIN',
+            currentBlock: currentBlock,
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            provider: provider.connection.url,
             error: e
         })
     }
 
-    return [{ daoHandlerId: daoHandlerId, response: response }]
+    const res = [{ daoHandlerId: daoHandlerId, response: response }]
+
+    log_pd.log({
+        level: 'info',
+        message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+        searchType: 'PROPOSALS',
+        sourceType: 'CHAIN',
+        currentBlock: currentBlock,
+        fromBlock: fromBlock,
+        toBlock: toBlock,
+        provider: provider.connection.url,
+        response: res
+    })
+
+    return res
 }

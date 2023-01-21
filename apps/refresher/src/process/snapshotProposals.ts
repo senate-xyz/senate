@@ -1,10 +1,17 @@
-import { RefreshQueue, RefreshStatus, prisma } from '@senate/database'
+import {
+    RefreshQueue,
+    RefreshStatus,
+    RefreshType,
+    prisma
+} from '@senate/database'
 import superagent from 'superagent'
 import { DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE } from '../config'
+import { log_ref } from '@senate/axiom'
 
 export const processSnapshotProposals = async (item: RefreshQueue) => {
     const daoHandler = await prisma.dAOHandler.findFirst({
-        where: { id: item.handlerId }
+        where: { id: item.handlerId },
+        include: { dao: true }
     })
 
     const proposalDetectiveReq = `${
@@ -59,9 +66,18 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                 }
             })
 
+            log_ref.log({
+                level: 'info',
+                message: `Process refresh items`,
+                dao: daoHandler.dao.name,
+                daoHandler: daoHandler.id,
+                type: RefreshType.DAOSNAPSHOTPROPOSALS,
+                request: proposalDetectiveReq
+            })
+
             return
         })
-        .catch(async () => {
+        .catch(async (e) => {
             await prisma.dAOHandler.update({
                 where: {
                     id: item.handlerId
@@ -72,6 +88,16 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                     lastChainProposalCreatedBlock: 0,
                     lastSnapshotProposalCreatedTimestamp: new Date(0)
                 }
+            })
+
+            log_ref.log({
+                level: 'error',
+                message: `Process refresh items`,
+                dao: daoHandler.dao.name,
+                daoHandler: daoHandler.id,
+                type: RefreshType.DAOSNAPSHOTPROPOSALS,
+                request: proposalDetectiveReq,
+                error: e
             })
         })
 }

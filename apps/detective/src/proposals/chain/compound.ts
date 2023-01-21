@@ -1,4 +1,4 @@
-import { log_node } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { DAOHandler } from '@senate/database'
 import { ethers } from 'ethers'
 
@@ -73,6 +73,11 @@ const formatTitle = (text: string): string => {
     const temp = text.split('\n')[0]
 
     if (!temp) {
+        log_pd.log({
+            level: 'warn',
+            message: `Could not get proposal title`,
+            text: text
+        })
         return 'Title unavailable'
     }
 

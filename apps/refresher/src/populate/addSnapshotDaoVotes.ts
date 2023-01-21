@@ -139,13 +139,12 @@ export const addSnapshotDaoVotes = async () => {
 
                     log_ref.log({
                         level: 'info',
-                        message: `Added items to queue`,
-                        data: {
-                            dao: daoHandler.dao.name,
-                            type: RefreshType.DAOSNAPSHOTVOTES,
-                            noOfBuckets: refreshItemsDao.length,
-                            items: refreshItemsDao
-                        }
+                        message: `Added refresh items to queue`,
+                        dao: daoHandler.dao.name,
+                        daoHandler: daoHandler.id,
+                        type: RefreshType.DAOSNAPSHOTVOTES,
+                        noOfBuckets: refreshItemsDao.length,
+                        items: refreshItemsDao
                     })
 
                     return refreshItemsDao

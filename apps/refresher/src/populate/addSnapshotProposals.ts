@@ -8,6 +8,7 @@ import {
     DAOS_PROPOSALS_SNAPSHOT_INTERVAL,
     DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE
 } from '../config'
+import { log_ref } from '@senate/axiom'
 
 export const addSnapshotProposalsToQueue = async () => {
     await prisma.$transaction(
@@ -74,6 +75,16 @@ export const addSnapshotProposalsToQueue = async () => {
                     }
                 })
             })
+
+            daoHandlers.map((daoHandler) =>
+                log_ref.log({
+                    level: 'info',
+                    message: `Added refresh items to queue`,
+                    dao: daoHandler.dao.name,
+                    daoHandler: daoHandler.id,
+                    type: RefreshType.DAOCHAINPROPOSALS
+                })
+            )
 
             await tx.dAOHandler.updateMany({
                 where: {

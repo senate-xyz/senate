@@ -109,17 +109,6 @@ export const updateChainDaoVotes = async (
     const provider: ethers.providers.JsonRpcProvider =
         currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
 
-    log_pd.log({
-        level: 'info',
-        message: `Search interval for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
-        data: {
-            currentBlock: currentBlock,
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            provider: provider.connection.url
-        }
-    })
-
     try {
         switch (daoHandler.type) {
             case 'AAVE_CHAIN':
@@ -171,10 +160,6 @@ export const updateChainDaoVotes = async (
 
         const successfulResults = results.filter((res) => res.success)
 
-        successfulResults.map((res) => {
-            result.set(res.voterAddress, 'ok')
-        })
-
         await prisma.vote
             .createMany({
                 data: successfulResults.map((res) => res.votes).flat(2),
@@ -199,19 +184,42 @@ export const updateChainDaoVotes = async (
                 })
                 return
             })
+
+        successfulResults.map((res) => {
+            result.set(res.voterAddress, 'ok')
+        })
     } catch (e) {
-        console.log(e)
         log_pd.log({
             level: 'error',
-            message: `Error fetching proposals for ${daoHandler.dao.name}`,
+            message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
+            searchType: 'VOTES',
+            sourceType: 'CHAIN',
+            currentBlock: currentBlock,
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            voters: voters,
+            provider: provider.connection.url,
             error: e
         })
     }
 
-    const resultsArray = Array.from(result, ([name, value]) => ({
+    const res = Array.from(result, ([name, value]) => ({
         voterAddress: name,
         response: value
     }))
 
-    return resultsArray
+    log_pd.log({
+        level: 'info',
+        message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
+        searchType: 'VOTES',
+        sourceType: 'CHAIN',
+        currentBlock: currentBlock,
+        fromBlock: fromBlock,
+        toBlock: toBlock,
+        voters: voters,
+        provider: provider.connection.url,
+        response: res
+    })
+
+    return res
 }
