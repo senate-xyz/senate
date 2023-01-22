@@ -22,7 +22,7 @@ const main = async () => {
 
     setInterval(async () => {
         processQueue()
-    }, 1000)
+    }, 250)
 
     cron.schedule('*/30 * * * * *', async () => {
         log_ref.log({
