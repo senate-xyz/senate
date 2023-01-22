@@ -19,7 +19,10 @@ export const updateSnapshotDaoVotes = async (
     let lastVoteCreated = (
         await prisma.voterHandler.findFirst({
             where: {
-                daoHandlerId: daoHandler.id
+                daoHandlerId: daoHandler.id,
+                voter: {
+                    address: { in: voters }
+                }
             },
             orderBy: {
                 lastSnapshotVoteCreatedTimestamp: 'desc'
