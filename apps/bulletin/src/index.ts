@@ -13,7 +13,6 @@ import { config } from 'dotenv'
 import { schedule } from 'node-cron'
 import { ServerClient } from 'postmark'
 import { log_bul } from '@senate/axiom'
-import superagent from 'superagent'
 
 config()
 
@@ -383,7 +382,6 @@ const formatEmailTemplateRow = async (
 
     let countdownUrl = ''
     for (let i = 0; i < 70; i++) {
-        console.log(i)
         countdownUrl = await generateCountdownGifUrl(
             notification.proposal.timeEnd
         )
@@ -480,8 +478,6 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
                         }
                     }
                 })
-                // console.log('SUCCESS')
-                // console.log(JSON.stringify(response))
                 break
             } catch (err) {
                 retries--
