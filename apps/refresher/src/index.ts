@@ -24,7 +24,7 @@ const main = async () => {
         processQueue()
     }, 250)
 
-    cron.schedule('*/30 * * * * *', async () => {
+    cron.schedule('*/10 * * * * *', async () => {
         log_ref.log({
             level: 'info',
             message: 'Prisma metrics',
