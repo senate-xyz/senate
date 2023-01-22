@@ -27,7 +27,7 @@ export const addChainProposalsToQueue = async () => {
                         in: [
                             DAOHandlerType.AAVE_CHAIN,
                             DAOHandlerType.COMPOUND_CHAIN,
-                            //DAOHandlerType.MAKER_EXECUTIVE,
+                            DAOHandlerType.MAKER_EXECUTIVE,
                             DAOHandlerType.MAKER_POLL,
                             DAOHandlerType.UNISWAP_CHAIN
                         ]
