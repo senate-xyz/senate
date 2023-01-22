@@ -109,23 +109,25 @@ export const updateSnapshotDaoVotes = async (
                 (vote) => vote.proposal.id == snapshotProposalId
             )
 
-            await prisma.vote.createMany({
-                data: votesForProposal.map((vote) => {
-                    return {
-                        voterAddress: vote.voter,
-                        daoId: daoHandler.daoId,
-                        proposalId: proposal.id,
-                        daoHandlerId: daoHandler.id,
-                        choiceId:
-                            vote.choice.length > 0
-                                ? String(vote.choice[0])
-                                : String(vote.choice),
-                        choice:
-                            vote.proposal.choices[vote.choice - 1] ?? 'No name'
-                    }
-                }),
-                skipDuplicates: true
-            })
+            if (votesForProposal.length)
+                await prisma.vote.createMany({
+                    data: votesForProposal.map((vote) => {
+                        return {
+                            voterAddress: vote.voter,
+                            daoId: daoHandler.daoId,
+                            proposalId: proposal.id,
+                            daoHandlerId: daoHandler.id,
+                            choiceId:
+                                vote.choice.length > 0
+                                    ? String(vote.choice[0])
+                                    : String(vote.choice),
+                            choice:
+                                vote.proposal.choices[vote.choice - 1] ??
+                                'No name'
+                        }
+                    }),
+                    skipDuplicates: true
+                })
         }
 
         await prisma.voterHandler.updateMany({

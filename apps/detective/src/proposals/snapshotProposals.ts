@@ -59,8 +59,8 @@ export const updateSnapshotProposals = async (
                 return response.body.data.proposals
             })
 
-        await prisma.proposal
-            .createMany({
+        if (proposals.length)
+            await prisma.proposal.createMany({
                 data: proposals.map((proposal) => {
                     return {
                         externalId: proposal.id,
@@ -76,18 +76,17 @@ export const updateSnapshotProposals = async (
                 }),
                 skipDuplicates: true
             })
-            .then(async () => {
-                await prisma.dAOHandler.update({
-                    where: {
-                        id: daoHandler.id
-                    },
-                    data: {
-                        lastChainProposalCreatedBlock: 0,
-                        lastSnapshotProposalCreatedTimestamp: new Date()
-                    }
-                })
-                return
-            })
+
+        await prisma.dAOHandler.update({
+            where: {
+                id: daoHandler.id
+            },
+            data: {
+                lastChainProposalCreatedBlock: 0,
+                lastSnapshotProposalCreatedTimestamp: new Date()
+            }
+        })
+
         response = 'ok'
     } catch (e) {
         log_pd.log({
