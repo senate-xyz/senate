@@ -1,21 +1,34 @@
-import { prisma, User } from "@senate/database";
+import { prisma, User, DAOHandlerType, DAOHandler } from "@senate/database";
 import axios from "axios";
 import promptSync from "prompt-sync";
 
 const prompt = promptSync({ sigint: true });
 
-const SNAPSHOT_SPACES = ["opcollective.eth", "ens.eth", "balancer.eth"];
-
 async function main() {
   console.log("🚀 Let's gooooo...");
 
   const user: User = await bootstrapStressTestUserWithSubscriptions();
+  const snapshotSpaces: Array<string> = await fetchSnapshotSpacesFromDb();
   const snapshotVoters: Array<string> =
-    await buildSnapshotVoterAddressesDataSet(SNAPSHOT_SPACES);
-  console.log("📃 Snapshot voters dataset size:", snapshotVoters.length);
+    await buildSnapshotVoterAddressesDataSet(snapshotSpaces);
+
+  const votersNotYetInDb = await filterVoters(snapshotVoters);
+  console.log(
+    "📃 (Not yet in db) Snapshot voters dataset size:",
+    votersNotYetInDb.length
+  );
 
   let index = 0;
   while (true) {
+    let nextBatchOfVoters = votersNotYetInDb.slice(
+      index,
+      index + 5 < votersNotYetInDb.length ? index + 5 : votersNotYetInDb.length
+    );
+    console.log(
+      "Next 5 voters:",
+      await getSnapshotVotesCount(nextBatchOfVoters, snapshotSpaces)
+    );
+
     console.log("\n");
     const answer = prompt("❓ How many voters to add to the database? ");
 
@@ -26,24 +39,84 @@ async function main() {
     }
 
     const limit =
-      index + count > snapshotVoters.length
-        ? snapshotVoters.length
+      index + count > votersNotYetInDb.length
+        ? votersNotYetInDb.length
         : index + count;
-    const voters = snapshotVoters.slice(index, index + count);
+
+    const voters = votersNotYetInDb.slice(index, limit);
 
     await linkVotersToUser(user, voters);
-    console.log(`✨ Processed voters from index ${index} to ${limit}`);
+    console.log(`✨ Processed voters from index ${index} to ${limit - 1}`);
 
-    index += count;
-
-    if (limit == snapshotVoters.length) {
+    if (limit == votersNotYetInDb.length) {
       console.log("✨ Processed all voters. Bye now!");
       break;
     }
+
+    index = limit;
   }
 }
 
+async function fetchSnapshotSpacesFromDb(): Promise<Array<string>> {
+  let handlers: DAOHandler[] = await prisma.dAOHandler.findMany({
+    where: {
+      type: DAOHandlerType.SNAPSHOT,
+    },
+  });
+
+  return handlers.map((handler) => handler.decoder["space"]);
+}
+
+async function getSnapshotVotesCount(
+  voters: Array<string>,
+  spaces: Array<string>
+): Promise<Map<string, number>> {
+  const result = new Map();
+
+  for (let voter of voters) {
+    const graphqlQuery = `{
+      votes(
+        first:1000, 
+        where: {
+          voter: "${voter}",
+          space_in: [${spaces.map((space) => `"${space}"`)}]
+        }
+      ) 
+      {
+        id
+      }
+    }`;
+
+    try {
+      const res = await axios({
+        url: "https://hub.snapshot.org/graphql",
+        method: "get",
+        data: {
+          query: graphqlQuery,
+        },
+      });
+
+      const votesCount = res.data.data.votes.length;
+      result.set(voter, votesCount);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  return result;
+}
+
+async function filterVoters(voters: string[]): Promise<string[]> {
+  let votersInDb = await fetchVoters();
+  return voters.filter((voter) => !votersInDb.includes(voter));
+}
+
+async function fetchVoters(): Promise<string[]> {
+  return (await prisma.voter.findMany()).map((voter) => voter.address);
+}
+
 async function linkVotersToUser(user: User, voters: Array<string>) {
+  console.log(`Adding ${voters.length} voters to db`);
   await prisma.$transaction(
     voters.map((voter) => {
       return prisma.user.update({

@@ -13,7 +13,8 @@
   ],
   "scripts": {
     "build": "tsup",
-    "start": "node dist/index"
+    "start": "node dist/index",
+    "dev": "tsup && node dist/index"
   },
   "dependencies": {
     "@types/prompt-sync": "^4.2.0",

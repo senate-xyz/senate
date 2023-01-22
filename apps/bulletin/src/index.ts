@@ -380,12 +380,9 @@ const formatEmailTemplateRow = async (
         notification.daoId
     )
 
-    let countdownUrl = ''
-    for (let i = 0; i < 70; i++) {
-        countdownUrl = await generateCountdownGifUrl(
-            notification.proposal.timeEnd
-        )
-    }
+    const countdownUrl = await generateCountdownGifUrl(
+        notification.proposal.timeEnd
+    )
 
     const votingStatus = voted
         ? 'Voted'
@@ -493,7 +490,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
                         retriesLeft: retries
                     }
                 })
-                await new Promise((resolve) => setTimeout(resolve, 10000))
+                await delay(10000)
             }
         }
 
