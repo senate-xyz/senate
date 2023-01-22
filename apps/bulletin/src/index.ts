@@ -92,6 +92,12 @@ schedule(
             } else {
                 await sendDailyBulletin()
             }
+
+            log_bul.log({
+                level: 'info',
+                message: 'Completed daily roundup',
+                data: {}
+            })
         }
     }
 )
@@ -380,6 +386,7 @@ const formatEmailTemplateRow = async (
         notification.daoId
     )
 
+    await delay(1000)
     const countdownUrl = await generateCountdownGifUrl(
         notification.proposal.timeEnd
     )
