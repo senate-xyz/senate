@@ -1,10 +1,17 @@
-import { prisma, RefreshQueue, RefreshStatus } from '@senate/database'
+import {
+    prisma,
+    RefreshQueue,
+    RefreshStatus,
+    RefreshType
+} from '@senate/database'
 import superagent from 'superagent'
 import { DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE } from '../config'
+import { log_ref } from '@senate/axiom'
 
 export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
     const daoHandler = await prisma.dAOHandler.findFirst({
-        where: { id: item.handlerId }
+        where: { id: item.handlerId },
+        include: { dao: true }
     })
 
     const voters = [...item.args['voters']]
@@ -66,9 +73,20 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                 }
             })
 
+            log_ref.log({
+                level: 'info',
+                message: `Process refresh items`,
+                dao: daoHandler.dao.name,
+                daoHandler: daoHandler.id,
+                type: RefreshType.DAOSNAPSHOTVOTES,
+                voters: voters,
+                request: proposalDetectiveReq,
+                response: data
+            })
+
             return
         })
-        .catch(async () => {
+        .catch(async (e) => {
             await prisma.voterHandler.updateMany({
                 where: {
                     voter: {
@@ -84,6 +102,17 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                     lastChainVoteCreatedBlock: 0,
                     lastSnapshotVoteCreatedTimestamp: new Date(0)
                 }
+            })
+
+            log_ref.log({
+                level: 'error',
+                message: `Process refresh items`,
+                dao: daoHandler.dao.name,
+                daoHandler: daoHandler.id,
+                type: RefreshType.DAOSNAPSHOTVOTES,
+                voters: voters,
+                request: proposalDetectiveReq,
+                error: e
             })
         })
 }

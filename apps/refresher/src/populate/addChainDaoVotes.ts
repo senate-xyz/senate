@@ -122,7 +122,7 @@ export const addChainDaoVotes = async () => {
 
                             return {
                                 bucket: `[${bucketMin}, ${bucketMax}] - ${votershandlers.length} items`,
-                                query: {
+                                item: {
                                     handlerId: daoHandler.id,
                                     refreshType: RefreshType.DAOCHAINVOTES,
                                     args: {
@@ -134,17 +134,16 @@ export const addChainDaoVotes = async () => {
                                 }
                             }
                         })
-                        .filter((el) => el.query.args.voters.length)
+                        .filter((el) => el.item.args.voters.length)
 
                     log_ref.log({
                         level: 'info',
-                        message: `Added items to queue`,
-                        data: {
-                            dao: daoHandler.dao.name,
-                            type: RefreshType.DAOCHAINVOTES,
-                            noOfBuckets: refreshItemsDao.length,
-                            items: refreshItemsDao
-                        }
+                        message: `Added refresh items to queue`,
+                        dao: daoHandler.dao.name,
+                        daoHandler: daoHandler.id,
+                        type: RefreshType.DAOCHAINVOTES,
+                        noOfBuckets: refreshItemsDao.length,
+                        items: refreshItemsDao
                     })
 
                     return refreshItemsDao
@@ -152,7 +151,7 @@ export const addChainDaoVotes = async () => {
                 .flat(2)
 
             await tx.refreshQueue.createMany({
-                data: refreshEntries.map((q) => q.query)
+                data: refreshEntries.map((q) => q.item)
             })
 
             await tx.voterHandler.updateMany({

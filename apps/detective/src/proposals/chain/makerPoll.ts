@@ -105,8 +105,7 @@ const getProposalTitle = async (
     } catch (e) {
         log_pd.log({
             level: 'warn',
-            message: `Error fetching title for Maker poll ${onChainId}`,
-            data: {}
+            message: `Error fetching title for Maker poll ${onChainId}`
         })
     }
 

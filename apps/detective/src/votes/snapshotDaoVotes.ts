@@ -6,6 +6,9 @@ export const updateSnapshotDaoVotes = async (
     daoHandlerId: string,
     voters: string[]
 ) => {
+    const result = new Map()
+    voters.map((voter) => result.set(voter, 'nok'))
+
     const daoHandler = await prisma.dAOHandler.findFirstOrThrow({
         where: { id: daoHandlerId },
         include: {
@@ -49,6 +52,7 @@ export const updateSnapshotDaoVotes = async (
                     }
                 }`
 
+    let votes
     try {
         const res = await superagent
             .get('https://hub.snapshot.org/graphql')
@@ -68,7 +72,7 @@ export const updateSnapshotDaoVotes = async (
             })
 
         //sanitize
-        const votes = res.filter(
+        votes = res.filter(
             (vote) => vote.proposal != null && vote.proposal.id != null
         )
 
@@ -138,21 +142,44 @@ export const updateSnapshotDaoVotes = async (
                 lastSnapshotVoteCreatedTimestamp: new Date(newestVote)
             }
         })
+
+        voters.map((voter) => result.set(voter, 'ok'))
     } catch (e) {
         log_pd.log({
-            level: 'warn',
-            message: `Error fetching votes for ${daoHandler.dao.name}`,
+            level: 'error',
+            message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
+            searchType: 'VOTES',
+            sourceType: 'SNAPSHOT',
+            created_gt: lastVoteCreated
+                ? Math.floor(lastVoteCreated.valueOf() / 1000)
+                : 0,
+            space: daoHandler.decoder['space'],
+            voters: voters,
+            query: graphqlQuery,
+            votes: votes,
             error: e
         })
     }
 
-    const result = new Map()
-    voters.map((voter) => result.set(voter, 'ok'))
-
-    const resultsArray = Array.from(result, ([name, value]) => ({
+    const res = Array.from(result, ([name, value]) => ({
         voterAddress: name,
         response: value
     }))
 
-    return resultsArray
+    log_pd.log({
+        level: 'info',
+        message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
+        searchType: 'VOTES',
+        sourceType: 'SNAPSHOT',
+        created_gt: lastVoteCreated
+            ? Math.floor(lastVoteCreated.valueOf() / 1000)
+            : 0,
+        space: daoHandler.decoder['space'],
+        voters: voters,
+        query: graphqlQuery,
+        votes: votes,
+        response: res
+    })
+
+    return res
 }

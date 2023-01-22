@@ -76,7 +76,7 @@ export const updateChainDaoVotes = async (
         )
     )
 
-    let results: Result[] = [],
+    let votes: Result[] = [],
         currentBlock: number
 
     try {
@@ -98,27 +98,21 @@ export const updateChainDaoVotes = async (
             ? fromBlock + blockBatchSize
             : currentBlock
 
-    if (toBlock > daoHandler.lastChainProposalCreatedBlock)
+    if (
+        toBlock > daoHandler.lastChainProposalCreatedBlock &&
+        toBlock != currentBlock
+    )
         toBlock = Number(daoHandler.lastChainProposalCreatedBlock)
+
+    if (fromBlock > toBlock) fromBlock = toBlock
 
     const provider: ethers.providers.JsonRpcProvider =
         currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
 
-    log_pd.log({
-        level: 'info',
-        message: `Search interval for ${daoHandler.dao.name} - ${daoHandler.type}`,
-        data: {
-            currentBlock: currentBlock,
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            provider: provider.connection.url
-        }
-    })
-
     try {
         switch (daoHandler.type) {
             case 'AAVE_CHAIN':
-                results = await getAaveVotes(
+                votes = await getAaveVotes(
                     provider,
                     daoHandler,
                     voters,
@@ -127,7 +121,7 @@ export const updateChainDaoVotes = async (
                 )
                 break
             case 'COMPOUND_CHAIN':
-                results = await getCompoundVotes(
+                votes = await getCompoundVotes(
                     provider,
                     daoHandler,
                     voters,
@@ -136,7 +130,7 @@ export const updateChainDaoVotes = async (
                 )
                 break
             case 'MAKER_EXECUTIVE':
-                results = await getMakerExecutiveVotes(
+                votes = await getMakerExecutiveVotes(
                     provider,
                     daoHandler,
                     voters,
@@ -145,7 +139,7 @@ export const updateChainDaoVotes = async (
                 )
                 break
             case 'MAKER_POLL':
-                results = await getMakerPollVotes(
+                votes = await getMakerPollVotes(
                     provider,
                     daoHandler,
                     voters,
@@ -154,7 +148,7 @@ export const updateChainDaoVotes = async (
                 )
                 break
             case 'UNISWAP_CHAIN':
-                results = await getUniswapVotes(
+                votes = await getUniswapVotes(
                     provider,
                     daoHandler,
                     voters,
@@ -164,11 +158,7 @@ export const updateChainDaoVotes = async (
                 break
         }
 
-        const successfulResults = results.filter((res) => res.success)
-
-        successfulResults.map((res) => {
-            result.set(res.voterAddress, 'ok')
-        })
+        const successfulResults = votes.filter((res) => res.success)
 
         await prisma.vote
             .createMany({
@@ -194,18 +184,44 @@ export const updateChainDaoVotes = async (
                 })
                 return
             })
+
+        successfulResults.map((res) => {
+            result.set(res.voterAddress, 'ok')
+        })
     } catch (e) {
         log_pd.log({
-            level: 'warn',
-            message: `Error fetching votes for ${daoHandler.dao.name}`,
+            level: 'error',
+            message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
+            searchType: 'VOTES',
+            sourceType: 'CHAIN',
+            currentBlock: currentBlock,
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            voters: voters,
+            votes: votes,
+            provider: provider.connection.url,
             error: e
         })
     }
 
-    const resultsArray = Array.from(result, ([name, value]) => ({
+    const res = Array.from(result, ([name, value]) => ({
         voterAddress: name,
         response: value
     }))
 
-    return resultsArray
+    log_pd.log({
+        level: 'info',
+        message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
+        searchType: 'VOTES',
+        sourceType: 'CHAIN',
+        currentBlock: currentBlock,
+        fromBlock: fromBlock,
+        toBlock: toBlock,
+        voters: voters,
+        votes: votes,
+        provider: provider.connection.url,
+        response: res
+    })
+
+    return res
 }

@@ -6,7 +6,7 @@ export const updateSnapshotProposals = async (
     daoHandlerId: string,
     minCreatedAt: number
 ): Promise<Array<{ daoHandlerId: string; response: string }>> => {
-    let response = 'ok'
+    let response = 'nok'
 
     const daoHandler = await prisma.dAOHandler.findFirst({
         where: { id: daoHandlerId },
@@ -86,16 +86,34 @@ export const updateSnapshotProposals = async (
                         lastSnapshotProposalCreatedTimestamp: new Date()
                     }
                 })
-                return 'ok'
+                return
             })
+        response = 'ok'
     } catch (e) {
-        response = 'nok'
         log_pd.log({
-            level: 'warn',
-            message: `Error fetching proposals for ${daoHandler.dao.name}`,
+            level: 'error',
+            message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+            searchType: 'PROPOSALS',
+            sourceType: 'SNAPSHOT',
+            created_gt: Math.floor(minCreatedAt / 1000),
+            query: graphqlQuery,
+            proposals: proposals,
             error: e
         })
     }
 
-    return [{ daoHandlerId: daoHandlerId, response: response }]
+    const res = [{ daoHandlerId: daoHandlerId, response: response }]
+
+    log_pd.log({
+        level: 'info',
+        message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+        searchType: 'PROPOSALS',
+        sourceType: 'SNAPSHOT',
+        created_gt: Math.floor(minCreatedAt / 1000),
+        query: graphqlQuery,
+        proposals: proposals,
+        response: res
+    })
+
+    return res
 }
