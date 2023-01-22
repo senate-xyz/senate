@@ -14,14 +14,13 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
         include: { dao: true }
     })
 
-    const proposalDetectiveReq = `${
-        process.env.DETECTIVE_URL
-    }/updateSnapshotProposals?daoHandlerId=${
-        item.handlerId
-    }&minCreatedAt=${daoHandler?.lastSnapshotProposalCreatedTimestamp?.valueOf()}`
-
     await superagent
-        .post(proposalDetectiveReq)
+        .post(`${process.env.DETECTIVE_URL}/updateSnapshotProposals`)
+        .send({
+            daoHandlerId: item.handlerId,
+            minCreatedAt:
+                daoHandler?.lastSnapshotProposalCreatedTimestamp?.valueOf()
+        })
         .type('application/json')
         .timeout({
             response: DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000,
@@ -70,7 +69,12 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                 dao: daoHandler.dao.name,
                 daoHandler: daoHandler.id,
                 type: RefreshType.DAOSNAPSHOTPROPOSALS,
-                request: proposalDetectiveReq,
+                postRequest: `${process.env.DETECTIVE_URL}/updateSnapshotProposals`,
+                postBody: {
+                    daoHandlerId: item.handlerId,
+                    minCreatedAt:
+                        daoHandler?.lastSnapshotProposalCreatedTimestamp?.valueOf()
+                },
                 response: data
             })
 
@@ -96,7 +100,12 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                 dao: daoHandler.dao.name,
                 daoHandler: daoHandler.id,
                 type: RefreshType.DAOSNAPSHOTPROPOSALS,
-                request: proposalDetectiveReq,
+                postRequest: `${process.env.DETECTIVE_URL}/updateSnapshotProposals`,
+                postBody: {
+                    daoHandlerId: item.handlerId,
+                    minCreatedAt:
+                        daoHandler?.lastSnapshotProposalCreatedTimestamp?.valueOf()
+                },
                 error: e
             })
         })

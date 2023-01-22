@@ -16,14 +16,9 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
 
     const voters = [...item.args['voters']]
 
-    let votersReq = ''
-
-    voters.map((voter) => (votersReq += `voters=${voter}&`))
-
-    const proposalDetectiveReq = `${process.env.DETECTIVE_URL}/updateSnapshotDaoVotes?daoHandlerId=${daoHandler?.id}&${votersReq}`
-
     await superagent
-        .post(proposalDetectiveReq)
+        .post(`${process.env.DETECTIVE_URL}/updateSnapshotDaoVotes`)
+        .send({ daoHandlerId: daoHandler.id, voters: voters })
         .type('application/json')
         .timeout({
             response: DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000,
@@ -80,7 +75,8 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                 daoHandler: daoHandler.id,
                 type: RefreshType.DAOSNAPSHOTVOTES,
                 voters: voters,
-                request: proposalDetectiveReq,
+                postRequest: `${process.env.DETECTIVE_URL}/updateChainDaoVotes`,
+                postBody: { daoHandlerId: daoHandler.id, voters: voters },
                 response: data
             })
 
@@ -112,7 +108,8 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                 daoHandler: daoHandler.id,
                 type: RefreshType.DAOSNAPSHOTVOTES,
                 voters: voters,
-                request: proposalDetectiveReq,
+                postRequest: `${process.env.DETECTIVE_URL}/updateChainDaoVotes`,
+                postBody: { daoHandlerId: daoHandler.id, voters: voters },
                 error: e
             })
         })

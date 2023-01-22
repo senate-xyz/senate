@@ -86,28 +86,30 @@ export const addSnapshotDaoVotes = async () => {
                 .map((daoHandler) => {
                     //this makes sense to be filtered inside the prisma query but
                     //if we do that prisma won't let us include voter anymore for some reason
-                    const voterHandlers = daoHandler.voterHandlers.filter(
-                        (vh) =>
-                            (vh.refreshStatus == RefreshStatus.DONE &&
-                                vh.lastRefreshTimestamp <
-                                    new Date(
-                                        Date.now() -
-                                            DAOS_VOTES_SNAPSHOT_INTERVAL *
-                                                60 *
-                                                1000
-                                    )) ||
-                            (vh.refreshStatus == RefreshStatus.PENDING &&
-                                vh.lastRefreshTimestamp <
-                                    new Date(
-                                        Date.now() -
-                                            DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE *
-                                                60 *
-                                                1000
-                                    )) ||
-                            (vh.refreshStatus == RefreshStatus.NEW &&
-                                vh.lastRefreshTimestamp <
-                                    new Date(Date.now() - 15 * 1000))
-                    )
+                    const voterHandlers = daoHandler.voterHandlers
+                        .filter(
+                            (vh) =>
+                                (vh.refreshStatus == RefreshStatus.DONE &&
+                                    vh.lastRefreshTimestamp <
+                                        new Date(
+                                            Date.now() -
+                                                DAOS_VOTES_SNAPSHOT_INTERVAL *
+                                                    60 *
+                                                    1000
+                                        )) ||
+                                (vh.refreshStatus == RefreshStatus.PENDING &&
+                                    vh.lastRefreshTimestamp <
+                                        new Date(
+                                            Date.now() -
+                                                DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE *
+                                                    60 *
+                                                    1000
+                                        )) ||
+                                (vh.refreshStatus == RefreshStatus.NEW &&
+                                    vh.lastRefreshTimestamp <
+                                        new Date(Date.now() - 15 * 1000))
+                        )
+                        .slice(0, 250)
 
                     const voteTimestamps = voterHandlers.map((voterHandler) =>
                         Number(

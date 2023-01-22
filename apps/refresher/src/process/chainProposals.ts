@@ -14,14 +14,13 @@ export const processChainProposals = async (item: RefreshQueue) => {
         include: { dao: true }
     })
 
-    const proposalDetectiveReq = `${
-        process.env.DETECTIVE_URL
-    }/updateChainProposals?daoHandlerId=${
-        item.handlerId
-    }&minBlockNumber=${daoHandler?.lastChainProposalCreatedBlock?.valueOf()}`
-
     await superagent
-        .post(proposalDetectiveReq)
+        .post(`${process.env.DETECTIVE_URL}/updateChainProposals`)
+        .send({
+            daoHandlerId: item.handlerId,
+            minBlockNumber: daoHandler?.lastChainProposalCreatedBlock?.valueOf()
+        })
+
         .type('application/json')
         .timeout({
             response: DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000 - 5000,
@@ -70,7 +69,12 @@ export const processChainProposals = async (item: RefreshQueue) => {
                 dao: daoHandler.dao.name,
                 daoHandler: daoHandler.id,
                 type: RefreshType.DAOCHAINPROPOSALS,
-                request: proposalDetectiveReq,
+                postReqeust: `${process.env.DETECTIVE_URL}/updateChainProposals`,
+                postBody: {
+                    daoHandlerId: item.handlerId,
+                    minBlockNumber:
+                        daoHandler?.lastChainProposalCreatedBlock?.valueOf()
+                },
                 response: data
             })
 
@@ -94,7 +98,12 @@ export const processChainProposals = async (item: RefreshQueue) => {
                 dao: daoHandler.dao.name,
                 daoHandler: daoHandler.id,
                 type: RefreshType.DAOCHAINPROPOSALS,
-                request: proposalDetectiveReq,
+                postReqeust: `${process.env.DETECTIVE_URL}/updateChainProposals`,
+                postBody: {
+                    daoHandlerId: item.handlerId,
+                    minBlockNumber:
+                        daoHandler?.lastChainProposalCreatedBlock?.valueOf()
+                },
                 error: e
             })
         })
