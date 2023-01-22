@@ -109,7 +109,7 @@ export const addSnapshotDaoVotes = async () => {
                                     vh.lastRefreshTimestamp <
                                         new Date(Date.now() - 15 * 1000))
                         )
-                        .slice(0, 250)
+                        .slice(0, 100)
 
                     const voteTimestamps = voterHandlers.map((voterHandler) =>
                         Number(
