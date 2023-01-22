@@ -14,6 +14,14 @@ import { thresholdsTime } from '../utils'
 import { log_ref } from '@senate/axiom'
 
 export const addSnapshotDaoVotes = async () => {
+    const normalRefresh = new Date(
+        Date.now() - DAOS_VOTES_SNAPSHOT_INTERVAL * 60 * 1000
+    )
+    const forceRefresh = new Date(
+        Date.now() - DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE * 60 * 1000
+    )
+    const newRefresh = new Date(Date.now() - 15 * 1000)
+
     await prisma.$transaction(
         async (tx) => {
             let daoHandlers = await tx.dAOHandler.findMany({
@@ -25,29 +33,19 @@ export const addSnapshotDaoVotes = async () => {
                                 {
                                     refreshStatus: RefreshStatus.DONE,
                                     lastRefreshTimestamp: {
-                                        lt: new Date(
-                                            Date.now() -
-                                                DAOS_VOTES_SNAPSHOT_INTERVAL *
-                                                    60 *
-                                                    1000
-                                        )
+                                        lt: normalRefresh
                                     }
                                 },
                                 {
                                     refreshStatus: RefreshStatus.PENDING,
                                     lastRefreshTimestamp: {
-                                        lt: new Date(
-                                            Date.now() -
-                                                DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE *
-                                                    60 *
-                                                    1000
-                                        )
+                                        lt: forceRefresh
                                     }
                                 },
                                 {
                                     refreshStatus: RefreshStatus.NEW,
                                     lastRefreshTimestamp: {
-                                        lt: new Date(Date.now() - 15 * 1000)
+                                        lt: newRefresh
                                     }
                                 }
                             ]
@@ -90,24 +88,11 @@ export const addSnapshotDaoVotes = async () => {
                         .filter(
                             (vh) =>
                                 (vh.refreshStatus == RefreshStatus.DONE &&
-                                    vh.lastRefreshTimestamp <
-                                        new Date(
-                                            Date.now() -
-                                                DAOS_VOTES_SNAPSHOT_INTERVAL *
-                                                    60 *
-                                                    1000
-                                        )) ||
+                                    vh.lastRefreshTimestamp < normalRefresh) ||
                                 (vh.refreshStatus == RefreshStatus.PENDING &&
-                                    vh.lastRefreshTimestamp <
-                                        new Date(
-                                            Date.now() -
-                                                DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE *
-                                                    60 *
-                                                    1000
-                                        )) ||
+                                    vh.lastRefreshTimestamp < forceRefresh) ||
                                 (vh.refreshStatus == RefreshStatus.NEW &&
-                                    vh.lastRefreshTimestamp <
-                                        new Date(Date.now() - 15 * 1000))
+                                    vh.lastRefreshTimestamp < newRefresh)
                         )
                         .slice(0, 100)
 
@@ -130,7 +115,9 @@ export const addSnapshotDaoVotes = async () => {
                                 (voterHandler) =>
                                     Number(
                                         voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
-                                    ) >= bucketMin &&
+                                    ) +
+                                        1 >=
+                                        bucketMin &&
                                     Number(
                                         voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
                                     ) < bucketMax

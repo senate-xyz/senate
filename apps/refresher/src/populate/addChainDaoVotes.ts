@@ -13,6 +13,14 @@ import { bin } from 'd3-array'
 import { log_ref } from '@senate/axiom'
 
 export const addChainDaoVotes = async () => {
+    const normalRefresh = new Date(
+        Date.now() - DAOS_VOTES_CHAIN_INTERVAL * 60 * 1000
+    )
+    const forceRefresh = new Date(
+        Date.now() - DAOS_VOTES_CHAIN_INTERVAL_FORCE * 60 * 1000
+    )
+    const newRefresh = new Date(Date.now() - 15 * 1000)
+
     await prisma.$transaction(
         async (tx) => {
             let daoHandlers = await tx.dAOHandler.findMany({
@@ -32,29 +40,19 @@ export const addChainDaoVotes = async () => {
                                 {
                                     refreshStatus: RefreshStatus.DONE,
                                     lastRefreshTimestamp: {
-                                        lt: new Date(
-                                            Date.now() -
-                                                DAOS_VOTES_CHAIN_INTERVAL *
-                                                    60 *
-                                                    1000
-                                        )
+                                        lt: normalRefresh
                                     }
                                 },
                                 {
                                     refreshStatus: RefreshStatus.PENDING,
                                     lastRefreshTimestamp: {
-                                        lt: new Date(
-                                            Date.now() -
-                                                DAOS_VOTES_CHAIN_INTERVAL_FORCE *
-                                                    60 *
-                                                    1000
-                                        )
+                                        lt: forceRefresh
                                     }
                                 },
                                 {
                                     refreshStatus: RefreshStatus.NEW,
                                     lastRefreshTimestamp: {
-                                        lt: new Date(Date.now() - 15 * 1000)
+                                        lt: newRefresh
                                     }
                                 }
                             ]
@@ -97,24 +95,11 @@ export const addChainDaoVotes = async () => {
                         .filter(
                             (vh) =>
                                 (vh.refreshStatus == RefreshStatus.DONE &&
-                                    vh.lastRefreshTimestamp <
-                                        new Date(
-                                            Date.now() -
-                                                DAOS_VOTES_CHAIN_INTERVAL *
-                                                    60 *
-                                                    1000
-                                        )) ||
+                                    vh.lastRefreshTimestamp < normalRefresh) ||
                                 (vh.refreshStatus == RefreshStatus.PENDING &&
-                                    vh.lastRefreshTimestamp <
-                                        new Date(
-                                            Date.now() -
-                                                DAOS_VOTES_CHAIN_INTERVAL_FORCE *
-                                                    60 *
-                                                    1000
-                                        )) ||
+                                    vh.lastRefreshTimestamp < forceRefresh) ||
                                 (vh.refreshStatus == RefreshStatus.NEW &&
-                                    vh.lastRefreshTimestamp <
-                                        new Date(Date.now() - 15 * 1000))
+                                    vh.lastRefreshTimestamp < newRefresh)
                         )
                         .slice(0, 250)
 
@@ -135,7 +120,9 @@ export const addChainDaoVotes = async () => {
                                 (voterHandler) =>
                                     Number(
                                         voterHandler.lastChainVoteCreatedBlock
-                                    ) >= bucketMin &&
+                                    ) +
+                                        1 >=
+                                        bucketMin &&
                                     Number(
                                         voterHandler.lastChainVoteCreatedBlock
                                     ) < bucketMax

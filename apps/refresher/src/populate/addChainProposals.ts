@@ -11,6 +11,14 @@ import {
 import { log_ref } from '@senate/axiom'
 
 export const addChainProposalsToQueue = async () => {
+    const normalRefresh = new Date(
+        Date.now() - DAOS_PROPOSALS_CHAIN_INTERVAL * 60 * 1000
+    )
+    const forceRefresh = new Date(
+        Date.now() - DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000
+    )
+    const newRefresh = new Date(Date.now() - 15 * 1000)
+
     await prisma.$transaction(
         async (tx) => {
             const daoHandlers = await tx.dAOHandler.findMany({
@@ -28,29 +36,19 @@ export const addChainProposalsToQueue = async () => {
                         {
                             refreshStatus: RefreshStatus.DONE,
                             lastRefreshTimestamp: {
-                                lt: new Date(
-                                    Date.now() -
-                                        DAOS_PROPOSALS_CHAIN_INTERVAL *
-                                            60 *
-                                            1000
-                                )
+                                lt: normalRefresh
                             }
                         },
                         {
                             refreshStatus: RefreshStatus.PENDING,
                             lastRefreshTimestamp: {
-                                lt: new Date(
-                                    Date.now() -
-                                        DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE *
-                                            60 *
-                                            1000
-                                )
+                                lt: forceRefresh
                             }
                         },
                         {
                             refreshStatus: RefreshStatus.NEW,
                             lastRefreshTimestamp: {
-                                lt: new Date(Date.now() - 15 * 1000)
+                                lt: newRefresh
                             }
                         }
                     ]
