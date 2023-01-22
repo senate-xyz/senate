@@ -13,7 +13,7 @@ const NewUser = () => {
     const storeTerms = trpc.user.settings.setTerms.useMutation()
     const storeNewUser = trpc.user.settings.setNewUser.useMutation()
 
-    const newUser = trpc.user.settings.newUser.useQuery()
+    const newUser = trpc.user.settings.isNewUser.useQuery()
 
     if (newUser.data) {
         if (!newUser.data.newUser) {

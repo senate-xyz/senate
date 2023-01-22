@@ -19,19 +19,68 @@ const main = async () => {
         level: 'info',
         message: `Started refresher`
     })
-    await loadConfig()
 
     setInterval(async () => {
         processQueue()
-    }, 500)
+    }, 250)
 
     cron.schedule('*/10 * * * * *', async () => {
+        log_ref.log({
+            level: 'info',
+            message: 'Prisma metrics',
+
+            prisma_client_queries_total: (
+                await prisma.$metrics.json()
+            ).counters.find(
+                (metric) => metric.key == 'prisma_client_queries_total'
+            )?.value,
+            prisma_datasource_queries_total: (
+                await prisma.$metrics.json()
+            ).counters.find(
+                (metric) => metric.key == 'prisma_datasource_queries_total'
+            )?.value,
+            prisma_pool_connections_open: (
+                await prisma.$metrics.json()
+            ).counters.find(
+                (metric) => metric.key == 'prisma_pool_connections_open'
+            )?.value,
+            prisma_client_queries_active: (
+                await prisma.$metrics.json()
+            ).gauges.find(
+                (metric) => metric.key == 'prisma_client_queries_active'
+            )?.value,
+            prisma_client_queries_wait: (
+                await prisma.$metrics.json()
+            ).gauges.find(
+                (metric) => metric.key == 'prisma_client_queries_wait'
+            )?.value,
+            prisma_pool_connections_busy: (
+                await prisma.$metrics.json()
+            ).gauges.find(
+                (metric) => metric.key == 'prisma_pool_connections_busy'
+            )?.value,
+            prisma_pool_connections_idle: (
+                await prisma.$metrics.json()
+            ).gauges.find(
+                (metric) => metric.key == 'prisma_pool_connections_idle'
+            )?.value,
+            prisma_pool_connections_opened_total: (
+                await prisma.$metrics.json()
+            ).gauges.find(
+                (metric) => metric.key == 'prisma_pool_connections_opened_total'
+            )?.value
+        })
         await loadConfig()
-        await createVoterHandlers()
-        await addSnapshotProposalsToQueue()
-        await addChainProposalsToQueue()
-        await addSnapshotDaoVotes()
-        await addChainDaoVotes()
+
+        const handlersCreated = await createVoterHandlers()
+
+        if (handlersCreated) {
+            await addSnapshotProposalsToQueue()
+            await addSnapshotDaoVotes()
+
+            await addChainProposalsToQueue()
+            await addChainDaoVotes()
+        }
     })
 }
 
@@ -39,32 +88,14 @@ const processQueue = async () => {
     if (RUNNING_PROCESS_QUEUE == true) return
     RUNNING_PROCESS_QUEUE = true
 
-    log_ref.log({
-        level: 'info',
-        message: `Process queue`
-    })
-
     const item = await prisma.refreshQueue.findFirst({
         orderBy: { priority: 'desc' }
     })
 
     if (!item) {
-        log_ref.log({
-            level: 'info',
-            message: `Queue empty`
-        })
-
         RUNNING_PROCESS_QUEUE = false
         return
     }
-
-    log_ref.log({
-        level: 'info',
-        message: `Queue item`,
-        data: {
-            item: item
-        }
-    })
 
     switch (item.refreshType) {
         case RefreshType.DAOSNAPSHOTPROPOSALS:
@@ -87,25 +118,9 @@ const processQueue = async () => {
         }
     }
 
-    await prisma.refreshQueue
-        .delete({
-            where: { id: item?.id }
-        })
-        .then((r) => {
-            log_ref.log({
-                level: 'info',
-                message: `Succesfully deleted queue item`,
-                data: { item: r }
-            })
-            return
-        })
-        .catch((e) => {
-            log_ref.log({
-                level: 'error',
-                message: `Failed to delete queue item`,
-                data: { error: e }
-            })
-        })
+    await prisma.refreshQueue.delete({
+        where: { id: item?.id }
+    })
 
     RUNNING_PROCESS_QUEUE = false
 }

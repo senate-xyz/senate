@@ -1,26 +1,19 @@
-import { InternalServerErrorException } from '@nestjs/common'
-import { prisma, DAOHandler } from '@senate/database'
+import { prisma } from '@senate/database'
 import { log_pd } from '@senate/axiom'
 import superagent from 'superagent'
 
 export const updateSnapshotProposals = async (
-    daoHandlerIds: string[],
+    daoHandlerId: string,
     minCreatedAt: number
 ): Promise<Array<{ daoHandlerId: string; response: string }>> => {
-    const results: Array<{ daoHandlerId: string; response: string }> = []
+    let response = 'nok'
 
-    const daoHandlerToSnapshotSpaceMap: Map<DAOHandler, string> =
-        await getSnapshotSpaces(daoHandlerIds)
-    const spacesArray = Array.from(daoHandlerToSnapshotSpaceMap.values())
-
-    log_pd.log({
-        level: 'info',
-        message: `New proposals update for ${spacesArray}}`,
-        data: {
-            daoHandlerId: daoHandlerToSnapshotSpaceMap[0],
-            minCreatedAt: minCreatedAt
-        }
+    const daoHandler = await prisma.dAOHandler.findFirst({
+        where: { id: daoHandlerId },
+        include: { dao: true }
     })
+
+    const space = daoHandler.decoder['space']
 
     let proposals
 
@@ -28,7 +21,7 @@ export const updateSnapshotProposals = async (
                 proposals (
                     first: 1000, 
                     where: {
-                    space_in: [${spacesArray.map((space) => `"${space}"`)}],
+                    space_in: ["${space}"],
                     created_gt: ${Math.floor(minCreatedAt / 1000)}
                     },
                     orderBy: "created",
@@ -48,16 +41,7 @@ export const updateSnapshotProposals = async (
                 }
                 }`
 
-    log_pd.log({
-        level: 'info',
-        message: `GraphQL query for ${spacesArray}`,
-        data: {
-            query: graphqlQuery
-        }
-    })
-
     try {
-        let tries = 0
         proposals = await superagent
             .get('https://hub.snapshot.org/graphql')
             .query({
@@ -68,137 +52,67 @@ export const updateSnapshotProposals = async (
                 deadline: 30000
             })
             .retry(3, (err, res) => {
-                tries++
-                if (tries > 1)
-                    log_pd.log({
-                        level: 'warn',
-                        message: `Retry GraphQL query for ${spacesArray}`,
-                        data: {
-                            query: graphqlQuery,
-                            error: JSON.stringify(err),
-                            res: JSON.stringify(res)
-                        }
-                    })
+                if (err) return true
+                if (res.status == 200) return false
             })
             .then((response) => {
-                log_pd.log({
-                    level: 'info',
-                    message: `GraphQL query response for ${spacesArray}`,
-                    data: {
-                        response: JSON.stringify(response)
-                    }
-                })
                 return response.body.data.proposals
             })
-            .catch(async (e) => {
-                log_pd.log({
-                    level: 'error',
-                    message: `GraphQL error for ${spacesArray}`,
-                    data: {
-                        error: JSON.stringify(e)
+
+        if (proposals.length)
+            await prisma.proposal.createMany({
+                data: proposals.map((proposal) => {
+                    return {
+                        externalId: proposal.id,
+                        name: String(proposal.title),
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id,
+                        timeEnd: new Date(proposal.end * 1000),
+                        timeStart: new Date(proposal.start * 1000),
+                        timeCreated: new Date(proposal.created * 1000),
+                        data: {},
+                        url: proposal.link
                     }
-                })
-                return
+                }),
+                skipDuplicates: true
             })
 
-        for (const [daoHandler, space] of daoHandlerToSnapshotSpaceMap) {
-            proposals = proposals.filter(
-                (proposal) => proposal.space.id === space
-            )
-            const response: string = await upsertSnapshotProposals(
-                daoHandler,
-                space,
-                proposals
-            )
-            results.push({ daoHandlerId: daoHandler.id, response: response })
-        }
+        await prisma.dAOHandler.update({
+            where: {
+                id: daoHandler.id
+            },
+            data: {
+                lastChainProposalCreatedBlock: 0,
+                lastSnapshotProposalCreatedTimestamp: new Date()
+            }
+        })
+
+        response = 'ok'
     } catch (e) {
         log_pd.log({
             level: 'error',
-            message: `Could not update proposals for ${spacesArray}`,
-            data: {
-                error: e
-            }
+            message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+            searchType: 'PROPOSALS',
+            sourceType: 'SNAPSHOT',
+            created_gt: Math.floor(minCreatedAt / 1000),
+            query: graphqlQuery,
+            proposals: proposals,
+            error: e
         })
-        throw new InternalServerErrorException()
     }
 
-    return results
-}
+    const res = [{ daoHandlerId: daoHandlerId, response: response }]
 
-const upsertSnapshotProposals = async (
-    daoHandler: DAOHandler,
-    space: string,
-    proposals: any[]
-): Promise<string> => {
-    const result = await prisma.proposal
-        .createMany({
-            data: proposals.map((proposal) => {
-                return {
-                    externalId: proposal.id,
-                    name: String(proposal.title),
-                    daoId: daoHandler.daoId,
-                    daoHandlerId: daoHandler.id,
-                    timeEnd: new Date(proposal.end * 1000),
-                    timeStart: new Date(proposal.start * 1000),
-                    timeCreated: new Date(proposal.created * 1000),
-                    data: {},
-                    url: proposal.link
-                }
-            }),
-            skipDuplicates: true
-        })
-        .then(async (r) => {
-            log_pd.log({
-                level: 'info',
-                message: `Upserted new proposals for ${space}`,
-                data: {
-                    proposals: r
-                }
-            })
-            await prisma.dAOHandler.update({
-                where: {
-                    id: daoHandler.id
-                },
-                data: {
-                    lastChainProposalCreatedBlock: 0,
-                    lastSnapshotProposalCreatedTimestamp: new Date()
-                }
-            })
-            return 'ok'
-        })
-        .catch(async (e) => {
-            log_pd.log({
-                level: 'error',
-                message: `Could not upsert proposals proposals for ${space}`,
-                data: {
-                    proposals: e
-                }
-            })
-            return 'nok'
-        })
-
-    return result
-}
-
-const getSnapshotSpaces = async (
-    daoHandlerIds: string[]
-): Promise<Map<DAOHandler, string>> => {
-    const snapshotDaoHandlers = await prisma.dAOHandler.findMany({
-        where: {
-            id: {
-                in: daoHandlerIds
-            }
-        },
-        include: { dao: true }
+    log_pd.log({
+        level: 'info',
+        message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+        searchType: 'PROPOSALS',
+        sourceType: 'SNAPSHOT',
+        created_gt: Math.floor(minCreatedAt / 1000),
+        query: graphqlQuery,
+        proposals: proposals,
+        response: res
     })
 
-    const map = new Map<DAOHandler, string>()
-    for (const snapshotDaoHandler of snapshotDaoHandlers) {
-        if (snapshotDaoHandler.decoder && snapshotDaoHandler.decoder['space']) {
-            map.set(snapshotDaoHandler, snapshotDaoHandler.decoder['space'])
-        }
-    }
-
-    return map
+    return res
 }

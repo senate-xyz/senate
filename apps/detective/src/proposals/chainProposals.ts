@@ -1,12 +1,23 @@
-import { InternalServerErrorException } from '@nestjs/common'
-import { log_pd } from '@senate/axiom'
-import { prisma } from '@senate/database'
+import { DAOHandlerType, prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import { aaveProposals } from './chain/aave'
 import { compoundProposals } from './chain/compound'
 import { makerExecutiveProposals } from './chain/makerExecutive'
 import { makerPolls } from './chain/makerPoll'
 import { uniswapProposals } from './chain/uniswap'
+import { log_pd } from '@senate/axiom'
+
+interface Result {
+    externalId: string
+    name: string
+    daoId: string
+    daoHandlerId: string
+    timeEnd: Date
+    timeStart: Date
+    timeCreated: Date
+    data: any
+    url: any
+}
 
 const infuraProvider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.INFURA_NODE_URL)
@@ -16,184 +27,131 @@ const senateProvider = new ethers.providers.JsonRpcProvider({
     url: String(process.env.SENATE_NODE_URL)
 })
 
-interface Result {
-    proposals: {
-        externalId: string
-        name: string
-        daoId: string
-        daoHandlerId: string
-        timeEnd: Date
-        timeStart: Date
-        timeCreated: Date
-        data: any
-        url: string
-    }[]
-    lastBlock: number
-}
-
 export const updateChainProposals = async (
     daoHandlerId: string,
     minBlockNumber: number
 ) => {
-    let response = 'ok'
+    let response = 'nok'
     const daoHandler = await prisma.dAOHandler.findFirst({
         where: { id: daoHandlerId },
         include: { dao: true }
     })
-    log_pd.log({
-        level: 'info',
-        message: `New proposals update for ${daoHandler.dao.name} - ${daoHandler.type}`,
-        data: {
-            daoHandlerId: daoHandlerId,
-            minBlockNumber: minBlockNumber
-        }
-    })
 
     if (!daoHandler.decoder) {
-        log_pd.log({
-            level: 'error',
-            message: 'Could not get daoHandler decoder'
-        })
         return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
     }
 
+    let proposals: Result[], currentBlock: number
+
     try {
-        let result: Result, provider, currentBlock, senateOnline
-        try {
-            currentBlock = await senateProvider.getBlockNumber()
-            senateOnline = true
-        } catch (e) {
-            currentBlock = await infuraProvider.getBlockNumber()
-        }
+        currentBlock = await senateProvider.getBlockNumber()
+    } catch (e) {
+        currentBlock = await infuraProvider.getBlockNumber()
+    }
 
-        log_pd.log({
-            level: 'info',
-            message: `Current block`,
-            data: {
-                currentBlock: currentBlock
-            }
-        })
+    const blockBatchSize =
+        daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE ? 100000 : 1000000
 
-        if (minBlockNumber < currentBlock - 50 || !senateOnline) {
-            provider = infuraProvider
-            log_pd.log({
-                level: 'info',
-                message: `Using Infura provider for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
-                data: {
-                    daoHandlerId: daoHandlerId,
-                    minBlockNumber: minBlockNumber,
-                    provider: 'Infura'
-                }
-            })
-        } else {
-            provider = senateProvider
-            log_pd.log({
-                level: 'info',
-                message: `Using Senate provider for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
-                data: {
-                    daoHandlerId: daoHandlerId,
-                    minBlockNumber: minBlockNumber,
-                    provider: 'Senate'
-                }
-            })
-        }
+    const fromBlock = Math.max(minBlockNumber, 0)
+    const toBlock =
+        currentBlock - fromBlock > blockBatchSize
+            ? fromBlock + blockBatchSize
+            : currentBlock
 
+    const provider: ethers.providers.JsonRpcProvider =
+        currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
+
+    try {
         switch (daoHandler.type) {
             case 'AAVE_CHAIN':
-                result = await aaveProposals(
+                proposals = await aaveProposals(
                     provider,
                     daoHandler,
-                    minBlockNumber
+                    fromBlock,
+                    toBlock
                 )
                 break
             case 'COMPOUND_CHAIN':
-                result = await compoundProposals(
+                proposals = await compoundProposals(
                     provider,
                     daoHandler,
-                    minBlockNumber
+                    fromBlock,
+                    toBlock
                 )
                 break
             case 'MAKER_EXECUTIVE':
-                result = await makerExecutiveProposals(
+                proposals = await makerExecutiveProposals(
                     provider,
                     daoHandler,
-                    minBlockNumber
+                    fromBlock,
+                    toBlock
                 )
                 break
             case 'MAKER_POLL':
-                result = await makerPolls(provider, daoHandler, minBlockNumber)
-                break
-            case 'UNISWAP_CHAIN':
-                result = await uniswapProposals(
+                proposals = await makerPolls(
                     provider,
                     daoHandler,
-                    minBlockNumber
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'UNISWAP_CHAIN':
+                proposals = await uniswapProposals(
+                    provider,
+                    daoHandler,
+                    fromBlock,
+                    toBlock
                 )
                 break
         }
 
-        log_pd.log({
-            level: 'info',
-            message: `Got proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
-            data: {
-                proposals: result.proposals,
-                lastBlock: result.lastBlock
-            }
-        })
-
-        await prisma.proposal
-            .createMany({
-                data: result.proposals,
+        if (proposals.length || toBlock != currentBlock) {
+            await prisma.proposal.createMany({
+                data: proposals,
                 skipDuplicates: true
             })
-            .then(async (r) => {
-                log_pd.log({
-                    level: 'info',
-                    message: `Upserted new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
-                    data: {
-                        proposals: r,
-                        lastChainProposalCreatedBlock: result.lastBlock
-                    }
-                })
-                await prisma.dAOHandler.update({
-                    where: {
-                        id: daoHandler.id
-                    },
-                    data: {
-                        lastChainProposalCreatedBlock: result.lastBlock,
-                        lastSnapshotProposalCreatedTimestamp: new Date(0)
-                    }
-                })
+        }
 
-                return
-            })
-            .catch(async (e) => {
-                response = 'nok'
-                log_pd.log({
-                    level: 'error',
-                    message: `Could not upsert new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
-                    data: { proposals: result.proposals, error: e }
-                })
-            })
-    } catch (e) {
-        response = 'nok'
-        log_pd.log({
-            level: 'error',
-            message: `Could not get new proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
+        await prisma.dAOHandler.update({
+            where: {
+                id: daoHandler.id
+            },
             data: {
-                error: e
+                lastChainProposalCreatedBlock: toBlock,
+                lastSnapshotProposalCreatedTimestamp: new Date(0)
             }
         })
-        throw new InternalServerErrorException()
+
+        response = 'ok'
+    } catch (e) {
+        log_pd.log({
+            level: 'error',
+            message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+            searchType: 'PROPOSALS',
+            sourceType: 'CHAIN',
+            currentBlock: currentBlock,
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            provider: provider.connection.url,
+            proposals: proposals,
+            error: e
+        })
     }
+
+    const res = [{ daoHandlerId: daoHandlerId, response: response }]
 
     log_pd.log({
         level: 'info',
-        message: `Succesfully updated proposals for ${daoHandler.dao.name} - ${daoHandler.type}`,
-        data: {
-            result: [{ daoHandlerId: daoHandlerId, response: response }]
-        }
+        message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+        searchType: 'PROPOSALS',
+        sourceType: 'CHAIN',
+        currentBlock: currentBlock,
+        fromBlock: fromBlock,
+        toBlock: toBlock,
+        provider: provider.connection.url,
+        proposals: proposals,
+        response: res
     })
 
-    return [{ daoHandlerId: daoHandlerId, response: response }]
+    return res
 }

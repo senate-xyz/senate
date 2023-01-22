@@ -32,8 +32,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'aave.eth',
-                            proposalsCount: 0
+                            space: 'aave.eth'
                         }
                     }
                 ]
@@ -433,8 +432,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'gitcoindao.eth',
-                            proposalsCount: 0
+                            space: 'gitcoindao.eth'
                         }
                     }
                 ]
@@ -492,6 +490,25 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'aurafinance.eth'
+                        }
+                    }
+                ]
+            }
+        }
+    })
+
+    const developerdao = await prisma.dAO.upsert({
+        where: { name: 'Developer DAO' },
+        update: {},
+        create: {
+            name: 'Developer DAO',
+            picture: '/assets/Project_Icons/developerdao',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'devdao.eth'
                         }
                     }
                 ]
@@ -751,6 +768,19 @@ const seedData = async () => {
                 create: {
                     userId: seedUser.id,
                     daoId: aura.id
+                },
+                update: {}
+            }),
+            prisma.subscription.upsert({
+                where: {
+                    userId_daoId: {
+                        userId: seedUser.id,
+                        daoId: developerdao.id
+                    }
+                },
+                create: {
+                    userId: seedUser.id,
+                    daoId: developerdao.id
                 },
                 update: {}
             })

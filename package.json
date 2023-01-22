@@ -6,7 +6,8 @@
   "license": "MIT",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "utilities/*"
   ],
   "prisma": {
     "schema": "packages/database/prisma/schema.prisma",
@@ -40,12 +41,12 @@
     "lint:fix": "turbo run lint:fix"
   },
   "devDependencies": {
-    "prettier": "^2.8.2",
+    "prettier": "^2.8.3",
     "tsx": "^3.12.2",
     "turbo": "latest"
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {
-    "rimraf": "^3.0.2"
+    "rimraf": "^4.1.1"
   }
 }

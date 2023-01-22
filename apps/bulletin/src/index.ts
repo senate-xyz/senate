@@ -2,6 +2,8 @@ import {
     type Proposal,
     type UserWithVotingAddresses,
     type Voter,
+    type DAO,
+    type Notification,
     RoundupNotificationType,
     prisma
 } from '@senate/database'
@@ -10,6 +12,7 @@ import axios from 'axios'
 import { config } from 'dotenv'
 import { schedule } from 'node-cron'
 import { ServerClient } from 'postmark'
+import { log_bul } from '@senate/axiom'
 
 config()
 
@@ -22,39 +25,102 @@ const delay = (ms: number): Promise<any> => {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+const emailProposalEndDateStringFormat: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+}
+
+interface EmailTemplateRow {
+    votingStatus: string
+    votingStatusIconUrl: string
+    proposalName: string
+    proposalUrl: string
+    daoLogoUrl: string
+    daoName: string
+    endHoursUTC: string
+    endMinutesUTC: string
+    endDateString: string
+    countdownUrl: string
+}
+
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
 schedule(
     String(process.env.BULLETIN_CRON_INTERVAL) ?? '* * 31 2 *',
     async function () {
         if (!Boolean(process.env.BULLETIN_ENABLE)) return
 
-        console.log('Starting roundup cron job...')
-        await clearNotificationsTable()
-        console.log('Notifications table cleared')
-        await addNewProposals()
-        console.log('New proposals added')
-        await addEndingProposals()
-        console.log('Ending proposals added')
-        await addPastProposals()
-        console.log('Past proposals added')
+        log_bul.log({
+            level: 'info',
+            message: 'Starting daily roundup',
+            data: {
+                today: new Date(Date.now())
+            }
+        })
 
-        console.log('Sending emailzzzz...')
-        await sendRoundupEmails()
-        console.log('Emails have been sent')
+        let errorsDetected = false
+
+        try {
+            await clearNotificationsTable()
+
+            const newProposals = await fetchNewProposals()
+            await insertNotifications(newProposals, RoundupNotificationType.NEW)
+
+            const endingProposals = await fetchEndingProposals()
+            await insertNotifications(
+                endingProposals,
+                RoundupNotificationType.ENDING_SOON
+            )
+
+            const pastProposals = await fetchPastProposals()
+            await insertNotifications(
+                pastProposals,
+                RoundupNotificationType.PAST
+            )
+        } catch (error) {
+            log_bul.log({
+                level: 'error',
+                message: 'Could not complete daily roundup',
+                data: {
+                    error: error
+                }
+            })
+            errorsDetected = true
+        } finally {
+            if (errorsDetected) {
+                await sendSorryPlsEmail()
+            } else {
+                await sendDailyBulletin()
+            }
+        }
     }
 )
 
 const clearNotificationsTable = async () => {
-    console.log('Clearing notifications table...')
-    await prisma.notification.deleteMany()
+    try {
+        await prisma.notification.deleteMany()
+
+        log_bul.log({
+            level: 'info',
+            message: 'Cleared notifications table'
+        })
+    } catch (error) {
+        log_bul.log({
+            level: 'error',
+            message: 'Could not clear notifications table',
+            data: {
+                error: error
+            }
+        })
+        throw new Error('Could not clear notifications table')
+    }
 }
 
-const insertNotifications = async (
-    proposals: Proposal[],
+const fetchUsersToBeNotifiedForProposal = async (
+    proposal: Proposal,
     type: RoundupNotificationType
 ) => {
-    for (const proposal of proposals) {
-        //Get users which should be notified
+    try {
         const users = await prisma.user.findMany({
             where: {
                 email: {
@@ -65,7 +131,8 @@ const insertNotifications = async (
                 },
                 subscriptions: {
                     some: {
-                        daoId: proposal.daoId
+                        daoId: proposal.daoId,
+                        notificationsEnabled: true
                     }
                 }
             },
@@ -74,8 +141,45 @@ const insertNotifications = async (
             }
         })
 
-        await prisma
-            .$transaction(
+        log_bul.log({
+            level: 'info',
+            message: 'Fetched users to be notified',
+            data: {
+                proposal: proposal,
+                type: type,
+                count: users.length
+            }
+        })
+
+        return users
+    } catch (error) {
+        log_bul.log({
+            level: 'error',
+            message: 'Could not fetch users to be notified',
+            data: {
+                error: error,
+                proposal: proposal,
+                type: type
+            }
+        })
+        throw new Error('Could not fetch users to be notified')
+    }
+}
+
+const insertNotifications = async (
+    proposals: Proposal[],
+    type: RoundupNotificationType
+) => {
+    try {
+        for (const proposal of proposals) {
+            //Get users which should be notified
+            const users = await fetchUsersToBeNotifiedForProposal(
+                proposal,
+                type
+            )
+
+            //Insert notifications
+            await prisma.$transaction(
                 users.map((user) => {
                     return prisma.notification.upsert({
                         where: {
@@ -95,187 +199,227 @@ const insertNotifications = async (
                     })
                 })
             )
-            .then((res) => {
-                return res
-            })
-    }
-}
+        }
 
-const addNewProposals = async () => {
-    console.log('Adding new proposal notifications...')
-
-    const proposals = await prisma.proposal.findMany({
-        where: {
-            timeCreated: {
-                gte: new Date(Date.now() - oneDay)
+        log_bul.log({
+            level: 'info',
+            message: 'Inserted notifications',
+            data: {
+                type: type,
+                count: proposals.length
             }
-        },
-        orderBy: {
-            timeEnd: 'asc'
-        }
-    })
+        })
+    } catch (error) {
+        log_bul.log({
+            level: 'error',
+            message: 'Could not intsert notifications',
+            data: {
+                error: error
+            }
+        })
 
-    if (proposals) {
-        console.log(`Found ${proposals.length} new proposals`)
-    } else {
-        console.log(`Found 0 new proposals`)
+        throw new Error('Could not insert notifications')
     }
-
-    await insertNotifications(proposals, RoundupNotificationType.NEW)
-
-    console.log('\n')
 }
 
-const addEndingProposals = async () => {
-    console.log('Adding ending proposals...')
-
-    const proposals = await prisma.proposal.findMany({
-        where: {
-            AND: [
-                {
-                    timeEnd: {
-                        lte: new Date(Date.now() + threeDays)
-                    }
-                },
-                {
-                    timeEnd: {
-                        gt: new Date(Date.now())
-                    }
+const fetchNewProposals = async () => {
+    try {
+        const proposals = await prisma.proposal.findMany({
+            where: {
+                timeCreated: {
+                    gte: new Date(Date.now() - oneDay)
                 }
-            ]
-        },
-        orderBy: {
-            timeEnd: 'asc'
-        }
-    })
+            },
+            orderBy: {
+                timeEnd: 'asc'
+            }
+        })
 
-    if (proposals) {
-        console.log(`Found ${proposals.length} ending soon proposals`)
-    } else {
-        console.log(`Found 0 ending soon proposals`)
+        log_bul.log({
+            level: 'info',
+            message: 'Fetched new proposals',
+            data: {
+                count: proposals.length
+            }
+        })
+
+        return proposals
+    } catch (error) {
+        log_bul.log({
+            level: 'error',
+            message: 'Could not fetch new proposals',
+            data: {
+                error: error
+            }
+        })
+
+        throw new Error('Could not fetch new proposals')
     }
-
-    await insertNotifications(proposals, RoundupNotificationType.ENDING_SOON)
-
-    console.log('\n')
 }
 
-const addPastProposals = async () => {
-    console.log('Adding new proposal notifications...')
-
-    const proposals = await prisma.proposal.findMany({
-        where: {
-            AND: [
-                {
-                    timeEnd: {
-                        lte: new Date(Date.now())
+const fetchEndingProposals = async () => {
+    try {
+        const proposals = await prisma.proposal.findMany({
+            where: {
+                AND: [
+                    {
+                        timeEnd: {
+                            lte: new Date(Date.now() + threeDays)
+                        }
+                    },
+                    {
+                        timeEnd: {
+                            gt: new Date(Date.now())
+                        }
                     }
-                },
-                {
-                    timeEnd: {
-                        gte: new Date(Date.now() - oneDay)
-                    }
-                }
-            ]
-        },
-        orderBy: {
-            timeEnd: 'desc'
-        }
-    })
+                ]
+            },
+            orderBy: {
+                timeEnd: 'asc'
+            }
+        })
 
-    if (proposals) {
-        console.log(`Found ${proposals.length} past proposals`)
-    } else {
-        console.log(`Found 0 past proposals`)
+        log_bul.log({
+            level: 'info',
+            message: 'Fetched ending proposals',
+            data: {
+                count: proposals.length
+            }
+        })
+
+        return proposals
+    } catch (error) {
+        log_bul.log({
+            level: 'error',
+            message: 'Could not fetch ending proposals',
+            data: {
+                error: error
+            }
+        })
+        throw new Error('Could not fetch ending proposals')
     }
+}
 
-    await insertNotifications(proposals, RoundupNotificationType.PAST)
+const fetchPastProposals = async () => {
+    try {
+        const proposals = await prisma.proposal.findMany({
+            where: {
+                AND: [
+                    {
+                        timeEnd: {
+                            lte: new Date(Date.now())
+                        }
+                    },
+                    {
+                        timeEnd: {
+                            gte: new Date(Date.now() - oneDay)
+                        }
+                    }
+                ]
+            },
+            orderBy: {
+                timeEnd: 'desc'
+            }
+        })
 
-    console.log('\n')
+        log_bul.log({
+            level: 'info',
+            message: 'Fetched past proposals',
+            data: {
+                count: proposals.length
+            }
+        })
+
+        return proposals
+    } catch (error) {
+        log_bul.log({
+            level: 'error',
+            message: 'Could not fetch past proposals',
+            data: {
+                error: error
+            }
+        })
+        throw new Error('Could not fetch past proposals')
+    }
 }
 
 const formatEmailTableData = async (
     user: UserWithVotingAddresses,
     notificationType: RoundupNotificationType
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any> => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let promises: Promise<any>[] = []
-
+): Promise<EmailTemplateRow[]> => {
     try {
-        const proposals = await prisma.notification.findMany({
-            where: {
-                userId: user.id,
-                type: notificationType
-            },
-            include: {
-                proposal: {
-                    include: {
-                        dao: true
-                    }
-                }
-            }
+        const notifications = await prisma.notification.findMany({
+            where: { userId: user.id, type: notificationType },
+            include: { proposal: { include: { dao: true } } }
         })
 
-        promises = proposals.map(async (notification) => {
-            const voted = await userVoted(
-                user.voters,
-                notification.proposalId,
-                notification.daoId
-            )
-            const dateOptions: Intl.DateTimeFormatOptions = {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            }
+        const tableRows: EmailTemplateRow[] = []
 
-            await delay(5000)
-            const countdownUrl = await generateCountdownGifUrl(
-                notification.proposal.timeEnd
-            )
+        for (const notification of notifications) {
+            tableRows.push(await formatEmailTemplateRow(notification, user))
+        }
 
-            const votingStatus = voted
-                ? 'Voted'
-                : notificationType == RoundupNotificationType.PAST
-                ? "Didn't vote"
-                : 'Not voted yet'
-
-            const votingStatusIconUrl = voted
-                ? process.env.WEB_URL + '/assets/Icon/Voted.png'
-                : notificationType == RoundupNotificationType.PAST
-                ? process.env.WEB_URL + '/assets/Icon/DidntVote.png'
-                : process.env.WEB_URL + '/assets/Icon/NotVotedYet.png'
-
-            return {
-                votingStatus: votingStatus,
-                votingStatusIconUrl: votingStatusIconUrl,
-                proposalName:
-                    notification.proposal.name.length > 100
-                        ? notification.proposal.name.substring(0, 100) + '...'
-                        : notification.proposal.name,
-                proposalUrl: notification.proposal.url,
-                daoLogoUrl:
-                    process.env.WEB_URL +
-                    notification.proposal.dao.picture +
-                    '_small.png',
-                endHoursUTC: formatTwoDigit(
-                    notification.proposal.timeEnd.getUTCHours()
-                ),
-                endMinutesUTC: formatTwoDigit(
-                    notification.proposal.timeEnd.getUTCMinutes()
-                ),
-                endDateString: notification.proposal.timeEnd.toLocaleDateString(
-                    undefined,
-                    dateOptions
-                ),
-                countdownUrl: countdownUrl
-            }
-        })
+        return tableRows
     } catch (error) {
-        console.error(error)
+        log_bul.log({
+            level: 'error',
+            message: 'Could not format email table data',
+            data: { error, user, notificationType }
+        })
+        throw new Error('Could not format email table data')
     }
+}
 
-    return Promise.all(promises)
+const formatEmailTemplateRow = async (
+    notification: Notification & { proposal: Proposal & { dao: DAO } },
+    user: UserWithVotingAddresses
+): Promise<EmailTemplateRow> => {
+    const voted = await userVoted(
+        user.voters,
+        notification.proposalId,
+        notification.daoId
+    )
+
+    const countdownUrl = await generateCountdownGifUrl(
+        notification.proposal.timeEnd
+    )
+
+    const votingStatus = voted
+        ? 'Voted'
+        : notification.type === RoundupNotificationType.PAST
+        ? "Didn't vote"
+        : 'Not voted yet'
+
+    const votingStatusIconUrl = voted
+        ? `${process.env.WEB_URL}/assets/Icon/Voted.png`
+        : notification.type === RoundupNotificationType.PAST
+        ? `${process.env.WEB_URL}/assets/Icon/DidntVote.png`
+        : `${process.env.WEB_URL}/assets/Icon/NotVotedYet.png`
+
+    return {
+        votingStatus,
+        votingStatusIconUrl: encodeURI(votingStatusIconUrl),
+        proposalName:
+            notification.proposal.name.length > 100
+                ? `${notification.proposal.name.substring(0, 100)}...`
+                : notification.proposal.name,
+        proposalUrl: encodeURI(notification.proposal.url),
+        daoLogoUrl: encodeURI(
+            `${process.env.WEB_URL}${notification.proposal.dao.picture}_small.png`
+        ),
+        daoName: notification.proposal.dao.name,
+        endHoursUTC: formatTwoDigit(
+            notification.proposal.timeEnd.getUTCHours()
+        ),
+        endMinutesUTC: formatTwoDigit(
+            notification.proposal.timeEnd.getUTCMinutes()
+        ),
+        endDateString: notification.proposal.timeEnd.toLocaleDateString(
+            undefined,
+            emailProposalEndDateStringFormat
+        ),
+        countdownUrl: encodeURI(countdownUrl)
+    }
 }
 
 const formatTwoDigit = (timeUnit: number): string => {
@@ -284,62 +428,143 @@ const formatTwoDigit = (timeUnit: number): string => {
 }
 
 const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
-    let url = ''
-
-    const yearUTC = endTime.getUTCFullYear()
-    const monthUTC = formatTwoDigit(endTime.getUTCMonth() + 1)
-    const dateUTC = formatTwoDigit(endTime.getUTCDate())
-    const hoursUTC = formatTwoDigit(endTime.getUTCHours())
-    const minutesUTC = formatTwoDigit(endTime.getUTCMinutes())
-
-    const endTimeString = `${yearUTC}-${monthUTC}-${dateUTC} ${hoursUTC}:${minutesUTC}:00`
-
     try {
-        const response = await axios({
-            url: 'https://countdownmail.com/api/create',
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-                'Accept-Encoding': 'null',
-                Authorization: process.env.VOTING_COUNTDOWN_TOKEN
-            },
-            data: {
-                skin_id: 6,
-                name: 'Voting countdown',
-                time_end: endTimeString,
-                time_zone: 'UTC',
-                font_family: 'Roboto-Medium',
-                label_font_family: 'RobotoCondensed-Light',
-                color_primary: '000000',
-                color_text: '000000',
-                color_bg: 'FFFFFF',
-                transparent: '0',
-                font_size: 26,
-                label_font_size: 8,
-                expired_mes_on: 1,
-                expired_mes: 'Proposal Ended',
-                day: '1',
-                days: 'days',
-                hours: 'hours',
-                minutes: 'minutes',
-                seconds: 'seconds',
-                advanced_params: {
-                    separator_color: 'FFFFFF',
-                    labels_color: '000000'
+        const yearUTC = endTime.getUTCFullYear()
+        const monthUTC = formatTwoDigit(endTime.getUTCMonth() + 1)
+        const dateUTC = formatTwoDigit(endTime.getUTCDate())
+        const hoursUTC = formatTwoDigit(endTime.getUTCHours())
+        const minutesUTC = formatTwoDigit(endTime.getUTCMinutes())
+        const endTimeString = `${yearUTC}-${monthUTC}-${dateUTC} ${hoursUTC}:${minutesUTC}:00`
+
+        let retries = 10
+        let response = null
+        while (retries) {
+            try {
+                response = await axios({
+                    url: 'https://countdownmail.com/api/create',
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        'Accept-Encoding': 'null',
+                        Authorization: process.env.VOTING_COUNTDOWN_TOKEN
+                    },
+                    data: {
+                        skin_id: 6,
+                        name: 'Voting countdown',
+                        time_end: endTimeString,
+                        time_zone: 'UTC',
+                        font_family: 'Roboto-Medium',
+                        label_font_family: 'RobotoCondensed-Light',
+                        color_primary: '000000',
+                        color_text: '000000',
+                        color_bg: 'FFFFFF',
+                        transparent: '0',
+                        font_size: 26,
+                        label_font_size: 8,
+                        expired_mes_on: 1,
+                        expired_mes: 'Proposal Ended',
+                        day: '1',
+                        days: 'days',
+                        hours: 'hours',
+                        minutes: 'minutes',
+                        seconds: 'seconds',
+                        advanced_params: {
+                            separator_color: 'FFFFFF',
+                            labels_color: '000000'
+                        }
+                    }
+                })
+                break
+            } catch (err) {
+                retries--
+                if (!retries) {
+                    throw err
                 }
+
+                log_bul.log({
+                    level: 'warn',
+                    message:
+                        'Coundownmail request failed. Retrying to generate countdown gif',
+                    data: {
+                        retriesLeft: retries
+                    }
+                })
+                await delay(10000)
+            }
+        }
+
+        if (
+            !response ||
+            !response.data ||
+            !response.data.message ||
+            !response.data.message.src
+        ) {
+            log_bul.log({
+                level: 'error',
+                message: 'Could not find gif URL in response',
+                data: {
+                    response: response
+                }
+            })
+            return ''
+        }
+
+        return response.data.message.src
+    } catch (error) {
+        log_bul.log({
+            level: 'error',
+            message: 'Could not generate countdown gif',
+            data: {
+                error: error
             }
         })
 
-        url = response.data.message.src
-    } catch (error) {
-        console.error('Failed to generate countdown gif: ', error)
+        return ''
     }
-
-    return url
 }
 
-const sendRoundupEmails = async () => {
+const fetchUsersToBeNotified = async (): Promise<UserWithVotingAddresses[]> => {
+    try {
+        const users = await prisma.user.findMany({
+            where: {
+                email: {
+                    not: ''
+                },
+                userSettings: {
+                    dailyBulletinEmail: true
+                },
+                subscriptions: {
+                    some: {
+                        notificationsEnabled: true
+                    }
+                }
+            },
+            include: {
+                voters: true
+            }
+        })
+
+        log_bul.log({
+            level: 'info',
+            message: 'Fetched users with daily bulletin enabled',
+            data: {}
+        })
+
+        return users
+    } catch (error) {
+        log_bul.log({
+            level: 'error',
+            message: 'Could not fetch users with daily bulletin enabled',
+            data: {
+                error: error
+            }
+        })
+        throw Error('Could not fetch users with daily bulletin enabled')
+    }
+}
+
+const sendDailyBulletin = async () => {
     const dateOptions: Intl.DateTimeFormatOptions = {
         weekday: 'long',
         year: 'numeric',
@@ -353,27 +578,10 @@ const sendRoundupEmails = async () => {
     )
 
     try {
-        console.log('Searching for users with daily bulletin enabled...')
-        const users = await prisma.user.findMany({
-            where: {
-                email: {
-                    not: ''
-                },
-                userSettings: {
-                    dailyBulletinEmail: true
-                }
-            },
-            include: {
-                voters: true
-            }
-        })
-        console.log(
-            'Found ' + users.length + ' users with daily bulletin enabled.'
-        )
+        const users = await fetchUsersToBeNotified()
 
         for (const user of users) {
             if (!user.email) continue
-            console.log('Sending email to ' + user.email)
 
             const endingSoonProposalsData = await formatEmailTableData(
                 user,
@@ -398,9 +606,9 @@ const sendRoundupEmails = async () => {
             const response = await client.sendEmailWithTemplate({
                 TemplateAlias: 'daily-bulletin',
                 TemplateModel: {
-                    senateLogoUrl:
-                        process.env.WEB_URL +
-                        '/assets/Senate_Logo/64/White.png',
+                    senateLogoUrl: encodeURI(
+                        process.env.WEB_URL + '/assets/Senate_Logo/64/White.png'
+                    ),
                     todaysDate: todaysDate,
                     endingSoonProposals: endingSoonProposalsData,
                     endingSoonProposalsTableCssClass:
@@ -420,12 +628,15 @@ const sendRoundupEmails = async () => {
                     pastProposalsNoDataBoxCssClass:
                         pastProposalsData.length > 0 ? 'hide' : 'show',
 
-                    twitterIconUrl:
-                        process.env.WEB_URL + '/assets/Icon/TwitterWhite.png',
-                    discordIconUrl:
-                        process.env.WEB_URL + '/assets/Icon/DiscordWhite.png',
-                    githubIconUrl:
+                    twitterIconUrl: encodeURI(
+                        process.env.WEB_URL + '/assets/Icon/TwitterWhite.png'
+                    ),
+                    discordIconUrl: encodeURI(
+                        process.env.WEB_URL + '/assets/Icon/DiscordWhite.png'
+                    ),
+                    githubIconUrl: encodeURI(
                         process.env.WEB_URL + '/assets/Icon/GithubWhite.png'
+                    )
                 },
                 InlineCss: true,
                 From: 'info@senatelabs.xyz',
@@ -436,11 +647,31 @@ const sendRoundupEmails = async () => {
                 MessageStream: 'outbound'
             })
 
-            console.log(`Email sent to ${user.email}`, response)
+            log_bul.log({
+                level: 'info',
+                message: 'Sent daily bulletin to user',
+                data: {
+                    email: user.email
+                }
+            })
         }
     } catch (error) {
-        console.error(error)
+        log_bul.log({
+            level: 'error',
+            message: 'Could not send daily bulletin',
+            data: {
+                error: error
+            }
+        })
     }
+}
+
+// TO BE IMPLEMENTED
+const sendSorryPlsEmail = async () => {
+    log_bul.log({
+        level: 'info',
+        message: 'Sending fallback email to users'
+    })
 }
 
 const userVoted = async (
@@ -448,18 +679,29 @@ const userVoted = async (
     proposalId: string,
     daoId: string
 ) => {
-    let voted = false
-    for (const voter of voters) {
-        const vote = await prisma.vote.findFirst({
-            where: {
-                voterAddress: voter.address,
-                daoId: daoId,
-                proposalId: proposalId
+    try {
+        let voted = false
+        for (const voter of voters) {
+            const vote = await prisma.vote.findFirst({
+                where: {
+                    voterAddress: voter.address,
+                    daoId: daoId,
+                    proposalId: proposalId
+                }
+            })
+
+            if (vote) voted = true
+        }
+
+        return voted
+    } catch (error) {
+        log_bul.log({
+            level: 'error',
+            message: 'Could not check if user voted',
+            data: {
+                error: error
             }
         })
-
-        if (vote) voted = true
+        throw Error('Could not check if user voted')
     }
-
-    return voted
 }

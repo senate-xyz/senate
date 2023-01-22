@@ -5,6 +5,7 @@ import { AppRouter } from '../../server/trpc/router/_app'
 import { trpc } from '../../utils/trpc'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
+import { DAOType, Vote } from '@senate/database'
 
 const endedOnOptions: { name: string; time: number }[] = [
     {
@@ -83,7 +84,7 @@ export const PastProposals = () => {
                         <option key='any' value='any'>
                             Any
                         </option>
-                        {followingDAOs.data?.map((followingDAO) => {
+                        {followingDAOs.data?.map((followingDAO: DAOType) => {
                             return (
                                 <option
                                     key={followingDAO.id}
@@ -177,7 +178,12 @@ export const PastProposals = () => {
                         </thead>
                         <tbody>
                             {filteredPastProposals.data?.map(
-                                (proposal, index) => (
+                                (
+                                    proposal: inferProcedureOutput<
+                                        AppRouter['user']['proposals']['filteredActiveProposals']
+                                    >[0],
+                                    index: number
+                                ) => (
                                     <PastProposal
                                         key={index}
                                         proposal={proposal}
@@ -201,7 +207,8 @@ const PastProposal = (props: {
         AppRouter['user']['proposals']['filteredPastProposals']
     >[0]
 }) => {
-    const voted = props.proposal.votes.map((vote) => vote.choice).length > 0
+    const voted =
+        props.proposal.votes.map((vote: Vote) => vote.choice).length > 0
 
     return (
         <tr
@@ -268,12 +275,13 @@ const PastProposal = (props: {
                             data-testid='proposal-not-voted'
                         >
                             <Image
-                                src='/assets/Icon/NotVotedYet.svg'
+                                src='/assets/Icon/DidntVote.svg'
                                 alt='voted'
                                 width={32}
                                 height={32}
                             />
-                            <div className='text-[18px]'>Not Voted Yet</div>
+
+                            <div className='text-[18px]'>Didn&apos;t Vote</div>
                         </div>
                     )}
                 </div>

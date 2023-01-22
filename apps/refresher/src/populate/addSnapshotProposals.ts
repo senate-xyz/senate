@@ -11,43 +11,36 @@ import {
 import { log_ref } from '@senate/axiom'
 
 export const addSnapshotProposalsToQueue = async () => {
-    log_ref.log({
-        level: 'info',
-        message: `Add new dao snapshot proposals to queue`
-    })
+    const normalRefresh = new Date(
+        Date.now() - DAOS_PROPOSALS_SNAPSHOT_INTERVAL * 60 * 1000
+    )
+    const forceRefresh = new Date(
+        Date.now() - DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE * 60 * 1000
+    )
+    const newRefresh = new Date(Date.now() - 15 * 1000)
 
     await prisma.$transaction(
         async (tx) => {
-            const snapshotDaoHandlers = await tx.dAOHandler.findMany({
+            const daoHandlers = await tx.dAOHandler.findMany({
                 where: {
                     type: DAOHandlerType.SNAPSHOT,
                     OR: [
                         {
                             refreshStatus: RefreshStatus.DONE,
                             lastRefreshTimestamp: {
-                                lt: new Date(
-                                    Date.now() -
-                                        DAOS_PROPOSALS_SNAPSHOT_INTERVAL *
-                                            60 *
-                                            1000
-                                )
+                                lt: normalRefresh
                             }
                         },
                         {
                             refreshStatus: RefreshStatus.PENDING,
                             lastRefreshTimestamp: {
-                                lt: new Date(
-                                    Date.now() -
-                                        DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE *
-                                            60 *
-                                            1000
-                                )
+                                lt: forceRefresh
                             }
                         },
                         {
                             refreshStatus: RefreshStatus.NEW,
                             lastRefreshTimestamp: {
-                                lt: new Date(Date.now() - 15 * 1000)
+                                lt: newRefresh
                             }
                         }
                     ]
@@ -57,24 +50,9 @@ export const addSnapshotProposalsToQueue = async () => {
                 }
             })
 
-            if (!snapshotDaoHandlers.length) {
-                log_ref.log({
-                    level: 'info',
-                    message: `Nothing to update`
-                })
+            if (!daoHandlers.length) {
                 return
             }
-
-            log_ref.log({
-                level: 'info',
-                message: `List of DAOs to be added to queue`,
-                data: {
-                    item: snapshotDaoHandlers,
-                    daos: snapshotDaoHandlers.map(
-                        (daoHandler) => daoHandler.dao.name
-                    )
-                }
-            })
 
             const previousPrio = (await tx.refreshQueue.findFirst({
                 where: {
@@ -85,77 +63,38 @@ export const addSnapshotProposalsToQueue = async () => {
                 select: { priority: true }
             })) ?? { priority: 50 }
 
-            log_ref.log({
-                level: 'info',
-                message: `Previous max priority`,
-                data: {
-                    priority: previousPrio.priority
-                }
-            })
-
-            await tx.refreshQueue
-                .createMany({
-                    data: snapshotDaoHandlers.map((daoHandler) => {
-                        return {
-                            clientId: daoHandler.id,
-                            refreshType: RefreshType.DAOSNAPSHOTPROPOSALS,
-                            priority: Number(previousPrio.priority) + 1
-                        }
-                    })
-                })
-                .then((r) => {
-                    log_ref.log({
-                        level: 'info',
-                        message: `Succesfully added to queue`,
-                        data: {
-                            item: r
-                        }
-                    })
-                    return
-                })
-                .catch((e) => {
-                    log_ref.log({
-                        level: 'error',
-                        message: `Failed to add to queue`,
-                        data: {
-                            error: e
-                        }
-                    })
-                })
-
-            await tx.dAOHandler
-                .updateMany({
-                    where: {
-                        id: {
-                            in: snapshotDaoHandlers.map(
-                                (daoHandler) => daoHandler.id
-                            )
-                        }
-                    },
-                    data: {
-                        refreshStatus: RefreshStatus.PENDING,
-                        lastRefreshTimestamp: new Date()
+            await tx.refreshQueue.createMany({
+                data: daoHandlers.map((daoHandler) => {
+                    return {
+                        handlerId: daoHandler.id,
+                        refreshType: RefreshType.DAOSNAPSHOTPROPOSALS,
+                        priority: Number(previousPrio.priority) + 1,
+                        args: {}
                     }
                 })
-                .then((r) => {
-                    log_ref.log({
-                        level: 'info',
-                        message: `Succesfully updated refresh statuses`,
-                        data: {
-                            item: r
-                        }
-                    })
-                    return
+            })
+
+            daoHandlers.map((daoHandler) =>
+                log_ref.log({
+                    level: 'info',
+                    message: `Added refresh items to queue`,
+                    dao: daoHandler.dao.name,
+                    daoHandler: daoHandler.id,
+                    type: RefreshType.DAOCHAINPROPOSALS
                 })
-                .catch((e) => {
-                    log_ref.log({
-                        level: 'error',
-                        message: `Failed to update refresh statuses`,
-                        data: {
-                            error: e
-                        }
-                    })
-                })
+            )
+
+            await tx.dAOHandler.updateMany({
+                where: {
+                    id: {
+                        in: daoHandlers.map((daoHandler) => daoHandler.id)
+                    }
+                },
+                data: {
+                    refreshStatus: RefreshStatus.PENDING,
+                    lastRefreshTimestamp: new Date()
+                }
+            })
         },
         {
             maxWait: 20000,

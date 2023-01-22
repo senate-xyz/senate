@@ -9,6 +9,19 @@ import { prisma } from '@senate/database'
 export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     const providers = [
         Credentials({
+            name: 'Ethereum',
+            credentials: {
+                message: {
+                    label: 'Message',
+                    type: 'text',
+                    placeholder: '0x0'
+                },
+                signature: {
+                    label: 'Signature',
+                    type: 'text',
+                    placeholder: '0x0'
+                }
+            },
             async authorize(credentials) {
                 try {
                     const siwe = new SiweMessage(
@@ -37,11 +50,14 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                                     create: {
                                         dailyBulletinEmail: true
                                     }
-                                }
+                                },
+                                lastActive: new Date(),
+                                sessionCount: 0
                             },
                             update: {
                                 name: siwe.address,
-                                newUser: false
+                                newUser: false,
+                                sessionCount: { increment: 1 }
                             }
                         })
 
@@ -67,38 +83,48 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                 } catch (e) {
                     return null
                 }
-            },
-            credentials: {
-                message: {
-                    label: 'Message',
-                    placeholder: '0x0',
-                    type: 'text'
-                },
-                signature: {
-                    label: 'Signature',
-                    placeholder: '0x0',
-                    type: 'text'
-                }
-            },
-            name: 'Ethereum'
+            }
         })
     ]
 
     return {
+        providers,
+        session: {
+            strategy: 'jwt',
+            maxAge: 600
+        },
         callbacks: {
-            async session({ session, token }) {
-                if (session.user) {
-                    session.user.name = token.sub
-                }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            async session({ session, token }: { session: any; token: any }) {
+                session.address = token.sub
+                session.user.name = token.sub
                 return session
             }
         },
-        providers,
         secret: process.env.NEXTAUTH_SECRET,
-        session: {
-            strategy: 'jwt'
-        },
-        debug: true
+        events: {
+            async signIn(message) {
+                await prisma.user.update({
+                    where: {
+                        name: String(message.user.id)
+                    },
+                    data: {
+                        lastActive: new Date(),
+                        sessionCount: { increment: 1 }
+                    }
+                })
+            },
+            async session(message) {
+                await prisma.user.update({
+                    where: {
+                        name: String(message.session.user?.name)
+                    },
+                    data: {
+                        lastActive: new Date()
+                    }
+                })
+            }
+        }
     }
 }
 
