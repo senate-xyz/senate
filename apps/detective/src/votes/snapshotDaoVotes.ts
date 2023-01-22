@@ -25,7 +25,7 @@ export const updateSnapshotDaoVotes = async (
                 }
             },
             orderBy: {
-                lastSnapshotVoteCreatedTimestamp: 'desc'
+                lastSnapshotVoteCreatedTimestamp: 'asc'
             }
         })
     ).lastSnapshotVoteCreatedTimestamp
