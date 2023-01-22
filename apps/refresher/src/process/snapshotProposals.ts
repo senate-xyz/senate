@@ -60,9 +60,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshTimestamp: new Date(0),
-                    lastChainProposalCreatedBlock: 0,
-                    lastSnapshotProposalCreatedTimestamp: new Date(0)
+                    lastRefreshTimestamp: new Date()
                 }
             })
 
@@ -85,9 +83,10 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshTimestamp: new Date(0),
-                    lastChainProposalCreatedBlock: 0,
-                    lastSnapshotProposalCreatedTimestamp: new Date(0)
+                    lastRefreshTimestamp: new Date(),
+                    lastSnapshotProposalCreatedTimestamp: new Date(
+                        Date.now() - 1000 * 60 * 60 * 24 * 90
+                    )
                 }
             })
 

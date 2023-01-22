@@ -6,7 +6,8 @@
   "license": "MIT",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "utilities/*"
   ],
   "prisma": {
     "schema": "packages/database/prisma/schema.prisma",

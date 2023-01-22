@@ -88,11 +88,36 @@ export const addChainDaoVotes = async () => {
             })) ?? { priority: 1 }
 
             let voterHandlersRefreshed: VoterHandler[] = []
+
             const refreshEntries = daoHandlers
                 .map((daoHandler) => {
-                    const voteTimestamps = daoHandler.voterHandlers.map(
-                        (voterHandler) =>
-                            Number(voterHandler.lastChainVoteCreatedBlock)
+                    //this makes sense to be filtered inside the prisma query but
+                    //if we do that prisma won't let us include voter anymore for some reason
+                    const voterHandlers = daoHandler.voterHandlers.filter(
+                        (vh) =>
+                            (vh.refreshStatus == RefreshStatus.DONE &&
+                                vh.lastRefreshTimestamp <
+                                    new Date(
+                                        Date.now() -
+                                            DAOS_VOTES_CHAIN_INTERVAL *
+                                                60 *
+                                                1000
+                                    )) ||
+                            (vh.refreshStatus == RefreshStatus.PENDING &&
+                                vh.lastRefreshTimestamp <
+                                    new Date(
+                                        Date.now() -
+                                            DAOS_VOTES_CHAIN_INTERVAL_FORCE *
+                                                60 *
+                                                1000
+                                    )) ||
+                            (vh.refreshStatus == RefreshStatus.NEW &&
+                                vh.lastRefreshTimestamp <
+                                    new Date(Date.now() - 15 * 1000))
+                    )
+
+                    const voteTimestamps = voterHandlers.map((voterHandler) =>
+                        Number(voterHandler.lastChainVoteCreatedBlock)
                     )
 
                     const voteTimestampBuckets = bin()
@@ -104,29 +129,28 @@ export const addChainDaoVotes = async () => {
                             const bucketMax = Number(bucket['x1'])
                             const bucketMin = Number(bucket['x0'])
 
-                            const votershandlers =
-                                daoHandler.voterHandlers.filter(
-                                    (voterHandler) =>
-                                        Number(
-                                            voterHandler.lastChainVoteCreatedBlock
-                                        ) >= bucketMin &&
-                                        Number(
-                                            voterHandler.lastChainVoteCreatedBlock
-                                        ) < bucketMax
-                                )
+                            const bucketVh = voterHandlers.filter(
+                                (voterHandler) =>
+                                    Number(
+                                        voterHandler.lastChainVoteCreatedBlock
+                                    ) >= bucketMin &&
+                                    Number(
+                                        voterHandler.lastChainVoteCreatedBlock
+                                    ) < bucketMax
+                            )
 
                             voterHandlersRefreshed = [
                                 ...voterHandlersRefreshed,
-                                ...votershandlers
+                                ...bucketVh
                             ]
 
                             return {
-                                bucket: `[${bucketMin}, ${bucketMax}] - ${votershandlers.length} items`,
+                                bucket: `[${bucketMin}, ${bucketMax}] - ${bucketVh.length} items`,
                                 item: {
                                     handlerId: daoHandler.id,
                                     refreshType: RefreshType.DAOCHAINVOTES,
                                     args: {
-                                        voters: votershandlers.map(
+                                        voters: bucketVh.map(
                                             (vhandler) => vhandler.voter.address
                                         )
                                     },

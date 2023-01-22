@@ -60,9 +60,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshTimestamp: new Date(0),
-                    lastChainProposalCreatedBlock: 0,
-                    lastSnapshotProposalCreatedTimestamp: new Date(0)
+                    lastRefreshTimestamp: new Date()
                 }
             })
 
@@ -85,9 +83,8 @@ export const processChainProposals = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshTimestamp: new Date(0),
-                    lastChainProposalCreatedBlock: 0,
-                    lastSnapshotProposalCreatedTimestamp: new Date(0)
+                    lastRefreshTimestamp: new Date(),
+                    lastChainProposalCreatedBlock: { decrement: 1000000 }
                 }
             })
 

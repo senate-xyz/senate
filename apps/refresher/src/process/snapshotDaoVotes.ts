@@ -69,7 +69,7 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshTimestamp: new Date(0)
+                    lastRefreshTimestamp: new Date()
                 }
             })
 
@@ -98,9 +98,10 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshTimestamp: new Date(0),
-                    lastChainVoteCreatedBlock: 0,
-                    lastSnapshotVoteCreatedTimestamp: new Date(0)
+                    lastRefreshTimestamp: new Date(),
+                    lastSnapshotVoteCreatedTimestamp: new Date(
+                        Date.now() - 1000 * 60 * 60 * 24 * 90
+                    )
                 }
             })
 

@@ -1,0 +1,3 @@
+{
+    "extends": "@senate/config/ts/node16.json"
+}
