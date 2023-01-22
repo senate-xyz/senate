@@ -91,17 +91,15 @@ export const addChainDaoVotes = async () => {
                 .map((daoHandler) => {
                     //this makes sense to be filtered inside the prisma query but
                     //if we do that prisma won't let us include voter anymore for some reason
-                    const voterHandlers = daoHandler.voterHandlers
-                        .filter(
-                            (vh) =>
-                                (vh.refreshStatus == RefreshStatus.DONE &&
-                                    vh.lastRefreshTimestamp < normalRefresh) ||
-                                (vh.refreshStatus == RefreshStatus.PENDING &&
-                                    vh.lastRefreshTimestamp < forceRefresh) ||
-                                (vh.refreshStatus == RefreshStatus.NEW &&
-                                    vh.lastRefreshTimestamp < newRefresh)
-                        )
-                        .slice(0, 250)
+                    const voterHandlers = daoHandler.voterHandlers.filter(
+                        (vh) =>
+                            (vh.refreshStatus == RefreshStatus.DONE &&
+                                vh.lastRefreshTimestamp < normalRefresh) ||
+                            (vh.refreshStatus == RefreshStatus.PENDING &&
+                                vh.lastRefreshTimestamp < forceRefresh) ||
+                            (vh.refreshStatus == RefreshStatus.NEW &&
+                                vh.lastRefreshTimestamp < newRefresh)
+                    )
 
                     const voteTimestamps = voterHandlers.map((voterHandler) =>
                         Number(voterHandler.lastChainVoteCreatedBlock)
@@ -116,17 +114,19 @@ export const addChainDaoVotes = async () => {
                             const bucketMax = Number(bucket['x1'])
                             const bucketMin = Number(bucket['x0'])
 
-                            const bucketVh = voterHandlers.filter(
-                                (voterHandler) =>
-                                    Number(
-                                        voterHandler.lastChainVoteCreatedBlock
-                                    ) +
-                                        1 >=
-                                        bucketMin &&
-                                    Number(
-                                        voterHandler.lastChainVoteCreatedBlock
-                                    ) < bucketMax
-                            )
+                            const bucketVh = voterHandlers
+                                .filter(
+                                    (voterHandler) =>
+                                        Number(
+                                            voterHandler.lastChainVoteCreatedBlock
+                                        ) +
+                                            1 >=
+                                            bucketMin &&
+                                        Number(
+                                            voterHandler.lastChainVoteCreatedBlock
+                                        ) < bucketMax
+                                )
+                                .slice(0, 250)
 
                             voterHandlersRefreshed = [
                                 ...voterHandlersRefreshed,

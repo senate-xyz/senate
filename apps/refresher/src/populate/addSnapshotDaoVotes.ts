@@ -84,17 +84,15 @@ export const addSnapshotDaoVotes = async () => {
                 .map((daoHandler) => {
                     //this makes sense to be filtered inside the prisma query but
                     //if we do that prisma won't let us include voter anymore for some reason
-                    const voterHandlers = daoHandler.voterHandlers
-                        .filter(
-                            (vh) =>
-                                (vh.refreshStatus == RefreshStatus.DONE &&
-                                    vh.lastRefreshTimestamp < normalRefresh) ||
-                                (vh.refreshStatus == RefreshStatus.PENDING &&
-                                    vh.lastRefreshTimestamp < forceRefresh) ||
-                                (vh.refreshStatus == RefreshStatus.NEW &&
-                                    vh.lastRefreshTimestamp < newRefresh)
-                        )
-                        .slice(0, 100)
+                    const voterHandlers = daoHandler.voterHandlers.filter(
+                        (vh) =>
+                            (vh.refreshStatus == RefreshStatus.DONE &&
+                                vh.lastRefreshTimestamp < normalRefresh) ||
+                            (vh.refreshStatus == RefreshStatus.PENDING &&
+                                vh.lastRefreshTimestamp < forceRefresh) ||
+                            (vh.refreshStatus == RefreshStatus.NEW &&
+                                vh.lastRefreshTimestamp < newRefresh)
+                    )
 
                     const voteTimestamps = voterHandlers.map((voterHandler) =>
                         Number(
@@ -111,17 +109,19 @@ export const addSnapshotDaoVotes = async () => {
                             const bucketMax = Number(bucket['x1'])
                             const bucketMin = Number(bucket['x0'])
 
-                            const bucketVh = voterHandlers.filter(
-                                (voterHandler) =>
-                                    Number(
-                                        voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
-                                    ) +
-                                        1 >=
-                                        bucketMin &&
-                                    Number(
-                                        voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
-                                    ) < bucketMax
-                            )
+                            const bucketVh = voterHandlers
+                                .filter(
+                                    (voterHandler) =>
+                                        Number(
+                                            voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
+                                        ) +
+                                            1 >=
+                                            bucketMin &&
+                                        Number(
+                                            voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
+                                        ) < bucketMax
+                                )
+                                .slice(0, 100)
 
                             voterHandlersRefreshed = [
                                 ...voterHandlersRefreshed,
