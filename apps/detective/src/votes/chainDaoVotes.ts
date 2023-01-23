@@ -87,7 +87,7 @@ export const updateChainDaoVotes = async (
 
     let blockBatchSize = Math.floor(40000000 / voters.length)
     if (daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE)
-        blockBatchSize = Math.floor(blockBatchSize / 10)
+        blockBatchSize = Math.floor(blockBatchSize / 100)
 
     let fromBlock = Math.max(lastVoteBlock, 0)
 
