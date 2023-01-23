@@ -38,7 +38,7 @@ export const getVotesForVoter = async (
     logs,
     daoHandler,
     voterAddress: string,
-    provider
+    provider: ethers.providers.JsonRpcProvider
 ) => {
     let success = true
 
@@ -50,24 +50,33 @@ export const getVotesForVoter = async (
         daoHandler.decoder['abi'],
         provider
     )
+
     const spellAddressesSet = new Set<string>()
+
     for (let i = 0; i < logs.length; i++) {
         const log = logs[i]
-        const eventArgs = iface.decodeEventLog('LogNote', log.data)
+        const tx = await provider.getTransaction(log.transactionHash)
 
-        const decodedFunctionData =
-            log.topics[0] === voteSingleActionTopic
-                ? iface.decodeFunctionData('vote(bytes32)', eventArgs.fax)
-                : iface.decodeFunctionData('vote(address[])', eventArgs.fax)
+        if (tx.to == voterAddress) {
+            const eventArgs = iface.decodeEventLog('LogNote', log.data)
 
-        const spells: string[] =
-            decodedFunctionData.yays !== undefined
-                ? decodedFunctionData.yays
-                : await getSlateYays(chiefContract, decodedFunctionData.slate)
+            const decodedFunctionData =
+                log.topics[0] === voteSingleActionTopic
+                    ? iface.decodeFunctionData('vote(bytes32)', eventArgs.fax)
+                    : iface.decodeFunctionData('vote(address[])', eventArgs.fax)
 
-        spells.forEach((spell) => {
-            spellAddressesSet.add(spell)
-        })
+            const spells: string[] =
+                decodedFunctionData.yays !== undefined
+                    ? decodedFunctionData.yays
+                    : await getSlateYays(
+                          chiefContract,
+                          decodedFunctionData.slate
+                      )
+
+            spells.forEach((spell) => {
+                spellAddressesSet.add(spell)
+            })
+        }
     }
 
     const intermediaryVotes = Array.from(spellAddressesSet)
