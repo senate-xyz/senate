@@ -95,7 +95,7 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                 data: {
                     refreshStatus: RefreshStatus.NEW,
                     lastRefreshTimestamp: new Date(),
-                    lastChainVoteCreatedBlock: { decrement: 1000000 }
+                    lastChainVoteCreatedBlock: { decrement: 50000 }
                 }
             })
 

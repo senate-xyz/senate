@@ -88,7 +88,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
                 data: {
                     refreshStatus: RefreshStatus.NEW,
                     lastRefreshTimestamp: new Date(),
-                    lastChainProposalCreatedBlock: { decrement: 1000000 }
+                    lastChainProposalCreatedBlock: { decrement: 50000 }
                 }
             })
 
