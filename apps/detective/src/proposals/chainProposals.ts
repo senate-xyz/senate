@@ -123,7 +123,7 @@ export const updateChainProposals = async (
         })
 
         response = 'ok'
-    } catch (e) {
+    } catch (e):any {
         log_pd.log({
             level: 'error',
             message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -134,7 +134,8 @@ export const updateChainProposals = async (
             toBlock: toBlock,
             provider: provider.connection.url,
             proposals: proposals,
-            error: e
+            errorMessage: e.message,
+            errorStack: e.stack
         })
     }
 

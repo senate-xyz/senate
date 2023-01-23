@@ -88,7 +88,7 @@ export const updateSnapshotProposals = async (
         })
 
         response = 'ok'
-    } catch (e) {
+    } catch (e: any) {
         log_pd.log({
             level: 'error',
             message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -97,7 +97,8 @@ export const updateSnapshotProposals = async (
             created_gt: Math.floor(minCreatedAt / 1000),
             query: graphqlQuery,
             proposals: proposals,
-            error: e
+            errorMessage: e.message,
+            errorStack: e.stack
         })
     }
 

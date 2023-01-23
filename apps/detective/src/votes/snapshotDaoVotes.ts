@@ -149,7 +149,7 @@ export const updateSnapshotDaoVotes = async (
         })
 
         voters.map((voter) => result.set(voter, 'ok'))
-    } catch (e) {
+    } catch (e: any) {
         log_pd.log({
             level: 'error',
             message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -162,7 +162,8 @@ export const updateSnapshotDaoVotes = async (
             voters: voters,
             query: graphqlQuery,
             votes: votes,
-            error: e
+            errorMessage: e.message,
+            errorStack: e.stack
         })
     }
 

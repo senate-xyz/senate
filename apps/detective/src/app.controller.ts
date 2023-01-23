@@ -18,11 +18,12 @@ import { log_pd } from '@senate/axiom'
 export class AllExceptionsFilter implements ExceptionFilter {
     constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
-    catch(exception: unknown, host: ArgumentsHost): void {
+    catch(exception: any, host: ArgumentsHost): void {
         log_pd.log({
             level: 'error',
             message: `AllExceptionsFilter`,
-            error: exception
+            errorMessage: exception.message,
+            errorStack: exception.stack
         })
 
         // In certain situations `httpAdapter` might not be available in the

@@ -104,7 +104,8 @@ export const processChainProposals = async (item: RefreshQueue) => {
                     minBlockNumber:
                         daoHandler?.lastChainProposalCreatedBlock?.valueOf()
                 },
-                error: e
+                errorMessage: e.message,
+                errorStack: e.stack
             })
         })
 }

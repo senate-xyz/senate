@@ -87,7 +87,7 @@ export const updateChainDaoVotes = async (
 
     let blockBatchSize = Math.floor(40000000 / voters.length)
     if (daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE)
-        blockBatchSize = Math.floor(blockBatchSize / 100)
+        blockBatchSize = Math.floor(blockBatchSize / 10)
 
     let fromBlock = Math.max(lastVoteBlock, 0)
 
@@ -184,7 +184,7 @@ export const updateChainDaoVotes = async (
         successfulResults.map((res) => {
             result.set(res.voterAddress, 'ok')
         })
-    } catch (e) {
+    } catch (e: any) {
         log_pd.log({
             level: 'error',
             message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -196,8 +196,10 @@ export const updateChainDaoVotes = async (
             voters: voters,
             votes: votes,
             provider: provider.connection.url,
-            error: e
+            errorMessage: e.message,
+            errorStack: e.stack
         })
+        console.log(e)
     }
 
     const res = Array.from(result, ([name, value]) => ({

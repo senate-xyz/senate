@@ -110,7 +110,8 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                 voters: voters,
                 postRequest: `${process.env.DETECTIVE_URL}/updateChainDaoVotes`,
                 postBody: { daoHandlerId: daoHandler.id, voters: voters },
-                error: e
+                errorMessage: e.message,
+                errorStack: e.stack
             })
         })
 }

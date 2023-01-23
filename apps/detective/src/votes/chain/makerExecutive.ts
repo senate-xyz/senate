@@ -55,28 +55,28 @@ export const getVotesForVoter = async (
 
     for (let i = 0; i < logs.length; i++) {
         const log = logs[i]
-        const tx = await provider.getTransaction(log.transactionHash)
 
-        if (tx.to == voterAddress) {
-            const eventArgs = iface.decodeEventLog('LogNote', log.data)
+        if (
+            String(log.topics[1]).toLowerCase() !=
+            hexZeroPad(voterAddress, 32).toLowerCase()
+        )
+            continue
 
-            const decodedFunctionData =
-                log.topics[0] === voteSingleActionTopic
-                    ? iface.decodeFunctionData('vote(bytes32)', eventArgs.fax)
-                    : iface.decodeFunctionData('vote(address[])', eventArgs.fax)
+        const eventArgs = iface.decodeEventLog('LogNote', log.data)
 
-            const spells: string[] =
-                decodedFunctionData.yays !== undefined
-                    ? decodedFunctionData.yays
-                    : await getSlateYays(
-                          chiefContract,
-                          decodedFunctionData.slate
-                      )
+        const decodedFunctionData =
+            log.topics[0] === voteSingleActionTopic
+                ? iface.decodeFunctionData('vote(bytes32)', eventArgs.fax)
+                : iface.decodeFunctionData('vote(address[])', eventArgs.fax)
 
-            spells.forEach((spell) => {
-                spellAddressesSet.add(spell)
-            })
-        }
+        const spells: string[] =
+            decodedFunctionData.yays !== undefined
+                ? decodedFunctionData.yays
+                : await getSlateYays(chiefContract, decodedFunctionData.slate)
+
+        spells.forEach((spell) => {
+            spellAddressesSet.add(spell)
+        })
     }
 
     const intermediaryVotes = Array.from(spellAddressesSet)
@@ -101,12 +101,13 @@ export const getVotesForVoter = async (
                             choiceId: '1',
                             choice: 'Yes'
                         }
-                    } catch (e) {
+                    } catch (e: any) {
                         log_pd.log({
                             level: 'error',
                             message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
                             logs: logs,
-                            error: e
+                            errorMessage: e.message,
+                            errorStack: e.stack
                         })
                         success = false
                     }

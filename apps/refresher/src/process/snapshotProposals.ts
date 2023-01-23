@@ -106,7 +106,8 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                     minCreatedAt:
                         daoHandler?.lastSnapshotProposalCreatedTimestamp?.valueOf()
                 },
-                error: e
+                errorMessage: e.message,
+                errorStack: e.stack
             })
         })
 }
