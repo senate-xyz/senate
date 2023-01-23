@@ -19,7 +19,7 @@ export const addChainDaoVotes = async () => {
     const forceRefresh = new Date(
         Date.now() - DAOS_VOTES_CHAIN_INTERVAL_FORCE * 60 * 1000
     )
-    const newRefresh = new Date(Date.now() - 15 * 1000)
+    const newRefresh = new Date(Date.now() - 5 * 1000)
 
     await prisma.$transaction(
         async (tx) => {
