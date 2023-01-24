@@ -290,7 +290,7 @@ const ActiveProposal = (props: {
                             data-testid='proposal-not-voted'
                         >
                             <Image
-                                src='/assets/Icon/DidntVote.svg'
+                                src='/assets/Icon/NotVotedYet.svg'
                                 alt='voted'
                                 width={32}
                                 height={32}
