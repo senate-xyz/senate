@@ -50,7 +50,6 @@ export const makerExecutiveProposals = async (
                 ),
                 timeStart: new Date(proposalData.date ?? Date.now()),
                 timeCreated: new Date(proposalData.date ?? Date.now()),
-                data: {},
                 url: daoHandler.decoder['proposalUrl'] + spellAddress
             }
         })

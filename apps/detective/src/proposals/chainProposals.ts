@@ -15,7 +15,6 @@ interface Result {
     timeEnd: Date
     timeStart: Date
     timeCreated: Date
-    data: any
     url: any
 }
 
