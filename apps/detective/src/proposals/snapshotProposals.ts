@@ -76,13 +76,17 @@ export const updateSnapshotProposals = async (
                 skipDuplicates: true
             })
 
+        const newMaxCreated = proposals.length
+            ? Math.max(...proposals.map((proposal) => proposal.created * 1000))
+            : Date.now()
+
         await prisma.dAOHandler.update({
             where: {
                 id: daoHandler.id
             },
             data: {
                 lastChainProposalCreatedBlock: 0,
-                lastSnapshotProposalCreatedTimestamp: new Date()
+                lastSnapshotProposalCreatedTimestamp: new Date(newMaxCreated)
             }
         })
 

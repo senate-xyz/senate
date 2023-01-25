@@ -1,5 +1,6 @@
 import { log_pd } from '@senate/axiom'
 import { prisma } from '@senate/database'
+import { ethers } from 'ethers'
 import superagent from 'superagent'
 
 export const updateSnapshotDaoVotes = async (
@@ -80,7 +81,7 @@ export const updateSnapshotDaoVotes = async (
         )
 
         const newestVote = votes.length
-            ? new Date(Math.max(...votes.map((vote) => vote.created)) * 1000)
+            ? Math.max(...votes.map((vote) => vote.created)) * 1000
             : Date.now()
 
         const proposalIds = [...new Set(votes.map((vote) => vote.proposal.id))]
@@ -108,15 +109,23 @@ export const updateSnapshotDaoVotes = async (
                 continue
             }
 
-            const votesForProposal = votes.filter(
-                (vote) => vote.proposal.id == snapshotProposalId
-            )
+            const votesForProposal = votes
+                .filter((vote) => vote.proposal.id == snapshotProposalId)
+                .filter(
+                    (vote, index, self) =>
+                        index ===
+                        self.findIndex(
+                            (t) =>
+                                t.voter === vote.voter &&
+                                t.created >= vote.created
+                        )
+                )
 
             if (votesForProposal.length)
                 await prisma.vote.createMany({
                     data: votesForProposal.map((vote) => {
                         return {
-                            voterAddress: vote.voter,
+                            voterAddress: ethers.utils.getAddress(vote.voter),
                             daoId: daoHandler.daoId,
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,

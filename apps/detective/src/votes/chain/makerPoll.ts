@@ -73,7 +73,7 @@ export const getVotesForVoter = async (
                         }
 
                         return {
-                            voterAddress: voterAddress,
+                            voterAddress: ethers.utils.getAddress(voterAddress),
                             daoId: daoHandler.daoId,
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,
