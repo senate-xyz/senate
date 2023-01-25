@@ -46,8 +46,8 @@ Table DAOHandler {
   type DAOHandlerType [not null]
   decoder Json [not null]
   lastChainProposalCreatedBlock BigInt [default: 0]
-  lastSnapshotProposalCreatedTimestamp DateTime
-  lastRefreshTimestamp DateTime [not null]
+  lastSnapshotProposalCreatedTimestamp DateTime [default: 2000-01-01T00:00:00+00:00]
+  lastRefreshTimestamp DateTime [not null, default: 2000-01-01T00:00:00+00:00]
   refreshStatus RefreshStatus [not null, default: 'NEW']
   daoId String [not null]
   dao DAO [not null]
@@ -65,7 +65,6 @@ Table Proposal {
   name String [not null]
   daoId String [not null]
   daoHandlerId String [not null]
-  data Json [not null]
   timeCreated DateTime [not null]
   timeStart DateTime [not null]
   timeEnd DateTime [not null]
@@ -116,9 +115,9 @@ Table VoterHandler {
   voterId String [not null]
   daoHandlerId String [not null]
   refreshStatus RefreshStatus [not null, default: 'NEW']
-  lastRefreshTimestamp DateTime [not null]
   lastChainVoteCreatedBlock BigInt [default: 0]
-  lastSnapshotVoteCreatedTimestamp DateTime
+  lastRefreshTimestamp DateTime [not null, default: 2000-01-01T00:00:00+00:00]
+  lastSnapshotVoteCreatedTimestamp DateTime [default: 2000-01-01T00:00:00+00:00]
   daoHandler DAOHandler [not null]
   voter Voter [not null]
 

@@ -33,10 +33,7 @@ export const userProposalsRouter = router({
                         }
                     },
                     {
-                        data: {
-                            path: '$.timeEnd',
-                            gte: Date.now() / 1000
-                        }
+                        timeEnd: { gte: new Date(Date.now() / 1000) }
                     }
                 ]
             },

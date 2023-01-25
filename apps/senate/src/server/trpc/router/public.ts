@@ -5,10 +5,7 @@ export const publicRouter = router({
     proposals: publicProcedure.query(async ({ ctx }) => {
         const userProposals = await ctx.prisma.proposal.findMany({
             where: {
-                data: {
-                    path: '$.timeEnd',
-                    gte: Date.now() / 1000
-                }
+                timeEnd: { gte: new Date(Date.now() / 1000) }
             },
             include: {
                 dao: {
