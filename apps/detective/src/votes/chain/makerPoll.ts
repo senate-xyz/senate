@@ -24,25 +24,6 @@ export const getMakerPollVotes = async (
         ]
     })
 
-    const result = await Promise.all(
-        voterAddresses.map((voterAddress) => {
-            return getVotesForVoter(logs, daoHandler, voterAddress)
-        })
-    )
-
-    return result
-}
-
-export const getVotesForVoter = async (
-    logs,
-    daoHandler,
-    voterAddress: string
-) => {
-    let success = true
-    const iface = new ethers.utils.Interface(
-        JSON.parse(daoHandler.decoder['eth_abi_vote'])
-    )
-
     const eventData = logs.map((log) => {
         return iface.parseLog({
             topics: log.topics,
@@ -50,9 +31,25 @@ export const getVotesForVoter = async (
         }).args
     })
 
-    const eventsForVoter = eventData.filter(
-        (event) => event.voter.toLowerCase() == voterAddress.toLowerCase()
+    const result = await Promise.all(
+        voterAddresses.map((voterAddress) => {
+            const eventsForVoter = eventData.filter(
+                (event) =>
+                    event.voter.toLowerCase() == voterAddress.toLowerCase()
+            )
+            return getVotesForVoter(eventsForVoter, daoHandler, voterAddress)
+        })
     )
+
+    return result
+}
+
+export const getVotesForVoter = async (
+    eventsForVoter: Array<any>,
+    daoHandler,
+    voterAddress: string
+) => {
+    let success = true
 
     const uniquePollIds: Set<string> = new Set(
         eventsForVoter.map((event) => BigNumber.from(event.pollId).toString())
