@@ -1,5 +1,5 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandler, prisma } from '@senate/database'
+import { DAOHandler, prisma, Vote, Proposal } from '@senate/database'
 import { BigNumber, ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 
@@ -11,12 +11,13 @@ export const getMakerPollVotes = async (
     toBlock: number
 ) => {
     const iface = new ethers.utils.Interface(
-        JSON.parse(daoHandler.decoder['abi_vote'])
+        JSON.parse(daoHandler.decoder['eth_abi_vote'])
     )
+
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['address_vote'],
+        address: daoHandler.decoder['eth_address_vote'],
         topics: [
             iface.getEventTopic('Voted'),
             voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
@@ -39,66 +40,64 @@ export const getVotesForVoter = async (
 ) => {
     let success = true
     const iface = new ethers.utils.Interface(
-        JSON.parse(daoHandler.decoder['abi_vote'])
+        JSON.parse(daoHandler.decoder['eth_abi_vote'])
     )
-    const votes =
-        (
-            await Promise.all(
-                logs.map(async (log) => {
-                    try {
-                        const eventData = iface.parseLog({
-                            topics: log.topics,
-                            data: log.data
-                        }).args
 
-                        if (
-                            String(eventData.voter).toLowerCase() !=
-                            voterAddress.toLowerCase()
-                        )
-                            return
+    const eventData = logs.map((log) => {
+        return iface.parseLog({
+            topics: log.topics,
+            data: log.data
+        }).args
+    })
 
-                        const proposal = await prisma.proposal.findFirst({
-                            where: {
-                                externalId: BigNumber.from(
-                                    eventData.pollId
-                                ).toString(),
-                                daoId: daoHandler.daoId,
-                                daoHandlerId: daoHandler.id
-                            }
-                        })
+    const eventsForVoter = eventData.filter(
+        (event) => event.voter.toLowerCase() == voterAddress.toLowerCase()
+    )
 
-                        if (!proposal) {
-                            success = false
-                            return
-                        }
+    const uniquePollIds: Set<string> = new Set(
+        eventsForVoter.map((event) => BigNumber.from(event.pollId).toString())
+    )
 
-                        return {
-                            voterAddress: voterAddress,
-                            daoId: daoHandler.daoId,
-                            proposalId: proposal.id,
-                            daoHandlerId: daoHandler.id,
-                            choiceId: BigNumber.from(
-                                eventData.optionId
-                            ).toString(),
-                            choice: BigNumber.from(
-                                eventData.optionId
-                            ).toString()
-                                ? 'Yes'
-                                : 'No'
-                        }
-                    } catch (e: any) {
-                        log_pd.log({
-                            level: 'error',
-                            message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
-                            logs: logs,
-                            errorMessage: e.message,
-                            errorStack: e.stack
-                        })
-                        success = false
-                    }
-                })
-            )
-        ).filter((n) => n) ?? []
+    const proposals = await prisma.proposal.findMany({
+        where: {
+            externalId: {
+                in: Array.from(uniquePollIds)
+            },
+            daoHandlerId: daoHandler.id
+        }
+    })
+
+    if (proposals.length != uniquePollIds.size) {
+        success = false
+        return { success, votes: [], voterAddress }
+    }
+
+    const proposalsMap = new Map(
+        proposals.map((proposal) => {
+            return [proposal.externalId, proposal]
+        })
+    )
+
+    const votes = await formatVotes(eventsForVoter, proposalsMap)
 
     return { success, votes, voterAddress }
+}
+
+const formatVotes = async (
+    events: Array<any>,
+    proposalsMap: Map<string, Proposal>
+) => {
+    return events.map((event) => {
+        const proposal = proposalsMap.get(
+            BigNumber.from(event.pollId).toString()
+        )
+        return {
+            voterAddress: event.voter,
+            daoId: proposal.daoId,
+            proposalId: proposal.id,
+            daoHandlerId: proposal.daoHandlerId,
+            choiceId: BigNumber.from(event.optionId).toString(),
+            choice: BigNumber.from(event.optionId).toString() ? 'Yes' : 'No'
+        }
+    })
 }
