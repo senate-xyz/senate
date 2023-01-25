@@ -8,6 +8,7 @@ import uniswapGovBravo from './abis/uniswapGovBravo.json'
 import compoundGovBravo from './abis/compoundGovBravo.json'
 import { prisma } from './client'
 import { DAOHandlerType } from '@prisma/client'
+import { ethers } from 'ethers'
 
 const seedData = async () => {
     console.log('Inserting DAOs')
@@ -940,8 +941,8 @@ const seedVoters = async () => {
                 data: {
                     voters: {
                         connectOrCreate: {
-                            where: { address: voter },
-                            create: { address: voter }
+                            where: { address: ethers.utils.getAddress(voter) },
+                            create: { address: ethers.utils.getAddress(voter) }
                         }
                     }
                 }
