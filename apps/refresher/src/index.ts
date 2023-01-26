@@ -45,7 +45,7 @@ const main = async () => {
         await prisma.refreshQueue.delete({
             where: { id: item?.id }
         })
-        while (Date.now() - start < 300) {
+        while (Date.now() - start < 350) {
             await sleep(1)
         }
     }
