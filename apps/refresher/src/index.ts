@@ -50,7 +50,7 @@ const main = async () => {
             })
         }
 
-        while (Date.now() - start < 330) {
+        while (Date.now() - start < 335) {
             await sleep(1)
         }
     }
