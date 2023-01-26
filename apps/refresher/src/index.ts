@@ -41,10 +41,15 @@ const main = async () => {
         const item = await prisma.refreshQueue.findFirst({
             orderBy: { priority: 'desc' }
         })
-        processQueue(item)
-        await prisma.refreshQueue.delete({
-            where: { id: item?.id }
-        })
+
+        if (item) {
+            processQueue(item)
+
+            await prisma.refreshQueue.delete({
+                where: { id: item?.id }
+            })
+        }
+
         while (Date.now() - start < 350) {
             await sleep(1)
         }
@@ -52,10 +57,6 @@ const main = async () => {
 }
 
 const processQueue = async (item: RefreshQueue) => {
-    if (!item) {
-        return
-    }
-
     switch (item.refreshType) {
         case RefreshType.DAOSNAPSHOTPROPOSALS:
             processSnapshotProposals(item)
