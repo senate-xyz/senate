@@ -19,7 +19,7 @@ function RetryTransactions(options?: Partial<IBackOffOptions>) {
                                     message: `Retrying prisma transaction`,
                                     error: e
                                 })
-                                return e.code === 'P2034'
+                                return e.code === 'P2034' || e.code === 'P1001'
                             },
                             ...options
                         }
