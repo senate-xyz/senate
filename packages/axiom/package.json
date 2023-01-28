@@ -20,7 +20,7 @@
         "prettier:fix": "prettier src --write"
     },
     "dependencies": {
-        "@axiomhq/axiom-node": "^0.10.0",
+        "@axiomhq/axiom-node": "^0.11.0",
         "winston": "^3.8.2"
     },
     "devDependencies": {

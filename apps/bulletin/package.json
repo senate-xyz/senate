@@ -29,7 +29,7 @@
         "@senate/config": "*",
         "@senate/database": "*",
         "@senate/axiom": "*",
-        "axios": "^1.2.3",
+        "axios": "^1.2.6",
         "node-cron": "^3.0.2",
         "postmark": "^3.0.15"
     },
