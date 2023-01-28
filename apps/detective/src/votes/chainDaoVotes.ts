@@ -5,6 +5,7 @@ import { getAaveVotes } from './chain/aave'
 import { getMakerExecutiveVotes } from './chain/makerExecutive'
 import { getUniswapVotes } from './chain/uniswap'
 import { getMakerPollVotes } from './chain/makerPoll'
+import { getMakerPollVotesFromArbitrum } from './chain/makerPollArbitrum'
 import { getCompoundVotes } from './chain/compound'
 import superagent from 'superagent'
 
@@ -156,6 +157,17 @@ export const updateChainDaoVotes = async (
                     toBlock
                 )
                 break
+            case 'MAKER_POLL_ARBITRUM':
+                const arbitrumProvider = new ethers.providers.JsonRpcProvider(
+                    process.env.ARBITRUM_NODE_URL
+                )
+                votes = await getMakerPollVotesFromArbitrum(
+                    arbitrumProvider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
         }
 
         const successfulResults = votes.filter((res) => res.success)
@@ -194,7 +206,7 @@ export const updateChainDaoVotes = async (
             fromBlock: fromBlock,
             toBlock: toBlock,
             voters: voters,
-            votes: votes,
+            votesCount: votes.length,
             provider: provider.connection.url,
             errorMessage: e.message,
             errorStack: e.stack

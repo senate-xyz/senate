@@ -2,7 +2,7 @@
 import aaveGovBravo from './abis/aaveGovBravo.json'
 import makerExecutivesChief from './abis/makerExecutivesChief.json'
 import makerPollCreate from './abis/makerPollCreate.json'
-import makerPollVoteEthereum from './abis/makerPollVoteEthereum.json',
+import makerPollVote from './abis/makerPollVote.json'
 import makerPollVoteArbitrum from './abis/makerPollVoteArbitrum.json'
 import uniswapGovBravo from './abis/uniswapGovBravo.json'
 import compoundGovBravo from './abis/compoundGovBravo.json'
@@ -63,14 +63,19 @@ const seedData = async () => {
                         decoder: {
                             address_create:
                                 '0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d',
-                            eth_address_vote:
+                            addess_vote:
                                 '0xD3A9FE267852281a1e6307a1C37CDfD76d39b133',
-                            arbi_address_vote:
-                                '0x4f4e551b4920a5417F8d4e7f8f099660dAdadcEC',
                             abi_create: makerPollCreate.abi,
-                            eth_abi_vote: makerPollVoteEthereum.abi,
-                            arbi_abi_vote: makerPollVoteArbitrum.abi,
+                            abi_vote: makerPollVote.abi,
                             proposalUrl: 'https://vote.makerdao.com/polling/'
+                        }
+                    },
+                    {
+                        type: DAOHandlerType.MAKER_POLL_ARBITRUM,
+                        decoder: {
+                            addess_vote:
+                                '0x4f4e551b4920a5417F8d4e7f8f099660dAdadcEC',
+                            abi_vote: makerPollVoteArbitrum.abi
                         }
                     }
                 ]
