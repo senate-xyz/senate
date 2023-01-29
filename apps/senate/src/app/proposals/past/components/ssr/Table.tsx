@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import dayjs, { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { unstable_getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 
 import { Vote, prisma } from '@senate/database'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
@@ -10,7 +10,7 @@ extend(relativeTime)
 const getProposals = async (from: string, end: number, voted: string) => {
     const active = false
 
-    const session = await unstable_getServerSession(authOptions())
+    const session = await getServerSession(authOptions())
 
     const user = await prisma.user.findFirst({
         where: {

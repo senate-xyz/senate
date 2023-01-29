@@ -1,11 +1,11 @@
 import { prisma } from '@senate/database'
-import { unstable_getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import { Filters } from './components/csr/Filters'
 import Table from './components/ssr/Table'
 
 const getSubscribedDAOs = async () => {
-    const session = await unstable_getServerSession(authOptions())
+    const session = await getServerSession(authOptions())
     const userAddress = session?.user?.name ?? ''
 
     const user = await prisma.user

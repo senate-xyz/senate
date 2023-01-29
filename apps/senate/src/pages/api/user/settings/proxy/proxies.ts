@@ -1,13 +1,13 @@
 import { prisma } from '@senate/database'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { unstable_getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../auth/[...nextauth]'
 
 export default async function handle(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    const session = await unstable_getServerSession(req, res, authOptions())
+    const session = await getServerSession(req, res, authOptions())
 
     const proxyAddresses = await prisma.voter.findMany({
         where: {
