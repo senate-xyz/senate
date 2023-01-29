@@ -6,7 +6,8 @@
   "license": "MIT",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "utilities/*"
   ],
   "prisma": {
     "schema": "packages/database/prisma/schema.prisma",
@@ -46,6 +47,6 @@
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {
-    "rimraf": "^4.1.1"
+    "rimraf": "^4.1.2"
   }
 }

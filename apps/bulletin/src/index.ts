@@ -13,7 +13,6 @@ import { config } from 'dotenv'
 import { schedule } from 'node-cron'
 import { ServerClient } from 'postmark'
 import { log_bul } from '@senate/axiom'
-import superagent from 'superagent'
 
 config()
 
@@ -78,12 +77,13 @@ schedule(
                 pastProposals,
                 RoundupNotificationType.PAST
             )
-        } catch (error) {
+        } catch (e: any) {
             log_bul.log({
                 level: 'error',
                 message: 'Could not complete daily roundup',
                 data: {
-                    error: error
+                    errorMessage: e.message,
+                    errorStack: e.stack
                 }
             })
             errorsDetected = true
@@ -93,6 +93,12 @@ schedule(
             } else {
                 await sendDailyBulletin()
             }
+
+            log_bul.log({
+                level: 'info',
+                message: 'Completed daily roundup',
+                data: {}
+            })
         }
     }
 )
@@ -105,12 +111,13 @@ const clearNotificationsTable = async () => {
             level: 'info',
             message: 'Cleared notifications table'
         })
-    } catch (error) {
+    } catch (e: any) {
         log_bul.log({
             level: 'error',
             message: 'Could not clear notifications table',
             data: {
-                error: error
+                errorMessage: e.message,
+                errorStack: e.stack
             }
         })
         throw new Error('Could not clear notifications table')
@@ -153,12 +160,13 @@ const fetchUsersToBeNotifiedForProposal = async (
         })
 
         return users
-    } catch (error) {
+    } catch (e: any) {
         log_bul.log({
             level: 'error',
             message: 'Could not fetch users to be notified',
             data: {
-                error: error,
+                errorMessage: e.message,
+                errorStack: e.stack,
                 proposal: proposal,
                 type: type
             }
@@ -210,12 +218,13 @@ const insertNotifications = async (
                 count: proposals.length
             }
         })
-    } catch (error) {
+    } catch (e: any) {
         log_bul.log({
             level: 'error',
             message: 'Could not intsert notifications',
             data: {
-                error: error
+                errorMessage: e.message,
+                errorStack: e.stack
             }
         })
 
@@ -245,12 +254,13 @@ const fetchNewProposals = async () => {
         })
 
         return proposals
-    } catch (error) {
+    } catch (e: any) {
         log_bul.log({
             level: 'error',
             message: 'Could not fetch new proposals',
             data: {
-                error: error
+                errorMessage: e.message,
+                errorStack: e.stack
             }
         })
 
@@ -289,12 +299,13 @@ const fetchEndingProposals = async () => {
         })
 
         return proposals
-    } catch (error) {
+    } catch (e: any) {
         log_bul.log({
             level: 'error',
             message: 'Could not fetch ending proposals',
             data: {
-                error: error
+                errorMessage: e.message,
+                errorStack: e.stack
             }
         })
         throw new Error('Could not fetch ending proposals')
@@ -332,12 +343,13 @@ const fetchPastProposals = async () => {
         })
 
         return proposals
-    } catch (error) {
+    } catch (e: any) {
         log_bul.log({
             level: 'error',
             message: 'Could not fetch past proposals',
             data: {
-                error: error
+                errorMessage: e.message,
+                errorStack: e.stack
             }
         })
         throw new Error('Could not fetch past proposals')
@@ -381,13 +393,10 @@ const formatEmailTemplateRow = async (
         notification.daoId
     )
 
-    let countdownUrl = ''
-    for (let i = 0; i < 70; i++) {
-        console.log(i)
-        countdownUrl = await generateCountdownGifUrl(
-            notification.proposal.timeEnd
-        )
-    }
+    await delay(1000)
+    const countdownUrl = await generateCountdownGifUrl(
+        notification.proposal.timeEnd
+    )
 
     const votingStatus = voted
         ? 'Voted'
@@ -480,8 +489,6 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
                         }
                     }
                 })
-                // console.log('SUCCESS')
-                // console.log(JSON.stringify(response))
                 break
             } catch (err) {
                 retries--
@@ -497,7 +504,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
                         retriesLeft: retries
                     }
                 })
-                await new Promise((resolve) => setTimeout(resolve, 10000))
+                await delay(10000)
             }
         }
 
@@ -518,12 +525,13 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
         }
 
         return response.data.message.src
-    } catch (error) {
+    } catch (e: any) {
         log_bul.log({
             level: 'error',
             message: 'Could not generate countdown gif',
             data: {
-                error: error
+                errorMessage: e.message,
+                errorStack: e.stack
             }
         })
 
@@ -559,12 +567,13 @@ const fetchUsersToBeNotified = async (): Promise<UserWithVotingAddresses[]> => {
         })
 
         return users
-    } catch (error) {
+    } catch (e: any) {
         log_bul.log({
             level: 'error',
             message: 'Could not fetch users with daily bulletin enabled',
             data: {
-                error: error
+                errorMessage: e.message,
+                errorStack: e.stack
             }
         })
         throw Error('Could not fetch users with daily bulletin enabled')
@@ -662,12 +671,13 @@ const sendDailyBulletin = async () => {
                 }
             })
         }
-    } catch (error) {
+    } catch (e: any) {
         log_bul.log({
             level: 'error',
             message: 'Could not send daily bulletin',
             data: {
-                error: error
+                errorMessage: e.message,
+                errorStack: e.stack
             }
         })
     }
@@ -701,12 +711,13 @@ const userVoted = async (
         }
 
         return voted
-    } catch (error) {
+    } catch (e: any) {
         log_bul.log({
             level: 'error',
             message: 'Could not check if user voted',
             data: {
-                error: error
+                errorMessage: e.message,
+                errorStack: e.stack
             }
         })
         throw Error('Could not check if user voted')

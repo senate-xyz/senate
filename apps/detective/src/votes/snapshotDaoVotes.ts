@@ -1,5 +1,6 @@
 import { log_pd } from '@senate/axiom'
 import { prisma } from '@senate/database'
+import { ethers } from 'ethers'
 import superagent from 'superagent'
 
 export const updateSnapshotDaoVotes = async (
@@ -19,10 +20,13 @@ export const updateSnapshotDaoVotes = async (
     let lastVoteCreated = (
         await prisma.voterHandler.findFirst({
             where: {
-                daoHandlerId: daoHandler.id
+                daoHandlerId: daoHandler.id,
+                voter: {
+                    address: { in: voters }
+                }
             },
             orderBy: {
-                lastSnapshotVoteCreatedTimestamp: 'desc'
+                lastSnapshotVoteCreatedTimestamp: 'asc'
             }
         })
     ).lastSnapshotVoteCreatedTimestamp
@@ -60,7 +64,7 @@ export const updateSnapshotDaoVotes = async (
                 query: graphqlQuery
             })
             .timeout({
-                response: 5000,
+                response: 10000,
                 deadline: 30000
             })
             .retry(3, (err, res) => {
@@ -77,7 +81,7 @@ export const updateSnapshotDaoVotes = async (
         )
 
         const newestVote = votes.length
-            ? new Date(Math.max(...votes.map((vote) => vote.created)) * 1000)
+            ? Math.max(...votes.map((vote) => vote.created)) * 1000
             : Date.now()
 
         const proposalIds = [...new Set(votes.map((vote) => vote.proposal.id))]
@@ -105,27 +109,37 @@ export const updateSnapshotDaoVotes = async (
                 continue
             }
 
-            const votesForProposal = votes.filter(
-                (vote) => vote.proposal.id == snapshotProposalId
-            )
+            const votesForProposal = votes
+                .filter((vote) => vote.proposal.id == snapshotProposalId)
+                .filter(
+                    (vote, index, self) =>
+                        index ===
+                        self.findIndex(
+                            (t) =>
+                                t.voter === vote.voter &&
+                                t.created >= vote.created
+                        )
+                )
 
-            await prisma.vote.createMany({
-                data: votesForProposal.map((vote) => {
-                    return {
-                        voterAddress: vote.voter,
-                        daoId: daoHandler.daoId,
-                        proposalId: proposal.id,
-                        daoHandlerId: daoHandler.id,
-                        choiceId:
-                            vote.choice.length > 0
-                                ? String(vote.choice[0])
-                                : String(vote.choice),
-                        choice:
-                            vote.proposal.choices[vote.choice - 1] ?? 'No name'
-                    }
-                }),
-                skipDuplicates: true
-            })
+            if (votesForProposal.length)
+                await prisma.vote.createMany({
+                    data: votesForProposal.map((vote) => {
+                        return {
+                            voterAddress: ethers.utils.getAddress(vote.voter),
+                            daoId: daoHandler.daoId,
+                            proposalId: proposal.id,
+                            daoHandlerId: daoHandler.id,
+                            choiceId:
+                                vote.choice.length > 0
+                                    ? String(vote.choice[0])
+                                    : String(vote.choice),
+                            choice:
+                                vote.proposal.choices[vote.choice - 1] ??
+                                'No name'
+                        }
+                    }),
+                    skipDuplicates: true
+                })
         }
 
         await prisma.voterHandler.updateMany({
@@ -144,7 +158,7 @@ export const updateSnapshotDaoVotes = async (
         })
 
         voters.map((voter) => result.set(voter, 'ok'))
-    } catch (e) {
+    } catch (e: any) {
         log_pd.log({
             level: 'error',
             message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -157,7 +171,8 @@ export const updateSnapshotDaoVotes = async (
             voters: voters,
             query: graphqlQuery,
             votes: votes,
-            error: e
+            errorMessage: e.message,
+            errorStack: e.stack
         })
     }
 

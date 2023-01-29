@@ -1,5 +1,6 @@
 import {
     ArgumentsHost,
+    Body,
     Catch,
     Controller,
     ExceptionFilter,
@@ -17,11 +18,12 @@ import { log_pd } from '@senate/axiom'
 export class AllExceptionsFilter implements ExceptionFilter {
     constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
-    catch(exception: unknown, host: ArgumentsHost): void {
+    catch(exception: any, host: ArgumentsHost): void {
         log_pd.log({
             level: 'error',
             message: `AllExceptionsFilter`,
-            error: exception
+            errorMessage: exception.message,
+            errorStack: exception.stack
         })
 
         // In certain situations `httpAdapter` might not be available in the
@@ -51,8 +53,8 @@ export class AppController {
 
     @Post('updateSnapshotDaoVotes')
     async updateSnapshotDaoVotes(
-        @Query('daoHandlerId') daoHandlerId: string,
-        @Query('voters', new ParseArrayPipe({ items: String, separator: '&' }))
+        @Body('daoHandlerId') daoHandlerId: string,
+        @Body('voters', new ParseArrayPipe({ items: String, separator: '&' }))
         voters: string[]
     ) {
         const response = await this.appService.updateSnapshotDaoVotes(
@@ -65,8 +67,8 @@ export class AppController {
 
     @Post('updateChainDaoVotes')
     async updateChainDaoVotes(
-        @Query('daoHandlerId') daoHandlerId: string,
-        @Query('voters', new ParseArrayPipe({ items: String, separator: '&' }))
+        @Body('daoHandlerId') daoHandlerId: string,
+        @Body('voters', new ParseArrayPipe({ items: String, separator: '&' }))
         voters: string[]
     ) {
         const response = await this.appService.updateChainDaoVotes(
@@ -79,8 +81,8 @@ export class AppController {
 
     @Post('updateSnapshotProposals')
     async updateSnapshotProposals(
-        @Query('daoHandlerId') daoHandlerId: string,
-        @Query('minCreatedAt') minCreatedAt: number
+        @Body('daoHandlerId') daoHandlerId: string,
+        @Body('minCreatedAt') minCreatedAt: number
     ) {
         const response = await this.appService.updateSnapshotProposals(
             daoHandlerId,
@@ -92,8 +94,8 @@ export class AppController {
 
     @Post('updateChainProposals')
     async updateChainProposals(
-        @Query('daoHandlerId') daoHandlerId: string,
-        @Query('minBlockNumber') minBlockNumber: number
+        @Body('daoHandlerId') daoHandlerId: string,
+        @Body('minBlockNumber') minBlockNumber: number
     ) {
         const response = await this.appService.updateChainProposals(
             daoHandlerId,

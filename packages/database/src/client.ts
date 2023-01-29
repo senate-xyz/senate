@@ -17,11 +17,9 @@ function RetryTransactions(options?: Partial<IBackOffOptions>) {
                                 log_prisma.log({
                                     level: 'warn',
                                     message: `Retrying prisma transaction`,
-                                    data: {
-                                        error: e
-                                    }
+                                    error: e
                                 })
-                                return e.code === 'P2034'
+                                return e.code === 'P2034' || e.code === 'P1001'
                             },
                             ...options
                         }

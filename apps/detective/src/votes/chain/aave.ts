@@ -48,7 +48,11 @@ export const getVotesForVoter = async (
                             data: log.data
                         }).args
 
-                        if (String(eventData.voter) != voterAddress) return
+                        if (
+                            String(eventData.voter).toLowerCase() !=
+                            voterAddress.toLowerCase()
+                        )
+                            return
 
                         const proposal = await prisma.proposal.findFirst({
                             where: {
@@ -66,19 +70,20 @@ export const getVotesForVoter = async (
                         }
 
                         return {
-                            voterAddress: voterAddress,
+                            voterAddress: ethers.utils.getAddress(voterAddress),
                             daoId: daoHandler.daoId,
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,
                             choiceId: String(eventData.support),
                             choice: String(eventData.support) ? 'Yes' : 'No'
                         }
-                    } catch (e) {
+                    } catch (e: any) {
                         log_pd.log({
                             level: 'error',
                             message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
                             logs: logs,
-                            error: e
+                            errorMessage: e.message,
+                            errorStack: e.stack
                         })
                         success = false
                     }

@@ -16,14 +16,9 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
 
     const voters = [...item.args['voters']]
 
-    let votersReq = ''
-
-    voters.map((voter) => (votersReq += `voters=${voter}&`))
-
-    const proposalDetectiveReq = `${process.env.DETECTIVE_URL}/updateChainDaoVotes?daoHandlerId=${daoHandler?.id}&${votersReq}`
-
     await superagent
-        .post(proposalDetectiveReq)
+        .post(`${process.env.DETECTIVE_URL}/updateChainDaoVotes`)
+        .send({ daoHandlerId: daoHandler.id, voters: voters })
         .type('application/json')
         .timeout({
             response: DAOS_VOTES_CHAIN_INTERVAL_FORCE * 60 * 1000 - 5000,
@@ -69,7 +64,7 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshTimestamp: new Date(0)
+                    lastRefreshTimestamp: new Date()
                 }
             })
 
@@ -80,7 +75,8 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                 daoHandler: daoHandler.id,
                 type: RefreshType.DAOCHAINVOTES,
                 voters: voters,
-                request: proposalDetectiveReq,
+                postRequest: `${process.env.DETECTIVE_URL}/updateChainDaoVotes`,
+                postBody: { daoHandlerId: daoHandler.id, voters: voters },
                 response: data
             })
 
@@ -98,9 +94,8 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshTimestamp: new Date(0),
-                    lastChainVoteCreatedBlock: 0,
-                    lastSnapshotVoteCreatedTimestamp: new Date(0)
+                    lastRefreshTimestamp: new Date(),
+                    lastChainVoteCreatedBlock: { decrement: 50000 }
                 }
             })
 
@@ -111,8 +106,10 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                 daoHandler: daoHandler.id,
                 type: RefreshType.DAOCHAINVOTES,
                 voters: voters,
-                request: proposalDetectiveReq,
-                error: e
+                postRequest: `${process.env.DETECTIVE_URL}/updateChainDaoVotes`,
+                postBody: { daoHandlerId: daoHandler.id, voters: voters },
+                errorMessage: e.message,
+                errorStack: e.stack
             })
         })
 }

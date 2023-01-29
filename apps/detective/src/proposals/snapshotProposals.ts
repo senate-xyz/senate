@@ -48,7 +48,7 @@ export const updateSnapshotProposals = async (
                 query: graphqlQuery
             })
             .timeout({
-                response: 5000,
+                response: 10000,
                 deadline: 30000
             })
             .retry(3, (err, res) => {
@@ -59,8 +59,8 @@ export const updateSnapshotProposals = async (
                 return response.body.data.proposals
             })
 
-        await prisma.proposal
-            .createMany({
+        if (proposals.length)
+            await prisma.proposal.createMany({
                 data: proposals.map((proposal) => {
                     return {
                         externalId: proposal.id,
@@ -70,26 +70,28 @@ export const updateSnapshotProposals = async (
                         timeEnd: new Date(proposal.end * 1000),
                         timeStart: new Date(proposal.start * 1000),
                         timeCreated: new Date(proposal.created * 1000),
-                        data: {},
                         url: proposal.link
                     }
                 }),
                 skipDuplicates: true
             })
-            .then(async () => {
-                await prisma.dAOHandler.update({
-                    where: {
-                        id: daoHandler.id
-                    },
-                    data: {
-                        lastChainProposalCreatedBlock: 0,
-                        lastSnapshotProposalCreatedTimestamp: new Date()
-                    }
-                })
-                return
-            })
+
+        const newMaxCreated = proposals.length
+            ? Math.max(...proposals.map((proposal) => proposal.created * 1000))
+            : Date.now()
+
+        await prisma.dAOHandler.update({
+            where: {
+                id: daoHandler.id
+            },
+            data: {
+                lastChainProposalCreatedBlock: 0,
+                lastSnapshotProposalCreatedTimestamp: new Date(newMaxCreated)
+            }
+        })
+
         response = 'ok'
-    } catch (e) {
+    } catch (e: any) {
         log_pd.log({
             level: 'error',
             message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -98,7 +100,8 @@ export const updateSnapshotProposals = async (
             created_gt: Math.floor(minCreatedAt / 1000),
             query: graphqlQuery,
             proposals: proposals,
-            error: e
+            errorMessage: e.message,
+            errorStack: e.stack
         })
     }
 

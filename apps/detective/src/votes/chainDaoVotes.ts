@@ -160,35 +160,31 @@ export const updateChainDaoVotes = async (
 
         const successfulResults = votes.filter((res) => res.success)
 
-        await prisma.vote
-            .createMany({
+        if (successfulResults.length)
+            await prisma.vote.createMany({
                 data: successfulResults.map((res) => res.votes).flat(2),
                 skipDuplicates: true
             })
-            .then(async () => {
-                await prisma.voterHandler.updateMany({
-                    where: {
-                        voter: {
-                            address: {
-                                in: successfulResults.map(
-                                    (res) => res.voterAddress
-                                )
-                            }
-                        },
-                        daoHandlerId: daoHandler.id
-                    },
-                    data: {
-                        lastChainVoteCreatedBlock: toBlock,
-                        lastSnapshotVoteCreatedTimestamp: new Date(0)
+
+        await prisma.voterHandler.updateMany({
+            where: {
+                voter: {
+                    address: {
+                        in: successfulResults.map((res) => res.voterAddress)
                     }
-                })
-                return
-            })
+                },
+                daoHandlerId: daoHandler.id
+            },
+            data: {
+                lastChainVoteCreatedBlock: toBlock,
+                lastSnapshotVoteCreatedTimestamp: new Date(0)
+            }
+        })
 
         successfulResults.map((res) => {
             result.set(res.voterAddress, 'ok')
         })
-    } catch (e) {
+    } catch (e: any) {
         log_pd.log({
             level: 'error',
             message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -200,8 +196,10 @@ export const updateChainDaoVotes = async (
             voters: voters,
             votes: votes,
             provider: provider.connection.url,
-            error: e
+            errorMessage: e.message,
+            errorStack: e.stack
         })
+        console.log(e)
     }
 
     const res = Array.from(result, ([name, value]) => ({

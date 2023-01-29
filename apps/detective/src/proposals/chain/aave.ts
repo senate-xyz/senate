@@ -65,7 +65,6 @@ export const aaveProposals = async (
                         timeEnd: new Date(votingEndsTimestamp * 1000),
                         timeStart: new Date(votingStartsTimestamp * 1000),
                         timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                        data: {},
                         url: proposalUrl
                     }
                 })
@@ -114,13 +113,14 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
                 })
             }
         }
-    } catch (e) {
+    } catch (e: any) {
         log_pd.log({
             level: 'warn',
             message: `Could not get proposal title`,
             hexHash: hexHash,
             url: IPFS_GATEWAY_URLS[0] + 'f01701220' + hexHash.substring(2),
-            error: e
+            errorMessage: e.message,
+            errorStack: e.stack
         })
     }
 

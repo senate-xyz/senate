@@ -38,7 +38,7 @@ export const getVotesForVoter = async (
     logs,
     daoHandler,
     voterAddress: string,
-    provider
+    provider: ethers.providers.JsonRpcProvider
 ) => {
     let success = true
 
@@ -50,9 +50,18 @@ export const getVotesForVoter = async (
         daoHandler.decoder['abi'],
         provider
     )
+
     const spellAddressesSet = new Set<string>()
+
     for (let i = 0; i < logs.length; i++) {
         const log = logs[i]
+
+        if (
+            String(log.topics[1]).toLowerCase() !=
+            hexZeroPad(voterAddress, 32).toLowerCase()
+        )
+            continue
+
         const eventArgs = iface.decodeEventLog('LogNote', log.data)
 
         const decodedFunctionData =
@@ -85,19 +94,20 @@ export const getVotesForVoter = async (
                         })
 
                         return {
-                            voterAddress: voterAddress,
+                            voterAddress: ethers.utils.getAddress(voterAddress),
                             daoId: daoHandler.daoId,
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,
                             choiceId: '1',
                             choice: 'Yes'
                         }
-                    } catch (e) {
+                    } catch (e: any) {
                         log_pd.log({
                             level: 'error',
                             message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
                             logs: logs,
-                            error: e
+                            errorMessage: e.message,
+                            errorStack: e.stack
                         })
                         success = false
                     }

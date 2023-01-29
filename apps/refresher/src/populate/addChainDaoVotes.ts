@@ -13,6 +13,14 @@ import { bin } from 'd3-array'
 import { log_ref } from '@senate/axiom'
 
 export const addChainDaoVotes = async () => {
+    const normalRefresh = new Date(
+        Date.now() - DAOS_VOTES_CHAIN_INTERVAL * 60 * 1000
+    )
+    const forceRefresh = new Date(
+        Date.now() - DAOS_VOTES_CHAIN_INTERVAL_FORCE * 60 * 1000
+    )
+    const newRefresh = new Date(Date.now() - 5 * 1000)
+
     await prisma.$transaction(
         async (tx) => {
             let daoHandlers = await tx.dAOHandler.findMany({
@@ -32,29 +40,19 @@ export const addChainDaoVotes = async () => {
                                 {
                                     refreshStatus: RefreshStatus.DONE,
                                     lastRefreshTimestamp: {
-                                        lt: new Date(
-                                            Date.now() -
-                                                DAOS_VOTES_CHAIN_INTERVAL *
-                                                    60 *
-                                                    1000
-                                        )
+                                        lt: normalRefresh
                                     }
                                 },
                                 {
                                     refreshStatus: RefreshStatus.PENDING,
                                     lastRefreshTimestamp: {
-                                        lt: new Date(
-                                            Date.now() -
-                                                DAOS_VOTES_CHAIN_INTERVAL_FORCE *
-                                                    60 *
-                                                    1000
-                                        )
+                                        lt: forceRefresh
                                     }
                                 },
                                 {
                                     refreshStatus: RefreshStatus.NEW,
                                     lastRefreshTimestamp: {
-                                        lt: new Date(Date.now() - 15 * 1000)
+                                        lt: newRefresh
                                     }
                                 }
                             ]
@@ -88,11 +86,23 @@ export const addChainDaoVotes = async () => {
             })) ?? { priority: 1 }
 
             let voterHandlersRefreshed: VoterHandler[] = []
+
             const refreshEntries = daoHandlers
                 .map((daoHandler) => {
-                    const voteTimestamps = daoHandler.voterHandlers.map(
-                        (voterHandler) =>
-                            Number(voterHandler.lastChainVoteCreatedBlock)
+                    //this makes sense to be filtered inside the prisma query but
+                    //if we do that prisma won't let us include voter anymore for some reason
+                    const voterHandlers = daoHandler.voterHandlers.filter(
+                        (vh) =>
+                            (vh.refreshStatus == RefreshStatus.DONE &&
+                                vh.lastRefreshTimestamp < normalRefresh) ||
+                            (vh.refreshStatus == RefreshStatus.PENDING &&
+                                vh.lastRefreshTimestamp < forceRefresh) ||
+                            (vh.refreshStatus == RefreshStatus.NEW &&
+                                vh.lastRefreshTimestamp < newRefresh)
+                    )
+
+                    const voteTimestamps = voterHandlers.map((voterHandler) =>
+                        Number(voterHandler.lastChainVoteCreatedBlock)
                     )
 
                     const voteTimestampBuckets = bin()
@@ -104,29 +114,32 @@ export const addChainDaoVotes = async () => {
                             const bucketMax = Number(bucket['x1'])
                             const bucketMin = Number(bucket['x0'])
 
-                            const votershandlers =
-                                daoHandler.voterHandlers.filter(
+                            const bucketVh = voterHandlers
+                                .filter(
                                     (voterHandler) =>
                                         Number(
                                             voterHandler.lastChainVoteCreatedBlock
-                                        ) >= bucketMin &&
+                                        ) +
+                                            1 >=
+                                            bucketMin &&
                                         Number(
                                             voterHandler.lastChainVoteCreatedBlock
                                         ) < bucketMax
                                 )
+                                .slice(0, 250)
 
                             voterHandlersRefreshed = [
                                 ...voterHandlersRefreshed,
-                                ...votershandlers
+                                ...bucketVh
                             ]
 
                             return {
-                                bucket: `[${bucketMin}, ${bucketMax}] - ${votershandlers.length} items`,
+                                bucket: `[${bucketMin}, ${bucketMax}] - ${bucketVh.length} items`,
                                 item: {
                                     handlerId: daoHandler.id,
                                     refreshType: RefreshType.DAOCHAINVOTES,
                                     args: {
-                                        voters: votershandlers.map(
+                                        voters: bucketVh.map(
                                             (vhandler) => vhandler.voter.address
                                         )
                                     },

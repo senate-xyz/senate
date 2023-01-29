@@ -8,9 +8,8 @@ generator dbml {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-  relationMode = "foreignKeys"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -57,8 +56,8 @@ model DAOHandler {
   type                                 DAOHandlerType
   decoder                              Json
   lastChainProposalCreatedBlock        BigInt?        @default(0)
-  lastSnapshotProposalCreatedTimestamp DateTime?      @default(dbgenerated("(from_unixtime(0))"))
-  lastRefreshTimestamp                 DateTime       @default(dbgenerated("(from_unixtime(0))"))
+  lastSnapshotProposalCreatedTimestamp DateTime?      @default("2000-01-01T00:00:00.00Z")
+  lastRefreshTimestamp                 DateTime       @default("2000-01-01T00:00:00.00Z")
   refreshStatus                        RefreshStatus  @default(NEW)
   daoId                                String
   dao                                  DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
@@ -74,7 +73,6 @@ model Proposal {
   name          String         @db.VarChar(2048)
   daoId         String
   daoHandlerId  String
-  data          Json
   timeCreated   DateTime
   timeStart     DateTime
   timeEnd       DateTime
@@ -125,9 +123,9 @@ model VoterHandler {
   voterId                          String
   daoHandlerId                     String
   refreshStatus                    RefreshStatus @default(NEW)
-  lastRefreshTimestamp             DateTime      @default(dbgenerated("(from_unixtime(0))"))
   lastChainVoteCreatedBlock        BigInt?       @default(0)
-  lastSnapshotVoteCreatedTimestamp DateTime?     @default(dbgenerated("(from_unixtime(0))"))
+  lastRefreshTimestamp             DateTime      @default("2000-01-01T00:00:00.00Z")
+  lastSnapshotVoteCreatedTimestamp DateTime?     @default("2000-01-01T00:00:00.00Z")
   daoHandler                       DAOHandler    @relation(fields: [daoHandlerId], references: [id], onDelete: Cascade)
   voter                            Voter         @relation(fields: [voterId], references: [id], onDelete: Cascade)
 

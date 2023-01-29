@@ -1,4 +1,4 @@
-import { prisma, RefreshType } from '@senate/database'
+import { prisma, RefreshQueue, RefreshType } from '@senate/database'
 import * as cron from 'node-cron'
 import { loadConfig } from './config'
 import { createVoterHandlers } from './createHandlers'
@@ -12,91 +12,51 @@ import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 import { log_ref } from '@senate/axiom'
 
-let RUNNING_PROCESS_QUEUE = false
-
 const main = async () => {
     log_ref.log({
         level: 'info',
         message: `Started refresher`
     })
 
+    await loadConfig()
+    await createVoterHandlers()
+
     setInterval(async () => {
-        processQueue()
+        prismaLogs()
+        await loadConfig()
+        await createVoterHandlers()
     }, 1000)
 
-    cron.schedule('*/10 * * * * *', async () => {
-        log_ref.log({
-            level: 'info',
-            message: 'Prisma metrics',
+    setInterval(async () => {
+        await addSnapshotProposalsToQueue()
+        await addSnapshotDaoVotes()
 
-            prisma_client_queries_total: (
-                await prisma.$metrics.json()
-            ).counters.find(
-                (metric) => metric.key == 'prisma_client_queries_total'
-            )?.value,
-            prisma_datasource_queries_total: (
-                await prisma.$metrics.json()
-            ).counters.find(
-                (metric) => metric.key == 'prisma_datasource_queries_total'
-            )?.value,
-            prisma_pool_connections_open: (
-                await prisma.$metrics.json()
-            ).counters.find(
-                (metric) => metric.key == 'prisma_pool_connections_open'
-            )?.value,
-            prisma_client_queries_active: (
-                await prisma.$metrics.json()
-            ).gauges.find(
-                (metric) => metric.key == 'prisma_client_queries_active'
-            )?.value,
-            prisma_client_queries_wait: (
-                await prisma.$metrics.json()
-            ).gauges.find(
-                (metric) => metric.key == 'prisma_client_queries_wait'
-            )?.value,
-            prisma_pool_connections_busy: (
-                await prisma.$metrics.json()
-            ).gauges.find(
-                (metric) => metric.key == 'prisma_pool_connections_busy'
-            )?.value,
-            prisma_pool_connections_idle: (
-                await prisma.$metrics.json()
-            ).gauges.find(
-                (metric) => metric.key == 'prisma_pool_connections_idle'
-            )?.value,
-            prisma_pool_connections_opened_total: (
-                await prisma.$metrics.json()
-            ).gauges.find(
-                (metric) => metric.key == 'prisma_pool_connections_opened_total'
-            )?.value
+        await addChainProposalsToQueue()
+        await addChainDaoVotes()
+    }, 1000)
+
+    while (true) {
+        const start = Date.now()
+
+        const item = await prisma.refreshQueue.findFirst({
+            orderBy: { priority: 'desc' }
         })
-        await loadConfig()
 
-        const handlersCreated = await createVoterHandlers()
+        if (item) {
+            processQueue(item)
 
-        if (handlersCreated) {
-            await addSnapshotProposalsToQueue()
-            await addSnapshotDaoVotes()
-
-            await addChainProposalsToQueue()
-            await addChainDaoVotes()
+            await prisma.refreshQueue.delete({
+                where: { id: item?.id }
+            })
         }
-    })
+
+        while (Date.now() - start < 335) {
+            await sleep(1)
+        }
+    }
 }
 
-const processQueue = async () => {
-    if (RUNNING_PROCESS_QUEUE == true) return
-    RUNNING_PROCESS_QUEUE = true
-
-    const item = await prisma.refreshQueue.findFirst({
-        orderBy: { priority: 'desc' }
-    })
-
-    if (!item) {
-        RUNNING_PROCESS_QUEUE = false
-        return
-    }
-
+const processQueue = async (item: RefreshQueue) => {
     switch (item.refreshType) {
         case RefreshType.DAOSNAPSHOTPROPOSALS:
             processSnapshotProposals(item)
@@ -117,12 +77,49 @@ const processQueue = async () => {
             break
         }
     }
-
-    await prisma.refreshQueue.delete({
-        where: { id: item?.id }
-    })
-
-    RUNNING_PROCESS_QUEUE = false
 }
 
 main()
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const prismaLogs = async () =>
+    log_ref.log({
+        level: 'info',
+        message: 'Prisma metrics',
+
+        prisma_client_queries_total: (
+            await prisma.$metrics.json()
+        ).counters.find((metric) => metric.key == 'prisma_client_queries_total')
+            ?.value,
+        prisma_datasource_queries_total: (
+            await prisma.$metrics.json()
+        ).counters.find(
+            (metric) => metric.key == 'prisma_datasource_queries_total'
+        )?.value,
+        prisma_pool_connections_open: (
+            await prisma.$metrics.json()
+        ).counters.find(
+            (metric) => metric.key == 'prisma_pool_connections_open'
+        )?.value,
+        prisma_client_queries_active: (
+            await prisma.$metrics.json()
+        ).gauges.find((metric) => metric.key == 'prisma_client_queries_active')
+            ?.value,
+        prisma_client_queries_wait: (await prisma.$metrics.json()).gauges.find(
+            (metric) => metric.key == 'prisma_client_queries_wait'
+        )?.value,
+        prisma_pool_connections_busy: (
+            await prisma.$metrics.json()
+        ).gauges.find((metric) => metric.key == 'prisma_pool_connections_busy')
+            ?.value,
+        prisma_pool_connections_idle: (
+            await prisma.$metrics.json()
+        ).gauges.find((metric) => metric.key == 'prisma_pool_connections_idle')
+            ?.value,
+        prisma_pool_connections_opened_total: (
+            await prisma.$metrics.json()
+        ).gauges.find(
+            (metric) => metric.key == 'prisma_pool_connections_opened_total'
+        )?.value
+    })
