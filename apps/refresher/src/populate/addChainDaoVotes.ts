@@ -32,7 +32,8 @@ export const addChainDaoVotes = async () => {
                             DAOHandlerType.MAKER_EXECUTIVE,
                             DAOHandlerType.MAKER_POLL,
                             DAOHandlerType.MAKER_POLL_ARBITRUM,
-                            DAOHandlerType.UNISWAP_CHAIN
+                            DAOHandlerType.UNISWAP_CHAIN,
+                            DAOHandlerType.ENS_CHAIN
                         ]
                     },
                     voterHandlers: {

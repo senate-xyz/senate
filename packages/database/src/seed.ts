@@ -6,6 +6,7 @@ import makerPollVote from './abis/makerPollVote.json'
 import makerPollVoteArbitrum from './abis/makerPollVoteArbitrum.json'
 import uniswapGovBravo from './abis/uniswapGovBravo.json'
 import compoundGovBravo from './abis/compoundGovBravo.json'
+import ensOZGovernor from './abis/ensOZGovernor.json'
 import { prisma } from './client'
 import { DAOHandlerType } from '@prisma/client'
 import { ethers } from 'ethers'
@@ -303,6 +304,16 @@ const seedData = async () => {
             picture: '/assets/Project_Icons/ens',
             handlers: {
                 create: [
+                    {
+                        type: DAOHandlerType.ENS_CHAIN,
+                        decoder: {
+                            address:
+                                '0x323A76393544d5ecca80cd6ef2A560C6a395b7E3',
+                            abi: ensOZGovernor.abi,
+                            proposalUrl:
+                                'https://www.tally.xyz/gov/ens/proposal/'
+                        }
+                    },
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {

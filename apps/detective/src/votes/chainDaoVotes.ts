@@ -4,6 +4,7 @@ import { ethers } from 'ethers'
 import { getAaveVotes } from './chain/aave'
 import { getMakerExecutiveVotes } from './chain/makerExecutive'
 import { getUniswapVotes } from './chain/uniswap'
+import { getENSVotes } from './chain/ens'
 import { getMakerPollVotes } from './chain/makerPoll'
 import { getMakerPollVotesFromArbitrum } from './chain/makerPollArbitrum'
 import { getCompoundVotes } from './chain/compound'
@@ -168,6 +169,16 @@ export const updateChainDaoVotes = async (
                     fromBlock,
                     toBlock
                 )
+                break
+            case 'ENS_CHAIN':
+                votes = await getENSVotes(
+                    provider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
+                break
         }
 
         const successfulResults = votes.filter((res) => res.success)
