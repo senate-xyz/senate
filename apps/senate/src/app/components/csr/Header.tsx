@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import ClientOnly from '../../clientOnly'
 import { RainbowConnect } from './RainbowConnect'
 
 export const Header = (props: { title: string }) => {
@@ -9,7 +10,10 @@ export const Header = (props: { title: string }) => {
 
     if (typeof window != 'undefined')
         window.addEventListener('wheel', () => {
-            if (window.scrollY > 0) {
+            if (
+                window.scrollY > 0 &&
+                document.body.scrollHeight > window.innerHeight + 100
+            ) {
                 setHeaderHeight('h-[96px]')
                 setTitleSize('text-[52px]')
             } else {
@@ -26,7 +30,9 @@ export const Header = (props: { title: string }) => {
                 {props.title}
             </h1>
             <div className='pr-20'>
-                <RainbowConnect />
+                <ClientOnly>
+                    <RainbowConnect />
+                </ClientOnly>
             </div>
         </div>
     )

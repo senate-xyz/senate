@@ -151,18 +151,16 @@ const SubscribeButton = (props: { setShowMenu: (arg0: boolean) => void }) => {
 
     return (
         <>
-            {openConnectModal && (
-                <button
-                    className='h-14 w-full bg-white text-xl font-bold text-black'
-                    onClick={() => {
-                        session.status == 'authenticated'
-                            ? props.setShowMenu(true)
-                            : openConnectModal()
-                    }}
-                >
-                    Subscribe
-                </button>
-            )}
+            <button
+                className='h-14 w-full bg-white text-xl font-bold text-black'
+                onClick={() => {
+                    session.status == 'authenticated'
+                        ? props.setShowMenu(true)
+                        : openConnectModal && openConnectModal()
+                }}
+            >
+                Subscribe
+            </button>
         </>
     )
 }
