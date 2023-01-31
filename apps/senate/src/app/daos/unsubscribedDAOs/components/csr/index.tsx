@@ -3,6 +3,9 @@
 import { useState, useTransition } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { WagmiWrapper } from '../../../../components/csr/WagmiWrapper'
 
 export const UnsubscribedDAO = (props: {
     daoId: string
@@ -132,16 +135,38 @@ export const UnsubscribedDAO = (props: {
                             })}
                         </div>
                     </div>
-                    <button
-                        className='h-14 w-full bg-white text-xl font-bold text-black'
-                        onClick={() => {
-                            setShowMenu(true)
-                        }}
-                    >
-                        Subscribe
-                    </button>
+
+                    <WagmiWrapper>
+                        <SubscribeButton setShowMenu={setShowMenu} />
+                    </WagmiWrapper>
                 </div>
             )}
         </div>
+    )
+}
+
+const SubscribeButton = (props: { setShowMenu: (arg0: boolean) => void }) => {
+    const { openConnectModal } = useConnectModal()
+    const session = useSession()
+
+    return (
+        <>
+            {openConnectModal ? (
+                <button
+                    className='h-14 w-full bg-white text-xl font-bold text-black'
+                    onClick={() => {
+                        session.status == 'authenticated'
+                            ? props.setShowMenu(true)
+                            : openConnectModal()
+                    }}
+                >
+                    Subscribe
+                </button>
+            ) : (
+                <button className='h-14 w-full bg-white text-xl font-bold text-black'>
+                    Subscribe
+                </button>
+            )}
+        </>
     )
 }

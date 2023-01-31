@@ -61,12 +61,16 @@ const getProposals = async (from: string, end: number, voted: string) => {
         where: {
             AND: [
                 {
-                    daoId:
-                        from == 'any'
-                            ? {
-                                  in: userSubscriptions.map((sub) => sub.daoId)
-                              }
-                            : String(from)
+                    dao: {
+                        name:
+                            from == 'any'
+                                ? {
+                                      in: userSubscriptions.map(
+                                          (sub) => sub.daoId
+                                      )
+                                  }
+                                : String(from)
+                    }
                 },
                 {
                     timeEnd: Boolean(active)

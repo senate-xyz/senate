@@ -1,4 +1,3 @@
-import { SessionProvider } from 'next-auth/react'
 import Link from 'next/link'
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [

@@ -79,7 +79,7 @@ export const Filters = (props: {
                         </option>
                         {props.subscriptions.map((sub) => {
                             return (
-                                <option key={sub.id} value={sub.id}>
+                                <option key={sub.name} value={sub.name}>
                                     {sub.name}
                                 </option>
                             )
