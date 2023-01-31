@@ -1,3 +1,4 @@
+import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
@@ -15,11 +16,12 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
     }
 ]
 
-export default function RootLayout({
+export default async function RootLayout({
     children
 }: {
     children: React.ReactNode
 }) {
+    const session = await getServerSession()
     return (
         <div className='flex grow flex-col bg-[#1E1B20] p-5'>
             <div className='flex w-full flex-row gap-10'>
@@ -35,7 +37,7 @@ export default function RootLayout({
                     )
                 })}
             </div>
-            <div className='mt-2'>{children}</div>
+            {session && <div className='mt-2'>{children}</div>}
         </div>
     )
 }

@@ -1,5 +1,7 @@
 'use client'
 
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import useSWR, { useSWRConfig } from 'swr'
 import useSWRMutation from 'swr/mutation'
 
@@ -67,6 +69,10 @@ const ProxyList = () => {
 }
 
 export default function Home() {
+    const session = useSession()
+    const router = useRouter()
+    if (session.status != 'authenticated') router.push('/settings/account')
+
     // const provider = useProvider()
 
     //    const voters = trpc.user.settings.voters.useQuery(undefined, {

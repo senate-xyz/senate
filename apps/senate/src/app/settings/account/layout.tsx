@@ -1,4 +1,6 @@
+import { getServerSession } from 'next-auth'
 import Link from 'next/link'
+import { NotConnected } from './components/csr/NotConnected'
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
@@ -21,27 +23,47 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
     }
 ]
 
-export default function RootLayout({
+export default async function RootLayout({
     children
 }: {
     children: React.ReactNode
 }) {
+    const session = await getServerSession()
     return (
-        <div className='flex grow flex-col bg-[#1E1B20] p-5'>
-            <div className='flex w-full flex-row gap-10'>
-                {tabs.map((tab) => {
-                    return (
+        <>
+            {session?.user ? (
+                <div className='flex grow flex-col bg-[#1E1B20] p-5 px-12'>
+                    <div className='flex w-full flex-row gap-10'>
+                        {tabs.map((tab) => {
+                            return (
+                                <Link
+                                    key={tab.id}
+                                    className={tab.color}
+                                    href={tab.link}
+                                >
+                                    {tab.name}
+                                </Link>
+                            )
+                        })}
+                    </div>
+                    <div className='pt-10 pl-2'>{children}</div>
+                </div>
+            ) : (
+                <div className='flex grow flex-col bg-[#1E1B20] p-5 px-12'>
+                    <div className='flex w-full flex-row gap-10'>
                         <Link
-                            key={tab.id}
-                            className={tab.color}
-                            href={tab.link}
+                            key={tabs[0].id}
+                            className={tabs[0].color}
+                            href={tabs[0].link}
                         >
-                            {tab.name}
+                            {tabs[0].name}
                         </Link>
-                    )
-                })}
-            </div>
-            <div className='mt-2'>{children}</div>
-        </div>
+                    </div>
+                    <div className='pt-10 pl-2'>
+                        <NotConnected />
+                    </div>
+                </div>
+            )}
+        </>
     )
 }
