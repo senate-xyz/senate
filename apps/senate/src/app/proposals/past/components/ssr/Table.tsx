@@ -54,6 +54,9 @@ const getProposals = async (from: string, end: number, voted: string) => {
     const userSubscriptions = await prisma.subscription.findMany({
         where: {
             userId: user?.id
+        },
+        include: {
+            dao: true
         }
     })
 
@@ -66,7 +69,7 @@ const getProposals = async (from: string, end: number, voted: string) => {
                             from == 'any'
                                 ? {
                                       in: userSubscriptions.map(
-                                          (sub) => sub.daoId
+                                          (sub) => sub.dao.name
                                       )
                                   }
                                 : String(from)
