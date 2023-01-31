@@ -27,7 +27,7 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className='flex grow flex-col bg-[#1E1B20] p-5'>
+        <div className='flex grow flex-col bg-[#1E1B20] p-5 px-12'>
             <div className='flex w-full flex-row gap-10'>
                 {tabs.map((tab) => {
                     return (
@@ -41,7 +41,7 @@ export default function RootLayout({
                     )
                 })}
             </div>
-            <div className='mt-2'>{children}</div>
+            <div className='pt-10 pl-2'>{children}</div>
         </div>
     )
 }

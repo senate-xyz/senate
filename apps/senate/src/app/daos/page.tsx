@@ -12,7 +12,7 @@ export default async function Home() {
                 <div className='w-full'>
                     {session && (
                         <div className='w-full p-10'>
-                            <p className='mb-4 w-full text-[36px] font-medium text-white'>
+                            <p className='mb-4 w-full text-[36px] font-semibold text-white'>
                                 Your DAOs
                             </p>
 
@@ -26,7 +26,7 @@ export default async function Home() {
                     )}
 
                     <div className='p-10'>
-                        <p className='mb-4 w-full text-[36px] font-medium text-white'>
+                        <p className='mb-4 w-full text-[36px] font-semibold text-white'>
                             DAOs you can subscribe to
                         </p>
                         <div className='w-full'>
