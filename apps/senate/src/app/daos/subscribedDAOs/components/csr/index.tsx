@@ -89,7 +89,10 @@ export const SubscribedDAO = (props: {
                 </div>
             ) : (
                 <div
-                    style={{ backgroundColor: props.bgColor }}
+                    style={{
+                        backgroundImage: `linear-gradient(45deg, ${props.bgColor}40 75%, ${props.bgColor}10)`,
+                        filter: 'saturate(10)'
+                    }}
                     className='relative flex h-full w-full flex-col rounded text-sm font-bold text-white shadow'
                 >
                     <div className='absolute flex w-full flex-col items-end pt-4 pr-4'>
@@ -109,6 +112,9 @@ export const SubscribedDAO = (props: {
                     </div>
                     <div className='flex grow flex-col items-center justify-end px-6 pb-6'>
                         <Image
+                            style={{
+                                filter: 'saturate(0.1)'
+                            }}
                             width='96'
                             height='96'
                             src={props.daoPicture + '.svg'}

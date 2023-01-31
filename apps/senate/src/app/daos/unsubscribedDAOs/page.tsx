@@ -78,11 +78,12 @@ export default async function UnsubscribedDAOs() {
             if (!dao.picture) return
 
             const color = await getAverageColor(
-                'https://senatelabs.xyz/' + dao.picture + '.svg'
+                'https://senatelabs.xyz/' + dao.picture + '.svg',
+                { mode: 'precision', algorithm: 'sqrt' }
             ).then((color) => color)
             return {
                 daoId: dao.id,
-                color: `${color.hex}50`
+                color: `${color.hex}`
             }
         })
     )
