@@ -40,7 +40,7 @@
     },
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.tsdk": "📂 root/node_modules/typescript/lib",
     "window.zoomLevel": 0,
     "[prisma]": {
       "editor.defaultFormatter": "Prisma.prisma"

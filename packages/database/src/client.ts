@@ -30,16 +30,20 @@ function RetryTransactions(options?: Partial<IBackOffOptions>) {
     )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const globalForPrisma = global as unknown as { prisma: any }
+declare global {
+    // eslint-disable-next-line no-var
+    var prisma: PrismaClient | undefined
+}
 
-export const prisma =
-    globalForPrisma.prisma ||
-    new PrismaClient().$extends(
-        RetryTransactions({
-            jitter: 'full',
-            numOfAttempts: 3
-        })
-    )
+const p = global.prisma || new PrismaClient()
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== 'production') {
+    global.prisma = p
+}
+
+export const prisma = p.$extends(
+    RetryTransactions({
+        jitter: 'full',
+        numOfAttempts: 3
+    })
+)

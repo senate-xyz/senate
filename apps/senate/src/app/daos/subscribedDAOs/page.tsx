@@ -75,8 +75,7 @@ export default async function SubscribedDAOs() {
                             daoPicture={subscribedDAO.picture}
                             bgColor={
                                 backgroundColors.find(
-                                    (dao: { daoId: string; color: string }) =>
-                                        dao?.daoId == subscribedDAO.id
+                                    (dao) => dao?.daoId == subscribedDAO.id
                                 )?.color
                             }
                             daoHandlers={subscribedDAO.handlers.map(
