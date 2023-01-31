@@ -2,6 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import useSWRMutation from 'swr/mutation'
 
@@ -71,7 +72,10 @@ const ProxyList = () => {
 export default function Home() {
     const session = useSession()
     const router = useRouter()
-    if (session.status != 'authenticated') router.push('/settings/account')
+
+    useEffect(() => {
+        if (session.status != 'authenticated') router.push('/settings/account')
+    }, [session.status])
 
     // const provider = useProvider()
 

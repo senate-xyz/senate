@@ -37,13 +37,11 @@ declare global {
 
 const p = global.prisma || new PrismaClient()
 
-if (process.env.NODE_ENV !== 'production') {
-    global.prisma = p
-}
-
 export const prisma = p.$extends(
     RetryTransactions({
         jitter: 'full',
         numOfAttempts: 3
     })
 )
+
+global.prisma = p
