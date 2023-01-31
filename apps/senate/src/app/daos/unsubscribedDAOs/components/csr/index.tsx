@@ -92,15 +92,15 @@ export const UnsubscribedDAO = (props: {
             ) : (
                 <div
                     style={{
-                        backgroundImage: `linear-gradient(45deg, ${props.bgColor}40 75%, ${props.bgColor}10)`,
-                        filter: 'saturate(10)'
+                        backgroundImage: `linear-gradient(45deg, ${props.bgColor}40 15%, ${props.bgColor}10)`,
+                        filter: 'saturate(5)'
                     }}
                     className='relative flex h-full w-full flex-col rounded text-sm font-bold text-white shadow'
                 >
                     <div className='flex grow flex-col items-center justify-end px-6 pb-6'>
                         <Image
                             style={{
-                                filter: 'saturate(0.1)'
+                                filter: 'saturate(0.2)'
                             }}
                             width='96'
                             height='96'
