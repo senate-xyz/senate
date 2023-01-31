@@ -4,7 +4,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useSession } from 'next-auth/react'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { WagmiWrapper } from './WagmiWrapper'
+import ClientOnly from '../../clientOnly'
 
 const RainbowConnectButton = () => {
     // const session = useSession()
@@ -35,8 +35,8 @@ const RainbowConnectButton = () => {
 
 export const RainbowConnect = () => {
     return (
-        <WagmiWrapper>
+        <ClientOnly>
             <RainbowConnectButton />
-        </WagmiWrapper>
+        </ClientOnly>
     )
 }

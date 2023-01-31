@@ -68,7 +68,7 @@ export const NavBar = () => {
                     )}
                 </Link>
 
-                <Link href={`/settings`}>
+                <Link href={`/settings/account`}>
                     {pathname?.includes('settings') ? (
                         <div className='flex flex-col items-center'>
                             <Image

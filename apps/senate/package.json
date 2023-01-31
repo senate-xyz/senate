@@ -14,7 +14,7 @@
         "test:senate": "start-server-and-test dev http://localhost:3000 test:e2e",
         "start": "next start",
         "start:senate": "next start",
-        "dev": "next dev",
+        "dev": "NODE_OPTIONS=--max-old-space-size=6144 next dev",
         "dev:senate": "next dev",
         "clean": "rimraf .next .turbo node_modules dist",
         "lint": "eslint src",

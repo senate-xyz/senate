@@ -30,9 +30,8 @@ function RetryTransactions(options?: Partial<IBackOffOptions>) {
     )
 }
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
-
-//export const prisma = globalForPrisma.prisma || new PrismaClient()
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const globalForPrisma = global as unknown as { prisma: any }
 
 export const prisma =
     globalForPrisma.prisma ||
@@ -42,3 +41,5 @@ export const prisma =
             numOfAttempts: 3
         })
     )
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma

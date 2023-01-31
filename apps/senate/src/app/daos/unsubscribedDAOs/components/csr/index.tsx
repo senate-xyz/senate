@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { WagmiWrapper } from '../../../../components/csr/WagmiWrapper'
+import ClientOnly from '../../../../clientOnly'
 
 export const UnsubscribedDAO = (props: {
     daoId: string
@@ -136,9 +136,9 @@ export const UnsubscribedDAO = (props: {
                         </div>
                     </div>
 
-                    <WagmiWrapper>
+                    <ClientOnly>
                         <SubscribeButton setShowMenu={setShowMenu} />
-                    </WagmiWrapper>
+                    </ClientOnly>
                 </div>
             )}
         </div>
@@ -151,7 +151,7 @@ const SubscribeButton = (props: { setShowMenu: (arg0: boolean) => void }) => {
 
     return (
         <>
-            {openConnectModal ? (
+            {openConnectModal && (
                 <button
                     className='h-14 w-full bg-white text-xl font-bold text-black'
                     onClick={() => {
@@ -160,10 +160,6 @@ const SubscribeButton = (props: { setShowMenu: (arg0: boolean) => void }) => {
                             : openConnectModal()
                     }}
                 >
-                    Subscribe
-                </button>
-            ) : (
-                <button className='h-14 w-full bg-white text-xl font-bold text-black'>
                     Subscribe
                 </button>
             )}

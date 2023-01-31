@@ -91,7 +91,7 @@ export function authOptions(req?: IncomingMessage): NextAuthOptions {
         providers,
         session: {
             strategy: 'jwt',
-            maxAge: 600
+            maxAge: 2592000
         },
         callbacks: {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

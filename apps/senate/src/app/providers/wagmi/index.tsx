@@ -1,28 +1,17 @@
-'use client'
-
+import { WagmiConfig, configureChains, createClient, mainnet } from 'wagmi'
 import {
     RainbowKitProvider,
     darkTheme,
     getDefaultWallets
 } from '@rainbow-me/rainbowkit'
-import { SessionProvider } from 'next-auth/react'
-import type { GetSiweMessageOptions } from '@rainbow-me/rainbowkit-siwe-next-auth'
-import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth'
-import { configureChains, mainnet, createClient, WagmiConfig } from 'wagmi'
-import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
+import {
+    type GetSiweMessageOptions,
+    RainbowKitSiweNextAuthProvider
+} from '@rainbow-me/rainbowkit-siwe-next-auth'
 import { publicProvider } from 'wagmi/providers/public'
+import { SessionProvider } from 'next-auth/react'
 
-const { chains, provider } = configureChains(
-    [mainnet],
-    [
-        jsonRpcProvider({
-            rpc: () => ({
-                http: process.env.NEXT_PUBLIC_PROVIDER_URL ?? 'missing_key'
-            })
-        }),
-        publicProvider()
-    ]
-)
+const { chains, provider } = configureChains([mainnet], [publicProvider()])
 
 const { connectors } = getDefaultWallets({
     appName: 'Senate',
@@ -35,11 +24,11 @@ const wagmiClient = createClient({
     provider
 })
 
-const getSiweMessageOptions: GetSiweMessageOptions = () => ({
+export const getSiweMessageOptions: GetSiweMessageOptions = () => ({
     statement: 'Sign in to Senate'
 })
 
-export const WagmiWrapper = (props: { children: JSX.Element }) => {
+const WagmiProvider = ({ children }: { children: React.ReactNode }) => {
     return (
         <WagmiConfig client={wagmiClient}>
             <SessionProvider refetchInterval={60}>
@@ -55,10 +44,12 @@ export const WagmiWrapper = (props: { children: JSX.Element }) => {
                             overlayBlur: 'small'
                         })}
                     >
-                        {props.children}
+                        {children}
                     </RainbowKitProvider>
                 </RainbowKitSiweNextAuthProvider>
             </SessionProvider>
         </WagmiConfig>
     )
 }
+
+export default WagmiProvider
