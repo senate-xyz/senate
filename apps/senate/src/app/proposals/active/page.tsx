@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import { Filters } from './components/csr/Filters'
 import Table from './components/ssr/Table'
+import Loading from './loading'
 
 const getSubscribedDAOs = async () => {
     const session = await getServerSession(authOptions())

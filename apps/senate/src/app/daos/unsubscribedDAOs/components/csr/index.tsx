@@ -104,7 +104,8 @@ export const UnsubscribedDAO = (props: {
                             }}
                             width='96'
                             height='96'
-                            src={props.daoPicture + '.svg'}
+                            src={props.daoPicture + '_medium.png'}
+                            quality='100'
                             alt='dao logo'
                         />
                         <div className='pt-6 text-center text-[36px] font-thin leading-8'>
