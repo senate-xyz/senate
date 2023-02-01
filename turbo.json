@@ -2,12 +2,14 @@
   "$schema": "https://turborepo.org/schema.json",
   "pipeline": {
     "build": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^db:generate"]
     },
-    "build:senate": { "dependsOn": ["^build"] },
-    "build:detective": { "dependsOn": ["^build"] },
-    "build:refresher": { "dependsOn": ["^build"] },
-    "build:bulletin": { "dependsOn": ["^build"] },
+    "build:senate": { "dependsOn": ["^db:generate"] },
+    "build:detective": { "dependsOn": ["^db:generate"] },
+    "build:refresher": { "dependsOn": ["^db:generate"] },
+    "build:bulletin": { "dependsOn": ["^db:generate"] },
+    "build:db": {},
+    "build:axiom": {},
 
     "*": {
       "env": [
@@ -44,11 +46,19 @@
     "start:refresher": {},
     "start:bulletin": {},
 
-    "dev": {},
-    "dev:senate": {},
-    "dev:detective": {},
-    "dev:refresher": {},
-    "dev:bulletin": {},
+    "dev": { "dependsOn": ["^db:generate", "^build:db", "^build:axiom"] },
+    "dev:senate": {
+      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    },
+    "dev:detective": {
+      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    },
+    "dev:refresher": {
+      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    },
+    "dev:bulletin": {
+      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    },
 
     "test:web": { "cache": false },
     "test:e2e": { "cache": false },
