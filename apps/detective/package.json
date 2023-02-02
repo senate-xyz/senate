@@ -8,10 +8,10 @@
     "scripts": {
         "prebuild": "rimraf dist",
         "build": "nest build",
-        "start": "nest start -d",
+        "start": "nest start",
         "dev": "nest start --watch",
         "build:detective": "nest build",
-        "start:detective": "nest start",
+        "start:detective": "nest start -d",
         "dev:detective": "nest start --watch",
         "test": "jest",
         "test:watch": "jest --watch",
