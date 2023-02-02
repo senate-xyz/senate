@@ -48,7 +48,7 @@ export const updateSnapshotProposals = async (
                 query: graphqlQuery
             })
             .timeout({
-                response: 5000,
+                response: 10000,
                 deadline: 30000
             })
             .retry(3, (err, res) => {

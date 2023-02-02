@@ -1,16 +1,24 @@
 {
-    "extends": "@senate/config/ts/nextjs.json",
-    "include": [
-        "next-env.d.ts",
-        "modules.d.ts",
-        "**/*.ts",
-        "**/*.tsx",
-        "**/*.cjs",
-        "**/*.mjs",
-        "tests/e2e/support.ts"
-    ],
-    "exclude": ["node_modules"],
-    "compilerOptions": {
-        "jsx": "preserve"
-    }
+  "extends": "@senate/config/ts/nextjs.json",
+  "include": [
+    "next-env.d.ts",
+    "modules.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.cjs",
+    "**/*.mjs",
+    "tests/e2e/support.ts",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  }
 }

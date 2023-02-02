@@ -6,7 +6,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { IncomingMessage } from 'http'
 import { prisma } from '@senate/database'
 
-export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
+export function authOptions(req?: IncomingMessage): NextAuthOptions {
     const providers = [
         Credentials({
             name: 'Ethereum',
@@ -91,7 +91,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
         providers,
         session: {
             strategy: 'jwt',
-            maxAge: 600
+            maxAge: 2592000
         },
         callbacks: {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -131,7 +131,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
-    const authOptions = getAuthOptions(req)
+    const opts = authOptions(req)
 
-    return await NextAuth(req, res, authOptions)
+    return await NextAuth(req, res, opts)
 }

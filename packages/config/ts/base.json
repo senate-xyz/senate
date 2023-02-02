@@ -20,6 +20,5 @@
         "paths": {
             "@senate/database": ["./../database"]
         }
-    },
-    "exclude": ["node_modules"]
+    }
 }

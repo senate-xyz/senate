@@ -1,3 +1,5 @@
 {
-    "extends": "@senate/config/ts/node16.json"
+  "extends": "@senate/config/ts/node.json",
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }

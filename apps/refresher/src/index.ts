@@ -1,5 +1,4 @@
 import { prisma, RefreshQueue, RefreshType } from '@senate/database'
-import * as cron from 'node-cron'
 import { loadConfig } from './config'
 import { createVoterHandlers } from './createHandlers'
 import { processSnapshotProposals } from './process/snapshotProposals'

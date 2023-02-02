@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client'
 export * from './client'
 
 export {
+    type PrismaClient,
     type PrismaPromise,
     type Proposal,
     type Voter,
@@ -19,6 +20,14 @@ export {
     RoundupNotificationType,
     type DAOHandler
 } from '@prisma/client'
+
+export type ProposalType = Prisma.ProposalGetPayload<{
+    include: { votes: true; dao: true }
+}>
+
+export type SubscriptionType = Prisma.SubscriptionGetPayload<{
+    include: { dao: true }
+}>
 
 export type DAOType = Prisma.DAOGetPayload<{
     include: {
