@@ -4,10 +4,18 @@
     "build": {
       "dependsOn": ["^db:generate"]
     },
-    "build:senate": { "dependsOn": ["^db:generate"] },
-    "build:detective": { "dependsOn": ["^db:generate"] },
-    "build:refresher": { "dependsOn": ["^db:generate"] },
-    "build:bulletin": { "dependsOn": ["^db:generate"] },
+    "build:senate": {
+      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    },
+    "build:detective": {
+      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    },
+    "build:refresher": {
+      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    },
+    "build:bulletin": {
+      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    },
     "build:db": {},
     "build:axiom": {},
 
