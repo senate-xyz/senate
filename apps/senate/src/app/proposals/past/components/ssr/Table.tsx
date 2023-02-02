@@ -205,7 +205,11 @@ const ActiveProposal = (props: {
             </td>
             <td className='cursor-pointer hover:underline'>
                 <a
-                    href={props.proposal.proposalLink}
+                    href={
+                        props.proposal.proposalLink.includes('snapshot.org')
+                            ? props.proposal.proposalLink + '?app=senate'
+                            : props.proposal.proposalLink
+                    }
                     target='_blank'
                     rel='noreferrer'
                 >
