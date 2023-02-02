@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import SubscribedDAOs from './subscribedDAOs/page'
 import UnsubscribedDAOs from './unsubscribedDAOs/page'
-import Loading from './subscribedDAOs/loading'
+import Loading from './loading'
 import { getServerSession } from 'next-auth'
 
 export default async function Home() {
