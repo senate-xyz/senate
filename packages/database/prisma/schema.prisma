@@ -9,7 +9,7 @@ generator dbml {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL_PARAMS")
 }
 
 model User {

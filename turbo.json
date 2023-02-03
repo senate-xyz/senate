@@ -50,7 +50,9 @@
 
         "AXIOM_TOKEN",
         "AXIOM_ORG_ID",
-        "AXIOM_DATASET"
+        "AXIOM_DATASET",
+
+        "DATABASE_URL_PARAMS"
       ]
     },
     "start": {},
