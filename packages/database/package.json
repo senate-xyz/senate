@@ -31,7 +31,6 @@
     "dependencies": {
         "@prisma/client": "4.9.0",
         "@senate/axiom": "*",
-        "ethers": "^5.7.2",
         "exponential-backoff": "^3.1.0"
     },
     "devDependencies": {
