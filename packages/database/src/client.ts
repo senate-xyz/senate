@@ -30,12 +30,9 @@ function RetryTransactions(options?: Partial<IBackOffOptions>) {
     )
 }
 
-declare global {
-    // eslint-disable-next-line no-var
-    var prisma: PrismaClient | undefined
-}
+const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
-const p = global.prisma || new PrismaClient()
+const p = globalForPrisma.prisma || new PrismaClient()
 
 export const prisma = p.$extends(
     RetryTransactions({
@@ -43,5 +40,3 @@ export const prisma = p.$extends(
         numOfAttempts: 3
     })
 )
-
-global.prisma = p
