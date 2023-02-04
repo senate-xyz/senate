@@ -29,7 +29,7 @@ export const aaveProposals = async (
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
         eventData: govBravoIface.parseLog({
-            topics: log.topics,
+            topics: log.topics as string[],
             data: log.data
         }).args
     }))

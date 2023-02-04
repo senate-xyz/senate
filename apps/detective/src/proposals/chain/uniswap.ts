@@ -21,7 +21,7 @@ export const uniswapProposals = async (
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
         eventData: govBravoIface.parseLog({
-            topics: log.topics as const,
+            topics: log.topics as string[],
             data: log.data
         }).args
     }))

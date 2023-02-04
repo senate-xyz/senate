@@ -23,7 +23,7 @@ export const makerPolls = async (
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
         eventData: pollingContractIface.parseLog({
-            topics: log.topics,
+            topics: log.topics as string[],
             data: log.data
         }).args
     }))
