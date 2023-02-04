@@ -2,26 +2,29 @@
   "$schema": "https://turborepo.org/schema.json",
   "pipeline": {
     "build": {
-      "dependsOn": ["^db:generate"],
+      "dependsOn": ["^build:db"],
       "cache": false
     },
     "build:senate": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"],
+      "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
     "build:detective": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"],
+      "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
     "build:refresher": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"],
+      "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
     "build:bulletin": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"],
+      "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
-    "build:db": {},
+    "build:db": {
+      "dependsOn": ["^db:generate", "^build:axiom"],
+      "cache": false
+    },
     "build:axiom": {},
 
     "*": {

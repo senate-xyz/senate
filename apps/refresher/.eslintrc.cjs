@@ -1,1 +1,1 @@
-module.exports = require("@senate/config/eslint/eslint");
+module.exports = require('@senate/config/.eslintrc.cjs')

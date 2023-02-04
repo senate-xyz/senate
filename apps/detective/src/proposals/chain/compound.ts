@@ -3,18 +3,18 @@ import { DAOHandler } from '@senate/database'
 import { ethers } from 'ethers'
 
 export const compoundProposals = async (
-    provider: ethers.providers.JsonRpcProvider,
+    provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandler,
     fromBlock: number,
     toBlock: number
 ) => {
-    const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
+    const govBravoIface = new ethers.Interface(daoHandler.decoder['abi'])
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
         address: daoHandler.decoder['address'],
-        topics: [govBravoIface.getEventTopic('ProposalCreated')]
+        topics: [govBravoIface.getEventName('ProposalCreated')]
     })
 
     const args = logs.map((log) => ({

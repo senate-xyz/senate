@@ -1,2 +1,2 @@
 
-module.exports = require("@senate/config/prettier/prettier");
+module.exports = require("@senate/config/.prettierrc.cjs");

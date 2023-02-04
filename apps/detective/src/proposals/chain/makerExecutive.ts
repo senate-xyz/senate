@@ -10,12 +10,12 @@ const VOTE_SINGE_ACTION_TOPIC =
 const ONE_MONTH_MS = 1000 * 60 * 60 * 24 * 30
 
 export const makerExecutiveProposals = async (
-    provider: ethers.providers.JsonRpcProvider,
+    provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandler,
     fromBlock: number,
     toBlock: number
 ) => {
-    const iface = new ethers.utils.Interface(daoHandler.decoder['abi'])
+    const iface = new ethers.Interface(daoHandler.decoder['abi'])
     const chiefContract = new ethers.Contract(
         daoHandler.decoder['address'],
         daoHandler.decoder['abi'],
@@ -123,8 +123,8 @@ const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
 }
 
 async function getSpellAddressArrayFromLogs(
-    logs: ethers.providers.Log[],
-    iface: ethers.utils.Interface,
+    logs: ethers.Log[],
+    iface: ethers.Interface,
     chiefContract: ethers.Contract
 ): Promise<string[]> {
     const spellAddressesSet = new Set<string>()

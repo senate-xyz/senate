@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 
 export const getMakerExecutiveVotes = async (
-    provider: ethers.providers.JsonRpcProvider,
+    provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandler,
     voterAddresses: string[],
     fromBlock: number,
@@ -38,13 +38,13 @@ export const getVotesForVoter = async (
     logs,
     daoHandler,
     voterAddress: string,
-    provider: ethers.providers.JsonRpcProvider
+    provider: ethers.JsonRpcProvider
 ) => {
     let success = true
 
     const voteSingleActionTopic =
         '0xa69beaba00000000000000000000000000000000000000000000000000000000'
-    const iface = new ethers.utils.Interface(daoHandler.decoder['abi'])
+    const iface = new ethers.Interface(daoHandler.decoder['abi'])
     const chiefContract = new ethers.Contract(
         daoHandler.decoder['address'],
         daoHandler.decoder['abi'],
@@ -94,7 +94,7 @@ export const getVotesForVoter = async (
                         })
 
                         return {
-                            voterAddress: ethers.utils.getAddress(voterAddress),
+                            voterAddress: ethers.getAddress(voterAddress),
                             daoId: daoHandler.daoId,
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,

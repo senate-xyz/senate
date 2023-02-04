@@ -125,7 +125,7 @@ export const updateSnapshotDaoVotes = async (
                 await prisma.vote.createMany({
                     data: votesForProposal.map((vote) => {
                         return {
-                            voterAddress: ethers.utils.getAddress(vote.voter),
+                            voterAddress: ethers.getAddress(vote.voter),
                             daoId: daoHandler.daoId,
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,

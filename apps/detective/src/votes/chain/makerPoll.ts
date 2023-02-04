@@ -1,16 +1,16 @@
 import { log_pd } from '@senate/axiom'
 import { DAOHandler, prisma } from '@senate/database'
-import { BigNumber, ethers } from 'ethers'
+import { ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 
 export const getMakerPollVotes = async (
-    provider: ethers.providers.JsonRpcProvider,
+    provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandler,
     voterAddresses: string[],
     fromBlock: number,
     toBlock: number
 ) => {
-    const iface = new ethers.utils.Interface(
+    const iface = new ethers.Interface(
         JSON.parse(daoHandler.decoder['abi_vote'])
     )
     const logs = await provider.getLogs({
@@ -18,7 +18,7 @@ export const getMakerPollVotes = async (
         toBlock: toBlock,
         address: daoHandler.decoder['address_vote'],
         topics: [
-            iface.getEventTopic('Voted'),
+            iface.getEventName('Voted'),
             voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
         ]
     })
@@ -38,7 +38,7 @@ export const getVotesForVoter = async (
     voterAddress: string
 ) => {
     let success = true
-    const iface = new ethers.utils.Interface(
+    const iface = new ethers.Interface(
         JSON.parse(daoHandler.decoder['abi_vote'])
     )
     const votes =
@@ -59,9 +59,7 @@ export const getVotesForVoter = async (
 
                         const proposal = await prisma.proposal.findFirst({
                             where: {
-                                externalId: BigNumber.from(
-                                    eventData.pollId
-                                ).toString(),
+                                externalId: BigInt(eventData.pollId).toString(),
                                 daoId: daoHandler.daoId,
                                 daoHandlerId: daoHandler.id
                             }
@@ -73,16 +71,12 @@ export const getVotesForVoter = async (
                         }
 
                         return {
-                            voterAddress: ethers.utils.getAddress(voterAddress),
+                            voterAddress: ethers.getAddress(voterAddress),
                             daoId: daoHandler.daoId,
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,
-                            choiceId: BigNumber.from(
-                                eventData.optionId
-                            ).toString(),
-                            choice: BigNumber.from(
-                                eventData.optionId
-                            ).toString()
+                            choiceId: BigInt(eventData.optionId).toString(),
+                            choice: BigInt(eventData.optionId).toString()
                                 ? 'Yes'
                                 : 'No'
                         }

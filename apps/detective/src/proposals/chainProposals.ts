@@ -18,13 +18,13 @@ interface Result {
     url: any
 }
 
-const infuraProvider = new ethers.providers.JsonRpcProvider({
-    url: String(process.env.INFURA_NODE_URL)
-})
+const infuraProvider = new ethers.JsonRpcProvider(
+    String(process.env.INFURA_NODE_URL)
+)
 
-const senateProvider = new ethers.providers.JsonRpcProvider({
-    url: String(process.env.SENATE_NODE_URL)
-})
+const senateProvider = new ethers.JsonRpcProvider(
+    String(process.env.SENATE_NODE_URL)
+)
 
 export const updateChainProposals = async (
     daoHandlerId: string,
@@ -57,7 +57,7 @@ export const updateChainProposals = async (
             ? fromBlock + blockBatchSize
             : currentBlock
 
-    const provider: ethers.providers.JsonRpcProvider =
+    const provider: ethers.JsonRpcProvider =
         currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
 
     try {
@@ -131,7 +131,7 @@ export const updateChainProposals = async (
             currentBlock: currentBlock,
             fromBlock: fromBlock,
             toBlock: toBlock,
-            provider: provider.connection.url,
+            provider: provider._getConnection().url,
             proposals: proposals,
             errorMessage: e.message,
             errorStack: e.stack
@@ -148,7 +148,7 @@ export const updateChainProposals = async (
         currentBlock: currentBlock,
         fromBlock: fromBlock,
         toBlock: toBlock,
-        provider: provider.connection.url,
+        provider: provider._getConnection().url,
         proposals: proposals,
         response: res
     })

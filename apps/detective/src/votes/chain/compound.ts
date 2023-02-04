@@ -1,23 +1,23 @@
 import { log_pd } from '@senate/axiom'
 import { DAOHandler, prisma } from '@senate/database'
-import { BigNumber, ethers } from 'ethers'
+import { ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 
 export const getCompoundVotes = async (
-    provider: ethers.providers.JsonRpcProvider,
+    provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandler,
     voterAddresses: string[],
     fromBlock: number,
     toBlock: number
 ) => {
-    const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
+    const govBravoIface = new ethers.Interface(daoHandler.decoder['abi'])
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
         address: daoHandler.decoder['address'],
         topics: [
-            govBravoIface.getEventTopic('VoteCast'),
+            govBravoIface.getEventName('VoteCast'),
             voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
         ]
     })
@@ -37,7 +37,7 @@ export const getVotesForVoter = async (
     voterAddress: string
 ) => {
     let success = true
-    const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
+    const govBravoIface = new ethers.Interface(daoHandler.decoder['abi'])
     const votes =
         (
             await Promise.all(
@@ -56,7 +56,7 @@ export const getVotesForVoter = async (
 
                         const proposal = await prisma.proposal.findFirst({
                             where: {
-                                externalId: BigNumber.from(
+                                externalId: BigInt(
                                     eventData.proposalId
                                 ).toString(),
                                 daoId: daoHandler.daoId,
@@ -70,7 +70,7 @@ export const getVotesForVoter = async (
                         }
 
                         return {
-                            voterAddress: ethers.utils.getAddress(voterAddress),
+                            voterAddress: ethers.getAddress(voterAddress),
                             daoId: daoHandler.daoId,
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,

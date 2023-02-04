@@ -4,19 +4,19 @@ import axios from 'axios'
 import { ethers } from 'ethers'
 
 export const makerPolls = async (
-    provider: ethers.providers.JsonRpcProvider,
+    provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandler,
     fromBlock: number,
     toBlock: number
 ) => {
-    const pollingContractIface = new ethers.utils.Interface(
+    const pollingContractIface = new ethers.Interface(
         daoHandler.decoder['abi_create']
     )
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
         address: daoHandler.decoder['address_create'],
-        topics: [pollingContractIface.getEventTopic('PollCreated')]
+        topics: [pollingContractIface.getEventName('PollCreated')]
     })
 
     const args = logs.map((log) => ({
