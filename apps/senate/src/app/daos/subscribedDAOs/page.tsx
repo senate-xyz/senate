@@ -3,7 +3,6 @@ import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import { SubscribedDAO } from './components/csr'
 import { getAverageColor } from 'fast-average-color-node'
 import { prisma } from '@senate/database'
-import Loading from '../loading'
 
 const getSubscribedDAOs = async () => {
     const session = await getServerSession(authOptions())
@@ -52,8 +51,6 @@ export default async function SubscribedDAOs() {
 
     const backgroundColors = await Promise.all(
         subscribedDAOs.map(async (dao) => {
-            if (!dao.picture) return
-
             const color = await getAverageColor(
                 'https://senatelabs.xyz/' + dao.picture + '.svg',
                 { mode: 'precision', algorithm: 'sqrt' }

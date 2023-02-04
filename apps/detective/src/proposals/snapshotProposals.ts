@@ -54,6 +54,7 @@ export const updateSnapshotProposals = async (
             .retry(3, (err, res) => {
                 if (err) return true
                 if (res.status == 200) return false
+                return false
             })
             .then((response) => {
                 return response.body.data.proposals

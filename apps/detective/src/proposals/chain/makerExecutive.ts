@@ -1,5 +1,5 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandler } from '@senate/database'
+import type { DAOHandler } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
 

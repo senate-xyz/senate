@@ -619,7 +619,7 @@ const sendDailyBulletin = async () => {
                     ? String(user.email)
                     : String(process.env.TEST_EMAIL)
 
-            const response = await client.sendEmailWithTemplate({
+            await client.sendEmailWithTemplate({
                 TemplateAlias: 'daily-bulletin',
                 TemplateModel: {
                     senateLogoUrl: encodeURI(

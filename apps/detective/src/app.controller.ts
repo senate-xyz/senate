@@ -8,10 +8,9 @@ import {
     HttpException,
     HttpStatus,
     ParseArrayPipe,
-    Post,
-    Query
+    Post
 } from '@nestjs/common'
-import { AppService } from './app.service'
+import type { AppService } from './app.service'
 import { log_pd } from '@senate/axiom'
 
 @Catch()

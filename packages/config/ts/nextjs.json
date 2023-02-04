@@ -5,7 +5,12 @@
     "compilerOptions": {
         "target": "esnext",
         "lib": ["dom", "dom.iterable", "esnext"],
-        "jsx": "react-jsx"
+        "jsx": "react-jsx",
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ]
     },
     "include": ["src", "next-env.d.ts"],
     "exclude": ["node_modules"]

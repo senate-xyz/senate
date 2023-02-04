@@ -1,6 +1,6 @@
 import { log_pd } from '@senate/axiom'
 import { DAOHandler, prisma } from '@senate/database'
-import { ethers } from 'ethers'
+import { ethers, Log } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 
 export const getMakerPollVotes = async (
@@ -41,58 +41,54 @@ export const getVotesForVoter = async (
     const iface = new ethers.Interface(
         JSON.parse(daoHandler.decoder['abi_vote'])
     )
-    const votes =
-        (
-            await Promise.all(
-                logs.map(async (log) => {
-                    try {
-                        const eventData = iface.parseLog({
-                            topics: log.topics,
-                            data: log.data
-                        }).args
+    const votes = await Promise.all(
+        logs.map(async (log: Log) => {
+            try {
+                const eventData = iface.parseLog({
+                    topics: log.topics as string[],
+                    data: log.data
+                }).args
 
-                        if (
-                            String(eventData.voter).toLowerCase() !=
-                            voterAddress.toLowerCase()
-                        )
-                            return
+                if (
+                    String(eventData.voter).toLowerCase() !=
+                    voterAddress.toLowerCase()
+                )
+                    return null
 
-                        const proposal = await prisma.proposal.findFirst({
-                            where: {
-                                externalId: BigInt(eventData.pollId).toString(),
-                                daoId: daoHandler.daoId,
-                                daoHandlerId: daoHandler.id
-                            }
-                        })
-
-                        if (!proposal) {
-                            success = false
-                            return
-                        }
-
-                        return {
-                            voterAddress: ethers.getAddress(voterAddress),
-                            daoId: daoHandler.daoId,
-                            proposalId: proposal.id,
-                            daoHandlerId: daoHandler.id,
-                            choiceId: BigInt(eventData.optionId).toString(),
-                            choice: BigInt(eventData.optionId).toString()
-                                ? 'Yes'
-                                : 'No'
-                        }
-                    } catch (e: any) {
-                        log_pd.log({
-                            level: 'error',
-                            message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
-                            logs: logs,
-                            errorMessage: e.message,
-                            errorStack: e.stack
-                        })
-                        success = false
+                const proposal = await prisma.proposal.findFirst({
+                    where: {
+                        externalId: BigInt(eventData.pollId).toString(),
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id
                     }
                 })
-            )
-        ).filter((n) => n) ?? []
+
+                if (!proposal) {
+                    success = false
+                    return null
+                }
+
+                return {
+                    voterAddress: ethers.getAddress(voterAddress),
+                    daoId: daoHandler.daoId,
+                    proposalId: proposal.id,
+                    daoHandlerId: daoHandler.id,
+                    choiceId: BigInt(eventData.optionId).toString(),
+                    choice: BigInt(eventData.optionId).toString() ? 'Yes' : 'No'
+                }
+            } catch (e: any) {
+                log_pd.log({
+                    level: 'error',
+                    message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
+                    logs: logs,
+                    errorMessage: e.message,
+                    errorStack: e.stack
+                })
+                success = false
+                return null
+            }
+        })
+    )
 
     return { success, votes, voterAddress }
 }

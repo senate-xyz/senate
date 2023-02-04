@@ -80,40 +80,38 @@ export const getVotesForVoter = async (
     }
 
     const intermediaryVotes = Array.from(spellAddressesSet)
-    const votes =
-        (
-            await Promise.all(
-                intermediaryVotes.map(async (vote) => {
-                    try {
-                        const proposal = await prisma.proposal.findFirst({
-                            where: {
-                                externalId: vote,
-                                daoId: daoHandler.daoId,
-                                daoHandlerId: daoHandler.id
-                            }
-                        })
-
-                        return {
-                            voterAddress: ethers.getAddress(voterAddress),
-                            daoId: daoHandler.daoId,
-                            proposalId: proposal.id,
-                            daoHandlerId: daoHandler.id,
-                            choiceId: '1',
-                            choice: 'Yes'
-                        }
-                    } catch (e: any) {
-                        log_pd.log({
-                            level: 'error',
-                            message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
-                            logs: logs,
-                            errorMessage: e.message,
-                            errorStack: e.stack
-                        })
-                        success = false
+    const votes = await Promise.all(
+        intermediaryVotes.map(async (vote) => {
+            try {
+                const proposal = await prisma.proposal.findFirst({
+                    where: {
+                        externalId: vote,
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id
                     }
                 })
-            )
-        ).filter((n) => n) ?? []
+
+                return {
+                    voterAddress: ethers.getAddress(voterAddress),
+                    daoId: daoHandler.daoId,
+                    proposalId: proposal.id,
+                    daoHandlerId: daoHandler.id,
+                    choiceId: '1',
+                    choice: 'Yes'
+                }
+            } catch (e: any) {
+                log_pd.log({
+                    level: 'error',
+                    message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
+                    logs: logs,
+                    errorMessage: e.message,
+                    errorStack: e.stack
+                })
+                success = false
+                return null
+            }
+        })
+    )
 
     return { success, votes, voterAddress }
 }

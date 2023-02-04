@@ -138,6 +138,16 @@ export const UnsubscribedDAO = (props: {
                                                 alt='chain proposals'
                                             />
                                         )
+                                    default:
+                                        return (
+                                            <Image
+                                                key={index}
+                                                width='24'
+                                                height='24'
+                                                src='/assets/Chain/Ethereum/On_Dark.svg'
+                                                alt='chain proposals'
+                                            />
+                                        )
                                 }
                             })}
                         </div>

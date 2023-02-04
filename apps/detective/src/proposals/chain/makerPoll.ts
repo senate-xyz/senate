@@ -1,5 +1,5 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandler } from '@senate/database'
+import type { DAOHandler } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
 
@@ -28,45 +28,35 @@ export const makerPolls = async (
         }).args
     }))
 
-    const proposals =
-        (
-            await Promise.all(
-                args.map(async (arg) => {
-                    const proposalOnChainId = Number(
-                        arg.eventData.pollId
-                    ).toString()
+    const proposals = await Promise.all(
+        args.map(async (arg) => {
+            const proposalOnChainId = Number(arg.eventData.pollId).toString()
 
-                    const proposalUrl =
-                        daoHandler.decoder['proposalUrl'] + proposalOnChainId
-                    const proposalCreatedTimestamp = Number(
-                        arg.eventData.blockCreated
-                    )
-                    const votingStartsTimestamp = Number(
-                        arg.eventData.startDate
-                    )
-                    const votingEndsTimestamp = Number(arg.eventData.endDate)
-                    const title = await getProposalTitle(
-                        arg.eventData.url,
-                        proposalOnChainId
-                    )
-
-                    if (proposalOnChainId == '1')
-                        //we know for sure this is a bad proposal
-                        return
-
-                    return {
-                        externalId: proposalOnChainId,
-                        name: String(title).slice(0, 1024),
-                        daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id,
-                        timeEnd: new Date(votingEndsTimestamp * 1000),
-                        timeStart: new Date(votingStartsTimestamp * 1000),
-                        timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                        url: proposalUrl
-                    }
-                })
+            const proposalUrl =
+                daoHandler.decoder['proposalUrl'] + proposalOnChainId
+            const proposalCreatedTimestamp = Number(arg.eventData.blockCreated)
+            const votingStartsTimestamp = Number(arg.eventData.startDate)
+            const votingEndsTimestamp = Number(arg.eventData.endDate)
+            const title = await getProposalTitle(
+                arg.eventData.url,
+                proposalOnChainId
             )
-        ).filter((n) => n) ?? []
+
+            //we know for sure this is a bad proposal
+            if (proposalOnChainId == '1') return null
+
+            return {
+                externalId: proposalOnChainId,
+                name: String(title).slice(0, 1024),
+                daoId: daoHandler.daoId,
+                daoHandlerId: daoHandler.id,
+                timeEnd: new Date(votingEndsTimestamp * 1000),
+                timeStart: new Date(votingStartsTimestamp * 1000),
+                timeCreated: new Date(proposalCreatedTimestamp * 1000),
+                url: proposalUrl
+            }
+        })
+    )
 
     return proposals
 }

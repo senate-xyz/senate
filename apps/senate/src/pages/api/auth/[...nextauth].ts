@@ -2,8 +2,8 @@ import NextAuth, { NextAuthOptions } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { SiweMessage } from 'siwe'
 import { getCsrfToken } from 'next-auth/react'
-import { NextApiRequest, NextApiResponse } from 'next'
-import { IncomingMessage } from 'http'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import type { IncomingMessage } from 'http'
 import { prisma } from '@senate/database'
 
 export function authOptions(req?: IncomingMessage): NextAuthOptions {
