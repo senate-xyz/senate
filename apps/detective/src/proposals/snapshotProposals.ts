@@ -1,4 +1,4 @@
-import { prisma } from '@senate/database'
+import { prisma, Decoder } from '@senate/database'
 import { log_pd } from '@senate/axiom'
 import superagent from 'superagent'
 
@@ -26,7 +26,7 @@ export const updateSnapshotProposals = async (
         include: { dao: true }
     })
 
-    const space = JSON.parse(daoHandler.decoder as string).space
+    const space = (daoHandler.decoder as Decoder).space
 
     let proposals
 

@@ -1,4 +1,5 @@
 import { log_pd } from '@senate/axiom'
+import { Decoder } from '@senate/database'
 import { prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import superagent from 'superagent'
@@ -53,9 +54,7 @@ export const updateSnapshotDaoVotes = async (
 
     const graphqlQuery = `{votes(first:1000, orderBy: "created", orderDirection: asc, where: {voter_in: [${voters.map(
         (voter) => `"${voter}"`
-    )}], space: "${
-        JSON.parse(daoHandler.decoder as string).space
-    }", created_gt: ${
+    )}], space: "${(daoHandler.decoder as Decoder).space}", created_gt: ${
         lastVoteCreated ? Math.floor(lastVoteCreated.valueOf() / 1000) : 0
     }}) {
                     id
@@ -188,7 +187,7 @@ export const updateSnapshotDaoVotes = async (
                 created_gt: lastVoteCreated
                     ? Math.floor(lastVoteCreated.valueOf() / 1000)
                     : 0,
-                space: JSON.parse(daoHandler.decoder as string).space,
+                space: (daoHandler.decoder as Decoder).space,
                 voters: voters,
                 query: graphqlQuery,
                 votes: votes,
@@ -210,7 +209,7 @@ export const updateSnapshotDaoVotes = async (
         created_gt: lastVoteCreated
             ? Math.floor(lastVoteCreated.valueOf() / 1000)
             : 0,
-        space: JSON.parse(daoHandler.decoder as string).space,
+        space: (daoHandler.decoder as Decoder).space,
         voters: voters,
         query: graphqlQuery,
         votes: votes,

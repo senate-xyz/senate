@@ -1,5 +1,6 @@
 import { log_pd } from '@senate/axiom'
 import type { DAOHandler } from '@senate/database'
+import { Decoder } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
 
@@ -15,19 +16,17 @@ export const makerExecutiveProposals = async (
     fromBlock: number,
     toBlock: number
 ) => {
-    const iface = new ethers.Interface(
-        JSON.parse(daoHandler.decoder as string).abi
-    )
+    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi)
     const chiefContract = new ethers.Contract(
-        JSON.parse(daoHandler.decoder as string).address,
-        JSON.parse(daoHandler.decoder as string).abi,
+        (daoHandler.decoder as Decoder).address,
+        (daoHandler.decoder as Decoder).abi,
         provider
     )
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: JSON.parse(daoHandler.decoder as string).address,
+        address: (daoHandler.decoder as Decoder).address,
         topics: [[VOTE_MULTIPLE_ACTIONS_TOPIC, VOTE_SINGE_ACTION_TOPIC]]
     })
 
@@ -52,9 +51,7 @@ export const makerExecutiveProposals = async (
                 ),
                 timeStart: new Date(proposalData.date ?? Date.now()),
                 timeCreated: new Date(proposalData.date ?? Date.now()),
-                url:
-                    JSON.parse(daoHandler.decoder as string).proposalUrl +
-                    spellAddress
+                url: (daoHandler.decoder as Decoder).proposalUrl + spellAddress
             }
         })
     )

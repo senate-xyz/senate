@@ -1,4 +1,5 @@
 import { log_pd } from '@senate/axiom'
+import { Decoder } from '@senate/database'
 import { DAOHandlerWithDAO, prisma } from '@senate/database'
 import { ethers, Log } from 'ethers'
 import { hexlify } from 'ethers'
@@ -10,13 +11,11 @@ export const getMakerPollVotes = async (
     fromBlock: number,
     toBlock: number
 ) => {
-    const iface = new ethers.Interface(
-        JSON.parse(daoHandler.decoder as string).abi_vote
-    )
+    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi_vote)
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: JSON.parse(daoHandler.decoder as string).address_vote,
+        address: (daoHandler.decoder as Decoder).address_vote,
         topics: [
             iface.getEventName('Voted'),
             voterAddresses.map((voterAddress) => hexlify(voterAddress))
@@ -38,9 +37,7 @@ export const getVotesForVoter = async (
     voterAddress: string
 ) => {
     let success = true
-    const iface = new ethers.Interface(
-        JSON.parse(daoHandler.decoder as string).abi_vote
-    )
+    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi_vote)
     const votes = await Promise.all(
         logs.map(async (log: Log) => {
             try {

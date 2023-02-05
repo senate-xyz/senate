@@ -1,5 +1,6 @@
 import { log_pd } from '@senate/axiom'
 import type { DAOHandler } from '@senate/database'
+import { Decoder } from '@senate/database'
 import { ethers } from 'ethers'
 
 export const compoundProposals = async (
@@ -9,13 +10,13 @@ export const compoundProposals = async (
     toBlock: number
 ) => {
     const govBravoIface = new ethers.Interface(
-        JSON.parse(daoHandler.decoder as string).abi
+        (daoHandler.decoder as Decoder).abi
     )
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: JSON.parse(daoHandler.decoder as string).address,
+        address: (daoHandler.decoder as Decoder).address,
         topics: [govBravoIface.getEventName('ProposalCreated')]
     })
 
@@ -46,8 +47,7 @@ export const compoundProposals = async (
                     : arg.eventData.description
             )
             const proposalUrl =
-                JSON.parse(daoHandler.decoder as string).proposalUrl +
-                arg.eventData.id
+                (daoHandler.decoder as Decoder).proposalUrl + arg.eventData.id
             const proposalOnChainId = Number(arg.eventData.id).toString()
 
             return {
