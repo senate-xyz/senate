@@ -1,5 +1,6 @@
 import { log_pd } from '@senate/axiom'
 import type { DAOHandler } from '@senate/database'
+import { Decoder } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
 
@@ -10,12 +11,12 @@ export const makerPolls = async (
     toBlock: number
 ) => {
     const pollingContractIface = new ethers.Interface(
-        JSON.parse(daoHandler.decoder as string).abi_create
+        (daoHandler.decoder as Decoder).abi_create
     )
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: JSON.parse(daoHandler.decoder as string).address_create,
+        address: (daoHandler.decoder as Decoder).address_create,
         topics: [pollingContractIface.getEventName('PollCreated')]
     })
 
@@ -33,8 +34,7 @@ export const makerPolls = async (
             const proposalOnChainId = Number(arg.eventData.pollId).toString()
 
             const proposalUrl =
-                JSON.parse(daoHandler.decoder as string).proposalUrl +
-                proposalOnChainId
+                (daoHandler.decoder as Decoder).proposalUrl + proposalOnChainId
             const proposalCreatedTimestamp = Number(arg.eventData.blockCreated)
             const votingStartsTimestamp = Number(arg.eventData.startDate)
             const votingEndsTimestamp = Number(arg.eventData.endDate)

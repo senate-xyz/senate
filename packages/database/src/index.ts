@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client'
 import { IBackOffOptions, backOff } from 'exponential-backoff'
 import { log_prisma } from '@senate/axiom'
+import type { InterfaceAbi } from 'ethers'
 
 export type { JsonArray, JsonValue } from 'type-fest'
 
@@ -22,6 +23,19 @@ export {
     RoundupNotificationType,
     type DAOHandler
 } from '@prisma/client'
+
+export type Decoder = {
+    abi?: InterfaceAbi
+    address?: string
+    proposalUrl?: string
+    space?: string
+
+    //makerpools
+    address_vote?: string
+    address_create?: string
+    abi_vote?: string
+    abi_create?: string
+}
 
 export type ProposalType = Prisma.ProposalGetPayload<{
     include: { votes: true; dao: true }
