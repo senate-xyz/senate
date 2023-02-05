@@ -27,6 +27,7 @@
     },
 
     "build:db": {
+      "cache": false,
       "dependsOn": ["^db:generate", "^build:axiom"]
     },
     "db:push": { "cache": false },

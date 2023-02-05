@@ -1,7 +1,7 @@
 import { log_pd } from '@senate/axiom'
 import { DAOHandlerWithDAO, prisma } from '@senate/database'
 import { ethers, Log } from 'ethers'
-import { hexZeroPad } from 'ethers/lib/utils'
+import { hexlify } from 'ethers'
 
 export const getMakerExecutiveVotes = async (
     provider: ethers.JsonRpcProvider,
@@ -21,7 +21,7 @@ export const getMakerExecutiveVotes = async (
         address: JSON.parse(daoHandler.decoder as string).address,
         topics: [
             [voteMultipleActionsTopic, voteSingleActionTopic],
-            voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
+            voterAddresses.map((voterAddress) => hexlify(voterAddress))
         ]
     })
 
@@ -60,7 +60,7 @@ export const getVotesForVoter = async (
 
         if (
             String(log.topics[1]).toLowerCase() !=
-            hexZeroPad(voterAddress, 32).toLowerCase()
+            hexlify(voterAddress).toLowerCase()
         )
             continue
 
