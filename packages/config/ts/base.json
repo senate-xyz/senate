@@ -11,6 +11,8 @@
         "isolatedModules": true,
         "resolveJsonModule": true,
         "noEmit": true,
+        "declaration": true,
+        "removeComments": true,
 
         "strict": true,
         "strictNullChecks": false,

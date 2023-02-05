@@ -1,7 +1,7 @@
 import { log_pd } from '@senate/axiom'
 import { DAOHandlerWithDAO, prisma } from '@senate/database'
 import { ethers, Log } from 'ethers'
-import { hexZeroPad } from 'ethers/lib/utils'
+import { hexlify } from 'ethers'
 
 export const getMakerPollVotes = async (
     provider: ethers.JsonRpcProvider,
@@ -19,7 +19,7 @@ export const getMakerPollVotes = async (
         address: JSON.parse(daoHandler.decoder as string).address_vote,
         topics: [
             iface.getEventName('Voted'),
-            voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
+            voterAddresses.map((voterAddress) => hexlify(voterAddress))
         ]
     })
 
