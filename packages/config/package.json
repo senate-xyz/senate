@@ -5,6 +5,7 @@
     "private": true,
     "license": "MIT",
     "main": "index.js",
+    "type": "module",
     "publishConfig": {
         "access": "public"
     },

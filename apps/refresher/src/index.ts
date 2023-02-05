@@ -89,36 +89,48 @@ const prismaLogs = async () =>
 
         prisma_client_queries_total: (
             await prisma.$metrics.json()
-        ).counters.find((metric) => metric.key == 'prisma_client_queries_total')
-            ?.value,
+        ).counters.find(
+            (metric: { key: string }) =>
+                metric.key == 'prisma_client_queries_total'
+        )?.value,
         prisma_datasource_queries_total: (
             await prisma.$metrics.json()
         ).counters.find(
-            (metric) => metric.key == 'prisma_datasource_queries_total'
+            (metric: { key: string }) =>
+                metric.key == 'prisma_datasource_queries_total'
         )?.value,
         prisma_pool_connections_open: (
             await prisma.$metrics.json()
         ).counters.find(
-            (metric) => metric.key == 'prisma_pool_connections_open'
+            (metric: { key: string }) =>
+                metric.key == 'prisma_pool_connections_open'
         )?.value,
         prisma_client_queries_active: (
             await prisma.$metrics.json()
-        ).gauges.find((metric) => metric.key == 'prisma_client_queries_active')
-            ?.value,
+        ).gauges.find(
+            (metric: { key: string }) =>
+                metric.key == 'prisma_client_queries_active'
+        )?.value,
         prisma_client_queries_wait: (await prisma.$metrics.json()).gauges.find(
-            (metric) => metric.key == 'prisma_client_queries_wait'
+            (metric: { key: string }) =>
+                metric.key == 'prisma_client_queries_wait'
         )?.value,
         prisma_pool_connections_busy: (
             await prisma.$metrics.json()
-        ).gauges.find((metric) => metric.key == 'prisma_pool_connections_busy')
-            ?.value,
+        ).gauges.find(
+            (metric: { key: string }) =>
+                metric.key == 'prisma_pool_connections_busy'
+        )?.value,
         prisma_pool_connections_idle: (
             await prisma.$metrics.json()
-        ).gauges.find((metric) => metric.key == 'prisma_pool_connections_idle')
-            ?.value,
+        ).gauges.find(
+            (metric: { key: string }) =>
+                metric.key == 'prisma_pool_connections_idle'
+        )?.value,
         prisma_pool_connections_opened_total: (
             await prisma.$metrics.json()
         ).gauges.find(
-            (metric) => metric.key == 'prisma_pool_connections_opened_total'
+            (metric: { key: string }) =>
+                metric.key == 'prisma_pool_connections_opened_total'
         )?.value
     })

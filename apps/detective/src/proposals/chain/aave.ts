@@ -16,12 +16,14 @@ export const aaveProposals = async (
     fromBlock: number,
     toBlock: number
 ) => {
-    const govBravoIface = new ethers.Interface(daoHandler.decoder['abi'])
+    const govBravoIface = new ethers.Interface(
+        JSON.parse(daoHandler.decoder as string).abi
+    )
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['address'],
+        address: JSON.parse(daoHandler.decoder as string).address,
         topics: [govBravoIface.getEventName('ProposalCreated')]
     })
 
@@ -48,7 +50,8 @@ export const aaveProposals = async (
                 (arg.eventData.endBlock - arg.txBlock) * 12
             const title = await fetchTitleFromIPFS(arg.eventData.ipfsHash)
             const proposalUrl =
-                daoHandler.decoder['proposalUrl'] + arg.eventData.id
+                JSON.parse(daoHandler.decoder as string).proposalUrl +
+                arg.eventData.id
             const proposalOnChainId = Number(arg.eventData.id).toString()
 
             return {
@@ -106,15 +109,16 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
                 })
             }
         }
-    } catch (e: any) {
-        log_pd.log({
-            level: 'warn',
-            message: `Could not get proposal title`,
-            hexHash: hexHash,
-            url: IPFS_GATEWAY_URLS[0] + 'f01701220' + hexHash.substring(2),
-            errorMessage: e.message,
-            errorStack: e.stack
-        })
+    } catch (e) {
+        if (e instanceof Error)
+            log_pd.log({
+                level: 'warn',
+                message: `Could not get proposal title`,
+                hexHash: hexHash,
+                url: IPFS_GATEWAY_URLS[0] + 'f01701220' + hexHash.substring(2),
+                errorMessage: e.message,
+                errorStack: e.stack
+            })
     }
 
     return title

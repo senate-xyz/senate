@@ -3,6 +3,23 @@ import { prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import superagent from 'superagent'
 
+type GraphQLVote = {
+    id: string
+    voter: string
+    choice: any
+    created: number
+    proposal: {
+        id: string
+        choices: string[]
+        title: string
+        body: string
+        created: number
+        start: number
+        end: number
+        link: string
+    }
+}
+
 export const updateSnapshotDaoVotes = async (
     daoHandlerId: string,
     voters: string[]
@@ -29,14 +46,16 @@ export const updateSnapshotDaoVotes = async (
                 lastSnapshotVoteCreatedTimestamp: 'asc'
             }
         })
-    ).lastSnapshotVoteCreatedTimestamp
+    )?.lastSnapshotVoteCreatedTimestamp
 
     if (lastVoteCreated > daoHandler.lastSnapshotProposalCreatedTimestamp)
         lastVoteCreated = daoHandler.lastSnapshotProposalCreatedTimestamp
 
     const graphqlQuery = `{votes(first:1000, orderBy: "created", orderDirection: asc, where: {voter_in: [${voters.map(
         (voter) => `"${voter}"`
-    )}], space: "${daoHandler.decoder['space']}", created_gt: ${
+    )}], space: "${
+        JSON.parse(daoHandler.decoder as string).space
+    }", created_gt: ${
         lastVoteCreated ? Math.floor(lastVoteCreated.valueOf() / 1000) : 0
     }}) {
                     id
@@ -58,7 +77,7 @@ export const updateSnapshotDaoVotes = async (
 
     let votes
     try {
-        const res = await superagent
+        const res = (await superagent
             .get('https://hub.snapshot.org/graphql')
             .query({
                 query: graphqlQuery
@@ -72,9 +91,9 @@ export const updateSnapshotDaoVotes = async (
                 if (res.status == 200) return false
                 return false
             })
-            .then((response) => {
+            .then((response: { body: { data: { votes: GraphQLVote[] } } }) => {
                 return response.body.data.votes
-            })
+            })) as GraphQLVote[]
 
         //sanitize
         votes = res.filter(
@@ -131,7 +150,7 @@ export const updateSnapshotDaoVotes = async (
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,
                             choiceId:
-                                vote.choice.length > 0
+                                vote.choice > 0
                                     ? String(vote.choice[0])
                                     : String(vote.choice),
                             choice:
@@ -159,22 +178,23 @@ export const updateSnapshotDaoVotes = async (
         })
 
         voters.map((voter) => result.set(voter, 'ok'))
-    } catch (e: any) {
-        log_pd.log({
-            level: 'error',
-            message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
-            searchType: 'VOTES',
-            sourceType: 'SNAPSHOT',
-            created_gt: lastVoteCreated
-                ? Math.floor(lastVoteCreated.valueOf() / 1000)
-                : 0,
-            space: daoHandler.decoder['space'],
-            voters: voters,
-            query: graphqlQuery,
-            votes: votes,
-            errorMessage: e.message,
-            errorStack: e.stack
-        })
+    } catch (e) {
+        if (e instanceof Error)
+            log_pd.log({
+                level: 'error',
+                message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
+                searchType: 'VOTES',
+                sourceType: 'SNAPSHOT',
+                created_gt: lastVoteCreated
+                    ? Math.floor(lastVoteCreated.valueOf() / 1000)
+                    : 0,
+                space: JSON.parse(daoHandler.decoder as string).space,
+                voters: voters,
+                query: graphqlQuery,
+                votes: votes,
+                errorMessage: e.message,
+                errorStack: e.stack
+            })
     }
 
     const res = Array.from(result, ([name, value]) => ({
@@ -190,7 +210,7 @@ export const updateSnapshotDaoVotes = async (
         created_gt: lastVoteCreated
             ? Math.floor(lastVoteCreated.valueOf() / 1000)
             : 0,
-        space: daoHandler.decoder['space'],
+        space: JSON.parse(daoHandler.decoder as string).space,
         voters: voters,
         query: graphqlQuery,
         votes: votes,

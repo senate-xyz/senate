@@ -4,7 +4,6 @@
     "compilerOptions": {
         "target": "ESNext",
         "module": "ESNext",
-        "strict": false,
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
@@ -13,6 +12,8 @@
         "resolveJsonModule": true,
         "noEmit": true,
 
+        "strict": true,
+        "strictNullChecks": false,
         "allowUnusedLabels": false,
         "allowUnreachableCode": false,
         "noFallthroughCasesInSwitch": true,

@@ -1,21 +1,23 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandler, prisma } from '@senate/database'
+import { DAOHandlerWithDAO, prisma } from '@senate/database'
 import { ethers, Log } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 
 export const getUniswapVotes = async (
     provider: ethers.JsonRpcProvider,
-    daoHandler: DAOHandler,
+    daoHandler: DAOHandlerWithDAO,
     voterAddresses: string[],
     fromBlock: number,
     toBlock: number
 ) => {
-    const govBravoIface = new ethers.Interface(daoHandler.decoder['abi'])
+    const govBravoIface = new ethers.Interface(
+        JSON.parse(daoHandler.decoder as string).abi
+    )
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['address'],
+        address: JSON.parse(daoHandler.decoder as string).address,
         topics: [
             govBravoIface.getEventName('VoteCast'),
             voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
@@ -32,12 +34,14 @@ export const getUniswapVotes = async (
 }
 
 export const getVotesForVoter = async (
-    logs,
-    daoHandler,
+    logs: Log[],
+    daoHandler: DAOHandlerWithDAO,
     voterAddress: string
 ) => {
     let success = true
-    const govBravoIface = new ethers.Interface(daoHandler.decoder['abi'])
+    const govBravoIface = new ethers.Interface(
+        JSON.parse(daoHandler.decoder as string).abi
+    )
     const votes = await Promise.all(
         logs.map(async (log: Log) => {
             try {

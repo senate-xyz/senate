@@ -15,17 +15,19 @@ export const makerExecutiveProposals = async (
     fromBlock: number,
     toBlock: number
 ) => {
-    const iface = new ethers.Interface(daoHandler.decoder['abi'])
+    const iface = new ethers.Interface(
+        JSON.parse(daoHandler.decoder as string).abi
+    )
     const chiefContract = new ethers.Contract(
-        daoHandler.decoder['address'],
-        daoHandler.decoder['abi'],
+        JSON.parse(daoHandler.decoder as string).address,
+        JSON.parse(daoHandler.decoder as string).abi,
         provider
     )
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['address'],
+        address: JSON.parse(daoHandler.decoder as string).address,
         topics: [[VOTE_MULTIPLE_ACTIONS_TOPIC, VOTE_SINGE_ACTION_TOPIC]]
     })
 
@@ -50,7 +52,9 @@ export const makerExecutiveProposals = async (
                 ),
                 timeStart: new Date(proposalData.date ?? Date.now()),
                 timeCreated: new Date(proposalData.date ?? Date.now()),
-                url: daoHandler.decoder['proposalUrl'] + spellAddress
+                url:
+                    JSON.parse(daoHandler.decoder as string).proposalUrl +
+                    spellAddress
             }
         })
     )

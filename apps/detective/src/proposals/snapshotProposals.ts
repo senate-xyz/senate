@@ -2,18 +2,31 @@ import { prisma } from '@senate/database'
 import { log_pd } from '@senate/axiom'
 import superagent from 'superagent'
 
+type GraphQLProposal = {
+    id: string
+    title: string
+    body: string
+    created: number
+    start: number
+    end: number
+    link: string
+    space: {
+        id: string
+    }
+}
+
 export const updateSnapshotProposals = async (
     daoHandlerId: string,
     minCreatedAt: number
 ): Promise<Array<{ daoHandlerId: string; response: string }>> => {
     let response = 'nok'
 
-    const daoHandler = await prisma.dAOHandler.findFirst({
+    const daoHandler = await prisma.dAOHandler.findFirstOrThrow({
         where: { id: daoHandlerId },
         include: { dao: true }
     })
 
-    const space = daoHandler.decoder['space']
+    const space = JSON.parse(daoHandler.decoder as string).space
 
     let proposals
 
@@ -42,7 +55,7 @@ export const updateSnapshotProposals = async (
                 }`
 
     try {
-        proposals = await superagent
+        proposals = (await superagent
             .get('https://hub.snapshot.org/graphql')
             .query({
                 query: graphqlQuery
@@ -58,7 +71,7 @@ export const updateSnapshotProposals = async (
             })
             .then((response) => {
                 return response.body.data.proposals
-            })
+            })) as GraphQLProposal[]
 
         if (proposals.length)
             await prisma.proposal.createMany({
@@ -92,18 +105,19 @@ export const updateSnapshotProposals = async (
         })
 
         response = 'ok'
-    } catch (e: any) {
-        log_pd.log({
-            level: 'error',
-            message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
-            searchType: 'PROPOSALS',
-            sourceType: 'SNAPSHOT',
-            created_gt: Math.floor(minCreatedAt / 1000),
-            query: graphqlQuery,
-            proposals: proposals,
-            errorMessage: e.message,
-            errorStack: e.stack
-        })
+    } catch (e) {
+        if (e instanceof Error)
+            log_pd.log({
+                level: 'error',
+                message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+                searchType: 'PROPOSALS',
+                sourceType: 'SNAPSHOT',
+                created_gt: Math.floor(minCreatedAt / 1000),
+                query: graphqlQuery,
+                proposals: proposals,
+                errorMessage: e.message,
+                errorStack: e.stack
+            })
     }
 
     const res = [{ daoHandlerId: daoHandlerId, response: response }]

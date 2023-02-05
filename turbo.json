@@ -2,30 +2,38 @@
   "$schema": "https://turborepo.org/schema.json",
   "pipeline": {
     "build": {
-      "dependsOn": ["^build:db"],
+      "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
+
     "build:senate": {
       "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
+
     "build:detective": {
       "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
+
     "build:refresher": {
       "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
+
     "build:bulletin": {
       "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
+
     "build:db": {
-      "dependsOn": ["^db:generate", "^build:axiom"],
-      "cache": false
+      "dependsOn": ["^db:generate", "^build:axiom"]
     },
-    "build:axiom": {},
+    "db:push": { "cache": false },
+    "db:seed": { "cache": false },
+    "db:generate": {},
+
+    "build:axiom": { "cache": false },
 
     "*": {
       "env": [
@@ -80,10 +88,6 @@
 
     "test:web": { "cache": false },
     "test:e2e": { "cache": false },
-
-    "db:push": { "cache": false },
-    "db:seed": { "cache": false },
-    "db:generate": { "cache": false },
 
     "lint": { "cache": false },
     "lint:fix": { "cache": false },

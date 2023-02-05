@@ -8,12 +8,14 @@ export const compoundProposals = async (
     fromBlock: number,
     toBlock: number
 ) => {
-    const govBravoIface = new ethers.Interface(daoHandler.decoder['abi'])
+    const govBravoIface = new ethers.Interface(
+        JSON.parse(daoHandler.decoder as string).abi
+    )
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['address'],
+        address: JSON.parse(daoHandler.decoder as string).address,
         topics: [govBravoIface.getEventName('ProposalCreated')]
     })
 
@@ -44,7 +46,8 @@ export const compoundProposals = async (
                     : arg.eventData.description
             )
             const proposalUrl =
-                daoHandler.decoder['proposalUrl'] + arg.eventData.id
+                JSON.parse(daoHandler.decoder as string).proposalUrl +
+                arg.eventData.id
             const proposalOnChainId = Number(arg.eventData.id).toString()
 
             return {

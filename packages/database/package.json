@@ -4,15 +4,9 @@
     "author": "Senate",
     "private": true,
     "license": "MIT",
-    "main": "./dist/index",
-    "typings": "./dist/index",
-    "module": "./dist/index.mjs",
+    "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
-    "files": [
-        "dist/**"
-    ],
     "scripts": {
-        "build": "tsup",
         "build:db": "tsup",
         "db:migrate:deploy": "prisma migrate deploy",
         "db:migrate:dev": "prisma migrate dev",
@@ -31,7 +25,8 @@
     "dependencies": {
         "@prisma/client": "4.9.0",
         "@senate/axiom": "*",
-        "exponential-backoff": "^3.1.0"
+        "exponential-backoff": "^3.1.0",
+        "type-fest": "^3.5.5"
     },
     "devDependencies": {
         "@senate/config": "*",

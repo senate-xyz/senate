@@ -1,80 +1,84 @@
-import { prisma, User, DAOHandlerType, DAOHandler } from "@senate/database";
-import axios from "axios";
-import promptSync from "prompt-sync";
+import { prisma, User, DAOHandlerType, DAOHandler } from '@senate/database'
+import axios from 'axios'
+import promptSync from 'prompt-sync'
 
-const prompt = promptSync({ sigint: true });
+const prompt = promptSync({ sigint: true })
 
 async function main() {
-  console.log("🚀 Let's gooooo...");
+    console.log("🚀 Let's gooooo...")
 
-  const user: User = await bootstrapStressTestUserWithSubscriptions();
-  const snapshotSpaces: Array<string> = await fetchSnapshotSpacesFromDb();
-  const snapshotVoters: Array<string> =
-    await buildSnapshotVoterAddressesDataSet(snapshotSpaces);
+    const user: User = await bootstrapStressTestUserWithSubscriptions()
+    const snapshotSpaces: Array<string> = await fetchSnapshotSpacesFromDb()
+    const snapshotVoters: Array<string> =
+        await buildSnapshotVoterAddressesDataSet(snapshotSpaces)
 
-  const votersNotYetInDb = await filterVoters(snapshotVoters);
-  console.log(
-    "📃 (Not yet in db) Snapshot voters dataset size:",
-    votersNotYetInDb.length
-  );
-
-  let index = 0;
-  while (true) {
-    let nextBatchOfVoters = votersNotYetInDb.slice(
-      index,
-      index + 5 < votersNotYetInDb.length ? index + 5 : votersNotYetInDb.length
-    );
+    const votersNotYetInDb = await filterVoters(snapshotVoters)
     console.log(
-      "Next 5 voters:",
-      await getSnapshotVotesCount(nextBatchOfVoters, snapshotSpaces)
-    );
+        '📃 (Not yet in db) Snapshot voters dataset size:',
+        votersNotYetInDb.length
+    )
 
-    console.log("\n");
-    const answer = prompt("❓ How many voters to add to the database? ");
+    let index = 0
+    while (true) {
+        const nextBatchOfVoters = votersNotYetInDb.slice(
+            index,
+            index + 5 < votersNotYetInDb.length
+                ? index + 5
+                : votersNotYetInDb.length
+        )
+        console.log(
+            'Next 5 voters:',
+            await getSnapshotVotesCount(nextBatchOfVoters, snapshotSpaces)
+        )
 
-    const count = parseInt(answer);
-    if (isNaN(count)) {
-      console.log("❌ Invalid input. Please enter a number");
-      continue;
+        console.log('\n')
+        const answer = prompt('❓ How many voters to add to the database? ')
+
+        const count = parseInt(answer)
+        if (isNaN(count)) {
+            console.log('❌ Invalid input. Please enter a number')
+            continue
+        }
+
+        const limit =
+            index + count > votersNotYetInDb.length
+                ? votersNotYetInDb.length
+                : index + count
+
+        const voters = votersNotYetInDb.slice(index, limit)
+
+        await linkVotersToUser(user, voters)
+        console.log(`✨ Processed voters from index ${index} to ${limit - 1}`)
+
+        if (limit == votersNotYetInDb.length) {
+            console.log('✨ Processed all voters. Bye now!')
+            break
+        }
+
+        index = limit
     }
-
-    const limit =
-      index + count > votersNotYetInDb.length
-        ? votersNotYetInDb.length
-        : index + count;
-
-    const voters = votersNotYetInDb.slice(index, limit);
-
-    await linkVotersToUser(user, voters);
-    console.log(`✨ Processed voters from index ${index} to ${limit - 1}`);
-
-    if (limit == votersNotYetInDb.length) {
-      console.log("✨ Processed all voters. Bye now!");
-      break;
-    }
-
-    index = limit;
-  }
 }
 
 async function fetchSnapshotSpacesFromDb(): Promise<Array<string>> {
-  let handlers: DAOHandler[] = await prisma.dAOHandler.findMany({
-    where: {
-      type: DAOHandlerType.SNAPSHOT,
-    },
-  });
+    const handlers: DAOHandler[] = await prisma.dAOHandler.findMany({
+        where: {
+            type: DAOHandlerType.SNAPSHOT
+        }
+    })
 
-  return handlers.map((handler) => handler.decoder["space"]);
+    return handlers.map(
+        (handler) => JSON.parse(handler.decoder as string).space
+    )
 }
 
 async function getSnapshotVotesCount(
-  voters: Array<string>,
-  spaces: Array<string>
+    voters: Array<string>,
+    spaces: Array<string>
 ): Promise<Map<string, number>> {
-  const result = new Map();
+    const result = new Map()
 
-  for (let voter of voters) {
-    const graphqlQuery = `{
+    for (const voter of voters) {
+        const graphqlQuery = `{
       votes(
         first:1000, 
         where: {
@@ -85,70 +89,70 @@ async function getSnapshotVotesCount(
       {
         id
       }
-    }`;
+    }`
 
-    try {
-      const res = await axios({
-        url: "https://hub.snapshot.org/graphql",
-        method: "get",
-        data: {
-          query: graphqlQuery,
-        },
-      });
+        try {
+            const res = await axios({
+                url: 'https://hub.snapshot.org/graphql',
+                method: 'get',
+                data: {
+                    query: graphqlQuery
+                }
+            })
 
-      const votesCount = res.data.data.votes.length;
-      result.set(voter, votesCount);
-    } catch (err) {
-      console.log(err);
+            const votesCount = res.data.data.votes.length
+            result.set(voter, votesCount)
+        } catch (err) {
+            console.log(err)
+        }
     }
-  }
 
-  return result;
+    return result
 }
 
 async function filterVoters(voters: string[]): Promise<string[]> {
-  let votersInDb = await fetchVoters();
-  return voters.filter((voter) => !votersInDb.includes(voter));
+    const votersInDb = await fetchVoters()
+    return voters.filter((voter) => !votersInDb.includes(voter))
 }
 
 async function fetchVoters(): Promise<string[]> {
-  return (await prisma.voter.findMany()).map((voter) => voter.address);
+    return (await prisma.voter.findMany()).map((voter) => voter.address)
 }
 
 async function linkVotersToUser(user: User, voters: Array<string>) {
-  console.log(`Adding ${voters.length} voters to db`);
-  await prisma.$transaction(
-    voters.map((voter) => {
-      return prisma.user.update({
-        where: { name: user.name },
-        data: {
-          voters: {
-            connectOrCreate: {
-              where: { address: voter },
-              create: { address: voter },
-            },
-          },
-        },
-      });
-    }),
-    {
-      isolationLevel: "ReadCommitted",
-    }
-  );
+    console.log(`Adding ${voters.length} voters to db`)
+    await prisma.$transaction(
+        voters.map((voter) => {
+            return prisma.user.update({
+                where: { name: user.name },
+                data: {
+                    voters: {
+                        connectOrCreate: {
+                            where: { address: voter },
+                            create: { address: voter }
+                        }
+                    }
+                }
+            })
+        }),
+        {
+            isolationLevel: 'ReadCommitted'
+        }
+    )
 }
 
 async function buildSnapshotVoterAddressesDataSet(
-  spaces: Array<string>
+    spaces: Array<string>
 ): Promise<Array<string>> {
-  let voters: Array<string> = [];
-  for (let space of spaces) voters.push(...(await getSnapshotVoters(space)));
+    const voters: Array<string> = []
+    for (const space of spaces) voters.push(...(await getSnapshotVoters(space)))
 
-  return voters;
+    return voters
 }
 
 async function getSnapshotVoters(space: string): Promise<Array<string>> {
-  console.log("⚡ Fetching voters from space:", space);
-  const graphqlQuery = `{votes(
+    console.log('⚡ Fetching voters from space:', space)
+    const graphqlQuery = `{votes(
         first:1000, 
         orderBy: "created", 
         orderDirection: desc, 
@@ -156,67 +160,70 @@ async function getSnapshotVoters(space: string): Promise<Array<string>> {
         {
         voter
         }
-    }`;
+    }`
 
-  let results: Array<string> = [];
-  try {
-    const res = await axios({
-      url: "https://hub.snapshot.org/graphql",
-      method: "get",
-      data: {
-        query: graphqlQuery,
-      },
-    });
+    let results: Array<string> = []
+    try {
+        const res = await axios({
+            url: 'https://hub.snapshot.org/graphql',
+            method: 'get',
+            data: {
+                query: graphqlQuery
+            }
+        })
 
-    results = res.data.data.votes.map((vote: any) => vote.voter);
-  } catch (err) {
-    console.log(err);
-  }
+        results = res.data.data.votes.map((vote: any) => vote.voter)
+    } catch (err) {
+        console.log(err)
+    }
 
-  return Array.from(new Set(results));
+    return Array.from(new Set(results))
 }
 
 async function bootstrapStressTestUserWithSubscriptions(): Promise<User> {
-  try {
-    const stressTestUser: User = await createStressTestUser();
-    const daos = await fetchDaos();
+    try {
+        const stressTestUser: User = await createStressTestUser()
+        const daos = await fetchDaos()
 
-    await prisma.$transaction(
-      daos.map((dao) => {
-        return prisma.subscription.upsert({
-          where: {
-            userId_daoId: { userId: stressTestUser.id, daoId: dao.id },
-          },
-          create: {
-            userId: stressTestUser.id,
-            daoId: dao.id,
-          },
-          update: {},
-        });
-      })
-    );
+        await prisma.$transaction(
+            daos.map((dao) => {
+                return prisma.subscription.upsert({
+                    where: {
+                        userId_daoId: {
+                            userId: stressTestUser.id,
+                            daoId: dao.id
+                        }
+                    },
+                    create: {
+                        userId: stressTestUser.id,
+                        daoId: dao.id
+                    },
+                    update: {}
+                })
+            })
+        )
 
-    return stressTestUser;
-  } catch (error) {
-    console.log("Failed bootstrapping stress test user with subscriptions");
-    throw error;
-  }
+        return stressTestUser
+    } catch (error) {
+        console.log('Failed bootstrapping stress test user with subscriptions')
+        throw error
+    }
 }
 
 async function createStressTestUser(): Promise<User> {
-  return await prisma.user.upsert({
-    where: {
-      name: "0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965",
-    },
-    create: {
-      name: "0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965",
-    },
-    update: {},
-  });
+    return await prisma.user.upsert({
+        where: {
+            name: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965'
+        },
+        create: {
+            name: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965'
+        },
+        update: {}
+    })
 }
 
 async function fetchDaos() {
-  return await prisma.dAO.findMany();
+    return await prisma.dAO.findMany()
 }
 
-main();
+main()

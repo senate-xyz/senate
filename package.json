@@ -19,6 +19,8 @@
     "build:detective": "turbo run build:detective",
     "build:refresher": "turbo run build:refresher",
     "build:bulletin": "turbo run build:bulletin",
+    "build:db": "turbo run build:db",
+    "build:axiom": "turbo run build:axiom",
     "start": "turbo run start",
     "start:senate": "turbo run start:senate",
     "start:detective": "turbo run start:detective",

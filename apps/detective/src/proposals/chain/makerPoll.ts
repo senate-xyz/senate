@@ -10,12 +10,12 @@ export const makerPolls = async (
     toBlock: number
 ) => {
     const pollingContractIface = new ethers.Interface(
-        daoHandler.decoder['abi_create']
+        JSON.parse(daoHandler.decoder as string).abi_create
     )
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['address_create'],
+        address: JSON.parse(daoHandler.decoder as string).address_create,
         topics: [pollingContractIface.getEventName('PollCreated')]
     })
 
@@ -33,7 +33,8 @@ export const makerPolls = async (
             const proposalOnChainId = Number(arg.eventData.pollId).toString()
 
             const proposalUrl =
-                daoHandler.decoder['proposalUrl'] + proposalOnChainId
+                JSON.parse(daoHandler.decoder as string).proposalUrl +
+                proposalOnChainId
             const proposalCreatedTimestamp = Number(arg.eventData.blockCreated)
             const votingStartsTimestamp = Number(arg.eventData.startDate)
             const votingEndsTimestamp = Number(arg.eventData.endDate)
@@ -41,9 +42,6 @@ export const makerPolls = async (
                 arg.eventData.url,
                 proposalOnChainId
             )
-
-            //we know for sure this is a bad proposal
-            if (proposalOnChainId == '1') return null
 
             return {
                 externalId: proposalOnChainId,
@@ -58,7 +56,8 @@ export const makerPolls = async (
         })
     )
 
-    return proposals
+    //we know for sure this is a bad proposal
+    return proposals.filter((proposal) => proposal.externalId != '1')
 }
 
 const formatTitle = (text: string): string => {

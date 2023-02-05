@@ -15,7 +15,7 @@ interface Result {
     timeEnd: Date
     timeStart: Date
     timeCreated: Date
-    url: any
+    url: string
 }
 
 const infuraProvider = new ethers.JsonRpcProvider(
@@ -31,7 +31,7 @@ export const updateChainProposals = async (
     minBlockNumber: number
 ) => {
     let response = 'nok'
-    const daoHandler = await prisma.dAOHandler.findFirst({
+    const daoHandler = await prisma.dAOHandler.findFirstOrThrow({
         where: { id: daoHandlerId },
         include: { dao: true }
     })
@@ -102,6 +102,8 @@ export const updateChainProposals = async (
                     toBlock
                 )
                 break
+            default:
+                proposals = []
         }
 
         if (proposals.length || toBlock != currentBlock) {
@@ -122,20 +124,20 @@ export const updateChainProposals = async (
         })
 
         response = 'ok'
-    } catch (e: any) {
-        log_pd.log({
-            level: 'error',
-            message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
-            searchType: 'PROPOSALS',
-            sourceType: 'CHAIN',
-            currentBlock: currentBlock,
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            provider: provider._getConnection().url,
-            proposals: proposals,
-            errorMessage: e.message,
-            errorStack: e.stack
-        })
+    } catch (e) {
+        if (e instanceof Error)
+            log_pd.log({
+                level: 'error',
+                message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+                searchType: 'PROPOSALS',
+                sourceType: 'CHAIN',
+                currentBlock: currentBlock,
+                fromBlock: fromBlock,
+                toBlock: toBlock,
+                provider: provider._getConnection().url,
+                errorMessage: e.message,
+                errorStack: e.stack
+            })
     }
 
     const res = [{ daoHandlerId: daoHandlerId, response: response }]

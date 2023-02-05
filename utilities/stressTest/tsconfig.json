@@ -1,5 +1,5 @@
 {
-  "extends": "@senate/config/ts/node.json",
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+    "extends": "@senate/config/ts/node.json",
+    "include": ["src"],
+    "exclude": ["node_modules", "dist"]
 }
