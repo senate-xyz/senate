@@ -158,7 +158,9 @@ export const updateChainDaoVotes = async (
                 break
         }
 
-        const successfulResults = votes.filter((res) => res.success)
+        const successfulResults = votes.filter(
+            (res) => res.success && res.votes.length
+        )
 
         if (successfulResults.length)
             await prisma.vote.createMany({
