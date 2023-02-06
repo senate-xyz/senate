@@ -17,7 +17,7 @@ export const makerPolls = async (
         fromBlock: fromBlock,
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address_create,
-        topics: [pollingContractIface.getEventName('PollCreated')]
+        topics: [pollingContractIface.getEvent('PollCreated').topicHash]
     })
 
     const args = logs.map((log) => ({

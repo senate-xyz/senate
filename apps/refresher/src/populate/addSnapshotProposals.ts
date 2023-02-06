@@ -61,7 +61,7 @@ export const addSnapshotProposalsToQueue = async () => {
                 orderBy: { priority: 'desc' },
                 take: 1,
                 select: { priority: true }
-            })) ?? { priority: 50 }
+            })) ?? { priority: 5000 }
 
             await tx.refreshQueue.createMany({
                 data: daoHandlers.map((daoHandler) => {

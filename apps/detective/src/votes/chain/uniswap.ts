@@ -20,7 +20,7 @@ export const getUniswapVotes = async (
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address,
         topics: [
-            govBravoIface.getEventName('VoteCast'),
+            govBravoIface.getEvent('VoteCast').topicHash,
             voterAddresses.map((voterAddress) => hexlify(voterAddress))
         ]
     })

@@ -17,7 +17,7 @@ export const getMakerPollVotes = async (
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address_vote,
         topics: [
-            iface.getEventName('Voted'),
+            iface.getEvent('Voted').topicHash,
             voterAddresses.map((voterAddress) => hexlify(voterAddress))
         ]
     })
