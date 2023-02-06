@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { Suspense } from 'react'
+import Loading from './loading'
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
@@ -21,7 +23,7 @@ export default async function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className='flex grow flex-col bg-[#1E1B20] p-5'>
+        <div className='flex grow flex-col bg-[#1E1B20]'>
             <div className='flex w-full flex-row gap-10'>
                 {tabs.map((tab) => {
                     return (
@@ -35,7 +37,7 @@ export default async function RootLayout({
                     )
                 })}
             </div>
-            <div className='mt-2'>{children}</div>
+            <Suspense fallback={<Loading />}>{children}</Suspense>
         </div>
     )
 }

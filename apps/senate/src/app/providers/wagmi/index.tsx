@@ -37,11 +37,13 @@ const WagmiProvider = ({ children }: { children: React.ReactNode }) => {
                 >
                     <RainbowKitProvider
                         chains={chains}
+                        modalSize='compact'
                         theme={darkTheme({
                             accentColor: '#262626',
                             accentColorForeground: 'white',
-                            borderRadius: 'medium',
-                            overlayBlur: 'small'
+                            borderRadius: 'none',
+                            overlayBlur: 'small',
+                            fontStack: 'rounded'
                         })}
                     >
                         {children}

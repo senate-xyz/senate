@@ -12,7 +12,7 @@ export default function RootLayout({
                 <div
                     className={`flex min-h-screen w-full grow flex-col pt-[192px]`}
                 >
-                    {children}
+                    <div className='flex grow flex-col p-5'>{children}</div>
                 </div>
             </div>
         </div>

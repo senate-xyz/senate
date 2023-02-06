@@ -4,6 +4,8 @@ import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import { Filters } from './components/csr/Filters'
 import Table from './components/ssr/Table'
 
+export const revalidate = 300
+
 const getSubscribedDAOs = async () => {
     const session = await getServerSession(authOptions())
     const userAddress = session?.user?.name ?? ''
@@ -61,6 +63,7 @@ export default async function Home({
         <div>
             <Filters subscriptions={subscripions} />
             {/* @ts-expect-error Server Component */}
+
             <Table
                 from={searchParams?.from}
                 end={searchParams?.end}
