@@ -25,7 +25,7 @@ export const aaveProposals = async (
         fromBlock: fromBlock,
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address,
-        topics: [govBravoIface.getEventName('ProposalCreated')]
+        topics: [govBravoIface.getEvent('ProposalCreated').topicHash]
     })
 
     const args = logs.map((log) => ({
@@ -45,10 +45,10 @@ export const aaveProposals = async (
 
             const votingStartsTimestamp =
                 proposalCreatedTimestamp +
-                (arg.eventData.startBlock - arg.txBlock) * 12
+                (Number(arg.eventData.startBlock) - arg.txBlock) * 12
             const votingEndsTimestamp =
                 proposalCreatedTimestamp +
-                (arg.eventData.endBlock - arg.txBlock) * 12
+                (Number(arg.eventData.endBlock) - arg.txBlock) * 12
             const title = await fetchTitleFromIPFS(arg.eventData.ipfsHash)
             const proposalUrl =
                 (daoHandler.decoder as Decoder).proposalUrl + arg.eventData.id

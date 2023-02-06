@@ -20,7 +20,7 @@ export const getAaveVotes = async (
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address,
         topics: [
-            govBravoIface.getEventName('VoteEmitted'),
+            govBravoIface.getEvent('VoteEmitted').topicHash,
             voterAddresses.map((voterAddress) => hexlify(voterAddress))
         ]
     })
