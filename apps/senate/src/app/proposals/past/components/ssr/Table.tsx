@@ -6,8 +6,6 @@ import { getServerSession } from 'next-auth'
 import { Vote, prisma } from '@senate/database'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
 import { RainbowConnect } from '../../../../components/csr/RainbowConnect'
-import { getSession } from 'next-auth/react'
-import ClientOnly from '../../../../clientOnly'
 extend(relativeTime)
 
 const getProposals = async (from: string, end: number, voted: string) => {

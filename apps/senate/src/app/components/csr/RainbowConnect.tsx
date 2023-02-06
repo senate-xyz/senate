@@ -35,8 +35,11 @@ const RainbowConnectButton = () => {
 
 export const RainbowConnect = () => {
     return (
-        <ClientOnly>
-            <RainbowConnectButton />
-        </ClientOnly>
+        <div>
+            <div className='text-white'></div>
+            <ClientOnly>
+                <RainbowConnectButton />
+            </ClientOnly>
+        </div>
     )
 }

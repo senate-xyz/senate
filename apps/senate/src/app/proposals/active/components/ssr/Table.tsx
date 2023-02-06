@@ -6,7 +6,6 @@ import { getServerSession } from 'next-auth'
 import { Vote, prisma } from '@senate/database'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
 import { RainbowConnect } from '../../../../components/csr/RainbowConnect'
-import RootProvider from '../../../../providers/providers'
 extend(relativeTime)
 
 const getProposals = async (from: string, end: number, voted: string) => {

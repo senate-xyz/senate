@@ -1,4 +1,3 @@
-import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
