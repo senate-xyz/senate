@@ -1,7 +1,7 @@
 import { log_pd } from '@senate/axiom'
 import { Decoder } from '@senate/database'
 import { DAOHandlerWithDAO, prisma } from '@senate/database'
-import { ethers, Log } from 'ethers'
+import { ethers, Log, zeroPadValue } from 'ethers'
 import { hexlify } from 'ethers'
 
 export const getMakerPollVotes = async (
@@ -18,7 +18,9 @@ export const getMakerPollVotes = async (
         address: (daoHandler.decoder as Decoder).address_vote,
         topics: [
             iface.getEvent('Voted').topicHash,
-            voterAddresses.map((voterAddress) => hexlify(voterAddress))
+            voterAddresses.map((voterAddress) =>
+                hexlify(zeroPadValue(voterAddress, 32))
+            )
         ]
     })
 

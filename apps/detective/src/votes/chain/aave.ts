@@ -2,7 +2,7 @@ import { log_pd } from '@senate/axiom'
 import { Decoder } from '@senate/database'
 import { type DAOHandlerWithDAO, prisma } from '@senate/database'
 import { ethers, Log } from 'ethers'
-import { hexlify } from 'ethers'
+import { hexlify, zeroPadValue } from 'ethers'
 
 export const getAaveVotes = async (
     provider: ethers.JsonRpcProvider,
@@ -21,7 +21,9 @@ export const getAaveVotes = async (
         address: (daoHandler.decoder as Decoder).address,
         topics: [
             govBravoIface.getEvent('VoteEmitted').topicHash,
-            voterAddresses.map((voterAddress) => hexlify(voterAddress))
+            voterAddresses.map((voterAddress) =>
+                hexlify(zeroPadValue(voterAddress, 32))
+            )
         ]
     })
 
