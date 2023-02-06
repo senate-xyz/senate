@@ -4,7 +4,7 @@ import { httpBatchLink, loggerLink } from '@trpc/client'
 import { createTRPCReact } from '@trpc/react-query'
 import { useState } from 'react'
 import superjson from 'superjson'
-import type { AppRouter } from '../server/routers/_app'
+import type { AppRouter } from './routers/_app'
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore

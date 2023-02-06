@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import ClientOnly from '../../../../clientOnly'
-import { trpc } from '../../../../../client/trpcClient'
+import { trpc } from '../../../../../server/trpcClient'
 
 export const UnsubscribedDAO = (props: {
     daoId: string

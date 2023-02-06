@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { trpc } from '../../../../../client/trpcClient'
+import { trpc } from '../../../../../server/trpcClient'
 
 export const SubscribedDAO = (props: {
     daoId: string

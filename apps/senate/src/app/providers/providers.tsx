@@ -1,6 +1,6 @@
 'use client'
 
-import { TrpcClientProvider } from '../../client/trpcClient'
+import { TrpcClientProvider } from '../../server/trpcClient'
 import WagmiProvider from './wagmi'
 
 const RootProvider = ({ children }: { children: React.ReactNode }) => {
