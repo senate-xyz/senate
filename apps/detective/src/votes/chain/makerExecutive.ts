@@ -1,7 +1,7 @@
 import { log_pd } from '@senate/axiom'
 import { Decoder } from '@senate/database'
 import { DAOHandlerWithDAO, prisma } from '@senate/database'
-import { ethers, Log } from 'ethers'
+import { ethers, Log, zeroPadValue } from 'ethers'
 import { hexlify } from 'ethers'
 
 export const getMakerExecutiveVotes = async (
@@ -22,7 +22,9 @@ export const getMakerExecutiveVotes = async (
         address: (daoHandler.decoder as Decoder).address,
         topics: [
             [voteMultipleActionsTopic, voteSingleActionTopic],
-            voterAddresses.map((voterAddress) => hexlify(voterAddress))
+            voterAddresses.map((voterAddress) =>
+                hexlify(zeroPadValue(voterAddress, 32))
+            )
         ]
     })
 
