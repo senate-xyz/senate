@@ -158,13 +158,14 @@ export const updateChainDaoVotes = async (
                 break
         }
 
-        const successfulResults = votes.filter(
-            (res) => res.success && res.votes.length
-        )
+        const successfulResults = votes.filter((res) => res.success)
 
         if (successfulResults.length)
             await prisma.vote.createMany({
-                data: successfulResults.map((res) => res.votes).flat(2),
+                data: successfulResults
+                    .filter((res) => res.votes.length)
+                    .map((res) => res.votes)
+                    .flat(2),
                 skipDuplicates: true
             })
 
