@@ -1,22 +1,20 @@
 'use client'
 
+import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
-import useSWR from 'swr'
-import useSWRMutation from 'swr/mutation'
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+import { trpc } from '../../../server/trpcClient'
 
 const UserAddress = () => {
-    const { data, error } = useSWR('/api/user/settings/account/name', fetcher)
+    const session = useSession()
 
-    if (error)
+    if (session.status != 'authenticated')
         return (
             <div className='text-[24px] font-light text-white'>
-                An error has occurred.
+                Please connect your wallet to customize your Account settings
             </div>
         )
 
-    if (!data)
+    if (!session.data)
         return (
             <div className='text-[24px] font-light text-white'>Loading...</div>
         )
@@ -29,7 +27,7 @@ const UserAddress = () => {
 
                 <div className='flex flex-row gap-6'>
                     <div className='text-[18px] font-thin text-white'>
-                        {data.userName}
+                        {session.data?.user?.name}
                     </div>
                 </div>
             </div>
@@ -37,35 +35,18 @@ const UserAddress = () => {
     )
 }
 
-async function updateUserEmail(url: string, { arg }: any) {
-    await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify(arg)
-    })
-}
-
 const UserEmail = () => {
-    const [currentEmail, setCurrentEmail] = useState('')
-    const [success, setSuccess] = useState(false)
+    const [currentEmail, setCurrentEmail] = useState('true')
+    const [success, setSuccess] = useState(true)
 
-    const { data, error } = useSWR('/api/user/settings/account/email', fetcher)
-    const { trigger } = useSWRMutation(
-        '/api/user/settings/account/email',
-        updateUserEmail
-    )
+    const setEmail = trpc.accountSettings.setEmail.useMutation()
+    const email = trpc.accountSettings.getEmail.useQuery()
 
     useEffect(() => {
-        if (data) setCurrentEmail(data.emailAddress)
-    }, [data])
+        setCurrentEmail(email.data ?? '')
+    }, [email.data])
 
-    if (error)
-        return (
-            <div className='text-[24px] font-light text-white'>
-                An error has occurred.
-            </div>
-        )
-
-    if (!data)
+    if (!email.isFetched)
         return (
             <div className='text-[24px] font-light text-white'>Loading...</div>
         )
@@ -76,35 +57,33 @@ const UserEmail = () => {
                 Your Email Address
             </div>
 
-            <div className='flex h-[46px] flex-row items-center'>
+            <div className={`flex h-[46px] w-fit flex-row items-center`}>
                 <input
-                    className={
-                        data.emailAddress == currentEmail
-                            ? 'h-full w-[320px] bg-[#D9D9D9] px-2 text-black'
-                            : 'h-full w-[320px] px-2 text-black'
-                    }
+                    className={`h-full w-[320px] focus:outline-none ${
+                        email.data == currentEmail ? ' bg-[#D9D9D9]' : ''
+                    } px-2 text-black `}
                     value={currentEmail}
                     onChange={(e) => {
                         setCurrentEmail(String(e.target.value))
+                        setSuccess(false)
                     }}
                 />
 
                 <div
                     className='flex h-full w-[72px] cursor-pointer flex-col justify-center bg-[#ABABAB] text-center'
                     onClick={() => {
-                        trigger({ emailAddress: currentEmail })
-                            .then(() => setSuccess(true))
-                            .catch(() => setSuccess(false))
+                        setEmail.mutate(
+                            { email: currentEmail },
+                            {
+                                onSuccess: () => setSuccess(true),
+                                onError: () => setSuccess(false)
+                            }
+                        )
                     }}
                 >
                     Save
                 </div>
             </div>
-            {success && (
-                <div className='text-[18px] font-thin text-white'>
-                    Email address successfully updated!
-                </div>
-            )}
         </div>
     )
 }
