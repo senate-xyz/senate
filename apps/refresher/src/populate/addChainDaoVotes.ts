@@ -41,19 +41,19 @@ export const addChainDaoVotes = async () => {
                             OR: [
                                 {
                                     refreshStatus: RefreshStatus.DONE,
-                                    lastRefreshTimestamp: {
+                                    lastRefreshDate: {
                                         lt: normalRefresh
                                     }
                                 },
                                 {
                                     refreshStatus: RefreshStatus.PENDING,
-                                    lastRefreshTimestamp: {
+                                    lastRefreshDate: {
                                         lt: forceRefresh
                                     }
                                 },
                                 {
                                     refreshStatus: RefreshStatus.NEW,
-                                    lastRefreshTimestamp: {
+                                    lastRefreshDate: {
                                         lt: newRefresh
                                     }
                                 }
@@ -71,7 +71,9 @@ export const addChainDaoVotes = async () => {
             })
 
             daoHandlers = daoHandlers.filter(
-                (daoHandlers) => daoHandlers.proposals.length
+                (daoHandler) =>
+                    daoHandler.proposals.length ||
+                    daoHandler.type == DAOHandlerType.MAKER_POLL_ARBITRUM
             )
 
             if (!daoHandlers.length) {
@@ -96,19 +98,24 @@ export const addChainDaoVotes = async () => {
                     const voterHandlers = daoHandler.voterHandlers.filter(
                         (vh) =>
                             (vh.refreshStatus == RefreshStatus.DONE &&
-                                vh.lastRefreshTimestamp < normalRefresh) ||
+                                vh.lastRefreshDate < normalRefresh) ||
                             (vh.refreshStatus == RefreshStatus.PENDING &&
-                                vh.lastRefreshTimestamp < forceRefresh) ||
+                                vh.lastRefreshDate < forceRefresh) ||
                             (vh.refreshStatus == RefreshStatus.NEW &&
-                                vh.lastRefreshTimestamp < newRefresh)
+                                vh.lastRefreshDate < newRefresh)
                     )
 
                     const voteTimestamps = voterHandlers.map((voterHandler) =>
                         Number(voterHandler.lastChainVoteCreatedBlock)
                     )
 
+                    const domainLimit =
+                        daoHandler.type === DAOHandlerType.MAKER_POLL_ARBITRUM
+                            ? 100000000
+                            : 17000000
+
                     const voteTimestampBuckets = bin()
-                        .domain([0, 17000000])
+                        .domain([0, domainLimit])
                         .thresholds(10)(voteTimestamps)
 
                     const refreshItemsDao = voteTimestampBuckets
@@ -173,7 +180,7 @@ export const addChainDaoVotes = async () => {
                 where: { id: { in: voterHandlersRefreshed.map((v) => v.id) } },
                 data: {
                     refreshStatus: RefreshStatus.PENDING,
-                    lastRefreshTimestamp: new Date()
+                    lastRefreshDate: new Date()
                 }
             })
         },

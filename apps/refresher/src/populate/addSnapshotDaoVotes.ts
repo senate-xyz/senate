@@ -32,19 +32,19 @@ export const addSnapshotDaoVotes = async () => {
                             OR: [
                                 {
                                     refreshStatus: RefreshStatus.DONE,
-                                    lastRefreshTimestamp: {
+                                    lastRefreshDate: {
                                         lt: normalRefresh
                                     }
                                 },
                                 {
                                     refreshStatus: RefreshStatus.PENDING,
-                                    lastRefreshTimestamp: {
+                                    lastRefreshDate: {
                                         lt: forceRefresh
                                     }
                                 },
                                 {
                                     refreshStatus: RefreshStatus.NEW,
-                                    lastRefreshTimestamp: {
+                                    lastRefreshDate: {
                                         lt: newRefresh
                                     }
                                 }
@@ -87,16 +87,16 @@ export const addSnapshotDaoVotes = async () => {
                     const voterHandlers = daoHandler.voterHandlers.filter(
                         (vh) =>
                             (vh.refreshStatus == RefreshStatus.DONE &&
-                                vh.lastRefreshTimestamp < normalRefresh) ||
+                                vh.lastRefreshDate < normalRefresh) ||
                             (vh.refreshStatus == RefreshStatus.PENDING &&
-                                vh.lastRefreshTimestamp < forceRefresh) ||
+                                vh.lastRefreshDate < forceRefresh) ||
                             (vh.refreshStatus == RefreshStatus.NEW &&
-                                vh.lastRefreshTimestamp < newRefresh)
+                                vh.lastRefreshDate < newRefresh)
                     )
 
                     const voteTimestamps = voterHandlers.map((voterHandler) =>
                         Number(
-                            voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
+                            voterHandler.lastSnapshotVoteCreatedDate?.valueOf()
                         )
                     )
 
@@ -113,12 +113,12 @@ export const addSnapshotDaoVotes = async () => {
                                 .filter(
                                     (voterHandler) =>
                                         Number(
-                                            voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
+                                            voterHandler.lastSnapshotVoteCreatedDate?.valueOf()
                                         ) +
                                             1 >=
                                             bucketMin &&
                                         Number(
-                                            voterHandler.lastSnapshotVoteCreatedTimestamp?.valueOf()
+                                            voterHandler.lastSnapshotVoteCreatedDate?.valueOf()
                                         ) < bucketMax
                                 )
                                 .slice(0, 100)
@@ -170,7 +170,7 @@ export const addSnapshotDaoVotes = async () => {
                 where: { id: { in: voterHandlersRefreshed.map((v) => v.id) } },
                 data: {
                     refreshStatus: RefreshStatus.PENDING,
-                    lastRefreshTimestamp: new Date()
+                    lastRefreshDate: new Date()
                 }
             })
         },

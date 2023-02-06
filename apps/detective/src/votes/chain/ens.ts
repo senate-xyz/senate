@@ -50,8 +50,6 @@ export const getVotesForVoter = async (
                             topics: log.topics,
                             data: log.data
                         }).args
-                        console.log(eventData)
-
                         if (
                             String(eventData.voter).toLowerCase() !=
                             voterAddress.toLowerCase()

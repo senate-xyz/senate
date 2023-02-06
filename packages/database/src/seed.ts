@@ -65,7 +65,7 @@ const seedData = async () => {
                         decoder: {
                             address_create:
                                 '0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d',
-                            addess_vote:
+                            address_vote:
                                 '0xD3A9FE267852281a1e6307a1C37CDfD76d39b133',
                             abi_create: makerPollCreate.abi,
                             abi_vote: makerPollVote.abi,
@@ -75,7 +75,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.MAKER_POLL_ARBITRUM,
                         decoder: {
-                            addess_vote:
+                            address_vote:
                                 '0x4f4e551b4920a5417F8d4e7f8f099660dAdadcEC',
                             abi_vote: makerPollVoteArbitrum.abi
                         }
@@ -281,7 +281,6 @@ const seedData = async () => {
                             address:
                                 '0x408ED6354d4973f66138C91495F2f2FCbd8724C3',
                             abi: uniswapGovBravo.abi,
-
                             proposalUrl: 'https://app.uniswap.org/#/vote/'
                         }
                     },

@@ -126,7 +126,7 @@ export const updateChainProposals = async (
             },
             data: {
                 lastChainProposalCreatedBlock: toBlock,
-                lastSnapshotProposalCreatedTimestamp: new Date(0)
+                lastSnapshotProposalCreatedDate: new Date(0)
             }
         })
 

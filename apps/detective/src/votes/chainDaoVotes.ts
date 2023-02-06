@@ -100,6 +100,7 @@ export const updateChainDaoVotes = async (
             ? fromBlock + blockBatchSize
             : currentBlock
 
+    //NOTE to future self: Maker Arbitrum's daoHandler.lastChainProposalCreatedBlock is always 0
     if (
         toBlock > daoHandler.lastChainProposalCreatedBlock &&
         toBlock != currentBlock
@@ -162,12 +163,15 @@ export const updateChainDaoVotes = async (
                 const arbitrumProvider = new ethers.providers.JsonRpcProvider(
                     process.env.ARBITRUM_NODE_URL
                 )
+                const toBlockArbitrum = await arbitrumProvider.getBlockNumber()
+                console.log('ARBITRUM FROM BLOCK: ', fromBlock)
+                console.log('ARBITRUM TO BLOCK: ', toBlockArbitrum)
                 votes = await getMakerPollVotesFromArbitrum(
                     arbitrumProvider,
                     daoHandler,
                     voters,
                     fromBlock,
-                    toBlock
+                    toBlockArbitrum
                 )
                 break
             case 'ENS_CHAIN':
@@ -200,7 +204,7 @@ export const updateChainDaoVotes = async (
             },
             data: {
                 lastChainVoteCreatedBlock: toBlock,
-                lastSnapshotVoteCreatedTimestamp: new Date(0)
+                lastSnapshotVoteCreatedDate: new Date(0)
             }
         })
 
@@ -216,7 +220,7 @@ export const updateChainDaoVotes = async (
             currentBlock: currentBlock,
             fromBlock: fromBlock,
             toBlock: toBlock,
-            voters: voters,
+            votersCount: voters.length,
             votesCount: votes.length,
             provider: provider.connection.url,
             errorMessage: e.message,
@@ -238,8 +242,8 @@ export const updateChainDaoVotes = async (
         currentBlock: currentBlock,
         fromBlock: fromBlock,
         toBlock: toBlock,
-        voters: voters,
-        votes: votes,
+        votersCount: voters.length,
+        votesCount: votes.length,
         provider: provider.connection.url,
         response: res
     })

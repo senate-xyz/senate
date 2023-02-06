@@ -77,7 +77,7 @@ export const updateSnapshotProposals = async (
             })
 
         const newMaxCreated = proposals.length
-            ? Math.max(...proposals.map((proposal) => proposal.created * 1000))
+            ? Math.max(...proposals.map((proposal) => proposal.created)) * 1000
             : Date.now()
 
         await prisma.dAOHandler.update({
@@ -86,7 +86,7 @@ export const updateSnapshotProposals = async (
             },
             data: {
                 lastChainProposalCreatedBlock: 0,
-                lastSnapshotProposalCreatedTimestamp: new Date(newMaxCreated)
+                lastSnapshotProposalCreatedDate: new Date(newMaxCreated)
             }
         })
 
@@ -98,8 +98,7 @@ export const updateSnapshotProposals = async (
             searchType: 'PROPOSALS',
             sourceType: 'SNAPSHOT',
             created_gt: Math.floor(minCreatedAt / 1000),
-            query: graphqlQuery,
-            proposals: proposals,
+            proposalsCount: proposals.length ?? 0,
             errorMessage: e.message,
             errorStack: e.stack
         })
@@ -113,8 +112,7 @@ export const updateSnapshotProposals = async (
         searchType: 'PROPOSALS',
         sourceType: 'SNAPSHOT',
         created_gt: Math.floor(minCreatedAt / 1000),
-        query: graphqlQuery,
-        proposals: proposals,
+        proposalsCount: proposals.length ?? 0,
         response: res
     })
 

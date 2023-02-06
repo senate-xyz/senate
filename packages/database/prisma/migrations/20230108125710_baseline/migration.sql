@@ -47,8 +47,8 @@ CREATE TABLE `DAOHandler` (
     `type` ENUM('AAVE_CHAIN', 'COMPOUND_CHAIN', 'UNISWAP_CHAIN', 'MAKER_EXECUTIVE', 'MAKER_POLL', 'SNAPSHOT') NOT NULL,
     `decoder` JSON NOT NULL,
     `lastChainProposalCreatedBlock` BIGINT NULL DEFAULT 0,
-    `lastSnapshotProposalCreatedTimestamp` DATETIME(3) NULL DEFAULT (from_unixtime(0)),
-    `lastRefreshTimestamp` DATETIME(3) NOT NULL DEFAULT (from_unixtime(0)),
+    `lastSnapshotProposalCreatedDate` DATETIME(3) NULL DEFAULT (from_unixtime(0)),
+    `lastRefreshDate` DATETIME(3) NOT NULL DEFAULT (from_unixtime(0)),
     `refreshStatus` ENUM('NEW', 'PENDING', 'DONE') NOT NULL DEFAULT 'NEW',
     `daoId` VARCHAR(191) NOT NULL,
 
@@ -111,9 +111,9 @@ CREATE TABLE `VoterHandler` (
     `voterId` VARCHAR(191) NOT NULL,
     `daoHandlerId` VARCHAR(191) NOT NULL,
     `refreshStatus` ENUM('NEW', 'PENDING', 'DONE') NOT NULL DEFAULT 'NEW',
-    `lastRefreshTimestamp` DATETIME(3) NOT NULL DEFAULT (from_unixtime(0)),
+    `lastRefreshDate` DATETIME(3) NOT NULL DEFAULT (from_unixtime(0)),
     `lastChainVoteCreatedBlock` BIGINT NULL DEFAULT 0,
-    `lastSnapshotVoteCreatedTimestamp` DATETIME(3) NULL DEFAULT (from_unixtime(0)),
+    `lastSnapshotVoteCreatedDate` DATETIME(3) NULL DEFAULT (from_unixtime(0)),
 
     INDEX `VoterHandler_daoHandlerId_idx`(`daoHandlerId`),
     UNIQUE INDEX `VoterHandler_voterId_daoHandlerId_key`(`voterId`, `daoHandlerId`),

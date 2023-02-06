@@ -17,7 +17,7 @@ export const getMakerPollVotes = async (
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['addess_vote'],
+        address: daoHandler.decoder['address_vote'],
         topics: [
             iface.getEventTopic('Voted'),
             voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))

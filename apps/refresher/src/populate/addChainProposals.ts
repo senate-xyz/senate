@@ -36,19 +36,19 @@ export const addChainProposalsToQueue = async () => {
                     OR: [
                         {
                             refreshStatus: RefreshStatus.DONE,
-                            lastRefreshTimestamp: {
+                            lastRefreshDate: {
                                 lt: normalRefresh
                             }
                         },
                         {
                             refreshStatus: RefreshStatus.PENDING,
-                            lastRefreshTimestamp: {
+                            lastRefreshDate: {
                                 lt: forceRefresh
                             }
                         },
                         {
                             refreshStatus: RefreshStatus.NEW,
-                            lastRefreshTimestamp: {
+                            lastRefreshDate: {
                                 lt: newRefresh
                             }
                         }
@@ -101,7 +101,7 @@ export const addChainProposalsToQueue = async () => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.PENDING,
-                    lastRefreshTimestamp: new Date()
+                    lastRefreshDate: new Date()
                 }
             })
         },

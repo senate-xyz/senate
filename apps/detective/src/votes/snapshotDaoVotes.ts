@@ -17,7 +17,7 @@ export const updateSnapshotDaoVotes = async (
         }
     })
 
-    let lastVoteCreated = (
+    const lastVoteCreated = (
         await prisma.voterHandler.findFirst({
             where: {
                 daoHandlerId: daoHandler.id,
@@ -26,18 +26,24 @@ export const updateSnapshotDaoVotes = async (
                 }
             },
             orderBy: {
-                lastSnapshotVoteCreatedTimestamp: 'asc'
+                lastSnapshotVoteCreatedDate: 'asc'
             }
         })
-    ).lastSnapshotVoteCreatedTimestamp
+    ).lastSnapshotVoteCreatedDate
 
-    if (lastVoteCreated > daoHandler.lastSnapshotProposalCreatedTimestamp)
-        lastVoteCreated = daoHandler.lastSnapshotProposalCreatedTimestamp
+    // Start search from whichever timestamp is earlier
+    const searchFromTimestamp =
+        lastVoteCreated.getTime() <
+        daoHandler.lastSnapshotProposalCreatedDate.getTime()
+            ? lastVoteCreated
+            : daoHandler.lastSnapshotProposalCreatedDate
 
     const graphqlQuery = `{votes(first:1000, orderBy: "created", orderDirection: asc, where: {voter_in: [${voters.map(
         (voter) => `"${voter}"`
     )}], space: "${daoHandler.decoder['space']}", created_gt: ${
-        lastVoteCreated ? Math.floor(lastVoteCreated.valueOf() / 1000) : 0
+        searchFromTimestamp
+            ? Math.floor(searchFromTimestamp.valueOf() / 1000)
+            : 0
     }}) {
                     id
                     voter
@@ -153,7 +159,7 @@ export const updateSnapshotDaoVotes = async (
             },
             data: {
                 lastChainVoteCreatedBlock: 0,
-                lastSnapshotVoteCreatedTimestamp: new Date(newestVote)
+                lastSnapshotVoteCreatedDate: new Date(newestVote)
             }
         })
 
@@ -164,8 +170,8 @@ export const updateSnapshotDaoVotes = async (
             message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
             searchType: 'VOTES',
             sourceType: 'SNAPSHOT',
-            created_gt: lastVoteCreated
-                ? Math.floor(lastVoteCreated.valueOf() / 1000)
+            created_gt: searchFromTimestamp
+                ? Math.floor(searchFromTimestamp.valueOf() / 1000)
                 : 0,
             space: daoHandler.decoder['space'],
             voters: voters,
@@ -186,13 +192,12 @@ export const updateSnapshotDaoVotes = async (
         message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
         searchType: 'VOTES',
         sourceType: 'SNAPSHOT',
-        created_gt: lastVoteCreated
-            ? Math.floor(lastVoteCreated.valueOf() / 1000)
+        created_gt: searchFromTimestamp
+            ? Math.floor(searchFromTimestamp.valueOf() / 1000)
             : 0,
         space: daoHandler.decoder['space'],
-        voters: voters,
-        query: graphqlQuery,
-        votes: votes,
+        votersCount: voters.length,
+        votesCount: votes.length,
         response: res
     })
 

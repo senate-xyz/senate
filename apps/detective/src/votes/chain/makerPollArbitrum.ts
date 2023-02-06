@@ -16,7 +16,7 @@ export const getMakerPollVotesFromArbitrum = async (
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['addess_vote'],
+        address: daoHandler.decoder['address_vote'],
         topics: [
             iface.getEventTopic('Voted'),
             voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
@@ -29,14 +29,6 @@ export const getMakerPollVotesFromArbitrum = async (
             data: log.data
         }).args
     })
-
-    console.log('EVENT DATA ARB', eventData.length)
-    console.log(
-        'SAMPLE ARB: ',
-        eventData.map((eventData) =>
-            BigNumber.from(eventData.pollId).toString()
-        )
-    )
 
     const result = await Promise.all(
         voterAddresses.map((voterAddress) => {
@@ -74,17 +66,12 @@ export const getVotesForVoter = async (
         }
     })
 
-    console.log(
-        'PROPOSALS FOUND IN DATABASE: ',
-        proposals.map((proposal) => proposal.externalId)
-    )
-
     if (proposals.length < uniquePollIds.size) {
         success = false
         return { success, votes: [], voterAddress }
     }
 
-    const proposalsMap = new Map(
+    const proposalsMap: Map<string, Proposal> = new Map(
         proposals.map((proposal) => {
             return [proposal.externalId, proposal]
         })
