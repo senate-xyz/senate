@@ -37,7 +37,7 @@ const UserAddress = () => {
 
 const UserEmail = () => {
     const [currentEmail, setCurrentEmail] = useState('true')
-    const [success, setSuccess] = useState(true)
+    // const [success, setSuccess] = useState(true)
 
     const setEmail = trpc.accountSettings.setEmail.useMutation()
     const email = trpc.accountSettings.getEmail.useQuery()
@@ -65,7 +65,7 @@ const UserEmail = () => {
                     value={currentEmail}
                     onChange={(e) => {
                         setCurrentEmail(String(e.target.value))
-                        setSuccess(false)
+                        // setSuccess(false)
                     }}
                 />
 
@@ -75,8 +75,8 @@ const UserEmail = () => {
                         setEmail.mutate(
                             { email: currentEmail },
                             {
-                                onSuccess: () => setSuccess(true),
-                                onError: () => setSuccess(false)
+                                // onSuccess: () => setSuccess(true),
+                                // onError: () => setSuccess(false)
                             }
                         )
                     }}
