@@ -45,55 +45,57 @@ export const getVotesForVoter = async (
     const govBravoIface = new ethers.Interface(
         (daoHandler.decoder as Decoder).abi
     )
-    const votes = await Promise.all(
-        logs.map(async (log: Log) => {
-            try {
-                const eventData = govBravoIface.parseLog({
-                    topics: log.topics as string[],
-                    data: log.data
-                }).args
+    const votes = (
+        await Promise.all(
+            logs.map(async (log: Log) => {
+                try {
+                    const eventData = govBravoIface.parseLog({
+                        topics: log.topics as string[],
+                        data: log.data
+                    }).args
 
-                if (
-                    String(eventData.voter).toLowerCase() !=
-                    voterAddress.toLowerCase()
-                )
-                    return null
+                    if (
+                        String(eventData.voter).toLowerCase() !=
+                        voterAddress.toLowerCase()
+                    )
+                        return null
 
-                const proposal = await prisma.proposal.findFirst({
-                    where: {
-                        externalId: BigInt(eventData.id).toString(),
-                        daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id
+                    const proposal = await prisma.proposal.findFirst({
+                        where: {
+                            externalId: BigInt(eventData.id).toString(),
+                            daoId: daoHandler.daoId,
+                            daoHandlerId: daoHandler.id
+                        }
+                    })
+
+                    if (!proposal) {
+                        success = false
+                        return null
                     }
-                })
 
-                if (!proposal) {
+                    return {
+                        voterAddress: ethers.getAddress(voterAddress),
+                        daoId: daoHandler.daoId,
+                        proposalId: proposal.id,
+                        daoHandlerId: daoHandler.id,
+                        choiceId: String(eventData.support),
+                        choice: String(eventData.support) ? 'Yes' : 'No'
+                    }
+                } catch (e) {
+                    if (e instanceof Error)
+                        log_pd.log({
+                            level: 'error',
+                            message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
+                            logs: logs,
+                            errorMessage: e.message,
+                            errorStack: e.stack
+                        })
                     success = false
                     return null
                 }
-
-                return {
-                    voterAddress: ethers.getAddress(voterAddress),
-                    daoId: daoHandler.daoId,
-                    proposalId: proposal.id,
-                    daoHandlerId: daoHandler.id,
-                    choiceId: String(eventData.support),
-                    choice: String(eventData.support) ? 'Yes' : 'No'
-                }
-            } catch (e) {
-                if (e instanceof Error)
-                    log_pd.log({
-                        level: 'error',
-                        message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
-                        logs: logs,
-                        errorMessage: e.message,
-                        errorStack: e.stack
-                    })
-                success = false
-                return null
-            }
-        })
-    )
+            })
+        )
+    ).filter((vote) => vote != null)
 
     return { success, votes, voterAddress }
 }
