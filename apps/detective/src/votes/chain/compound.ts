@@ -1,7 +1,7 @@
 import { log_pd } from '@senate/axiom'
 import { Decoder } from '@senate/database'
 import { DAOHandlerWithDAO, prisma } from '@senate/database'
-import { ethers, Log } from 'ethers'
+import { ethers, Log, zeroPadValue } from 'ethers'
 import { hexlify } from 'ethers'
 
 export const getCompoundVotes = async (
@@ -21,7 +21,9 @@ export const getCompoundVotes = async (
         address: (daoHandler.decoder as Decoder).address,
         topics: [
             govBravoIface.getEvent('VoteCast').topicHash,
-            voterAddresses.map((voterAddress) => hexlify(voterAddress))
+            voterAddresses.map((voterAddress) =>
+                hexlify(zeroPadValue(voterAddress, 32))
+            )
         ]
     })
 
