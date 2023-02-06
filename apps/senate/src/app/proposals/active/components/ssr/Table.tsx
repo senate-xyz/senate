@@ -5,6 +5,8 @@ import { getServerSession } from 'next-auth'
 
 import { Vote, prisma } from '@senate/database'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
+import { RainbowConnect } from '../../../../components/csr/RainbowConnect'
+import RootProvider from '../../../../providers/providers'
 extend(relativeTime)
 
 const getProposals = async (from: string, end: number, voted: string) => {
@@ -167,6 +169,7 @@ export default async function Table(props: {
                             },
                             index: number
                         ) => (
+                            /* @ts-expect-error Server Component */
                             <ActiveProposal key={index} proposal={proposal} />
                         )
                     )}
@@ -176,7 +179,7 @@ export default async function Table(props: {
     )
 }
 
-const ActiveProposal = (props: {
+const ActiveProposal = async (props: {
     proposal: {
         daoName: string
         daoPicture: string
@@ -186,6 +189,8 @@ const ActiveProposal = (props: {
         voted: boolean
     }
 }) => {
+    const session = await getServerSession(authOptions())
+
     return (
         <tr className='h-[96px] w-full items-center justify-evenly bg-[#121212] text-[#EDEDED]'>
             <td>
@@ -225,25 +230,31 @@ const ActiveProposal = (props: {
             </td>
             <td>
                 <div className='text-end'>
-                    {props.proposal.voted ? (
-                        <div className='flex w-full flex-col items-center'>
-                            <Image
-                                src='/assets/Icon/Voted.svg'
-                                alt='voted'
-                                width={32}
-                                height={32}
-                            />
-                            <div className='text-[18px]'>Voted</div>
-                        </div>
+                    {session?.user?.name ? (
+                        props.proposal.voted ? (
+                            <div className='flex w-full flex-col items-center'>
+                                <Image
+                                    src='/assets/Icon/Voted.svg'
+                                    alt='voted'
+                                    width={32}
+                                    height={32}
+                                />
+                                <div className='text-[18px]'>Voted</div>
+                            </div>
+                        ) : (
+                            <div className='flex w-full flex-col items-center'>
+                                <Image
+                                    src='/assets/Icon/NotVotedYet.svg'
+                                    alt='voted'
+                                    width={32}
+                                    height={32}
+                                />
+                                <div className='text-[18px]'>Not Voted Yet</div>
+                            </div>
+                        )
                     ) : (
                         <div className='flex w-full flex-col items-center'>
-                            <Image
-                                src='/assets/Icon/NotVotedYet.svg'
-                                alt='voted'
-                                width={32}
-                                height={32}
-                            />
-                            <div className='text-[18px]'>Not Voted Yet</div>
+                            <RainbowConnect />
                         </div>
                     )}
                 </div>

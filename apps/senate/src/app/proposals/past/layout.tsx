@@ -21,7 +21,6 @@ export default async function RootLayout({
 }: {
     children: React.ReactNode
 }) {
-    const session = await getServerSession()
     return (
         <div className='flex grow flex-col bg-[#1E1B20] p-5'>
             <div className='flex w-full flex-row gap-10'>
@@ -37,7 +36,7 @@ export default async function RootLayout({
                     )
                 })}
             </div>
-            {session && <div className='mt-2'>{children}</div>}
+            <div className='mt-2'>{children}</div>
         </div>
     )
 }
