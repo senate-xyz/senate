@@ -16,23 +16,23 @@ interface Result {
     timeEnd: Date
     timeStart: Date
     timeCreated: Date
-    url: any
+    url: string
 }
 
-const infuraProvider = new ethers.providers.JsonRpcProvider({
-    url: String(process.env.INFURA_NODE_URL)
-})
+const infuraProvider = new ethers.JsonRpcProvider(
+    String(process.env.INFURA_NODE_URL)
+)
 
-const senateProvider = new ethers.providers.JsonRpcProvider({
-    url: String(process.env.SENATE_NODE_URL)
-})
+const senateProvider = new ethers.JsonRpcProvider(
+    String(process.env.SENATE_NODE_URL)
+)
 
 export const updateChainProposals = async (
     daoHandlerId: string,
     minBlockNumber: number
 ) => {
     let response = 'nok'
-    const daoHandler = await prisma.dAOHandler.findFirst({
+    const daoHandler = await prisma.dAOHandler.findFirstOrThrow({
         where: { id: daoHandlerId },
         include: { dao: true }
     })
@@ -58,7 +58,7 @@ export const updateChainProposals = async (
             ? fromBlock + blockBatchSize
             : currentBlock
 
-    const provider: ethers.providers.JsonRpcProvider =
+    const provider: ethers.JsonRpcProvider =
         currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
 
     try {
@@ -111,6 +111,8 @@ export const updateChainProposals = async (
                     toBlock
                 )
                 break
+            default:
+                proposals = []
         }
 
         if (proposals.length || toBlock != currentBlock) {
@@ -131,20 +133,20 @@ export const updateChainProposals = async (
         })
 
         response = 'ok'
-    } catch (e: any) {
-        log_pd.log({
-            level: 'error',
-            message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
-            searchType: 'PROPOSALS',
-            sourceType: 'CHAIN',
-            currentBlock: currentBlock,
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            provider: provider.connection.url,
-            proposalsCount: proposals ? proposals.length : 0,
-            errorMessage: e.message,
-            errorStack: e.stack
-        })
+    } catch (e) {
+        if (e instanceof Error)
+            log_pd.log({
+                level: 'error',
+                message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+                searchType: 'PROPOSALS',
+                sourceType: 'CHAIN',
+                currentBlock: currentBlock,
+                fromBlock: fromBlock,
+                toBlock: toBlock,
+                provider: provider._getConnection().url,
+                errorMessage: e.message,
+                errorStack: e.stack
+            })
     }
 
     const res = [{ daoHandlerId: daoHandlerId, response: response }]
@@ -157,8 +159,8 @@ export const updateChainProposals = async (
         currentBlock: currentBlock,
         fromBlock: fromBlock,
         toBlock: toBlock,
-        provider: provider.connection.url,
         proposalsCouht: proposals ? proposals.length : 0,
+        provider: provider._getConnection().url,
         response: res
     })
 

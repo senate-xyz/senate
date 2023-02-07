@@ -10,13 +10,13 @@ import { getMakerPollVotesFromArbitrum } from './chain/makerPollArbitrum'
 import { getCompoundVotes } from './chain/compound'
 import superagent from 'superagent'
 
-const infuraProvider = new ethers.providers.JsonRpcProvider({
-    url: String(process.env.INFURA_NODE_URL)
-})
+const infuraProvider = new ethers.JsonRpcProvider(
+    String(process.env.INFURA_NODE_URL)
+)
 
-const senateProvider = new ethers.providers.JsonRpcProvider({
-    url: String(process.env.SENATE_NODE_URL)
-})
+const senateProvider = new ethers.JsonRpcProvider(
+    String(process.env.SENATE_NODE_URL)
+)
 
 interface Result {
     voterAddress: string
@@ -109,7 +109,7 @@ export const updateChainDaoVotes = async (
 
     if (fromBlock > toBlock) fromBlock = toBlock
 
-    const provider: ethers.providers.JsonRpcProvider =
+    const provider: ethers.JsonRpcProvider =
         currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
 
     try {
@@ -244,7 +244,7 @@ export const updateChainDaoVotes = async (
         toBlock: toBlock,
         votersCount: voters.length,
         votesCount: votes.length,
-        provider: provider.connection.url,
+        provider: provider._getConnection().url,
         response: res
     })
 

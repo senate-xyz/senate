@@ -1,26 +1,26 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandler, prisma } from '@senate/database'
-import { BigNumber, ethers } from 'ethers'
-import { hexZeroPad } from 'ethers/lib/utils'
+import { Decoder } from '@senate/database'
+import { DAOHandlerWithDAO, prisma } from '@senate/database'
+import { ethers, Log, zeroPadValue } from 'ethers'
+import { hexlify } from 'ethers'
 
 export const getMakerPollVotes = async (
-    provider: ethers.providers.JsonRpcProvider,
-    daoHandler: DAOHandler,
+    provider: ethers.JsonRpcProvider,
+    daoHandler: DAOHandlerWithDAO,
     voterAddresses: string[],
     fromBlock: number,
     toBlock: number
 ) => {
-    const iface = new ethers.utils.Interface(
-        JSON.parse(daoHandler.decoder['abi_vote'])
-    )
-
+    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi_vote)
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['address_vote'],
+        address: (daoHandler.decoder as Decoder).address_vote,
         topics: [
-            iface.getEventTopic('Voted'),
-            voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
+            iface.getEvent('Voted').topicHash,
+            voterAddresses.map((voterAddress) =>
+                hexlify(zeroPadValue(voterAddress, 32))
+            )
         ]
     })
 
@@ -34,72 +34,64 @@ export const getMakerPollVotes = async (
 }
 
 export const getVotesForVoter = async (
-    logs,
-    daoHandler,
+    logs: Log[],
+    daoHandler: DAOHandlerWithDAO,
     voterAddress: string
 ) => {
     let success = true
-    const iface = new ethers.utils.Interface(
-        JSON.parse(daoHandler.decoder['abi_vote'])
-    )
-    const votes =
-        (
-            await Promise.all(
-                logs.map(async (log) => {
-                    try {
-                        const eventData = iface.parseLog({
-                            topics: log.topics,
-                            data: log.data
-                        }).args
+    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi_vote)
+    const votes = (
+        await Promise.all(
+            logs.map(async (log: Log) => {
+                try {
+                    const eventData = iface.parseLog({
+                        topics: log.topics as string[],
+                        data: log.data
+                    }).args
 
-                        if (
-                            String(eventData.voter).toLowerCase() !=
-                            voterAddress.toLowerCase()
-                        )
-                            return
+                    if (
+                        String(eventData.voter).toLowerCase() !=
+                        voterAddress.toLowerCase()
+                    )
+                        return null
 
-                        const proposal = await prisma.proposal.findFirst({
-                            where: {
-                                externalId: BigNumber.from(
-                                    eventData.pollId
-                                ).toString(),
-                                daoId: daoHandler.daoId,
-                                daoHandlerId: daoHandler.id
-                            }
-                        })
-
-                        if (!proposal) {
-                            success = false
-                            return
-                        }
-
-                        return {
-                            voterAddress: ethers.utils.getAddress(voterAddress),
+                    const proposal = await prisma.proposal.findFirst({
+                        where: {
+                            externalId: BigInt(eventData.pollId).toString(),
                             daoId: daoHandler.daoId,
-                            proposalId: proposal.id,
-                            daoHandlerId: daoHandler.id,
-                            choiceId: BigNumber.from(
-                                eventData.optionId
-                            ).toString(),
-                            choice: BigNumber.from(
-                                eventData.optionId
-                            ).toString()
-                                ? 'Yes'
-                                : 'No'
+                            daoHandlerId: daoHandler.id
                         }
-                    } catch (e: any) {
-                        log_pd.log({
-                            level: 'error',
-                            message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
-                            logs: logs,
-                            errorMessage: e.message,
-                            errorStack: e.stack
-                        })
+                    })
+
+                    if (!proposal) {
                         success = false
+                        return null
                     }
-                })
-            )
-        ).filter((n) => n) ?? []
+
+                    return {
+                        voterAddress: ethers.getAddress(voterAddress),
+                        daoId: daoHandler.daoId,
+                        proposalId: proposal.id,
+                        daoHandlerId: daoHandler.id,
+                        choiceId: BigInt(eventData.optionId).toString(),
+                        choice: BigInt(eventData.optionId).toString()
+                            ? 'Yes'
+                            : 'No'
+                    }
+                } catch (e: any) {
+                    log_pd.log({
+                        level: 'error',
+                        message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
+                        logs: logs,
+                        errorMessage: e.message,
+                        errorStack: e.stack
+                    })
+                    success = false
+                    return null
+                }
+            })
+        )
+    ).filter((vote) => vote != null)
 
     return { success, votes, voterAddress }
 }

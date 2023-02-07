@@ -1,11 +1,12 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandler, prisma } from '@senate/database'
-import { ethers } from 'ethers'
-import { hexZeroPad } from 'ethers/lib/utils'
+import { Decoder } from '@senate/database'
+import { DAOHandlerWithDAO, prisma } from '@senate/database'
+import { ethers, Log, zeroPadValue } from 'ethers'
+import { hexlify } from 'ethers'
 
 export const getMakerExecutiveVotes = async (
-    provider: ethers.providers.JsonRpcProvider,
-    daoHandler: DAOHandler,
+    provider: ethers.JsonRpcProvider,
+    daoHandler: DAOHandlerWithDAO,
     voterAddresses: string[],
     fromBlock: number,
     toBlock: number
@@ -18,10 +19,12 @@ export const getMakerExecutiveVotes = async (
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['address'],
+        address: (daoHandler.decoder as Decoder).address,
         topics: [
             [voteMultipleActionsTopic, voteSingleActionTopic],
-            voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
+            voterAddresses.map((voterAddress) =>
+                hexlify(zeroPadValue(voterAddress, 32))
+            )
         ]
     })
 
@@ -35,19 +38,19 @@ export const getMakerExecutiveVotes = async (
 }
 
 export const getVotesForVoter = async (
-    logs,
-    daoHandler,
+    logs: Log[],
+    daoHandler: DAOHandlerWithDAO,
     voterAddress: string,
-    provider: ethers.providers.JsonRpcProvider
+    provider: ethers.JsonRpcProvider
 ) => {
     let success = true
 
     const voteSingleActionTopic =
         '0xa69beaba00000000000000000000000000000000000000000000000000000000'
-    const iface = new ethers.utils.Interface(daoHandler.decoder['abi'])
+    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi)
     const chiefContract = new ethers.Contract(
-        daoHandler.decoder['address'],
-        daoHandler.decoder['abi'],
+        (daoHandler.decoder as Decoder).address,
+        (daoHandler.decoder as Decoder).abi,
         provider
     )
 
@@ -58,7 +61,7 @@ export const getVotesForVoter = async (
 
         if (
             String(log.topics[1]).toLowerCase() !=
-            hexZeroPad(voterAddress, 32).toLowerCase()
+            hexlify(voterAddress).toLowerCase()
         )
             continue
 
@@ -80,28 +83,28 @@ export const getVotesForVoter = async (
     }
 
     const intermediaryVotes = Array.from(spellAddressesSet)
-    const votes =
-        (
-            await Promise.all(
-                intermediaryVotes.map(async (vote) => {
-                    try {
-                        const proposal = await prisma.proposal.findFirst({
-                            where: {
-                                externalId: vote,
-                                daoId: daoHandler.daoId,
-                                daoHandlerId: daoHandler.id
-                            }
-                        })
-
-                        return {
-                            voterAddress: ethers.utils.getAddress(voterAddress),
+    const votes = (
+        await Promise.all(
+            intermediaryVotes.map(async (vote) => {
+                try {
+                    const proposal = await prisma.proposal.findFirstOrThrow({
+                        where: {
+                            externalId: vote,
                             daoId: daoHandler.daoId,
-                            proposalId: proposal.id,
-                            daoHandlerId: daoHandler.id,
-                            choiceId: '1',
-                            choice: 'Yes'
+                            daoHandlerId: daoHandler.id
                         }
-                    } catch (e: any) {
+                    })
+
+                    return {
+                        voterAddress: ethers.getAddress(voterAddress),
+                        daoId: daoHandler.daoId,
+                        proposalId: proposal.id,
+                        daoHandlerId: daoHandler.id,
+                        choiceId: '1',
+                        choice: 'Yes'
+                    }
+                } catch (e) {
+                    if (e instanceof Error)
                         log_pd.log({
                             level: 'error',
                             message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -109,11 +112,12 @@ export const getVotesForVoter = async (
                             errorMessage: e.message,
                             errorStack: e.stack
                         })
-                        success = false
-                    }
-                })
-            )
-        ).filter((n) => n) ?? []
+                    success = false
+                    return null
+                }
+            })
+        )
+    ).filter((vote) => vote != null)
 
     return { success, votes, voterAddress }
 }

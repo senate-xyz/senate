@@ -19,6 +19,8 @@
     "build:detective": "turbo run build:detective",
     "build:refresher": "turbo run build:refresher",
     "build:bulletin": "turbo run build:bulletin",
+    "build:db": "turbo run build:db",
+    "build:axiom": "turbo run build:axiom",
     "start": "turbo run start",
     "start:senate": "turbo run start:senate",
     "start:detective": "turbo run start:detective",
@@ -43,7 +45,7 @@
   "devDependencies": {
     "prettier": "^2.8.3",
     "tsx": "^3.12.2",
-    "turbo": "latest"
+    "turbo": "1.7.3"
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {

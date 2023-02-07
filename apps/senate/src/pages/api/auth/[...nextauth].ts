@@ -2,11 +2,13 @@ import NextAuth, { NextAuthOptions } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { SiweMessage } from 'siwe'
 import { getCsrfToken } from 'next-auth/react'
-import { NextApiRequest, NextApiResponse } from 'next'
-import { IncomingMessage } from 'http'
+import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '@senate/database'
 
-export function authOptions(req?: IncomingMessage): NextAuthOptions {
+export function authOptions(
+    req?: NextApiRequest,
+    res?: NextApiResponse
+): NextAuthOptions {
     const providers = [
         Credentials({
             name: 'Ethereum',
@@ -114,6 +116,12 @@ export function authOptions(req?: IncomingMessage): NextAuthOptions {
                     }
                 })
             },
+            async signOut() {
+                res?.setHeader('Set-Cookie', [
+                    `WebsiteToken=deleted; Max-Age=0`,
+                    `AnotherCookieName=deleted; Max-Age=0`
+                ])
+            },
             async session(message) {
                 await prisma.user.update({
                     where: {
@@ -131,7 +139,7 @@ export function authOptions(req?: IncomingMessage): NextAuthOptions {
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
-    const opts = authOptions(req)
+    const opts = authOptions(req, res)
 
     return await NextAuth(req, res, opts)
 }

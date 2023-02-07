@@ -70,7 +70,7 @@ export const addChainProposalsToQueue = async () => {
                 orderBy: { priority: 'desc' },
                 take: 1,
                 select: { priority: true }
-            })) ?? { priority: 50 }
+            })) ?? { priority: 5000 }
 
             daoHandlers.map((daoHandler) =>
                 log_ref.log({

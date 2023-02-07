@@ -2,6 +2,13 @@ import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 import { NotConnected } from './components/csr/NotConnected'
 
+const defaultTab: { id: number; name: string; color: string; link: string } = {
+    id: 0,
+    name: 'Account',
+    color: 'text-white text-[36px] font-bold cursor-pointer',
+    link: '/settings/account'
+}
+
 const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
         id: 0,
@@ -52,11 +59,11 @@ export default async function RootLayout({
                 <div className='flex grow flex-col bg-[#1E1B20] p-5 px-12'>
                     <div className='flex w-full flex-row gap-10'>
                         <Link
-                            key={tabs[0].id}
-                            className={tabs[0].color}
-                            href={tabs[0].link}
+                            key={defaultTab.id}
+                            className={defaultTab.color}
+                            href={defaultTab.link}
                         >
-                            {tabs[0].name}
+                            {defaultTab.name}
                         </Link>
                     </div>
                     <div className='pt-10 pl-2'>

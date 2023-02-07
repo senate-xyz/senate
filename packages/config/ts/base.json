@@ -2,23 +2,29 @@
     "$schema": "https://json.schemastore.org/tsconfig",
     "display": "Default",
     "compilerOptions": {
-        "declaration": true,
-        "declarationMap": true,
+        "target": "ESNext",
+        "module": "ESNext",
         "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "allowSyntheticDefaultImports": true,
-        "inlineSources": false,
-        "isolatedModules": true,
-        "moduleResolution": "node",
-        "noUnusedLocals": false,
-        "noUnusedParameters": false,
-        "preserveWatchOutput": true,
         "skipLibCheck": true,
-        "strict": true,
-        "strictNullChecks": true,
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "node",
+        "isolatedModules": true,
         "resolveJsonModule": true,
-        "paths": {
-            "@senate/database": ["./../database"]
-        }
+        "noEmit": true,
+        "declaration": true,
+        "removeComments": true,
+
+        "strict": true,
+        "strictNullChecks": false,
+        "allowUnusedLabels": false,
+        "allowUnreachableCode": false,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noUncheckedIndexedAccess": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "importsNotUsedAsValues": "error",
+        "checkJs": true
     }
 }

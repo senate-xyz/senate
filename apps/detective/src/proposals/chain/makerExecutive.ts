@@ -1,5 +1,6 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandler } from '@senate/database'
+import type { DAOHandler } from '@senate/database'
+import { Decoder } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
 
@@ -10,22 +11,22 @@ const VOTE_SINGE_ACTION_TOPIC =
 const ONE_MONTH_MS = 1000 * 60 * 60 * 24 * 30
 
 export const makerExecutiveProposals = async (
-    provider: ethers.providers.JsonRpcProvider,
+    provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandler,
     fromBlock: number,
     toBlock: number
 ) => {
-    const iface = new ethers.utils.Interface(daoHandler.decoder['abi'])
+    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi)
     const chiefContract = new ethers.Contract(
-        daoHandler.decoder['address'],
-        daoHandler.decoder['abi'],
+        (daoHandler.decoder as Decoder).address,
+        (daoHandler.decoder as Decoder).abi,
         provider
     )
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['address'],
+        address: (daoHandler.decoder as Decoder).address,
         topics: [[VOTE_MULTIPLE_ACTIONS_TOPIC, VOTE_SINGE_ACTION_TOPIC]]
     })
 
@@ -50,7 +51,7 @@ export const makerExecutiveProposals = async (
                 ),
                 timeStart: new Date(proposalData.date ?? Date.now()),
                 timeCreated: new Date(proposalData.date ?? Date.now()),
-                url: daoHandler.decoder['proposalUrl'] + spellAddress
+                url: (daoHandler.decoder as Decoder).proposalUrl + spellAddress
             }
         })
     )
@@ -123,8 +124,8 @@ const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
 }
 
 async function getSpellAddressArrayFromLogs(
-    logs: ethers.providers.Log[],
-    iface: ethers.utils.Interface,
+    logs: ethers.Log[],
+    iface: ethers.Interface,
     chiefContract: ethers.Contract
 ): Promise<string[]> {
     const spellAddressesSet = new Set<string>()

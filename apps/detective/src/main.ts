@@ -34,6 +34,7 @@ async function bootstrap() {
             ).counters.find(
                 (metric) => metric.key == 'prisma_pool_connections_open'
             )?.value,
+
             prisma_client_queries_active: (
                 await prisma.$metrics.json()
             ).gauges.find(

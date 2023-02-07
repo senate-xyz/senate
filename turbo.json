@@ -2,27 +2,39 @@
   "$schema": "https://turborepo.org/schema.json",
   "pipeline": {
     "build": {
-      "dependsOn": ["^db:generate"],
+      "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
+
     "build:senate": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"],
+      "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
+
     "build:detective": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"],
+      "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
+
     "build:refresher": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"],
+      "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
+
     "build:bulletin": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"],
+      "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
     },
-    "build:db": {},
-    "build:axiom": {},
+
+    "build:db": {
+      "cache": false,
+      "dependsOn": ["^db:generate", "^build:axiom"]
+    },
+    "db:push": { "cache": false },
+    "db:seed": { "cache": false },
+    "db:generate": {},
+
+    "build:axiom": { "cache": false },
 
     "*": {
       "env": [
@@ -51,7 +63,9 @@
 
         "AXIOM_TOKEN",
         "AXIOM_ORG_ID",
-        "AXIOM_DATASET"
+        "AXIOM_DATASET",
+
+        "DATABASE_URL_PARAMS"
       ]
     },
     "start": {},
@@ -76,10 +90,6 @@
 
     "test:web": { "cache": false },
     "test:e2e": { "cache": false },
-
-    "db:push": { "cache": false },
-    "db:seed": { "cache": false },
-    "db:generate": { "cache": false },
 
     "lint": { "cache": false },
     "lint:fix": { "cache": false },

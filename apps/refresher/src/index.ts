@@ -3,13 +3,13 @@ import { loadConfig } from './config'
 import { createVoterHandlers } from './createHandlers'
 import { processSnapshotProposals } from './process/snapshotProposals'
 import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
-import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { processChainProposals } from './process/chainProposals'
-import { addChainDaoVotes } from './populate/addChainDaoVotes'
 import { processChainDaoVotes } from './process/chainDaoVotes'
-import { addChainProposalsToQueue } from './populate/addChainProposals'
-import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 import { log_ref } from '@senate/axiom'
+import { addChainProposalsToQueue } from './populate/addChainProposals'
+import { addChainDaoVotes } from './populate/addChainDaoVotes'
+import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
+import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 
 const main = async () => {
     log_ref.log({
@@ -101,6 +101,7 @@ const prismaLogs = async () =>
         ).counters.find(
             (metric) => metric.key == 'prisma_pool_connections_open'
         )?.value,
+
         prisma_client_queries_active: (
             await prisma.$metrics.json()
         ).gauges.find((metric) => metric.key == 'prisma_client_queries_active')

@@ -4,12 +4,11 @@ import {
     Catch,
     Controller,
     ExceptionFilter,
-    HttpAdapterHost,
+    type HttpAdapterHost,
     HttpException,
     HttpStatus,
     ParseArrayPipe,
-    Post,
-    Query
+    Post
 } from '@nestjs/common'
 import { AppService } from './app.service'
 import { log_pd } from '@senate/axiom'
@@ -18,7 +17,7 @@ import { log_pd } from '@senate/axiom'
 export class AllExceptionsFilter implements ExceptionFilter {
     constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
-    catch(exception: any, host: ArgumentsHost): void {
+    catch(exception: Error, host: ArgumentsHost): void {
         log_pd.log({
             level: 'error',
             message: `AllExceptionsFilter`,

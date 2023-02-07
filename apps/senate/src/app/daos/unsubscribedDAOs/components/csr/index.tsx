@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import ClientOnly from '../../../../clientOnly'
+import { trpc } from '../../../../../server/trpcClient'
 
 export const UnsubscribedDAO = (props: {
     daoId: string
@@ -18,16 +19,14 @@ export const UnsubscribedDAO = (props: {
     const [getDailyEmails, setDailyEmails] = useState(true)
 
     const router = useRouter()
-    const [isPending, startTransition] = useTransition()
-    const [isFetching, setIsFetching] = useState(false)
-    const isMutating = isFetching || isPending
+    const subscribe = trpc.subscriptions.subscribe.useMutation()
 
     return (
         <div className='h-[320px] w-[240px]'>
             {showMenu ? (
                 <div
                     className={`relative flex h-full w-full flex-col rounded bg-black text-sm font-bold text-white shadow ${
-                        isMutating ? 'opacity-50' : 'opacity-100'
+                        subscribe.isLoading ? 'opacity-50' : 'opacity-100'
                     }`}
                 >
                     <div className='flex w-full flex-row justify-between px-4 pt-4'>
@@ -67,23 +66,15 @@ export const UnsubscribedDAO = (props: {
                     <button
                         className='h-14 w-full bg-white text-xl font-bold text-black'
                         onClick={async () => {
-                            setIsFetching(true)
-                            await fetch('/api/user/subscriptions/subscribe', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    daoId: props.daoId,
-                                    dailyEmails: getDailyEmails
-                                })
-                            })
-                            setIsFetching(false)
-
-                            startTransition(() => {
-                                router.refresh()
-                                setShowMenu(false)
-                            })
+                            subscribe.mutate(
+                                { daoId: props.daoId },
+                                {
+                                    onSuccess: () => {
+                                        router.refresh()
+                                        setShowMenu(false)
+                                    }
+                                }
+                            )
                         }}
                     >
                         Confirm
@@ -129,6 +120,16 @@ export const UnsubscribedDAO = (props: {
                                     case 'UNISWAP_CHAIN':
                                     case 'MAKER_POLL':
                                     case 'MAKER_EXECUTIVE':
+                                        return (
+                                            <Image
+                                                key={index}
+                                                width='24'
+                                                height='24'
+                                                src='/assets/Chain/Ethereum/On_Dark.svg'
+                                                alt='chain proposals'
+                                            />
+                                        )
+                                    default:
                                         return (
                                             <Image
                                                 key={index}

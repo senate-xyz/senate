@@ -26,8 +26,8 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
         })
         .retry(3, (err, res) => {
             if (res.status == 201) return false
-
             if (err) return true
+            return false
         })
         .then(async (response) => response.body)
         .then(async (data) => {

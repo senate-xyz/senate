@@ -75,8 +75,6 @@ export default async function UnsubscribedDAOs() {
 
     const backgroundColors = await Promise.all(
         unsubscribedDAOs.map(async (dao) => {
-            if (!dao.picture) return
-
             const color = await getAverageColor(
                 'https://senatelabs.xyz/' + dao.picture + '.svg',
                 { mode: 'precision', algorithm: 'sqrt' }

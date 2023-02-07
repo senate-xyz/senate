@@ -1,7 +1,25 @@
 import { log_pd } from '@senate/axiom'
+import { Decoder } from '@senate/database'
 import { prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import superagent from 'superagent'
+
+type GraphQLVote = {
+    id: string
+    voter: string
+    choice: any
+    created: number
+    proposal: {
+        id: string
+        choices: string[]
+        title: string
+        body: string
+        created: number
+        start: number
+        end: number
+        link: string
+    }
+}
 
 export const updateSnapshotDaoVotes = async (
     daoHandlerId: string,
@@ -40,7 +58,7 @@ export const updateSnapshotDaoVotes = async (
 
     const graphqlQuery = `{votes(first:1000, orderBy: "created", orderDirection: asc, where: {voter_in: [${voters.map(
         (voter) => `"${voter}"`
-    )}], space: "${daoHandler.decoder['space']}", created_gt: ${
+    )}], space: "${(daoHandler.decoder as Decoder).space}", created_gt: ${
         searchFromTimestamp
             ? Math.floor(searchFromTimestamp.valueOf() / 1000)
             : 0
@@ -64,7 +82,7 @@ export const updateSnapshotDaoVotes = async (
 
     let votes
     try {
-        const res = await superagent
+        const res = (await superagent
             .get('https://hub.snapshot.org/graphql')
             .query({
                 query: graphqlQuery
@@ -76,10 +94,11 @@ export const updateSnapshotDaoVotes = async (
             .retry(3, (err, res) => {
                 if (err) return true
                 if (res.status == 200) return false
+                return false
             })
-            .then((response) => {
+            .then((response: { body: { data: { votes: GraphQLVote[] } } }) => {
                 return response.body.data.votes
-            })
+            })) as GraphQLVote[]
 
         //sanitize
         votes = res.filter(
@@ -131,12 +150,12 @@ export const updateSnapshotDaoVotes = async (
                 await prisma.vote.createMany({
                     data: votesForProposal.map((vote) => {
                         return {
-                            voterAddress: ethers.utils.getAddress(vote.voter),
+                            voterAddress: ethers.getAddress(vote.voter),
                             daoId: daoHandler.daoId,
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,
                             choiceId:
-                                vote.choice.length > 0
+                                vote.choice > 0
                                     ? String(vote.choice[0])
                                     : String(vote.choice),
                             choice:
@@ -164,22 +183,22 @@ export const updateSnapshotDaoVotes = async (
         })
 
         voters.map((voter) => result.set(voter, 'ok'))
-    } catch (e: any) {
-        log_pd.log({
-            level: 'error',
-            message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
-            searchType: 'VOTES',
-            sourceType: 'SNAPSHOT',
-            created_gt: searchFromTimestamp
-                ? Math.floor(searchFromTimestamp.valueOf() / 1000)
-                : 0,
-            space: daoHandler.decoder['space'],
-            voters: voters,
-            query: graphqlQuery,
-            votes: votes,
-            errorMessage: e.message,
-            errorStack: e.stack
-        })
+    } catch (e) {
+        if (e instanceof Error)
+            log_pd.log({
+                level: 'error',
+                message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
+                searchType: 'VOTES',
+                sourceType: 'SNAPSHOT',
+                created_gt: searchFromTimestamp
+                    ? Math.floor(searchFromTimestamp.valueOf() / 1000)
+                    : 0,
+                space: (daoHandler.decoder as Decoder).space,
+                votersCount: voters.length,
+                votesCount: votes.length,
+                errorMessage: e.message,
+                errorStack: e.stack
+            })
     }
 
     const res = Array.from(result, ([name, value]) => ({
@@ -195,8 +214,9 @@ export const updateSnapshotDaoVotes = async (
         created_gt: searchFromTimestamp
             ? Math.floor(searchFromTimestamp.valueOf() / 1000)
             : 0,
-        space: daoHandler.decoder['space'],
+        space: (daoHandler.decoder as Decoder).space,
         votersCount: voters.length,
+        query: graphqlQuery,
         votesCount: votes.length,
         response: res
     })

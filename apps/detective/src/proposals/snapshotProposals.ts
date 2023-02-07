@@ -1,6 +1,19 @@
-import { prisma } from '@senate/database'
+import { prisma, Decoder } from '@senate/database'
 import { log_pd } from '@senate/axiom'
 import superagent from 'superagent'
+
+type GraphQLProposal = {
+    id: string
+    title: string
+    body: string
+    created: number
+    start: number
+    end: number
+    link: string
+    space: {
+        id: string
+    }
+}
 
 export const updateSnapshotProposals = async (
     daoHandlerId: string,
@@ -8,12 +21,12 @@ export const updateSnapshotProposals = async (
 ): Promise<Array<{ daoHandlerId: string; response: string }>> => {
     let response = 'nok'
 
-    const daoHandler = await prisma.dAOHandler.findFirst({
+    const daoHandler = await prisma.dAOHandler.findFirstOrThrow({
         where: { id: daoHandlerId },
         include: { dao: true }
     })
 
-    const space = daoHandler.decoder['space']
+    const space = (daoHandler.decoder as Decoder).space
 
     let proposals
 
@@ -42,7 +55,7 @@ export const updateSnapshotProposals = async (
                 }`
 
     try {
-        proposals = await superagent
+        proposals = (await superagent
             .get('https://hub.snapshot.org/graphql')
             .query({
                 query: graphqlQuery
@@ -54,10 +67,11 @@ export const updateSnapshotProposals = async (
             .retry(3, (err, res) => {
                 if (err) return true
                 if (res.status == 200) return false
+                return false
             })
             .then((response) => {
                 return response.body.data.proposals
-            })
+            })) as GraphQLProposal[]
 
         if (proposals.length)
             await prisma.proposal.createMany({
