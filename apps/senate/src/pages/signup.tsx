@@ -171,7 +171,7 @@ const Home = () => {
                                                         )
                                                         setTimeout(() => {
                                                             router.push('/daos')
-                                                        }, 7000)
+                                                        }, 8000)
                                                     }
                                                 }
                                             )
