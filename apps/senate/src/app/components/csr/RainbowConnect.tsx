@@ -12,15 +12,15 @@ const RainbowConnectButton = () => {
     const router = useRouter()
     const newUser = trpc.accountSettings.isNewUser.useQuery()
 
-    if (newUser.data) {
+    useEffect(() => {
         if (newUser.data && session.status == 'authenticated') {
             router.push('/signup')
         }
-    }
+    }, [newUser.data])
 
     useEffect(() => {
         newUser.refetch()
-    }, [session])
+    }, [session.status == 'authenticated'])
 
     return <ConnectButton showBalance={false} />
 }

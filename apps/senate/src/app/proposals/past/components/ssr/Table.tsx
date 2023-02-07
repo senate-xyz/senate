@@ -5,7 +5,7 @@ import { getServerSession } from 'next-auth'
 
 import { Vote, prisma } from '@senate/database'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
-import { RainbowConnect } from '../../../../components/csr/RainbowConnect'
+import ConnectWalletModal from '../../../components/csr/ConnectWalletModal'
 extend(relativeTime)
 
 const getProposals = async (from: string, end: number, voted: string) => {
@@ -116,18 +116,20 @@ const getProposals = async (from: string, end: number, voted: string) => {
         }
     })
 
-    const result = userProposals.map((proposal) => {
-        return {
-            daoName: proposal.dao.name,
-            daoPicture: proposal.dao.picture,
-            proposalTitle: proposal.name,
-            proposalLink: proposal.url,
-            timeEnd: proposal.timeEnd,
-            voted: user
-                ? proposal.votes.map((vote: Vote) => vote.choice).length > 0
-                : false
-        }
-    })
+    const result =
+        userProposals.map((proposal) => {
+            return {
+                daoName: proposal.dao.name,
+                daoPicture: proposal.dao.picture,
+                proposalTitle: proposal.name,
+                proposalLink: proposal.url,
+                timeEnd: proposal.timeEnd,
+                voted: user
+                    ? proposal.votes.map((vote: Vote) => vote.choice).length > 0
+                    : false
+            }
+        }) ?? []
+
     return result
 }
 
@@ -143,7 +145,8 @@ export default async function Table(props: {
     )
 
     return (
-        <div className='mt-[16px] flex flex-col'>
+        <div className={`mt-[16px] flex flex-col`}>
+            <ConnectWalletModal />
             <table className='w-full table-auto border-separate border-spacing-y-[4px] text-left'>
                 <thead className='h-[56px] bg-black text-white'>
                     <tr>
@@ -188,8 +191,6 @@ const ActiveProposal = async (props: {
         voted: boolean
     }
 }) => {
-    const session = await getServerSession(authOptions())
-
     return (
         <tr className='h-[96px] w-full items-center justify-evenly bg-[#121212] text-[#EDEDED]'>
             <td>
@@ -229,31 +230,25 @@ const ActiveProposal = async (props: {
             </td>
             <td>
                 <div className='text-end'>
-                    {session?.user?.name ? (
-                        props.proposal.voted ? (
-                            <div className='flex w-full flex-col items-center'>
-                                <Image
-                                    src='/assets/Icon/Voted.svg'
-                                    alt='voted'
-                                    width={32}
-                                    height={32}
-                                />
-                                <div className='text-[18px]'>Voted</div>
-                            </div>
-                        ) : (
-                            <div className='flex w-full flex-col items-center'>
-                                <Image
-                                    src='/assets/Icon/NotVotedYet.svg'
-                                    alt='voted'
-                                    width={32}
-                                    height={32}
-                                />
-                                <div className='text-[18px]'>Not Voted Yet</div>
-                            </div>
-                        )
+                    {props.proposal.voted ? (
+                        <div className='flex w-full flex-col items-center'>
+                            <Image
+                                src='/assets/Icon/Voted.svg'
+                                alt='voted'
+                                width={32}
+                                height={32}
+                            />
+                            <div className='text-[18px]'>Voted</div>
+                        </div>
                     ) : (
                         <div className='flex w-full flex-col items-center'>
-                            <RainbowConnect />
+                            <Image
+                                src='/assets/Icon/NotVotedYet.svg'
+                                alt='voted'
+                                width={32}
+                                height={32}
+                            />
+                            <div className='text-[18px]'>Not Voted Yet</div>
                         </div>
                     )}
                 </div>
