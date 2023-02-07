@@ -3,32 +3,24 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useSession } from 'next-auth/react'
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import ClientOnly from '../../clientOnly'
+import { trpc } from '../../../server/trpcClient'
+import { useRouter } from 'next/navigation'
 
 const RainbowConnectButton = () => {
-    // const session = useSession()
-    // const newUser = trpc.user.settings.isNewUser.useQuery(void 0, {
-    //     context: appQueryContext
-    // })
-
-    // if (newUser.data) {
-    //     if (newUser.data.newUser && session.status == 'authenticated') {
-    //         router.push('/new-user')
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     newUser.refetch()
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [session])
-
-    const router = useRouter()
     const session = useSession()
+    const router = useRouter()
+    const newUser = trpc.accountSettings.isNewUser.useQuery()
+
+    if (newUser.data) {
+        if (newUser.data && session.status == 'authenticated') {
+            router.push('/signup')
+        }
+    }
 
     useEffect(() => {
-        router.refresh()
-    }, [router, session])
+        newUser.refetch()
+    }, [session])
 
     return <ConnectButton showBalance={false} />
 }

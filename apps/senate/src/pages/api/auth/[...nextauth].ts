@@ -58,7 +58,6 @@ export function authOptions(
                             },
                             update: {
                                 name: siwe.address,
-                                newUser: false,
                                 sessionCount: { increment: 1 }
                             }
                         })

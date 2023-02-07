@@ -112,5 +112,65 @@ export const accountSettingsRouter = router({
             })
 
             return result
+        }),
+
+    isNewUser: privateProcedure.query(async ({ ctx }) => {
+        const user = await prisma.user.findFirst({
+            where: {
+                name: { equals: String(ctx.user.name) }
+            }
+        })
+
+        return user?.newUser
+    }),
+
+    setNewUser: privateProcedure
+        .input(
+            z.object({
+                value: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const user = await prisma.user.findFirst({
+                where: {
+                    name: { equals: String(ctx.user.name) }
+                }
+            })
+
+            const result = await prisma.user.update({
+                where: {
+                    id: user?.id
+                },
+                data: {
+                    newUser: input.value
+                }
+            })
+
+            return result
+        }),
+
+    setTerms: privateProcedure
+        .input(
+            z.object({
+                value: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const user = await prisma.user.findFirst({
+                where: {
+                    name: { equals: String(ctx.user.name) }
+                }
+            })
+
+            const result = await prisma.user.update({
+                where: {
+                    id: user?.id
+                },
+                data: {
+                    acceptedTerms: input.value
+                }
+            })
+
+            return result
         })
 })
