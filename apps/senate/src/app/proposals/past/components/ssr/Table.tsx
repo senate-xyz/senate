@@ -145,7 +145,7 @@ export default async function Table(props: {
     )
 
     return (
-        <div className={`mt-[16px] flex flex-col`}>
+        <div className={`relative mt-[16px] flex flex-col`}>
             <ConnectWalletModal />
             <table className='w-full table-auto border-separate border-spacing-y-[4px] text-left'>
                 <thead className='h-[56px] bg-black text-white'>
