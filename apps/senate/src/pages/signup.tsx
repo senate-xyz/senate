@@ -103,7 +103,7 @@ const Home = () => {
                                     />
                                     <label
                                         className='ml-2 select-none text-sm font-medium text-white'
-                                        onClick={(e) => setTerms(!terms)}
+                                        onClick={() => setTerms(!terms)}
                                     >
                                         I agree to the{' '}
                                         <Link
