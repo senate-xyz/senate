@@ -112,6 +112,7 @@ export const updateSnapshotProposals = async (
             searchType: 'PROPOSALS',
             sourceType: 'SNAPSHOT',
             created_gt: Math.floor(minCreatedAt / 1000),
+            proposals: proposals,
             proposalsCount: proposals.length ?? 0,
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
@@ -127,6 +128,7 @@ export const updateSnapshotProposals = async (
         searchType: 'PROPOSALS',
         sourceType: 'SNAPSHOT',
         created_gt: Math.floor(minCreatedAt / 1000),
+        proposals: proposals,
         proposalsCount: proposals.length ?? 0,
         response: res
     })

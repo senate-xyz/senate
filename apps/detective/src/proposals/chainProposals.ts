@@ -142,6 +142,8 @@ export const updateChainProposals = async (
             currentBlock: currentBlock,
             fromBlock: fromBlock,
             toBlock: toBlock,
+            proposals: proposals,
+            proposalsCount: proposals.length ?? 0,
             provider: provider._getConnection().url,
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
@@ -159,7 +161,8 @@ export const updateChainProposals = async (
         currentBlock: currentBlock,
         fromBlock: fromBlock,
         toBlock: toBlock,
-        proposalsCout: proposals ? proposals.length : 0,
+        proposals: proposals,
+        proposalsCount: proposals.length ?? 0,
         provider: provider._getConnection().url,
         response: res
     })
