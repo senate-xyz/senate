@@ -218,9 +218,7 @@ export const updateChainDaoVotes = async (
             fromBlock: fromBlock,
             toBlock: toBlock,
             voters: voters,
-            votersCount: voters.length ?? 0,
             votes: votes,
-            votesCount: votes.length ?? 0,
             provider: provider._getConnection().url,
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
@@ -242,9 +240,7 @@ export const updateChainDaoVotes = async (
         fromBlock: fromBlock,
         toBlock: toBlock,
         voters: voters,
-        votersCount: voters.length ?? 0,
         votes: votes,
-        votesCount: votes.length ?? 0,
         provider: provider._getConnection().url,
         response: res
     })

@@ -113,7 +113,6 @@ export const updateSnapshotProposals = async (
             sourceType: 'SNAPSHOT',
             created_gt: Math.floor(minCreatedAt / 1000),
             proposals: proposals,
-            proposalsCount: proposals.length ?? 0,
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
             errorStack: (e as Error).stack
@@ -129,7 +128,6 @@ export const updateSnapshotProposals = async (
         sourceType: 'SNAPSHOT',
         created_gt: Math.floor(minCreatedAt / 1000),
         proposals: proposals,
-        proposalsCount: proposals.length ?? 0,
         response: res
     })
 

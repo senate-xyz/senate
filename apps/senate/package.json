@@ -47,7 +47,7 @@
         "superjson": "^1.12.2",
         "swr": "^2.0.3",
         "wagmi": "^0.11.5",
-        "zod": "^3.20.2"
+        "zod": "^3.20.3"
     },
     "devDependencies": {
         "@synthetixio/synpress": "^3.0.5",
