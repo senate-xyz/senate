@@ -1,28 +1,28 @@
+import { log_ref } from '@senate/axiom'
 import {
     DAOHandlerType,
+    prisma,
     RefreshStatus,
     RefreshType,
-    VoterHandler,
-    prisma
+    VoterHandler
 } from '@senate/database'
+import { bin } from 'd3-array'
 import {
     DAOS_VOTES_CHAIN_INTERVAL,
     DAOS_VOTES_CHAIN_INTERVAL_FORCE
 } from '../config'
-import { bin } from 'd3-array'
-import { log_ref } from '@senate/axiom'
 
 export const addChainDaoVotes = async () => {
-    const normalRefresh = new Date(
-        Date.now() - DAOS_VOTES_CHAIN_INTERVAL * 60 * 1000
-    )
-    const forceRefresh = new Date(
-        Date.now() - DAOS_VOTES_CHAIN_INTERVAL_FORCE * 60 * 1000
-    )
-    const newRefresh = new Date(Date.now() - 5 * 1000)
-
     await prisma.$transaction(
         async (tx) => {
+            const normalRefresh = new Date(
+                Date.now() - DAOS_VOTES_CHAIN_INTERVAL * 60 * 1000
+            )
+            const forceRefresh = new Date(
+                Date.now() - DAOS_VOTES_CHAIN_INTERVAL_FORCE * 60 * 1000
+            )
+            const newRefresh = new Date(Date.now() - 5 * 1000)
+
             let daoHandlers = await tx.dAOHandler.findMany({
                 where: {
                     type: {
@@ -63,6 +63,28 @@ export const addChainDaoVotes = async () => {
                 },
                 include: {
                     voterHandlers: {
+                        where: {
+                            OR: [
+                                {
+                                    refreshStatus: RefreshStatus.DONE,
+                                    lastRefresh: {
+                                        lt: normalRefresh
+                                    }
+                                },
+                                {
+                                    refreshStatus: RefreshStatus.PENDING,
+                                    lastRefresh: {
+                                        lt: forceRefresh
+                                    }
+                                },
+                                {
+                                    refreshStatus: RefreshStatus.NEW,
+                                    lastRefresh: {
+                                        lt: newRefresh
+                                    }
+                                }
+                            ]
+                        },
                         include: { voter: true }
                     },
                     dao: true,
@@ -93,17 +115,7 @@ export const addChainDaoVotes = async () => {
 
             const refreshEntries = daoHandlers
                 .map((daoHandler) => {
-                    //this makes sense to be filtered inside the prisma query but
-                    //if we do that prisma won't let us include voter anymore for some reason
-                    const voterHandlers = daoHandler.voterHandlers.filter(
-                        (vh) =>
-                            (vh.refreshStatus == RefreshStatus.DONE &&
-                                vh.lastRefresh < normalRefresh) ||
-                            (vh.refreshStatus == RefreshStatus.PENDING &&
-                                vh.lastRefresh < forceRefresh) ||
-                            (vh.refreshStatus == RefreshStatus.NEW &&
-                                vh.lastRefresh < newRefresh)
-                    )
+                    const voterHandlers = daoHandler.voterHandlers
 
                     const voteTimestamps = voterHandlers.map((voterHandler) =>
                         Number(voterHandler.lastChainRefresh)
@@ -181,9 +193,6 @@ export const addChainDaoVotes = async () => {
                 }
             })
         },
-        {
-            maxWait: 20000,
-            timeout: 60000
-        }
+        { maxWait: 30000 }
     )
 }

@@ -1,8 +1,8 @@
 import {
     DAOHandlerType,
+    prisma,
     RefreshStatus,
-    RefreshType,
-    prisma
+    RefreshType
 } from '@senate/database'
 import {
     DAOS_PROPOSALS_CHAIN_INTERVAL,
@@ -11,16 +11,16 @@ import {
 import { log_ref } from '@senate/axiom'
 
 export const addChainProposalsToQueue = async () => {
-    const normalRefresh = new Date(
-        Date.now() - DAOS_PROPOSALS_CHAIN_INTERVAL * 60 * 1000
-    )
-    const forceRefresh = new Date(
-        Date.now() - DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000
-    )
-    const newRefresh = new Date(Date.now() - 15 * 1000)
-
     await prisma.$transaction(
         async (tx) => {
+            const normalRefresh = new Date(
+                Date.now() - DAOS_PROPOSALS_CHAIN_INTERVAL * 60 * 1000
+            )
+            const forceRefresh = new Date(
+                Date.now() - DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000
+            )
+            const newRefresh = new Date(Date.now() - 15 * 1000)
+
             const daoHandlers = await tx.dAOHandler.findMany({
                 where: {
                     type: {
@@ -105,9 +105,6 @@ export const addChainProposalsToQueue = async () => {
                 }
             })
         },
-        {
-            maxWait: 20000,
-            timeout: 60000
-        }
+        { maxWait: 30000 }
     )
 }

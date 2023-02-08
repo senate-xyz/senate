@@ -1,30 +1,47 @@
-import { RefreshStatus, RefreshType, prisma } from '@senate/database'
+import {
+    RefreshStatus,
+    RefreshType,
+    prisma,
+    RefreshQueue,
+    DAOHandlerWithDAO
+} from '@senate/database'
 import superagent from 'superagent'
 import { DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE } from '../config'
 import { log_ref } from '@senate/axiom'
 
 export const processSnapshotProposals = async () => {
-    const item = await prisma.refreshQueue.findFirst({
-        where: {
-            refreshType: RefreshType.DAOSNAPSHOTPROPOSALS
+    let item: RefreshQueue, daoHandler: DAOHandlerWithDAO
+
+    await prisma.$transaction(
+        async (tx) => {
+            item = await tx.refreshQueue.findFirst({
+                where: {
+                    refreshType: RefreshType.DAOSNAPSHOTPROPOSALS
+                },
+                orderBy: {
+                    priority: 'asc'
+                }
+            })
+
+            if (!item) return
+
+            await tx.refreshQueue.delete({
+                where: {
+                    id: item.id
+                }
+            })
+
+            daoHandler = await tx.dAOHandler.findFirst({
+                where: { id: item.handlerId },
+                include: { dao: true }
+            })
         },
-        orderBy: {
-            priority: 'asc'
+        {
+            maxWait: 30000
         }
-    })
+    )
 
     if (!item) return
-
-    await prisma.refreshQueue.delete({
-        where: {
-            id: item.id
-        }
-    })
-
-    const daoHandler = await prisma.dAOHandler.findFirst({
-        where: { id: item.handlerId },
-        include: { dao: true }
-    })
 
     await superagent
         .post(`${process.env.DETECTIVE_URL}/updateSnapshotProposals`)
@@ -47,33 +64,34 @@ export const processSnapshotProposals = async () => {
             if (!data) return
             if (!Array.isArray(data)) return
 
-            await prisma.dAOHandler.updateMany({
-                where: {
-                    id: {
-                        in: data
-                            .filter((result) => result.response == 'ok')
-                            .map((result) => result.daoHandlerId)
+            await prisma.$transaction([
+                prisma.dAOHandler.updateMany({
+                    where: {
+                        id: {
+                            in: data
+                                .filter((result) => result.response == 'ok')
+                                .map((result) => result.daoHandlerId)
+                        }
+                    },
+                    data: {
+                        refreshStatus: RefreshStatus.DONE,
+                        lastRefresh: new Date()
                     }
-                },
-                data: {
-                    refreshStatus: RefreshStatus.DONE,
-                    lastRefresh: new Date()
-                }
-            })
-
-            await prisma.dAOHandler.updateMany({
-                where: {
-                    id: {
-                        in: data
-                            .filter((result) => result.response == 'nok')
-                            .map((result) => result.daoHandlerId)
+                }),
+                prisma.dAOHandler.updateMany({
+                    where: {
+                        id: {
+                            in: data
+                                .filter((result) => result.response == 'nok')
+                                .map((result) => result.daoHandlerId)
+                        }
+                    },
+                    data: {
+                        refreshStatus: RefreshStatus.NEW,
+                        lastRefresh: new Date()
                     }
-                },
-                data: {
-                    refreshStatus: RefreshStatus.NEW,
-                    lastRefresh: new Date()
-                }
-            })
+                })
+            ])
 
             log_ref.log({
                 level: 'info',

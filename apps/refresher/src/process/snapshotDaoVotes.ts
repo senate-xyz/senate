@@ -1,6 +1,8 @@
 import {
+    DAOHandlerWithDAO,
     prisma,
     RefreshArgs,
+    RefreshQueue,
     RefreshStatus,
     RefreshType
 } from '@senate/database'
@@ -9,27 +11,38 @@ import { DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE } from '../config'
 import { log_ref } from '@senate/axiom'
 
 export const processSnapshotDaoVotes = async () => {
-    const item = await prisma.refreshQueue.findFirst({
-        where: {
-            refreshType: RefreshType.DAOSNAPSHOTVOTES
+    let item: RefreshQueue, daoHandler: DAOHandlerWithDAO
+
+    await prisma.$transaction(
+        async (tx) => {
+            item = await tx.refreshQueue.findFirst({
+                where: {
+                    refreshType: RefreshType.DAOSNAPSHOTVOTES
+                },
+                orderBy: {
+                    priority: 'asc'
+                }
+            })
+
+            if (!item) return
+
+            await tx.refreshQueue.delete({
+                where: {
+                    id: item.id
+                }
+            })
+
+            daoHandler = await tx.dAOHandler.findFirst({
+                where: { id: item.handlerId },
+                include: { dao: true }
+            })
         },
-        orderBy: {
-            priority: 'asc'
+        {
+            maxWait: 30000
         }
-    })
+    )
 
     if (!item) return
-
-    await prisma.refreshQueue.delete({
-        where: {
-            id: item.id
-        }
-    })
-
-    const daoHandler = await prisma.dAOHandler.findFirst({
-        where: { id: item.handlerId },
-        include: { dao: true }
-    })
 
     const voters = [...(item.args as RefreshArgs).voters]
 
@@ -51,39 +64,43 @@ export const processSnapshotDaoVotes = async () => {
             if (!data) return
             if (!Array.isArray(data)) return
 
-            await prisma.voterHandler.updateMany({
-                where: {
-                    voter: {
-                        address: {
-                            in: data
-                                .filter((result) => result.response == 'ok')
-                                .map((result) => result.voterAddress)
-                        }
+            await prisma.$transaction([
+                prisma.voterHandler.updateMany({
+                    where: {
+                        voter: {
+                            address: {
+                                in: data
+                                    .filter((result) => result.response == 'ok')
+                                    .map((result) => result.voterAddress)
+                            }
+                        },
+                        daoHandlerId: daoHandler?.id
                     },
-                    daoHandlerId: daoHandler?.id
-                },
-                data: {
-                    refreshStatus: RefreshStatus.DONE,
-                    lastRefresh: new Date()
-                }
-            })
+                    data: {
+                        refreshStatus: RefreshStatus.DONE,
+                        lastRefresh: new Date()
+                    }
+                }),
 
-            await prisma.voterHandler.updateMany({
-                where: {
-                    voter: {
-                        address: {
-                            in: data
-                                .filter((result) => result.response == 'nok')
-                                .map((result) => result.voterAddress)
-                        }
+                prisma.voterHandler.updateMany({
+                    where: {
+                        voter: {
+                            address: {
+                                in: data
+                                    .filter(
+                                        (result) => result.response == 'nok'
+                                    )
+                                    .map((result) => result.voterAddress)
+                            }
+                        },
+                        daoHandlerId: daoHandler?.id
                     },
-                    daoHandlerId: daoHandler?.id
-                },
-                data: {
-                    refreshStatus: RefreshStatus.NEW,
-                    lastRefresh: new Date()
-                }
-            })
+                    data: {
+                        refreshStatus: RefreshStatus.NEW,
+                        lastRefresh: new Date()
+                    }
+                })
+            ])
 
             log_ref.log({
                 level: 'info',

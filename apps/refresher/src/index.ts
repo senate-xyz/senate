@@ -21,12 +21,13 @@ const main = async () => {
     await createVoterHandlers()
 
     setInterval(async () => {
-        prismaLogs()
-        await loadConfig()
-        await createVoterHandlers()
-    }, 1000)
+        await prismaLogs()
+    }, 10000)
 
     setInterval(async () => {
+        await loadConfig()
+        await createVoterHandlers()
+
         await addSnapshotProposalsToQueue()
         await addSnapshotDaoVotes()
 
@@ -37,9 +38,9 @@ const main = async () => {
     while (true) {
         const start = Date.now()
 
-        const item = await prisma.refreshQueue.count()
+        const hasQueue = await prisma.refreshQueue.count()
 
-        if (item) {
+        if (hasQueue) {
             processSnapshotProposals()
             processSnapshotDaoVotes()
             processChainProposals()

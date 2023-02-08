@@ -6,10 +6,15 @@
     "configurations": [
         {
             "type": "node",
-            "name": "Railway attach",
-            "request": "attach",
-            "address": "https://proposal-detective-staging.up.railway.app",
-            "port": 9229
+            "request": "launch",
+            "name": "Launch Program",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/dist/index",
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ]
         }
     ]
 }

@@ -1,8 +1,8 @@
 import {
     DAOHandlerType,
+    prisma,
     RefreshStatus,
-    RefreshType,
-    prisma
+    RefreshType
 } from '@senate/database'
 import {
     DAOS_PROPOSALS_SNAPSHOT_INTERVAL,
@@ -11,16 +11,16 @@ import {
 import { log_ref } from '@senate/axiom'
 
 export const addSnapshotProposalsToQueue = async () => {
-    const normalRefresh = new Date(
-        Date.now() - DAOS_PROPOSALS_SNAPSHOT_INTERVAL * 60 * 1000
-    )
-    const forceRefresh = new Date(
-        Date.now() - DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE * 60 * 1000
-    )
-    const newRefresh = new Date(Date.now() - 15 * 1000)
-
     await prisma.$transaction(
         async (tx) => {
+            const normalRefresh = new Date(
+                Date.now() - DAOS_PROPOSALS_SNAPSHOT_INTERVAL * 60 * 1000
+            )
+            const forceRefresh = new Date(
+                Date.now() - DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE * 60 * 1000
+            )
+            const newRefresh = new Date(Date.now() - 15 * 1000)
+
             const daoHandlers = await tx.dAOHandler.findMany({
                 where: {
                     type: DAOHandlerType.SNAPSHOT,
@@ -96,9 +96,6 @@ export const addSnapshotProposalsToQueue = async () => {
                 }
             })
         },
-        {
-            maxWait: 20000,
-            timeout: 60000
-        }
+        { maxWait: 30000 }
     )
 }

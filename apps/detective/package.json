@@ -11,7 +11,7 @@
         "start": "nest start",
         "dev": "nest start --watch",
         "build:detective": "nest build",
-        "start:detective": "nest start --debug 0.0.0.0",
+        "start:detective": "nest start",
         "dev:detective": "nest start --watch",
         "test": "jest",
         "test:watch": "jest --watch",
