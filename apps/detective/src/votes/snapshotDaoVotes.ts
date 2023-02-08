@@ -56,6 +56,8 @@ export const updateSnapshotDaoVotes = async (
             ? lastVoteCreated
             : daoHandler.lastSnapshotRefresh
 
+    const searchToTimestamp = daoHandler.lastSnapshotRefresh
+
     const graphqlQuery = `{
         votes(
             first:1000,
@@ -64,7 +66,11 @@ export const updateSnapshotDaoVotes = async (
             where: {
                 voter_in: [${voters.map((voter) => `"${voter}"`)}], 
                 space: "${(daoHandler.decoder as Decoder).space}",
-                created_lt: ${daoHandler.lastSnapshotRefresh},
+                created_lt: ${
+                    searchToTimestamp
+                        ? Math.floor(searchToTimestamp.valueOf() / 1000)
+                        : 0
+                },
                 created_gt: ${
                     searchFromTimestamp
                         ? Math.floor(searchFromTimestamp.valueOf() / 1000)
