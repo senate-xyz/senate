@@ -56,13 +56,20 @@ export const updateSnapshotDaoVotes = async (
             ? lastVoteCreated
             : daoHandler.lastSnapshotRefresh
 
-    const graphqlQuery = `{votes(first:1000, orderBy: "created", orderDirection: asc, where: {voter_in: [${voters.map(
-        (voter) => `"${voter}"`
-    )}], space: "${(daoHandler.decoder as Decoder).space}", created_gt: ${
-        searchFromTimestamp
-            ? Math.floor(searchFromTimestamp.valueOf() / 1000)
-            : 0
-    }}) {
+    const graphqlQuery = `{
+        votes(
+            first:1000,
+            orderBy: "created",
+            orderDirection: asc,
+            where: {
+                voter_in: [${voters.map((voter) => `"${voter}"`)}], 
+                space: "${(daoHandler.decoder as Decoder).space}",
+                created_lt: ${daoHandler.lastSnapshotRefresh},
+                created_gt: ${
+                    searchFromTimestamp
+                        ? Math.floor(searchFromTimestamp.valueOf() / 1000)
+                        : 0
+                }}) {
                     id
                     voter
                     choice
