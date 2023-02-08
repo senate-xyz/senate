@@ -43,7 +43,7 @@ export const getMakerPollVotesFromArbitrum = async (
 }
 
 export const getVotesForVoter = async (
-    eventsForVoter: Array<any>,
+    eventsForVoter: ethers.Result[],
     daoHandler: DAOHandler,
     voterAddress: string
 ) => {
@@ -79,7 +79,7 @@ export const getVotesForVoter = async (
 }
 
 const formatVotes = async (
-    events: Array<any>,
+    events: ethers.Result[],
     proposalsMap: Map<string, Proposal>
 ) => {
     return events.map((event) => {

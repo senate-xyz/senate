@@ -77,6 +77,7 @@ schedule(
                 pastProposals,
                 RoundupNotificationType.PAST
             )
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (e: any) {
             log_bul.log({
                 level: 'error',
@@ -111,6 +112,7 @@ const clearNotificationsTable = async () => {
             level: 'info',
             message: 'Cleared notifications table'
         })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         log_bul.log({
             level: 'error',
@@ -158,6 +160,7 @@ const fetchUsersToBeNotifiedForProposal = async (
         })
 
         return users
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         log_bul.log({
             level: 'error',
@@ -216,6 +219,7 @@ const insertNotifications = async (
                 count: proposals.length
             }
         })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         log_bul.log({
             level: 'error',
@@ -252,6 +256,7 @@ const fetchNewProposals = async () => {
         })
 
         return proposals
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         log_bul.log({
             level: 'error',
@@ -297,6 +302,7 @@ const fetchEndingProposals = async () => {
         })
 
         return proposals
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         log_bul.log({
             level: 'error',
@@ -341,6 +347,7 @@ const fetchPastProposals = async () => {
         })
 
         return proposals
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         log_bul.log({
             level: 'error',
@@ -523,6 +530,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
         }
 
         return response.data.message.src
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         log_bul.log({
             level: 'error',
@@ -563,6 +571,7 @@ const fetchUsersToBeNotified = async (): Promise<UserWithVotingAddresses[]> => {
         })
 
         return users
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         log_bul.log({
             level: 'error',
@@ -667,6 +676,7 @@ const sendDailyBulletin = async () => {
                 }
             })
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         log_bul.log({
             level: 'error',
@@ -707,6 +717,7 @@ const userVoted = async (
         }
 
         return voted
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         log_bul.log({
             level: 'error',

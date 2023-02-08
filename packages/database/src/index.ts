@@ -65,6 +65,7 @@ function RetryTransactions(options?: Partial<IBackOffOptions>) {
     return Prisma.defineExtension((prisma) =>
         prisma.$extends({
             client: {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 $transaction(...args: any) {
                     return backOff(
                         // eslint-disable-next-line prefer-spread

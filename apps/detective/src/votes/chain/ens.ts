@@ -79,6 +79,7 @@ export const getVotesForVoter = async (
                             choiceId: String(eventData.support),
                             choice: String(eventData.support) ? 'Yes' : 'No'
                         }
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     } catch (e: any) {
                         log_pd.log({
                             level: 'error',

@@ -7,6 +7,7 @@ import superagent from 'superagent'
 type GraphQLVote = {
     id: string
     voter: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     choice: any
     created: number
     proposal: {

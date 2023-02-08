@@ -105,6 +105,7 @@ export const updateSnapshotProposals = async (
         })
 
         response = 'ok'
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         log_pd.log({
             level: 'error',
