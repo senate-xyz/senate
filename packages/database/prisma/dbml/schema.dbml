@@ -167,6 +167,11 @@ Table Config {
   value String [not null]
 }
 
+Table UserToVoter {
+  votersId String [ref: > Voter.id]
+  usersId String [ref: > User.id]
+}
+
 Enum RoundupNotificationType {
   NEW
   ENDING_SOON
