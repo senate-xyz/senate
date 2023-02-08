@@ -144,6 +144,16 @@ export const SubscribedDAO = (props: {
                                                 alt='chain proposals'
                                             />
                                         )
+                                    case 'MAKER_POLL_ARBITRUM':
+                                        return (
+                                            <Image
+                                                key={index}
+                                                width='24'
+                                                height='24'
+                                                src='/assets/Chain/Arbitrum/On_Dark.svg'
+                                                alt='chain proposals'
+                                            />
+                                        )
                                     default:
                                         return (
                                             <Image
