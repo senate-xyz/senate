@@ -1,7 +1,6 @@
 import {
     prisma,
     RefreshArgs,
-    RefreshQueue,
     RefreshStatus,
     RefreshType
 } from '@senate/database'
@@ -9,7 +8,24 @@ import superagent from 'superagent'
 import { DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE } from '../config'
 import { log_ref } from '@senate/axiom'
 
-export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
+export const processSnapshotDaoVotes = async () => {
+    const item = await prisma.refreshQueue.findFirst({
+        where: {
+            refreshType: RefreshType.DAOSNAPSHOTVOTES
+        },
+        orderBy: {
+            priority: 'asc'
+        }
+    })
+
+    if (!item) return
+
+    await prisma.refreshQueue.delete({
+        where: {
+            id: item.id
+        }
+    })
+
     const daoHandler = await prisma.dAOHandler.findFirst({
         where: { id: item.handlerId },
         include: { dao: true }

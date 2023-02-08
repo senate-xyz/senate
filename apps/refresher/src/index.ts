@@ -1,4 +1,4 @@
-import { prisma, RefreshQueue, RefreshType } from '@senate/database'
+import { prisma } from '@senate/database'
 import { loadConfig } from './config'
 import { createVoterHandlers } from './createHandlers'
 import { processSnapshotProposals } from './process/snapshotProposals'
@@ -37,43 +37,17 @@ const main = async () => {
     while (true) {
         const start = Date.now()
 
-        const item = await prisma.refreshQueue.findFirst({
-            orderBy: { priority: 'desc' }
-        })
+        const item = await prisma.refreshQueue.count()
 
         if (item) {
-            processQueue(item)
-
-            await prisma.refreshQueue.delete({
-                where: { id: item?.id }
-            })
+            processSnapshotProposals()
+            processSnapshotDaoVotes()
+            processChainProposals()
+            processChainDaoVotes()
         }
 
-        while (Date.now() - start < 335) {
-            await sleep(1)
-        }
-    }
-}
-
-const processQueue = async (item: RefreshQueue) => {
-    switch (item.refreshType) {
-        case RefreshType.DAOSNAPSHOTPROPOSALS:
-            processSnapshotProposals(item)
-            break
-
-        case RefreshType.DAOSNAPSHOTVOTES: {
-            processSnapshotDaoVotes(item)
-            break
-        }
-
-        case RefreshType.DAOCHAINPROPOSALS: {
-            processChainProposals(item)
-            break
-        }
-
-        case RefreshType.DAOCHAINVOTES: {
-            processChainDaoVotes(item)
-            break
+        while (Date.now() - start < 500) {
+            await sleep(100)
         }
     }
 }
