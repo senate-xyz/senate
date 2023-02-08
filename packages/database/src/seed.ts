@@ -7,7 +7,7 @@ import makerPollVoteArbitrum from './abis/makerPollVoteArbitrum.json'
 import uniswapGovBravo from './abis/uniswapGovBravo.json'
 import compoundGovBravo from './abis/compoundGovBravo.json'
 import ensOZGovernor from './abis/ensOZGovernor.json'
-import { prisma } from './client'
+import { prisma } from './index'
 import { DAOHandlerType } from '@prisma/client'
 import { ethers } from 'ethers'
 
@@ -951,8 +951,8 @@ const seedVoters = async () => {
                 data: {
                     voters: {
                         connectOrCreate: {
-                            where: { address: ethers.utils.getAddress(voter) },
-                            create: { address: ethers.utils.getAddress(voter) }
+                            where: { address: ethers.getAddress(voter) },
+                            create: { address: ethers.getAddress(voter) }
                         }
                     }
                 }
