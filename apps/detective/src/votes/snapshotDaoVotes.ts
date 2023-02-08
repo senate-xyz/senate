@@ -44,17 +44,16 @@ export const updateSnapshotDaoVotes = async (
                 }
             },
             orderBy: {
-                lastSnapshotVoteCreatedDate: 'asc'
+                lastSnapshotRefresh: 'asc'
             }
         })
-    ).lastSnapshotVoteCreatedDate
+    ).lastSnapshotRefresh
 
     // Start search from whichever timestamp is earlier
     const searchFromTimestamp =
-        lastVoteCreated.getTime() <
-        daoHandler.lastSnapshotProposalCreatedDate.getTime()
+        lastVoteCreated.getTime() < daoHandler.lastSnapshotRefresh.getTime()
             ? lastVoteCreated
-            : daoHandler.lastSnapshotProposalCreatedDate
+            : daoHandler.lastSnapshotRefresh
 
     const graphqlQuery = `{votes(first:1000, orderBy: "created", orderDirection: asc, where: {voter_in: [${voters.map(
         (voter) => `"${voter}"`
@@ -177,8 +176,8 @@ export const updateSnapshotDaoVotes = async (
                 daoHandlerId: daoHandler.id
             },
             data: {
-                lastChainVoteCreatedBlock: 0,
-                lastSnapshotVoteCreatedDate: new Date(newestVote)
+                lastChainRefresh: 0,
+                lastSnapshotRefresh: new Date(newestVote)
             }
         })
 

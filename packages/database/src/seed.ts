@@ -209,7 +209,6 @@ const seedData = async () => {
                 create: [
                     {
                         type: DAOHandlerType.COMPOUND_CHAIN,
-                        lastChainProposalCreatedBlock: 0,
                         decoder: {
                             address:
                                 '0xc0Da02939E1441F497fd74F78cE7Decb17B66529',
@@ -543,11 +542,7 @@ const seedData = async () => {
         },
         create: {
             name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
-            userSettings: {
-                create: {
-                    dailyBulletinEmail: true
-                }
-            }
+            dailyBulletin: true
         },
         update: {
             name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',

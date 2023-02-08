@@ -127,8 +127,8 @@ export const updateChainProposals = async (
                 id: daoHandler.id
             },
             data: {
-                lastChainProposalCreatedBlock: toBlock,
-                lastSnapshotProposalCreatedDate: new Date(0)
+                lastChainRefresh: toBlock,
+                lastSnapshotRefresh: new Date(0)
             }
         })
 

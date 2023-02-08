@@ -48,11 +48,7 @@ export function authOptions(
                                 newUser: true,
                                 acceptedTerms: false,
                                 email: '',
-                                userSettings: {
-                                    create: {
-                                        dailyBulletinEmail: true
-                                    }
-                                },
+                                dailyBulletin: true,
                                 lastActive: new Date(),
                                 sessionCount: 0
                             },

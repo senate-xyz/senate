@@ -134,9 +134,7 @@ const fetchUsersToBeNotifiedForProposal = async (
                 email: {
                     not: ''
                 },
-                userSettings: {
-                    dailyBulletinEmail: true
-                },
+                dailyBulletin: true,
                 subscriptions: {
                     some: {
                         daoId: proposal.daoId,
@@ -546,9 +544,7 @@ const fetchUsersToBeNotified = async (): Promise<UserWithVotingAddresses[]> => {
                 email: {
                     not: ''
                 },
-                userSettings: {
-                    dailyBulletinEmail: true
-                },
+                dailyBulletin: true,
                 subscriptions: {
                     some: {
                         notificationsEnabled: true

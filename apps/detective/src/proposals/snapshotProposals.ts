@@ -99,8 +99,8 @@ export const updateSnapshotProposals = async (
                 id: daoHandler.id
             },
             data: {
-                lastChainProposalCreatedBlock: 0,
-                lastSnapshotProposalCreatedDate: new Date(newMaxCreated)
+                lastChainRefresh: 0,
+                lastSnapshotRefresh: new Date(newMaxCreated)
             }
         })
 
