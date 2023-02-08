@@ -41,19 +41,19 @@ export const addChainDaoVotes = async () => {
                             OR: [
                                 {
                                     refreshStatus: RefreshStatus.DONE,
-                                    lastRefreshDate: {
+                                    lastRefresh: {
                                         lt: normalRefresh
                                     }
                                 },
                                 {
                                     refreshStatus: RefreshStatus.PENDING,
-                                    lastRefreshDate: {
+                                    lastRefresh: {
                                         lt: forceRefresh
                                     }
                                 },
                                 {
                                     refreshStatus: RefreshStatus.NEW,
-                                    lastRefreshDate: {
+                                    lastRefresh: {
                                         lt: newRefresh
                                     }
                                 }
@@ -98,15 +98,15 @@ export const addChainDaoVotes = async () => {
                     const voterHandlers = daoHandler.voterHandlers.filter(
                         (vh) =>
                             (vh.refreshStatus == RefreshStatus.DONE &&
-                                vh.lastRefreshDate < normalRefresh) ||
+                                vh.lastRefresh < normalRefresh) ||
                             (vh.refreshStatus == RefreshStatus.PENDING &&
-                                vh.lastRefreshDate < forceRefresh) ||
+                                vh.lastRefresh < forceRefresh) ||
                             (vh.refreshStatus == RefreshStatus.NEW &&
-                                vh.lastRefreshDate < newRefresh)
+                                vh.lastRefresh < newRefresh)
                     )
 
                     const voteTimestamps = voterHandlers.map((voterHandler) =>
-                        Number(voterHandler.lastChainVoteCreatedBlock)
+                        Number(voterHandler.lastChainRefresh)
                     )
 
                     const domainLimit =
@@ -126,14 +126,11 @@ export const addChainDaoVotes = async () => {
                             const bucketVh = voterHandlers
                                 .filter(
                                     (voterHandler) =>
-                                        Number(
-                                            voterHandler.lastChainVoteCreatedBlock
-                                        ) +
+                                        Number(voterHandler.lastChainRefresh) +
                                             1 >=
                                             bucketMin &&
-                                        Number(
-                                            voterHandler.lastChainVoteCreatedBlock
-                                        ) < bucketMax
+                                        Number(voterHandler.lastChainRefresh) <
+                                            bucketMax
                                 )
                                 .slice(0, 250)
 
@@ -180,7 +177,7 @@ export const addChainDaoVotes = async () => {
                 where: { id: { in: voterHandlersRefreshed.map((v) => v.id) } },
                 data: {
                     refreshStatus: RefreshStatus.PENDING,
-                    lastRefreshDate: new Date()
+                    lastRefresh: new Date()
                 }
             })
         },

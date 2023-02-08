@@ -7,6 +7,7 @@ import {
 import superagent from 'superagent'
 import { DAOS_VOTES_CHAIN_INTERVAL_FORCE } from '../config'
 import { log_ref } from '@senate/axiom'
+import type { RefreshArgs } from '@senate/database'
 
 export const processChainDaoVotes = async (item: RefreshQueue) => {
     const daoHandler = await prisma.dAOHandler.findFirst({
@@ -14,7 +15,7 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
         include: { dao: true }
     })
 
-    const voters = [...item.args['voters']]
+    const voters = [...(item.args as RefreshArgs).voters]
 
     await superagent
         .post(`${process.env.DETECTIVE_URL}/updateChainDaoVotes`)
@@ -47,7 +48,7 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.DONE,
-                    lastRefreshDate: new Date()
+                    lastRefresh: new Date()
                 }
             })
 
@@ -64,7 +65,7 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshDate: new Date()
+                    lastRefresh: new Date()
                 }
             })
 
@@ -87,15 +88,15 @@ export const processChainDaoVotes = async (item: RefreshQueue) => {
                 where: {
                     voter: {
                         address: {
-                            in: voters.map((voter) => voter.address)
+                            in: voters.map((voter) => voter)
                         }
                     },
                     daoHandlerId: daoHandler?.id
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshDate: new Date(),
-                    lastChainVoteCreatedBlock: { decrement: 50000 }
+                    lastRefresh: new Date(),
+                    lastChainRefresh: { decrement: 50000 }
                 }
             })
 

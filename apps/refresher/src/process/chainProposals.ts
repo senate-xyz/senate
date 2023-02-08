@@ -18,7 +18,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
         .post(`${process.env.DETECTIVE_URL}/updateChainProposals`)
         .send({
             daoHandlerId: item.handlerId,
-            minBlockNumber: daoHandler?.lastChainProposalCreatedBlock?.valueOf()
+            minBlockNumber: daoHandler?.lastChainRefresh?.valueOf()
         })
 
         .type('application/json')
@@ -46,7 +46,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.DONE,
-                    lastRefreshDate: new Date()
+                    lastRefresh: new Date()
                 }
             })
 
@@ -60,7 +60,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshDate: new Date()
+                    lastRefresh: new Date()
                 }
             })
 
@@ -73,8 +73,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
                 postReqeust: `${process.env.DETECTIVE_URL}/updateChainProposals`,
                 postBody: {
                     daoHandlerId: item.handlerId,
-                    minBlockNumber:
-                        daoHandler?.lastChainProposalCreatedBlock?.valueOf()
+                    minBlockNumber: daoHandler?.lastChainRefresh?.valueOf()
                 },
                 response: data
             })
@@ -88,8 +87,8 @@ export const processChainProposals = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshDate: new Date(),
-                    lastChainProposalCreatedBlock: { decrement: 50000 }
+                    lastRefresh: new Date(),
+                    lastChainRefresh: { decrement: 50000 }
                 }
             })
 
@@ -102,8 +101,7 @@ export const processChainProposals = async (item: RefreshQueue) => {
                 postReqeust: `${process.env.DETECTIVE_URL}/updateChainProposals`,
                 postBody: {
                     daoHandlerId: item.handlerId,
-                    minBlockNumber:
-                        daoHandler?.lastChainProposalCreatedBlock?.valueOf()
+                    minBlockNumber: daoHandler?.lastChainRefresh?.valueOf()
                 },
                 errorMessage: e.message,
                 errorStack: e.stack

@@ -36,6 +36,10 @@ export type Decoder = {
     abi_create?: string
 }
 
+export type RefreshArgs = {
+    voters: string[]
+}
+
 export type ProposalType = Prisma.ProposalGetPayload<{
     include: { votes: true; dao: true }
 }>

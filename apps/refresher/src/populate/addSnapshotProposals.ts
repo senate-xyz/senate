@@ -27,19 +27,19 @@ export const addSnapshotProposalsToQueue = async () => {
                     OR: [
                         {
                             refreshStatus: RefreshStatus.DONE,
-                            lastRefreshDate: {
+                            lastRefresh: {
                                 lt: normalRefresh
                             }
                         },
                         {
                             refreshStatus: RefreshStatus.PENDING,
-                            lastRefreshDate: {
+                            lastRefresh: {
                                 lt: forceRefresh
                             }
                         },
                         {
                             refreshStatus: RefreshStatus.NEW,
-                            lastRefreshDate: {
+                            lastRefresh: {
                                 lt: newRefresh
                             }
                         }
@@ -92,7 +92,7 @@ export const addSnapshotProposalsToQueue = async () => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.PENDING,
-                    lastRefreshDate: new Date()
+                    lastRefresh: new Date()
                 }
             })
         },

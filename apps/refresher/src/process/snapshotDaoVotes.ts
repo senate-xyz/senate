@@ -1,5 +1,6 @@
 import {
     prisma,
+    RefreshArgs,
     RefreshQueue,
     RefreshStatus,
     RefreshType
@@ -14,7 +15,7 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
         include: { dao: true }
     })
 
-    const voters = [...item.args['voters']]
+    const voters = [...(item.args as RefreshArgs).voters]
 
     await superagent
         .post(`${process.env.DETECTIVE_URL}/updateSnapshotDaoVotes`)
@@ -47,7 +48,7 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.DONE,
-                    lastRefreshDate: new Date()
+                    lastRefresh: new Date()
                 }
             })
 
@@ -64,7 +65,7 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshDate: new Date()
+                    lastRefresh: new Date()
                 }
             })
 
@@ -87,15 +88,15 @@ export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
                 where: {
                     voter: {
                         address: {
-                            in: voters.map((voter) => voter.address)
+                            in: voters.map((voter) => voter)
                         }
                     },
                     daoHandlerId: daoHandler?.id
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshDate: new Date(),
-                    lastSnapshotVoteCreatedDate: new Date(
+                    lastRefresh: new Date(),
+                    lastSnapshotRefresh: new Date(
                         Date.now() - 1000 * 60 * 60 * 24 * 90
                     )
                 }
