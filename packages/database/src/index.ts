@@ -7,7 +7,6 @@ export type { JsonArray, JsonValue } from 'type-fest'
 
 export {
     type PrismaClient,
-    type PrismaPromise,
     type Proposal,
     type Voter,
     type VoterHandler,
