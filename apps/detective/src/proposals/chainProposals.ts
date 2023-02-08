@@ -159,7 +159,7 @@ export const updateChainProposals = async (
         currentBlock: currentBlock,
         fromBlock: fromBlock,
         toBlock: toBlock,
-        proposalsCouht: proposals ? proposals.length : 0,
+        proposalsCout: proposals ? proposals.length : 0,
         provider: provider._getConnection().url,
         response: res
     })
