@@ -94,7 +94,7 @@ export const updateSnapshotDaoVotes = async (
             .retry(3, (err, res) => {
                 if (err) return true
                 if (res.status == 200) return false
-                return false
+                return true
             })
             .then((response: { body: { data: { votes: GraphQLVote[] } } }) => {
                 return response.body.data.votes
