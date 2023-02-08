@@ -43,9 +43,9 @@
     "lint:fix": "turbo run lint:fix"
   },
   "devDependencies": {
-    "prettier": "^2.8.3",
-    "tsx": "^3.12.2",
-    "turbo": "1.7.3"
+    "prettier": "^2.8.4",
+    "tsx": "^3.12.3",
+    "turbo": "1.7.4"
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {
