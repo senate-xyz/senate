@@ -4,7 +4,9 @@ import { ethers } from 'ethers'
 import { getAaveVotes } from './chain/aave'
 import { getMakerExecutiveVotes } from './chain/makerExecutive'
 import { getUniswapVotes } from './chain/uniswap'
+import { getENSVotes } from './chain/ens'
 import { getMakerPollVotes } from './chain/makerPoll'
+import { getMakerPollVotesFromArbitrum } from './chain/makerPollArbitrum'
 import { getCompoundVotes } from './chain/compound'
 import superagent from 'superagent'
 
@@ -98,6 +100,7 @@ export const updateChainDaoVotes = async (
             ? fromBlock + blockBatchSize
             : currentBlock
 
+    //NOTE to future self: Maker Arbitrum's daoHandler.lastChainProposalCreatedBlock is always 0
     if (
         toBlock > daoHandler.lastChainProposalCreatedBlock &&
         toBlock != currentBlock
@@ -156,6 +159,30 @@ export const updateChainDaoVotes = async (
                     toBlock
                 )
                 break
+            case 'MAKER_POLL_ARBITRUM':
+                const arbitrumProvider = new ethers.providers.JsonRpcProvider(
+                    process.env.ARBITRUM_NODE_URL
+                )
+                const toBlockArbitrum = await arbitrumProvider.getBlockNumber()
+                console.log('ARBITRUM FROM BLOCK: ', fromBlock)
+                console.log('ARBITRUM TO BLOCK: ', toBlockArbitrum)
+                votes = await getMakerPollVotesFromArbitrum(
+                    arbitrumProvider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlockArbitrum
+                )
+                break
+            case 'ENS_CHAIN':
+                votes = await getENSVotes(
+                    provider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
+                break
         }
 
         const successfulResults = votes.filter((res) => res.success)
@@ -177,7 +204,7 @@ export const updateChainDaoVotes = async (
             },
             data: {
                 lastChainVoteCreatedBlock: toBlock,
-                lastSnapshotVoteCreatedTimestamp: new Date(0)
+                lastSnapshotVoteCreatedDate: new Date(0)
             }
         })
 
@@ -193,9 +220,9 @@ export const updateChainDaoVotes = async (
             currentBlock: currentBlock,
             fromBlock: fromBlock,
             toBlock: toBlock,
-            voters: voters,
-            votes: votes,
-            provider: provider._getConnection().url,
+            votersCount: voters.length,
+            votesCount: votes.length,
+            provider: provider.connection.url,
             errorMessage: e.message,
             errorStack: e.stack
         })
@@ -215,8 +242,8 @@ export const updateChainDaoVotes = async (
         currentBlock: currentBlock,
         fromBlock: fromBlock,
         toBlock: toBlock,
-        voters: voters,
-        votes: votes,
+        votersCount: voters.length,
+        votesCount: votes.length,
         provider: provider._getConnection().url,
         response: res
     })

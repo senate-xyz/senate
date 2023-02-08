@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import aaveGovBravo from './abis/aaveGovBravo.json'
-import makerChief from './abis/makerChief.json'
+import makerExecutivesChief from './abis/makerExecutivesChief.json'
 import makerPollCreate from './abis/makerPollCreate.json'
 import makerPollVote from './abis/makerPollVote.json'
+import makerPollVoteArbitrum from './abis/makerPollVoteArbitrum.json'
 import uniswapGovBravo from './abis/uniswapGovBravo.json'
 import compoundGovBravo from './abis/compoundGovBravo.json'
+import ensOZGovernor from './abis/ensOZGovernor.json'
 import { prisma } from './client'
 import { DAOHandlerType } from '@prisma/client'
 import { ethers } from 'ethers'
@@ -54,7 +56,7 @@ const seedData = async () => {
                         decoder: {
                             address:
                                 '0x0a3f6849f78076aefaDf113F5BED87720274dDC0',
-                            abi: makerChief.abi,
+                            abi: makerExecutivesChief.abi,
                             proposalUrl: 'https://vote.makerdao.com/executive/'
                         }
                     },
@@ -68,6 +70,14 @@ const seedData = async () => {
                             abi_create: makerPollCreate.abi,
                             abi_vote: makerPollVote.abi,
                             proposalUrl: 'https://vote.makerdao.com/polling/'
+                        }
+                    },
+                    {
+                        type: DAOHandlerType.MAKER_POLL_ARBITRUM,
+                        decoder: {
+                            address_vote:
+                                '0x4f4e551b4920a5417F8d4e7f8f099660dAdadcEC',
+                            abi_vote: makerPollVoteArbitrum.abi
                         }
                     }
                 ]
@@ -271,7 +281,6 @@ const seedData = async () => {
                             address:
                                 '0x408ED6354d4973f66138C91495F2f2FCbd8724C3',
                             abi: uniswapGovBravo.abi,
-
                             proposalUrl: 'https://app.uniswap.org/#/vote/'
                         }
                     },
@@ -294,6 +303,16 @@ const seedData = async () => {
             picture: '/assets/Project_Icons/ens',
             handlers: {
                 create: [
+                    {
+                        type: DAOHandlerType.ENS_CHAIN,
+                        decoder: {
+                            address:
+                                '0x323A76393544d5ecca80cd6ef2A560C6a395b7E3',
+                            abi: ensOZGovernor.abi,
+                            proposalUrl:
+                                'https://www.tally.xyz/gov/ens/proposal/'
+                        }
+                    },
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {

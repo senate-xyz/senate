@@ -29,25 +29,26 @@ export const addChainProposalsToQueue = async () => {
                             DAOHandlerType.COMPOUND_CHAIN,
                             DAOHandlerType.MAKER_EXECUTIVE,
                             DAOHandlerType.MAKER_POLL,
-                            DAOHandlerType.UNISWAP_CHAIN
+                            DAOHandlerType.UNISWAP_CHAIN,
+                            DAOHandlerType.ENS_CHAIN
                         ]
                     },
                     OR: [
                         {
                             refreshStatus: RefreshStatus.DONE,
-                            lastRefreshTimestamp: {
+                            lastRefreshDate: {
                                 lt: normalRefresh
                             }
                         },
                         {
                             refreshStatus: RefreshStatus.PENDING,
-                            lastRefreshTimestamp: {
+                            lastRefreshDate: {
                                 lt: forceRefresh
                             }
                         },
                         {
                             refreshStatus: RefreshStatus.NEW,
-                            lastRefreshTimestamp: {
+                            lastRefreshDate: {
                                 lt: newRefresh
                             }
                         }
@@ -100,7 +101,7 @@ export const addChainProposalsToQueue = async () => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.PENDING,
-                    lastRefreshTimestamp: new Date()
+                    lastRefreshDate: new Date()
                 }
             })
         },

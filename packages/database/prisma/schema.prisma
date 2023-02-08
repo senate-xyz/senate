@@ -52,17 +52,17 @@ model DAO {
 }
 
 model DAOHandler {
-  id                                   String         @id @default(cuid())
-  type                                 DAOHandlerType
-  decoder                              Json
-  lastChainProposalCreatedBlock        BigInt?        @default(0)
-  lastSnapshotProposalCreatedTimestamp DateTime?      @default("2000-01-01T00:00:00.00Z")
-  lastRefreshTimestamp                 DateTime       @default("2000-01-01T00:00:00.00Z")
-  refreshStatus                        RefreshStatus  @default(NEW)
-  daoId                                String
-  dao                                  DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
-  proposals                            Proposal[]
-  voterHandlers                        VoterHandler[]
+  id                              String         @id @default(cuid())
+  type                            DAOHandlerType
+  decoder                         Json
+  lastChainProposalCreatedBlock   BigInt?        @default(0)
+  lastSnapshotProposalCreatedDate DateTime?      @default("2000-01-01T00:00:00.00Z")
+  lastRefreshDate                 DateTime       @default("2000-01-01T00:00:00.00Z")
+  refreshStatus                   RefreshStatus  @default(NEW)
+  daoId                           String
+  dao                             DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  proposals                       Proposal[]
+  voterHandlers                   VoterHandler[]
 
   @@unique([daoId, type])
 }
@@ -119,15 +119,15 @@ model Vote {
 }
 
 model VoterHandler {
-  id                               String        @id @default(cuid())
-  voterId                          String
-  daoHandlerId                     String
-  refreshStatus                    RefreshStatus @default(NEW)
-  lastChainVoteCreatedBlock        BigInt?       @default(0)
-  lastRefreshTimestamp             DateTime      @default("2000-01-01T00:00:00.00Z")
-  lastSnapshotVoteCreatedTimestamp DateTime?     @default("2000-01-01T00:00:00.00Z")
-  daoHandler                       DAOHandler    @relation(fields: [daoHandlerId], references: [id], onDelete: Cascade)
-  voter                            Voter         @relation(fields: [voterId], references: [id], onDelete: Cascade)
+  id                          String        @id @default(cuid())
+  voterId                     String
+  daoHandlerId                String
+  refreshStatus               RefreshStatus @default(NEW)
+  lastChainVoteCreatedBlock   BigInt?       @default(0)
+  lastRefreshDate             DateTime      @default("2000-01-01T00:00:00.00Z")
+  lastSnapshotVoteCreatedDate DateTime?     @default("2000-01-01T00:00:00.00Z")
+  daoHandler                  DAOHandler    @relation(fields: [daoHandlerId], references: [id], onDelete: Cascade)
+  voter                       Voter         @relation(fields: [voterId], references: [id], onDelete: Cascade)
 
   @@unique([voterId, daoHandlerId])
   @@index([daoHandlerId])
@@ -168,8 +168,10 @@ enum DAOHandlerType {
   AAVE_CHAIN
   COMPOUND_CHAIN
   UNISWAP_CHAIN
+  ENS_CHAIN
   MAKER_EXECUTIVE
   MAKER_POLL
+  MAKER_POLL_ARBITRUM
   SNAPSHOT
 }
 

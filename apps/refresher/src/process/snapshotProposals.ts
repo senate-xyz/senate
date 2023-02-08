@@ -18,8 +18,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
         .post(`${process.env.DETECTIVE_URL}/updateSnapshotProposals`)
         .send({
             daoHandlerId: item.handlerId,
-            minCreatedAt:
-                daoHandler?.lastSnapshotProposalCreatedTimestamp?.valueOf()
+            minCreatedAt: daoHandler?.lastSnapshotProposalCreatedDate?.valueOf()
         })
         .type('application/json')
         .timeout({
@@ -46,7 +45,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.DONE,
-                    lastRefreshTimestamp: new Date()
+                    lastRefreshDate: new Date()
                 }
             })
 
@@ -60,7 +59,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshTimestamp: new Date()
+                    lastRefreshDate: new Date()
                 }
             })
 
@@ -74,7 +73,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                 postBody: {
                     daoHandlerId: item.handlerId,
                     minCreatedAt:
-                        daoHandler?.lastSnapshotProposalCreatedTimestamp?.valueOf()
+                        daoHandler?.lastSnapshotProposalCreatedDate?.valueOf()
                 },
                 response: data
             })
@@ -88,8 +87,8 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
-                    lastRefreshTimestamp: new Date(),
-                    lastSnapshotProposalCreatedTimestamp: new Date(
+                    lastRefreshDate: new Date(),
+                    lastSnapshotProposalCreatedDate: new Date(
                         Date.now() - 1000 * 60 * 60 * 24 * 90
                     )
                 }
@@ -105,7 +104,7 @@ export const processSnapshotProposals = async (item: RefreshQueue) => {
                 postBody: {
                     daoHandlerId: item.handlerId,
                     minCreatedAt:
-                        daoHandler?.lastSnapshotProposalCreatedTimestamp?.valueOf()
+                        daoHandler?.lastSnapshotProposalCreatedDate?.valueOf()
                 },
                 errorMessage: e.message,
                 errorStack: e.stack

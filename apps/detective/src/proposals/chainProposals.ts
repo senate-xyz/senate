@@ -5,6 +5,7 @@ import { compoundProposals } from './chain/compound'
 import { makerExecutiveProposals } from './chain/makerExecutive'
 import { makerPolls } from './chain/makerPoll'
 import { uniswapProposals } from './chain/uniswap'
+import { ensProposals } from './chain/ens'
 import { log_pd } from '@senate/axiom'
 
 interface Result {
@@ -102,6 +103,14 @@ export const updateChainProposals = async (
                     toBlock
                 )
                 break
+            case 'ENS_CHAIN':
+                proposals = await ensProposals(
+                    provider,
+                    daoHandler,
+                    fromBlock,
+                    toBlock
+                )
+                break
             default:
                 proposals = []
         }
@@ -119,7 +128,7 @@ export const updateChainProposals = async (
             },
             data: {
                 lastChainProposalCreatedBlock: toBlock,
-                lastSnapshotProposalCreatedTimestamp: new Date(0)
+                lastSnapshotProposalCreatedDate: new Date(0)
             }
         })
 
@@ -150,8 +159,8 @@ export const updateChainProposals = async (
         currentBlock: currentBlock,
         fromBlock: fromBlock,
         toBlock: toBlock,
+        proposalsCouht: proposals ? proposals.length : 0,
         provider: provider._getConnection().url,
-        proposals: proposals,
         response: res
     })
 

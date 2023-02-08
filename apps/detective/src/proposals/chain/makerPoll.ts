@@ -72,6 +72,11 @@ const getProposalTitle = async (
 ): Promise<string> => {
     let response
 
+    //check if url is valid
+    if (!url || !url.startsWith('https://') || !url.startsWith('http://')) {
+        return 'Unknown'
+    }
+
     try {
         let retriesLeft = 5
         while (retriesLeft) {
@@ -88,11 +93,19 @@ const getProposalTitle = async (
                         calculateExponentialBackoffTimeInMs(retriesLeft)
                     )
                 )
+
+                log_pd.log({
+                    level: 'warn',
+                    message: `Retrying fetching title for Maker poll ${onChainId}`,
+                    data: {
+                        retriesLeft: retriesLeft
+                    }
+                })
             }
         }
     } catch (e) {
         log_pd.log({
-            level: 'warn',
+            level: 'error',
             message: `Error fetching title for Maker poll ${onChainId}`
         })
     }
