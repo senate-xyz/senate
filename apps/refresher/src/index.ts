@@ -1,5 +1,5 @@
 import { prisma } from '@senate/database'
-import { loadConfig } from './config'
+import { loadConfig, REFRESH_PROCESS_INTERVAL_MS } from './config'
 import { createVoterHandlers } from './createHandlers'
 import { processSnapshotProposals } from './process/snapshotProposals'
 import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
@@ -46,8 +46,8 @@ const main = async () => {
             processChainDaoVotes()
         }
 
-        while (Date.now() - start < 500) {
-            await sleep(100)
+        while (Date.now() - start < REFRESH_PROCESS_INTERVAL_MS) {
+            await sleep(10)
         }
     }
 }

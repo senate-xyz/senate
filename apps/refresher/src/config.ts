@@ -1,5 +1,7 @@
 import { prisma } from '@senate/database'
 
+const DEFAULT_REFRESH_PROCESS_INTERVAL_MS = 250
+
 const DEFAULT_DAOS_PROPOSALS_SNAPSHOT_INTERVAL = 2,
     DEFAULT_DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE = 60,
     DEFAULT_DAOS_VOTES_SNAPSHOT_INTERVAL = 1,
@@ -8,6 +10,8 @@ const DEFAULT_DAOS_PROPOSALS_SNAPSHOT_INTERVAL = 2,
     DEFAULT_DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE = 60,
     DEFAULT_DAOS_VOTES_CHAIN_INTERVAL = 1,
     DEFAULT_DAOS_VOTES_CHAIN_INTERVAL_FORCE = 60
+
+export let REFRESH_PROCESS_INTERVAL_MS: number
 
 export let DAOS_PROPOSALS_SNAPSHOT_INTERVAL: number,
     DAOS_PROPOSALS_SNAPSHOT_INTERVAL_FORCE: number,
@@ -19,6 +23,21 @@ export let DAOS_PROPOSALS_SNAPSHOT_INTERVAL: number,
     DAOS_VOTES_CHAIN_INTERVAL_FORCE: number
 
 export const loadConfig = async () => {
+    REFRESH_PROCESS_INTERVAL_MS = Number(
+        (
+            await prisma.config.upsert({
+                where: {
+                    param: 'REFRESH_PROCESS_INTERVAL_MS'
+                },
+                create: {
+                    param: 'REFRESH_PROCESS_INTERVAL_MS',
+                    value: String(DEFAULT_REFRESH_PROCESS_INTERVAL_MS)
+                },
+                update: {}
+            })
+        ).value
+    )
+
     DAOS_PROPOSALS_SNAPSHOT_INTERVAL = Number(
         (
             await prisma.config.upsert({
