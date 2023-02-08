@@ -1,27 +1,25 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandler, prisma } from '@senate/database'
-import { BigNumber, ethers } from 'ethers'
-import { hexZeroPad } from 'ethers/lib/utils'
+import { DAOHandlerWithDAO, Decoder, prisma } from '@senate/database'
+import { ethers, Log, zeroPadValue, hexlify } from 'ethers'
 
 export const getENSVotes = async (
-    provider: ethers.providers.JsonRpcProvider,
-    daoHandler: DAOHandler,
+    provider: ethers.JsonRpcProvider,
+    daoHandler: DAOHandlerWithDAO,
     voterAddresses: string[],
     fromBlock: number,
     toBlock: number
 ) => {
-    const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
+    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi)
 
-    const infuraProvider = new ethers.providers.JsonRpcProvider({
-        url: String(process.env.INFURA_NODE_URL)
-    })
-    const logs = await infuraProvider.getLogs({
+    const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['address'],
+        address: (daoHandler.decoder as Decoder).address,
         topics: [
-            govBravoIface.getEventTopic('VoteCast'),
-            voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
+            iface.getEvent('VoteCast').topicHash,
+            voterAddresses.map((voterAddress) =>
+                hexlify(zeroPadValue(voterAddress, 32))
+            )
         ]
     })
 
@@ -35,30 +33,32 @@ export const getENSVotes = async (
 }
 
 export const getVotesForVoter = async (
-    logs,
-    daoHandler,
+    logs: Log[],
+    daoHandler: DAOHandlerWithDAO,
     voterAddress: string
 ) => {
     let success = true
-    const govBravoIface = new ethers.utils.Interface(daoHandler.decoder['abi'])
+    const govBravoIface = new ethers.Interface(
+        (daoHandler.decoder as Decoder).abi
+    )
     const votes =
         (
             await Promise.all(
                 logs.map(async (log) => {
                     try {
                         const eventData = govBravoIface.parseLog({
-                            topics: log.topics,
+                            topics: log.topics as string[],
                             data: log.data
                         }).args
                         if (
                             String(eventData.voter).toLowerCase() !=
                             voterAddress.toLowerCase()
                         )
-                            return
+                            return null
 
                         const proposal = await prisma.proposal.findFirst({
                             where: {
-                                externalId: BigNumber.from(
+                                externalId: BigInt(
                                     eventData.proposalId
                                 ).toString(),
                                 daoId: daoHandler.daoId,
@@ -68,11 +68,11 @@ export const getVotesForVoter = async (
 
                         if (!proposal) {
                             success = false
-                            return
+                            return null
                         }
 
                         return {
-                            voterAddress: ethers.utils.getAddress(voterAddress),
+                            voterAddress: ethers.getAddress(voterAddress),
                             daoId: daoHandler.daoId,
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,
@@ -88,6 +88,7 @@ export const getVotesForVoter = async (
                             errorStack: e.stack
                         })
                         success = false
+                        return null
                     }
                 })
             )

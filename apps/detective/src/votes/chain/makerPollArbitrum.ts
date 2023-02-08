@@ -1,31 +1,30 @@
-import { DAOHandler, prisma, Vote, Proposal } from '@senate/database'
-import { BigNumber, ethers } from 'ethers'
-import { hexZeroPad } from 'ethers/lib/utils'
+import { DAOHandler, prisma, Proposal, Decoder } from '@senate/database'
+import { ethers, hexlify, zeroPadValue } from 'ethers'
 
 export const getMakerPollVotesFromArbitrum = async (
-    provider: ethers.providers.JsonRpcProvider,
+    provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandler,
     voterAddresses: string[],
     fromBlock: number,
     toBlock: number
 ) => {
-    const iface = new ethers.utils.Interface(
-        JSON.parse(daoHandler.decoder['abi_vote'])
-    )
+    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi_vote)
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['address_vote'],
+        address: (daoHandler.decoder as Decoder).address_vote,
         topics: [
-            iface.getEventTopic('Voted'),
-            voterAddresses.map((voterAddress) => hexZeroPad(voterAddress, 32))
+            iface.getEvent('Voted').topicHash,
+            voterAddresses.map((voterAddress) =>
+                hexlify(zeroPadValue(voterAddress, 32))
+            )
         ]
     })
 
     const eventData = logs.map((log) => {
         return iface.parseLog({
-            topics: log.topics,
+            topics: log.topics as string[],
             data: log.data
         }).args
     })
@@ -40,21 +39,18 @@ export const getMakerPollVotesFromArbitrum = async (
         })
     )
 
-    console.log('VOTES FOUND: ', result.length)
-    console.log(result)
-
     return result
 }
 
 export const getVotesForVoter = async (
     eventsForVoter: Array<any>,
-    daoHandler,
+    daoHandler: DAOHandler,
     voterAddress: string
 ) => {
     let success = true
 
     const uniquePollIds: Set<string> = new Set(
-        eventsForVoter.map((event) => BigNumber.from(event.pollId).toString())
+        eventsForVoter.map((event) => BigInt(event.pollId).toString())
     )
 
     const proposals = await prisma.proposal.findMany({
@@ -87,16 +83,14 @@ const formatVotes = async (
     proposalsMap: Map<string, Proposal>
 ) => {
     return events.map((event) => {
-        const proposal = proposalsMap.get(
-            BigNumber.from(event.pollId).toString()
-        )
+        const proposal = proposalsMap.get(BigInt(event.pollId).toString())
         return {
             voterAddress: event.voter,
             daoId: proposal.daoId,
             proposalId: proposal.id,
             daoHandlerId: proposal.daoHandlerId,
-            choiceId: BigNumber.from(event.optionId).toString(),
-            choice: BigNumber.from(event.optionId).toString() ? 'Yes' : 'No'
+            choiceId: BigInt(event.optionId).toString(),
+            choice: BigInt(event.optionId).toString() ? 'Yes' : 'No'
         }
     })
 }

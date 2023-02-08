@@ -160,7 +160,7 @@ export const updateChainDaoVotes = async (
                 )
                 break
             case 'MAKER_POLL_ARBITRUM':
-                const arbitrumProvider = new ethers.providers.JsonRpcProvider(
+                const arbitrumProvider = new ethers.JsonRpcProvider(
                     process.env.ARBITRUM_NODE_URL
                 )
                 const toBlockArbitrum = await arbitrumProvider.getBlockNumber()
@@ -222,7 +222,7 @@ export const updateChainDaoVotes = async (
             toBlock: toBlock,
             votersCount: voters.length,
             votesCount: votes.length,
-            provider: provider.connection.url,
+            provider: provider._getConnection().url,
             errorMessage: e.message,
             errorStack: e.stack
         })

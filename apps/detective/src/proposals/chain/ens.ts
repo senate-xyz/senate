@@ -1,29 +1,29 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandler } from '@senate/database'
+import { DAOHandler, Decoder } from '@senate/database'
 import { ethers } from 'ethers'
 
 export const ensProposals = async (
-    provider: ethers.providers.JsonRpcProvider,
+    provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandler,
     fromBlock: number,
     toBlock: number
 ) => {
-    const ozGovernorInterface = new ethers.utils.Interface(
-        daoHandler.decoder['abi']
+    const ozGovernorInterface = new ethers.Interface(
+        (daoHandler.decoder as Decoder).abi
     )
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
-        address: daoHandler.decoder['address'],
-        topics: [ozGovernorInterface.getEventTopic('ProposalCreated')]
+        address: (daoHandler.decoder as Decoder).address,
+        topics: [ozGovernorInterface.getEvent('ProposalCreated').topicHash]
     })
 
     const args = logs.map((log) => ({
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
         eventData: ozGovernorInterface.parseLog({
-            topics: log.topics,
+            topics: log.topics as string[],
             data: log.data
         }).args
     }))
@@ -46,7 +46,8 @@ export const ensProposals = async (
                     const proposalOnChainId =
                         arg.eventData.proposalId.toString()
                     const proposalUrl =
-                        daoHandler.decoder['proposalUrl'] + proposalOnChainId
+                        (daoHandler.decoder as Decoder).proposalUrl +
+                        proposalOnChainId
 
                     return {
                         externalId: proposalOnChainId,
