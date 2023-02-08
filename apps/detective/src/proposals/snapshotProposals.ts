@@ -16,8 +16,7 @@ type GraphQLProposal = {
 }
 
 export const updateSnapshotProposals = async (
-    daoHandlerId: string,
-    minCreatedAt: number
+    daoHandlerId: string
 ): Promise<Array<{ daoHandlerId: string; response: string }>> => {
     let response = 'nok'
 
@@ -25,6 +24,8 @@ export const updateSnapshotProposals = async (
         where: { id: daoHandlerId },
         include: { dao: true }
     })
+
+    const minCreatedAt = await daoHandler.lastSnapshotRefresh.getTime()
 
     const space = (daoHandler.decoder as Decoder).space
 
@@ -34,7 +35,7 @@ export const updateSnapshotProposals = async (
                 proposals (
                     first: 1000, 
                     where: {
-                    space_in: ["${space}"],
+                    space: "${space}",
                     created_gt: ${Math.floor(minCreatedAt / 1000)}
                     },
                     orderBy: "created",
@@ -92,7 +93,7 @@ export const updateSnapshotProposals = async (
 
         const newMaxCreated = proposals.length
             ? Math.max(...proposals.map((proposal) => proposal.created)) * 1000
-            : Date.now()
+            : minCreatedAt
 
         await prisma.dAOHandler.update({
             where: {

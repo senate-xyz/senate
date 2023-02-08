@@ -72,7 +72,7 @@ export const updateChainDaoVotes = async (
             return 0
         })
 
-    const lastVoteBlock = Math.min(
+    const oldestVoteBlock = Math.min(
         ...voterHandlers.map((voterHandler) =>
             Number(voterHandler.lastChainRefresh)
         )
@@ -91,7 +91,7 @@ export const updateChainDaoVotes = async (
     if (daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE)
         blockBatchSize = Math.floor(blockBatchSize / 10)
 
-    let fromBlock = Math.max(lastVoteBlock, 0)
+    let fromBlock = Math.max(oldestVoteBlock, 0)
 
     if (fromBlock < firstProposalBlock) fromBlock = firstProposalBlock
 

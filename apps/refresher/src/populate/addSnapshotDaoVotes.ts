@@ -100,18 +100,21 @@ export const addSnapshotDaoVotes = async () => {
                 select: { priority: true }
             })) ?? { priority: 1 }
 
-            let voterHandlersRefreshed: VoterHandler[] = []
+            let voterHandlerToRefresh: VoterHandler[] = []
 
             const refreshEntries = daoHandlers
                 .map((daoHandler) => {
                     const voterHandlers = daoHandler.voterHandlers
 
                     const voteTimestamps = voterHandlers.map((voterHandler) =>
-                        Number(voterHandler.lastSnapshotRefresh?.valueOf())
+                        Number(voterHandler.lastSnapshotRefresh?.getTime())
                     )
 
                     const voteTimestampBuckets = bin<number, Date>()
-                        .domain([new Date(0), new Date(Date.now() + 5000)])
+                        .domain([
+                            new Date(0),
+                            new Date(Date.now() + 60 * 60 * 1000)
+                        ])
                         .thresholds(thresholdsTime(10))(voteTimestamps)
 
                     const refreshItemsDao = voteTimestampBuckets
@@ -122,19 +125,18 @@ export const addSnapshotDaoVotes = async () => {
                             const bucketVh = voterHandlers
                                 .filter(
                                     (voterHandler) =>
+                                        bucketMin <=
+                                            Number(
+                                                voterHandler.lastSnapshotRefresh?.getTime()
+                                            ) &&
                                         Number(
-                                            voterHandler.lastSnapshotRefresh?.valueOf()
-                                        ) +
-                                            1 >=
-                                            bucketMin &&
-                                        Number(
-                                            voterHandler.lastSnapshotRefresh?.valueOf()
+                                            voterHandler.lastSnapshotRefresh?.getTime()
                                         ) < bucketMax
                                 )
                                 .slice(0, 100)
 
-                            voterHandlersRefreshed = [
-                                ...voterHandlersRefreshed,
+                            voterHandlerToRefresh = [
+                                ...voterHandlerToRefresh,
                                 ...bucketVh
                             ]
 
@@ -177,7 +179,7 @@ export const addSnapshotDaoVotes = async () => {
             })
 
             await tx.voterHandler.updateMany({
-                where: { id: { in: voterHandlersRefreshed.map((v) => v.id) } },
+                where: { id: { in: voterHandlerToRefresh.map((v) => v.id) } },
                 data: {
                     refreshStatus: RefreshStatus.PENDING,
                     lastRefresh: new Date()

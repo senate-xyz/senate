@@ -45,8 +45,7 @@ export const processChainProposals = async () => {
     await superagent
         .post(`${process.env.DETECTIVE_URL}/updateChainProposals`)
         .send({
-            daoHandlerId: item.handlerId,
-            minBlockNumber: daoHandler?.lastChainRefresh?.valueOf()
+            daoHandlerId: item.handlerId
         })
 
         .type('application/json')

@@ -46,8 +46,7 @@ export const processSnapshotProposals = async () => {
     await superagent
         .post(`${process.env.DETECTIVE_URL}/updateSnapshotProposals`)
         .send({
-            daoHandlerId: item.handlerId,
-            minCreatedAt: daoHandler?.lastSnapshotRefresh?.valueOf()
+            daoHandlerId: item.handlerId
         })
         .type('application/json')
         .timeout({

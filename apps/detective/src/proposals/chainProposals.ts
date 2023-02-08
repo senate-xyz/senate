@@ -27,10 +27,7 @@ const senateProvider = new ethers.JsonRpcProvider(
     String(process.env.SENATE_NODE_URL)
 )
 
-export const updateChainProposals = async (
-    daoHandlerId: string,
-    minBlockNumber: number
-) => {
+export const updateChainProposals = async (daoHandlerId: string) => {
     let response = 'nok'
     const daoHandler = await prisma.dAOHandler.findFirstOrThrow({
         where: { id: daoHandlerId },
@@ -48,6 +45,8 @@ export const updateChainProposals = async (
     } catch (e) {
         currentBlock = await infuraProvider.getBlockNumber()
     }
+
+    const minBlockNumber = Number(daoHandler.lastChainRefresh)
 
     const blockBatchSize =
         daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE ? 100000 : 1000000

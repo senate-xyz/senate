@@ -9,10 +9,9 @@ import { updateChainDaoVotes } from './votes/chainDaoVotes'
 export class AppService {
     //SNAPSHOT PROPOSALS
     async updateSnapshotProposals(
-        daoHandlerId: string,
-        minCreatedAt: number
+        daoHandlerId: string
     ): Promise<Array<{ daoHandlerId: string; response: string }>> {
-        return await updateSnapshotProposals(daoHandlerId, minCreatedAt)
+        return await updateSnapshotProposals(daoHandlerId)
     }
 
     //SNAPSHOT VOTES
@@ -25,10 +24,9 @@ export class AppService {
 
     //CHAIN PROPOSALS
     async updateChainProposals(
-        daoHandlerId: string,
-        minBlockNumber: number
+        daoHandlerId: string
     ): Promise<Array<{ daoHandlerId: string; response: string }>> {
-        return await updateChainProposals(daoHandlerId, minBlockNumber)
+        return await updateChainProposals(daoHandlerId)
     }
 
     //CHAIN VOTES

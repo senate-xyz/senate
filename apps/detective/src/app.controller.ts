@@ -79,26 +79,18 @@ export class AppController {
     }
 
     @Post('updateSnapshotProposals')
-    async updateSnapshotProposals(
-        @Body('daoHandlerId') daoHandlerId: string,
-        @Body('minCreatedAt') minCreatedAt: number
-    ) {
+    async updateSnapshotProposals(@Body('daoHandlerId') daoHandlerId: string) {
         const response = await this.appService.updateSnapshotProposals(
-            daoHandlerId,
-            minCreatedAt
+            daoHandlerId
         )
 
         return response
     }
 
     @Post('updateChainProposals')
-    async updateChainProposals(
-        @Body('daoHandlerId') daoHandlerId: string,
-        @Body('minBlockNumber') minBlockNumber: number
-    ) {
+    async updateChainProposals(@Body('daoHandlerId') daoHandlerId: string) {
         const response = await this.appService.updateChainProposals(
-            daoHandlerId,
-            minBlockNumber
+            daoHandlerId
         )
 
         return response

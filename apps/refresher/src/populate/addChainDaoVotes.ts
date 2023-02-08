@@ -111,7 +111,7 @@ export const addChainDaoVotes = async () => {
                 select: { priority: true }
             })) ?? { priority: 1 }
 
-            let voterHandlersRefreshed: VoterHandler[] = []
+            let voterHandlerToRefresh: VoterHandler[] = []
 
             const refreshEntries = daoHandlers
                 .map((daoHandler) => {
@@ -138,16 +138,17 @@ export const addChainDaoVotes = async () => {
                             const bucketVh = voterHandlers
                                 .filter(
                                     (voterHandler) =>
-                                        Number(voterHandler.lastChainRefresh) +
-                                            1 >=
-                                            bucketMin &&
+                                        bucketMin <=
+                                            Number(
+                                                voterHandler.lastChainRefresh
+                                            ) &&
                                         Number(voterHandler.lastChainRefresh) <
                                             bucketMax
                                 )
-                                .slice(0, 250)
+                                .slice(0, 100)
 
-                            voterHandlersRefreshed = [
-                                ...voterHandlersRefreshed,
+                            voterHandlerToRefresh = [
+                                ...voterHandlerToRefresh,
                                 ...bucketVh
                             ]
 
@@ -186,7 +187,7 @@ export const addChainDaoVotes = async () => {
             })
 
             await tx.voterHandler.updateMany({
-                where: { id: { in: voterHandlersRefreshed.map((v) => v.id) } },
+                where: { id: { in: voterHandlerToRefresh.map((v) => v.id) } },
                 data: {
                     refreshStatus: RefreshStatus.PENDING,
                     lastRefresh: new Date()
