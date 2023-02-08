@@ -1,4 +1,10 @@
-import { prisma, User, DAOHandlerType, DAOHandler } from '@senate/database'
+import {
+    prisma,
+    User,
+    DAOHandlerType,
+    DAOHandler,
+    Decoder
+} from '@senate/database'
 import axios from 'axios'
 import promptSync from 'prompt-sync'
 
@@ -66,9 +72,7 @@ async function fetchSnapshotSpacesFromDb(): Promise<Array<string>> {
         }
     })
 
-    return handlers.map(
-        (handler) => JSON.parse(handler.decoder as string).space
-    )
+    return handlers.map((handler) => (handler.decoder as Decoder).space)
 }
 
 async function getSnapshotVotesCount(

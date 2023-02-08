@@ -38,10 +38,10 @@ export const ensProposals = async (
 
                     const votingStartsTimestamp =
                         proposalCreatedTimestamp +
-                        (arg.eventData.startBlock - arg.txBlock) * 12
+                        (Number(arg.eventData.startBlock) - arg.txBlock) * 12
                     const votingEndsTimestamp =
                         proposalCreatedTimestamp +
-                        (arg.eventData.endBlock - arg.txBlock) * 12
+                        (Number(arg.eventData.endBlock) - arg.txBlock) * 12
                     const title = await formatTitle(arg.eventData.description)
                     const proposalOnChainId =
                         arg.eventData.proposalId.toString()
