@@ -208,8 +208,7 @@ export const updateChainDaoVotes = async (
         successfulResults.map((res) => {
             result.set(res.voterAddress, 'ok')
         })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
+    } catch (e) {
         log_pd.log({
             level: 'error',
             message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -221,10 +220,10 @@ export const updateChainDaoVotes = async (
             votersCount: voters.length,
             votesCount: votes.length,
             provider: provider._getConnection().url,
-            errorMessage: e.message,
-            errorStack: e.stack
+            errorName: (e as Error).name,
+            errorMessage: (e as Error).message,
+            errorStack: (e as Error).stack
         })
-        console.log(e)
     }
 
     const res = Array.from(result, ([name, value]) => ({

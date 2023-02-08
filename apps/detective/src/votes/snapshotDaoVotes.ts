@@ -184,21 +184,21 @@ export const updateSnapshotDaoVotes = async (
 
         voters.map((voter) => result.set(voter, 'ok'))
     } catch (e) {
-        if (e instanceof Error)
-            log_pd.log({
-                level: 'error',
-                message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
-                searchType: 'VOTES',
-                sourceType: 'SNAPSHOT',
-                created_gt: searchFromTimestamp
-                    ? Math.floor(searchFromTimestamp.valueOf() / 1000)
-                    : 0,
-                space: (daoHandler.decoder as Decoder).space,
-                votersCount: voters.length,
-                votesCount: votes.length,
-                errorMessage: e.message,
-                errorStack: e.stack
-            })
+        log_pd.log({
+            level: 'error',
+            message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
+            searchType: 'VOTES',
+            sourceType: 'SNAPSHOT',
+            created_gt: searchFromTimestamp
+                ? Math.floor(searchFromTimestamp.valueOf() / 1000)
+                : 0,
+            space: (daoHandler.decoder as Decoder).space,
+            votersCount: voters.length,
+            votesCount: votes.length,
+            errorName: (e as Error).name,
+            errorMessage: (e as Error).message,
+            errorStack: (e as Error).stack
+        })
     }
 
     const res = Array.from(result, ([name, value]) => ({

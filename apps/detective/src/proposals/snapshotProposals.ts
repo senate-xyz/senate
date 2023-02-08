@@ -105,8 +105,7 @@ export const updateSnapshotProposals = async (
         })
 
         response = 'ok'
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
+    } catch (e) {
         log_pd.log({
             level: 'error',
             message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -114,8 +113,9 @@ export const updateSnapshotProposals = async (
             sourceType: 'SNAPSHOT',
             created_gt: Math.floor(minCreatedAt / 1000),
             proposalsCount: proposals.length ?? 0,
-            errorMessage: e.message,
-            errorStack: e.stack
+            errorName: (e as Error).name,
+            errorMessage: (e as Error).message,
+            errorStack: (e as Error).stack
         })
     }
 

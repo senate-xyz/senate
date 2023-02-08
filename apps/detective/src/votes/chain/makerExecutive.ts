@@ -104,14 +104,14 @@ export const getVotesForVoter = async (
                         choice: 'Yes'
                     }
                 } catch (e) {
-                    if (e instanceof Error)
-                        log_pd.log({
-                            level: 'error',
-                            message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
-                            logs: logs,
-                            errorMessage: e.message,
-                            errorStack: e.stack
-                        })
+                    log_pd.log({
+                        level: 'error',
+                        message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
+                        logs: logs,
+                        errorName: (e as Error).name,
+                        errorMessage: (e as Error).message,
+                        errorStack: (e as Error).stack
+                    })
                     success = false
                     return null
                 }

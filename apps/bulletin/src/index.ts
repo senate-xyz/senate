@@ -77,14 +77,14 @@ schedule(
                 pastProposals,
                 RoundupNotificationType.PAST
             )
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (e: any) {
+        } catch (e) {
             log_bul.log({
                 level: 'error',
                 message: 'Could not complete daily roundup',
                 data: {
-                    errorMessage: e.message,
-                    errorStack: e.stack
+                    errorName: (e as Error).name,
+                    errorMessage: (e as Error).message,
+                    errorStack: (e as Error).stack
                 }
             })
             errorsDetected = true
@@ -112,14 +112,14 @@ const clearNotificationsTable = async () => {
             level: 'info',
             message: 'Cleared notifications table'
         })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
+    } catch (e) {
         log_bul.log({
             level: 'error',
             message: 'Could not clear notifications table',
             data: {
-                errorMessage: e.message,
-                errorStack: e.stack
+                errorName: (e as Error).name,
+                errorMessage: (e as Error).message,
+                errorStack: (e as Error).stack
             }
         })
         throw new Error('Could not clear notifications table')
@@ -160,14 +160,14 @@ const fetchUsersToBeNotifiedForProposal = async (
         })
 
         return users
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
+    } catch (e) {
         log_bul.log({
             level: 'error',
             message: 'Could not fetch users to be notified',
             data: {
-                errorMessage: e.message,
-                errorStack: e.stack,
+                errorName: (e as Error).name,
+                errorMessage: (e as Error).message,
+                errorStack: (e as Error).stack,
                 proposal: proposal,
                 type: type
             }
@@ -219,14 +219,14 @@ const insertNotifications = async (
                 count: proposals.length
             }
         })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
+    } catch (e) {
         log_bul.log({
             level: 'error',
             message: 'Could not intsert notifications',
             data: {
-                errorMessage: e.message,
-                errorStack: e.stack
+                errorName: (e as Error).name,
+                errorMessage: (e as Error).message,
+                errorStack: (e as Error).stack
             }
         })
 
@@ -256,14 +256,14 @@ const fetchNewProposals = async () => {
         })
 
         return proposals
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
+    } catch (e) {
         log_bul.log({
             level: 'error',
             message: 'Could not fetch new proposals',
             data: {
-                errorMessage: e.message,
-                errorStack: e.stack
+                errorName: (e as Error).name,
+                errorMessage: (e as Error).message,
+                errorStack: (e as Error).stack
             }
         })
 
@@ -302,14 +302,14 @@ const fetchEndingProposals = async () => {
         })
 
         return proposals
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
+    } catch (e) {
         log_bul.log({
             level: 'error',
             message: 'Could not fetch ending proposals',
             data: {
-                errorMessage: e.message,
-                errorStack: e.stack
+                errorName: (e as Error).name,
+                errorMessage: (e as Error).message,
+                errorStack: (e as Error).stack
             }
         })
         throw new Error('Could not fetch ending proposals')
@@ -347,14 +347,14 @@ const fetchPastProposals = async () => {
         })
 
         return proposals
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
+    } catch (e) {
         log_bul.log({
             level: 'error',
             message: 'Could not fetch past proposals',
             data: {
-                errorMessage: e.message,
-                errorStack: e.stack
+                errorName: (e as Error).name,
+                errorMessage: (e as Error).message,
+                errorStack: (e as Error).stack
             }
         })
         throw new Error('Could not fetch past proposals')
@@ -530,14 +530,14 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
         }
 
         return response.data.message.src
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
+    } catch (e) {
         log_bul.log({
             level: 'error',
             message: 'Could not generate countdown gif',
             data: {
-                errorMessage: e.message,
-                errorStack: e.stack
+                errorName: (e as Error).name,
+                errorMessage: (e as Error).message,
+                errorStack: (e as Error).stack
             }
         })
 
@@ -571,14 +571,14 @@ const fetchUsersToBeNotified = async (): Promise<UserWithVotingAddresses[]> => {
         })
 
         return users
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
+    } catch (e) {
         log_bul.log({
             level: 'error',
             message: 'Could not fetch users with daily bulletin enabled',
             data: {
-                errorMessage: e.message,
-                errorStack: e.stack
+                errorName: (e as Error).name,
+                errorMessage: (e as Error).message,
+                errorStack: (e as Error).stack
             }
         })
         throw Error('Could not fetch users with daily bulletin enabled')
@@ -676,14 +676,14 @@ const sendDailyBulletin = async () => {
                 }
             })
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
+    } catch (e) {
         log_bul.log({
             level: 'error',
             message: 'Could not send daily bulletin',
             data: {
-                errorMessage: e.message,
-                errorStack: e.stack
+                errorName: (e as Error).name,
+                errorMessage: (e as Error).message,
+                errorStack: (e as Error).stack
             }
         })
     }
@@ -717,14 +717,14 @@ const userVoted = async (
         }
 
         return voted
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
+    } catch (e) {
         log_bul.log({
             level: 'error',
             message: 'Could not check if user voted',
             data: {
-                errorMessage: e.message,
-                errorStack: e.stack
+                errorName: (e as Error).name,
+                errorMessage: (e as Error).message,
+                errorStack: (e as Error).stack
             }
         })
         throw Error('Could not check if user voted')

@@ -134,19 +134,19 @@ export const updateChainProposals = async (
 
         response = 'ok'
     } catch (e) {
-        if (e instanceof Error)
-            log_pd.log({
-                level: 'error',
-                message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
-                searchType: 'PROPOSALS',
-                sourceType: 'CHAIN',
-                currentBlock: currentBlock,
-                fromBlock: fromBlock,
-                toBlock: toBlock,
-                provider: provider._getConnection().url,
-                errorMessage: e.message,
-                errorStack: e.stack
-            })
+        log_pd.log({
+            level: 'error',
+            message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+            searchType: 'PROPOSALS',
+            sourceType: 'CHAIN',
+            currentBlock: currentBlock,
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            provider: provider._getConnection().url,
+            errorName: (e as Error).name,
+            errorMessage: (e as Error).message,
+            errorStack: (e as Error).stack
+        })
     }
 
     const res = [{ daoHandlerId: daoHandlerId, response: response }]
