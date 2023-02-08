@@ -193,9 +193,11 @@ export const updateSnapshotDaoVotes = async (
                 ? Math.floor(searchFromTimestamp.valueOf() / 1000)
                 : 0,
             space: (daoHandler.decoder as Decoder).space,
-            voters: voters,
             query: graphqlQuery,
+            voters: voters,
+            votersCount: voters.length ?? 0,
             votes: votes,
+            votesCount: votes.length ?? 0,
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
             errorStack: (e as Error).stack
