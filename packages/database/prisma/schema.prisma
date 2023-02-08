@@ -40,6 +40,9 @@ model Voter {
   votes         Vote[]
   voterHandlers VoterHandler[]
   users         User[]         @relation("UserToVoter")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model DAO {
@@ -52,6 +55,9 @@ model DAO {
   proposals     Proposal[]
   subscriptions Subscription[]
   votes         Vote[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model DAOHandler {
@@ -94,6 +100,9 @@ model Proposal {
   dao           DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
   votes         Vote[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([externalId, daoId])
   @@index([daoId])
   @@index([daoHandlerId])
@@ -109,6 +118,9 @@ model Notification {
   proposalId String
   proposal   Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
   daoId      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([proposalId, userId, type])
   @@index([userId])
@@ -130,6 +142,9 @@ model Vote {
   daoHandlerId String
   daoHandler   DAOHandler @relation(fields: [daoHandlerId], references: [id], onDelete: Cascade)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([voterAddress, daoId, proposalId])
   @@index([proposalId])
   @@index([daoId])
@@ -148,6 +163,9 @@ model VoterHandler {
   voterId      String
   voter        Voter      @relation(fields: [voterId], references: [id], onDelete: Cascade)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([voterId, daoHandlerId])
   @@index([daoHandlerId])
 }
@@ -162,6 +180,9 @@ model Subscription {
   daoId  String
   dao    DAO    @relation(fields: [daoId], references: [id], onDelete: Cascade)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([userId, daoId])
   @@index([daoId])
 }
@@ -173,6 +194,9 @@ model RefreshQueue {
   handlerId   String
   args        Json
   priority    BigInt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Config {

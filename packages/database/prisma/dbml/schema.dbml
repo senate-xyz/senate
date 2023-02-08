@@ -24,6 +24,8 @@ Table Voter {
   votes Vote [not null]
   voterHandlers VoterHandler [not null]
   users User [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
 }
 
 Table DAO {
@@ -34,6 +36,8 @@ Table DAO {
   proposals Proposal [not null]
   subscriptions Subscription [not null]
   votes Vote [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
 }
 
 Table DAOHandler {
@@ -71,6 +75,8 @@ Table Proposal {
   daoId String [not null]
   dao DAO [not null]
   votes Vote [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
 
   indexes {
     (externalId, daoId) [unique]
@@ -85,6 +91,8 @@ Table Notification {
   proposalId String [not null]
   proposal Proposal [not null]
   daoId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
 
   indexes {
     (proposalId, userId, type) [unique]
@@ -103,6 +111,8 @@ Table Vote {
   dao DAO [not null]
   daoHandlerId String [not null]
   daoHandler DAOHandler [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
 
   indexes {
     (voterAddress, daoId, proposalId) [unique]
@@ -119,6 +129,8 @@ Table VoterHandler {
   daoHandler DAOHandler [not null]
   voterId String [not null]
   voter Voter [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
 
   indexes {
     (voterId, daoHandlerId) [unique]
@@ -132,6 +144,8 @@ Table Subscription {
   user User [not null]
   daoId String [not null]
   dao DAO [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
 
   indexes {
     (userId, daoId) [unique]
@@ -144,6 +158,8 @@ Table RefreshQueue {
   handlerId String [not null]
   args Json [not null]
   priority BigInt [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
 }
 
 Table Config {
