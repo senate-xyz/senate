@@ -101,7 +101,7 @@ export const processChainProposals = async () => {
                 postReqeust: `${process.env.DETECTIVE_URL}/updateChainProposals`,
                 postBody: {
                     daoHandlerId: item.handlerId,
-                    minBlockNumber: daoHandler?.lastChainRefresh?.valueOf()
+                    minBlockNumber: daoHandler?.chainIndex?.valueOf()
                 },
                 response: data
             })
@@ -116,7 +116,7 @@ export const processChainProposals = async () => {
                 data: {
                     refreshStatus: RefreshStatus.NEW,
                     lastRefresh: new Date(),
-                    lastChainRefresh: { decrement: 50000 }
+                    chainIndex: { decrement: 50000 }
                 }
             })
 
@@ -129,7 +129,7 @@ export const processChainProposals = async () => {
                 postReqeust: `${process.env.DETECTIVE_URL}/updateChainProposals`,
                 postBody: {
                     daoHandlerId: item.handlerId,
-                    minBlockNumber: daoHandler?.lastChainRefresh?.valueOf()
+                    minBlockNumber: daoHandler?.chainIndex?.valueOf()
                 },
                 errorMessage: e.message,
                 errorStack: e.stack

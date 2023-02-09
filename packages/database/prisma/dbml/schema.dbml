@@ -44,8 +44,8 @@ Table DAOHandler {
   id String [pk]
   type DAOHandlerType [not null]
   decoder Json [not null]
-  lastChainRefresh BigInt [default: 0]
-  lastSnapshotRefresh DateTime [default: 2000-01-01T00:00:00+00:00]
+  chainIndex BigInt [default: 0]
+  snapshotIndex DateTime [default: 2000-01-01T00:00:00+00:00]
   lastRefresh DateTime [not null, default: 2000-01-01T00:00:00+00:00]
   refreshStatus RefreshStatus [not null, default: 'NEW']
   daoId String [not null]
@@ -121,8 +121,8 @@ Table Vote {
 
 Table VoterHandler {
   id String [pk]
-  lastChainRefresh BigInt [default: 0]
-  lastSnapshotRefresh DateTime [default: 2000-01-01T00:00:00+00:00]
+  chainIndex BigInt [default: 0]
+  snapshotIndex DateTime [default: 2000-01-01T00:00:00+00:00]
   lastRefresh DateTime [not null, default: 2000-01-01T00:00:00+00:00]
   refreshStatus RefreshStatus [not null, default: 'NEW']
   daoHandlerId String [not null]

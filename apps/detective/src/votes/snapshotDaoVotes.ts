@@ -47,17 +47,17 @@ export const updateSnapshotDaoVotes = async (
 
     const oldestVote = Math.min(
         ...voterHandlers.map((voterHandler) =>
-            voterHandler.lastSnapshotRefresh.getTime()
+            voterHandler.snapshotIndex.getTime()
         )
     )
 
     // Start search from whichever timestamp is earlier
     const searchFromTimestamp =
-        oldestVote < daoHandler.lastSnapshotRefresh.getTime()
+        oldestVote < daoHandler.snapshotIndex.getTime()
             ? oldestVote
-            : daoHandler.lastSnapshotRefresh.getTime()
+            : daoHandler.snapshotIndex.getTime()
 
-    const searchToTimestamp = daoHandler.lastSnapshotRefresh.getTime()
+    const searchToTimestamp = daoHandler.snapshotIndex.getTime()
 
     const graphqlQuery = `{
         votes(
@@ -166,28 +166,26 @@ export const updateSnapshotDaoVotes = async (
                     }),
                     skipDuplicates: true
                 })
-            }
 
-            const newestVote = votes.length
-                ? Math.max(...votes.map((vote) => vote.created * 1000))
-                : searchToTimestamp
-                ? searchToTimestamp
-                : 0
+                const newestVote = Math.max(
+                    ...votes.map((vote) => vote.created * 1000)
+                )
 
-            await prisma.voterHandler.updateMany({
-                where: {
-                    voter: {
-                        address: {
-                            in: voters.map((voter) => voter)
-                        }
+                await prisma.voterHandler.updateMany({
+                    where: {
+                        voter: {
+                            address: {
+                                in: voters.map((voter) => voter)
+                            }
+                        },
+                        daoHandlerId: daoHandler.id
                     },
-                    daoHandlerId: daoHandler.id
-                },
-                data: {
-                    lastChainRefresh: 0,
-                    lastSnapshotRefresh: new Date(newestVote)
-                }
-            })
+                    data: {
+                        chainIndex: 0,
+                        snapshotIndex: new Date(newestVote)
+                    }
+                })
+            }
         }
 
         voters.map((voter) => result.set(voter, 'ok'))

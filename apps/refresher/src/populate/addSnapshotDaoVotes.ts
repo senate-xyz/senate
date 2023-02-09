@@ -107,7 +107,7 @@ export const addSnapshotDaoVotes = async () => {
                     const voterHandlers = daoHandler.voterHandlers
 
                     const voteTimestamps = voterHandlers.map((voterHandler) =>
-                        Number(voterHandler.lastSnapshotRefresh?.getTime())
+                        Number(voterHandler.snapshotIndex?.getTime())
                     )
 
                     const voteTimestampBuckets = bin<number, Date>()
@@ -127,10 +127,10 @@ export const addSnapshotDaoVotes = async () => {
                                     (voterHandler) =>
                                         bucketMin <=
                                             Number(
-                                                voterHandler.lastSnapshotRefresh?.getTime()
+                                                voterHandler.snapshotIndex?.getTime()
                                             ) &&
                                         Number(
-                                            voterHandler.lastSnapshotRefresh?.getTime()
+                                            voterHandler.snapshotIndex?.getTime()
                                         ) < bucketMax
                                 )
                                 .slice(0, 100)

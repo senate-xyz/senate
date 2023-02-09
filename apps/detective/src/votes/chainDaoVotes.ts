@@ -73,9 +73,7 @@ export const updateChainDaoVotes = async (
         })
 
     const oldestVoteBlock = Math.min(
-        ...voterHandlers.map((voterHandler) =>
-            Number(voterHandler.lastChainRefresh)
-        )
+        ...voterHandlers.map((voterHandler) => Number(voterHandler.chainIndex))
     )
 
     let votes: Result[] = [],
@@ -101,8 +99,8 @@ export const updateChainDaoVotes = async (
             : currentBlock
 
     //NOTE to future self: Maker Arbitrum's daoHandler.lastChainProposalCreatedBlock is always 0
-    if (toBlock > daoHandler.lastChainRefresh && toBlock != currentBlock)
-        toBlock = Number(daoHandler.lastChainRefresh)
+    if (toBlock > daoHandler.chainIndex && toBlock != currentBlock)
+        toBlock = Number(daoHandler.chainIndex)
 
     if (fromBlock > toBlock) fromBlock = toBlock
 
@@ -200,8 +198,8 @@ export const updateChainDaoVotes = async (
                 daoHandlerId: daoHandler.id
             },
             data: {
-                lastChainRefresh: toBlock,
-                lastSnapshotRefresh: new Date(0)
+                chainIndex: toBlock,
+                snapshotIndex: new Date(0)
             }
         })
 

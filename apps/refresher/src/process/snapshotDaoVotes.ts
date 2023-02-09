@@ -129,7 +129,7 @@ export const processSnapshotDaoVotes = async () => {
                 data: {
                     refreshStatus: RefreshStatus.NEW,
                     lastRefresh: new Date(),
-                    lastSnapshotRefresh: new Date(
+                    snapshotIndex: new Date(
                         Date.now() - 1000 * 60 * 60 * 24 * 90
                     )
                 }

@@ -46,7 +46,7 @@ export const updateChainProposals = async (daoHandlerId: string) => {
         currentBlock = await infuraProvider.getBlockNumber()
     }
 
-    const minBlockNumber = Number(daoHandler.lastChainRefresh)
+    const minBlockNumber = Number(daoHandler.chainIndex)
 
     const blockBatchSize =
         daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE ? 100000 : 1000000
@@ -126,8 +126,8 @@ export const updateChainProposals = async (daoHandlerId: string) => {
                 id: daoHandler.id
             },
             data: {
-                lastChainRefresh: toBlock,
-                lastSnapshotRefresh: new Date(0)
+                chainIndex: toBlock,
+                snapshotIndex: new Date(0)
             }
         })
 

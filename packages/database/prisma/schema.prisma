@@ -63,12 +63,12 @@ model DAO {
 model DAOHandler {
   id String @id @default(cuid())
 
-  type                DAOHandlerType
-  decoder             Json
-  lastChainRefresh    BigInt?        @default(0)
-  lastSnapshotRefresh DateTime?      @default("2000-01-01T00:00:00.00Z")
-  lastRefresh         DateTime       @default("2000-01-01T00:00:00.00Z")
-  refreshStatus       RefreshStatus  @default(NEW)
+  type          DAOHandlerType
+  decoder       Json
+  chainIndex    BigInt?        @default(0)
+  snapshotIndex DateTime?      @default("2000-01-01T00:00:00.00Z")
+  lastRefresh   DateTime       @default("2000-01-01T00:00:00.00Z")
+  refreshStatus RefreshStatus  @default(NEW)
 
   daoId         String
   dao           DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
@@ -153,10 +153,10 @@ model Vote {
 model VoterHandler {
   id String @id @default(cuid())
 
-  lastChainRefresh    BigInt?       @default(0)
-  lastSnapshotRefresh DateTime?     @default("2000-01-01T00:00:00.00Z")
-  lastRefresh         DateTime      @default("2000-01-01T00:00:00.00Z")
-  refreshStatus       RefreshStatus @default(NEW)
+  chainIndex    BigInt?       @default(0)
+  snapshotIndex DateTime?     @default("2000-01-01T00:00:00.00Z")
+  lastRefresh   DateTime      @default("2000-01-01T00:00:00.00Z")
+  refreshStatus RefreshStatus @default(NEW)
 
   daoHandlerId String
   daoHandler   DAOHandler @relation(fields: [daoHandlerId], references: [id], onDelete: Cascade)

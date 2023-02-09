@@ -25,7 +25,7 @@ export const updateSnapshotProposals = async (
         include: { dao: true }
     })
 
-    const minCreatedAt = await daoHandler.lastSnapshotRefresh.getTime()
+    const minCreatedAt = await daoHandler.snapshotIndex.getTime()
 
     const space = (daoHandler.decoder as Decoder).space
 
@@ -100,8 +100,8 @@ export const updateSnapshotProposals = async (
                 id: daoHandler.id
             },
             data: {
-                lastChainRefresh: 0,
-                lastSnapshotRefresh: new Date(newMaxCreated)
+                chainIndex: 0,
+                snapshotIndex: new Date(newMaxCreated)
             }
         })
 

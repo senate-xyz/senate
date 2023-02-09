@@ -80,7 +80,7 @@ export const addSnapshotProposalsToQueue = async () => {
                     message: `Added refresh items to queue`,
                     dao: daoHandler.dao.name,
                     daoHandler: daoHandler.id,
-                    type: RefreshType.DAOCHAINPROPOSALS
+                    type: RefreshType.DAOSNAPSHOTPROPOSALS
                 })
             )
 

@@ -118,7 +118,7 @@ export const addChainDaoVotes = async () => {
                     const voterHandlers = daoHandler.voterHandlers
 
                     const voteTimestamps = voterHandlers.map((voterHandler) =>
-                        Number(voterHandler.lastChainRefresh)
+                        Number(voterHandler.chainIndex)
                     )
 
                     const domainLimit =
@@ -139,10 +139,8 @@ export const addChainDaoVotes = async () => {
                                 .filter(
                                     (voterHandler) =>
                                         bucketMin <=
-                                            Number(
-                                                voterHandler.lastChainRefresh
-                                            ) &&
-                                        Number(voterHandler.lastChainRefresh) <
+                                            Number(voterHandler.chainIndex) &&
+                                        Number(voterHandler.chainIndex) <
                                             bucketMax
                                 )
                                 .slice(0, 100)

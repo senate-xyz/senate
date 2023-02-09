@@ -129,7 +129,7 @@ export const processChainDaoVotes = async () => {
                 data: {
                     refreshStatus: RefreshStatus.NEW,
                     lastRefresh: new Date(),
-                    lastChainRefresh: { decrement: 50000 }
+                    chainIndex: { decrement: 50000 }
                 }
             })
 
