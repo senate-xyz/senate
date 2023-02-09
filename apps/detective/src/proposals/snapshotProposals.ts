@@ -25,7 +25,7 @@ export const updateSnapshotProposals = async (
         include: { dao: true }
     })
 
-    const minCreatedAt = await daoHandler.snapshotIndex.getTime()
+    const oldIndex = await daoHandler.snapshotIndex.getTime()
 
     const space = (daoHandler.decoder as Decoder).space
 
@@ -36,7 +36,7 @@ export const updateSnapshotProposals = async (
                     first: 1000, 
                     where: {
                     space: "${space}",
-                    created_gt: ${Math.floor(minCreatedAt / 1000)}
+                    created_gt: ${Math.floor(oldIndex / 1000)}
                     },
                     orderBy: "created",
                     orderDirection: asc
@@ -74,6 +74,7 @@ export const updateSnapshotProposals = async (
                 return response.body.data.proposals
             })) as GraphQLProposal[]
 
+        let newIndex = Date.now()
         if (proposals.length) {
             await prisma.proposal.createMany({
                 data: proposals.map((proposal) => {
@@ -90,21 +91,20 @@ export const updateSnapshotProposals = async (
                 }),
                 skipDuplicates: true
             })
-            const newMaxCreated = proposals.length
-                ? Math.max(...proposals.map((proposal) => proposal.created)) *
-                  1000
-                : minCreatedAt
-
-            await prisma.dAOHandler.update({
-                where: {
-                    id: daoHandler.id
-                },
-                data: {
-                    chainIndex: 0,
-                    snapshotIndex: new Date(newMaxCreated)
-                }
-            })
+            newIndex =
+                Math.max(...proposals.map((proposal) => proposal.created)) *
+                1000
         }
+
+        await prisma.dAOHandler.update({
+            where: {
+                id: daoHandler.id
+            },
+            data: {
+                chainIndex: 0,
+                snapshotIndex: new Date(newIndex)
+            }
+        })
 
         response = 'ok'
     } catch (e) {
@@ -113,7 +113,7 @@ export const updateSnapshotProposals = async (
             message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
             searchType: 'PROPOSALS',
             sourceType: 'SNAPSHOT',
-            created_gt: Math.floor(minCreatedAt / 1000),
+            created_gt: Math.floor(oldIndex / 1000),
             proposals: proposals,
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
@@ -128,7 +128,7 @@ export const updateSnapshotProposals = async (
         message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
         searchType: 'PROPOSALS',
         sourceType: 'SNAPSHOT',
-        created_gt: Math.floor(minCreatedAt / 1000),
+        created_gt: Math.floor(oldIndex / 1000),
         proposals: proposals,
         response: res
     })
