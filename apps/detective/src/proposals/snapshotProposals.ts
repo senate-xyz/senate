@@ -74,7 +74,7 @@ export const updateSnapshotProposals = async (
                 return response.body.data.proposals
             })) as GraphQLProposal[]
 
-        if (proposals.length)
+        if (proposals.length) {
             await prisma.proposal.createMany({
                 data: proposals.map((proposal) => {
                     return {
@@ -90,20 +90,21 @@ export const updateSnapshotProposals = async (
                 }),
                 skipDuplicates: true
             })
+            const newMaxCreated = proposals.length
+                ? Math.max(...proposals.map((proposal) => proposal.created)) *
+                  1000
+                : minCreatedAt
 
-        const newMaxCreated = proposals.length
-            ? Math.max(...proposals.map((proposal) => proposal.created)) * 1000
-            : minCreatedAt
-
-        await prisma.dAOHandler.update({
-            where: {
-                id: daoHandler.id
-            },
-            data: {
-                chainIndex: 0,
-                snapshotIndex: new Date(newMaxCreated)
-            }
-        })
+            await prisma.dAOHandler.update({
+                where: {
+                    id: daoHandler.id
+                },
+                data: {
+                    chainIndex: 0,
+                    snapshotIndex: new Date(newMaxCreated)
+                }
+            })
+        }
 
         response = 'ok'
     } catch (e) {
