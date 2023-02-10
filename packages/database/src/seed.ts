@@ -280,7 +280,7 @@ const seedData = async () => {
                             address:
                                 '0x408ED6354d4973f66138C91495F2f2FCbd8724C3',
                             abi: uniswapGovBravo.abi,
-                            proposalUrl: 'https://app.uniswap.org/#/vote/'
+                            proposalUrl: 'https://app.uniswap.org/#/vote/2/'
                         }
                     },
                     {
