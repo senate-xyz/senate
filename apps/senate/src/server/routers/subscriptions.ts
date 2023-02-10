@@ -6,46 +6,37 @@ export const subscriptionsRouter = router({
     subscribe: privateProcedure
         .input(
             z.object({
-                daoId: z.string()
+                daoId: z.string(),
+                notificationsEnabled: z.boolean()
             })
         )
         .mutation(async ({ input, ctx }) => {
-            const user = await prisma.user
-                .findFirstOrThrow({
-                    where: {
-                        name: { equals: String(ctx.user.name) }
-                    },
-                    select: {
-                        id: true,
-                        voters: true
-                    }
-                })
-                .catch(() => {
-                    return { id: '0', voters: [] }
-                })
+            const user = await prisma.user.findFirstOrThrow({
+                where: {
+                    name: { equals: String(ctx.user.name) }
+                }
+            })
 
-            const result = await prisma.subscription
-                .upsert({
-                    where: {
-                        userId_daoId: {
-                            userId: user.id,
-                            daoId: input.daoId
-                        }
-                    },
-                    update: {},
-                    create: {
+            const result = await prisma.subscription.upsert({
+                where: {
+                    userId_daoId: {
                         userId: user.id,
                         daoId: input.daoId
                     }
-                })
-                .then(() => {
-                    return true
-                })
-                .catch(() => {
-                    return false
-                })
+                },
+                update: {
+                    notificationsEnabled: input.notificationsEnabled
+                },
+                create: {
+                    userId: user.id,
+                    daoId: input.daoId,
+                    notificationsEnabled: input.notificationsEnabled
+                }
+            })
+
             return result
         }),
+
     unsubscribe: privateProcedure
         .input(
             z.object({
@@ -53,35 +44,49 @@ export const subscriptionsRouter = router({
             })
         )
         .mutation(async ({ input, ctx }) => {
-            const user = await prisma.user
-                .findFirstOrThrow({
-                    where: {
-                        name: { equals: String(ctx.user.name) }
-                    },
-                    select: {
-                        id: true,
-                        voters: true
-                    }
-                })
-                .catch(() => {
-                    return { id: '0', voters: [] }
-                })
+            const user = await prisma.user.findFirstOrThrow({
+                where: {
+                    name: { equals: String(ctx.user.name) }
+                }
+            })
 
-            const result = await prisma.subscription
-                .delete({
-                    where: {
-                        userId_daoId: {
-                            userId: user.id,
-                            daoId: input.daoId
-                        }
+            const result = await prisma.subscription.delete({
+                where: {
+                    userId_daoId: {
+                        userId: user?.id,
+                        daoId: input.daoId
                     }
-                })
-                .then(() => {
-                    return true
-                })
-                .catch(() => {
-                    return false
-                })
+                }
+            })
+
+            return result
+        }),
+
+    updateSubscription: privateProcedure
+        .input(
+            z.object({
+                daoId: z.string(),
+                notificationsEnabled: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const user = await prisma.user.findFirstOrThrow({
+                where: {
+                    name: { equals: String(ctx.user.name) }
+                }
+            })
+
+            const result = await prisma.subscription.update({
+                where: {
+                    userId_daoId: {
+                        userId: user.id,
+                        daoId: input.daoId
+                    }
+                },
+                data: {
+                    notificationsEnabled: input.notificationsEnabled
+                }
+            })
 
             return result
         })

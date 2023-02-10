@@ -172,5 +172,46 @@ export const accountSettingsRouter = router({
             })
 
             return result
+        }),
+
+    getUser: privateProcedure.query(async ({ ctx }) => {
+        const user = await prisma.user.findFirst({
+            where: {
+                name: { equals: String(ctx.user.name) }
+            }
+        })
+
+        const result = await prisma.user.findFirst({
+            where: {
+                id: user?.id
+            }
+        })
+
+        return result
+    }),
+
+    updateDailyEmails: privateProcedure
+        .input(
+            z.object({
+                dailyBulletin: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const user = await prisma.user.findFirst({
+                where: {
+                    name: { equals: String(ctx.user.name) }
+                }
+            })
+
+            const result = await prisma.user.update({
+                where: {
+                    id: user?.id
+                },
+                data: {
+                    dailyBulletin: input.dailyBulletin
+                }
+            })
+
+            return result
         })
 })

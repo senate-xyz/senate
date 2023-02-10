@@ -32,7 +32,6 @@ const getSubscribedDAOs = async () => {
         orderBy: {
             id: 'asc'
         },
-        distinct: 'id',
         include: {
             handlers: true,
             subscriptions: {
@@ -49,9 +48,8 @@ const getAllDAOs = async () => {
     const daosList = await prisma.dAO.findMany({
         where: {},
         orderBy: {
-            id: 'asc'
+            name: 'asc'
         },
-        distinct: 'id',
         include: {
             handlers: true,
             subscriptions: {

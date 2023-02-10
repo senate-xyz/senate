@@ -32,7 +32,7 @@ const getSubscribedDAOs = async () => {
             }
         },
         orderBy: {
-            id: 'asc'
+            name: 'asc'
         },
         distinct: 'id',
         include: {

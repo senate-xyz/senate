@@ -67,7 +67,10 @@ export const UnsubscribedDAO = (props: {
                         className='h-14 w-full bg-white text-xl font-bold text-black'
                         onClick={async () => {
                             subscribe.mutate(
-                                { daoId: props.daoId },
+                                {
+                                    daoId: props.daoId,
+                                    notificationsEnabled: getDailyEmails
+                                },
                                 {
                                     onSuccess: () => {
                                         router.refresh()

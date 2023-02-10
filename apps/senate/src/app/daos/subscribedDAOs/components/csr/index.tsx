@@ -13,13 +13,17 @@ export const SubscribedDAO = (props: {
     bgColor: string | undefined
     daoHandlers: string[]
     activeProposals: number
+    notificationsEnabled: boolean
 }) => {
     const [showMenu, setShowMenu] = useState(false)
-    const [getDailyEmails, setDailyEmails] = useState(true)
+    const [getDailyEmails, setDailyEmails] = useState(
+        props.notificationsEnabled
+    )
 
     const router = useRouter()
 
     const unsubscribe = trpc.subscriptions.unsubscribe.useMutation()
+    const updateDAO = trpc.subscriptions.updateSubscription.useMutation()
 
     return (
         <div className='h-[320px] w-[240px]'>
@@ -53,9 +57,14 @@ export const SubscribedDAO = (props: {
                                     <input
                                         type='checkbox'
                                         checked={getDailyEmails}
-                                        onChange={(e) =>
+                                        onChange={(e) => {
                                             setDailyEmails(e.target.checked)
-                                        }
+                                            updateDAO.mutate({
+                                                daoId: props.daoId,
+                                                notificationsEnabled:
+                                                    e.target.checked
+                                            })
+                                        }}
                                         className='peer sr-only'
                                     />
                                     <div className="peer h-6 w-11 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />

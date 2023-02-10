@@ -21,42 +21,39 @@ const getSubscribedDAOs = async () => {
             return { id: '0' }
         })
 
-    const daosList = await prisma.dAO.findMany({
+    const subscriptionsList = await prisma.subscription.findMany({
         where: {
-            subscriptions: {
-                some: {
-                    user: { is: user }
+            userId: user.id
+        },
+        include: {
+            dao: {
+                include: {
+                    handlers: true,
+                    proposals: { where: { timeEnd: { gt: new Date() } } }
                 }
             }
         },
         orderBy: {
-            id: 'asc'
-        },
-        distinct: 'id',
-        include: {
-            handlers: true,
-            subscriptions: {
-                where: {
-                    userId: { contains: user.id }
-                }
-            },
-            proposals: { where: { timeEnd: { gt: new Date() } } }
+            dao: {
+                name: 'asc'
+            }
         }
     })
-    return daosList
+
+    return subscriptionsList
 }
 
 export default async function SubscribedDAOs() {
-    const subscribedDAOs = await getSubscribedDAOs()
+    const subscriptions = await getSubscribedDAOs()
 
     const backgroundColors = await Promise.all(
-        subscribedDAOs.map(async (dao) => {
+        subscriptions.map(async (sub) => {
             const color = await getAverageColor(
-                'https://senatelabs.xyz/' + dao.picture + '.svg',
+                'https://senatelabs.xyz/' + sub.dao.picture + '.svg',
                 { mode: 'precision', algorithm: 'sqrt' }
             ).then((color) => color)
             return {
-                daoId: dao.id,
+                daoId: sub.id,
                 color: `${color.hex}`
             }
         })
@@ -65,22 +62,23 @@ export default async function SubscribedDAOs() {
     return (
         <main>
             <div className='grid grid-cols-1 place-items-start gap-10 min-[650px]:grid-cols-2 min-[900px]:grid-cols-3 min-[1150px]:grid-cols-4 min-[1500px]:grid-cols-5 min-[1650px]:grid-cols-6'>
-                {subscribedDAOs.map((subscribedDAO, index) => {
+                {subscriptions.map((sub, index) => {
                     return (
                         <SubscribedDAO
                             key={index}
-                            daoId={subscribedDAO.id}
-                            daoName={subscribedDAO.name}
-                            daoPicture={subscribedDAO.picture}
+                            daoId={sub.dao.id}
+                            daoName={sub.dao.name}
+                            daoPicture={sub.dao.picture}
                             bgColor={
                                 backgroundColors.find(
-                                    (dao) => dao?.daoId == subscribedDAO.id
+                                    (dao) => dao?.daoId == sub.id
                                 )?.color
                             }
-                            daoHandlers={subscribedDAO.handlers.map(
+                            daoHandlers={sub.dao.handlers.map(
                                 (handler) => handler.type
                             )}
-                            activeProposals={subscribedDAO.proposals.length}
+                            activeProposals={sub.dao.proposals.length}
+                            notificationsEnabled={sub.notificationsEnabled}
                         />
                     )
                 })}
