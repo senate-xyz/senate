@@ -9,7 +9,7 @@ const ConnectWalletModal = () => {
     return (
         <>
             {session.status != 'authenticated' && (
-                <div className='absolute flex h-full w-full scale-[1.01] justify-center backdrop-blur'>
+                <div className='absolute flex h-full w-full scale-x-[1.025] justify-center backdrop-blur'>
                     <div className='pt-48 '>
                         <RainbowConnect />
                     </div>
