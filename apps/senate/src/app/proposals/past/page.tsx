@@ -1,6 +1,7 @@
 import { prisma } from '@senate/database'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
+import ConnectWalletModal from '../components/csr/ConnectWalletModal'
 import { Filters } from './components/csr/Filters'
 import Table from './components/ssr/Table'
 
@@ -60,7 +61,10 @@ export default async function Home({
     })
 
     return (
-        <div>
+        <div className='relative'>
+            <div className='z-10'>
+                <ConnectWalletModal />
+            </div>
             <Filters subscriptions={subscripions} />
             {/* @ts-expect-error Server Component */}
 

@@ -37,9 +37,7 @@ export default async function RootLayout({
                     )
                 })}
             </div>
-            <div className='mt-2'>
-                <Suspense fallback={<Loading />}>{children}</Suspense>
-            </div>
+            <Suspense fallback={<Loading />}>{children}</Suspense>
         </div>
     )
 }

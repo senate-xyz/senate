@@ -5,7 +5,6 @@ import { getServerSession } from 'next-auth'
 
 import { Vote, prisma } from '@senate/database'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
-import ConnectWalletModal from '../../../components/csr/ConnectWalletModal'
 extend(relativeTime)
 
 const getProposals = async (from: string, end: number, voted: string) => {
@@ -145,8 +144,7 @@ export default async function Table(props: {
     )
 
     return (
-        <div className={`relative mt-[16px] flex flex-col`}>
-            <ConnectWalletModal />
+        <div className={`mt-[16px] flex flex-col`}>
             <table className='w-full table-auto border-separate border-spacing-y-[4px] text-left'>
                 <thead className='h-[56px] bg-black text-white'>
                     <tr>

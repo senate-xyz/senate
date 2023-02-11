@@ -8,14 +8,13 @@ import { trpc } from '../../../server/trpcClient'
 export default function Home() {
     const session = useSession()
     const router = useRouter()
+    const user = trpc.accountSettings.getUser.useQuery()
 
     const [getDailyEmails, setDailyEmails] = useState(false)
 
     useEffect(() => {
         if (session.status != 'authenticated') router.push('/settings/account')
     }, [session.status])
-
-    const user = trpc.accountSettings.getUser.useQuery()
 
     useEffect(() => {
         if (user.data) setDailyEmails(user.data.dailyBulletin)

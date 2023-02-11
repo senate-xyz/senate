@@ -1,4 +1,6 @@
-import { getServerSession } from 'next-auth'
+'use client'
+
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 
 const defaultTab: { id: number; name: string; color: string; link: string } = {
@@ -29,18 +31,18 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
     }
 ]
 
-export default async function RootLayout({
+export default function RootLayout({
     children
 }: {
     children: React.ReactNode
 }) {
-    const session = await getServerSession()
+    const session = useSession()
     return (
         <>
-            {session?.user ? (
-                <div className='flex grow flex-col bg-[#1E1B20] p-5 px-12'>
-                    <div className='flex w-full flex-row gap-10'>
-                        {tabs.map((tab) => {
+            <div className='flex grow flex-col bg-[#1E1B20] p-5 px-12'>
+                <div className='flex w-full flex-row gap-10'>
+                    {session?.status == 'authenticated' ? (
+                        tabs.map((tab) => {
                             return (
                                 <Link
                                     key={tab.id}
@@ -50,13 +52,8 @@ export default async function RootLayout({
                                     {tab.name}
                                 </Link>
                             )
-                        })}
-                    </div>
-                    <div className='pt-10 pl-2'>{children}</div>
-                </div>
-            ) : (
-                <div className='flex grow flex-col bg-[#1E1B20] p-5 px-12'>
-                    <div className='flex w-full flex-row gap-10'>
+                        })
+                    ) : (
                         <Link
                             key={defaultTab.id}
                             className={defaultTab.color}
@@ -64,10 +61,10 @@ export default async function RootLayout({
                         >
                             {defaultTab.name}
                         </Link>
-                    </div>
-                    <div className='pt-10 pl-2'>{children}</div>
+                    )}
                 </div>
-            )}
+                <div className='pt-10 pl-2'>{children}</div>
+            </div>
         </>
     )
 }

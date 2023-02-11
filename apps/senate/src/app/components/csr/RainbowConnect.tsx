@@ -2,24 +2,24 @@
 
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useSession } from 'next-auth/react'
-import { useEffect } from 'react'
+import { useEffect, useReducer } from 'react'
 import ClientOnly from '../../clientOnly'
 import { trpc } from '../../../server/trpcClient'
 import { useRouter } from 'next/navigation'
+import { useAccount } from 'wagmi'
 
 const RainbowConnectButton = () => {
     const session = useSession()
+    const { address } = useAccount()
     const router = useRouter()
     const newUser = trpc.accountSettings.isNewUser.useQuery()
 
-    useEffect(() => {
-        console.log(session)
-    }, [session])
+    const [, forceUpdate] = useReducer((x) => x + 1, 0)
 
     useEffect(() => {
-        console.log(session)
-        if (router) router.refresh()
-    }, [session, router])
+        forceUpdate()
+        router.refresh()
+    }, [session, router, address])
 
     useEffect(() => {
         if (newUser.data && session.status == 'authenticated') {
@@ -37,7 +37,6 @@ const RainbowConnectButton = () => {
 export const RainbowConnect = () => {
     return (
         <div>
-            <div className='text-white'></div>
             <ClientOnly>
                 <RainbowConnectButton />
             </ClientOnly>

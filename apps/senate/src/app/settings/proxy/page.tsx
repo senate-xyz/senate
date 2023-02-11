@@ -11,10 +11,6 @@ export default function Home() {
     const router = useRouter()
     const provider = useProvider()
 
-    useEffect(() => {
-        if (session.status != 'authenticated') router.push('/settings/account')
-    }, [session.status])
-
     const voters = trpc.accountSettings.voters.useQuery(undefined, {
         refetchInterval: 5000
     })
@@ -22,6 +18,10 @@ export default function Home() {
     const addVoter = trpc.accountSettings.addVoter.useMutation()
 
     const [proxyAddress, setProxyAddress] = useState('')
+
+    useEffect(() => {
+        if (session.status != 'authenticated') router.push('/settings/account')
+    }, [session.status])
 
     return (
         <div className='mt-2 flex flex-col gap-12'>
