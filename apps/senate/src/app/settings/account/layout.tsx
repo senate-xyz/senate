@@ -1,6 +1,5 @@
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
-import { NotConnected } from './components/csr/NotConnected'
 
 const defaultTab: { id: number; name: string; color: string; link: string } = {
     id: 0,
@@ -66,9 +65,7 @@ export default async function RootLayout({
                             {defaultTab.name}
                         </Link>
                     </div>
-                    <div className='pt-10 pl-2'>
-                        <NotConnected />
-                    </div>
+                    <div className='pt-10 pl-2'>{children}</div>
                 </div>
             )}
         </>

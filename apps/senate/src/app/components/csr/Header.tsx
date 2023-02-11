@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import ClientOnly from '../../clientOnly'
 import { RainbowConnect } from './RainbowConnect'
 
 export const Header = (props: { title: string }) => {
@@ -30,9 +29,7 @@ export const Header = (props: { title: string }) => {
                 {props.title}
             </h1>
             <div className='pr-20'>
-                <ClientOnly>
-                    <RainbowConnect />
-                </ClientOnly>
+                <RainbowConnect />
             </div>
         </div>
     )

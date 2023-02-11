@@ -13,6 +13,11 @@ const RainbowConnectButton = () => {
     const newUser = trpc.accountSettings.isNewUser.useQuery()
 
     useEffect(() => {
+        console.log(session)
+    }, [session])
+
+    useEffect(() => {
+        console.log(session)
         if (router) router.refresh()
     }, [session, router])
 

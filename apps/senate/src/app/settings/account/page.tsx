@@ -3,21 +3,11 @@
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { trpc } from '../../../server/trpcClient'
+import { NotConnected } from './components/csr/NotConnected'
 
 const UserAddress = () => {
     const session = useSession()
 
-    if (session.status != 'authenticated')
-        return (
-            <div className='text-[24px] font-light text-white'>
-                Please connect your wallet to customize your Account settings
-            </div>
-        )
-
-    if (!session.data)
-        return (
-            <div className='text-[24px] font-light text-white'>Loading...</div>
-        )
     return (
         <div>
             <div className='flex flex-col gap-2'>
@@ -37,7 +27,6 @@ const UserAddress = () => {
 
 const UserEmail = () => {
     const [currentEmail, setCurrentEmail] = useState('true')
-    // const [success, setSuccess] = useState(true)
 
     const setEmail = trpc.accountSettings.setEmail.useMutation()
     const email = trpc.accountSettings.getEmail.useQuery()
@@ -65,20 +54,13 @@ const UserEmail = () => {
                     value={currentEmail}
                     onChange={(e) => {
                         setCurrentEmail(String(e.target.value))
-                        // setSuccess(false)
                     }}
                 />
 
                 <div
                     className='flex h-full w-[72px] cursor-pointer flex-col justify-center bg-[#ABABAB] text-center'
                     onClick={() => {
-                        setEmail.mutate(
-                            { email: currentEmail },
-                            {
-                                // onSuccess: () => setSuccess(true),
-                                // onError: () => setSuccess(false)
-                            }
-                        )
+                        setEmail.mutate({ email: currentEmail })
                     }}
                 >
                     Save
@@ -89,12 +71,23 @@ const UserEmail = () => {
 }
 
 export default function Home() {
-    return (
-        <main>
-            <div className='mt-2 flex flex-col gap-12'>
-                <UserAddress />
-                <UserEmail />
+    const session = useSession()
+
+    if (session.status != 'authenticated')
+        return (
+            <div>
+                <div className='pt-10 pl-2'>
+                    <NotConnected />
+                </div>
             </div>
-        </main>
-    )
+        )
+    else
+        return (
+            <main>
+                <div className='mt-2 flex flex-col gap-12'>
+                    <UserAddress />
+                    <UserEmail />
+                </div>
+            </main>
+        )
 }
