@@ -1,5 +1,5 @@
 {
-    "name": "@senate/stresstest",
+    "name": "@senate/stress-test",
     "version": "1.0.0",
     "author": "Senate",
     "private": true,
