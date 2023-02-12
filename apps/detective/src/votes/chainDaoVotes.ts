@@ -26,7 +26,6 @@ interface Result {
         daoId: string
         proposalId: string
         daoHandlerId: string
-        choiceId: string
         choice: string
     }[]
 }
