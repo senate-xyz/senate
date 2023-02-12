@@ -7,7 +7,7 @@
   "workspaces": [
     "apps/*",
     "packages/*",
-    "utilities/*"
+    "utilities/stressTest"
   ],
   "prisma": {
     "schema": "packages/database/prisma/schema.prisma",
