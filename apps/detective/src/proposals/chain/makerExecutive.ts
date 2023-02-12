@@ -51,6 +51,7 @@ export const makerExecutiveProposals = async (
                 ),
                 timeStart: new Date(proposalData.date ?? Date.now()),
                 timeCreated: new Date(proposalData.date ?? Date.now()),
+                choices: JSON.stringify(['Yes', 'No']),
                 url: (daoHandler.decoder as Decoder).proposalUrl + spellAddress
             }
         })

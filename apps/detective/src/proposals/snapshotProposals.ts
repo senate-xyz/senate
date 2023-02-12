@@ -6,6 +6,8 @@ type GraphQLProposal = {
     id: string
     title: string
     body: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    choices: any
     created: number
     start: number
     end: number
@@ -44,6 +46,7 @@ export const updateSnapshotProposals = async (
                     id
                     title
                     body
+                    choices
                     created
                     start
                     end
@@ -86,6 +89,7 @@ export const updateSnapshotProposals = async (
                         timeEnd: new Date(proposal.end * 1000),
                         timeStart: new Date(proposal.start * 1000),
                         timeCreated: new Date(proposal.created * 1000),
+                        choices: JSON.stringify(proposal.choices),
                         url: proposal.link
                     }
                 }),

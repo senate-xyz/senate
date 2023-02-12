@@ -65,6 +65,7 @@ Table Proposal {
   id String [pk]
   name String [not null]
   externalId String [not null]
+  choices String [not null, default: '{"None"}']
   timeCreated DateTime [not null]
   timeStart DateTime [not null]
   timeEnd DateTime [not null]
@@ -101,8 +102,7 @@ Table Notification {
 
 Table Vote {
   id String [pk]
-  choiceId String [not null, default: '0']
-  choice String [not null, default: 'None']
+  choice String [not null, default: '{"None"}']
   voterAddress String [not null]
   voter Voter [not null]
   proposalId String [not null]

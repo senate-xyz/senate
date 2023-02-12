@@ -89,8 +89,9 @@ const formatVotes = async (
             daoId: proposal.daoId,
             proposalId: proposal.id,
             daoHandlerId: proposal.daoHandlerId,
-            choiceId: BigInt(event.optionId).toString(),
-            choice: BigInt(event.optionId).toString() ? 'Yes' : 'No'
+            choice: JSON.stringify(
+                BigInt(event.optionId).toString() ? 'Yes' : 'No'
+            )
         }
     })
 }
