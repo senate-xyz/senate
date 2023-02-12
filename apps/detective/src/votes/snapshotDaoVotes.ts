@@ -148,7 +148,6 @@ export const updateSnapshotDaoVotes = async (
                             daoId: daoHandler.daoId,
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,
-                            choiceId: JSON.stringify(vote.choice),
                             choice: vote.choice
                                 ? Array.isArray(vote.choice)
                                     ? JSON.stringify(
