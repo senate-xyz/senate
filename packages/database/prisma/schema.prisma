@@ -88,7 +88,7 @@ model Proposal {
   name       String @db.VarChar(2048)
   externalId String
 
-  choices     String   @default("{\"None\"}")
+  choices     String   @default("None")
   timeCreated DateTime
   timeStart   DateTime
   timeEnd     DateTime
@@ -131,7 +131,7 @@ model Notification {
 model Vote {
   id String @id @default(cuid())
 
-  choice String @default("{\"None\"}")
+  choice String @default("None")
 
   voterAddress String
   voter        Voter      @relation(fields: [voterAddress], references: [address], onDelete: Cascade)
