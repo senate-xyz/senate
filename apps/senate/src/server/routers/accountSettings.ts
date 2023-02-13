@@ -54,7 +54,7 @@ export const accountSettingsRouter = router({
     addVoter: privateProcedure
         .input(
             z.object({
-                address: z.string()
+                address: z.string().startsWith('0x').length(42)
             })
         )
         .mutation(async ({ input, ctx }) => {
@@ -88,7 +88,7 @@ export const accountSettingsRouter = router({
     removeVoter: privateProcedure
         .input(
             z.object({
-                address: z.string()
+                address: z.string().startsWith('0x').length(42)
             })
         )
         .mutation(async ({ input, ctx }) => {

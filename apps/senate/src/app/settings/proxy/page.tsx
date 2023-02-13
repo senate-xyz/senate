@@ -50,7 +50,6 @@ export default function Home() {
 
                                     <button
                                         onClick={() => {
-                                            provider.resolveName
                                             removeVoter.mutate(
                                                 {
                                                     address: voter.address
@@ -97,6 +96,7 @@ export default function Home() {
                                 {
                                     onSuccess() {
                                         voters.refetch()
+                                        setProxyAddress('')
                                     }
                                 }
                             )
@@ -105,6 +105,31 @@ export default function Home() {
                         Add
                     </div>
                 </div>
+                {addVoter.error && (
+                    <div className='flex flex-col text-white'>
+                        {JSON.parse(addVoter.error.message).map(
+                            (err: Error) => (
+                                <div>{err.message}</div>
+                            )
+                        )}
+                    </div>
+                )}
+                {removeVoter.error && (
+                    <div className='flex flex-col text-white'>
+                        {JSON.parse(removeVoter.error.message).map(
+                            (err: Error) => (
+                                <div>{err.message}</div>
+                            )
+                        )}
+                    </div>
+                )}
+                {voters.error && (
+                    <div className='flex flex-col text-white'>
+                        {JSON.parse(voters.error.message).map((err: Error) => (
+                            <div>{err.message}</div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     )

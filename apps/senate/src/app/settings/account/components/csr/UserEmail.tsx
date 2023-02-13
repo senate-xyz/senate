@@ -42,6 +42,15 @@ const UserEmail = () => {
                         Save
                     </div>
                 </div>
+                {setEmail.error && (
+                    <div className='flex flex-col text-white'>
+                        {JSON.parse(setEmail.error.message).map(
+                            (err: Error) => (
+                                <div>{err.message}</div>
+                            )
+                        )}
+                    </div>
+                )}
             </div>
         )
     return <></>
