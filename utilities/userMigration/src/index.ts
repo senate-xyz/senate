@@ -96,9 +96,6 @@ const importUsers = async (fromFile: string) => {
 
     const users: OldUserType[] = JSON.parse(rawdata.toString())
 
-    await newPrisma.user.deleteMany({})
-    await newPrisma.subscription.deleteMany({})
-
     for (const user of users) {
         const newUser = await newPrisma.user.upsert({
             where: {
@@ -145,11 +142,22 @@ const importUsers = async (fromFile: string) => {
         })
 
         for (const subscription of user.subscriptions) {
-            await newPrisma.subscription.create({
-                data: {
+            const dao = await newPrisma.dAO.findFirst({
+                where: {
+                    name: subscription.dao.name
+                }
+            })
+            await newPrisma.subscription.upsert({
+                where: {
+                    userId_daoId: {
+                        userId: newUser.id,
+                        daoId: dao.id
+                    }
+                },
+                create: {
                     dao: {
                         connect: {
-                            name: subscription.dao.name
+                            name: dao.name
                         }
                     },
                     user: {
@@ -157,7 +165,8 @@ const importUsers = async (fromFile: string) => {
                             id: newUser.id
                         }
                     }
-                }
+                },
+                update: {}
             })
         }
     }
