@@ -12,10 +12,6 @@ export default function Head() {
                 content='width=device-width, initial-scale=1'
                 name='viewport'
             />
-            <meta
-                name='description'
-                content='Da best decentralised governance tool'
-            />
             <link rel='icon' href='/favicon.ico' />
         </>
     )

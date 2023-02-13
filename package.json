@@ -1,7 +1,6 @@
 {
   "name": "senate",
   "author": "Senate",
-  "description": "Da best decentralised governance facilitation tool",
   "private": true,
   "license": "MIT",
   "workspaces": [
