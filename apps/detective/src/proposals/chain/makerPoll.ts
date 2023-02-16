@@ -75,8 +75,12 @@ const getProposalTitle = async (
 ): Promise<string> => {
     let response
 
-    //check if url is valid
-    if (!url || !url.startsWith('https://') || !url.startsWith('http://')) {
+    //check if url is valid - when not valid, axios throws an error which does not get caught by the catch block
+    if (!url || !(url.startsWith('https://') || url.startsWith('http://'))) {
+        log_pd.log({
+            level: 'error',
+            message: `URL Invalid! Cannot fetch title for Maker poll ${onChainId}`
+        })
         return 'Unknown'
     }
 
