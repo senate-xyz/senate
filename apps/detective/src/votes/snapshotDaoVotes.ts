@@ -10,6 +10,8 @@ type GraphQLVote = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     choice: any
     created: number
+    reason: string
+    vp: number
     proposal: {
         id: string
         choices: string[]
@@ -78,6 +80,8 @@ export const updateSnapshotDaoVotes = async (
                     id
                     voter
                     choice
+                    reason
+                    vp
                     created
                     proposal {
                         id
@@ -148,20 +152,9 @@ export const updateSnapshotDaoVotes = async (
                             daoId: daoHandler.daoId,
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,
-                            choice: vote.choice
-                                ? Array.isArray(vote.choice)
-                                    ? JSON.stringify(
-                                          vote.choice.map(
-                                              (choice: number) =>
-                                                  vote.proposal.choices[
-                                                      choice - 1
-                                                  ]
-                                          )
-                                      )
-                                    : JSON.stringify(
-                                          vote.proposal.choices[vote.choice - 1]
-                                      )
-                                : 'No choice'
+                            choice: vote.choice,
+                            reason: vote.reason,
+                            votingPower: vote.vp
                         }
                     }),
                     skipDuplicates: true
@@ -180,7 +173,7 @@ export const updateSnapshotDaoVotes = async (
                     daoHandlerId: daoHandler.id
                 },
                 data: {
-                    chainIndex: 0,
+                    chainIndex: 1920000,
                     snapshotIndex: new Date(newIndex)
                 }
             })

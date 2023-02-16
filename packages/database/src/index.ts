@@ -29,6 +29,9 @@ export type Decoder = {
     proposalUrl?: string
     space?: string
 
+    proxyAbi?: InterfaceAbi
+    proxyAddress?: string
+
     //makerpools
     address_vote?: string
     address_create?: string

@@ -27,6 +27,8 @@ interface Result {
         proposalId: string
         daoHandlerId: string
         choice: string
+        reason: string
+        votingPower: number
     }[]
 }
 
@@ -198,7 +200,7 @@ export const updateChainDaoVotes = async (
             },
             data: {
                 chainIndex: toBlock,
-                snapshotIndex: new Date(0)
+                snapshotIndex: new Date('2009-01-09T04:54:25.00Z')
             }
         })
 

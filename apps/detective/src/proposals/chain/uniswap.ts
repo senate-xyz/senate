@@ -29,6 +29,12 @@ export const uniswapProposals = async (
         }).args
     }))
 
+    const proxyGovContract = new ethers.Contract(
+        (daoHandler.decoder as Decoder).address,
+        (daoHandler.decoder as Decoder).proxyAbi,
+        provider
+    )
+
     const proposals = await Promise.all(
         args.map(async (arg) => {
             const proposalCreatedTimestamp = (
@@ -50,6 +56,10 @@ export const uniswapProposals = async (
                 (daoHandler.decoder as Decoder).proposalUrl + arg.eventData.id
             const proposalOnChainId = Number(arg.eventData.id).toString()
 
+            const onchainProposal = await proxyGovContract.proposals(
+                proposalOnChainId
+            )
+
             return {
                 externalId: proposalOnChainId,
                 name: String(title).slice(0, 1024),
@@ -58,7 +68,16 @@ export const uniswapProposals = async (
                 timeEnd: new Date(votingEndsTimestamp * 1000),
                 timeStart: new Date(votingStartsTimestamp * 1000),
                 timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                choices: JSON.stringify(['Yes', 'No']),
+                choices: ['For', 'Abstain', 'Against'],
+                scores: [
+                    parseFloat(onchainProposal.forVotes),
+                    parseFloat(onchainProposal.abstainVotes),
+                    parseFloat(onchainProposal.againstVotes)
+                ],
+                scoresTotal:
+                    parseFloat(onchainProposal.forVotes) +
+                    parseFloat(onchainProposal.abstainVotes) +
+                    parseFloat(onchainProposal.againstVotes),
                 url: proposalUrl
             }
         })

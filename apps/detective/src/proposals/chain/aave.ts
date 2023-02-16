@@ -37,6 +37,12 @@ export const aaveProposals = async (
         }).args
     }))
 
+    const govContract = new ethers.Contract(
+        (daoHandler.decoder as Decoder).address,
+        (daoHandler.decoder as Decoder).abi,
+        provider
+    )
+
     const proposals = await Promise.all(
         args.map(async (arg) => {
             const proposalCreatedTimestamp = (
@@ -54,6 +60,10 @@ export const aaveProposals = async (
                 (daoHandler.decoder as Decoder).proposalUrl + arg.eventData.id
             const proposalOnChainId = Number(arg.eventData.id).toString()
 
+            const onchainProposal = await govContract.getProposalById(
+                proposalOnChainId
+            )
+
             return {
                 externalId: proposalOnChainId,
                 name: String(title).slice(0, 1024),
@@ -62,7 +72,14 @@ export const aaveProposals = async (
                 timeEnd: new Date(votingEndsTimestamp * 1000),
                 timeStart: new Date(votingStartsTimestamp * 1000),
                 timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                choices: JSON.stringify(['Yes', 'No']),
+                choices: ['For', 'Against'],
+                scores: [
+                    parseFloat(onchainProposal.forVotes),
+                    parseFloat(onchainProposal.againstVotes)
+                ],
+                scoresTotal:
+                    parseFloat(onchainProposal.forVotes) +
+                    parseFloat(onchainProposal.againstVotes),
                 url: proposalUrl
             }
         })

@@ -20,7 +20,7 @@ model User {
 
   notifications Notification[]
   subscriptions Subscription[]
-  voters        Voter[]        @relation("UserToVoter")
+  voters        Voter[]
 
   newUser       Boolean  @default(true)
   acceptedTerms Boolean  @default(false)
@@ -39,7 +39,7 @@ model Voter {
 
   votes         Vote[]
   voterHandlers VoterHandler[]
-  users         User[]         @relation("UserToVoter")
+  users         User[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -65,9 +65,9 @@ model DAOHandler {
 
   type          DAOHandlerType
   decoder       Json
-  chainIndex    BigInt?        @default(0)
-  snapshotIndex DateTime?      @default("2000-01-01T00:00:00.00Z")
-  lastRefresh   DateTime       @default("2000-01-01T00:00:00.00Z")
+  chainIndex    BigInt?        @default(1920000)
+  snapshotIndex DateTime?      @default("2009-01-09T04:54:25.00Z")
+  lastRefresh   DateTime       @default("2009-01-09T04:54:25.00Z")
   refreshStatus RefreshStatus  @default(NEW)
 
   daoId         String
@@ -88,7 +88,10 @@ model Proposal {
   name       String @db.VarChar(2048)
   externalId String
 
-  choices     String   @default("None")
+  choices     Json
+  scores      Json
+  scoresTotal Float
+
   timeCreated DateTime
   timeStart   DateTime
   timeEnd     DateTime
@@ -131,7 +134,9 @@ model Notification {
 model Vote {
   id String @id @default(cuid())
 
-  choice String @default("None")
+  choice      Json
+  votingPower Float
+  reason      String @db.VarChar(2048)
 
   voterAddress String
   voter        Voter      @relation(fields: [voterAddress], references: [address], onDelete: Cascade)
@@ -153,9 +158,9 @@ model Vote {
 model VoterHandler {
   id String @id @default(cuid())
 
-  chainIndex    BigInt?       @default(0)
-  snapshotIndex DateTime?     @default("2000-01-01T00:00:00.00Z")
-  lastRefresh   DateTime      @default("2000-01-01T00:00:00.00Z")
+  chainIndex    BigInt?       @default(1920000)
+  snapshotIndex DateTime?     @default("2009-01-09T04:54:25.00Z")
+  lastRefresh   DateTime      @default("2009-01-09T04:54:25.00Z")
   refreshStatus RefreshStatus @default(NEW)
 
   daoHandlerId String

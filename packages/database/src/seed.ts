@@ -5,7 +5,9 @@ import makerPollCreate from './abis/makerPollCreate.json'
 import makerPollVote from './abis/makerPollVote.json'
 import makerPollVoteArbitrum from './abis/makerPollVoteArbitrum.json'
 import uniswapGovBravo from './abis/uniswapGovBravo.json'
+import uniswapGovBravoDelegate from './abis/uniswapGovBravoDelegate.json'
 import compoundGovBravo from './abis/compoundGovBravo.json'
+import compoundGovBravoDelegate from './abis/compoundGovBravoDelegate.json'
 import ensOZGovernor from './abis/ensOZGovernor.json'
 import { prisma } from './index'
 import { DAOHandlerType } from '@prisma/client'
@@ -24,10 +26,11 @@ const seedData = async () => {
                 create: [
                     {
                         type: DAOHandlerType.AAVE_CHAIN,
+                        chainIndex: 11427398,
                         decoder: {
                             address:
                                 '0xEC568fffba86c094cf06b22134B23074DFE2252c',
-                            abi: aaveGovBravo.abi,
+                            abi: aaveGovBravo,
                             proposalUrl:
                                 'https://app.aave.com/governance/proposal/?proposalId='
                         }
@@ -56,7 +59,7 @@ const seedData = async () => {
                         decoder: {
                             address:
                                 '0x0a3f6849f78076aefaDf113F5BED87720274dDC0',
-                            abi: makerExecutivesChief.abi,
+                            abi: makerExecutivesChief,
                             proposalUrl: 'https://vote.makerdao.com/executive/'
                         }
                     },
@@ -67,8 +70,8 @@ const seedData = async () => {
                                 '0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d',
                             address_vote:
                                 '0xD3A9FE267852281a1e6307a1C37CDfD76d39b133',
-                            abi_create: makerPollCreate.abi,
-                            abi_vote: makerPollVote.abi,
+                            abi_create: makerPollCreate,
+                            abi_vote: makerPollVote,
                             proposalUrl: 'https://vote.makerdao.com/polling/'
                         }
                     },
@@ -77,7 +80,7 @@ const seedData = async () => {
                         decoder: {
                             address_vote:
                                 '0x4f4e551b4920a5417F8d4e7f8f099660dAdadcEC',
-                            abi_vote: makerPollVoteArbitrum.abi
+                            abi_vote: makerPollVoteArbitrum
                         }
                     }
                 ]
@@ -209,10 +212,14 @@ const seedData = async () => {
                 create: [
                     {
                         type: DAOHandlerType.COMPOUND_CHAIN,
+                        chainIndex: 12006099,
                         decoder: {
                             address:
                                 '0xc0Da02939E1441F497fd74F78cE7Decb17B66529',
-                            abi: compoundGovBravo.abi,
+                            abi: compoundGovBravo,
+                            proxyAddress:
+                                '0xeF3B6E9e13706A8F01fe98fdCf66335dc5CfdEED',
+                            proxyAbi: compoundGovBravoDelegate,
                             proposalUrl:
                                 'https://compound.finance/governance/proposals/'
                         }
@@ -276,10 +283,14 @@ const seedData = async () => {
                 create: [
                     {
                         type: DAOHandlerType.UNISWAP_CHAIN,
+                        chainIndex: 13059157,
                         decoder: {
                             address:
                                 '0x408ED6354d4973f66138C91495F2f2FCbd8724C3',
-                            abi: uniswapGovBravo.abi,
+                            abi: uniswapGovBravo,
+                            proxyAddress:
+                                '0x53a328f4086d7c0f1fa19e594c9b842125263026',
+                            proxyAbi: uniswapGovBravoDelegate,
                             proposalUrl: 'https://app.uniswap.org/#/vote/2/'
                         }
                     },
@@ -304,10 +315,11 @@ const seedData = async () => {
                 create: [
                     {
                         type: DAOHandlerType.ENS_CHAIN,
+                        chainIndex: 13533772,
                         decoder: {
                             address:
                                 '0x323A76393544d5ecca80cd6ef2A560C6a395b7E3',
-                            abi: ensOZGovernor.abi,
+                            abi: ensOZGovernor,
                             proposalUrl:
                                 'https://www.tally.xyz/gov/ens/proposal/'
                         }
