@@ -5,6 +5,9 @@ import { getAaveVotes } from './chain/aave'
 import { getMakerExecutiveVotes } from './chain/makerExecutive'
 import { getUniswapVotes } from './chain/uniswap'
 import { getENSVotes } from './chain/ens'
+import { getGitcoinVotes } from './chain/gitcoin'
+import { getHopVotes } from './chain/hop'
+import { getDydxVotes } from './chain/dydx'
 import { getMakerPollVotes } from './chain/makerPoll'
 import { getMakerPollVotesFromArbitrum } from './chain/makerPollArbitrum'
 import { getCompoundVotes } from './chain/compound'
@@ -158,8 +161,6 @@ export const updateChainDaoVotes = async (
                     process.env.ARBITRUM_NODE_URL
                 )
                 const toBlockArbitrum = await arbitrumProvider.getBlockNumber()
-                console.log('ARBITRUM FROM BLOCK: ', fromBlock)
-                console.log('ARBITRUM TO BLOCK: ', toBlockArbitrum)
                 votes = await getMakerPollVotesFromArbitrum(
                     arbitrumProvider,
                     daoHandler,
@@ -177,6 +178,35 @@ export const updateChainDaoVotes = async (
                     toBlock
                 )
                 break
+            case 'GITCOIN_CHAIN':
+                votes = await getGitcoinVotes(
+                    provider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'HOP_CHAIN':
+                votes = await getHopVotes(
+                    provider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'DYDX_CHAIN':
+                votes = await getDydxVotes(
+                    infuraProvider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            default:
+                votes = []
         }
 
         const successfulResults = votes.filter((res) => res.success)

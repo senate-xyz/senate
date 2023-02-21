@@ -7,6 +7,9 @@ import makerPollVoteArbitrum from './abis/makerPollVoteArbitrum.json'
 import uniswapGovBravo from './abis/uniswapGovBravo.json'
 import compoundGovBravo from './abis/compoundGovBravo.json'
 import ensOZGovernor from './abis/ensOZGovernor.json'
+import gitcoinAbi from './abis/gitcoin.json'
+import hopAbi from './abis/hop.json'
+import dydxAbi from './abis/dydx.json'
 import { prisma } from './index'
 import { DAOHandlerType } from '@prisma/client'
 import { ethers } from 'ethers'
@@ -174,6 +177,16 @@ const seedData = async () => {
                         decoder: {
                             space: 'hop.eth'
                         }
+                    },
+                    {
+                        type: DAOHandlerType.HOP_CHAIN,
+                        decoder: {
+                            address:
+                                '0xed8Bdb5895B8B7f9Fdb3C087628FD8410E853D48',
+                            abi: hopAbi,
+                            proposalUrl:
+                                'https://www.tally.xyz/gov/hop/proposal/'
+                        }
                     }
                 ]
             }
@@ -259,6 +272,16 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'dydxgov.eth'
+                        }
+                    },
+                    {
+                        type: DAOHandlerType.DYDX_CHAIN,
+                        decoder: {
+                            address:
+                                '0x7E9B1672616FF6D6629Ef2879419aaE79A9018D2',
+                            abi: dydxAbi,
+                            proposalUrl:
+                                'https://dydx.community/dashboard/proposal/'
                         }
                     }
                 ]
@@ -452,6 +475,16 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'gitcoindao.eth'
+                        }
+                    },
+                    {
+                        type: DAOHandlerType.GITCOIN_CHAIN,
+                        decoder: {
+                            address:
+                                '0xDbD27635A534A3d3169Ef0498beB56Fb9c937489',
+                            abi: gitcoinAbi,
+                            proposalUrl:
+                                'https://www.tally.xyz/gov/gitcoin/proposal/'
                         }
                     }
                 ]
