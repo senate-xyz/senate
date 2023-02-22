@@ -1,5 +1,5 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandlerType, prisma } from '@senate/database'
+import { DAOHandlerType, JsonValue, prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import { getAaveVotes } from './chain/aave'
 import { getMakerExecutiveVotes } from './chain/makerExecutive'
@@ -26,7 +26,7 @@ interface Result {
         daoId: string
         proposalId: string
         daoHandlerId: string
-        choice: string
+        choice: JsonValue
         reason: string
         votingPower: number
     }[]

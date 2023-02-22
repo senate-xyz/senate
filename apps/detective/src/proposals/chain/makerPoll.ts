@@ -51,7 +51,7 @@ export const makerPolls = async (
                 timeEnd: new Date(votingEndsTimestamp * 1000),
                 timeStart: new Date(votingStartsTimestamp * 1000),
                 timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                choices: ['Yes', 'No'],
+                choices: ['For', 'Against'],
                 scores: [0, 0],
                 scoresTotal: 0,
                 url: proposalUrl

@@ -1,5 +1,5 @@
 import { log_pd } from '@senate/axiom'
-import { Decoder } from '@senate/database'
+import { Decoder, JsonValue } from '@senate/database'
 import { prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import superagent from 'superagent'
@@ -8,7 +8,7 @@ type GraphQLVote = {
     id: string
     voter: string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    choice: any
+    choice: JsonValue
     created: number
     reason: string
     vp: number
