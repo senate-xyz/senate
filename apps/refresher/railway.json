@@ -7,7 +7,7 @@
     },
     "deploy": {
         "startCommand": "yarn start:refresher",
-        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyType": "ALWAYS",
         "restartPolicyMaxRetries": 10
     }
 }

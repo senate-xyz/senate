@@ -7,7 +7,7 @@
     },
     "deploy": {
         "startCommand": "yarn start:bulletin",
-        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyType": "ALWAYS",
         "restartPolicyMaxRetries": 10
     }
 }

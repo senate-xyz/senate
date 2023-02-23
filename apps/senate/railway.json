@@ -7,7 +7,7 @@
     },
     "deploy": {
         "startCommand": "yarn start:senate",
-        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyType": "ALWAYS",
         "restartPolicyMaxRetries": 10
     }
 }
