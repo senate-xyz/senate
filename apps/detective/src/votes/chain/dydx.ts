@@ -78,9 +78,9 @@ export const getVotesForVoter = async (
                         daoId: daoHandler.daoId,
                         proposalId: proposal.id,
                         daoHandlerId: daoHandler.id,
-                        choice: JSON.stringify(
-                            String(eventData.support) ? 'Yes' : 'No'
-                        )
+                        choice: String(eventData.support) ? 1 : 3,
+                        reason: '',
+                        votingPower: parseFloat(eventData.votingPower)
                     }
                 } catch (e) {
                     log_pd.log({

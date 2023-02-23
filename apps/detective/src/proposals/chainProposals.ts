@@ -1,4 +1,9 @@
-import { DAOHandlerType, JsonValue, prisma } from '@senate/database'
+import {
+    DAOHandlerType,
+    JsonValue,
+    prisma,
+    ProposalState
+} from '@senate/database'
 import { ethers } from 'ethers'
 import { aaveProposals } from './chain/aave'
 import { compoundProposals } from './chain/compound'
@@ -22,6 +27,7 @@ interface Result {
     choices: JsonValue
     scores: JsonValue
     scoresTotal: number
+    state: ProposalState
     url: string
 }
 

@@ -1,5 +1,5 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandler, Decoder } from '@senate/database'
+import { DAOHandler, Decoder, ProposalState } from '@senate/database'
 import { ethers } from 'ethers'
 
 export const hopProposals = async (
@@ -26,6 +26,12 @@ export const hopProposals = async (
         }).args
     }))
 
+    const govContract = new ethers.Contract(
+        (daoHandler.decoder as Decoder).address,
+        (daoHandler.decoder as Decoder).abi,
+        provider
+    )
+
     const proposals =
         (
             await Promise.all(
@@ -47,6 +53,10 @@ export const hopProposals = async (
                         (daoHandler.decoder as Decoder).proposalUrl +
                         proposalOnChainId
 
+                    const onchainProposal = await govContract.proposalVotes(
+                        proposalOnChainId
+                    )
+
                     return {
                         externalId: proposalOnChainId,
                         name: String(title).slice(0, 1024),
@@ -55,7 +65,17 @@ export const hopProposals = async (
                         timeEnd: new Date(votingEndsTimestamp * 1000),
                         timeStart: new Date(votingStartsTimestamp * 1000),
                         timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                        choices: JSON.stringify(['Yes', 'No']),
+                        choices: ['For', 'Abstain', 'Against'],
+                        scores: [
+                            parseFloat(onchainProposal.forVotes),
+                            parseFloat(onchainProposal.abstainVotes),
+                            parseFloat(onchainProposal.againstVotes)
+                        ],
+                        scoresTotal:
+                            parseFloat(onchainProposal.forVotes) +
+                            parseFloat(onchainProposal.abstainVotes) +
+                            parseFloat(onchainProposal.againstVotes),
+                        state: ProposalState.CLOSED,
                         url: proposalUrl
                     }
                 })

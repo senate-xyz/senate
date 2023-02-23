@@ -88,6 +88,7 @@ model Proposal {
   name       String @db.VarChar(2048)
   externalId String
 
+  state       ProposalState
   choices     Json
   scores      Json
   scoresTotal Float
@@ -242,4 +243,9 @@ enum RefreshType {
   DAOSNAPSHOTVOTES
   VOTERCHAINVOTES
   VOTERSNAPSHOTVOTES
+}
+
+enum ProposalState {
+  OPEN
+  CLOSED
 }

@@ -59,6 +59,7 @@ const seedData = async () => {
                 create: [
                     {
                         type: DAOHandlerType.MAKER_EXECUTIVE,
+                        chainIndex: 8000000,
                         decoder: {
                             address:
                                 '0x0a3f6849f78076aefaDf113F5BED87720274dDC0',
@@ -68,6 +69,7 @@ const seedData = async () => {
                     },
                     {
                         type: DAOHandlerType.MAKER_POLL,
+                        chainIndex: 8000000,
                         decoder: {
                             address_create:
                                 '0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d',
@@ -183,6 +185,7 @@ const seedData = async () => {
                     },
                     {
                         type: DAOHandlerType.HOP_CHAIN,
+                        chainIndex: 14923681,
                         decoder: {
                             address:
                                 '0xed8Bdb5895B8B7f9Fdb3C087628FD8410E853D48',
@@ -283,6 +286,7 @@ const seedData = async () => {
                     },
                     {
                         type: DAOHandlerType.DYDX_CHAIN,
+                        chainIndex: 12816310,
                         decoder: {
                             address:
                                 '0x7E9B1672616FF6D6629Ef2879419aaE79A9018D2',
@@ -491,6 +495,7 @@ const seedData = async () => {
                     },
                     {
                         type: DAOHandlerType.GITCOIN_CHAIN,
+                        chainIndex: 12497481,
                         decoder: {
                             address:
                                 '0xDbD27635A534A3d3169Ef0498beB56Fb9c937489',

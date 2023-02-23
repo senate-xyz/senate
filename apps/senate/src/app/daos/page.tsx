@@ -9,10 +9,6 @@ export default async function Home() {
             <div className='w-full'>
                 {session && (
                     <div className='w-full p-10'>
-                        <p className='mb-4 w-full text-[36px] font-semibold text-white'>
-                            Your DAOs
-                        </p>
-
                         <div className='w-full'>
                             {/* @ts-expect-error Server Component */}
                             <SubscribedDAOs />
@@ -21,9 +17,6 @@ export default async function Home() {
                 )}
 
                 <div className='p-10'>
-                    <p className='mb-4 w-full text-[36px] font-semibold text-white'>
-                        DAOs you can subscribe to
-                    </p>
                     <div className='w-full'>
                         {/* @ts-expect-error Server Component */}
                         <UnsubscribedDAOs />
