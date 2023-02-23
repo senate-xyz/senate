@@ -41,7 +41,7 @@
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "typescript.tsdk": "📂 root/node_modules/typescript/lib",
-    "window.zoomLevel": 0,
+    "window.zoomLevel": -1,
     "[prisma]": {
       "editor.defaultFormatter": "Prisma.prisma"
     }

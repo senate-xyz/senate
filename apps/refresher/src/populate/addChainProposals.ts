@@ -30,7 +30,10 @@ export const addChainProposalsToQueue = async () => {
                             DAOHandlerType.MAKER_EXECUTIVE,
                             DAOHandlerType.MAKER_POLL,
                             DAOHandlerType.UNISWAP_CHAIN,
-                            DAOHandlerType.ENS_CHAIN
+                            DAOHandlerType.ENS_CHAIN,
+                            DAOHandlerType.GITCOIN_CHAIN,
+                            DAOHandlerType.HOP_CHAIN,
+                            DAOHandlerType.DYDX_CHAIN
                         ]
                     },
                     OR: [

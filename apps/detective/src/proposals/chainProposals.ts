@@ -6,6 +6,9 @@ import { makerExecutiveProposals } from './chain/makerExecutive'
 import { makerPolls } from './chain/makerPoll'
 import { uniswapProposals } from './chain/uniswap'
 import { ensProposals } from './chain/ens'
+import { gitcoinProposals } from './chain/gitcoin'
+import { hopProposals } from './chain/hop'
+import { dydxProposals } from './chain/dydx'
 import { log_pd } from '@senate/axiom'
 
 interface Result {
@@ -107,6 +110,30 @@ export const updateChainProposals = async (daoHandlerId: string) => {
                 break
             case 'ENS_CHAIN':
                 proposals = await ensProposals(
+                    provider,
+                    daoHandler,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'GITCOIN_CHAIN':
+                proposals = await gitcoinProposals(
+                    provider,
+                    daoHandler,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'HOP_CHAIN':
+                proposals = await hopProposals(
+                    provider,
+                    daoHandler,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'DYDX_CHAIN':
+                proposals = await dydxProposals(
                     provider,
                     daoHandler,
                     fromBlock,
