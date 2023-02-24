@@ -75,8 +75,13 @@ export const hopProposals = async (
                             parseFloat(onchainProposal.forVotes) +
                             parseFloat(onchainProposal.abstainVotes) +
                             parseFloat(onchainProposal.againstVotes),
-                        state: ProposalState.CLOSED,
-                        url: proposalUrl
+                        state:
+                            new Date(votingEndsTimestamp * 1000).getTime() >
+                            Date.now()
+                                ? ProposalState.OPEN
+                                : ProposalState.CLOSED,
+                        url: proposalUrl,
+                        block: arg.txBlock
                     }
                 })
             )

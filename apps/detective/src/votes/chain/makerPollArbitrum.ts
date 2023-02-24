@@ -91,7 +91,8 @@ const formatVotes = async (
             daoHandlerId: proposal.daoHandlerId,
             choice: BigInt(event.optionId).toString() ? 1 : 2,
             reason: '',
-            votingPower: 0
+            votingPower: 0,
+            proposalState: proposal.state
         }
     })
 }

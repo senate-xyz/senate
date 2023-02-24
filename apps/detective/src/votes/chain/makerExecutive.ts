@@ -102,7 +102,8 @@ export const getVotesForVoter = async (
                         daoHandlerId: daoHandler.id,
                         choice: 1,
                         reason: '',
-                        votingPower: 0
+                        votingPower: 0,
+                        proposalState: proposal.state
                     }
                 } catch (e) {
                     log_pd.log({

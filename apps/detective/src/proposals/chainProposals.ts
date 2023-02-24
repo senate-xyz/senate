@@ -29,6 +29,7 @@ interface Result {
     scoresTotal: number
     state: ProposalState
     url: string
+    block: number
 }
 
 const infuraProvider = new ethers.JsonRpcProvider(
@@ -151,18 +152,54 @@ export const updateChainProposals = async (daoHandlerId: string) => {
         }
 
         if (proposals.length || toBlock != currentBlock) {
-            await prisma.proposal.createMany({
-                data: proposals,
-                skipDuplicates: true
-            })
+            await prisma.$transaction(
+                proposals.map((proposal) => {
+                    return prisma.proposal.upsert({
+                        where: {
+                            externalId_daoId: {
+                                externalId: proposal.externalId,
+                                daoId: proposal.daoId
+                            }
+                        },
+                        update: {
+                            state: proposal.state,
+                            choices: proposal.choices,
+                            scores: proposal.scores,
+                            scoresTotal: proposal.scoresTotal
+                        },
+                        create: {
+                            name: proposal.name,
+                            externalId: proposal.externalId,
+                            state: proposal.state,
+                            choices: proposal.choices,
+                            scores: proposal.scores,
+                            scoresTotal: proposal.scoresTotal,
+                            timeCreated: proposal.timeCreated,
+                            timeStart: proposal.timeStart,
+                            timeEnd: proposal.timeEnd,
+                            url: proposal.url,
+
+                            daoId: daoHandler.daoId,
+                            daoHandlerId: daoHandler.id
+                        }
+                    })
+                })
+            )
         }
+
+        const newIndex = Math.min(
+            ...proposals
+                .filter((p) => p.state == ProposalState.OPEN)
+                .map((p) => p.block),
+            toBlock
+        )
 
         await prisma.dAOHandler.update({
             where: {
                 id: daoHandler.id
             },
             data: {
-                chainIndex: toBlock,
+                chainIndex: newIndex,
                 snapshotIndex: new Date('2009-01-09T04:54:25.00Z')
             }
         })

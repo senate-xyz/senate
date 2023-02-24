@@ -72,8 +72,13 @@ export const gitcoinProposals = async (
                         scoresTotal:
                             parseFloat(onchainProposal.forVotes) +
                             parseFloat(onchainProposal.againstVotes),
-                        state: ProposalState.CLOSED,
-                        url: proposalUrl
+                        state:
+                            new Date(votingEndsTimestamp * 1000).getTime() >
+                            Date.now()
+                                ? ProposalState.OPEN
+                                : ProposalState.CLOSED,
+                        url: proposalUrl,
+                        block: arg.txBlock
                     }
                 })
             )

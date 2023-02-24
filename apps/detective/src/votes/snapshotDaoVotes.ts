@@ -155,9 +155,9 @@ export const updateSnapshotDaoVotes = async (
                     skipDuplicates: true
                 })
             else
-                for (const vote of votesForProposal)
-                    await prisma.$transaction(async (tx) => {
-                        tx.vote.update({
+                await prisma.$transaction(
+                    votesForProposal.map((vote) => {
+                        return prisma.vote.upsert({
                             where: {
                                 voterAddress_daoId_proposalId: {
                                     voterAddress: ethers.getAddress(vote.voter),
@@ -165,29 +165,44 @@ export const updateSnapshotDaoVotes = async (
                                     proposalId: proposal.id
                                 }
                             },
-                            data: {
+                            create: {
+                                choice: vote.choice,
+                                votingPower: vote.vp,
+                                reason: vote.reason,
+
+                                voterAddress: ethers.getAddress(vote.voter),
+                                daoId: daoHandler.daoId,
+                                proposalId: proposal.id,
+                                daoHandlerId: daoHandler.id
+                            },
+                            update: {
                                 choice: vote.choice,
                                 votingPower: vote.vp,
                                 reason: vote.reason
                             }
                         })
                     })
-
-            await prisma.voterHandler.updateMany({
-                where: {
-                    voter: {
-                        address: {
-                            in: voters.map((voter) => voter)
-                        }
-                    },
-                    daoHandlerId: daoHandler.id
-                },
-                data: {
-                    chainIndex: 1920000,
-                    snapshotIndex: new Date(proposal.timeCreated.getTime())
-                }
-            })
+                )
         }
+
+        const newIndex = new Date(
+            Math.min(...votes.map((vote) => vote.created * 1000))
+        )
+
+        await prisma.voterHandler.updateMany({
+            where: {
+                voter: {
+                    address: {
+                        in: voters.map((voter) => voter)
+                    }
+                },
+                daoHandlerId: daoHandler.id
+            },
+            data: {
+                chainIndex: 1920000,
+                snapshotIndex: newIndex
+            }
+        })
 
         voters.map((voter) => result.set(voter, 'ok'))
     } catch (e) {

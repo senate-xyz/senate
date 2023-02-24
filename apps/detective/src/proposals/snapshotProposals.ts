@@ -83,60 +83,49 @@ export const updateSnapshotProposals = async (
                 return response.body.data.proposals
             })) as GraphQLProposal[]
 
-        await prisma.proposal.createMany({
-            data: proposals.map((proposal) => {
-                return {
-                    name: String(proposal.title),
-                    externalId: proposal.id,
-                    state:
-                        String(proposal.state) == 'closed'
-                            ? ProposalState.CLOSED
-                            : ProposalState.OPEN,
-                    choices: proposal.choices,
-                    scores: proposal.scores,
-                    scoresTotal: proposal.scores_total,
-                    timeCreated: new Date(proposal.created * 1000),
-                    timeStart: new Date(proposal.start * 1000),
-                    timeEnd: new Date(proposal.end * 1000),
-                    url: proposal.link,
-
-                    daoId: daoHandler.daoId,
-                    daoHandlerId: daoHandler.id
-                }
-            }),
-            skipDuplicates: true
-        })
-
-        const openProposals = proposals.filter(
-            (proposal) => proposal.state != 'closed'
-        )
-
-        for (const proposal of openProposals)
-            await prisma.$transaction(async (tx) => {
-                tx.proposal.update({
+        await prisma.$transaction(
+            proposals.map((proposal) => {
+                return prisma.proposal.upsert({
                     where: {
                         externalId_daoId: {
                             externalId: proposal.id,
                             daoId: daoHandler.daoId
                         }
                     },
-                    data: {
+                    update: {
+                        state:
+                            proposal.state == 'active'
+                                ? ProposalState.OPEN
+                                : ProposalState.CLOSED,
+                        choices: proposal.choices,
+                        scores: proposal.scores,
+                        scoresTotal: proposal.scores_total
+                    },
+                    create: {
                         name: String(proposal.title),
                         externalId: proposal.id,
                         state:
-                            String(proposal.state) == 'closed'
-                                ? ProposalState.CLOSED
-                                : ProposalState.OPEN,
+                            proposal.state == 'active'
+                                ? ProposalState.OPEN
+                                : ProposalState.CLOSED,
                         choices: proposal.choices,
                         scores: proposal.scores,
                         scoresTotal: proposal.scores_total,
                         timeCreated: new Date(proposal.created * 1000),
                         timeStart: new Date(proposal.start * 1000),
                         timeEnd: new Date(proposal.end * 1000),
-                        url: proposal.link
+                        url: proposal.link,
+
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id
                     }
                 })
             })
+        )
+
+        const openProposals = proposals.filter(
+            (proposal) => proposal.state == 'open'
+        )
 
         const newIndex = openProposals.length
             ? new Date(

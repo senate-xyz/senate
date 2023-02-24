@@ -6,10 +6,10 @@ import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
 import { processChainProposals } from './process/chainProposals'
 import { processChainDaoVotes } from './process/chainDaoVotes'
 import { log_ref } from '@senate/axiom'
-import { addChainProposalsToQueue } from './populate/addChainProposals'
-import { addChainDaoVotes } from './populate/addChainDaoVotes'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
+import { addChainDaoVotes } from './populate/addChainDaoVotes'
+import { addChainProposalsToQueue } from './populate/addChainProposals'
 
 const main = async () => {
     log_ref.log({

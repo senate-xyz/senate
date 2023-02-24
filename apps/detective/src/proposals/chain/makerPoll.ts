@@ -54,8 +54,12 @@ export const makerPolls = async (
                 choices: ['For', 'Against'],
                 scores: [0, 0],
                 scoresTotal: 0,
-                state: ProposalState.CLOSED,
-                url: proposalUrl
+                state:
+                    new Date(votingEndsTimestamp * 1000).getTime() > Date.now()
+                        ? ProposalState.OPEN
+                        : ProposalState.CLOSED,
+                url: proposalUrl,
+                block: arg.txBlock
             }
         })
     )

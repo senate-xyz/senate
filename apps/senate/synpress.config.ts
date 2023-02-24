@@ -7,7 +7,7 @@ export default defineConfig({
     userAgent: 'synpress',
     retries: {
         runMode: 2,
-        openMode: 0,
+        openMode: 0
     },
     screenshotsFolder: 'tests/e2e/screenshots',
     videosFolder: 'tests/e2e/videos',
@@ -17,7 +17,7 @@ export default defineConfig({
     viewportWidth: 1366,
     viewportHeight: 850,
     env: {
-        coverage: false,
+        coverage: false
     },
     defaultCommandTimeout: 10000,
     pageLoadTimeout: 10000,
@@ -28,16 +28,16 @@ export default defineConfig({
             synpressPlugins(on, config)
             return config
         },
-        experimentalSessionAndOrigin: true,
+        //experimentalSessionAndOrigin: true,
         experimentalStudio: true,
         baseUrl: 'http://localhost:3000',
         specPattern: [
             'tests/e2e/specs/00_tests_setup.cy.ts',
             'tests/e2e/specs/01_layout/**/*.{js,jsx,ts,tsx}',
             'tests/e2e/specs/02_design/**/*.{js,jsx,ts,tsx}',
-            'tests/e2e/specs/03_functional/**/*.{js,jsx,ts,tsx}',
+            'tests/e2e/specs/03_functional/**/*.{js,jsx,ts,tsx}'
         ],
-        supportFile: 'tests/e2e/support.ts',
+        supportFile: 'tests/e2e/support.ts'
     },
-    watchForFileChanges: false,
+    watchForFileChanges: false
 })
