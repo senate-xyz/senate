@@ -222,9 +222,19 @@ export const updateChainDaoVotes = async (
             .map((res) => res.votes)
             .flat(2)
 
-        const closedVotes = successfulResults.filter(
-            (vote) => vote.proposalState == ProposalState.CLOSED
-        )
+        const closedVotes = successfulResults
+            .filter((vote) => vote.proposalState == ProposalState.CLOSED)
+            .map((vote) => {
+                return {
+                    voterAddress: vote.voterAddress,
+                    daoId: vote.daoId,
+                    proposalId: vote.proposalId,
+                    daoHandlerId: vote.daoHandlerId,
+                    choice: vote.choice,
+                    reason: vote.reason,
+                    votingPower: vote.votingPower
+                }
+            })
 
         const openVotes = successfulResults.filter(
             (vote) => vote.proposalState == ProposalState.OPEN
