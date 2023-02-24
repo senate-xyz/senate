@@ -186,13 +186,13 @@ export const updateChainProposals = async (daoHandlerId: string) => {
                 })
             )
         }
-
-        const newIndex = Math.min(
-            ...proposals
-                .filter((p) => p.state == ProposalState.OPEN)
-                .map((p) => p.block),
-            toBlock
+        const openProposals = proposals.filter(
+            (proposal) => proposal.state == ProposalState.OPEN
         )
+
+        const newIndex = openProposals.length
+            ? Math.min(...openProposals.map((p) => p.block))
+            : Math.max(...openProposals.map((p) => p.block), fromBlock)
 
         await prisma.dAOHandler.update({
             where: {

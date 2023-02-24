@@ -128,15 +128,12 @@ export const updateSnapshotProposals = async (
         )
 
         const newIndex = openProposals.length
-            ? new Date(
-                  Math.min(
-                      ...openProposals.map((proposal) => proposal.created)
-                  ) * 1000
-              )
-            : new Date(
-                  Math.max(...proposals.map((proposal) => proposal.created)) *
-                      1000
-              )
+            ? Math.min(...openProposals.map((proposal) => proposal.created)) *
+              1000
+            : Math.max(
+                  ...proposals.map((proposal) => proposal.created),
+                  daoHandler.snapshotIndex.getTime()
+              ) * 1000
 
         await prisma.dAOHandler.update({
             where: {
@@ -144,9 +141,7 @@ export const updateSnapshotProposals = async (
             },
             data: {
                 chainIndex: 1920000,
-                snapshotIndex: newIndex.getTime()
-                    ? newIndex
-                    : daoHandler.snapshotIndex
+                snapshotIndex: new Date(newIndex)
             }
         })
 
