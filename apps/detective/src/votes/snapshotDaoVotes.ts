@@ -187,8 +187,11 @@ export const updateSnapshotDaoVotes = async (
 
         const newIndex = new Date(
             Math.min(
-                Math.max(...votes.map((vote) => vote.created * 1000)),
-                searchFromTimestamp
+                Math.max(
+                    ...votes.map((vote) => vote.created * 1000),
+                    daoHandler.snapshotIndex.getTime()
+                ),
+                daoHandler.snapshotIndex.getTime()
             )
         )
 
