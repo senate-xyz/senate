@@ -1,10 +1,18 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandlerType, prisma } from '@senate/database'
+import {
+    DAOHandlerType,
+    JsonValue,
+    ProposalState,
+    prisma
+} from '@senate/database'
 import { ethers } from 'ethers'
 import { getAaveVotes } from './chain/aave'
 import { getMakerExecutiveVotes } from './chain/makerExecutive'
 import { getUniswapVotes } from './chain/uniswap'
 import { getENSVotes } from './chain/ens'
+import { getGitcoinVotes } from './chain/gitcoin'
+import { getHopVotes } from './chain/hop'
+import { getDydxVotes } from './chain/dydx'
 import { getMakerPollVotes } from './chain/makerPoll'
 import { getMakerPollVotesFromArbitrum } from './chain/makerPollArbitrum'
 import { getCompoundVotes } from './chain/compound'
@@ -26,7 +34,10 @@ interface Result {
         daoId: string
         proposalId: string
         daoHandlerId: string
-        choice: string
+        choice: JsonValue
+        reason: string
+        votingPower: number
+        proposalState: ProposalState
     }[]
 }
 
@@ -158,8 +169,6 @@ export const updateChainDaoVotes = async (
                     process.env.ARBITRUM_NODE_URL
                 )
                 const toBlockArbitrum = await arbitrumProvider.getBlockNumber()
-                console.log('ARBITRUM FROM BLOCK: ', fromBlock)
-                console.log('ARBITRUM TO BLOCK: ', toBlockArbitrum)
                 votes = await getMakerPollVotesFromArbitrum(
                     arbitrumProvider,
                     daoHandler,
@@ -177,15 +186,85 @@ export const updateChainDaoVotes = async (
                     toBlock
                 )
                 break
+            case 'GITCOIN_CHAIN':
+                votes = await getGitcoinVotes(
+                    provider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'HOP_CHAIN':
+                votes = await getHopVotes(
+                    provider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'DYDX_CHAIN':
+                votes = await getDydxVotes(
+                    infuraProvider,
+                    daoHandler,
+                    voters,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            default:
+                votes = []
         }
 
-        const successfulResults = votes.filter((res) => res.success)
+        const successfulResults = votes
+            .filter((res) => res.success)
+            .map((res) => res.votes)
+            .flat(2)
 
-        if (successfulResults.length)
-            await prisma.vote.createMany({
-                data: successfulResults.map((res) => res.votes).flat(2),
-                skipDuplicates: true
+        const closedVotes = successfulResults.filter(
+            (vote) => vote.proposalState == ProposalState.CLOSED
+        )
+
+        const openVotes = successfulResults.filter(
+            (vote) => vote.proposalState == ProposalState.OPEN
+        )
+
+        await prisma.vote.createMany({
+            data: closedVotes,
+            skipDuplicates: true
+        })
+
+        await prisma.$transaction(
+            openVotes.map((vote) => {
+                return prisma.vote.upsert({
+                    where: {
+                        voterAddress_daoId_proposalId: {
+                            voterAddress: vote.voterAddress,
+                            daoId: vote.daoId,
+                            proposalId: vote.proposalId
+                        }
+                    },
+                    create: {
+                        choice: vote.choice,
+                        votingPower: vote.votingPower,
+                        reason: vote.reason,
+
+                        voterAddress: vote.voterAddress,
+                        daoId: vote.daoId,
+                        proposalId: vote.proposalId,
+                        daoHandlerId: vote.daoHandlerId
+                    },
+                    update: {
+                        choice: vote.choice,
+                        votingPower: vote.votingPower,
+                        reason: vote.reason
+                    }
+                })
             })
+        )
+
+        const newIndex = Math.min(Number(daoHandler.chainIndex), toBlock)
 
         await prisma.voterHandler.updateMany({
             where: {
@@ -197,8 +276,8 @@ export const updateChainDaoVotes = async (
                 daoHandlerId: daoHandler.id
             },
             data: {
-                chainIndex: toBlock,
-                snapshotIndex: new Date(0)
+                chainIndex: newIndex,
+                snapshotIndex: new Date('2009-01-09T04:54:25.00Z')
             }
         })
 

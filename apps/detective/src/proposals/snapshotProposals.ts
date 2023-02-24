@@ -1,4 +1,4 @@
-import { prisma, Decoder } from '@senate/database'
+import { prisma, Decoder, ProposalState } from '@senate/database'
 import { log_pd } from '@senate/axiom'
 import superagent from 'superagent'
 
@@ -8,9 +8,12 @@ type GraphQLProposal = {
     body: string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     choices: any
+    scores: number[]
+    scores_total: number
     created: number
     start: number
     end: number
+    state: string
     link: string
     space: {
         id: string
@@ -38,7 +41,7 @@ export const updateSnapshotProposals = async (
                     first: 1000, 
                     where: {
                     space: "${space}",
-                    created_gt: ${Math.floor(oldIndex / 1000)}
+                    created_gte: ${Math.floor(oldIndex / 1000)}
                     },
                     orderBy: "created",
                     orderDirection: asc
@@ -47,9 +50,12 @@ export const updateSnapshotProposals = async (
                     title
                     body
                     choices
+                    scores
+                    scores_total
                     created
                     start
                     end
+                    state
                     link
                     space
                     {
@@ -77,36 +83,70 @@ export const updateSnapshotProposals = async (
                 return response.body.data.proposals
             })) as GraphQLProposal[]
 
-        let newIndex = Date.now()
-        if (proposals.length) {
-            await prisma.proposal.createMany({
-                data: proposals.map((proposal) => {
-                    return {
-                        externalId: proposal.id,
+        await prisma.$transaction(
+            proposals.map((proposal) => {
+                return prisma.proposal.upsert({
+                    where: {
+                        externalId_daoId: {
+                            externalId: proposal.id,
+                            daoId: daoHandler.daoId
+                        }
+                    },
+                    update: {
+                        state:
+                            proposal.state == 'active'
+                                ? ProposalState.OPEN
+                                : ProposalState.CLOSED,
+                        choices: proposal.choices,
+                        scores: proposal.scores,
+                        scoresTotal: proposal.scores_total
+                    },
+                    create: {
                         name: String(proposal.title),
-                        daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id,
-                        timeEnd: new Date(proposal.end * 1000),
-                        timeStart: new Date(proposal.start * 1000),
+                        externalId: proposal.id,
+                        state:
+                            proposal.state == 'active'
+                                ? ProposalState.OPEN
+                                : ProposalState.CLOSED,
+                        choices: proposal.choices,
+                        scores: proposal.scores,
+                        scoresTotal: proposal.scores_total,
                         timeCreated: new Date(proposal.created * 1000),
-                        choices: JSON.stringify(proposal.choices),
-                        url: proposal.link
+                        timeStart: new Date(proposal.start * 1000),
+                        timeEnd: new Date(proposal.end * 1000),
+                        url: proposal.link,
+
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id
                     }
-                }),
-                skipDuplicates: true
+                })
             })
-            newIndex =
-                Math.max(...proposals.map((proposal) => proposal.created)) *
-                1000
-        }
+        )
+
+        const openProposals = proposals.filter(
+            (proposal) => proposal.state == 'open'
+        )
+
+        const newIndex = openProposals.length
+            ? new Date(
+                  Math.min(
+                      ...openProposals.map((proposal) => proposal.created)
+                  ) * 1000
+              )
+            : new Date(
+                  Math.max(...proposals.map((proposal) => proposal.created)) *
+                      1000
+              )
 
         await prisma.dAOHandler.update({
             where: {
                 id: daoHandler.id
             },
             data: {
-                chainIndex: 0,
-                snapshotIndex: new Date(newIndex)
+                chainIndex: 1920000,
+                snapshotIndex: newIndex.getTime()
+                    ? newIndex
+                    : daoHandler.snapshotIndex
             }
         })
 

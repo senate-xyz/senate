@@ -112,7 +112,7 @@ export const addSnapshotDaoVotes = async () => {
 
                     const voteTimestampBuckets = bin<number, Date>()
                         .domain([
-                            new Date(0),
+                            new Date('2009-01-09T04:54:25.00Z'),
                             new Date(Date.now() + 60 * 60 * 1000)
                         ])
                         .thresholds(thresholdsTime(10))(voteTimestamps)

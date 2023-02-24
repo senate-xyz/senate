@@ -1,8 +1,8 @@
 import { log_pd } from '@senate/axiom'
 import { DAOHandlerWithDAO, Decoder, prisma } from '@senate/database'
-import { ethers, Log, zeroPadValue, hexlify } from 'ethers'
+import { hexlify, zeroPadValue, ethers } from 'ethers'
 
-export const getENSVotes = async (
+export const getHopVotes = async (
     provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandlerWithDAO,
     voterAddresses: string[],
@@ -23,9 +23,21 @@ export const getENSVotes = async (
         ]
     })
 
+    const events = logs.map((log) => {
+        return iface.parseLog({
+            topics: log.topics as string[],
+            data: log.data
+        }).args
+    })
+
     const result = await Promise.all(
         voterAddresses.map((voterAddress) => {
-            return getVotesForVoter(logs, daoHandler, voterAddress)
+            const voterEvents = events.filter(
+                (event) =>
+                    event.voter.toLowerCase() === voterAddress.toLowerCase()
+            )
+
+            return getVotesForVoter(voterEvents, daoHandler, voterAddress)
         })
     )
 
@@ -33,29 +45,17 @@ export const getENSVotes = async (
 }
 
 export const getVotesForVoter = async (
-    logs: Log[],
+    eventsForVoter: ethers.Result[],
     daoHandler: DAOHandlerWithDAO,
     voterAddress: string
 ) => {
     let success = true
-    const govBravoIface = new ethers.Interface(
-        (daoHandler.decoder as Decoder).abi
-    )
+
     const votes =
         (
             await Promise.all(
-                logs.map(async (log) => {
+                eventsForVoter.map(async (eventData) => {
                     try {
-                        const eventData = govBravoIface.parseLog({
-                            topics: log.topics as string[],
-                            data: log.data
-                        }).args
-                        if (
-                            String(eventData.voter).toLowerCase() !=
-                            voterAddress.toLowerCase()
-                        )
-                            return null
-
                         const proposal = await prisma.proposal.findFirst({
                             where: {
                                 externalId: BigInt(
@@ -85,7 +85,7 @@ export const getVotesForVoter = async (
                         log_pd.log({
                             level: 'error',
                             message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
-                            logs: logs,
+                            event: eventData,
                             errorName: (e as Error).name,
                             errorMessage: (e as Error).message,
                             errorStack: (e as Error).stack

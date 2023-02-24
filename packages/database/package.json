@@ -25,16 +25,16 @@
     "dependencies": {
         "@prisma/client": "4.10.1",
         "@senate/axiom": "*",
-        "ethers": "^6.0.2",
-        "exponential-backoff": "^3.1.0",
-        "type-fest": "^3.5.7"
+        "ethers": "^6.0.8",
+        "exponential-backoff": "^3.1.1",
+        "type-fest": "^3.6.0"
     },
     "devDependencies": {
         "@senate/config": "*",
         "eslint": "^8.34.0",
         "prisma": "4.10.1",
         "prisma-dbml-generator": "^0.10.0",
-        "tsup": "^6.6.0",
+        "tsup": "^6.6.3",
         "typescript": "^4.9.5"
     },
     "packageManager": "yarn@1.22.19"

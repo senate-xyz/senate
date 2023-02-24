@@ -1,10 +1,10 @@
 import { log_pd } from '@senate/axiom'
 import { Decoder } from '@senate/database'
-import { DAOHandlerWithDAO, prisma } from '@senate/database'
-import { ethers, Log, zeroPadValue } from 'ethers'
-import { hexlify } from 'ethers'
+import { type DAOHandlerWithDAO, prisma } from '@senate/database'
+import { ethers, Log } from 'ethers'
+import { hexlify, zeroPadValue } from 'ethers'
 
-export const getUniswapVotes = async (
+export const getDydxVotes = async (
     provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandlerWithDAO,
     voterAddresses: string[],
@@ -20,7 +20,7 @@ export const getUniswapVotes = async (
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address,
         topics: [
-            govBravoIface.getEvent('VoteCast').topicHash,
+            govBravoIface.getEvent('VoteEmitted').topicHash,
             voterAddresses.map((voterAddress) =>
                 hexlify(zeroPadValue(voterAddress, 32))
             )
@@ -62,7 +62,7 @@ export const getVotesForVoter = async (
 
                     const proposal = await prisma.proposal.findFirst({
                         where: {
-                            externalId: BigInt(eventData.proposalId).toString(),
+                            externalId: BigInt(eventData.id).toString(),
                             daoId: daoHandler.daoId,
                             daoHandlerId: daoHandler.id
                         }
@@ -79,8 +79,8 @@ export const getVotesForVoter = async (
                         proposalId: proposal.id,
                         daoHandlerId: daoHandler.id,
                         choice: String(eventData.support) ? 1 : 3,
-                        reason: String(eventData.reason),
-                        votingPower: parseFloat(eventData.votes),
+                        reason: '',
+                        votingPower: parseFloat(eventData.votingPower),
                         proposalState: proposal.state
                     }
                 } catch (e) {

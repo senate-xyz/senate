@@ -44,9 +44,9 @@ Table DAOHandler {
   id String [pk]
   type DAOHandlerType [not null]
   decoder Json [not null]
-  chainIndex BigInt [default: 0]
-  snapshotIndex DateTime [default: 2000-01-01T00:00:00+00:00]
-  lastRefresh DateTime [not null, default: 2000-01-01T00:00:00+00:00]
+  chainIndex BigInt [default: 1920000]
+  snapshotIndex DateTime [default: 2009-01-09T04:54:25+00:00]
+  lastRefresh DateTime [not null, default: 2009-01-09T04:54:25+00:00]
   refreshStatus RefreshStatus [not null, default: 'NEW']
   daoId String [not null]
   dao DAO [not null]
@@ -65,7 +65,10 @@ Table Proposal {
   id String [pk]
   name String [not null]
   externalId String [not null]
-  choices String [not null, default: 'None']
+  state ProposalState [not null]
+  choices Json [not null]
+  scores Json [not null]
+  scoresTotal Float [not null]
   timeCreated DateTime [not null]
   timeStart DateTime [not null]
   timeEnd DateTime [not null]
@@ -102,7 +105,9 @@ Table Notification {
 
 Table Vote {
   id String [pk]
-  choice String [not null, default: 'None']
+  choice Json [not null]
+  votingPower Float [not null]
+  reason String [not null]
   voterAddress String [not null]
   voter Voter [not null]
   proposalId String [not null]
@@ -121,9 +126,9 @@ Table Vote {
 
 Table VoterHandler {
   id String [pk]
-  chainIndex BigInt [default: 0]
-  snapshotIndex DateTime [default: 2000-01-01T00:00:00+00:00]
-  lastRefresh DateTime [not null, default: 2000-01-01T00:00:00+00:00]
+  chainIndex BigInt [default: 1920000]
+  snapshotIndex DateTime [default: 2009-01-09T04:54:25+00:00]
+  lastRefresh DateTime [not null, default: 2009-01-09T04:54:25+00:00]
   refreshStatus RefreshStatus [not null, default: 'NEW']
   daoHandlerId String [not null]
   daoHandler DAOHandler [not null]
@@ -178,6 +183,9 @@ Enum DAOHandlerType {
   COMPOUND_CHAIN
   UNISWAP_CHAIN
   ENS_CHAIN
+  GITCOIN_CHAIN
+  HOP_CHAIN
+  DYDX_CHAIN
   MAKER_EXECUTIVE
   MAKER_POLL
   MAKER_POLL_ARBITRUM
@@ -197,6 +205,11 @@ Enum RefreshType {
   DAOSNAPSHOTVOTES
   VOTERCHAINVOTES
   VOTERSNAPSHOTVOTES
+}
+
+Enum ProposalState {
+  OPEN
+  CLOSED
 }
 
 Ref: DAOHandler.daoId > DAO.id [delete: Cascade]

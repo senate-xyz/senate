@@ -13,13 +13,8 @@
             },
             {
                 "internalType": "address",
-                "name": "guardian",
+                "name": "addExecutorAdmin",
                 "type": "address"
-            },
-            {
-                "internalType": "address[]",
-                "name": "executors",
-                "type": "address[]"
             }
         ],
         "stateMutability": "nonpayable",
@@ -68,25 +63,6 @@
             }
         ],
         "name": "GovernanceStrategyChanged",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "previousOwner",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
-            }
-        ],
-        "name": "OwnershipTransferred",
         "type": "event"
     },
     {
@@ -229,6 +205,81 @@
         "anonymous": false,
         "inputs": [
             {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            },
+            {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "previousAdminRole",
+                "type": "bytes32"
+            },
+            {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "newAdminRole",
+                "type": "bytes32"
+            }
+        ],
+        "name": "RoleAdminChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "sender",
+                "type": "address"
+            }
+        ],
+        "name": "RoleGranted",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "sender",
+                "type": "address"
+            }
+        ],
+        "name": "RoleRevoked",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
                 "indexed": false,
                 "internalType": "uint256",
                 "name": "id",
@@ -277,6 +328,24 @@
     },
     {
         "inputs": [],
+        "name": "ADD_EXECUTOR_ROLE",
+        "outputs": [
+            { "internalType": "bytes32", "name": "", "type": "bytes32" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "DEFAULT_ADMIN_ROLE",
+        "outputs": [
+            { "internalType": "bytes32", "name": "", "type": "bytes32" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "DOMAIN_TYPEHASH",
         "outputs": [
             { "internalType": "bytes32", "name": "", "type": "bytes32" }
@@ -286,8 +355,17 @@
     },
     {
         "inputs": [],
-        "name": "NAME",
+        "name": "EIP712_DOMAIN_NAME",
         "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "OWNER_ROLE",
+        "outputs": [
+            { "internalType": "bytes32", "name": "", "type": "bytes32" }
+        ],
         "stateMutability": "view",
         "type": "function"
     },
@@ -298,13 +376,6 @@
             { "internalType": "bytes32", "name": "", "type": "bytes32" }
         ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "__abdicate",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -390,15 +461,6 @@
     {
         "inputs": [],
         "name": "getGovernanceStrategy",
-        "outputs": [
-            { "internalType": "address", "name": "", "type": "address" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getGuardian",
         "outputs": [
             { "internalType": "address", "name": "", "type": "address" }
         ],
@@ -503,7 +565,7 @@
                         "type": "bytes32"
                     }
                 ],
-                "internalType": "struct IAaveGovernanceV2.ProposalWithoutVotes",
+                "internalType": "struct IDydxGovernor.ProposalWithoutVotes",
                 "name": "",
                 "type": "tuple"
             }
@@ -522,7 +584,7 @@
         "name": "getProposalState",
         "outputs": [
             {
-                "internalType": "enum IAaveGovernanceV2.ProposalState",
+                "internalType": "enum IDydxGovernor.ProposalState",
                 "name": "",
                 "type": "uint8"
             }
@@ -535,6 +597,17 @@
         "name": "getProposalsCount",
         "outputs": [
             { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            { "internalType": "bytes32", "name": "role", "type": "bytes32" }
+        ],
+        "name": "getRoleAdmin",
+        "outputs": [
+            { "internalType": "bytes32", "name": "", "type": "bytes32" }
         ],
         "stateMutability": "view",
         "type": "function"
@@ -563,7 +636,7 @@
                         "type": "uint248"
                     }
                 ],
-                "internalType": "struct IAaveGovernanceV2.Vote",
+                "internalType": "struct IDydxGovernor.Vote",
                 "name": "",
                 "type": "tuple"
             }
@@ -582,19 +655,30 @@
     },
     {
         "inputs": [
-            { "internalType": "address", "name": "executor", "type": "address" }
+            { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+            { "internalType": "address", "name": "account", "type": "address" }
         ],
-        "name": "isExecutorAuthorized",
+        "name": "grantRole",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+            { "internalType": "address", "name": "account", "type": "address" }
+        ],
+        "name": "hasRole",
         "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
         "stateMutability": "view",
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "owner",
-        "outputs": [
-            { "internalType": "address", "name": "", "type": "address" }
+        "inputs": [
+            { "internalType": "address", "name": "executor", "type": "address" }
         ],
+        "name": "isExecutorAuthorized",
+        "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
         "stateMutability": "view",
         "type": "function"
     },
@@ -612,8 +696,21 @@
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "renounceOwnership",
+        "inputs": [
+            { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+            { "internalType": "address", "name": "account", "type": "address" }
+        ],
+        "name": "renounceRole",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+            { "internalType": "address", "name": "account", "type": "address" }
+        ],
+        "name": "revokeRole",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -677,11 +774,15 @@
     },
     {
         "inputs": [
-            { "internalType": "address", "name": "newOwner", "type": "address" }
+            {
+                "internalType": "bytes4",
+                "name": "interfaceId",
+                "type": "bytes4"
+            }
         ],
-        "name": "transferOwnership",
-        "outputs": [],
-        "stateMutability": "nonpayable",
+        "name": "supportsInterface",
+        "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+        "stateMutability": "view",
         "type": "function"
     },
     {

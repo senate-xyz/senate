@@ -116,9 +116,7 @@ export const processSnapshotProposals = async () => {
                 data: {
                     refreshStatus: RefreshStatus.NEW,
                     lastRefresh: new Date(),
-                    snapshotIndex: new Date(
-                        Date.now() - 1000 * 60 * 60 * 24 * 90
-                    )
+                    snapshotIndex: new Date('2009-01-09T04:54:25.00Z')
                 }
             })
 

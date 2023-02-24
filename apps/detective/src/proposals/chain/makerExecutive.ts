@@ -1,5 +1,5 @@
 import { log_pd } from '@senate/axiom'
-import type { DAOHandler } from '@senate/database'
+import { DAOHandler, ProposalState } from '@senate/database'
 import { Decoder } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
@@ -40,6 +40,13 @@ export const makerExecutiveProposals = async (
         spellAddresses.map(async (spellAddress) => {
             const proposalData = await getProposalData(spellAddress)
 
+            const proposalBlock = await axios.get(
+                `https://coins.llama.fi/block/ethereum/${new Date(
+                    proposalData.spellData.expiration ??
+                        Date.now() + ONE_MONTH_MS
+                ).getTime()}`
+            )
+
             return {
                 externalId: spellAddress,
                 name: proposalData.title.slice(0, 1024) ?? 'Unknown',
@@ -51,8 +58,18 @@ export const makerExecutiveProposals = async (
                 ),
                 timeStart: new Date(proposalData.date ?? Date.now()),
                 timeCreated: new Date(proposalData.date ?? Date.now()),
-                choices: JSON.stringify(['Yes', 'No']),
-                url: (daoHandler.decoder as Decoder).proposalUrl + spellAddress
+                choices: ['Yes', 'No'],
+                scores: [0, 0],
+                scoresTotal: 0,
+                state:
+                    new Date(
+                        proposalData.spellData.expiration ??
+                            Date.now() + ONE_MONTH_MS
+                    ).getTime() > Date.now()
+                        ? ProposalState.OPEN
+                        : ProposalState.CLOSED,
+                url: (daoHandler.decoder as Decoder).proposalUrl + spellAddress,
+                block: proposalBlock.data.height
             }
         })
     )

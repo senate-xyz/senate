@@ -11,27 +11,25 @@ const IPFS_GATEWAY_URLS = [
     'https://gateway.pinata.cloud/ipfs/'
 ]
 
-export const aaveProposals = async (
+export const dydxProposals = async (
     provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandler,
     fromBlock: number,
     toBlock: number
 ) => {
-    const govBravoIface = new ethers.Interface(
-        (daoHandler.decoder as Decoder).abi
-    )
+    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi)
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address,
-        topics: [govBravoIface.getEvent('ProposalCreated').topicHash]
+        topics: [iface.getEvent('ProposalCreated').topicHash]
     })
 
     const args = logs.map((log) => ({
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
-        eventData: govBravoIface.parseLog({
+        eventData: iface.parseLog({
             topics: log.topics as string[],
             data: log.data
         }).args
@@ -55,7 +53,10 @@ export const aaveProposals = async (
             const votingEndsTimestamp =
                 proposalCreatedTimestamp +
                 (Number(arg.eventData.endBlock) - arg.txBlock) * 12
-            const title = await fetchTitleFromIPFS(arg.eventData.ipfsHash)
+            const title = await fetchTitleFromIPFS(
+                arg.eventData.ipfsHash,
+                arg.eventData.id
+            )
             const proposalUrl =
                 (daoHandler.decoder as Decoder).proposalUrl + arg.eventData.id
             const proposalOnChainId = Number(arg.eventData.id).toString()
@@ -93,8 +94,11 @@ export const aaveProposals = async (
     return proposals
 }
 
-const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
-    let title = 'Unknown'
+const fetchTitleFromIPFS = async (
+    hexHash: string,
+    onChainId: string
+): Promise<string> => {
+    let title = `DIP ${onChainId} - Unknown`
     try {
         let retries = 12
         let gatewayIndex = 0
@@ -114,7 +118,7 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
                     })
                 }
 
-                title = response.data.title
+                title = `DIP ${onChainId} - ${response.data.title}`
                 break
             } catch (e) {
                 retries--

@@ -1,5 +1,5 @@
 import { log_pd } from '@senate/axiom'
-import type { DAOHandler } from '@senate/database'
+import { DAOHandler, ProposalState } from '@senate/database'
 import { Decoder } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
@@ -51,8 +51,15 @@ export const makerPolls = async (
                 timeEnd: new Date(votingEndsTimestamp * 1000),
                 timeStart: new Date(votingStartsTimestamp * 1000),
                 timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                choices: JSON.stringify(['Yes', 'No']),
-                url: proposalUrl
+                choices: ['For', 'Against'],
+                scores: [0, 0],
+                scoresTotal: 0,
+                state:
+                    new Date(votingEndsTimestamp * 1000).getTime() > Date.now()
+                        ? ProposalState.OPEN
+                        : ProposalState.CLOSED,
+                url: proposalUrl,
+                block: arg.txBlock
             }
         })
     )

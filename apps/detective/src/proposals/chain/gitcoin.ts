@@ -2,27 +2,25 @@ import { log_pd } from '@senate/axiom'
 import { DAOHandler, Decoder, ProposalState } from '@senate/database'
 import { ethers } from 'ethers'
 
-export const ensProposals = async (
+export const gitcoinProposals = async (
     provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandler,
     fromBlock: number,
     toBlock: number
 ) => {
-    const ozGovernorInterface = new ethers.Interface(
-        (daoHandler.decoder as Decoder).abi
-    )
+    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi)
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address,
-        topics: [ozGovernorInterface.getEvent('ProposalCreated').topicHash]
+        topics: [iface.getEvent('ProposalCreated').topicHash]
     })
 
     const args = logs.map((log) => ({
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
-        eventData: ozGovernorInterface.parseLog({
+        eventData: iface.parseLog({
             topics: log.topics as string[],
             data: log.data
         }).args
@@ -49,13 +47,12 @@ export const ensProposals = async (
                         proposalCreatedTimestamp +
                         (Number(arg.eventData.endBlock) - arg.txBlock) * 12
                     const title = await formatTitle(arg.eventData.description)
-                    const proposalOnChainId =
-                        arg.eventData.proposalId.toString()
+                    const proposalOnChainId = arg.eventData.id.toString()
                     const proposalUrl =
                         (daoHandler.decoder as Decoder).proposalUrl +
                         proposalOnChainId
 
-                    const onchainProposal = await govContract.proposalVotes(
+                    const onchainProposal = await govContract.proposals(
                         proposalOnChainId
                     )
 
@@ -67,15 +64,13 @@ export const ensProposals = async (
                         timeEnd: new Date(votingEndsTimestamp * 1000),
                         timeStart: new Date(votingStartsTimestamp * 1000),
                         timeCreated: new Date(proposalCreatedTimestamp * 1000),
-                        choices: ['For', 'Abstain', 'Against'],
+                        choices: ['For', 'Against'],
                         scores: [
                             parseFloat(onchainProposal.forVotes),
-                            parseFloat(onchainProposal.abstainVotes),
                             parseFloat(onchainProposal.againstVotes)
                         ],
                         scoresTotal:
                             parseFloat(onchainProposal.forVotes) +
-                            parseFloat(onchainProposal.abstainVotes) +
                             parseFloat(onchainProposal.againstVotes),
                         state:
                             new Date(votingEndsTimestamp * 1000).getTime() >

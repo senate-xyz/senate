@@ -20,6 +20,7 @@ export {
     RefreshType,
     DAOHandlerType,
     RoundupNotificationType,
+    ProposalState,
     type DAOHandler
 } from '@prisma/client'
 
@@ -28,6 +29,9 @@ export type Decoder = {
     address?: string
     proposalUrl?: string
     space?: string
+
+    proxyAbi?: InterfaceAbi
+    proxyAddress?: string
 
     //makerpools
     address_vote?: string

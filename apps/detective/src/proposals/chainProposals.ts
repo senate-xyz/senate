@@ -1,4 +1,9 @@
-import { DAOHandlerType, prisma } from '@senate/database'
+import {
+    DAOHandlerType,
+    JsonValue,
+    prisma,
+    ProposalState
+} from '@senate/database'
 import { ethers } from 'ethers'
 import { aaveProposals } from './chain/aave'
 import { compoundProposals } from './chain/compound'
@@ -6,6 +11,9 @@ import { makerExecutiveProposals } from './chain/makerExecutive'
 import { makerPolls } from './chain/makerPoll'
 import { uniswapProposals } from './chain/uniswap'
 import { ensProposals } from './chain/ens'
+import { gitcoinProposals } from './chain/gitcoin'
+import { hopProposals } from './chain/hop'
+import { dydxProposals } from './chain/dydx'
 import { log_pd } from '@senate/axiom'
 
 interface Result {
@@ -16,7 +24,12 @@ interface Result {
     timeEnd: Date
     timeStart: Date
     timeCreated: Date
+    choices: JsonValue
+    scores: JsonValue
+    scoresTotal: number
+    state: ProposalState
     url: string
+    block: number
 }
 
 const infuraProvider = new ethers.JsonRpcProvider(
@@ -51,7 +64,7 @@ export const updateChainProposals = async (daoHandlerId: string) => {
     const blockBatchSize =
         daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE ? 100000 : 1000000
 
-    const fromBlock = Math.max(minBlockNumber, 0)
+    const fromBlock = Math.max(minBlockNumber, 1920000)
     const toBlock =
         currentBlock - fromBlock > blockBatchSize
             ? fromBlock + blockBatchSize
@@ -110,24 +123,84 @@ export const updateChainProposals = async (daoHandlerId: string) => {
                     toBlock
                 )
                 break
+            case 'GITCOIN_CHAIN':
+                proposals = await gitcoinProposals(
+                    provider,
+                    daoHandler,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'HOP_CHAIN':
+                proposals = await hopProposals(
+                    provider,
+                    daoHandler,
+                    fromBlock,
+                    toBlock
+                )
+                break
+            case 'DYDX_CHAIN':
+                proposals = await dydxProposals(
+                    provider,
+                    daoHandler,
+                    fromBlock,
+                    toBlock
+                )
+                break
             default:
                 proposals = []
         }
 
         if (proposals.length || toBlock != currentBlock) {
-            await prisma.proposal.createMany({
-                data: proposals,
-                skipDuplicates: true
-            })
+            await prisma.$transaction(
+                proposals.map((proposal) => {
+                    return prisma.proposal.upsert({
+                        where: {
+                            externalId_daoId: {
+                                externalId: proposal.externalId,
+                                daoId: proposal.daoId
+                            }
+                        },
+                        update: {
+                            state: proposal.state,
+                            choices: proposal.choices,
+                            scores: proposal.scores,
+                            scoresTotal: proposal.scoresTotal
+                        },
+                        create: {
+                            name: proposal.name,
+                            externalId: proposal.externalId,
+                            state: proposal.state,
+                            choices: proposal.choices,
+                            scores: proposal.scores,
+                            scoresTotal: proposal.scoresTotal,
+                            timeCreated: proposal.timeCreated,
+                            timeStart: proposal.timeStart,
+                            timeEnd: proposal.timeEnd,
+                            url: proposal.url,
+
+                            daoId: daoHandler.daoId,
+                            daoHandlerId: daoHandler.id
+                        }
+                    })
+                })
+            )
         }
+
+        const newIndex = Math.min(
+            ...proposals
+                .filter((p) => p.state == ProposalState.OPEN)
+                .map((p) => p.block),
+            toBlock
+        )
 
         await prisma.dAOHandler.update({
             where: {
                 id: daoHandler.id
             },
             data: {
-                chainIndex: toBlock,
-                snapshotIndex: new Date(0)
+                chainIndex: newIndex,
+                snapshotIndex: new Date('2009-01-09T04:54:25.00Z')
             }
         })
 
