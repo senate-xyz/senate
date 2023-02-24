@@ -186,7 +186,10 @@ export const updateSnapshotDaoVotes = async (
         }
 
         const newIndex = new Date(
-            Math.min(...votes.map((vote) => vote.created * 1000))
+            Math.min(
+                ...votes.map((vote) => vote.created * 1000),
+                searchFromTimestamp
+            )
         )
 
         await prisma.voterHandler.updateMany({
