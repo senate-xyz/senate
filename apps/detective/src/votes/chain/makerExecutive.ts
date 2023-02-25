@@ -103,7 +103,8 @@ export const getVotesForVoter = async (
                         choice: 1,
                         reason: '',
                         votingPower: 0,
-                        proposalState: proposal.state
+                        proposalActive:
+                            proposal.timeEnd.getTime() > new Date().getTime()
                     }
                 } catch (e) {
                     log_pd.log({

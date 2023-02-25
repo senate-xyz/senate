@@ -1,9 +1,4 @@
-import {
-    DAOHandlerType,
-    JsonValue,
-    prisma,
-    ProposalState
-} from '@senate/database'
+import { DAOHandlerType, JsonValue, prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import { aaveProposals } from './chain/aave'
 import { compoundProposals } from './chain/compound'
@@ -27,7 +22,6 @@ interface Result {
     choices: JsonValue
     scores: JsonValue
     scoresTotal: number
-    state: ProposalState
     url: string
     block: number
 }
@@ -151,48 +145,55 @@ export const updateChainProposals = async (daoHandlerId: string) => {
                 proposals = []
         }
 
-        if (proposals.length || toBlock != currentBlock) {
-            await prisma.$transaction(
-                proposals.map((proposal) => {
-                    return prisma.proposal.upsert({
-                        where: {
-                            externalId_daoId: {
-                                externalId: proposal.externalId,
-                                daoId: proposal.daoId
-                            }
-                        },
-                        update: {
-                            state: proposal.state,
-                            choices: proposal.choices,
-                            scores: proposal.scores,
-                            scoresTotal: proposal.scoresTotal
-                        },
-                        create: {
-                            name: proposal.name,
+        await prisma.$transaction(
+            proposals.map((proposal) => {
+                return prisma.proposal.upsert({
+                    where: {
+                        externalId_daoId: {
                             externalId: proposal.externalId,
-                            state: proposal.state,
-                            choices: proposal.choices,
-                            scores: proposal.scores,
-                            scoresTotal: proposal.scoresTotal,
-                            timeCreated: proposal.timeCreated,
-                            timeStart: proposal.timeStart,
-                            timeEnd: proposal.timeEnd,
-                            url: proposal.url,
-
-                            daoId: daoHandler.daoId,
-                            daoHandlerId: daoHandler.id
+                            daoId: proposal.daoId
                         }
-                    })
+                    },
+                    update: {
+                        choices: proposal.choices,
+                        scores: proposal.scores,
+                        scoresTotal: proposal.scoresTotal
+                    },
+                    create: {
+                        name: proposal.name,
+                        externalId: proposal.externalId,
+                        choices: proposal.choices,
+                        scores: proposal.scores,
+                        scoresTotal: proposal.scoresTotal,
+                        timeCreated: proposal.timeCreated,
+                        timeStart: proposal.timeStart,
+                        timeEnd: proposal.timeEnd,
+                        url: proposal.url,
+
+                        daoId: daoHandler.daoId,
+                        daoHandlerId: daoHandler.id
+                    }
                 })
-            )
-        }
-        const openProposals = proposals.filter(
-            (proposal) => proposal.state == ProposalState.OPEN
+            })
         )
 
-        const newIndex = openProposals.length
-            ? Math.min(...openProposals.map((p) => p.block))
-            : Math.max(...openProposals.map((p) => p.block), fromBlock)
+        const closedProposals = proposals.filter(
+            (proposal) => proposal.timeEnd.getTime() < new Date().getTime()
+        )
+
+        const openProposals = proposals.filter(
+            (proposal) => proposal.timeEnd.getTime() > new Date().getTime()
+        )
+
+        let newIndex
+
+        if (openProposals.length) {
+            newIndex = Math.min(...openProposals.map((p) => p.block))
+        } else if (closedProposals.length) {
+            newIndex = Math.max(...closedProposals.map((p) => p.block))
+        } else {
+            newIndex = toBlock
+        }
 
         await prisma.dAOHandler.update({
             where: {

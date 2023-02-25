@@ -1,5 +1,5 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandler, Decoder, ProposalState } from '@senate/database'
+import { DAOHandler, Decoder } from '@senate/database'
 import { ethers } from 'ethers'
 
 export const gitcoinProposals = async (
@@ -72,11 +72,6 @@ export const gitcoinProposals = async (
                         scoresTotal:
                             parseFloat(onchainProposal.forVotes) +
                             parseFloat(onchainProposal.againstVotes),
-                        state:
-                            new Date(votingEndsTimestamp * 1000).getTime() >
-                            Date.now()
-                                ? ProposalState.OPEN
-                                : ProposalState.CLOSED,
                         url: proposalUrl,
                         block: arg.txBlock
                     }

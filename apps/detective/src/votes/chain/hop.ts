@@ -79,7 +79,9 @@ export const getVotesForVoter = async (
                             choice: String(eventData.support) ? 1 : 3,
                             reason: String(eventData.reason),
                             votingPower: parseFloat(eventData.weight),
-                            proposalState: proposal.state
+                            proposalActive:
+                                proposal.timeEnd.getTime() >
+                                new Date().getTime()
                         }
                     } catch (e) {
                         log_pd.log({
