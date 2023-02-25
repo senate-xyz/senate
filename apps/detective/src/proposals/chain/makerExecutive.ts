@@ -40,31 +40,28 @@ export const makerExecutiveProposals = async (
         spellAddresses.map(async (spellAddress) => {
             const proposalData = await getProposalData(spellAddress)
 
-            const proposalBlock = await axios.get(
-                `https://coins.llama.fi/block/ethereum/${
-                    new Date(
-                        proposalData.spellData.expiration ??
-                            Date.now() + ONE_MONTH_MS
-                    ).getTime() / 1000
-                }`
-            )
+            const proposalBlock = await axios
+                .get(
+                    `https://coins.llama.fi/block/ethereum/${Math.floor(
+                        proposalData.spellData.expiration.getTime() / 1000
+                    )}`
+                )
+                .then((res) => res.data.height)
+                .catch(async () => toBlock)
 
             return {
                 externalId: spellAddress,
                 name: proposalData.title.slice(0, 1024) ?? 'Unknown',
                 daoId: daoHandler.daoId,
                 daoHandlerId: daoHandler.id,
-                timeEnd: new Date(
-                    proposalData.spellData.expiration ??
-                        Date.now() + ONE_MONTH_MS
-                ),
+                timeEnd: new Date(proposalData.spellData.expiration),
                 timeStart: new Date(proposalData.date ?? Date.now()),
                 timeCreated: new Date(proposalData.date ?? Date.now()),
                 choices: ['Yes', 'No'],
                 scores: [0, 0],
                 scoresTotal: 0,
                 url: (daoHandler.decoder as Decoder).proposalUrl + spellAddress,
-                block: proposalBlock.data.height
+                block: proposalBlock
             }
         })
     )
@@ -76,7 +73,7 @@ const getProposalData = async (spellAddress: string) => {
     let response = {
         title: 'Unknown',
         spellData: {
-            expiration: new Date(0)
+            expiration: new Date(Date.now() + ONE_MONTH_MS)
         },
         date: new Date(0)
     }
@@ -84,12 +81,24 @@ const getProposalData = async (spellAddress: string) => {
         let retriesLeft = 5
         while (retriesLeft) {
             try {
-                response = (
+                const data = (
                     await axios.get(
                         'https://vote.makerdao.com/api/executive/' +
                             spellAddress
                     )
                 ).data
+
+                if (!data.error) {
+                    response = {
+                        title: data.title,
+                        spellData: {
+                            expiration: new Date(
+                                data.expiration ?? Date.now() + ONE_MONTH_MS
+                            )
+                        },
+                        date: new Date(data.date)
+                    }
+                }
 
                 break
             } catch (err) {
