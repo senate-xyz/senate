@@ -40,6 +40,8 @@ export const makerExecutiveProposals = async (
         spellAddresses.map(async (spellAddress) => {
             const proposalData = await getProposalData(spellAddress)
 
+            if (proposalData.title === 'Unknown') return Promise.resolve(null)
+
             const proposalBlock = await axios
                 .get(
                     `https://coins.llama.fi/block/ethereum/${Math.floor(
@@ -66,7 +68,7 @@ export const makerExecutiveProposals = async (
         })
     )
 
-    return proposals
+    return proposals.filter((proposal) => proposal !== null)
 }
 
 const getProposalData = async (spellAddress: string) => {
