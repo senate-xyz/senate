@@ -92,7 +92,7 @@ const formatVotes = async (
             choice: BigInt(event.optionId).toString() ? 1 : 2,
             reason: '',
             votingPower: 0,
-            proposalState: proposal.state
+            proposalActive: proposal.timeEnd.getTime() > new Date().getTime()
         }
     })
 }

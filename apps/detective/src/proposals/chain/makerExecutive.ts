@@ -1,5 +1,5 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandler, ProposalState } from '@senate/database'
+import { DAOHandler } from '@senate/database'
 import { Decoder } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
@@ -61,13 +61,6 @@ export const makerExecutiveProposals = async (
                 choices: ['Yes', 'No'],
                 scores: [0, 0],
                 scoresTotal: 0,
-                state:
-                    new Date(
-                        proposalData.spellData.expiration ??
-                            Date.now() + ONE_MONTH_MS
-                    ).getTime() > Date.now()
-                        ? ProposalState.OPEN
-                        : ProposalState.CLOSED,
                 url: (daoHandler.decoder as Decoder).proposalUrl + spellAddress,
                 block: proposalBlock.data.height
             }

@@ -65,7 +65,6 @@ Table Proposal {
   id String [pk]
   name String [not null]
   externalId String [not null]
-  state ProposalState [not null]
   choices Json [not null]
   scores Json [not null]
   scoresTotal Float [not null]
@@ -205,11 +204,6 @@ Enum RefreshType {
   DAOSNAPSHOTVOTES
   VOTERCHAINVOTES
   VOTERSNAPSHOTVOTES
-}
-
-Enum ProposalState {
-  OPEN
-  CLOSED
 }
 
 Ref: DAOHandler.daoId > DAO.id [delete: Cascade]

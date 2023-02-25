@@ -1,10 +1,5 @@
 import { log_pd } from '@senate/axiom'
-import {
-    DAOHandlerType,
-    JsonValue,
-    ProposalState,
-    prisma
-} from '@senate/database'
+import { DAOHandlerType, JsonValue, prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import { getAaveVotes } from './chain/aave'
 import { getMakerExecutiveVotes } from './chain/makerExecutive'
@@ -37,7 +32,7 @@ interface Result {
         choice: JsonValue
         reason: string
         votingPower: number
-        proposalState: ProposalState
+        proposalActive: boolean
     }[]
 }
 
@@ -103,14 +98,10 @@ export const updateChainDaoVotes = async (
 
     if (fromBlock < firstProposalBlock) fromBlock = firstProposalBlock
 
-    let toBlock =
+    const toBlock =
         currentBlock - fromBlock > blockBatchSize
             ? fromBlock + blockBatchSize
             : currentBlock
-
-    //NOTE to future self: Maker Arbitrum's daoHandler.lastChainProposalCreatedBlock is always 0
-    if (toBlock > daoHandler.chainIndex && toBlock != currentBlock)
-        toBlock = Number(daoHandler.chainIndex)
 
     if (fromBlock > toBlock) fromBlock = toBlock
 
@@ -224,7 +215,7 @@ export const updateChainDaoVotes = async (
             .flat(2)
 
         const closedVotes = successfulVotes
-            .filter((vote) => vote.proposalState == ProposalState.CLOSED)
+            .filter((vote) => vote.proposalActive == false)
             .map((vote) => {
                 return {
                     voterAddress: vote.voterAddress,
@@ -238,7 +229,7 @@ export const updateChainDaoVotes = async (
             })
 
         const openVotes = successfulVotes.filter(
-            (vote) => vote.proposalState == ProposalState.OPEN
+            (vote) => vote.proposalActive == true
         )
 
         await prisma.vote.createMany({

@@ -1,5 +1,5 @@
 import { log_pd } from '@senate/axiom'
-import { DAOHandler, ProposalState } from '@senate/database'
+import { DAOHandler } from '@senate/database'
 import { Decoder } from '@senate/database'
 import { ethers } from 'ethers'
 
@@ -78,10 +78,6 @@ export const uniswapProposals = async (
                     parseFloat(onchainProposal.forVotes) +
                     parseFloat(onchainProposal.abstainVotes) +
                     parseFloat(onchainProposal.againstVotes),
-                state:
-                    new Date(votingEndsTimestamp * 1000).getTime() > Date.now()
-                        ? ProposalState.OPEN
-                        : ProposalState.CLOSED,
                 url: proposalUrl,
                 block: arg.txBlock
             }
