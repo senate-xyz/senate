@@ -190,7 +190,7 @@ export const updateChainProposals = async (daoHandlerId: string) => {
         if (openProposals.length) {
             newIndex = Math.min(...openProposals.map((p) => p.block))
         } else if (closedProposals.length) {
-            newIndex = Math.max(...closedProposals.map((p) => p.block))
+            newIndex = Math.max(...closedProposals.map((p) => p.block + 1))
         } else {
             newIndex = toBlock
         }

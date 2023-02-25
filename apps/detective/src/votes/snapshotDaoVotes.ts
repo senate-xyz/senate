@@ -186,7 +186,8 @@ export const updateSnapshotDaoVotes = async (
         }
 
         const searchToTimestmap = Math.max(
-            ...votes.map((vote) => vote.created * 1000)
+            ...votes.map((vote) => vote.created * 1000),
+            searchFromTimestamp
         )
 
         const newIndex = Math.min(
