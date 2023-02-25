@@ -20,7 +20,6 @@ export {
     RefreshType,
     DAOHandlerType,
     RoundupNotificationType,
-    ProposalState,
     type DAOHandler
 } from '@prisma/client'
 
