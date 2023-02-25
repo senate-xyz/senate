@@ -41,10 +41,12 @@ export const makerExecutiveProposals = async (
             const proposalData = await getProposalData(spellAddress)
 
             const proposalBlock = await axios.get(
-                `https://coins.llama.fi/block/ethereum/${new Date(
-                    proposalData.spellData.expiration ??
-                        Date.now() + ONE_MONTH_MS
-                ).getTime()}`
+                `https://coins.llama.fi/block/ethereum/${
+                    new Date(
+                        proposalData.spellData.expiration ??
+                            Date.now() + ONE_MONTH_MS
+                    ).getTime() / 1000
+                }`
             )
 
             return {
