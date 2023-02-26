@@ -8,7 +8,7 @@ const VOTE_MULTIPLE_ACTIONS_TOPIC =
     '0xed08132900000000000000000000000000000000000000000000000000000000'
 const VOTE_SINGE_ACTION_TOPIC =
     '0xa69beaba00000000000000000000000000000000000000000000000000000000'
-const ONE_MONTH_MS = 1000 * 60 * 60 * 24 * 30
+//const ONE_MONTH_MS = 1000 * 60 * 60 * 24 * 30
 
 export const makerExecutiveProposals = async (
     provider: ethers.JsonRpcProvider,
@@ -40,7 +40,11 @@ export const makerExecutiveProposals = async (
         spellAddresses.map(async (spellAddress) => {
             const proposalData = await getProposalData(spellAddress)
 
-            if (proposalData.title === 'Unknown') return Promise.resolve(null)
+            if (
+                proposalData.title === 'Unknown' ||
+                proposalData.spellData.expiration.getTime() == 0
+            )
+                return Promise.resolve(null)
 
             const proposalBlock = await axios
                 .get(
@@ -75,7 +79,7 @@ const getProposalData = async (spellAddress: string) => {
     let response = {
         title: 'Unknown',
         spellData: {
-            expiration: new Date(Date.now() + ONE_MONTH_MS)
+            expiration: new Date(0)
         },
         date: new Date(0)
     }
@@ -90,13 +94,11 @@ const getProposalData = async (spellAddress: string) => {
                     )
                 ).data
 
-                if (!data.error) {
+                if (!data.error && data.title && data.expiration && data.date) {
                     response = {
                         title: data.title,
                         spellData: {
-                            expiration: new Date(
-                                data.expiration ?? Date.now() + ONE_MONTH_MS
-                            )
+                            expiration: new Date(data.expiration)
                         },
                         date: new Date(data.date)
                     }
