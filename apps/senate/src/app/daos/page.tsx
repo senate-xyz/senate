@@ -1,9 +1,10 @@
 import SubscribedDAOs from './subscribedDAOs/page'
 import UnsubscribedDAOs from './unsubscribedDAOs/page'
-import { getServerSession } from 'next-auth'
+
+import { currentUser } from '@clerk/nextjs/app-beta'
 
 export default async function Home() {
-    const session = await getServerSession()
+    const session = await currentUser()
     return (
         <main className='text-white'>
             <div className='w-full'>

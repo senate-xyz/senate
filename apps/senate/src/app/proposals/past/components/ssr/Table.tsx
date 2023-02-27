@@ -1,20 +1,18 @@
 import Image from 'next/image'
 import dayjs, { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { getServerSession } from 'next-auth'
-
 import { Vote, prisma } from '@senate/database'
-import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
+import { currentUser } from '@clerk/nextjs/app-beta'
 extend(relativeTime)
 
 const getProposals = async (from: string, end: number, voted: string) => {
     const active = false
 
-    const session = await getServerSession(authOptions())
+    const userSession = await currentUser()
 
     const user = await prisma.user.findFirst({
         where: {
-            name: { equals: String(session?.user?.name) }
+            name: { equals: userSession?.web3Wallets[0]?.web3Wallet ?? '' }
         },
         include: {
             voters: true

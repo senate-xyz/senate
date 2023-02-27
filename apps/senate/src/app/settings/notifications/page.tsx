@@ -1,20 +1,20 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { trpc } from '../../../server/trpcClient'
 
 export default function Home() {
-    const session = useSession()
+    const { isLoaded, isSignedIn } = useUser()
     const router = useRouter()
     const user = trpc.accountSettings.getUser.useQuery()
 
     const [getDailyEmails, setDailyEmails] = useState(false)
 
     useEffect(() => {
-        if (session.status != 'authenticated') router.push('/settings/account')
-    }, [session.status])
+        if (isLoaded && !isSignedIn) router.push('/settings/account')
+    }, [isLoaded])
 
     useEffect(() => {
         if (user.data) setDailyEmails(user.data.dailyBulletin)

@@ -1,6 +1,7 @@
 import { router, privateProcedure } from '../trpc'
 import { z } from 'zod'
 import { prisma } from '@senate/database'
+import { clerkClient } from '@clerk/nextjs/server'
 
 export const subscriptionsRouter = router({
     subscribe: privateProcedure
@@ -11,9 +12,17 @@ export const subscriptionsRouter = router({
             })
         )
         .mutation(async ({ input, ctx }) => {
+            const clerkUser = await clerkClient.users.getUser(
+                ctx.auth?.userId || ''
+            )
+
+            console.log(clerkUser.web3Wallets[0]?.web3Wallet)
+
             const user = await prisma.user.findFirstOrThrow({
                 where: {
-                    name: { equals: String(ctx.user.name) }
+                    name: {
+                        equals: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                    }
                 }
             })
 
@@ -44,9 +53,15 @@ export const subscriptionsRouter = router({
             })
         )
         .mutation(async ({ input, ctx }) => {
+            const clerkUser = await clerkClient.users.getUser(
+                ctx.auth?.userId || ''
+            )
+
             const user = await prisma.user.findFirstOrThrow({
                 where: {
-                    name: { equals: String(ctx.user.name) }
+                    name: {
+                        equals: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                    }
                 }
             })
 
@@ -70,9 +85,15 @@ export const subscriptionsRouter = router({
             })
         )
         .mutation(async ({ input, ctx }) => {
+            const clerkUser = await clerkClient.users.getUser(
+                ctx.auth?.userId || ''
+            )
+
             const user = await prisma.user.findFirstOrThrow({
                 where: {
-                    name: { equals: String(ctx.user.name) }
+                    name: {
+                        equals: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                    }
                 }
             })
 
