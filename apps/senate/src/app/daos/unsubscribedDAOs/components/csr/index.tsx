@@ -174,7 +174,12 @@ const SubscribeButton = (props: { setShowMenu: (arg0: boolean) => void }) => {
                 onClick={() => {
                     user.isSignedIn
                         ? props.setShowMenu(true)
-                        : openSignIn({ redirectUrl: pathname })
+                        : openSignIn({
+                              redirectUrl: pathname,
+                              appearance: {
+                                  elements: { footer: { display: 'none' } }
+                              }
+                          })
                 }}
             >
                 Subscribe
