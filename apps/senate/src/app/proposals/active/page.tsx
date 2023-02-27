@@ -1,6 +1,5 @@
+import { currentUser } from '@clerk/nextjs/app-beta'
 import { prisma } from '@senate/database'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import ConnectWalletModal from '../components/csr/ConnectWalletModal'
 import { Filters } from './components/csr/Filters'
 import Table from './components/ssr/Table'
@@ -8,13 +7,12 @@ import Table from './components/ssr/Table'
 export const revalidate = 300
 
 const getSubscribedDAOs = async () => {
-    const session = await getServerSession(authOptions())
-    const userAddress = session?.user?.name ?? ''
+    const userSession = await currentUser()
 
     const user = await prisma.user
         .findFirstOrThrow({
             where: {
-                name: { equals: userAddress }
+                name: { equals: userSession?.web3Wallets[0]?.web3Wallet ?? '' }
             },
             select: {
                 id: true

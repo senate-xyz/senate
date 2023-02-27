@@ -1,30 +1,28 @@
 'use client'
 
-import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { useSession } from 'next-auth/react'
+import { useClerk } from '@clerk/nextjs'
+import { usePathname } from 'next/navigation'
 
 const NotConnected = () => {
-    const session = useSession()
-    const { openConnectModal } = useConnectModal()
+    const { openSignIn } = useClerk()
+    const pathname = usePathname()
 
-    if (session?.status != 'authenticated')
-        return (
-            <div>
-                <div className='flex flex-col gap-5'>
-                    <p className='text-[15px] text-[#D9D9D9]'>
-                        Please connect your wallet to customize your Account
-                        settings
-                    </p>
-                    <button
-                        className='w-fit bg-zinc-800 py-2 px-4 font-bold text-white hover:scale-105'
-                        onClick={openConnectModal}
-                    >
-                        Connect Wallet
-                    </button>
-                </div>
+    return (
+        <div>
+            <div className='flex flex-col gap-5'>
+                <p className='text-[15px] text-[#D9D9D9]'>
+                    Please connect your wallet to customize your Account
+                    settings
+                </p>
+                <button
+                    className='w-fit bg-zinc-800 py-2 px-4 font-bold text-white hover:scale-105'
+                    onClick={() => openSignIn({ redirectUrl: pathname })}
+                >
+                    Connect Wallet
+                </button>
             </div>
-        )
-    return <></>
+        </div>
+    )
 }
 
 export default NotConnected

@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { SignedIn, SignedOut } from '@clerk/nextjs/app-beta/client'
 import Link from 'next/link'
 
 const defaultTab: { id: number; name: string; color: string; link: string } = {
@@ -36,13 +36,12 @@ export default function RootLayout({
 }: {
     children: React.ReactNode
 }) {
-    const session = useSession()
     return (
         <>
             <div className='flex grow flex-col bg-[#1E1B20] p-5 px-12'>
                 <div className='flex w-full flex-row gap-10'>
-                    {session?.status == 'authenticated' ? (
-                        tabs.map((tab) => {
+                    <SignedIn>
+                        {tabs.map((tab) => {
                             return (
                                 <Link
                                     key={tab.id}
@@ -52,8 +51,10 @@ export default function RootLayout({
                                     {tab.name}
                                 </Link>
                             )
-                        })
-                    ) : (
+                        })}
+                    </SignedIn>
+
+                    <SignedOut>
                         <Link
                             key={defaultTab.id}
                             className={defaultTab.color}
@@ -61,7 +62,7 @@ export default function RootLayout({
                         >
                             {defaultTab.name}
                         </Link>
-                    )}
+                    </SignedOut>
                 </div>
                 <div className='pt-10 pl-2'>{children}</div>
             </div>

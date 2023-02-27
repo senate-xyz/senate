@@ -1,17 +1,15 @@
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import { UnsubscribedDAO } from './components/csr'
 import { getAverageColor } from 'fast-average-color-node'
 import { prisma } from '@senate/database'
+import { currentUser } from '@clerk/nextjs/app-beta'
 
 const getSubscribedDAOs = async () => {
-    const session = await getServerSession(authOptions())
-    const userAddress = session?.user?.name ?? ''
+    const userSession = await currentUser()
 
     const user = await prisma.user
         .findFirstOrThrow({
             where: {
-                name: { equals: userAddress }
+                name: { equals: userSession?.web3Wallets[0]?.web3Wallet ?? '' }
             },
             select: {
                 id: true
@@ -86,7 +84,7 @@ export default async function UnsubscribedDAOs() {
 
     return (
         <main>
-            {unsubscribedDAOs.length && (
+            {unsubscribedDAOs.length > 0 && (
                 <p className='mb-4 w-full text-[36px] font-semibold text-white'>
                     DAOs you can subscribe to
                 </p>
