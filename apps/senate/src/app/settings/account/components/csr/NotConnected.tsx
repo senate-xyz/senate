@@ -16,7 +16,14 @@ const NotConnected = () => {
                 </p>
                 <button
                     className='w-fit bg-zinc-800 py-2 px-4 font-bold text-white hover:scale-105'
-                    onClick={() => openSignIn({ redirectUrl: pathname })}
+                    onClick={() =>
+                        openSignIn({
+                            redirectUrl: pathname,
+                            appearance: {
+                                elements: { footer: { display: 'none' } }
+                            }
+                        })
+                    }
                 >
                     Connect Wallet
                 </button>
