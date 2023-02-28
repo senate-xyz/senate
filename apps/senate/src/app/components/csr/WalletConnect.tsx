@@ -1,26 +1,12 @@
 'use client'
 
-import { useClerk, useUser } from '@clerk/nextjs'
+import { useClerk } from '@clerk/nextjs'
 import { SignedIn, SignedOut } from '@clerk/nextjs/app-beta/client'
-import { usePathname, useRouter } from 'next/navigation'
-
-import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 
 export const WalletConnect = () => {
-    const router = useRouter()
     const { openSignIn, signOut, redirectToHome } = useClerk()
-    const user = useUser()
     const pathname = usePathname()
-
-    useEffect(() => {
-        if (user.isSignedIn) {
-            const createdAt = user.user?.createdAt?.getTime() ?? 0
-
-            if (Date.now() - createdAt < 5000) {
-                router.push('/sign-up')
-            }
-        }
-    }, [user])
 
     return (
         <div>
