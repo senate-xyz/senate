@@ -48,7 +48,7 @@ schedule('15 * * * *', async () => {
         })
 
         for (const daoHandler of daoHandlers) {
-            // Fetch the addresses from all voterHandlers connected to the daoHandler
+            // Fetch the addresses from all voterHandlers linked to the daoHandler
             const voterAddresses: string[] = (
                 await prisma.voterHandler.findMany({
                     where: {
