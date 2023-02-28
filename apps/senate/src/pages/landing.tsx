@@ -54,7 +54,7 @@ const Home = () => {
                             leaveTo='opacity-0'
                         >
                             <div className='text-[24px] font-light text-white -translate-y-20 w-[447px] text-center mb-8'>
-                                Welcome to Senate
+                                Welcome to Senate!
                             </div>
                         </Transition.Child>
 

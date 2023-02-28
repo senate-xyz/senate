@@ -16,8 +16,6 @@ export const subscriptionsRouter = router({
                 ctx.auth?.userId || ''
             )
 
-            console.log(clerkUser.web3Wallets[0]?.web3Wallet)
-
             const user = await prisma.user.findFirstOrThrow({
                 where: {
                     name: {
