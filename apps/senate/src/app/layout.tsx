@@ -1,9 +1,9 @@
 import { ClerkProvider } from '@clerk/nextjs/app-beta'
 import { dark } from '@clerk/themes'
 import Link from 'next/link'
-import { TrpcClientProvider } from '../server/trpcClient'
 import '../styles/globals.css'
 import { NavBar } from './components/csr/NavBar'
+import RootProvider from './providers/providers'
 
 export default function RootLayout({
     children
@@ -16,7 +16,7 @@ export default function RootLayout({
                 baseTheme: dark
             }}
         >
-            <TrpcClientProvider>
+            <RootProvider>
                 <html lang='en'>
                     <head />
                     <body>
@@ -45,7 +45,7 @@ export default function RootLayout({
                         </div>
                     </body>
                 </html>
-            </TrpcClientProvider>
+            </RootProvider>
         </ClerkProvider>
     )
 }
