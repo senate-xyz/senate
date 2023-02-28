@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { trpc } from '../../../../../server/trpcClient'
 
 const UserEmail = () => {
-    const [currentEmail, setCurrentEmail] = useState('true')
+    const [currentEmail, setCurrentEmail] = useState('')
 
     const setEmail = trpc.accountSettings.setEmail.useMutation()
     const email = trpc.accountSettings.getEmail.useQuery()
