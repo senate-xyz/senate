@@ -47,9 +47,11 @@ export const Filters = (props: {
     const [voted, setVoted] = useState('any')
 
     useEffect(() => {
-        setFrom(String(searchParams.get('from') ?? 'any'))
-        setEnd(Number(searchParams.get('end') ?? 1))
-        setVoted(String(searchParams.get('voted') ?? 'any'))
+        if (searchParams) {
+            setFrom(String(searchParams.get('from') ?? 'any'))
+            setEnd(Number(searchParams.get('end') ?? 1))
+            setVoted(String(searchParams.get('voted') ?? 'any'))
+        }
     }, [searchParams])
 
     useEffect(() => {

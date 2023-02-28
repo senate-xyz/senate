@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { RainbowConnect } from './RainbowConnect'
+import { WalletConnect } from './WalletConnect'
 
 export const Header = (props: { title: string }) => {
     const [headerHeight, setHeaderHeight] = useState('h-[192px]')
@@ -28,8 +28,9 @@ export const Header = (props: { title: string }) => {
             <h1 className={`${titleSize} font-extrabold text-white transition`}>
                 {props.title}
             </h1>
+
             <div className='pr-20'>
-                <RainbowConnect />
+                <WalletConnect />
             </div>
         </div>
     )

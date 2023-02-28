@@ -2,11 +2,9 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
-import { useConnectModal } from '@rainbow-me/rainbowkit'
-import ClientOnly from '../../../../clientOnly'
+import { usePathname, useRouter } from 'next/navigation'
 import { trpc } from '../../../../../server/trpcClient'
+import { useClerk, useUser } from '@clerk/nextjs'
 
 export const UnsubscribedDAO = (props: {
     daoId: string
@@ -157,9 +155,7 @@ export const UnsubscribedDAO = (props: {
                         </div>
                     </div>
 
-                    <ClientOnly>
-                        <SubscribeButton setShowMenu={setShowMenu} />
-                    </ClientOnly>
+                    <SubscribeButton setShowMenu={setShowMenu} />
                 </div>
             )}
         </div>
@@ -167,17 +163,23 @@ export const UnsubscribedDAO = (props: {
 }
 
 const SubscribeButton = (props: { setShowMenu: (arg0: boolean) => void }) => {
-    const { openConnectModal } = useConnectModal()
-    const session = useSession()
+    const user = useUser()
+    const { openSignIn } = useClerk()
+    const pathname = usePathname()
 
     return (
         <>
             <button
                 className='h-14 w-full bg-white text-xl font-bold text-black'
                 onClick={() => {
-                    session.status == 'authenticated'
+                    user.isSignedIn
                         ? props.setShowMenu(true)
-                        : openConnectModal && openConnectModal()
+                        : openSignIn({
+                              redirectUrl: pathname,
+                              appearance: {
+                                  elements: { footer: { display: 'none' } }
+                              }
+                          })
                 }}
             >
                 Subscribe

@@ -5,11 +5,9 @@ import WagmiProvider from './wagmi'
 
 const RootProvider = ({ children }: { children: React.ReactNode }) => {
     return (
-        <div>
-            <WagmiProvider>
-                <TrpcClientProvider>{children} </TrpcClientProvider>
-            </WagmiProvider>
-        </div>
+        <TrpcClientProvider>
+            <WagmiProvider>{children}</WagmiProvider>
+        </TrpcClientProvider>
     )
 }
 

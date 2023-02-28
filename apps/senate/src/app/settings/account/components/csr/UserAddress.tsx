@@ -1,30 +1,25 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
-import { useAccount } from 'wagmi'
+import { useUser } from '@clerk/nextjs'
 
 const UserAddress = () => {
-    const { address } = useAccount()
-    const session = useSession()
+    const user = useUser()
 
-    if (session?.status != 'unauthenticated')
-        return (
-            <div>
-                <div className='flex flex-col gap-2'>
-                    <div className='text-[24px] font-light text-white'>
-                        Your Account Address
-                    </div>
+    return (
+        <div>
+            <div className='flex flex-col gap-2'>
+                <div className='text-[24px] font-light text-white'>
+                    Your Account Address
+                </div>
 
-                    <div className='flex flex-row gap-6'>
-                        <div className='text-[18px] font-thin text-white'>
-                            {address}
-                        </div>
+                <div className='flex flex-row gap-6'>
+                    <div className='text-[18px] font-thin text-white'>
+                        {user.user?.web3Wallets[0]?.web3Wallet}
                     </div>
                 </div>
             </div>
-        )
-
-    return <></>
+        </div>
+    )
 }
 
 export default UserAddress

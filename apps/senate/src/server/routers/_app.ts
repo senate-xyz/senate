@@ -11,7 +11,7 @@ export const appRouter = router({
     subscriptions: subscriptionsRouter,
     health: healthRouter,
     whoami: publicProcedure.query(({ ctx }) => {
-        const user = ctx.user ?? null
+        const user = ctx.auth.userId ?? null
         return user
     })
 })

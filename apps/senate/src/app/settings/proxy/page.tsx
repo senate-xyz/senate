@@ -1,13 +1,13 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useProvider } from 'wagmi'
 import { trpc } from '../../../server/trpcClient'
 
 export default function Home() {
-    const session = useSession()
+    const { isLoaded, isSignedIn } = useUser()
     const router = useRouter()
     const provider = useProvider()
 
@@ -20,8 +20,8 @@ export default function Home() {
     const [proxyAddress, setProxyAddress] = useState('')
 
     useEffect(() => {
-        if (session.status != 'authenticated') router.push('/settings/account')
-    }, [session.status])
+        if (isLoaded && !isSignedIn) router.push('/settings/account')
+    }, [isLoaded])
 
     return (
         <div className='mt-2 flex flex-col gap-12'>
