@@ -69,7 +69,7 @@ const Home = () => {
                         >
                             <div className='text-[24px] font-light text-white -translate-y-20 w-[447px] text-center mb-8'>
                                 The place where you can keep track of{' '}
-                                <span className='bg-lime-400 text-black font-semibold'>
+                                <span className='bg-[#5EF413] text-black font-semibold'>
                                     off-chain and on-chain proposals
                                 </span>{' '}
                                 from your favorite DAOs with ease.
@@ -88,7 +88,7 @@ const Home = () => {
                             <div className='text-[24px] font-light text-white -translate-y-20 w-[447px] text-center mb-8'>
                                 And also, you’ll never miss a vote ever again
                                 with our{' '}
-                                <span className='bg-lime-400 text-black font-semibold'>
+                                <span className='bg-[#5EF413] text-black font-semibold'>
                                     daily email reminders
                                 </span>
                                 .
