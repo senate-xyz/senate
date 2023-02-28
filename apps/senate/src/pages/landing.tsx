@@ -33,6 +33,9 @@ const Home = () => {
                                 enter='transition ease-in-out duration-[5000ms] delay-[3000ms]'
                                 enterFrom='translate-y-28'
                                 enterTo='-translate-y-28'
+                                leave='ease-out'
+                                leaveFrom='opacity-100'
+                                leaveTo='opacity-0'
                             >
                                 <div className='flex justify-center'>
                                     <Image
@@ -48,6 +51,9 @@ const Home = () => {
                                 enter='transition-opacity ease-linear duration-500 delay-[8000ms]'
                                 enterFrom='opacity-0'
                                 enterTo='opacity-100'
+                                leave='ease-out'
+                                leaveFrom='opacity-100'
+                                leaveTo='opacity-0'
                             >
                                 <div className='text-[24px] font-light text-white -translate-y-20 w-[447px] text-center mb-8'>
                                     Welcome to Senate
@@ -59,6 +65,9 @@ const Home = () => {
                                 enter='transition-opacity ease-linear duration-500 delay-[9000ms]'
                                 enterFrom='opacity-0'
                                 enterTo='opacity-100'
+                                leave='ease-out'
+                                leaveFrom='opacity-100'
+                                leaveTo='opacity-0'
                             >
                                 <div className='text-[24px] font-light text-white -translate-y-20 w-[447px] text-center mb-8'>
                                     The place where you can keep track of{' '}
@@ -74,6 +83,9 @@ const Home = () => {
                                 enter='transition-opacity ease-linear duration-500 delay-[10000ms]'
                                 enterFrom='opacity-0'
                                 enterTo='opacity-100'
+                                leave='ease-out'
+                                leaveFrom='opacity-100'
+                                leaveTo='opacity-0'
                             >
                                 <div className='text-[24px] font-light text-white -translate-y-20 w-[447px] text-center mb-8'>
                                     And also, you’ll never miss a vote ever
@@ -90,6 +102,9 @@ const Home = () => {
                                 enter='transition-opacity ease-linear duration-500 delay-[11000ms]'
                                 enterFrom='opacity-0'
                                 enterTo='opacity-100'
+                                leave='ease-out'
+                                leaveFrom='opacity-100'
+                                leaveTo='opacity-0'
                             >
                                 <div className='text-[24px] font-light text-white -translate-y-20 w-[447px] text-center whitespace-pre'>
                                     Does that sound cool to you?
