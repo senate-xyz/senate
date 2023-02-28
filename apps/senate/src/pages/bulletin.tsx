@@ -3,8 +3,7 @@
 import '../styles/globals.css'
 import RootProvider from '../app/providers/providers'
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
-import { trpc } from '../server/trpcClient'
+import { useState } from 'react'
 
 const WrapperHome = () => {
     return (
