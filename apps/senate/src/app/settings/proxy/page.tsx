@@ -72,7 +72,9 @@ export default function Home() {
 
                 <div className='mt-12 flex h-[46px] flex-row items-center'>
                     <input
-                        className='h-full w-[480px] bg-[#D9D9D9] px-2 text-black'
+                        className={`h-full w-[480px] ${
+                            proxyAddress.length ? 'bg-white' : 'bg-[#D9D9D9]'
+                        } px-2 text-black`}
                         value={proxyAddress}
                         onChange={(e) => setProxyAddress(e.target.value)}
                         placeholder='Paste a new proxy address here'
