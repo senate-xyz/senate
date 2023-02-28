@@ -6,7 +6,6 @@ import RootProvider from '../app/providers/providers'
 import { ClerkProvider } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
 import { Transition } from '@headlessui/react'
-import { Fragment } from 'react'
 
 const WrapperHome = () => {
     return (
