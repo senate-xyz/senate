@@ -2682,20 +2682,20 @@
   resolved "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz"
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
-"@trpc/client@^10.13.0":
-  version "10.13.0"
-  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-10.13.0.tgz#8999a7ba068a684629071b77a07c00a141585eca"
-  integrity sha512-r4KuN0os2J194lxg5jn4+o3uNlqunLFYptwTHcVW4Q0XGO0ZoTKLHuxT7c9IeDivkAs6G5oVEPiKhptkag36dQ==
+"@trpc/client@^10.13.2":
+  version "10.13.2"
+  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-10.13.2.tgz#9303f6b47d587cbf5d3d1cccfa0032174dbe9fae"
+  integrity sha512-iEZOAYS/Ak5T6j2lrN2NCYYLb8YY9sbj4JJR9VgxDL8Cz1dRFpFZ2BA4VwNW6xoh0G+MRdSGvivTYdggbJ4BBg==
 
-"@trpc/react-query@^10.13.0":
-  version "10.13.0"
-  resolved "https://registry.yarnpkg.com/@trpc/react-query/-/react-query-10.13.0.tgz#ca5a1da0ea126976d7435775f2ba1846cb7fad59"
-  integrity sha512-y4jbojrDFdEl1KBejBoMWIofcUXDHQA8wf01eKMEDV7Jwc7lhq6R1dxYtKzeF+s5wqfnPWFOGZDmB3flzv07Dw==
+"@trpc/react-query@^10.13.2":
+  version "10.13.2"
+  resolved "https://registry.yarnpkg.com/@trpc/react-query/-/react-query-10.13.2.tgz#fe25cbf4e95754a0598266895b88bbac1b706d59"
+  integrity sha512-wLNDZKe5yQ2AYs/uoymxyRn5jNdYNpbOX17tHirnDDPKDRJojooGuL6uIDS1kvm70QJiNR/UKjKfwLDgZdGcqw==
 
-"@trpc/server@^10.13.0":
-  version "10.13.0"
-  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-10.13.0.tgz#0945b5210a18934c2284c8679cb6692ecb5b054c"
-  integrity sha512-d/bu6utCC4ALxhTJkolEPAHMOSuCAu3mG79TZswa6wD2ob0/Z3AIvBF/meeSTqDxe4tvXY78lQqOkQI81dgi/g==
+"@trpc/server@^10.13.2":
+  version "10.13.2"
+  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-10.13.2.tgz#53d5deb3a998c65cc5829e6c83302999fe9a4ee8"
+  integrity sha512-/5L09a7EHxRy1D6RIFsIt5fMJ8bBspMp/eDPjAH7T033f9AMyYx0jWU7r5lswoBVSbdUDJgxKyLzwXIrVNVisg==
 
 "@truffle/abi-utils@^0.3.6":
   version "0.3.6"
@@ -6868,20 +6868,15 @@ cookie-signature@1.0.6:
   resolved "https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.0.6.tgz"
   integrity sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==
 
-cookie@0.5.0:
+cookie@0.5.0, cookie@^0.5.0:
   version "0.5.0"
-  resolved "https://registry.npmjs.org/cookie/-/cookie-0.5.0.tgz"
+  resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.5.0.tgz#d1f5d71adec6558c58f389987c366aa47e994f8b"
   integrity sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==
 
 cookie@^0.4.0:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.4.2.tgz#0e41f24de5ecf317947c82fc789e06a884824432"
   integrity sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==
-
-cookie@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.5.0.tgz#d1f5d71adec6558c58f389987c366aa47e994f8b"
-  integrity sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==
 
 cookiejar@^2.1.1, cookiejar@^2.1.4:
   version "2.1.4"
