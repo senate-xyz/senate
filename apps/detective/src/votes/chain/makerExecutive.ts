@@ -96,6 +96,8 @@ export const getVotesForVoter = async (
                     })
 
                     return {
+                        //TODO: Implement setting created block number
+                        blockCreated: 420,
                         voterAddress: ethers.getAddress(voterAddress),
                         daoId: daoHandler.daoId,
                         proposalId: proposal.id,

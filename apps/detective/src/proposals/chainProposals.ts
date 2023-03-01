@@ -19,11 +19,11 @@ interface Result {
     timeEnd: Date
     timeStart: Date
     timeCreated: Date
+    blockCreated: number
     choices: JsonValue
     scores: JsonValue
     scoresTotal: number
     url: string
-    block: number
 }
 
 const infuraProvider = new ethers.JsonRpcProvider(
@@ -165,6 +165,7 @@ export const updateChainProposals = async (daoHandlerId: string) => {
                         choices: proposal.choices,
                         scores: proposal.scores,
                         scoresTotal: proposal.scoresTotal,
+                        blockCreated: proposal.blockCreated,
                         timeCreated: proposal.timeCreated,
                         timeStart: proposal.timeStart,
                         timeEnd: proposal.timeEnd,
@@ -188,9 +189,11 @@ export const updateChainProposals = async (daoHandlerId: string) => {
         let newIndex
 
         if (openProposals.length) {
-            newIndex = Math.min(...openProposals.map((p) => p.block))
+            newIndex = Math.min(...openProposals.map((p) => p.blockCreated))
         } else if (closedProposals.length) {
-            newIndex = Math.max(...closedProposals.map((p) => p.block + 1))
+            newIndex = Math.max(
+                ...closedProposals.map((p) => p.blockCreated + 1)
+            )
         } else {
             newIndex = toBlock
         }

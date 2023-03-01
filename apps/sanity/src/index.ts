@@ -70,7 +70,7 @@ schedule('15 * * * *', async () => {
                     voterAddress: {
                         in: voterAddresses
                     },
-                    createdAt: {
+                    timeCreated: {
                         gte: new Date(SEARCH_FROM),
                         lte: new Date(SEARCH_TO)
                     }
@@ -129,10 +129,6 @@ schedule('15 * * * *', async () => {
                         return response.body.data.votes
                     }
                 )) as GraphQLVote[]
-
-            console.log(
-                `[SNAPSHOT] Found ${votesFromSnapshot.length} votes from ${voterAddresses.length} addresses \n`
-            )
 
             votesCount.set(
                 (daoHandler.decoder as Decoder).space,

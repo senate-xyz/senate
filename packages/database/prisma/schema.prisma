@@ -92,10 +92,11 @@ model Proposal {
   scores      Json
   scoresTotal Float
 
-  timeCreated DateTime
-  timeStart   DateTime
-  timeEnd     DateTime
-  url         String   @db.VarChar(1024)
+  blockCreated BigInt?  @default(420)
+  timeCreated  DateTime
+  timeStart    DateTime
+  timeEnd      DateTime
+  url          String   @db.VarChar(1024)
 
   notifications Notification[]
   daoHandlerId  String
@@ -146,6 +147,9 @@ model Vote {
   dao          DAO        @relation(fields: [daoId], references: [id], onDelete: Cascade)
   daoHandlerId String
   daoHandler   DAOHandler @relation(fields: [daoHandlerId], references: [id], onDelete: Cascade)
+
+  blockCreated BigInt?   @default(420)
+  timeCreated  DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

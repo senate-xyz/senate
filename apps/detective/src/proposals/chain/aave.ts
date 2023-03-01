@@ -72,6 +72,7 @@ export const aaveProposals = async (
                 timeEnd: new Date(votingEndsTimestamp * 1000),
                 timeStart: new Date(votingStartsTimestamp * 1000),
                 timeCreated: new Date(proposalCreatedTimestamp * 1000),
+                blockCreated: arg.txBlock,
                 choices: ['For', 'Against'],
                 scores: [
                     parseFloat(onchainProposal.forVotes),
@@ -80,8 +81,7 @@ export const aaveProposals = async (
                 scoresTotal:
                     parseFloat(onchainProposal.forVotes) +
                     parseFloat(onchainProposal.againstVotes),
-                url: proposalUrl,
-                block: arg.txBlock
+                url: proposalUrl
             }
         })
     )

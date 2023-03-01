@@ -142,7 +142,7 @@ export const updateSnapshotDaoVotes = async (
                 await prisma.vote.createMany({
                     data: votesForProposal.map((vote) => {
                         return {
-                            createdAt: new Date(vote.created * 1000),
+                            timeCreated: new Date(vote.created * 1000),
                             choice: vote.choice,
                             votingPower: vote.vp,
                             reason: vote.reason,
@@ -167,7 +167,7 @@ export const updateSnapshotDaoVotes = async (
                                 }
                             },
                             create: {
-                                createdAt: new Date(vote.created * 1000),
+                                timeCreated: new Date(vote.created * 1000),
                                 choice: vote.choice,
                                 votingPower: vote.vp,
                                 reason: vote.reason,
@@ -178,7 +178,7 @@ export const updateSnapshotDaoVotes = async (
                                 daoHandlerId: daoHandler.id
                             },
                             update: {
-                                createdAt: new Date(vote.created * 1000),
+                                timeCreated: new Date(vote.created * 1000),
                                 choice: vote.choice,
                                 votingPower: vote.vp,
                                 reason: vote.reason

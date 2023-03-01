@@ -25,6 +25,7 @@ interface Result {
     voterAddress: string
     success: boolean
     votes: {
+        blockCreated: number
         voterAddress: string
         daoId: string
         proposalId: string
@@ -248,6 +249,7 @@ export const updateChainDaoVotes = async (
                         }
                     },
                     create: {
+                        blockCreated: vote.blockCreated,
                         choice: vote.choice,
                         votingPower: vote.votingPower,
                         reason: vote.reason,

@@ -68,6 +68,7 @@ Table Proposal {
   choices Json [not null]
   scores Json [not null]
   scoresTotal Float [not null]
+  blockCreated BigInt [default: 420]
   timeCreated DateTime [not null]
   timeStart DateTime [not null]
   timeEnd DateTime [not null]
@@ -115,6 +116,8 @@ Table Vote {
   dao DAO [not null]
   daoHandlerId String [not null]
   daoHandler DAOHandler [not null]
+  blockCreated BigInt [default: 420]
+  timeCreated DateTime
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
 

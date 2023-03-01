@@ -45,6 +45,7 @@ export const getVotesForVoter = async (
     const govBravoIface = new ethers.Interface(
         (daoHandler.decoder as Decoder).abi
     )
+
     const votes = (
         await Promise.all(
             logs.map(async (log: Log) => {
@@ -74,6 +75,7 @@ export const getVotesForVoter = async (
                     }
 
                     return {
+                        blockCreated: log.blockNumber,
                         voterAddress: ethers.getAddress(voterAddress),
                         daoId: daoHandler.daoId,
                         proposalId: proposal.id,

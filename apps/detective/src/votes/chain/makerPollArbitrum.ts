@@ -1,6 +1,12 @@
 import { DAOHandler, prisma, Proposal, Decoder } from '@senate/database'
 import { ethers, hexlify, zeroPadValue } from 'ethers'
 
+interface DecodedLog {
+    txBlock: number
+    txHash: string
+    eventData: ethers.Result
+}
+
 export const getMakerPollVotesFromArbitrum = async (
     provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandler,
@@ -22,20 +28,23 @@ export const getMakerPollVotesFromArbitrum = async (
         ]
     })
 
-    const eventData = logs.map((log) => {
-        return iface.parseLog({
+    const decodedLogs: DecodedLog[] = logs.map((log) => ({
+        txBlock: log.blockNumber,
+        txHash: log.transactionHash,
+        eventData: iface.parseLog({
             topics: log.topics as string[],
             data: log.data
         }).args
-    })
+    }))
 
     const result = await Promise.all(
         voterAddresses.map((voterAddress) => {
-            const eventsForVoter = eventData.filter(
-                (event) =>
-                    event.voter.toLowerCase() == voterAddress.toLowerCase()
+            const voterLogs = decodedLogs.filter(
+                (log) =>
+                    log.eventData.voter.toLowerCase() ===
+                    voterAddress.toLowerCase()
             )
-            return getVotesForVoter(eventsForVoter, daoHandler, voterAddress)
+            return getVotesForVoter(voterLogs, daoHandler, voterAddress)
         })
     )
 
@@ -43,14 +52,14 @@ export const getMakerPollVotesFromArbitrum = async (
 }
 
 export const getVotesForVoter = async (
-    eventsForVoter: ethers.Result[],
+    voterLogs: DecodedLog[],
     daoHandler: DAOHandler,
     voterAddress: string
 ) => {
     let success = true
 
     const uniquePollIds: Set<string> = new Set(
-        eventsForVoter.map((event) => BigInt(event.pollId).toString())
+        voterLogs.map((log) => BigInt(log.eventData.pollId).toString())
     )
 
     const proposals = await prisma.proposal.findMany({
@@ -73,23 +82,26 @@ export const getVotesForVoter = async (
         })
     )
 
-    const votes = await formatVotes(eventsForVoter, proposalsMap)
+    const votes = await formatVotes(voterLogs, proposalsMap)
 
     return { success, votes, voterAddress }
 }
 
 const formatVotes = async (
-    events: ethers.Result[],
+    decodedLogs: DecodedLog[],
     proposalsMap: Map<string, Proposal>
 ) => {
-    return events.map((event) => {
-        const proposal = proposalsMap.get(BigInt(event.pollId).toString())
+    return decodedLogs.map((log) => {
+        const proposal = proposalsMap.get(
+            BigInt(log.eventData.pollId).toString()
+        )
         return {
-            voterAddress: event.voter,
+            blockCreated: log.txBlock,
+            voterAddress: log.eventData.voter,
             daoId: proposal.daoId,
             proposalId: proposal.id,
             daoHandlerId: proposal.daoHandlerId,
-            choice: BigInt(event.optionId).toString() ? 1 : 2,
+            choice: BigInt(log.eventData.optionId).toString() ? 1 : 2,
             reason: '',
             votingPower: 0,
             proposalActive: proposal.timeEnd.getTime() > new Date().getTime()

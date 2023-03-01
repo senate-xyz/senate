@@ -2,6 +2,12 @@ import { log_pd } from '@senate/axiom'
 import { DAOHandlerWithDAO, Decoder, prisma } from '@senate/database'
 import { ethers } from 'ethers'
 
+interface DecodedLog {
+    txBlock: number
+    txHash: string
+    eventData: ethers.Result
+}
+
 export const getGitcoinVotes = async (
     provider: ethers.JsonRpcProvider,
     daoHandler: DAOHandlerWithDAO,
@@ -24,20 +30,23 @@ export const getGitcoinVotes = async (
         ]
     })
 
-    const events = logs.map((log) => {
-        return iface.parseLog({
+    const decodedLogs: DecodedLog[] = logs.map((log) => ({
+        txBlock: log.blockNumber,
+        txHash: log.transactionHash,
+        eventData: iface.parseLog({
             topics: log.topics as string[],
             data: log.data
         }).args
-    })
+    }))
 
     const result = await Promise.all(
         voterAddresses.map((voterAddress) => {
-            const voterEvents = events.filter(
-                (event) =>
-                    event.voter.toLowerCase() === voterAddress.toLowerCase()
+            const voterLogs = decodedLogs.filter(
+                (log) =>
+                    log.eventData.voter.toLowerCase() ===
+                    voterAddress.toLowerCase()
             )
-            return getVotesForVoter(voterEvents, daoHandler, voterAddress)
+            return getVotesForVoter(voterLogs, daoHandler, voterAddress)
         })
     )
 
@@ -45,7 +54,7 @@ export const getGitcoinVotes = async (
 }
 
 export const getVotesForVoter = async (
-    eventsForVoter: ethers.Result[],
+    voterLogs: DecodedLog[],
     daoHandler: DAOHandlerWithDAO,
     voterAddress: string
 ) => {
@@ -54,12 +63,12 @@ export const getVotesForVoter = async (
     const votes =
         (
             await Promise.all(
-                eventsForVoter.map(async (eventData) => {
+                voterLogs.map(async (log) => {
                     try {
                         const proposal = await prisma.proposal.findFirst({
                             where: {
                                 externalId: BigInt(
-                                    eventData.proposalId
+                                    log.eventData.proposalId
                                 ).toString(),
                                 daoId: daoHandler.daoId,
                                 daoHandlerId: daoHandler.id
@@ -72,13 +81,14 @@ export const getVotesForVoter = async (
                         }
 
                         return {
+                            blockCreated: log.txBlock,
                             voterAddress: ethers.getAddress(voterAddress),
                             daoId: daoHandler.daoId,
                             proposalId: proposal.id,
                             daoHandlerId: daoHandler.id,
-                            choice: String(eventData.support) ? 1 : 2,
+                            choice: String(log.eventData.support) ? 1 : 2,
                             reason: '',
-                            votingPower: parseFloat(eventData.votes),
+                            votingPower: parseFloat(log.eventData.votes),
                             proposalActive:
                                 proposal.timeEnd.getTime() >
                                 new Date().getTime()
@@ -87,7 +97,7 @@ export const getVotesForVoter = async (
                         log_pd.log({
                             level: 'error',
                             message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
-                            event: eventData,
+                            event: log.eventData,
                             errorName: (e as Error).name,
                             errorMessage: (e as Error).message,
                             errorStack: (e as Error).stack

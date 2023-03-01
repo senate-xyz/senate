@@ -49,7 +49,7 @@ export const makerExecutiveProposals = async (
             const proposalBlock = await axios
                 .get(
                     `https://coins.llama.fi/block/ethereum/${Math.floor(
-                        proposalData.spellData.expiration.getTime() / 1000
+                        proposalData.date.getTime() / 1000
                     )}`
                 )
                 .then((res) => res.data.height)
@@ -57,17 +57,17 @@ export const makerExecutiveProposals = async (
 
             return {
                 externalId: spellAddress,
-                name: proposalData.title.slice(0, 1024) ?? 'Unknown',
+                name: proposalData.title.slice(0, 1024),
                 daoId: daoHandler.daoId,
                 daoHandlerId: daoHandler.id,
                 timeEnd: new Date(proposalData.spellData.expiration),
-                timeStart: new Date(proposalData.date ?? Date.now()),
-                timeCreated: new Date(proposalData.date ?? Date.now()),
+                timeStart: new Date(proposalData.date),
+                timeCreated: new Date(proposalData.date),
+                blockCreated: proposalBlock,
                 choices: ['Yes', 'No'],
                 scores: [0, 0],
                 scoresTotal: 0,
-                url: (daoHandler.decoder as Decoder).proposalUrl + spellAddress,
-                block: proposalBlock
+                url: (daoHandler.decoder as Decoder).proposalUrl + spellAddress
             }
         })
     )
@@ -84,7 +84,8 @@ const getProposalData = async (spellAddress: string) => {
         date: new Date(0)
     }
     try {
-        let retriesLeft = 5
+        let retriesNumber = 5
+        let retriesLeft = retriesNumber
         while (retriesLeft) {
             try {
                 const data = (
@@ -112,7 +113,10 @@ const getProposalData = async (spellAddress: string) => {
                 await new Promise((resolve) =>
                     setTimeout(
                         resolve,
-                        calculateExponentialBackoffTimeInMs(retriesLeft)
+                        calculateExponentialBackoffTimeInMs(
+                            retriesNumber,
+                            retriesLeft
+                        )
                     )
                 )
             }
@@ -127,8 +131,11 @@ const getProposalData = async (spellAddress: string) => {
     return response
 }
 
-const calculateExponentialBackoffTimeInMs = (retriesLeft: number) => {
-    return 1000 * Math.pow(2, 5 - retriesLeft)
+const calculateExponentialBackoffTimeInMs = (
+    retriesNumber: number,
+    retriesLeft: number
+) => {
+    return 1000 * Math.pow(2, retriesNumber - retriesLeft)
 }
 
 const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {
