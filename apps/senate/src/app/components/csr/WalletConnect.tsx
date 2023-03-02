@@ -15,7 +15,7 @@ export const WalletConnect = () => {
                     className='w-fit bg-zinc-800 py-2 px-4 font-bold text-white hover:scale-105'
                     onClick={() =>
                         openSignIn({
-                            redirectUrl: pathname,
+                            redirectUrl: `/connected?redirect=${pathname}`,
                             appearance: {
                                 elements: { footer: { display: 'none' } }
                             }

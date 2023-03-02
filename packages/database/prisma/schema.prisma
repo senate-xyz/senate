@@ -22,11 +22,12 @@ model User {
   subscriptions Subscription[]
   voters        Voter[]
 
-  newUser       Boolean  @default(true)
-  acceptedTerms Boolean  @default(false)
-  dailyBulletin Boolean  @default(true)
-  lastActive    DateTime @default(now())
-  sessionCount  Int      @default(0)
+  newUser                Boolean   @default(true)
+  acceptedTerms          Boolean   @default(false)
+  acceptedTermsTimestamp DateTime?
+  dailyBulletin          Boolean   @default(false)
+  lastActive             DateTime  @default(now())
+  sessionCount           Int       @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

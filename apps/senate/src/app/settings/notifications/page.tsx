@@ -1,15 +1,11 @@
 'use client'
 
 import { useUser } from '@clerk/nextjs'
-import { cookies } from 'next/headers'
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { trpc } from '../../../server/trpcClient'
 
 export default function Home() {
-    const cookieStore = cookies()
-    if (!cookieStore.get('hasSeenLanding')) redirect('/landing')
-
     const { isLoaded, isSignedIn } = useUser()
     const router = useRouter()
     const user = trpc.accountSettings.getUser.useQuery()

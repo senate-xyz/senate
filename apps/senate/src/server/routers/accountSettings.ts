@@ -142,7 +142,8 @@ export const accountSettingsRouter = router({
     setTerms: privateProcedure
         .input(
             z.object({
-                value: z.boolean()
+                value: z.boolean(),
+                timestamp: z.number()
             })
         )
         .mutation(async ({ input, ctx }) => {
@@ -156,9 +157,13 @@ export const accountSettingsRouter = router({
                 },
                 create: {
                     name: String(clerkUser.web3Wallets[0]?.web3Wallet),
-                    acceptedTerms: input.value
+                    acceptedTerms: input.value,
+                    acceptedTermsTimestamp: new Date(input.timestamp)
                 },
-                update: { acceptedTerms: input.value }
+                update: {
+                    acceptedTerms: input.value,
+                    acceptedTermsTimestamp: new Date(input.timestamp)
+                }
             })
 
             return user
