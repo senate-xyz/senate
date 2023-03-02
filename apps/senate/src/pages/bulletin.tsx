@@ -1,7 +1,7 @@
 'use client'
 
 import '../styles/globals.css'
-import RootProvider from '../app/providers/providers'
+import RootProvider from '../app/components/providers/providers'
 import Image from 'next/image'
 import { useState } from 'react'
 

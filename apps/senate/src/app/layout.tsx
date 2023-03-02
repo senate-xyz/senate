@@ -3,7 +3,7 @@ import { dark } from '@clerk/themes'
 import Link from 'next/link'
 import '../styles/globals.css'
 import { NavBar } from './components/csr/NavBar'
-import RootProvider from './providers/providers'
+import RootProvider from './components/providers/providers'
 
 export default function RootLayout({
     children
