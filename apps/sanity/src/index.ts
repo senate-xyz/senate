@@ -42,7 +42,7 @@ type GraphQLProposal = {
 schedule('15 * * * *', async () => {
     log_sanity.log({
         level: 'info',
-        message: 'Starting sanity check for snapshot votes',
+        message: 'Starting sanity check for snapshot votes and proposals',
         date: new Date(Date.now())
     })
 
@@ -69,6 +69,11 @@ schedule('15 * * * *', async () => {
             error: error
         })
     }
+
+    log_sanity.log({
+        level: 'info',
+        message: 'FINISHED sanity check for snapshot votes and proposals'
+    })
 })
 
 const checkAndSanitizeVotesRoutine = async (
