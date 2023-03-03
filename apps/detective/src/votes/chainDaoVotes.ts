@@ -313,7 +313,7 @@ export const updateChainDaoVotes = async (
 
     log_pd.log({
         level: 'info',
-        message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
+        message: `FINISHED updating voters ${daoHandler.dao.name} - ${daoHandler.type}`,
         searchType: 'VOTES',
         sourceType: 'CHAIN',
         currentBlock: currentBlock,

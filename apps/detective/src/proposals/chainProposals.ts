@@ -190,10 +190,6 @@ export const updateChainProposals = async (daoHandlerId: string) => {
 
         if (openProposals.length) {
             newIndex = Math.min(...openProposals.map((p) => p.blockCreated))
-        } else if (closedProposals.length) {
-            newIndex = Math.max(
-                ...closedProposals.map((p) => p.blockCreated + 1)
-            )
         } else {
             newIndex = toBlock
         }
@@ -227,10 +223,9 @@ export const updateChainProposals = async (daoHandlerId: string) => {
     }
 
     const res = [{ daoHandlerId: daoHandlerId, response: response }]
-
     log_pd.log({
         level: 'info',
-        message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+        message: `FINISHED updating proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
         searchType: 'PROPOSALS',
         sourceType: 'CHAIN',
         currentBlock: currentBlock,

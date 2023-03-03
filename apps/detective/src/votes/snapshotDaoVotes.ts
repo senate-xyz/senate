@@ -70,25 +70,28 @@ export const updateSnapshotDaoVotes = async (
                     searchFromTimestamp
                         ? Math.floor(searchFromTimestamp / 1000)
                         : 0
-                }}) {
-                    id
-                    voter
-                    choice
-                    reason
-                    vp
-                    created
-                    proposal {
-                        id
-                        choices
-                        title
-                        body
-                        created
-                        start
-                        end
-                        link
-                        }
-                    }
-                }`
+                }
+            }
+        ) 
+        {
+            id
+            voter
+            choice
+            reason
+            vp
+            created
+            proposal {
+                id
+                choices
+                title
+                body
+                created
+                start
+                end
+                link
+            }
+        }
+    }`
 
     let votes
     try {

@@ -6,7 +6,7 @@ import { ethers } from 'ethers'
 
 const VOTE_MULTIPLE_ACTIONS_TOPIC =
     '0xed08132900000000000000000000000000000000000000000000000000000000'
-const VOTE_SINGE_ACTION_TOPIC =
+const VOTE_SINGLE_ACTION_TOPIC =
     '0xa69beaba00000000000000000000000000000000000000000000000000000000'
 //const ONE_MONTH_MS = 1000 * 60 * 60 * 24 * 30
 
@@ -27,7 +27,7 @@ export const makerExecutiveProposals = async (
         fromBlock: fromBlock,
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address,
-        topics: [[VOTE_MULTIPLE_ACTIONS_TOPIC, VOTE_SINGE_ACTION_TOPIC]]
+        topics: [[VOTE_MULTIPLE_ACTIONS_TOPIC, VOTE_SINGLE_ACTION_TOPIC]]
     })
 
     const spellAddresses = await getSpellAddressArrayFromLogs(
@@ -95,11 +95,17 @@ const getProposalData = async (spellAddress: string) => {
                     )
                 ).data
 
-                if (!data.error && data.title && data.expiration && data.date) {
+                if (
+                    !data.error &&
+                    data.title &&
+                    data.spellData &&
+                    data.spellData.expiration &&
+                    data.date
+                ) {
                     response = {
                         title: data.title,
                         spellData: {
-                            expiration: new Date(data.expiration)
+                            expiration: new Date(data.spellData.expiration)
                         },
                         date: new Date(data.date)
                     }
@@ -167,7 +173,7 @@ async function getSpellAddressArrayFromLogs(
         const eventArgs = iface.decodeEventLog('LogNote', log.data)
 
         const decodedFunctionData =
-            log.topics[0] === VOTE_SINGE_ACTION_TOPIC
+            log.topics[0] === VOTE_SINGLE_ACTION_TOPIC
                 ? iface.decodeFunctionData('vote(bytes32)', eventArgs.fax)
                 : iface.decodeFunctionData('vote(address[])', eventArgs.fax)
 

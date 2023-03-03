@@ -36,32 +36,33 @@ export const updateSnapshotProposals = async (
     let proposals
 
     const graphqlQuery = `{
-                proposals (
-                    first: 1000, 
-                    where: {
-                    space: "${space}",
-                    created_gte: ${Math.floor(oldIndex / 1000)}
-                    },
-                    orderBy: "created",
-                    orderDirection: asc
-                ) {
-                    id
-                    title
-                    body
-                    choices
-                    scores
-                    scores_total
-                    created
-                    start
-                    end
-                    state
-                    link
-                    space
-                    {
-                        id
-                    }
-                }
-                }`
+        proposals (
+            first: 1000, 
+            where: {
+            space: "${space}",
+            created_gte: ${Math.floor(oldIndex / 1000)}
+            },
+            orderBy: "created",
+            orderDirection: asc
+        ) 
+        {
+            id
+            title
+            body
+            choices
+            scores
+            scores_total
+            created
+            start
+            end
+            state
+            link
+            space
+            {
+                id
+            }
+        }
+    }`
 
     try {
         proposals = (await superagent
