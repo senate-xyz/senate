@@ -178,10 +178,6 @@ export const updateChainProposals = async (daoHandlerId: string) => {
             })
         )
 
-        const closedProposals = proposals.filter(
-            (proposal) => proposal.timeEnd.getTime() < new Date().getTime()
-        )
-
         const openProposals = proposals.filter(
             (proposal) => proposal.timeEnd.getTime() > new Date().getTime()
         )
