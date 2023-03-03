@@ -27,8 +27,8 @@ const Connected = () => {
     useEffect(() => {
         if (!searchParams) return
         if (!searchParams.get('redirect')) return
-        if (!cookie.acceptedTerms) return
-        if (!cookie.acceptedTermsTimestamp) return
+        if (!cookie.acceptedTerms || !cookie.acceptedTermsTimestamp)
+            router.push('/landing')
 
         console.log(cookie)
         console.log(searchParams)
