@@ -1,5 +1,7 @@
 import { currentUser } from '@clerk/nextjs/app-beta'
 import { prisma } from '@senate/database'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 import ConnectWalletModal from '../components/csr/ConnectWalletModal'
 import { Filters } from './components/csr/Filters'
 import Table from './components/ssr/Table'
@@ -8,6 +10,9 @@ export const revalidate = 300
 
 const getSubscribedDAOs = async () => {
     const userSession = await currentUser()
+
+    const cookieStore = cookies()
+    if (!cookieStore.get('hasSeenLanding')) redirect('/landing')
 
     const user = await prisma.user
         .findFirstOrThrow({

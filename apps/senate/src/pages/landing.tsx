@@ -2,7 +2,7 @@
 
 import '../styles/globals.css'
 import Image from 'next/image'
-import RootProvider from '../app/providers/providers'
+import RootProvider from '../app/components/providers/providers'
 import { Transition } from '@headlessui/react'
 import { useRouter } from 'next/navigation'
 import { useCookies } from 'react-cookie'

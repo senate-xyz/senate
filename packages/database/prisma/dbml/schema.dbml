@@ -11,7 +11,8 @@ Table User {
   voters Voter [not null]
   newUser Boolean [not null, default: true]
   acceptedTerms Boolean [not null, default: false]
-  dailyBulletin Boolean [not null, default: true]
+  acceptedTermsTimestamp DateTime
+  dailyBulletin Boolean [not null, default: false]
   lastActive DateTime [default: `now()`, not null]
   sessionCount Int [not null, default: 0]
   createdAt DateTime [default: `now()`, not null]

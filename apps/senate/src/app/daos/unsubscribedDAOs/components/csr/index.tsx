@@ -110,7 +110,7 @@ export const UnsubscribedDAO = (props: {
                                   }
                               )
                             : openSignIn({
-                                  redirectUrl: pathname,
+                                  redirectUrl: `/connected?redirect=${pathname}`,
                                   appearance: {
                                       elements: {
                                           footer: { display: 'none' }
