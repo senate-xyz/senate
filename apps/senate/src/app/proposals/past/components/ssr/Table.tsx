@@ -137,7 +137,7 @@ export default async function Table(props: {
 }) {
     const proposals = await getProposals(
         props.from ?? 'any',
-        props.end ?? 1,
+        props.end ?? 90,
         props.voted ?? 'any'
     )
 
@@ -148,7 +148,7 @@ export default async function Table(props: {
                     <tr>
                         <th className='w-[200px] pl-[16px] font-normal'>DAO</th>
                         <th className='font-normal'>Proposal Title</th>
-                        <th className='w-[200px]  font-normal'>Ends in</th>
+                        <th className='w-[200px]  font-normal'>Ended</th>
                         <th className='w-[200px] text-center font-normal'>
                             Vote status
                         </th>

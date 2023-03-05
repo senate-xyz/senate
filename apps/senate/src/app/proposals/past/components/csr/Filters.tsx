@@ -5,20 +5,20 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 const endOptions: { name: string; time: number }[] = [
     {
-        name: 'Last 24 hours',
-        time: 1
-    },
-    {
-        name: 'Last 7 days',
-        time: 7
+        name: 'Last 90 days',
+        time: 90
     },
     {
         name: 'Last 30 days',
         time: 30
     },
     {
-        name: 'Last 90 days',
-        time: 90
+        name: 'Last 7 days',
+        time: 7
+    },
+    {
+        name: 'Last 24 hours',
+        time: 1
     }
 ]
 
@@ -49,7 +49,7 @@ export const Filters = (props: {
     useEffect(() => {
         if (searchParams) {
             setFrom(String(searchParams.get('from') ?? 'any'))
-            setEnd(Number(searchParams.get('end') ?? 1))
+            setEnd(Number(searchParams.get('end') ?? 90))
             setVoted(String(searchParams.get('voted') ?? 'any'))
         }
     }, [searchParams])

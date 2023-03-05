@@ -90,7 +90,7 @@ export default async function UnsubscribedDAOs() {
                         DAOs you can subscribe to
                     </p>
 
-                    <div className='grid grid-cols-1 place-items-start gap-10 min-[650px]:grid-cols-2 min-[900px]:grid-cols-3 min-[1150px]:grid-cols-4 min-[1500px]:grid-cols-5 min-[1650px]:grid-cols-6'>
+                    <div className='grid grid-cols-1 place-items-start gap-10 min-[650px]:grid-cols-2 min-[900px]:grid-cols-3 min-[1150px]:grid-cols-4 min-[1500px]:grid-cols-5'>
                         {unsubscribedDAOs.map((unsubscribedDAO, index) => {
                             return (
                                 <UnsubscribedDAO

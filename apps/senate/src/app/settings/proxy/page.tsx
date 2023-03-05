@@ -14,7 +14,7 @@ export default function Home() {
     const voters = trpc.accountSettings.voters.useQuery(undefined, {
         refetchInterval: 5000
     })
-    const removeVoter = trpc.accountSettings.removeVoter.useMutation()
+
     const addVoter = trpc.accountSettings.addVoter.useMutation()
 
     const [proxyAddress, setProxyAddress] = useState('')
@@ -39,34 +39,7 @@ export default function Home() {
                 <div className='mt-12 flex flex-col gap-6'>
                     {voters.data &&
                         voters.data.map((voter) => {
-                            return (
-                                <div
-                                    key={voter.address}
-                                    className='flex flex-row items-center gap-12'
-                                >
-                                    <div className='font-mono text-[18px] font-light text-white'>
-                                        {voter.address}
-                                    </div>
-
-                                    <button
-                                        onClick={() => {
-                                            removeVoter.mutate(
-                                                {
-                                                    address: voter.address
-                                                },
-                                                {
-                                                    onSuccess() {
-                                                        voters.refetch()
-                                                    }
-                                                }
-                                            )
-                                        }}
-                                        className='text-[18px] font-light text-white underline'
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            )
+                            return <Voter address={voter.address} />
                         })}
                 </div>
 
@@ -77,7 +50,7 @@ export default function Home() {
                         } px-2 text-black`}
                         value={proxyAddress}
                         onChange={(e) => setProxyAddress(e.target.value)}
-                        placeholder='Paste a new proxy address here'
+                        placeholder='Paste a new proxy address here (or ENS)'
                     />
 
                     <div
@@ -116,15 +89,7 @@ export default function Home() {
                         )}
                     </div>
                 )}
-                {removeVoter.error && (
-                    <div className='flex flex-col text-white'>
-                        {JSON.parse(removeVoter.error.message).map(
-                            (err: Error) => (
-                                <div>{err.message}</div>
-                            )
-                        )}
-                    </div>
-                )}
+
                 {voters.error && (
                     <div className='flex flex-col text-white'>
                         {JSON.parse(voters.error.message).map((err: Error) => (
@@ -133,6 +98,44 @@ export default function Home() {
                     </div>
                 )}
             </div>
+        </div>
+    )
+}
+
+const Voter = ({ address }: { address: string }) => {
+    const provider = useProvider()
+    const [voterEns, setVoterEns] = useState('')
+
+    useEffect(() => {
+        ;(async () => {
+            const ens = await provider.lookupAddress(address)
+            setVoterEns(ens ?? '')
+        })()
+    }, [address])
+
+    const removeVoter = trpc.accountSettings.removeVoter.useMutation()
+
+    return (
+        <div key={address} className='flex flex-row items-end gap-12'>
+            <div className='flex flex-col'>
+                <div className='font-mono text-[18px] font-light text-white'>
+                    {voterEns}
+                </div>
+                <div className='font-mono text-[18px] font-light text-[#ABABAB]'>
+                    {address}
+                </div>
+            </div>
+
+            <button
+                onClick={() => {
+                    removeVoter.mutate({
+                        address: address
+                    })
+                }}
+                className='text-[18px] font-light text-white underline'
+            >
+                Delete
+            </button>
         </div>
     )
 }

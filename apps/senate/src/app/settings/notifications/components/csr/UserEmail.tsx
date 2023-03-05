@@ -14,8 +14,8 @@ const UserEmail = () => {
     }, [email.data])
 
     return (
-        <div>
-            <div className='text-[24px] font-light text-white'>
+        <div className='flex flex-col gap-2'>
+            <div className='text-[18px] font-light text-white'>
                 Your Email Address
             </div>
 

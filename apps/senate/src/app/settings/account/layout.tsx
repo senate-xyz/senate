@@ -19,7 +19,7 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
     },
     {
         id: 1,
-        name: 'Proxy Addresses',
+        name: 'Other Addresses',
         color: 'text-[#808080] text-[36px] font-light cursor-pointer',
         link: '/settings/proxy'
     },

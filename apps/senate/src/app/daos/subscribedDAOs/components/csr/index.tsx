@@ -33,8 +33,10 @@ export const SubscribedDAO = (props: {
                         unsubscribe.isLoading ? 'opacity-50' : 'opacity-100'
                     }`}
                 >
-                    <div className='flex w-full flex-row justify-end px-4 pt-4'>
-                        {/* <p>Notifications</p> */}
+                    <div className='flex w-full flex-row items-center justify-between px-4 pt-4'>
+                        <div className='justify-center  text-center text-[21px] font-semibold leading-8'>
+                            {props.daoName}
+                        </div>
                         <div
                             className='cursor-pointer'
                             onClick={() => {
@@ -49,31 +51,22 @@ export const SubscribedDAO = (props: {
                             />
                         </div>
                     </div>
-                    <div className='flex w-full grow flex-col items-center justify-between'>
-                        <div className='flex w-full flex-col items-center gap-2 px-3 pt-5'>
-                            <div className='flex w-full flex-row items-center justify-between gap-2'>
-                                {/* <p>Get daily emails</p>
-                                <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
-                                    <input
-                                        type='checkbox'
-                                        checked={getDailyEmails}
-                                        onChange={(e) => {
-                                            setDailyEmails(e.target.checked)
-                                            updateDAO.mutate({
-                                                daoId: props.daoId,
-                                                notificationsEnabled:
-                                                    e.target.checked
-                                            })
-                                        }}
-                                        className='peer sr-only'
-                                    />
-                                    <div className="peer h-6 w-11 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
-                                </label> */}
-                            </div>
+                    <div className='flex h-full flex-col gap-4 px-4 pt-4'>
+                        <div className='text-[15px] font-thin leading-[19px]'>
+                            You are currently subscribed to follow the off-chain
+                            and on-chain proposals of Aave.
+                        </div>
+                        <div className='text-[15px] font-thin leading-[19px]'>
+                            You are also getting daily updates on these
+                            proposals on your email.
+                        </div>
+                        <div className='text-[15px] font-thin leading-[19px]'>
+                            Do you wish to unsubscribe from Aave?
                         </div>
                     </div>
-                    <button
-                        className='h-14 w-full bg-white text-xl font-bold text-black'
+
+                    <div
+                        className='w-full pb-6 text-center text-[15px] font-thin text-white underline'
                         onClick={async () => {
                             unsubscribe.mutate(
                                 { daoId: props.daoId },
@@ -86,8 +79,8 @@ export const SubscribedDAO = (props: {
                             )
                         }}
                     >
-                        Unsubscribe
-                    </button>
+                        Unsubscribe from {props.daoName}
+                    </div>
                 </div>
             ) : (
                 <div

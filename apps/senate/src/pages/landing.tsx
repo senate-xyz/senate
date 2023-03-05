@@ -57,7 +57,7 @@ const Home = () => {
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='text-[24px] font-light text-white -translate-y-20 w-[447px] text-center mb-8'>
+                            <div className='mb-8 w-[447px] -translate-y-20 text-center text-[24px] font-light text-white'>
                                 Welcome to Senate!
                             </div>
                         </Transition.Child>
@@ -71,9 +71,9 @@ const Home = () => {
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='text-[24px] font-light text-white -translate-y-20 w-[447px] text-center mb-8'>
+                            <div className='mb-8 w-[447px] -translate-y-20 text-center text-[24px] font-light text-white'>
                                 The place where you can keep track of{' '}
-                                <span className='bg-[#5EF413] text-black font-semibold'>
+                                <span className='bg-[#5EF413] font-semibold text-black'>
                                     off-chain and on-chain proposals
                                 </span>{' '}
                                 from your favorite DAOs with ease.
@@ -89,10 +89,10 @@ const Home = () => {
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='text-[24px] font-light text-white -translate-y-20 w-[447px] text-center mb-8'>
+                            <div className='mb-8 w-[447px] -translate-y-20 text-center text-[24px] font-light text-white'>
                                 And also, you’ll never miss a vote ever again
                                 with our{' '}
-                                <span className='bg-[#5EF413] text-black font-semibold'>
+                                <span className='bg-[#5EF413] font-semibold text-black'>
                                     daily email reminders
                                 </span>
                                 .
@@ -108,10 +108,10 @@ const Home = () => {
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='text-[24px] font-light text-white -translate-y-20 w-[447px] text-center whitespace-pre'>
+                            <div className='w-[447px] -translate-y-20 whitespace-pre text-center text-[24px] font-light text-white'>
                                 Does that sound cool to you?
                             </div>
-                            <div className='text-[24px] font-light text-white -translate-y-20 w-[447px] text-center whitespace-pre'>
+                            <div className='w-[447px] -translate-y-20 whitespace-pre text-center text-[24px] font-light text-white'>
                                 Then go ahead, and...
                             </div>
                             <div className='flex flex-row items-center'>
@@ -181,9 +181,9 @@ const Home = () => {
                             </div>
 
                             {warning && !terms && (
-                                <div className='text-[12px] font-normal text-[#FF3D00] mt-4 text-center'>
-                                    Please accept the Terms & Conditions and
-                                    Privacy Policy above.
+                                <div className='mt-4 text-center text-[12px] font-normal text-[#FF3D00]'>
+                                    Please accept the Terms of Service, Privacy
+                                    Policy and Cookie Policy above.
                                 </div>
                             )}
                         </Transition.Child>

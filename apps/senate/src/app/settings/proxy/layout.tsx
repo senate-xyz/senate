@@ -9,7 +9,7 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
     },
     {
         id: 1,
-        name: 'Proxy Addresses',
+        name: 'Other Addresses',
         color: 'text-white text-[36px] font-bold cursor-pointer',
         link: '/settings/proxy'
     },
