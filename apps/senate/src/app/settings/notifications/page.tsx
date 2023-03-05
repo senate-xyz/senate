@@ -33,7 +33,7 @@ export default function Home() {
                     Your Notifications
                 </div>
 
-                <div className='w-[50%] text-[18px] font-light leading-[23px] text-white'>
+                <div className='text-[18px] font-light leading-[23px] text-white'>
                     If you wish to, we will send you a daily email with the
                     Proposals for the DAOs you are subscribed to.
                 </div>

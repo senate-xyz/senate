@@ -64,7 +64,7 @@ export default function RootLayout({
                         </Link>
                     </SignedOut>
                 </div>
-                <div className='pt-10 pl-2'>{children}</div>
+                <div className='w-[1150px] pt-10 pl-2'>{children}</div>
             </div>
         </>
     )

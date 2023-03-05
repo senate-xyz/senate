@@ -24,16 +24,16 @@ export default function Home() {
     }, [isLoaded])
 
     return (
-        <div className='mt-2 flex flex-col gap-12'>
-            <div className='flex flex-col gap-2'>
-                <div className='text-[24px] font-light text-white'>
-                    Your Proxy Addresses
+        <div className='flex flex-col gap-12'>
+            <div className='flex flex-col gap-4'>
+                <div className='text-[24px] font-light leading-[30px] text-white'>
+                    Your Other Addresses
                 </div>
 
-                <div className='w-[50%] text-[18px] font-light text-white'>
-                    Proxy Addresses are wallet addresses that you can add in
-                    Senate, so that you can see the voting activity of multiple
-                    addresses.
+                <div className='w-[50%] text-[18px] font-light leading-[23px] text-white'>
+                    Here you can add other addresses to your Senate account, so
+                    that you can see the voting activity for those addresses as
+                    well.
                 </div>
 
                 <div className='mt-12 flex flex-col gap-6'>

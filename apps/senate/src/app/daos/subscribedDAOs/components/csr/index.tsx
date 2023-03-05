@@ -33,53 +33,56 @@ export const SubscribedDAO = (props: {
                         unsubscribe.isLoading ? 'opacity-50' : 'opacity-100'
                     }`}
                 >
-                    <div className='flex w-full flex-row items-center justify-between px-4 pt-4'>
-                        <div className='justify-center  text-center text-[21px] font-semibold leading-8'>
-                            {props.daoName}
+                    <div className='flex h-full flex-col justify-between'>
+                        <div className='flex w-full flex-row items-start justify-between px-4 pt-4'>
+                            <div className='justify-center  text-center text-[21px] font-semibold leading-8'>
+                                {props.daoName}
+                            </div>
+                            <div
+                                className='cursor-pointer'
+                                onClick={() => {
+                                    setShowMenu(false)
+                                }}
+                            >
+                                <Image
+                                    width='32'
+                                    height='32'
+                                    src='/assets/Icon/Close.svg'
+                                    alt='close button'
+                                />
+                            </div>
                         </div>
+                        <div className='flex h-full flex-col gap-4 px-4 pt-4'>
+                            <div className='text-[15px] font-thin leading-[19px]'>
+                                You are currently subscribed to follow the
+                                off-chain and on-chain proposals of{' '}
+                                {props.daoName}.
+                            </div>
+                            <div className='text-[15px] font-thin leading-[19px]'>
+                                You are also getting daily updates on these
+                                proposals on your email.
+                            </div>
+                            <div className='text-[15px] font-thin leading-[19px]'>
+                                Do you wish to unsubscribe from {props.daoName}?
+                            </div>
+                        </div>
+
                         <div
-                            className='cursor-pointer'
-                            onClick={() => {
-                                setShowMenu(false)
+                            className='w-full cursor-pointer px-4 pb-4 text-center text-[15px] font-thin text-white underline'
+                            onClick={async () => {
+                                unsubscribe.mutate(
+                                    { daoId: props.daoId },
+                                    {
+                                        onSuccess: () => {
+                                            router.refresh()
+                                            setShowMenu(false)
+                                        }
+                                    }
+                                )
                             }}
                         >
-                            <Image
-                                width='32'
-                                height='32'
-                                src='/assets/Icon/Close.svg'
-                                alt='close button'
-                            />
+                            Unsubscribe from {props.daoName}
                         </div>
-                    </div>
-                    <div className='flex h-full flex-col gap-4 px-4 pt-4'>
-                        <div className='text-[15px] font-thin leading-[19px]'>
-                            You are currently subscribed to follow the off-chain
-                            and on-chain proposals of Aave.
-                        </div>
-                        <div className='text-[15px] font-thin leading-[19px]'>
-                            You are also getting daily updates on these
-                            proposals on your email.
-                        </div>
-                        <div className='text-[15px] font-thin leading-[19px]'>
-                            Do you wish to unsubscribe from Aave?
-                        </div>
-                    </div>
-
-                    <div
-                        className='w-full pb-6 text-center text-[15px] font-thin text-white underline'
-                        onClick={async () => {
-                            unsubscribe.mutate(
-                                { daoId: props.daoId },
-                                {
-                                    onSuccess: () => {
-                                        router.refresh()
-                                        setShowMenu(false)
-                                    }
-                                }
-                            )
-                        }}
-                    >
-                        Unsubscribe from {props.daoName}
                     </div>
                 </div>
             ) : (

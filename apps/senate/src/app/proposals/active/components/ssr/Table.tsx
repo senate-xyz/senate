@@ -203,14 +203,14 @@ const ActiveProposal = async (props: {
                         </div>
                         <div>
                             {props.proposal.onchain ? (
+                                ''
+                            ) : (
                                 <Image
                                     width={94}
                                     height={26}
                                     src={'/assets/Icon/OffChainProposal.svg'}
                                     alt='off-chain'
                                 />
-                            ) : (
-                                ''
                             )}
                         </div>
                     </div>

@@ -23,7 +23,7 @@ const UserAddress = () => {
     return (
         <div>
             <div className='flex flex-col gap-2'>
-                <div className='text-[24px] font-light text-white'>
+                <div className='text-[24px] font-light leading-[30px] text-white'>
                     Your Account Address
                 </div>
 

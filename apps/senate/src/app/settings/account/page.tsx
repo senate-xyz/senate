@@ -8,8 +8,8 @@ export default function Home() {
     const { signOut, redirectToHome } = useClerk()
 
     return (
-        <main>
-            <div className='mt-2 flex flex-col gap-12'>
+        <div className='flex flex-col gap-12'>
+            <div className='flex flex-col gap-4'>
                 <SignedOut>
                     <NotConnected />
                 </SignedOut>
@@ -26,6 +26,6 @@ export default function Home() {
                     </button>
                 </SignedIn>
             </div>
-        </main>
+        </div>
     )
 }

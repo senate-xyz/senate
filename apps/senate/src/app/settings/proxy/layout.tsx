@@ -42,7 +42,7 @@ export default async function RootLayout({
                         )
                     })}
                 </div>
-                <div className='pt-10 pl-2'>{children}</div>
+                <div className='w-[1150px] pt-10 pl-2'>{children}</div>
             </div>
         </>
     )
