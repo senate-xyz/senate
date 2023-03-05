@@ -1,11 +1,13 @@
 'use client'
 
 import { useUser } from '@clerk/nextjs'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { trpc } from '../../../server/trpcClient'
 
 export default function Home() {
+    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
+
     const { isLoaded, isSignedIn } = useUser()
     const router = useRouter()
     const user = trpc.accountSettings.getUser.useQuery()

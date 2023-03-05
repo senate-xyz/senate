@@ -8,6 +8,8 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@senate/database'
 
 const hasUserBulletin = async () => {
+    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
+
     const userSession = await currentUser()
 
     const user = await prisma.user

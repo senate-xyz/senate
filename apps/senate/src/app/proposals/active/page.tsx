@@ -9,6 +9,8 @@ import Table from './components/ssr/Table'
 export const revalidate = 300
 
 const getSubscribedDAOs = async () => {
+    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
+
     const userSession = await currentUser()
 
     const cookieStore = cookies()
