@@ -3,7 +3,9 @@
 import '../styles/globals.css'
 import RootProvider from '../app/components/providers/providers'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { trpc } from '../server/trpcClient'
+import { useRouter } from 'next/navigation'
 
 const WrapperHome = () => {
     return (
@@ -16,7 +18,18 @@ const WrapperHome = () => {
 export default WrapperHome
 
 const Home = () => {
-    const [email, setEmail] = useState('')
+    const [newEmail, setNewEmail] = useState('')
+    const [success, setSuccess] = useState(false)
+    const [error, setError] = useState(false)
+    const router = useRouter()
+
+    const setEmail =
+        trpc.accountSettings.setEmailAndEnableBulletin.useMutation()
+    const email = trpc.accountSettings.getEmail.useQuery()
+
+    useEffect(() => {
+        if (email.isFetched) setNewEmail(email.data ?? '')
+    }, [email.data])
 
     return (
         <div className='flex min-h-screen w-full flex-row bg-black'>
@@ -43,21 +56,44 @@ const Home = () => {
 
                     <input
                         className={`h-[46px] w-[420px] mt-6 focus:outline-none bg-[#D9D9D9] px-2 text-black `}
-                        value={email}
+                        value={newEmail}
                         placeholder='delegatooooor@defi.dao'
                         onChange={(e) => {
-                            setEmail(String(e.target.value))
+                            setNewEmail(String(e.target.value))
                         }}
                     />
 
                     <div
                         className={`flex h-[43px] w-[420px] cursor-pointer flex-col justify-center ${
-                            email.length ? 'bg-white' : 'bg-[#545454]'
+                            newEmail.length ? 'bg-white' : 'bg-[#545454]'
                         } text-center mt-6`}
-                        onClick={() => {}}
+                        onClick={() => {
+                            setEmail.mutate(
+                                { email: newEmail },
+                                {
+                                    onSuccess: () => {
+                                        setSuccess(true)
+                                        router.push('/daos')
+                                    },
+                                    onError: () => {
+                                        setError(true)
+                                    }
+                                }
+                            )
+                        }}
                     >
                         Get Daily Bulletin
                     </div>
+                    {success && (
+                        <div className='text-[12px] font-normal text-[#5EF413] mt-4 text-center'>
+                            Email updated successfully!
+                        </div>
+                    )}
+                    {error && (
+                        <div className='text-[12px] font-normal text-[#FF3D00] mt-4 text-center'>
+                            There was an error updating your email.
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

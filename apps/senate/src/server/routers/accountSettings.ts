@@ -4,6 +4,32 @@ import { prisma } from '@senate/database'
 import { clerkClient } from '@clerk/nextjs/server'
 
 export const accountSettingsRouter = router({
+    setEmailAndEnableBulletin: privateProcedure
+        .input(
+            z.object({
+                email: z.string().email()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const clerkUser = await clerkClient.users.getUser(
+                ctx.auth?.userId || ''
+            )
+
+            const user = await prisma.user.upsert({
+                where: {
+                    name: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                },
+                create: {
+                    name: String(clerkUser.web3Wallets[0]?.web3Wallet),
+                    email: input.email,
+                    dailyBulletin: true
+                },
+                update: { email: input.email, dailyBulletin: true }
+            })
+
+            return user
+        }),
+
     setEmail: privateProcedure
         .input(
             z.object({

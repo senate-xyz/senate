@@ -2,7 +2,6 @@
 
 import '../styles/globals.css'
 import Image from 'next/image'
-import RootProvider from '../app/components/providers/providers'
 import { Transition } from '@headlessui/react'
 import { useRouter } from 'next/navigation'
 import { useCookies } from 'react-cookie'
@@ -10,11 +9,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 const WrapperHome = () => {
-    return (
-        <RootProvider>
-            <Home />
-        </RootProvider>
-    )
+    return <Home />
 }
 
 export default WrapperHome
@@ -46,6 +41,7 @@ const Home = () => {
                             <div className='flex justify-center'>
                                 <Image
                                     src='/assets/Senate_Logo/Senate_Animation.gif'
+                                    priority={true}
                                     alt={''}
                                     width={300}
                                     height={300}

@@ -58,35 +58,39 @@ export default async function SubscribedDAOs() {
     )
 
     return (
-        <main>
+        <div>
             {subscriptions.length > 0 && (
-                <p className='mb-4 w-full text-[36px] font-semibold text-white'>
-                    Your DAOs
-                </p>
-            )}
+                <main className='p-10'>
+                    <p className='mb-4 w-full text-[36px] font-semibold text-white'>
+                        Your DAOs
+                    </p>
 
-            <div className='grid grid-cols-1 place-items-start gap-10 min-[650px]:grid-cols-2 min-[900px]:grid-cols-3 min-[1150px]:grid-cols-4 min-[1500px]:grid-cols-5 min-[1650px]:grid-cols-6'>
-                {subscriptions.map((sub, index) => {
-                    return (
-                        <SubscribedDAO
-                            key={index}
-                            daoId={sub.dao.id}
-                            daoName={sub.dao.name}
-                            daoPicture={sub.dao.picture}
-                            bgColor={
-                                backgroundColors.find(
-                                    (dao) => dao?.daoId == sub.id
-                                )?.color
-                            }
-                            daoHandlers={sub.dao.handlers.map(
-                                (handler) => handler.type
-                            )}
-                            activeProposals={sub.dao.proposals.length}
-                            notificationsEnabled={sub.notificationsEnabled}
-                        />
-                    )
-                })}
-            </div>
-        </main>
+                    <div className='grid grid-cols-1 place-items-start gap-10 min-[650px]:grid-cols-2 min-[900px]:grid-cols-3 min-[1150px]:grid-cols-4 min-[1500px]:grid-cols-5 min-[1650px]:grid-cols-6'>
+                        {subscriptions.map((sub, index) => {
+                            return (
+                                <SubscribedDAO
+                                    key={index}
+                                    daoId={sub.dao.id}
+                                    daoName={sub.dao.name}
+                                    daoPicture={sub.dao.picture}
+                                    bgColor={
+                                        backgroundColors.find(
+                                            (dao) => dao?.daoId == sub.id
+                                        )?.color
+                                    }
+                                    daoHandlers={sub.dao.handlers.map(
+                                        (handler) => handler.type
+                                    )}
+                                    activeProposals={sub.dao.proposals.length}
+                                    notificationsEnabled={
+                                        sub.notificationsEnabled
+                                    }
+                                />
+                            )
+                        })}
+                    </div>
+                </main>
+            )}
+        </div>
     )
 }
