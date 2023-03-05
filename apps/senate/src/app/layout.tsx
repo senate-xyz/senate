@@ -5,6 +5,8 @@ import '../styles/globals.css'
 import { NavBar } from './components/csr/NavBar'
 import RootProvider from './components/providers/providers'
 
+const clerk_pub_key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
 export default function RootLayout({
     children
 }: {
@@ -15,6 +17,7 @@ export default function RootLayout({
             appearance={{
                 baseTheme: dark
             }}
+            publishableKey={clerk_pub_key}
         >
             <RootProvider>
                 <html lang='en'>

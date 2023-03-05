@@ -154,6 +154,7 @@ export default async function Table(props: {
                         </th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {proposals.map(
                         (
@@ -173,6 +174,12 @@ export default async function Table(props: {
                     )}
                 </tbody>
             </table>
+
+            {proposals.length == 0 && (
+                <div className='h-[96px] w-full items-center justify-evenly pt-10 text-center text-[#EDEDED]'>
+                    Subscribe to some DAOs to see their proposals.
+                </div>
+            )}
         </div>
     )
 }
