@@ -4,6 +4,7 @@ import Link from 'next/link'
 import '../styles/globals.css'
 import { NavBar } from './components/csr/NavBar'
 import RootProvider from './components/providers/providers'
+import React from 'react'
 
 const clerk_pub_key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 

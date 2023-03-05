@@ -103,6 +103,7 @@ const getProposals = async (from: string, end: number, voted: string) => {
         },
         include: {
             dao: true,
+            daoHandler: true,
             votes: {
                 where: {
                     voterAddress: {
@@ -117,6 +118,7 @@ const getProposals = async (from: string, end: number, voted: string) => {
         userProposals.map((proposal) => {
             return {
                 daoName: proposal.dao.name,
+                onchain: proposal.daoHandler.type == 'SNAPSHOT' ? false : true,
                 daoPicture: proposal.dao.picture,
                 proposalTitle: proposal.name,
                 proposalLink: proposal.url,
@@ -156,22 +158,10 @@ export default async function Table(props: {
                 </thead>
 
                 <tbody>
-                    {proposals.map(
-                        (
-                            proposal: {
-                                daoName: string
-                                daoPicture: string
-                                proposalTitle: string
-                                proposalLink: string
-                                timeEnd: Date
-                                voted: boolean
-                            },
-                            index: number
-                        ) => (
-                            /* @ts-expect-error Server Component */
-                            <ActiveProposal key={index} proposal={proposal} />
-                        )
-                    )}
+                    {proposals.map((proposal, index) => (
+                        /* @ts-expect-error Server Component */
+                        <ActiveProposal key={index} proposal={proposal} />
+                    ))}
                 </tbody>
             </table>
 
@@ -187,6 +177,7 @@ export default async function Table(props: {
 const ActiveProposal = async (props: {
     proposal: {
         daoName: string
+        onchain: boolean
         daoPicture: string
         proposalTitle: string
         proposalLink: string
@@ -206,8 +197,22 @@ const ActiveProposal = async (props: {
                             alt={props.proposal.daoName}
                         />
                     </div>
-                    <div className='text-[24px] font-thin'>
-                        {props.proposal.daoName}
+                    <div className='flex flex-col gap-2 pl-2'>
+                        <div className='text-[24px] font-light leading-[30px]'>
+                            {props.proposal.daoName}
+                        </div>
+                        <div>
+                            {props.proposal.onchain ? (
+                                <Image
+                                    width={94}
+                                    height={26}
+                                    src={'/assets/Icon/OffChainProposal.svg'}
+                                    alt='off-chain'
+                                />
+                            ) : (
+                                ''
+                            )}
+                        </div>
                     </div>
                 </div>
             </td>
@@ -227,8 +232,27 @@ const ActiveProposal = async (props: {
                 </a>
             </td>
             <td>
-                <div className='text-[21px]'>
-                    {dayjs(props.proposal.timeEnd).fromNow()}
+                <div className='flex flex-col justify-between gap-2'>
+                    <div className='text-[21px] font-semibold leading-[26px]'>
+                        {dayjs(props.proposal.timeEnd).fromNow()}
+                    </div>
+                    <div className='text-[15px] font-normal leading-[19px]'>
+                        {`on ${new Date(
+                            props.proposal.timeEnd
+                        ).toLocaleDateString('en-US', {
+                            month: 'long',
+                            day: 'numeric'
+                        })} at ${new Date(
+                            props.proposal.timeEnd
+                        ).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            timeZone: 'UTC',
+                            hour12: false
+                        })} UTC
+                    `}
+                    </div>
                 </div>
             </td>
             <td>

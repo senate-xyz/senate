@@ -1,8 +1,9 @@
 import Image from 'next/image'
-import dayjs, { extend } from 'dayjs'
+import { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { Vote, prisma } from '@senate/database'
+import { Vote, prisma, JsonArray } from '@senate/database'
 import { currentUser } from '@clerk/nextjs/app-beta'
+import React from 'react'
 extend(relativeTime)
 
 const getProposals = async (from: string, end: number, voted: string) => {
@@ -103,6 +104,7 @@ const getProposals = async (from: string, end: number, voted: string) => {
         },
         include: {
             dao: true,
+            daoHandler: true,
             votes: {
                 where: {
                     voterAddress: {
@@ -115,15 +117,50 @@ const getProposals = async (from: string, end: number, voted: string) => {
 
     const result =
         userProposals.map((proposal) => {
+            let highestScore = 0
+            let highestScoreIndex = 0
+            let highestScoreChoice = ''
+            if (
+                proposal.scores &&
+                typeof proposal.scores === 'object' &&
+                Array.isArray(proposal?.scores) &&
+                proposal.choices &&
+                typeof proposal.choices === 'object' &&
+                Array.isArray(proposal?.choices)
+            ) {
+                const scores = proposal.scores as JsonArray
+
+                console.log(scores)
+                console.log(scores.length)
+
+                for (const score of scores) {
+                    if (Number(score) > highestScore) {
+                        highestScore = Number(score)
+                        highestScoreIndex++
+                    }
+                    console.log(`score: ${score}`)
+                    console.log(`highestScore: ${highestScore}`)
+                    console.log(`highestScoreIndex: ${highestScoreIndex}`)
+                }
+
+                highestScoreChoice = String(
+                    proposal.choices[highestScoreIndex - 1]
+                )
+            }
+
             return {
                 daoName: proposal.dao.name,
+                onchain: proposal.daoHandler.type == 'SNAPSHOT' ? false : true,
                 daoPicture: proposal.dao.picture,
                 proposalTitle: proposal.name,
                 proposalLink: proposal.url,
                 timeEnd: proposal.timeEnd,
                 voted: user
                     ? proposal.votes.map((vote: Vote) => vote.choice).length > 0
-                    : false
+                    : false,
+                highestScoreChoice: highestScoreChoice,
+                highestScore: highestScore,
+                scoresTotal: proposal.scoresTotal
             }
         }) ?? []
 
@@ -156,22 +193,10 @@ export default async function Table(props: {
                 </thead>
 
                 <tbody>
-                    {proposals.map(
-                        (
-                            proposal: {
-                                daoName: string
-                                daoPicture: string
-                                proposalTitle: string
-                                proposalLink: string
-                                timeEnd: Date
-                                voted: boolean
-                            },
-                            index: number
-                        ) => (
-                            /* @ts-expect-error Server Component */
-                            <ActiveProposal key={index} proposal={proposal} />
-                        )
-                    )}
+                    {proposals.map((proposal, index: number) => (
+                        /* @ts-expect-error Server Component */
+                        <ActiveProposal key={index} proposal={proposal} />
+                    ))}
                 </tbody>
             </table>
 
@@ -187,11 +212,15 @@ export default async function Table(props: {
 const ActiveProposal = async (props: {
     proposal: {
         daoName: string
+        onchain: boolean
         daoPicture: string
         proposalTitle: string
         proposalLink: string
         timeEnd: Date
         voted: boolean
+        highestScoreChoice: string
+        highestScore: number
+        scoresTotal: number
     }
 }) => {
     return (
@@ -206,8 +235,22 @@ const ActiveProposal = async (props: {
                             alt={props.proposal.daoName}
                         />
                     </div>
-                    <div className='text-[24px] font-thin'>
-                        {props.proposal.daoName}
+                    <div className='flex flex-col gap-2 pl-2'>
+                        <div className='text-[24px] font-light leading-[30px]'>
+                            {props.proposal.daoName}
+                        </div>
+                        <div>
+                            {props.proposal.onchain ? (
+                                ''
+                            ) : (
+                                <Image
+                                    width={94}
+                                    height={26}
+                                    src={'/assets/Icon/OffChainProposal.svg'}
+                                    alt='off-chain'
+                                />
+                            )}
+                        </div>
                     </div>
                 </div>
             </td>
@@ -226,9 +269,47 @@ const ActiveProposal = async (props: {
                     </div>
                 </a>
             </td>
-            <td>
-                <div className='text-[21px]'>
-                    {dayjs(props.proposal.timeEnd).fromNow()}
+            <td className='flex flex-col justify-center gap-2'>
+                <div className='flex flex-row'>
+                    <div></div>
+                    <div className='text-[21px] leading-[26px] text-white'>
+                        {props.proposal.highestScoreChoice}
+                    </div>
+                </div>
+                <div className='h-[22px] w-[340px] bg-[#262626]'>
+                    <div
+                        style={{
+                            width: `${(
+                                (props.proposal.highestScore /
+                                    props.proposal.scoresTotal) *
+                                100
+                            ).toFixed(0)}%`
+                        }}
+                        className={`h-full bg-[#EDEDED]`}
+                    >
+                        <div className='px-2 text-black'>
+                            {(
+                                (props.proposal.highestScore /
+                                    props.proposal.scoresTotal) *
+                                100
+                            ).toFixed(2)}
+                            %
+                        </div>
+                    </div>
+                </div>
+
+                <div className='text-[15px] leading-[19px]'>
+                    {props.proposal.timeEnd.toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        second: 'numeric',
+                        timeZone: 'UTC',
+                        hour12: false
+                    })}{' '}
+                    UTC
                 </div>
             </td>
             <td>
@@ -246,12 +327,12 @@ const ActiveProposal = async (props: {
                     ) : (
                         <div className='flex w-full flex-col items-center'>
                             <Image
-                                src='/assets/Icon/NotVotedYet.svg'
+                                src='/assets/Icon/DidntVote.svg'
                                 alt='voted'
                                 width={32}
                                 height={32}
                             />
-                            <div className='text-[18px]'>Not Voted Yet</div>
+                            <div className='text-[18px]'>Didn’t Vote</div>
                         </div>
                     )}
                 </div>
