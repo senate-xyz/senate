@@ -14,16 +14,13 @@
         "generate": "prisma generate --schema prisma/new/schema.prisma && prisma generate --schema prisma/old/schema.prisma"
     },
     "dependencies": {
-        "@prisma/client": "^4.10.1",
-        "@senate/config": "*",
-        "@senate/database": "*",
+        "@prisma/client": "^4.11.0",
         "@types/prompt-sync": "^4.2.0",
         "inquirer": "8.2.5",
-        "prisma": "^4.10.1"
+        "prisma": "^4.11.0"
     },
     "devDependencies": {
-        "@types/inquirer": "^9.0.3",
-        "tsup": "^6.6.0",
+        "tsup": "^6.6.3",
         "typescript": "^4.9.5"
     }
 }

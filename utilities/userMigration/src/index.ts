@@ -56,7 +56,6 @@ export type OldUserType = PrismaOld.UserGetPayload<{
     include: {
         subscriptions: { include: { dao: true } }
         voters: true
-        userSettings: true
     }
 }>
 
@@ -69,9 +68,8 @@ export type NewUsertype = PrismaNew.UserGetPayload<{
 const exportUsers = async (toFile: string) => {
     const data = await oldPrisma.user.findMany({
         include: {
-            subscriptions: { include: { dao: true } },
-            voters: true,
-            userSettings: true
+            subscriptions: { select: { dao: { select: { name: true } } } },
+            voters: true
         }
     })
 
@@ -108,7 +106,7 @@ const importUsers = async (fromFile: string) => {
                 acceptedTerms: user.acceptedTerms,
                 lastActive: user.lastActive,
                 sessionCount: user.sessionCount,
-                dailyBulletin: user.userSettings.dailyBulletinEmail,
+                dailyBulletin: user.dailyBulletin,
                 voters: {
                     connectOrCreate: user.voters.map((voter) => ({
                         where: {
@@ -127,7 +125,7 @@ const importUsers = async (fromFile: string) => {
                 acceptedTerms: user.acceptedTerms,
                 lastActive: user.lastActive,
                 sessionCount: user.sessionCount,
-                dailyBulletin: user.userSettings.dailyBulletinEmail,
+                dailyBulletin: user.dailyBulletin,
                 voters: {
                     connectOrCreate: user.voters.map((voter) => ({
                         where: {
