@@ -3,7 +3,6 @@ import { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Vote, prisma, JsonArray } from '@senate/database'
 import { currentUser } from '@clerk/nextjs/app-beta'
-import React from 'react'
 extend(relativeTime)
 
 const getProposals = async (from: string, end: number, voted: string) => {
@@ -130,17 +129,11 @@ const getProposals = async (from: string, end: number, voted: string) => {
             ) {
                 const scores = proposal.scores as JsonArray
 
-                console.log(scores)
-                console.log(scores.length)
-
                 for (const score of scores) {
                     if (Number(score) > highestScore) {
                         highestScore = Number(score)
                         highestScoreIndex++
                     }
-                    console.log(`score: ${score}`)
-                    console.log(`highestScore: ${highestScore}`)
-                    console.log(`highestScoreIndex: ${highestScoreIndex}`)
                 }
 
                 highestScoreChoice = String(
