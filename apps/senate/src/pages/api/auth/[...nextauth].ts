@@ -86,15 +86,22 @@ export function authOptions(
         secret: process.env.NEXTAUTH_SECRET,
         events: {
             async signIn(message) {
-                await prisma.user.update({
+                const user = await prisma.user.findFirst({
                     where: {
                         name: String(message.user.id)
-                    },
-                    data: {
-                        lastActive: new Date(),
-                        sessionCount: { increment: 1 }
                     }
                 })
+
+                if (user)
+                    await prisma.user.update({
+                        where: {
+                            name: String(message.user.id)
+                        },
+                        data: {
+                            lastActive: new Date(),
+                            sessionCount: { increment: 1 }
+                        }
+                    })
             },
             async signOut() {
                 res?.setHeader('Set-Cookie', [
@@ -103,14 +110,21 @@ export function authOptions(
                 ])
             },
             async session(message) {
-                await prisma.user.update({
+                const user = await prisma.user.findFirst({
                     where: {
                         name: String(message.session.user?.name)
-                    },
-                    data: {
-                        lastActive: new Date()
                     }
                 })
+
+                if (user)
+                    await prisma.user.update({
+                        where: {
+                            name: String(message.session.user?.name)
+                        },
+                        data: {
+                            lastActive: new Date()
+                        }
+                    })
             }
         }
     }

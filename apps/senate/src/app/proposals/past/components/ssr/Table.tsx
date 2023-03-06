@@ -7,7 +7,12 @@ import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
 
 extend(relativeTime)
 
-const getProposals = async (from: string, end: number, voted: string) => {
+const getProposals = async (
+    from: string,
+    end: number,
+    voted: string,
+    proxy: string
+) => {
     const active = false
 
     const session = await getServerSession(authOptions())
@@ -29,7 +34,10 @@ const getProposals = async (from: string, end: number, voted: string) => {
                 votes: {
                     none: {
                         voterAddress: {
-                            in: user?.voters.map((voter) => voter.address)
+                            in:
+                                proxy == 'any'
+                                    ? user?.voters.map((voter) => voter.address)
+                                    : proxy
                         }
                     }
                 }
@@ -41,7 +49,10 @@ const getProposals = async (from: string, end: number, voted: string) => {
                 votes: {
                     some: {
                         voterAddress: {
-                            in: user?.voters.map((voter) => voter.address)
+                            in:
+                                proxy == 'any'
+                                    ? user?.voters.map((voter) => voter.address)
+                                    : proxy
                         }
                     }
                 }
@@ -110,7 +121,10 @@ const getProposals = async (from: string, end: number, voted: string) => {
             votes: {
                 where: {
                     voterAddress: {
-                        in: user?.voters.map((voter) => voter.address)
+                        in:
+                            proxy == 'any'
+                                ? user?.voters.map((voter) => voter.address)
+                                : proxy
                     }
                 }
             }
@@ -168,11 +182,13 @@ export default async function Table(props: {
     from?: string
     end?: number
     voted?: string
+    proxy?: string
 }) {
     const proposals = await getProposals(
         props.from ?? 'any',
         props.end ?? 90,
-        props.voted ?? 'any'
+        props.voted ?? 'any',
+        props.proxy ?? 'any'
     )
 
     return (

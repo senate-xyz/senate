@@ -19,7 +19,17 @@ export const accountSettingsRouter = router({
                 create: {
                     name: String(username),
                     email: input.email,
-                    dailyBulletin: true
+                    dailyBulletin: true,
+                    voters: {
+                        connectOrCreate: {
+                            where: {
+                                address: String(username)
+                            },
+                            create: {
+                                address: String(username)
+                            }
+                        }
+                    }
                 },
                 update: { email: input.email, dailyBulletin: true }
             })
@@ -42,7 +52,17 @@ export const accountSettingsRouter = router({
                 },
                 create: {
                     name: String(username),
-                    email: input.email
+                    email: input.email,
+                    voters: {
+                        connectOrCreate: {
+                            where: {
+                                address: String(username)
+                            },
+                            create: {
+                                address: String(username)
+                            }
+                        }
+                    }
                 },
                 update: { email: input.email }
             })
@@ -78,7 +98,7 @@ export const accountSettingsRouter = router({
             }
         })
 
-        return user?.voters
+        return user?.voters.filter((voter) => voter.address !== username)
     }),
 
     addVoter: privateProcedure
@@ -169,7 +189,17 @@ export const accountSettingsRouter = router({
                 create: {
                     name: String(username),
                     acceptedTerms: input.value,
-                    acceptedTermsTimestamp: new Date(input.timestamp)
+                    acceptedTermsTimestamp: new Date(input.timestamp),
+                    voters: {
+                        connectOrCreate: {
+                            where: {
+                                address: String(username)
+                            },
+                            create: {
+                                address: String(username)
+                            }
+                        }
+                    }
                 },
                 update: {
                     acceptedTerms: input.value,
