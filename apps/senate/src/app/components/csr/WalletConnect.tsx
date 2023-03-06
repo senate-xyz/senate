@@ -24,9 +24,9 @@ const WalletConnect = () => {
             router.push(`/connected?redirect=${pathname}`)
     }, [account, session.status, cookie])
 
-    // useEffect(() => {
-    //     if (account.isConnected || account.isDisconnected) router.refresh()
-    // }, [account])
+    useEffect(() => {
+        router.refresh()
+    }, [account.isConnected, account.isDisconnected, session.status])
 
     return <ConnectButton />
 }

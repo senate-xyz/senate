@@ -1,6 +1,7 @@
 'use client'
 
 import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
@@ -14,6 +15,7 @@ export const UnsubscribedDAO = (props: {
     daoHandlers: string[]
 }) => {
     const account = useAccount()
+    const session = useSession()
     const { openConnectModal } = useConnectModal()
 
     const router = useRouter()
@@ -97,7 +99,7 @@ export const UnsubscribedDAO = (props: {
                 <button
                     className='h-14 w-full bg-white text-xl font-bold text-black'
                     onClick={() => {
-                        account.isConnected
+                        account.isConnected && session.status == 'authenticated'
                             ? subscribe.mutate(
                                   {
                                       daoId: props.daoId,
@@ -105,6 +107,9 @@ export const UnsubscribedDAO = (props: {
                                   },
                                   {
                                       onSuccess: () => {
+                                          router.refresh()
+                                      },
+                                      onError: () => {
                                           router.refresh()
                                       }
                                   }

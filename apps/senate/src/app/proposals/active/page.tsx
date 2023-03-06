@@ -12,9 +12,8 @@ export const revalidate = 300
 const getSubscribedDAOs = async () => {
     const session = await getServerSession(authOptions())
     const userAddress = session?.user?.name ?? ''
-
-    const user = await prisma.user
-        .findFirstOrThrow({
+    try {
+        const user = await prisma.user.findFirstOrThrow({
             where: {
                 name: { equals: userAddress }
             },
@@ -22,51 +21,54 @@ const getSubscribedDAOs = async () => {
                 id: true
             }
         })
-        .catch(() => {
-            return { id: '0' }
-        })
 
-    const daosList = await prisma.dAO.findMany({
-        where: {
-            subscriptions: {
-                some: {
-                    user: { is: user }
-                }
-            }
-        },
-        orderBy: {
-            name: 'asc'
-        },
-        distinct: 'id',
-        include: {
-            handlers: true,
-            subscriptions: {
-                where: {
-                    userId: { contains: user.id }
+        const daosList = await prisma.dAO.findMany({
+            where: {
+                subscriptions: {
+                    some: {
+                        user: { is: user }
+                    }
                 }
             },
-            proposals: { where: { timeEnd: { gt: new Date() } } }
-        }
-    })
-    return daosList
+            orderBy: {
+                name: 'asc'
+            },
+            distinct: 'id',
+            include: {
+                handlers: true,
+                subscriptions: {
+                    where: {
+                        userId: { contains: user.id }
+                    }
+                },
+                proposals: { where: { timeEnd: { gt: new Date() } } }
+            }
+        })
+        return daosList
+    } catch (e) {
+        return []
+    }
 }
 
 const getProxies = async () => {
     const session = await getServerSession(authOptions())
     const userAddress = session?.user?.name ?? ''
+    try {
+        const user = await prisma.user.findFirstOrThrow({
+            where: {
+                name: { equals: userAddress }
+            },
+            include: {
+                voters: true
+            }
+        })
 
-    const user = await prisma.user.findFirstOrThrow({
-        where: {
-            name: { equals: userAddress }
-        },
-        include: {
-            voters: true
-        }
-    })
+        const proxies = user.voters.map((voter) => voter.address)
 
-    const proxies = user.voters.map((voter) => voter.address)
-
-    return proxies
+        return proxies
+    } catch (e) {
+        return []
+    }
 }
 
 export default async function Home({

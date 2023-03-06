@@ -186,7 +186,7 @@ const Proxy = (props: { address: string }) => {
     useEffect(() => {
         ;(async () => {
             const ens = await provider.lookupAddress(props.address)
-            setName(ens ?? '')
+            setName(ens ?? props.address)
         })()
     }, [props.address])
 
