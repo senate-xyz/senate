@@ -83,6 +83,7 @@ export default function RootLayout({
                                             <Link
                                                 className='underline'
                                                 href='https://discord.gg/kwGCVqHVdX'
+                                                target='_blank'
                                             >
                                                 please let us know
                                             </Link>

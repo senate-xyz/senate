@@ -134,6 +134,7 @@ const Home = () => {
                                             'https://senate.notion.site/Senate-Labs-Terms-of-Service-990ca9e655094b6f9673a3ead572956a'
                                         }
                                         className='underline'
+                                        target='_blank'
                                     >
                                         Terms & Conditions
                                     </Link>{' '}
@@ -143,6 +144,7 @@ const Home = () => {
                                             'https://senate.notion.site/Senate-Labs-Privacy-Policy-494e23d8a4e34d0189bfe07e0ae01bde'
                                         }
                                         className='underline'
+                                        target='_blank'
                                     >
                                         Privacy Policy
                                     </Link>{' '}
@@ -152,6 +154,7 @@ const Home = () => {
                                             'https://senate.notion.site/Senate-Labs-Cookie-Policy-b429fe7b181e4cfda95f404f480bfdc7'
                                         }
                                         className='underline'
+                                        target='_blank'
                                     >
                                         Cookie Policy
                                     </Link>{' '}
