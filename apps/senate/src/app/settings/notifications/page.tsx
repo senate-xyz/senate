@@ -1,23 +1,26 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
 import { redirect, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useCookies } from 'react-cookie'
+import { useAccount } from 'wagmi'
 import { trpc } from '../../../server/trpcClient'
 import UserEmail from './components/csr/UserEmail'
 
 export default function Home() {
     if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
+    const [cookie] = useCookies(['hasSeenLanding'])
+    if (!cookie.hasSeenLanding) redirect('/landing')
 
-    const { isLoaded, isSignedIn } = useUser()
+    const account = useAccount()
     const router = useRouter()
     const user = trpc.accountSettings.getUser.useQuery()
 
     const [getDailyEmails, setDailyEmails] = useState(false)
 
     useEffect(() => {
-        if (isLoaded && !isSignedIn) router.push('/settings/account')
-    }, [isLoaded])
+        if (!account.isConnected) router.push('/settings/account')
+    }, [account])
 
     useEffect(() => {
         if (user.data) setDailyEmails(user.data.dailyBulletin)

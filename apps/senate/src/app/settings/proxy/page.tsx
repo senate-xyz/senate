@@ -1,13 +1,17 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useProvider } from 'wagmi'
+import { useCookies } from 'react-cookie'
+import { useAccount, useProvider } from 'wagmi'
 import { trpc } from '../../../server/trpcClient'
 
 export default function Home() {
-    const { isLoaded, isSignedIn } = useUser()
+    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
+    const [cookie] = useCookies(['hasSeenLanding'])
+    if (!cookie.hasSeenLanding) redirect('/landing')
+
+    const account = useAccount()
     const router = useRouter()
     const provider = useProvider()
 
@@ -20,8 +24,8 @@ export default function Home() {
     const [proxyAddress, setProxyAddress] = useState('')
 
     useEffect(() => {
-        if (isLoaded && !isSignedIn) router.push('/settings/account')
-    }, [isLoaded])
+        if (!account.isConnected) router.push('/settings/account')
+    }, [account])
 
     return (
         <div className='flex flex-col gap-12'>

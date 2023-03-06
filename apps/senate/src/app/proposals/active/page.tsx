@@ -1,7 +1,8 @@
-import { currentUser } from '@clerk/nextjs/app-beta'
 import { prisma } from '@senate/database'
+import { getServerSession } from 'next-auth'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import ConnectWalletModal from '../components/csr/ConnectWalletModal'
 import { Filters } from './components/csr/Filters'
 import Table from './components/ssr/Table'
@@ -9,17 +10,13 @@ import Table from './components/ssr/Table'
 export const revalidate = 300
 
 const getSubscribedDAOs = async () => {
-    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
-
-    const userSession = await currentUser()
-
-    const cookieStore = cookies()
-    if (!cookieStore.get('hasSeenLanding')) redirect('/landing')
+    const session = await getServerSession(authOptions())
+    const userAddress = session?.user?.name ?? ''
 
     const user = await prisma.user
         .findFirstOrThrow({
             where: {
-                name: { equals: userSession?.web3Wallets[0]?.web3Wallet ?? '' }
+                name: { equals: userAddress }
             },
             select: {
                 id: true
@@ -59,6 +56,10 @@ export default async function Home({
     params: { slug: string }
     searchParams?: { from: string; end: number; voted: string }
 }) {
+    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
+    const cookieStore = cookies()
+    if (!cookieStore.get('hasSeenLanding')) redirect('/landing')
+
     const subscribedDAOs = await getSubscribedDAOs()
 
     const subscripions = subscribedDAOs.map((subDAO) => {

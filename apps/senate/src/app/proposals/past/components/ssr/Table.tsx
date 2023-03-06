@@ -2,17 +2,20 @@ import Image from 'next/image'
 import { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Vote, prisma, JsonArray } from '@senate/database'
-import { currentUser } from '@clerk/nextjs/app-beta'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
+
 extend(relativeTime)
 
 const getProposals = async (from: string, end: number, voted: string) => {
     const active = false
 
-    const userSession = await currentUser()
+    const session = await getServerSession(authOptions())
+    const userAddress = session?.user?.name ?? ''
 
     const user = await prisma.user.findFirst({
         where: {
-            name: { equals: userSession?.web3Wallets[0]?.web3Wallet ?? '' }
+            name: { equals: userAddress }
         },
         include: {
             voters: true
@@ -119,6 +122,7 @@ const getProposals = async (from: string, end: number, voted: string) => {
             let highestScore = 0
             let highestScoreIndex = 0
             let highestScoreChoice = ''
+
             if (
                 proposal.scores &&
                 typeof proposal.scores === 'object' &&
@@ -300,47 +304,56 @@ const ActiveProposal = async (props: {
                     </div>
                 </a>
             </td>
-            <td className='flex flex-col justify-center gap-2'>
-                <div className='flex flex-row'>
-                    <div></div>
-                    <div className='text-[21px] leading-[26px] text-white'>
-                        {props.proposal.highestScoreChoice}
-                    </div>
-                </div>
-                <div className='h-[22px] w-[340px] bg-[#262626]'>
-                    <div
-                        style={{
-                            width: `${(
-                                (props.proposal.highestScore /
-                                    props.proposal.scoresTotal) *
-                                100
-                            ).toFixed(0)}%`
-                        }}
-                        className={`h-full bg-[#EDEDED]`}
-                    >
-                        <div className='px-2 text-black'>
-                            {(
-                                (props.proposal.highestScore /
-                                    props.proposal.scoresTotal) *
-                                100
-                            ).toFixed(2)}
-                            %
+            <td>
+                <div className='flex h-[96px] flex-col justify-between py-2'>
+                    {props.proposal.highestScoreChoice != 'undefined' ? (
+                        <div>
+                            <div className='flex flex-row'>
+                                <div className='text-[21px] leading-[26px] text-white'>
+                                    {props.proposal.highestScoreChoice}
+                                </div>
+                            </div>
+                            <div className='w-[340px] bg-[#262626]'>
+                                <div
+                                    style={{
+                                        width: `${(
+                                            (props.proposal.highestScore /
+                                                props.proposal.scoresTotal) *
+                                            100
+                                        ).toFixed(0)}%`
+                                    }}
+                                    className={`h-full bg-[#EDEDED]`}
+                                >
+                                    <div className='px-2 text-black'>
+                                        {(
+                                            (props.proposal.highestScore /
+                                                props.proposal.scoresTotal) *
+                                            100
+                                        ).toFixed(2)}
+                                        %
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    ) : (
+                        <div className='text-[17px] leading-[26px] text-white'>
+                            Unable to fetch results data
+                        </div>
+                    )}
 
-                <div className='text-[15px] leading-[19px]'>
-                    {props.proposal.timeEnd.toLocaleString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: 'numeric',
-                        minute: 'numeric',
-                        second: 'numeric',
-                        timeZone: 'UTC',
-                        hour12: false
-                    })}{' '}
-                    UTC
+                    <div className='text-[15px] leading-[19px]'>
+                        {props.proposal.timeEnd.toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            second: 'numeric',
+                            timeZone: 'UTC',
+                            hour12: false
+                        })}{' '}
+                        UTC
+                    </div>
                 </div>
             </td>
             <td>

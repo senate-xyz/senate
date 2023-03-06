@@ -1,30 +1,31 @@
 'use client'
 
-import { SignedOut, useClerk } from '@clerk/nextjs'
-import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import { useAccount } from 'wagmi'
+import WalletConnect from '../../../components/csr/WalletConnect'
 
 const ConnectWalletModal = () => {
-    const { openSignIn } = useClerk()
-    const pathname = usePathname()
+    const account = useAccount()
+    const session = useSession()
+    const [show, setShow] = useState(false)
+
+    useEffect(() => {
+        if (!account.isConnected || session.status != 'authenticated')
+            setShow(true)
+        else setShow(false)
+    }, [account.isConnected, session.status])
 
     return (
-        <SignedOut>
-            <div className='absolute flex h-full w-full scale-x-[1.025] flex-col items-center backdrop-blur'>
-                <button
-                    className='w-fit bg-zinc-800 py-2 px-4 font-bold text-white hover:scale-105 mt-48'
-                    onClick={() =>
-                        openSignIn({
-                            redirectUrl: `/connected?redirect=${pathname}`,
-                            appearance: {
-                                elements: { footer: { display: 'none' } }
-                            }
-                        })
-                    }
-                >
-                    Connect Wallet
-                </button>
-            </div>
-        </SignedOut>
+        <div>
+            {show && (
+                <div className='absolute flex h-full w-full scale-x-[1.025] flex-col items-center backdrop-blur'>
+                    <div className='mt-32'>
+                        <WalletConnect />
+                    </div>
+                </div>
+            )}
+        </div>
     )
 }
 

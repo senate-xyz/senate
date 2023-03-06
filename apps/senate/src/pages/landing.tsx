@@ -173,7 +173,9 @@ const Home = () => {
                                             'acceptedTermsTimestamp',
                                             Date.now()
                                         )
-                                        router.push('/daos')
+                                        setTimeout(function () {
+                                            router.push('/daos')
+                                        }, 500)
                                     }
                                 }}
                             >

@@ -1,30 +1,38 @@
 'use client'
 
-import { SignedIn, SignedOut, useClerk } from '@clerk/nextjs/app-beta/client'
+import { useAccountModal } from '@rainbow-me/rainbowkit'
+import { redirect } from 'next/navigation'
+import { useCookies } from 'react-cookie'
+import { useAccount } from 'wagmi'
 import NotConnected from './components/csr/NotConnected'
 import UserAddress from './components/csr/UserAddress'
 
 export default function Home() {
-    const { signOut, redirectToHome } = useClerk()
+    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
+    const [cookie] = useCookies(['hasSeenLanding'])
+    if (!cookie.hasSeenLanding) redirect('/landing')
+
+    const account = useAccount()
+    const { openAccountModal } = useAccountModal()
 
     return (
         <div className='flex flex-col gap-12'>
             <div className='flex flex-col gap-4'>
-                <SignedOut>
+                {!account.address ? (
                     <NotConnected />
-                </SignedOut>
-                <SignedIn>
-                    <UserAddress />
-                    <button
-                        className='w-fit bg-black py-2 px-4 font-bold text-white hover:scale-105'
-                        onClick={() => {
-                            signOut()
-                            redirectToHome()
-                        }}
-                    >
-                        Disconnect Wallet
-                    </button>
-                </SignedIn>
+                ) : (
+                    <>
+                        <UserAddress />
+                        <button
+                            className='w-fit bg-black py-2 px-4 font-bold text-white hover:scale-105'
+                            onClick={() => {
+                                openAccountModal ? openAccountModal() : null
+                            }}
+                        >
+                            Disconnect Wallet
+                        </button>
+                    </>
+                )}
             </div>
         </div>
     )

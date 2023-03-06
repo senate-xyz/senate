@@ -1,17 +1,17 @@
 'use client'
 
 import '../styles/globals.css'
-import RootProvider from '../app/components/providers/providers'
+
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { trpc } from '../server/trpcClient'
+import { trpc, TrpcClientProvider } from '../server/trpcClient'
 import { useRouter } from 'next/navigation'
 
 const WrapperHome = () => {
     return (
-        <RootProvider>
+        <TrpcClientProvider>
             <Home />
-        </RootProvider>
+        </TrpcClientProvider>
     )
 }
 

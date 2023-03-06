@@ -1,15 +1,19 @@
 import { SubscribedDAO } from './components/csr'
 import { getAverageColor } from 'fast-average-color-node'
 import { prisma } from '@senate/database'
-import { currentUser } from '@clerk/nextjs/app-beta'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../../../pages/api/auth/[...nextauth]'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 
 const getSubscribedDAOs = async () => {
-    const userSession = await currentUser()
+    const session = await getServerSession(authOptions())
+    const userAddress = session?.user?.name ?? ''
 
     const user = await prisma.user
         .findFirstOrThrow({
             where: {
-                name: { equals: userSession?.web3Wallets[0]?.web3Wallet ?? '' }
+                name: { equals: userAddress }
             },
             select: {
                 id: true
@@ -42,6 +46,10 @@ const getSubscribedDAOs = async () => {
 }
 
 export default async function SubscribedDAOs() {
+    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
+    const cookieStore = cookies()
+    if (!cookieStore.get('hasSeenLanding')) redirect('/landing')
+
     const subscriptions = await getSubscribedDAOs()
 
     const backgroundColors = await Promise.all(

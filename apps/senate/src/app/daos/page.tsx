@@ -2,20 +2,20 @@ import SubscribedDAOs from './subscribedDAOs/page'
 import UnsubscribedDAOs from './unsubscribedDAOs/page'
 import SetupDailyBulletin from '../components/csr/SetupDailyBulletin'
 
-import { currentUser } from '@clerk/nextjs/app-beta'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { prisma } from '@senate/database'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../../pages/api/auth/[...nextauth]'
 
 const hasUserBulletin = async () => {
-    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
-
-    const userSession = await currentUser()
+    const session = await getServerSession(authOptions())
+    const userAddress = session?.user?.name ?? ''
 
     const user = await prisma.user
         .findFirstOrThrow({
             where: {
-                name: { equals: userSession?.web3Wallets[0]?.web3Wallet ?? '' }
+                name: { equals: userAddress }
             },
             select: {
                 dailyBulletin: true
@@ -29,12 +29,13 @@ const hasUserBulletin = async () => {
 }
 
 const hasSubscribedDAOs = async () => {
-    const userSession = await currentUser()
+    const session = await getServerSession(authOptions())
+    const userAddress = session?.user?.name ?? ''
 
     const user = await prisma.user
         .findFirstOrThrow({
             where: {
-                name: { equals: userSession?.web3Wallets[0]?.web3Wallet ?? '' }
+                name: { equals: userAddress }
             },
             select: {
                 id: true
@@ -67,23 +68,24 @@ const hasSubscribedDAOs = async () => {
 }
 
 export default async function Home() {
-    const session = await currentUser()
-
+    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
     const cookieStore = cookies()
     if (!cookieStore.get('hasSeenLanding')) redirect('/landing')
 
     const userBulletin = await hasUserBulletin()
     const userDAOs = await hasSubscribedDAOs()
 
+    console.log(userBulletin, userDAOs)
+
     return (
         <main className='text-white'>
             <div className='w-full'>
                 {!userBulletin && userDAOs && <SetupDailyBulletin />}
 
-                {session && (
+                {
                     /* @ts-expect-error Server Component */
                     <SubscribedDAOs />
-                )}
+                }
 
                 {/* @ts-expect-error Server Component */}
                 <UnsubscribedDAOs />

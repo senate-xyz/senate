@@ -1,9 +1,10 @@
 'use client'
 
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useAccount } from 'wagmi'
 import { trpc } from '../../../../../server/trpcClient'
-import { useClerk, useUser } from '@clerk/nextjs'
 
 export const UnsubscribedDAO = (props: {
     daoId: string
@@ -12,9 +13,8 @@ export const UnsubscribedDAO = (props: {
     bgColor: string | undefined
     daoHandlers: string[]
 }) => {
-    const user = useUser()
-    const { openSignIn } = useClerk()
-    const pathname = usePathname()
+    const account = useAccount()
+    const { openConnectModal } = useConnectModal()
 
     const router = useRouter()
     const subscribe = trpc.subscriptions.subscribe.useMutation()
@@ -97,7 +97,7 @@ export const UnsubscribedDAO = (props: {
                 <button
                     className='h-14 w-full bg-white text-xl font-bold text-black'
                     onClick={() => {
-                        user.isSignedIn
+                        account.isConnected
                             ? subscribe.mutate(
                                   {
                                       daoId: props.daoId,
@@ -109,14 +109,9 @@ export const UnsubscribedDAO = (props: {
                                       }
                                   }
                               )
-                            : openSignIn({
-                                  redirectUrl: `/connected?redirect=${pathname}`,
-                                  appearance: {
-                                      elements: {
-                                          footer: { display: 'none' }
-                                      }
-                                  }
-                              })
+                            : openConnectModal
+                            ? openConnectModal()
+                            : null
                     }}
                 >
                     Subscribe
