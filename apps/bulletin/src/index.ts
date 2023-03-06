@@ -42,6 +42,12 @@ interface EmailTemplateRow {
     endMinutesUTC: string
     endDateString: string
     countdownUrl: string
+    // result: {
+    //     choice: string
+    //     weight: number
+    //     quorum: boolean
+    //     imgUrl: string
+    // }
 }
 
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing

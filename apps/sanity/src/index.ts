@@ -3,7 +3,7 @@ import {
     DAOHandler,
     DAOHandlerType,
     Decoder,
-    JsonValue
+    JsonValue,
     Proposal
 } from '@senate/database'
 
@@ -79,7 +79,6 @@ const checkAndSanitizeVotesRoutine = async (
     const missingVotes: Map<string, GraphQLVote[]> = new Map()
 
     for (const daoHandler of daoHandlers) {
-
         const voterAddresses: string[] = (
             await prisma.voterHandler.findMany({
                 where: {
@@ -108,11 +107,12 @@ const checkAndSanitizeVotesRoutine = async (
             (daoHandler.decoder as Decoder).space
         )
 
-        const votesNotInDatabase : GraphQLVote[] = votesFromSnapshotAPI.filter(
-            (vote) => 
+        const votesNotInDatabase: GraphQLVote[] = votesFromSnapshotAPI.filter(
+            (vote) =>
                 !votesFromDatabase.some(
-                    (voteFromDatabase) => 
-                        voteFromDatabase.proposal.externalId === vote.proposal.id &&
+                    (voteFromDatabase) =>
+                        voteFromDatabase.proposal.externalId ===
+                            vote.proposal.id &&
                         voteFromDatabase.voterAddress === vote.voter
                 )
         )
@@ -146,7 +146,6 @@ const checkAndSanitizeVotesRoutine = async (
         //TODO: implement sanitization
         // Set voterHandler snapshotIndex back so that the vote is re-fetched
     }
-
 }
 
 const checkAndSanitizeProposalsRoutine = async (
@@ -170,40 +169,39 @@ const checkAndSanitizeProposalsRoutine = async (
 
         const proposalsNotOnSnapshot: Proposal[] = proposalsFromDatabase.filter(
             (proposal: Proposal) => {
-                proposalsFromSnapshotAPI
-                .map(
-                    (proposal: GraphQLProposal) => proposal.id
-                )
-                .includes(proposal.externalId) === false
+                return !proposalsFromSnapshotAPI
+                    .map((proposal: GraphQLProposal) => proposal.id)
+                    .includes(proposal.externalId)
             }
         )
 
-        const proposalsNotInDatabase: GraphQLProposal[] = proposalsFromSnapshotAPI.filter(
-            (proposal: GraphQLProposal) => {
-                proposalsFromDatabase
-                .map(
-                    (proposal: Proposal) => proposal.externalId
-                )
-                .includes(proposal.id) === false
-            }
-        )
+        const proposalsNotInDatabase: GraphQLProposal[] =
+            proposalsFromSnapshotAPI.filter((proposal: GraphQLProposal) => {
+                return !proposalsFromDatabase
+                    .map((proposal: Proposal) => proposal.externalId)
+                    .includes(proposal.id)
+            })
+
+        console.log(proposalsNotOnSnapshot, proposalsNotInDatabase)
 
         if (proposalsNotOnSnapshot.length > 0) {
             // we have proposals which have been removed from snapshot. need to purge them from the database.
             log_sanity.log({
                 level: 'warn',
                 message: `Found ${proposalsNotOnSnapshot.length} proposals to remove`,
-                proposals: proposalsNotOnSnapshot,
-
+                proposals: proposalsNotOnSnapshot
             })
-   
-            //  await prisma.proposal.deleteMany({
-            //     where: {
-            //         id: {
-            //             in: proposalsNotOnSnapshot.map((proposal) => proposal.id)
-            //         }
-            //     }
-            // })
+
+            await prisma.proposal.deleteMany({
+                where: {
+                    daoHandlerId: daoHandler.id,
+                    id: {
+                        in: proposalsNotOnSnapshot.map(
+                            (proposal) => proposal.id
+                        )
+                    }
+                }
+            })
         }
 
         if (proposalsNotInDatabase.length > 0) {
@@ -211,12 +209,11 @@ const checkAndSanitizeProposalsRoutine = async (
             log_sanity.log({
                 level: 'warn',
                 message: `Missing proposals: ${proposalsFromDatabase.length} proposals `,
-                proposals: proposalsNotOnSnapshot,
-
+                proposals: proposalsNotOnSnapshot
             })
         }
     }
-}   
+}
 
 const fetchProposalsFromSnapshotAPI = async (
     space: string,
@@ -259,9 +256,13 @@ const fetchProposalsFromSnapshotAPI = async (
             if (res.status == 200) return false
             return true
         })
-        .then((response: { body: { data: { proposals: GraphQLProposal[] } } }) => {
-            return response.body.data.proposals
-        })) as GraphQLProposal[]
+        .then(
+            (response: {
+                body: { data: { proposals: GraphQLProposal[] } }
+            }) => {
+                return response.body.data.proposals
+            }
+        )) as GraphQLProposal[]
 }
 
 const fetchProposalsFromDatabase = async (
@@ -320,12 +321,12 @@ const fetchVotesFromSnapshotAPI = async (
             orderBy: "created",
             orderDirection: asc,
             where: {
-                voter_in: [${voterAddresses.map((voter) => `"${voter}"`)}], 
+                voter_in: [${voterAddresses.map((voter) => `"${voter}"`)}],
                 space: "${space}",
                 created_gte: ${searchFrom},
                 created_lte: ${searchTo}
             }
-        ) 
+        )
         {
             id
             voter
@@ -340,8 +341,8 @@ const fetchVotesFromSnapshotAPI = async (
                 created
                 start
                 end
-                link    
-            }        
+                link
+            }
         }
     }`
 
@@ -361,6 +362,5 @@ const fetchVotesFromSnapshotAPI = async (
         })
         .then((response: { body: { data: { votes: GraphQLVote[] } } }) => {
             return response.body.data.votes
-        })
-    ) as GraphQLVote[]
+        })) as GraphQLVote[]
 }
