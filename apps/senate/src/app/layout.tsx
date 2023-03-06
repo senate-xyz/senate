@@ -53,7 +53,14 @@ export default function RootLayout({
 }) {
     return (
         <html lang='en'>
-            <head />
+            <head>
+                <link rel='preconnect' href='https://fonts.googleapis.com' />
+                <link rel='preconnect' href='https://fonts.gstatic.com' />
+                <link
+                    href='https://fonts.googleapis.com/css2?family=DM+Mono&display=swap'
+                    rel='stylesheet'
+                ></link>
+            </head>
             <body>
                 <TrpcClientProvider>
                     <WagmiConfig client={wagmiClient}>
