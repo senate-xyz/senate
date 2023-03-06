@@ -75,8 +75,6 @@ export default async function Home() {
     const userBulletin = await hasUserBulletin()
     const userDAOs = await hasSubscribedDAOs()
 
-    console.log(userBulletin, userDAOs)
-
     return (
         <main className='text-white'>
             <div className='w-full'>

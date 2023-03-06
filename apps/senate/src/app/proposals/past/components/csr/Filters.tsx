@@ -49,8 +49,6 @@ export const Filters = (props: {
     const [voted, setVoted] = useState('any')
     const [proxy, setProxy] = useState('any')
 
-    console.log(props.proxies)
-
     useEffect(() => {
         if (searchParams) {
             setFrom(String(searchParams.get('from') ?? 'any'))

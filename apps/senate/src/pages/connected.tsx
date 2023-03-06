@@ -33,9 +33,6 @@ const Connected = () => {
         if (!cookie.acceptedTerms || !cookie.acceptedTermsTimestamp)
             router.push('/landing')
 
-        console.log(cookie)
-        console.log(searchParams)
-
         storeTerms.mutate(
             {
                 value: Boolean(cookie.acceptedTerms),
