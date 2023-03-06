@@ -25,7 +25,7 @@ function getBaseUrl() {
         return ''
     if (process.env.WEB_URL)
         // reference for vercel.com
-        return `https://${process.env.WEB_URL}`
+        return process.env.WEB_URL
     // assume localhost
     return `http://localhost:${process.env.PORT ?? 3000}`
 }
@@ -43,7 +43,13 @@ export function TrpcClientProvider(props: { children: React.ReactNode }) {
                 //             opts.result instanceof Error)
                 // }),
                 httpBatchLink({
-                    url: `${getBaseUrl()}/api/trpc`
+                    url: `${getBaseUrl()}api/trpc`,
+                    fetch(url, options) {
+                        return fetch(url, {
+                            ...options,
+                            credentials: 'include'
+                        })
+                    }
                 })
             ],
             transformer: superjson
