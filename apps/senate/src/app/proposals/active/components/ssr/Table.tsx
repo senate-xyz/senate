@@ -148,11 +148,49 @@ export default async function Table(props: {
             <table className='w-full table-auto border-separate border-spacing-y-[4px] text-left'>
                 <thead className='h-[56px] bg-black text-white'>
                     <tr>
-                        <th className='w-[200px] pl-[16px] font-normal'>DAO</th>
-                        <th className='font-normal'>Proposal Title</th>
-                        <th className='w-[200px]  font-normal'>Ends in</th>
-                        <th className='w-[200px] text-center font-normal'>
-                            Vote status
+                        <th className='h-[56px] w-[200px] items-center pl-[16px]'>
+                            <div className='flex gap-1'>
+                                <div>DAO</div>
+                                <Image
+                                    width={24}
+                                    height={24}
+                                    src={'/assets/Icon/SortAscending.svg'}
+                                    alt='off-chain'
+                                />
+                            </div>
+                        </th>
+                        <th className='h-[56px] items-center'>
+                            <div className='flex gap-1'>
+                                <div>Proposal Title</div>
+                                <Image
+                                    width={24}
+                                    height={24}
+                                    src={'/assets/Icon/SortAscending.svg'}
+                                    alt='off-chain'
+                                />
+                            </div>
+                        </th>
+                        <th className='h-[56px] w-[200px] items-center font-normal'>
+                            <div className='flex gap-1'>
+                                <div>Ends in</div>
+                                <Image
+                                    width={24}
+                                    height={24}
+                                    src={'/assets/Icon/SortDiscending.svg'}
+                                    alt='off-chain'
+                                />
+                            </div>
+                        </th>
+                        <th className='h-[56px] w-[200px] items-center text-center font-normal'>
+                            <div className='flex justify-center gap-1'>
+                                <div>Vote status</div>
+                                <Image
+                                    width={24}
+                                    height={24}
+                                    src={'/assets/Icon/SortDiscendingWhite.svg'}
+                                    alt='off-chain'
+                                />
+                            </div>
                         </th>
                     </tr>
                 </thead>
