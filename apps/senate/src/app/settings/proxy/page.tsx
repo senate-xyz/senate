@@ -49,16 +49,16 @@ export default function Home() {
 
                 <div className='mt-12 flex h-[46px] flex-row items-center'>
                     <input
-                        className={`h-full w-[480px] ${
-                            proxyAddress.length ? 'bg-white' : 'bg-[#D9D9D9]'
-                        } px-2 text-black`}
+                        className={`h-full w-[480px] bg-[#D9D9D9] px-2 text-black`}
                         value={proxyAddress}
                         onChange={(e) => setProxyAddress(e.target.value)}
                         placeholder='Paste a new proxy address here (or ENS)'
                     />
 
                     <div
-                        className='flex h-full w-[72px] cursor-pointer flex-col justify-center bg-[#ABABAB] text-center'
+                        className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
+                            proxyAddress.length ? 'bg-white' : 'bg-[#ABABAB]'
+                        } text-center`}
                         onClick={async () => {
                             let resolvedAddress = proxyAddress
                             if (
@@ -122,10 +122,10 @@ const Voter = ({ address }: { address: string }) => {
     return (
         <div key={address} className='flex flex-row items-end gap-12'>
             <div className='flex flex-col'>
-                <div className='font-mono text-[18px] font-light text-white'>
+                <div className='text-[18px] font-normal leading-[23px] text-white'>
                     {voterEns}
                 </div>
-                <div className='font-mono text-[18px] font-light text-[#ABABAB]'>
+                <div className='font-mono text-[18px] font-light leading-[23px] text-[#ABABAB]'>
                     {address}
                 </div>
             </div>

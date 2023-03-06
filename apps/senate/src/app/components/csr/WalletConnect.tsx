@@ -28,7 +28,7 @@ const WalletConnect = () => {
         router.refresh()
     }, [account.isConnected, account.isDisconnected, session.status])
 
-    return <ConnectButton />
+    return <ConnectButton showBalance={false} />
 }
 
 export default WalletConnect

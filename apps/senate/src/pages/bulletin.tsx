@@ -79,7 +79,7 @@ const Home = () => {
 
                     <div
                         className={`flex h-[43px] w-[420px] cursor-pointer flex-col justify-center ${
-                            newEmail.length ? 'bg-white' : 'bg-[#545454]'
+                            newEmail.length ? 'bg-white' : 'bg-[#ABABAB]'
                         } mt-6 text-center`}
                         onClick={() => {
                             setEmail.mutate(

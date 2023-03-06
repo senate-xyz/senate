@@ -136,7 +136,7 @@ const Home = () => {
                                         className='underline'
                                         target='_blank'
                                     >
-                                        Terms & Conditions
+                                        Terms of Service
                                     </Link>{' '}
                                     ,{' '}
                                     <Link

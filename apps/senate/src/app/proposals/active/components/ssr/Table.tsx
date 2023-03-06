@@ -170,23 +170,11 @@ export default async function Table(props: {
                         <th className='h-[56px] w-[200px] items-center pl-[16px]'>
                             <div className='flex gap-1'>
                                 <div>DAO</div>
-                                <Image
-                                    width={24}
-                                    height={24}
-                                    src={'/assets/Icon/SortAscending.svg'}
-                                    alt='off-chain'
-                                />
                             </div>
                         </th>
                         <th className='h-[56px] items-center'>
                             <div className='flex gap-1'>
                                 <div>Proposal Title</div>
-                                <Image
-                                    width={24}
-                                    height={24}
-                                    src={'/assets/Icon/SortAscending.svg'}
-                                    alt='off-chain'
-                                />
                             </div>
                         </th>
                         <th className='h-[56px] w-[200px] items-center font-normal'>
@@ -196,19 +184,13 @@ export default async function Table(props: {
                                     width={24}
                                     height={24}
                                     src={'/assets/Icon/SortDiscending.svg'}
-                                    alt='off-chain'
+                                    alt='ends-in'
                                 />
                             </div>
                         </th>
                         <th className='h-[56px] w-[200px] items-center text-center font-normal'>
                             <div className='flex justify-center gap-1'>
                                 <div>Vote status</div>
-                                <Image
-                                    width={24}
-                                    height={24}
-                                    src={'/assets/Icon/SortDiscendingWhite.svg'}
-                                    alt='off-chain'
-                                />
                             </div>
                         </th>
                     </tr>
@@ -260,7 +242,12 @@ const ActiveProposal = async (props: {
                         </div>
                         <div>
                             {props.proposal.onchain ? (
-                                ''
+                                <Image
+                                    width={94}
+                                    height={26}
+                                    src={'/assets/Icon/OnChainProposal.svg'}
+                                    alt='off-chain'
+                                />
                             ) : (
                                 <Image
                                     width={94}

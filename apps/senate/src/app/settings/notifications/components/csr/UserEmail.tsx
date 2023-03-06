@@ -21,9 +21,7 @@ const UserEmail = () => {
 
             <div className={`flex h-[46px] w-fit flex-row items-center`}>
                 <input
-                    className={`h-full w-[320px] focus:outline-none ${
-                        email.data == currentEmail ? ' bg-[#D9D9D9]' : ''
-                    } px-2 text-black `}
+                    className={`h-full w-[320px] bg-[#D9D9D9] px-2 text-black focus:outline-none `}
                     value={currentEmail}
                     onChange={(e) => {
                         setCurrentEmail(String(e.target.value))
@@ -31,7 +29,11 @@ const UserEmail = () => {
                 />
 
                 <div
-                    className='flex h-full w-[72px] cursor-pointer flex-col justify-center bg-[#ABABAB] text-center'
+                    className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
+                        email.data == currentEmail
+                            ? ' bg-[#ABABAB]'
+                            : 'bg-white'
+                    } text-center`}
                     onClick={() => {
                         setEmail.mutate({ email: currentEmail })
                     }}

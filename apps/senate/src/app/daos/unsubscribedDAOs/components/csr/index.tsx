@@ -45,54 +45,59 @@ export const UnsubscribedDAO = (props: {
                         {props.daoName}
                     </div>
                     <div className='flex flex-row gap-4 pt-6 opacity-50'>
-                        {props.daoHandlers.map((handler, index: number) => {
-                            switch (handler) {
-                                case 'SNAPSHOT':
-                                    return (
-                                        <Image
-                                            key={index}
-                                            width='24'
-                                            height='24'
-                                            src='/assets/Chain/Snapshot/On_Dark.svg'
-                                            alt='snapshot proposals'
-                                        />
-                                    )
-                                case 'AAVE_CHAIN':
-                                case 'COMPOUND_CHAIN':
-                                case 'UNISWAP_CHAIN':
-                                case 'MAKER_POLL':
-                                case 'MAKER_EXECUTIVE':
-                                    return (
-                                        <Image
-                                            key={index}
-                                            width='24'
-                                            height='24'
-                                            src='/assets/Chain/Ethereum/On_Dark.svg'
-                                            alt='chain proposals'
-                                        />
-                                    )
-                                case 'MAKER_POLL_ARBITRUM':
-                                    return (
-                                        <Image
-                                            key={index}
-                                            width='24'
-                                            height='24'
-                                            src='/assets/Chain/Arbitrum/On_Dark.svg'
-                                            alt='chain proposals'
-                                        />
-                                    )
-                                default:
-                                    return (
-                                        <Image
-                                            key={index}
-                                            width='24'
-                                            height='24'
-                                            src='/assets/Chain/Ethereum/On_Dark.svg'
-                                            alt='chain proposals'
-                                        />
-                                    )
-                            }
-                        })}
+                        {props.daoHandlers
+                            .sort((a) => {
+                                if (a == 'SNAPSHOT') return 1
+                                else return -1
+                            })
+                            .map((handler, index: number) => {
+                                switch (handler) {
+                                    case 'SNAPSHOT':
+                                        return (
+                                            <Image
+                                                key={index}
+                                                width='24'
+                                                height='24'
+                                                src='/assets/Chain/Snapshot/On_Dark.svg'
+                                                alt='snapshot proposals'
+                                            />
+                                        )
+                                    case 'AAVE_CHAIN':
+                                    case 'COMPOUND_CHAIN':
+                                    case 'UNISWAP_CHAIN':
+                                    case 'MAKER_POLL':
+                                    case 'MAKER_EXECUTIVE':
+                                        return (
+                                            <Image
+                                                key={index}
+                                                width='24'
+                                                height='24'
+                                                src='/assets/Chain/Ethereum/On_Dark.svg'
+                                                alt='chain proposals'
+                                            />
+                                        )
+                                    case 'MAKER_POLL_ARBITRUM':
+                                        return (
+                                            <Image
+                                                key={index}
+                                                width='24'
+                                                height='24'
+                                                src='/assets/Chain/Arbitrum/On_Dark.svg'
+                                                alt='chain proposals'
+                                            />
+                                        )
+                                    default:
+                                        return (
+                                            <Image
+                                                key={index}
+                                                width='24'
+                                                height='24'
+                                                src='/assets/Chain/Ethereum/On_Dark.svg'
+                                                alt='chain proposals'
+                                            />
+                                        )
+                                }
+                            })}
                     </div>
                 </div>
 

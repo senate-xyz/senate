@@ -151,29 +151,31 @@ export const Filters = (props: {
                     </select>
                 </div>
 
-                <div className='flex h-[38px] w-[300px] flex-row items-center'>
-                    <label
-                        className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
-                        htmlFor='voted'
-                    >
-                        <div>And Showing Votes From</div>
-                    </label>
-                    <select
-                        className='h-full w-full text-black'
-                        id='voted'
-                        onChange={(e) => {
-                            setProxy(String(e.target.value))
-                        }}
-                        value={proxy}
-                    >
-                        <option key='any' value='any'>
-                            Any
-                        </option>
-                        {props.proxies.map((proxy) => {
-                            return <Proxy address={proxy} />
-                        })}
-                    </select>
-                </div>
+                {props.proxies.length > 1 && (
+                    <div className='flex h-[38px] w-[300px] flex-row items-center'>
+                        <label
+                            className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
+                            htmlFor='voted'
+                        >
+                            <div>And Showing Votes From</div>
+                        </label>
+                        <select
+                            className='h-full w-full text-black'
+                            id='voted'
+                            onChange={(e) => {
+                                setProxy(String(e.target.value))
+                            }}
+                            value={proxy}
+                        >
+                            <option key='any' value='any'>
+                                Any
+                            </option>
+                            {props.proxies.map((proxy) => {
+                                return <Proxy address={proxy} />
+                            })}
+                        </select>
+                    </div>
+                )}
             </div>
         </div>
     )
