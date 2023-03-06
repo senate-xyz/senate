@@ -122,7 +122,7 @@ const Voter = ({ address }: { address: string }) => {
     return (
         <div key={address} className='flex flex-row items-end gap-12'>
             <div className='flex flex-col'>
-                <div className='text-[18px] font-normal leading-[23px] text-white'>
+                <div className='font-mono text-[18px] font-normal leading-[23px] text-white'>
                     {voterEns}
                 </div>
                 <div className='font-mono text-[18px] font-light leading-[23px] text-[#ABABAB]'>
