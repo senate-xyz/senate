@@ -42,7 +42,7 @@ type GraphQLProposal = {
 schedule('15 * * * *', async () => {
     log_sanity.log({
         level: 'info',
-        message: 'Starting sanity check for snapshot votes',
+        message: 'Starting sanity check for snapshot votes and proposals',
         date: new Date(Date.now())
     })
 
@@ -69,6 +69,11 @@ schedule('15 * * * *', async () => {
             error: error
         })
     }
+
+    log_sanity.log({
+        level: 'info',
+        message: 'FINISHED sanity check for snapshot votes and proposals'
+    })
 })
 
 const checkAndSanitizeVotesRoutine = async (
@@ -108,13 +113,14 @@ const checkAndSanitizeVotesRoutine = async (
         )
 
         const votesNotInDatabase: GraphQLVote[] = votesFromSnapshotAPI.filter(
-            (vote) =>
-                !votesFromDatabase.some(
+            (vote) => {
+                return !votesFromDatabase.some(
                     (voteFromDatabase) =>
                         voteFromDatabase.proposal.externalId ===
                             vote.proposal.id &&
                         voteFromDatabase.voterAddress === vote.voter
                 )
+            }
         )
 
         missingVotes.set(

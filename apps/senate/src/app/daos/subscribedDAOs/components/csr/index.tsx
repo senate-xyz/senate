@@ -16,14 +16,14 @@ export const SubscribedDAO = (props: {
     notificationsEnabled: boolean
 }) => {
     const [showMenu, setShowMenu] = useState(false)
-    const [getDailyEmails, setDailyEmails] = useState(
-        props.notificationsEnabled
-    )
+    // const [getDailyEmails, setDailyEmails] = useState(
+    //     props.notificationsEnabled
+    // )
 
     const router = useRouter()
 
     const unsubscribe = trpc.subscriptions.unsubscribe.useMutation()
-    const updateDAO = trpc.subscriptions.updateSubscription.useMutation()
+    // const updateDAO = trpc.subscriptions.updateSubscription.useMutation()
 
     return (
         <div className='h-[320px] w-[240px]'>
@@ -33,61 +33,57 @@ export const SubscribedDAO = (props: {
                         unsubscribe.isLoading ? 'opacity-50' : 'opacity-100'
                     }`}
                 >
-                    <div className='flex w-full flex-row justify-between px-4 pt-4'>
-                        <p>Notifications</p>
-                        <div
-                            className='cursor-pointer'
-                            onClick={() => {
-                                setShowMenu(false)
-                            }}
-                        >
-                            <Image
-                                width='32'
-                                height='32'
-                                src='/assets/Icon/Close.svg'
-                                alt='close button'
-                            />
-                        </div>
-                    </div>
-                    <div className='flex w-full grow flex-col items-center justify-between'>
-                        <div className='flex w-full flex-col items-center gap-2 px-3 pt-5'>
-                            <div className='flex w-full flex-row items-center justify-between gap-2'>
-                                <p>Get daily emails</p>
-                                <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
-                                    <input
-                                        type='checkbox'
-                                        checked={getDailyEmails}
-                                        onChange={(e) => {
-                                            setDailyEmails(e.target.checked)
-                                            updateDAO.mutate({
-                                                daoId: props.daoId,
-                                                notificationsEnabled:
-                                                    e.target.checked
-                                            })
-                                        }}
-                                        className='peer sr-only'
-                                    />
-                                    <div className="peer h-6 w-11 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
-                                </label>
+                    <div className='flex h-full flex-col justify-between'>
+                        <div className='flex w-full flex-row items-start justify-between px-4 pt-4'>
+                            <div className='justify-center  text-center text-[21px] font-semibold leading-8'>
+                                {props.daoName}
+                            </div>
+                            <div
+                                className='cursor-pointer'
+                                onClick={() => {
+                                    setShowMenu(false)
+                                }}
+                            >
+                                <Image
+                                    width='32'
+                                    height='32'
+                                    src='/assets/Icon/Close.svg'
+                                    alt='close button'
+                                />
                             </div>
                         </div>
-                    </div>
-                    <button
-                        className='h-14 w-full bg-white text-xl font-bold text-black'
-                        onClick={async () => {
-                            unsubscribe.mutate(
-                                { daoId: props.daoId },
-                                {
-                                    onSuccess: () => {
-                                        router.refresh()
-                                        setShowMenu(false)
+                        <div className='flex h-full flex-col gap-4 px-4 pt-4'>
+                            <div className='text-[15px] font-thin leading-[19px]'>
+                                You are currently subscribed to follow the
+                                off-chain and on-chain proposals of{' '}
+                                {props.daoName}.
+                            </div>
+                            <div className='text-[15px] font-thin leading-[19px]'>
+                                You are also getting daily updates on these
+                                proposals on your email.
+                            </div>
+                            <div className='text-[15px] font-thin leading-[19px]'>
+                                Do you wish to unsubscribe from {props.daoName}?
+                            </div>
+                        </div>
+
+                        <div
+                            className='w-full cursor-pointer px-4 pb-4 text-center text-[15px] font-thin text-white underline'
+                            onClick={async () => {
+                                unsubscribe.mutate(
+                                    { daoId: props.daoId },
+                                    {
+                                        onSuccess: () => {
+                                            router.refresh()
+                                            setShowMenu(false)
+                                        }
                                     }
-                                }
-                            )
-                        }}
-                    >
-                        Unsubscribe
-                    </button>
+                                )
+                            }}
+                        >
+                            Unsubscribe from {props.daoName}
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <div
@@ -127,54 +123,59 @@ export const SubscribedDAO = (props: {
                             {props.daoName}
                         </div>
                         <div className='flex flex-row gap-4 pt-6 opacity-50'>
-                            {props.daoHandlers.map((handler, index: number) => {
-                                switch (handler) {
-                                    case 'SNAPSHOT':
-                                        return (
-                                            <Image
-                                                key={index}
-                                                width='24'
-                                                height='24'
-                                                src='/assets/Chain/Snapshot/On_Dark.svg'
-                                                alt='snapshot proposals'
-                                            />
-                                        )
-                                    case 'AAVE_CHAIN':
-                                    case 'COMPOUND_CHAIN':
-                                    case 'UNISWAP_CHAIN':
-                                    case 'MAKER_POLL':
-                                    case 'MAKER_EXECUTIVE':
-                                        return (
-                                            <Image
-                                                key={index}
-                                                width='24'
-                                                height='24'
-                                                src='/assets/Chain/Ethereum/On_Dark.svg'
-                                                alt='chain proposals'
-                                            />
-                                        )
-                                    case 'MAKER_POLL_ARBITRUM':
-                                        return (
-                                            <Image
-                                                key={index}
-                                                width='24'
-                                                height='24'
-                                                src='/assets/Chain/Arbitrum/On_Dark.svg'
-                                                alt='chain proposals'
-                                            />
-                                        )
-                                    default:
-                                        return (
-                                            <Image
-                                                key={index}
-                                                width='24'
-                                                height='24'
-                                                src='/assets/Chain/Ethereum/On_Dark.svg'
-                                                alt='chain proposals'
-                                            />
-                                        )
-                                }
-                            })}
+                            {props.daoHandlers
+                                .sort((a) => {
+                                    if (a == 'SNAPSHOT') return 1
+                                    else return -1
+                                })
+                                .map((handler, index: number) => {
+                                    switch (handler) {
+                                        case 'SNAPSHOT':
+                                            return (
+                                                <Image
+                                                    key={index}
+                                                    width='24'
+                                                    height='24'
+                                                    src='/assets/Chain/Snapshot/On_Dark.svg'
+                                                    alt='snapshot proposals'
+                                                />
+                                            )
+                                        case 'AAVE_CHAIN':
+                                        case 'COMPOUND_CHAIN':
+                                        case 'UNISWAP_CHAIN':
+                                        case 'MAKER_POLL':
+                                        case 'MAKER_EXECUTIVE':
+                                            return (
+                                                <Image
+                                                    key={index}
+                                                    width='24'
+                                                    height='24'
+                                                    src='/assets/Chain/Ethereum/On_Dark.svg'
+                                                    alt='chain proposals'
+                                                />
+                                            )
+                                        case 'MAKER_POLL_ARBITRUM':
+                                            return (
+                                                <Image
+                                                    key={index}
+                                                    width='24'
+                                                    height='24'
+                                                    src='/assets/Chain/Arbitrum/On_Dark.svg'
+                                                    alt='chain proposals'
+                                                />
+                                            )
+                                        default:
+                                            return (
+                                                <Image
+                                                    key={index}
+                                                    width='24'
+                                                    height='24'
+                                                    src='/assets/Chain/Ethereum/On_Dark.svg'
+                                                    alt='chain proposals'
+                                                />
+                                            )
+                                    }
+                                })}
                         </div>
                         <div
                             className={

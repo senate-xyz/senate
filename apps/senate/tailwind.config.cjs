@@ -5,7 +5,8 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Matter', { fontFeatureSettings: '"salt", "ss01"' }]
+                sans: ['Matter', { fontFeatureSettings: '"salt", "ss01"' }],
+                mono: ['DM Mono']
             }
         }
     },

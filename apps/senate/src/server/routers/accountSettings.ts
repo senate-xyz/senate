@@ -1,9 +1,42 @@
 import { router, privateProcedure } from '../trpc'
 import { z } from 'zod'
 import { prisma } from '@senate/database'
-import { clerkClient } from '@clerk/nextjs/server'
 
 export const accountSettingsRouter = router({
+    setEmailAndEnableBulletin: privateProcedure
+        .input(
+            z.object({
+                email: z.string().email()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.upsert({
+                where: {
+                    name: String(username)
+                },
+                create: {
+                    name: String(username),
+                    email: input.email,
+                    dailyBulletin: true,
+                    voters: {
+                        connectOrCreate: {
+                            where: {
+                                address: String(username)
+                            },
+                            create: {
+                                address: String(username)
+                            }
+                        }
+                    }
+                },
+                update: { email: input.email, dailyBulletin: true }
+            })
+
+            return user
+        }),
+
     setEmail: privateProcedure
         .input(
             z.object({
@@ -11,17 +44,25 @@ export const accountSettingsRouter = router({
             })
         )
         .mutation(async ({ input, ctx }) => {
-            const clerkUser = await clerkClient.users.getUser(
-                ctx.auth?.userId || ''
-            )
+            const username = await ctx.user.name
 
             const user = await prisma.user.upsert({
                 where: {
-                    name: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                    name: String(username)
                 },
                 create: {
-                    name: String(clerkUser.web3Wallets[0]?.web3Wallet),
-                    email: input.email
+                    name: String(username),
+                    email: input.email,
+                    voters: {
+                        connectOrCreate: {
+                            where: {
+                                address: String(username)
+                            },
+                            create: {
+                                address: String(username)
+                            }
+                        }
+                    }
                 },
                 update: { email: input.email }
             })
@@ -30,14 +71,12 @@ export const accountSettingsRouter = router({
         }),
 
     getEmail: privateProcedure.query(async ({ ctx }) => {
-        const clerkUser = await clerkClient.users.getUser(
-            ctx.auth?.userId || ''
-        )
+        const username = await ctx.user.name
 
         const user = await prisma.user.findFirst({
             where: {
                 name: {
-                    equals: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                    equals: String(username)
                 }
             }
         })
@@ -46,14 +85,12 @@ export const accountSettingsRouter = router({
     }),
 
     voters: privateProcedure.query(async ({ ctx }) => {
-        const clerkUser = await clerkClient.users.getUser(
-            ctx.auth?.userId || ''
-        )
+        const username = await ctx.user.name
 
         const user = await prisma.user.findFirst({
             where: {
                 name: {
-                    equals: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                    equals: String(username)
                 }
             },
             include: {
@@ -61,7 +98,7 @@ export const accountSettingsRouter = router({
             }
         })
 
-        return user?.voters
+        return user?.voters.filter((voter) => voter.address !== username)
     }),
 
     addVoter: privateProcedure
@@ -71,14 +108,12 @@ export const accountSettingsRouter = router({
             })
         )
         .mutation(async ({ input, ctx }) => {
-            const clerkUser = await clerkClient.users.getUser(
-                ctx.auth?.userId || ''
-            )
+            const username = await ctx.user.name
 
             const user = await prisma.user.findFirst({
                 where: {
                     name: {
-                        equals: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                        equals: String(username)
                     }
                 }
             })
@@ -111,14 +146,12 @@ export const accountSettingsRouter = router({
             })
         )
         .mutation(async ({ input, ctx }) => {
-            const clerkUser = await clerkClient.users.getUser(
-                ctx.auth?.userId || ''
-            )
+            const username = await ctx.user.name
 
             const user = await prisma.user.findFirst({
                 where: {
                     name: {
-                        equals: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                        equals: String(username)
                     }
                 }
             })
@@ -147,18 +180,26 @@ export const accountSettingsRouter = router({
             })
         )
         .mutation(async ({ input, ctx }) => {
-            const clerkUser = await clerkClient.users.getUser(
-                ctx.auth?.userId || ''
-            )
+            const username = await ctx.user.name
 
             const user = await prisma.user.upsert({
                 where: {
-                    name: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                    name: String(username)
                 },
                 create: {
-                    name: String(clerkUser.web3Wallets[0]?.web3Wallet),
+                    name: String(username),
                     acceptedTerms: input.value,
-                    acceptedTermsTimestamp: new Date(input.timestamp)
+                    acceptedTermsTimestamp: new Date(input.timestamp),
+                    voters: {
+                        connectOrCreate: {
+                            where: {
+                                address: String(username)
+                            },
+                            create: {
+                                address: String(username)
+                            }
+                        }
+                    }
                 },
                 update: {
                     acceptedTerms: input.value,
@@ -170,14 +211,12 @@ export const accountSettingsRouter = router({
         }),
 
     getUser: privateProcedure.query(async ({ ctx }) => {
-        const clerkUser = await clerkClient.users.getUser(
-            ctx.auth?.userId || ''
-        )
+        const username = await ctx.user.name
 
         const user = await prisma.user.findFirst({
             where: {
                 name: {
-                    equals: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                    equals: String(username)
                 }
             }
         })
@@ -192,16 +231,14 @@ export const accountSettingsRouter = router({
             })
         )
         .mutation(async ({ input, ctx }) => {
-            const clerkUser = await clerkClient.users.getUser(
-                ctx.auth?.userId || ''
-            )
+            const username = await ctx.user.name
 
             const user = await prisma.user.upsert({
                 where: {
-                    name: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                    name: String(username)
                 },
                 create: {
-                    name: String(clerkUser.web3Wallets[0]?.web3Wallet),
+                    name: String(username),
                     dailyBulletin: input.dailyBulletin
                 },
                 update: { dailyBulletin: input.dailyBulletin }

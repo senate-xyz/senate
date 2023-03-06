@@ -2,23 +2,24 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useProvider } from 'wagmi'
 
 const endOptions: { name: string; time: number }[] = [
     {
-        name: 'Last 24 hours',
-        time: 1
-    },
-    {
-        name: 'Last 7 days',
-        time: 7
+        name: 'Last 90 days',
+        time: 90
     },
     {
         name: 'Last 30 days',
         time: 30
     },
     {
-        name: 'Last 90 days',
-        time: 90
+        name: 'Last 7 days',
+        time: 7
+    },
+    {
+        name: 'Last 24 hours',
+        time: 1
     }
 ]
 
@@ -39,24 +40,29 @@ const voteOptions: { id: string; name: string }[] = [
 
 export const Filters = (props: {
     subscriptions: { id: string; name: string }[]
+    proxies: string[]
 }) => {
     const searchParams = useSearchParams()
     const router = useRouter()
     const [from, setFrom] = useState('any')
     const [end, setEnd] = useState(1)
     const [voted, setVoted] = useState('any')
+    const [proxy, setProxy] = useState('any')
 
     useEffect(() => {
         if (searchParams) {
             setFrom(String(searchParams.get('from') ?? 'any'))
-            setEnd(Number(searchParams.get('end') ?? 1))
+            setEnd(Number(searchParams.get('end') ?? 90))
             setVoted(String(searchParams.get('voted') ?? 'any'))
+            setProxy(String(searchParams.get('proxy') ?? 'any'))
         }
     }, [searchParams])
 
     useEffect(() => {
-        router.push(`/proposals/past?from=${from}&end=${end}&voted=${voted}`)
-    }, [from, end, voted, router])
+        router.push(
+            `/proposals/past?from=${from}&end=${end}&voted=${voted}&proxy=${proxy}`
+        )
+    }, [from, end, voted, router, proxy])
 
     return (
         <div className='mt-[16px] flex flex-col'>
@@ -144,7 +150,51 @@ export const Filters = (props: {
                         })}
                     </select>
                 </div>
+
+                {props.proxies.length > 1 && (
+                    <div className='flex h-[38px] w-[300px] flex-row items-center'>
+                        <label
+                            className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
+                            htmlFor='voted'
+                        >
+                            <div>And Showing Votes From</div>
+                        </label>
+                        <select
+                            className='h-full w-full text-black'
+                            id='voted'
+                            onChange={(e) => {
+                                setProxy(String(e.target.value))
+                            }}
+                            value={proxy}
+                        >
+                            <option key='any' value='any'>
+                                Any
+                            </option>
+                            {props.proxies.map((proxy) => {
+                                return <Proxy address={proxy} />
+                            })}
+                        </select>
+                    </div>
+                )}
             </div>
         </div>
+    )
+}
+
+const Proxy = (props: { address: string }) => {
+    const [name, setName] = useState(props.address)
+    const provider = useProvider()
+
+    useEffect(() => {
+        ;(async () => {
+            const ens = await provider.lookupAddress(props.address)
+            setName(ens ?? props.address)
+        })()
+    }, [props.address])
+
+    return (
+        <option key={props.address} value={props.address}>
+            {name}
+        </option>
     )
 }

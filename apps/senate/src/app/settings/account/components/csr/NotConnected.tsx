@@ -1,12 +1,9 @@
 'use client'
 
-import { useClerk } from '@clerk/nextjs'
-import { usePathname } from 'next/navigation'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 
 const NotConnected = () => {
-    const { openSignIn } = useClerk()
-    const pathname = usePathname()
-
+    const { openConnectModal } = useConnectModal()
     return (
         <div>
             <div className='flex flex-col gap-5'>
@@ -16,14 +13,9 @@ const NotConnected = () => {
                 </p>
                 <button
                     className='w-fit bg-zinc-800 py-2 px-4 font-bold text-white hover:scale-105'
-                    onClick={() =>
-                        openSignIn({
-                            redirectUrl: `/connected?redirect=${pathname}`,
-                            appearance: {
-                                elements: { footer: { display: 'none' } }
-                            }
-                        })
-                    }
+                    onClick={() => {
+                        openConnectModal ? openConnectModal() : null
+                    }}
                 >
                     Connect Wallet
                 </button>

@@ -3,16 +3,15 @@ import '../styles/globals.css'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useCookies } from 'react-cookie'
-import RootProvider from '../app/components/providers/providers'
-import { trpc } from '../server/trpcClient'
+import { trpc, TrpcClientProvider } from '../server/trpcClient'
 
 const ConnectedWrapper = () => {
     return (
-        <div className='min-h-screen w-full bg-black'>
-            <RootProvider>
+        <TrpcClientProvider>
+            <div className='min-h-screen w-full bg-black'>
                 <Connected />
-            </RootProvider>
-        </div>
+            </div>
+        </TrpcClientProvider>
     )
 }
 
@@ -20,18 +19,18 @@ const Connected = () => {
     const searchParams = useSearchParams()
 
     const router = useRouter()
-    const [cookie] = useCookies(['acceptedTerms', 'acceptedTermsTimestamp'])
+    const [cookie, setCookie] = useCookies([
+        'acceptedTerms',
+        'acceptedTermsTimestamp',
+        'connected'
+    ])
 
     const storeTerms = trpc.accountSettings.setTerms.useMutation()
 
     useEffect(() => {
-        if (!searchParams) return
-        if (!searchParams.get('redirect')) return
+        if (!searchParams || !searchParams.get('redirect')) router.push('/daos')
         if (!cookie.acceptedTerms || !cookie.acceptedTermsTimestamp)
             router.push('/landing')
-
-        console.log(cookie)
-        console.log(searchParams)
 
         storeTerms.mutate(
             {
@@ -40,7 +39,11 @@ const Connected = () => {
             },
             {
                 onSuccess: () => {
-                    router.push(searchParams.get('redirect') ?? '/')
+                    setCookie('connected', true)
+                    router.push(searchParams?.get('redirect') ?? '/daos')
+                },
+                onError: () => {
+                    router.push('/daos')
                 }
             }
         )

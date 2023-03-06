@@ -6,6 +6,7 @@ export default createNextApiHandler({
     router: appRouter,
     createContext(opts) {
         return createContext({
+            type: 'api',
             ...opts
         })
     }

@@ -1,41 +1,34 @@
 'use client'
 
-import { useClerk } from '@clerk/nextjs'
-import { SignedIn, SignedOut } from '@clerk/nextjs/app-beta/client'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { useCookies } from 'react-cookie'
+import { useAccount } from 'wagmi'
 
-export const WalletConnect = () => {
-    const { openSignIn, signOut, redirectToHome } = useClerk()
+const WalletConnect = () => {
     const pathname = usePathname()
+    const router = useRouter()
+    const account = useAccount()
+    const session = useSession()
+    const [cookie] = useCookies(['connected'])
 
-    return (
-        <div>
-            <SignedOut>
-                <button
-                    className='w-fit bg-zinc-800 py-2 px-4 font-bold text-white hover:scale-105'
-                    onClick={() =>
-                        openSignIn({
-                            redirectUrl: `/connected?redirect=${pathname}`,
-                            appearance: {
-                                elements: { footer: { display: 'none' } }
-                            }
-                        })
-                    }
-                >
-                    Connect Wallet
-                </button>
-            </SignedOut>
-            <SignedIn>
-                <button
-                    className='w-fit bg-zinc-800 py-2 px-4 font-bold text-white hover:scale-105'
-                    onClick={() => {
-                        signOut()
-                        redirectToHome()
-                    }}
-                >
-                    Sign out
-                </button>
-            </SignedIn>
-        </div>
-    )
+    useEffect(() => {
+        if (
+            account.isConnected &&
+            session.status == 'authenticated' &&
+            !cookie.connected
+        )
+            router.push(`/connected?redirect=${pathname}`)
+    }, [account, session.status, cookie])
+
+    useEffect(() => {
+        router.refresh()
+    }, [account.isConnected, account.isDisconnected, session.status])
+
+    return <ConnectButton showBalance={false} />
 }
+
+export default WalletConnect

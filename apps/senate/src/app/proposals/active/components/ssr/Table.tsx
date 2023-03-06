@@ -2,17 +2,25 @@ import Image from 'next/image'
 import dayjs, { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Vote, prisma } from '@senate/database'
-import { currentUser } from '@clerk/nextjs/app-beta'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
+
 extend(relativeTime)
 
-const getProposals = async (from: string, end: number, voted: string) => {
+const getProposals = async (
+    from: string,
+    end: number,
+    voted: string,
+    proxy: string
+) => {
     const active = true
 
-    const userSession = await currentUser()
+    const session = await getServerSession(authOptions())
+    const userAddress = session?.user?.name ?? ''
 
     const user = await prisma.user.findFirst({
         where: {
-            name: { equals: userSession?.web3Wallets[0]?.web3Wallet ?? '' }
+            name: { equals: userAddress }
         },
         include: {
             voters: true
@@ -26,7 +34,10 @@ const getProposals = async (from: string, end: number, voted: string) => {
                 votes: {
                     none: {
                         voterAddress: {
-                            in: user?.voters.map((voter) => voter.address)
+                            in:
+                                proxy == 'any'
+                                    ? user?.voters.map((voter) => voter.address)
+                                    : proxy
                         }
                     }
                 }
@@ -38,7 +49,10 @@ const getProposals = async (from: string, end: number, voted: string) => {
                 votes: {
                     some: {
                         voterAddress: {
-                            in: user?.voters.map((voter) => voter.address)
+                            in:
+                                proxy == 'any'
+                                    ? user?.voters.map((voter) => voter.address)
+                                    : proxy
                         }
                     }
                 }
@@ -103,10 +117,14 @@ const getProposals = async (from: string, end: number, voted: string) => {
         },
         include: {
             dao: true,
+            daoHandler: true,
             votes: {
                 where: {
                     voterAddress: {
-                        in: user?.voters.map((voter) => voter.address)
+                        in:
+                            proxy == 'any'
+                                ? user?.voters.map((voter) => voter.address)
+                                : proxy
                     }
                 }
             }
@@ -117,6 +135,7 @@ const getProposals = async (from: string, end: number, voted: string) => {
         userProposals.map((proposal) => {
             return {
                 daoName: proposal.dao.name,
+                onchain: proposal.daoHandler.type == 'SNAPSHOT' ? false : true,
                 daoPicture: proposal.dao.picture,
                 proposalTitle: proposal.name,
                 proposalLink: proposal.url,
@@ -134,11 +153,13 @@ export default async function Table(props: {
     from?: string
     end?: number
     voted?: string
+    proxy?: string
 }) {
     const proposals = await getProposals(
         props.from ?? 'any',
         props.end ?? 365,
-        props.voted ?? 'any'
+        props.voted ?? 'any',
+        props.proxy ?? 'any'
     )
 
     return (
@@ -146,33 +167,48 @@ export default async function Table(props: {
             <table className='w-full table-auto border-separate border-spacing-y-[4px] text-left'>
                 <thead className='h-[56px] bg-black text-white'>
                     <tr>
-                        <th className='w-[200px] pl-[16px] font-normal'>DAO</th>
-                        <th className='font-normal'>Proposal Title</th>
-                        <th className='w-[200px]  font-normal'>Ends in</th>
-                        <th className='w-[200px] text-center font-normal'>
-                            Vote status
+                        <th className='h-[56px] w-[200px] items-center pl-[16px]'>
+                            <div className='flex gap-1'>
+                                <div>DAO</div>
+                            </div>
+                        </th>
+                        <th className='h-[56px] items-center'>
+                            <div className='flex gap-1'>
+                                <div>Proposal Title</div>
+                            </div>
+                        </th>
+                        <th className='h-[56px] w-[200px] items-center font-normal'>
+                            <div className='flex gap-1'>
+                                <div>Ends in</div>
+                                <Image
+                                    width={24}
+                                    height={24}
+                                    src={'/assets/Icon/SortDiscending.svg'}
+                                    alt='ends-in'
+                                />
+                            </div>
+                        </th>
+                        <th className='h-[56px] w-[200px] items-center text-center font-normal'>
+                            <div className='flex justify-center gap-1'>
+                                <div>Vote status</div>
+                            </div>
                         </th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    {proposals.map(
-                        (
-                            proposal: {
-                                daoName: string
-                                daoPicture: string
-                                proposalTitle: string
-                                proposalLink: string
-                                timeEnd: Date
-                                voted: boolean
-                            },
-                            index: number
-                        ) => (
-                            /* @ts-expect-error Server Component */
-                            <ActiveProposal key={index} proposal={proposal} />
-                        )
-                    )}
+                    {proposals.map((proposal, index) => (
+                        /* @ts-expect-error Server Component */
+                        <ActiveProposal key={index} proposal={proposal} />
+                    ))}
                 </tbody>
             </table>
+
+            {proposals.length == 0 && (
+                <div className='h-[96px] w-full items-center justify-evenly pt-10 text-center text-[#EDEDED]'>
+                    Subscribe to some DAOs to see their proposals.
+                </div>
+            )}
         </div>
     )
 }
@@ -180,6 +216,7 @@ export default async function Table(props: {
 const ActiveProposal = async (props: {
     proposal: {
         daoName: string
+        onchain: boolean
         daoPicture: string
         proposalTitle: string
         proposalLink: string
@@ -199,8 +236,27 @@ const ActiveProposal = async (props: {
                             alt={props.proposal.daoName}
                         />
                     </div>
-                    <div className='text-[24px] font-thin'>
-                        {props.proposal.daoName}
+                    <div className='flex flex-col gap-2 pl-2'>
+                        <div className='text-[24px] font-light leading-[30px]'>
+                            {props.proposal.daoName}
+                        </div>
+                        <div>
+                            {props.proposal.onchain ? (
+                                <Image
+                                    width={94}
+                                    height={26}
+                                    src={'/assets/Icon/OnChainProposal.svg'}
+                                    alt='off-chain'
+                                />
+                            ) : (
+                                <Image
+                                    width={94}
+                                    height={26}
+                                    src={'/assets/Icon/OffChainProposal.svg'}
+                                    alt='off-chain'
+                                />
+                            )}
+                        </div>
                     </div>
                 </div>
             </td>
@@ -220,8 +276,27 @@ const ActiveProposal = async (props: {
                 </a>
             </td>
             <td>
-                <div className='text-[21px]'>
-                    {dayjs(props.proposal.timeEnd).fromNow()}
+                <div className='flex flex-col justify-between gap-2'>
+                    <div className='text-[21px] font-semibold leading-[26px]'>
+                        {dayjs(props.proposal.timeEnd).fromNow()}
+                    </div>
+                    <div className='text-[15px] font-normal leading-[19px]'>
+                        {`on ${new Date(
+                            props.proposal.timeEnd
+                        ).toLocaleDateString('en-US', {
+                            month: 'long',
+                            day: 'numeric'
+                        })} at ${new Date(
+                            props.proposal.timeEnd
+                        ).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            timeZone: 'UTC',
+                            hour12: false
+                        })} UTC
+                    `}
+                    </div>
                 </div>
             </td>
             <td>

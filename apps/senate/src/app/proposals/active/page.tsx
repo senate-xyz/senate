@@ -1,7 +1,8 @@
-import { currentUser } from '@clerk/nextjs/app-beta'
 import { prisma } from '@senate/database'
+import { getServerSession } from 'next-auth'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import ConnectWalletModal from '../components/csr/ConnectWalletModal'
 import { Filters } from './components/csr/Filters'
 import Table from './components/ssr/Table'
@@ -9,55 +10,79 @@ import Table from './components/ssr/Table'
 export const revalidate = 300
 
 const getSubscribedDAOs = async () => {
-    const userSession = await currentUser()
-
-    const cookieStore = cookies()
-    if (!cookieStore.get('hasSeenLanding')) redirect('/landing')
-
-    const user = await prisma.user
-        .findFirstOrThrow({
+    const session = await getServerSession(authOptions())
+    const userAddress = session?.user?.name ?? ''
+    try {
+        const user = await prisma.user.findFirstOrThrow({
             where: {
-                name: { equals: userSession?.web3Wallets[0]?.web3Wallet ?? '' }
+                name: { equals: userAddress }
             },
             select: {
                 id: true
             }
         })
-        .catch(() => {
-            return { id: '0' }
-        })
 
-    const daosList = await prisma.dAO.findMany({
-        where: {
-            subscriptions: {
-                some: {
-                    user: { is: user }
-                }
-            }
-        },
-        orderBy: {
-            name: 'asc'
-        },
-        distinct: 'id',
-        include: {
-            handlers: true,
-            subscriptions: {
-                where: {
-                    userId: { contains: user.id }
+        const daosList = await prisma.dAO.findMany({
+            where: {
+                subscriptions: {
+                    some: {
+                        user: { is: user }
+                    }
                 }
             },
-            proposals: { where: { timeEnd: { gt: new Date() } } }
-        }
-    })
-    return daosList
+            orderBy: {
+                name: 'asc'
+            },
+            distinct: 'id',
+            include: {
+                handlers: true,
+                subscriptions: {
+                    where: {
+                        userId: { contains: user.id }
+                    }
+                },
+                proposals: { where: { timeEnd: { gt: new Date() } } }
+            }
+        })
+        return daosList
+    } catch (e) {
+        return []
+    }
 }
+
+const getProxies = async () => {
+    const session = await getServerSession(authOptions())
+    const userAddress = session?.user?.name ?? ''
+    try {
+        const user = await prisma.user.findFirstOrThrow({
+            where: {
+                name: { equals: userAddress }
+            },
+            include: {
+                voters: true
+            }
+        })
+
+        const proxies = user.voters.map((voter) => voter.address)
+
+        return proxies
+    } catch (e) {
+        return []
+    }
+}
+
 export default async function Home({
     searchParams
 }: {
     params: { slug: string }
-    searchParams?: { from: string; end: number; voted: string }
+    searchParams?: { from: string; end: number; voted: string; proxy: string }
 }) {
+    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
+    const cookieStore = cookies()
+    if (!cookieStore.get('hasSeenLanding')) redirect('/landing')
+
     const subscribedDAOs = await getSubscribedDAOs()
+    const proxies = await getProxies()
 
     const subscripions = subscribedDAOs.map((subDAO) => {
         return { id: subDAO.id, name: subDAO.name }
@@ -68,12 +93,13 @@ export default async function Home({
             <div className='z-10'>
                 <ConnectWalletModal />
             </div>
-            <Filters subscriptions={subscripions} />
+            <Filters subscriptions={subscripions} proxies={proxies} />
             {/* @ts-expect-error Server Component */}
             <Table
                 from={searchParams?.from}
                 end={searchParams?.end}
                 voted={searchParams?.voted}
+                proxy={searchParams?.proxy}
             />
         </div>
     )

@@ -1,9 +1,11 @@
 'use client'
 
+import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useAccount } from 'wagmi'
 import { trpc } from '../../../../../server/trpcClient'
-import { useClerk, useUser } from '@clerk/nextjs'
 
 export const UnsubscribedDAO = (props: {
     daoId: string
@@ -12,9 +14,9 @@ export const UnsubscribedDAO = (props: {
     bgColor: string | undefined
     daoHandlers: string[]
 }) => {
-    const user = useUser()
-    const { openSignIn } = useClerk()
-    const pathname = usePathname()
+    const account = useAccount()
+    const session = useSession()
+    const { openConnectModal } = useConnectModal()
 
     const router = useRouter()
     const subscribe = trpc.subscriptions.subscribe.useMutation()
@@ -43,61 +45,66 @@ export const UnsubscribedDAO = (props: {
                         {props.daoName}
                     </div>
                     <div className='flex flex-row gap-4 pt-6 opacity-50'>
-                        {props.daoHandlers.map((handler, index: number) => {
-                            switch (handler) {
-                                case 'SNAPSHOT':
-                                    return (
-                                        <Image
-                                            key={index}
-                                            width='24'
-                                            height='24'
-                                            src='/assets/Chain/Snapshot/On_Dark.svg'
-                                            alt='snapshot proposals'
-                                        />
-                                    )
-                                case 'AAVE_CHAIN':
-                                case 'COMPOUND_CHAIN':
-                                case 'UNISWAP_CHAIN':
-                                case 'MAKER_POLL':
-                                case 'MAKER_EXECUTIVE':
-                                    return (
-                                        <Image
-                                            key={index}
-                                            width='24'
-                                            height='24'
-                                            src='/assets/Chain/Ethereum/On_Dark.svg'
-                                            alt='chain proposals'
-                                        />
-                                    )
-                                case 'MAKER_POLL_ARBITRUM':
-                                    return (
-                                        <Image
-                                            key={index}
-                                            width='24'
-                                            height='24'
-                                            src='/assets/Chain/Arbitrum/On_Dark.svg'
-                                            alt='chain proposals'
-                                        />
-                                    )
-                                default:
-                                    return (
-                                        <Image
-                                            key={index}
-                                            width='24'
-                                            height='24'
-                                            src='/assets/Chain/Ethereum/On_Dark.svg'
-                                            alt='chain proposals'
-                                        />
-                                    )
-                            }
-                        })}
+                        {props.daoHandlers
+                            .sort((a) => {
+                                if (a == 'SNAPSHOT') return 1
+                                else return -1
+                            })
+                            .map((handler, index: number) => {
+                                switch (handler) {
+                                    case 'SNAPSHOT':
+                                        return (
+                                            <Image
+                                                key={index}
+                                                width='24'
+                                                height='24'
+                                                src='/assets/Chain/Snapshot/On_Dark.svg'
+                                                alt='snapshot proposals'
+                                            />
+                                        )
+                                    case 'AAVE_CHAIN':
+                                    case 'COMPOUND_CHAIN':
+                                    case 'UNISWAP_CHAIN':
+                                    case 'MAKER_POLL':
+                                    case 'MAKER_EXECUTIVE':
+                                        return (
+                                            <Image
+                                                key={index}
+                                                width='24'
+                                                height='24'
+                                                src='/assets/Chain/Ethereum/On_Dark.svg'
+                                                alt='chain proposals'
+                                            />
+                                        )
+                                    case 'MAKER_POLL_ARBITRUM':
+                                        return (
+                                            <Image
+                                                key={index}
+                                                width='24'
+                                                height='24'
+                                                src='/assets/Chain/Arbitrum/On_Dark.svg'
+                                                alt='chain proposals'
+                                            />
+                                        )
+                                    default:
+                                        return (
+                                            <Image
+                                                key={index}
+                                                width='24'
+                                                height='24'
+                                                src='/assets/Chain/Ethereum/On_Dark.svg'
+                                                alt='chain proposals'
+                                            />
+                                        )
+                                }
+                            })}
                     </div>
                 </div>
 
                 <button
                     className='h-14 w-full bg-white text-xl font-bold text-black'
                     onClick={() => {
-                        user.isSignedIn
+                        account.isConnected && session.status == 'authenticated'
                             ? subscribe.mutate(
                                   {
                                       daoId: props.daoId,
@@ -106,17 +113,15 @@ export const UnsubscribedDAO = (props: {
                                   {
                                       onSuccess: () => {
                                           router.refresh()
+                                      },
+                                      onError: () => {
+                                          router.refresh()
                                       }
                                   }
                               )
-                            : openSignIn({
-                                  redirectUrl: `/connected?redirect=${pathname}`,
-                                  appearance: {
-                                      elements: {
-                                          footer: { display: 'none' }
-                                      }
-                                  }
-                              })
+                            : openConnectModal
+                            ? openConnectModal()
+                            : null
                     }}
                 >
                     Subscribe

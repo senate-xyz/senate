@@ -1,87 +1,64 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useProvider } from 'wagmi'
+import { useCookies } from 'react-cookie'
+import { useAccount, useProvider } from 'wagmi'
 import { trpc } from '../../../server/trpcClient'
 
 export default function Home() {
-    const { isLoaded, isSignedIn } = useUser()
+    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
+    const [cookie] = useCookies(['hasSeenLanding'])
+    if (!cookie.hasSeenLanding) redirect('/landing')
+
+    const account = useAccount()
     const router = useRouter()
     const provider = useProvider()
 
     const voters = trpc.accountSettings.voters.useQuery(undefined, {
         refetchInterval: 5000
     })
-    const removeVoter = trpc.accountSettings.removeVoter.useMutation()
+
     const addVoter = trpc.accountSettings.addVoter.useMutation()
 
     const [proxyAddress, setProxyAddress] = useState('')
 
     useEffect(() => {
-        if (isLoaded && !isSignedIn) router.push('/settings/account')
-    }, [isLoaded])
+        if (!account.isConnected) router.push('/settings/account')
+    }, [account])
 
     return (
-        <div className='mt-2 flex flex-col gap-12'>
-            <div className='flex flex-col gap-2'>
-                <div className='text-[24px] font-light text-white'>
-                    Your Proxy Addresses
+        <div className='flex flex-col gap-12'>
+            <div className='flex flex-col gap-4'>
+                <div className='text-[24px] font-light leading-[30px] text-white'>
+                    Your Other Addresses
                 </div>
 
-                <div className='w-[50%] text-[18px] font-light text-white'>
-                    Proxy Addresses are wallet addresses that you can add in
-                    Senate, so that you can see the voting activity of multiple
-                    addresses.
+                <div className='w-[50%] text-[18px] font-light leading-[23px] text-white'>
+                    Here you can add other addresses to your Senate account, so
+                    that you can see the voting activity for those addresses as
+                    well.
                 </div>
 
                 <div className='mt-12 flex flex-col gap-6'>
                     {voters.data &&
                         voters.data.map((voter) => {
-                            return (
-                                <div
-                                    key={voter.address}
-                                    className='flex flex-row items-center gap-12'
-                                >
-                                    <div className='font-mono text-[18px] font-light text-white'>
-                                        {voter.address}
-                                    </div>
-
-                                    <button
-                                        onClick={() => {
-                                            removeVoter.mutate(
-                                                {
-                                                    address: voter.address
-                                                },
-                                                {
-                                                    onSuccess() {
-                                                        voters.refetch()
-                                                    }
-                                                }
-                                            )
-                                        }}
-                                        className='text-[18px] font-light text-white underline'
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            )
+                            return <Voter address={voter.address} />
                         })}
                 </div>
 
                 <div className='mt-12 flex h-[46px] flex-row items-center'>
                     <input
-                        className={`h-full w-[480px] ${
-                            proxyAddress.length ? 'bg-white' : 'bg-[#D9D9D9]'
-                        } px-2 text-black`}
+                        className={`h-full w-[480px] bg-[#D9D9D9] px-2 font-mono text-[18px] font-light leading-[23px] text-black`}
                         value={proxyAddress}
                         onChange={(e) => setProxyAddress(e.target.value)}
-                        placeholder='Paste a new proxy address here'
+                        placeholder='Paste a new proxy address here (or ENS)'
                     />
 
                     <div
-                        className='flex h-full w-[72px] cursor-pointer flex-col justify-center bg-[#ABABAB] text-center'
+                        className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
+                            proxyAddress.length ? 'bg-white' : 'bg-[#ABABAB]'
+                        } text-center`}
                         onClick={async () => {
                             let resolvedAddress = proxyAddress
                             if (
@@ -116,15 +93,7 @@ export default function Home() {
                         )}
                     </div>
                 )}
-                {removeVoter.error && (
-                    <div className='flex flex-col text-white'>
-                        {JSON.parse(removeVoter.error.message).map(
-                            (err: Error) => (
-                                <div>{err.message}</div>
-                            )
-                        )}
-                    </div>
-                )}
+
                 {voters.error && (
                     <div className='flex flex-col text-white'>
                         {JSON.parse(voters.error.message).map((err: Error) => (
@@ -133,6 +102,44 @@ export default function Home() {
                     </div>
                 )}
             </div>
+        </div>
+    )
+}
+
+const Voter = ({ address }: { address: string }) => {
+    const provider = useProvider()
+    const [voterEns, setVoterEns] = useState('')
+
+    useEffect(() => {
+        ;(async () => {
+            const ens = await provider.lookupAddress(address)
+            setVoterEns(ens ?? '')
+        })()
+    }, [address])
+
+    const removeVoter = trpc.accountSettings.removeVoter.useMutation()
+
+    return (
+        <div key={address} className='flex flex-row items-end gap-12'>
+            <div className='flex flex-col'>
+                <div className='font-mono text-[18px] font-normal leading-[23px] text-white'>
+                    {voterEns}
+                </div>
+                <div className='font-mono text-[18px] font-light leading-[23px] text-[#ABABAB]'>
+                    {address}
+                </div>
+            </div>
+
+            <button
+                onClick={() => {
+                    removeVoter.mutate({
+                        address: address
+                    })
+                }}
+                className='text-[18px] font-light text-white underline'
+            >
+                Delete
+            </button>
         </div>
     )
 }

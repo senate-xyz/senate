@@ -1,22 +1,39 @@
 'use client'
 
-import { SignedIn, SignedOut } from '@clerk/nextjs/app-beta/client'
+import { useAccountModal } from '@rainbow-me/rainbowkit'
+import { redirect } from 'next/navigation'
+import { useCookies } from 'react-cookie'
+import { useAccount } from 'wagmi'
 import NotConnected from './components/csr/NotConnected'
 import UserAddress from './components/csr/UserAddress'
-import UserEmail from './components/csr/UserEmail'
 
 export default function Home() {
+    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
+    const [cookie] = useCookies(['hasSeenLanding'])
+    if (!cookie.hasSeenLanding) redirect('/landing')
+
+    const account = useAccount()
+    const { openAccountModal } = useAccountModal()
+
     return (
-        <main>
-            <div className='mt-2 flex flex-col gap-12'>
-                <SignedOut>
+        <div className='flex flex-col gap-12'>
+            <div className='flex flex-col gap-4'>
+                {!account.address ? (
                     <NotConnected />
-                </SignedOut>
-                <SignedIn>
-                    <UserAddress />
-                    <UserEmail />
-                </SignedIn>
+                ) : (
+                    <>
+                        <UserAddress />
+                        <button
+                            className='w-fit bg-black py-2 px-4 font-bold text-white hover:scale-105'
+                            onClick={() => {
+                                openAccountModal ? openAccountModal() : null
+                            }}
+                        >
+                            Disconnect Wallet
+                        </button>
+                    </>
+                )}
             </div>
-        </main>
+        </div>
     )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { WalletConnect } from './WalletConnect'
+import WalletConnect from './WalletConnect'
 
 export const Header = (props: { title: string }) => {
     const [headerHeight, setHeaderHeight] = useState('h-[192px]')

@@ -9,7 +9,7 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
     },
     {
         id: 1,
-        name: 'Proxy Addresses',
+        name: 'Other Addresses',
         color: 'text-white text-[36px] font-bold cursor-pointer',
         link: '/settings/proxy'
     },
@@ -42,7 +42,7 @@ export default async function RootLayout({
                         )
                     })}
                 </div>
-                <div className='pt-10 pl-2'>{children}</div>
+                <div className='w-[1150px] pt-10 pl-2'>{children}</div>
             </div>
         </>
     )

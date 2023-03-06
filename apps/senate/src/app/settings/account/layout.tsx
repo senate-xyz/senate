@@ -1,6 +1,6 @@
 'use client'
 
-import { SignedIn, SignedOut } from '@clerk/nextjs/app-beta/client'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 
 const defaultTab: { id: number; name: string; color: string; link: string } = {
@@ -19,7 +19,7 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
     },
     {
         id: 1,
-        name: 'Proxy Addresses',
+        name: 'Other Addresses',
         color: 'text-[#808080] text-[36px] font-light cursor-pointer',
         link: '/settings/proxy'
     },
@@ -36,12 +36,14 @@ export default function RootLayout({
 }: {
     children: React.ReactNode
 }) {
+    const session = useSession()
+
     return (
         <>
             <div className='flex grow flex-col bg-[#1E1B20] p-5 px-12'>
                 <div className='flex w-full flex-row gap-10'>
-                    <SignedIn>
-                        {tabs.map((tab) => {
+                    {session.status == 'authenticated' ? (
+                        tabs.map((tab) => {
                             return (
                                 <Link
                                     key={tab.id}
@@ -51,10 +53,8 @@ export default function RootLayout({
                                     {tab.name}
                                 </Link>
                             )
-                        })}
-                    </SignedIn>
-
-                    <SignedOut>
+                        })
+                    ) : (
                         <Link
                             key={defaultTab.id}
                             className={defaultTab.color}
@@ -62,9 +62,9 @@ export default function RootLayout({
                         >
                             {defaultTab.name}
                         </Link>
-                    </SignedOut>
+                    )}
                 </div>
-                <div className='pt-10 pl-2'>{children}</div>
+                <div className='w-[1150px] pt-10 pl-2'>{children}</div>
             </div>
         </>
     )

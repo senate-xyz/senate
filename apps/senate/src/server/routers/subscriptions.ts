@@ -1,7 +1,6 @@
 import { router, privateProcedure } from '../trpc'
 import { z } from 'zod'
 import { prisma } from '@senate/database'
-import { clerkClient } from '@clerk/nextjs/server'
 
 export const subscriptionsRouter = router({
     subscribe: privateProcedure
@@ -12,14 +11,12 @@ export const subscriptionsRouter = router({
             })
         )
         .mutation(async ({ input, ctx }) => {
-            const clerkUser = await clerkClient.users.getUser(
-                ctx.auth?.userId || ''
-            )
+            const username = await ctx.user.name
 
             const user = await prisma.user.findFirstOrThrow({
                 where: {
                     name: {
-                        equals: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                        equals: String(username)
                     }
                 }
             })
@@ -51,14 +48,12 @@ export const subscriptionsRouter = router({
             })
         )
         .mutation(async ({ input, ctx }) => {
-            const clerkUser = await clerkClient.users.getUser(
-                ctx.auth?.userId || ''
-            )
+            const username = await ctx.user.name
 
             const user = await prisma.user.findFirstOrThrow({
                 where: {
                     name: {
-                        equals: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                        equals: String(username)
                     }
                 }
             })
@@ -83,14 +78,12 @@ export const subscriptionsRouter = router({
             })
         )
         .mutation(async ({ input, ctx }) => {
-            const clerkUser = await clerkClient.users.getUser(
-                ctx.auth?.userId || ''
-            )
+            const username = await ctx.user.name
 
             const user = await prisma.user.findFirstOrThrow({
                 where: {
                     name: {
-                        equals: String(clerkUser.web3Wallets[0]?.web3Wallet)
+                        equals: String(username)
                     }
                 }
             })
