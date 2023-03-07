@@ -1,17 +1,19 @@
 'use client'
 import '../styles/globals.css'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useCookies } from 'react-cookie'
-import { trpc, TrpcClientProvider } from '../server/trpcClient'
+import { trpc } from '../server/trpcClient'
+import RootProvider from '../app/providers'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/router'
 
 const ConnectedWrapper = () => {
     return (
-        <TrpcClientProvider>
+        <RootProvider>
             <div className='min-h-screen w-full bg-black'>
                 <Connected />
             </div>
-        </TrpcClientProvider>
+        </RootProvider>
     )
 }
 
@@ -19,6 +21,7 @@ const Connected = () => {
     const searchParams = useSearchParams()
 
     const router = useRouter()
+
     const [cookie, setCookie] = useCookies([
         'acceptedTerms',
         'acceptedTermsTimestamp',
@@ -28,27 +31,31 @@ const Connected = () => {
     const storeTerms = trpc.accountSettings.setTerms.useMutation()
 
     useEffect(() => {
-        // if (!searchParams || !searchParams?.get('redirect'))
-        //     router.push('/daos')
-        if (!cookie.acceptedTerms || !cookie.acceptedTermsTimestamp)
-            router.push('/landing')
-
-        storeTerms.mutate(
-            {
-                value: Boolean(cookie.acceptedTerms),
-                timestamp: Number(cookie.acceptedTermsTimestamp)
-            },
-            {
-                onSuccess: () => {
-                    setCookie('connected', true)
-                    router.push(searchParams?.get('redirect') ?? '/daos')
+        if (
+            !cookie.connected &&
+            storeTerms &&
+            cookie.acceptedTerms &&
+            cookie.acceptedTermsTimestamp &&
+            storeTerms.isIdle
+        ) {
+            storeTerms.mutate(
+                {
+                    value: Boolean(cookie.acceptedTerms),
+                    timestamp: Number(cookie.acceptedTermsTimestamp)
                 },
-                onError: () => {
-                    router.push('/landing')
+                {
+                    onSuccess: () => {
+                        setCookie('connected', true)
+                    }
                 }
-            }
-        )
-    }, [cookie])
+            )
+        }
+    }, [cookie, storeTerms])
+
+    useEffect(() => {
+        if (cookie.connected)
+            router.push(searchParams?.get('redirect') ?? '/daos')
+    }, [cookie.connected])
 
     return <></>
 }

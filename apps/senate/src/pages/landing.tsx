@@ -6,7 +6,7 @@ import { Transition } from '@headlessui/react'
 import { useRouter } from 'next/navigation'
 import { useCookies } from 'react-cookie'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const WrapperHome = () => {
     return <Home />
@@ -16,13 +16,22 @@ export default WrapperHome
 
 const Home = () => {
     const router = useRouter()
-    const [, setCookie] = useCookies([
+    const [cookie, setCookie] = useCookies([
         'hasSeenLanding',
         'acceptedTerms',
         'acceptedTermsTimestamp'
     ])
     const [terms, setTerms] = useState(false)
     const [warning, setWarning] = useState(false)
+
+    useEffect(() => {
+        if (
+            cookie.acceptedTerms &&
+            cookie.acceptedTermsTimestamp > 0 &&
+            cookie.hasSeenLanding
+        )
+            router.push('/daos')
+    }, [cookie])
 
     return (
         <div className='flex min-h-screen w-full flex-row bg-black'>
@@ -176,9 +185,6 @@ const Home = () => {
                                             'acceptedTermsTimestamp',
                                             Date.now()
                                         )
-                                        setTimeout(function () {
-                                            router.push('/daos')
-                                        }, 500)
                                     }
                                 }}
                             >
