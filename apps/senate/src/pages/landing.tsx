@@ -99,8 +99,8 @@ const Home = () => {
                             leaveTo='opacity-0'
                         >
                             <div className='mb-8 w-[447px] -translate-y-20 text-center text-[24px] font-light text-white'>
-                                And also, you’ll never miss a vote ever again
-                                with our{' '}
+                                Also, you’ll never miss a vote ever again with
+                                our{' '}
                                 <span className='bg-[#5EF413] font-semibold text-black'>
                                     daily email reminders
                                 </span>
@@ -146,7 +146,7 @@ const Home = () => {
                                         target='_blank'
                                     >
                                         Terms of Service
-                                    </Link>{' '}
+                                    </Link>
                                     ,{' '}
                                     <Link
                                         href={
