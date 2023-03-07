@@ -2,14 +2,12 @@
 
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useSession } from 'next-auth/react'
-import { usePathname } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useCookies } from 'react-cookie'
 import { useAccount } from 'wagmi'
 
 const WalletConnect = () => {
-    const pathname = usePathname()
     const router = useRouter()
     const account = useAccount()
     const session = useSession()
@@ -21,7 +19,7 @@ const WalletConnect = () => {
             session.status == 'authenticated' &&
             !cookie.connected
         )
-            router.push(`/connected?redirect=${pathname}`)
+            router.push(`/connected?redirect=/daos`)
     }, [account, session.status, cookie])
 
     useEffect(() => {
