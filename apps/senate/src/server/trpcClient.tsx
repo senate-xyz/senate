@@ -1,6 +1,6 @@
 'use client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { httpBatchLink } from '@trpc/client'
+import { httpBatchLink, loggerLink } from '@trpc/client'
 import { createTRPCReact } from '@trpc/react-query'
 import { useState } from 'react'
 import superjson from 'superjson'
@@ -27,7 +27,7 @@ function getBaseUrl() {
         // reference for vercel.com
         return process.env.WEB_URL
     // assume localhost
-    return `http://localhost:${process.env.PORT ?? 3000}`
+    return `https://localhost:${process.env.PORT ?? 3000}`
 }
 
 export function TrpcClientProvider(props: { children: React.ReactNode }) {
@@ -35,13 +35,13 @@ export function TrpcClientProvider(props: { children: React.ReactNode }) {
     const [trpcClient] = useState(() =>
         trpc.createClient({
             links: [
-                // loggerLink({
-                //     enabled: (opts) =>
-                //         (process.env.NODE_ENV === 'development' &&
-                //             typeof window !== 'undefined') ||
-                //         (opts.direction === 'down' &&
-                //             opts.result instanceof Error)
-                // }),
+                loggerLink({
+                    enabled: (opts) =>
+                        (process.env.NODE_ENV === 'development' &&
+                            typeof window !== 'undefined') ||
+                        (opts.direction === 'down' &&
+                            opts.result instanceof Error)
+                }),
                 httpBatchLink({
                     url: `${getBaseUrl()}api/trpc`,
                     fetch(url, options) {
