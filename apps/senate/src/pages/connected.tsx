@@ -28,7 +28,8 @@ const Connected = () => {
     const storeTerms = trpc.accountSettings.setTerms.useMutation()
 
     useEffect(() => {
-        if (!searchParams || !searchParams.get('redirect')) router.push('/daos')
+        // if (!searchParams || !searchParams?.get('redirect'))
+        //     router.push('/daos')
         if (!cookie.acceptedTerms || !cookie.acceptedTermsTimestamp)
             router.push('/landing')
 
@@ -43,11 +44,11 @@ const Connected = () => {
                     router.push(searchParams?.get('redirect') ?? '/daos')
                 },
                 onError: () => {
-                    router.push('/daos')
+                    router.push('/landing')
                 }
             }
         )
-    }, [searchParams])
+    }, [cookie])
 
     return <></>
 }
