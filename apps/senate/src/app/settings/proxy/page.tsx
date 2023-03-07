@@ -25,6 +25,23 @@ export default function Home() {
         if (!account.isConnected) router.push('/settings/account')
     }, [account])
 
+    const onEnter = async () => {
+        let resolvedAddress = proxyAddress
+        if ((await provider.resolveName(proxyAddress))?.length) {
+            resolvedAddress = String(await provider.resolveName(proxyAddress))
+        }
+
+        addVoter.mutate(
+            { address: resolvedAddress },
+            {
+                onSuccess() {
+                    voters.refetch()
+                    setProxyAddress('')
+                }
+            }
+        )
+    }
+
     return (
         <div className='flex flex-col gap-12'>
             <div className='flex flex-col gap-4'>
@@ -50,6 +67,9 @@ export default function Home() {
                         className={`h-full w-[480px] bg-[#D9D9D9] px-2 font-mono text-[18px] font-light leading-[23px] text-black`}
                         value={proxyAddress}
                         onChange={(e) => setProxyAddress(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') onEnter()
+                        }}
                         placeholder='Paste a new proxy address here (or ENS)'
                     />
 
@@ -57,26 +77,8 @@ export default function Home() {
                         className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
                             proxyAddress.length ? 'bg-white' : 'bg-[#ABABAB]'
                         } text-center`}
-                        onClick={async () => {
-                            let resolvedAddress = proxyAddress
-                            if (
-                                (await provider.resolveName(proxyAddress))
-                                    ?.length
-                            ) {
-                                resolvedAddress = String(
-                                    await provider.resolveName(proxyAddress)
-                                )
-                            }
-
-                            addVoter.mutate(
-                                { address: resolvedAddress },
-                                {
-                                    onSuccess() {
-                                        voters.refetch()
-                                        setProxyAddress('')
-                                    }
-                                }
-                            )
+                        onClick={() => {
+                            onEnter()
                         }}
                     >
                         Add

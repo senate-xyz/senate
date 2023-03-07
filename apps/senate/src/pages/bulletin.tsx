@@ -32,6 +32,23 @@ const Home = () => {
         if (email.isFetched) setNewEmail(email.data ?? '')
     }, [email.data])
 
+    const onEnter = () => {
+        setEmail.mutate(
+            { email: newEmail },
+            {
+                onSuccess: () => {
+                    setSuccess(true)
+                    setError(false)
+                    router.push('/daos')
+                },
+                onError: () => {
+                    setError(true)
+                    setSuccess(false)
+                }
+            }
+        )
+    }
+
     return (
         <div className='flex min-h-screen w-full flex-row bg-black'>
             <div className='flex min-h-full w-full flex-row'>
@@ -73,6 +90,9 @@ const Home = () => {
                         className={`mt-6 h-[46px] w-[420px] bg-[#D9D9D9] px-2 text-black focus:outline-none `}
                         value={newEmail}
                         placeholder='delegatooooor@defi.dao'
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') onEnter()
+                        }}
                         onChange={(e) => {
                             setNewEmail(String(e.target.value))
                         }}
@@ -82,22 +102,7 @@ const Home = () => {
                         className={`flex h-[43px] w-[420px] cursor-pointer flex-col justify-center ${
                             newEmail.length ? 'bg-white' : 'bg-[#ABABAB]'
                         } mt-6 text-center`}
-                        onClick={() => {
-                            setEmail.mutate(
-                                { email: newEmail },
-                                {
-                                    onSuccess: () => {
-                                        setSuccess(true)
-                                        setError(false)
-                                        router.push('/daos')
-                                    },
-                                    onError: () => {
-                                        setError(true)
-                                        setSuccess(false)
-                                    }
-                                }
-                            )
-                        }}
+                        onClick={() => onEnter()}
                     >
                         Get Daily Bulletin
                     </div>

@@ -13,6 +13,10 @@ const UserEmail = () => {
         setCurrentEmail(email.data ?? '')
     }, [email.data])
 
+    const onEnter = () => {
+        setEmail.mutate({ email: currentEmail })
+    }
+
     return (
         <div className='flex flex-col gap-2'>
             <div className='text-[18px] font-light text-white'>
@@ -26,6 +30,9 @@ const UserEmail = () => {
                     onChange={(e) => {
                         setCurrentEmail(String(e.target.value))
                     }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') onEnter()
+                    }}
                 />
 
                 <div
@@ -34,9 +41,7 @@ const UserEmail = () => {
                             ? ' bg-[#ABABAB]'
                             : 'bg-white'
                     } text-center`}
-                    onClick={() => {
-                        setEmail.mutate({ email: currentEmail })
-                    }}
+                    onClick={() => onEnter()}
                 >
                     Save
                 </div>

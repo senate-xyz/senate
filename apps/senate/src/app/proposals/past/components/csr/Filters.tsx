@@ -83,7 +83,7 @@ export const Filters = (props: {
                         value={from}
                     >
                         <option key='any' value='any'>
-                            Any
+                            All Subscribed DAOs
                         </option>
                         {props.subscriptions.map((sub) => {
                             return (

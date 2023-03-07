@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import '@rainbow-me/rainbowkit/styles.css'
 
 import '../styles/globals.css'
@@ -26,7 +25,7 @@ export default function RootLayout({
             <body>
                 <RootProvider>
                     <div className='h-full min-h-screen w-full bg-black'>
-                        <div className='absolute left-0 z-30 w-full justify-center bg-slate-300 p-1 text-center text-black'>
+                        {/* <div className='absolute left-0 z-30 w-full justify-center bg-slate-300 p-1 text-center text-black'>
                             This software is still in beta and some proposals,
                             for some DAOs, at some times, fail to load. So it’s
                             not totally reliable yet. If you find something
@@ -39,7 +38,7 @@ export default function RootLayout({
                                 please let us know
                             </Link>
                             .
-                        </div>
+                        </div> */}
                         <div className='z-10 flex h-full min-h-screen w-full flex-row'>
                             <div className='fixed'>
                                 <NavBar />

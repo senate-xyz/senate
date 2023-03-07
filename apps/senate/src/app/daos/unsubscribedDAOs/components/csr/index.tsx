@@ -4,6 +4,8 @@ import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { useCookies } from 'react-cookie'
 import { useAccount } from 'wagmi'
 import { trpc } from '../../../../../server/trpcClient'
 
@@ -14,12 +16,45 @@ export const UnsubscribedDAO = (props: {
     bgColor: string | undefined
     daoHandlers: string[]
 }) => {
+    const [cookie, setCookie, removeCookie] = useCookies(['subscribe'])
+
     const account = useAccount()
     const session = useSession()
     const { openConnectModal } = useConnectModal()
 
     const router = useRouter()
     const subscribe = trpc.subscriptions.subscribe.useMutation()
+
+    const connectAndSubscribe = (id: string) => {
+        setCookie('subscribe', id)
+        openConnectModal && openConnectModal()
+    }
+
+    //automagically subscribe to the dao you tried to but weren't connected
+    useEffect(() => {
+        if (
+            cookie.subscribe &&
+            session.status == 'authenticated' &&
+            subscribe.isIdle
+        ) {
+            subscribe.mutate(
+                {
+                    daoId: cookie.subscribe,
+                    notificationsEnabled: true
+                },
+                {
+                    onSuccess: () => {
+                        router.refresh()
+                        removeCookie('subscribe')
+                    },
+                    onError: () => {
+                        router.refresh()
+                        removeCookie('subscribe')
+                    }
+                }
+            )
+        }
+    }, [cookie.subscribe, session])
 
     return (
         <div className='h-[320px] w-[240px]'>
@@ -119,9 +154,7 @@ export const UnsubscribedDAO = (props: {
                                       }
                                   }
                               )
-                            : openConnectModal
-                            ? openConnectModal()
-                            : null
+                            : connectAndSubscribe(props.daoId)
                     }}
                 >
                     Subscribe
