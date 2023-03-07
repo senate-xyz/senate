@@ -1,6 +1,7 @@
 'use client'
 
 import { useAccountModal } from '@rainbow-me/rainbowkit'
+import { useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
 import { useCookies } from 'react-cookie'
 import { useAccount } from 'wagmi'
@@ -13,12 +14,13 @@ export default function Home() {
     if (!cookie.hasSeenLanding) redirect('/landing')
 
     const account = useAccount()
+    const session = useSession()
     const { openAccountModal } = useAccountModal()
 
     return (
         <div className='flex flex-col gap-12'>
             <div className='flex flex-col gap-4'>
-                {!account.address ? (
+                {!account.address || session.status != 'authenticated' ? (
                     <NotConnected />
                 ) : (
                     <>
