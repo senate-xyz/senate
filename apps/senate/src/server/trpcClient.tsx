@@ -23,9 +23,9 @@ function getBaseUrl() {
     if (typeof window !== 'undefined')
         // browser should use relative path
         return ''
-    if (process.env.WEB_URL)
+    if (process.env.NEXT_PUBLIC_WEB_URL)
         // reference for vercel.com
-        return process.env.WEB_URL
+        return process.env.NEXT_PUBLIC_WEB_URL
     // assume localhost
     return `https://localhost:${process.env.PORT ?? 3000}`
 }
