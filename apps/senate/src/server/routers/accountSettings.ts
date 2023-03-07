@@ -98,7 +98,11 @@ export const accountSettingsRouter = router({
             }
         })
 
-        return user?.voters.filter((voter) => voter.address !== username)
+        const filteredVoters = user?.voters.filter(
+            (voter) => voter.address !== username
+        )
+
+        return filteredVoters ?? []
     }),
 
     addVoter: privateProcedure
