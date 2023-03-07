@@ -30,7 +30,7 @@ export default function Home() {
         trpc.accountSettings.updateDailyEmails.useMutation()
 
     return (
-        <div className='flex flex-col gap-12'>
+        <div className='flex min-h-screen flex-col gap-12'>
             <div className='flex flex-col gap-4'>
                 <div className='text-[24px] font-light leading-[30px] text-white'>
                     Your Notifications

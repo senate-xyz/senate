@@ -41,7 +41,7 @@ export default function RootLayout({
     return (
         <>
             <div className='flex grow flex-col bg-[#1E1B20] p-5 px-12'>
-                <div className='flex w-full flex-row gap-10'>
+                <div className='flex w-full flex-row gap-10 overflow-x-auto'>
                     {session.status == 'authenticated' ? (
                         tabs.map((tab) => {
                             return (
@@ -64,7 +64,7 @@ export default function RootLayout({
                         </Link>
                     )}
                 </div>
-                <div className='w-[1150px] pt-10 pl-2'>{children}</div>
+                <div className='pt-10 pl-2 lg:w-[1150px]'>{children}</div>
             </div>
         </>
     )
