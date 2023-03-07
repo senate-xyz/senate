@@ -50,7 +50,9 @@ export default async function SubscribedDAOs() {
     const cookieStore = cookies()
     if (!cookieStore.get('hasSeenLanding')) redirect('/landing')
 
-    const subscriptions = await getSubscribedDAOs()
+    const subscriptions = (await getSubscribedDAOs()).sort((a, b) =>
+        a.dao.name.localeCompare(b.dao.name)
+    )
 
     const backgroundColors = await Promise.all(
         subscriptions.map(async (sub) => {

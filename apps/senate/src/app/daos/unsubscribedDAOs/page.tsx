@@ -70,12 +70,14 @@ export default async function UnsubscribedDAOs() {
     const allDAOs = await getAllDAOs()
     const subscribedDAOs = await getSubscribedDAOs()
 
-    const unsubscribedDAOs = allDAOs.filter(
-        (dao) =>
-            !subscribedDAOs
-                .map((subscribedDAO) => subscribedDAO.name)
-                .includes(dao.name)
-    )
+    const unsubscribedDAOs = allDAOs
+        .filter(
+            (dao) =>
+                !subscribedDAOs
+                    .map((subscribedDAO) => subscribedDAO.name)
+                    .includes(dao.name)
+        )
+        .sort((a, b) => a.name.localeCompare(b.name))
 
     const backgroundColors = await Promise.all(
         unsubscribedDAOs.map(async (dao) => {
