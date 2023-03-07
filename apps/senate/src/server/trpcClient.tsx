@@ -43,7 +43,7 @@ export function TrpcClientProvider(props: { children: React.ReactNode }) {
                             opts.result instanceof Error)
                 }),
                 httpBatchLink({
-                    url: `${getBaseUrl()}api/trpc`
+                    url: `${getBaseUrl()}/api/trpc`
                 })
             ],
             transformer: superjson
