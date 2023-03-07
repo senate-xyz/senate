@@ -29,7 +29,7 @@ export const Header = (props: { title: string }) => {
                 {props.title}
             </h1>
 
-            <div className='pr-20'>
+            <div className='hidden pr-20 lg:flex'>
                 <WalletConnect />
             </div>
         </div>

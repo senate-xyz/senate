@@ -51,8 +51,8 @@ const Home = () => {
     }
 
     return (
-        <div className='flex min-h-screen w-full flex-row bg-black'>
-            <div className='flex min-h-full w-full flex-row'>
+        <div className='flex min-h-screen w-full bg-black'>
+            <div className='flex min-h-full w-full flex-col lg:flex-row'>
                 <div
                     className='absolute right-5 top-5 cursor-pointer'
                     onClick={() => {
@@ -66,7 +66,7 @@ const Home = () => {
                         alt='close button'
                     />
                 </div>
-                <div className='flex w-0.5 grow flex-col items-center justify-center bg-white'>
+                <div className='hidden w-full grow flex-col items-center justify-center bg-white lg:flex lg:w-0.5'>
                     <Transition appear={true} show={true}>
                         <Transition.Child
                             appear={true}
@@ -99,20 +99,20 @@ const Home = () => {
                     </Transition>
                 </div>
 
-                <div className='flex w-0.5 grow flex-col items-center bg-black pt-20'>
+                <div className='flex h-1/2 w-full grow flex-col items-start bg-black px-10 py-20 lg:h-screen lg:w-0.5 lg:items-center'>
                     <div className='text-[36px] font-bold text-white'>
                         Get your Daily Bulletin
                     </div>
-                    <div className='mt-4 w-[420px] text-[15px] font-normal text-white'>
+                    <div className='mt-4 text-[15px] font-normal text-white lg:w-[420px]'>
                         Senate works best with your email address, so we can
                         notify you of new proposals from the DAOs you follow.
                     </div>
-                    <div className='w-[420px] text-[15px] font-normal text-white'>
+                    <div className='text-[15px] font-normal text-white lg:w-[420px]'>
                         Everyday, at 8:00 am UTC.
                     </div>
 
                     <input
-                        className={`mt-6 h-[46px] w-[420px] bg-[#D9D9D9] px-2 text-black focus:outline-none `}
+                        className={`mt-6 h-[46px] w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[420px] `}
                         value={newEmail}
                         placeholder='delegatooooor@defi.dao'
                         onKeyDown={(e) => {
@@ -124,7 +124,7 @@ const Home = () => {
                     />
 
                     <div
-                        className={`flex h-[43px] w-[420px] cursor-pointer flex-col justify-center ${
+                        className={`flex h-[43px] w-full cursor-pointer flex-col justify-center lg:w-[420px] ${
                             newEmail.length ? 'bg-white' : 'bg-[#ABABAB]'
                         } mt-6 text-center`}
                         onClick={() => onEnter()}
@@ -141,6 +141,16 @@ const Home = () => {
                             There was an error updating your email.
                         </div>
                     )}
+                </div>
+
+                <div className='flex w-full grow flex-col items-center justify-center bg-white lg:hidden'>
+                    <Image
+                        src='/assets/Senate_Logo/Daily_Bulletin_Example.png'
+                        width={800}
+                        height={1987}
+                        alt={''}
+                        quality={100}
+                    />
                 </div>
             </div>
         </div>

@@ -36,7 +36,7 @@ const Home = () => {
     return (
         <div className='flex min-h-screen w-full flex-row bg-black'>
             <div className='flex min-h-full w-full flex-col'>
-                <div className='flex h-full w-full flex-row items-center justify-center'>
+                <div className='flex h-full w-full flex-row items-center justify-center px-4'>
                     <Transition appear={true} show={true}>
                         <Transition.Child
                             appear={true}
@@ -66,7 +66,7 @@ const Home = () => {
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='mb-8 w-[447px] -translate-y-20 text-center text-[24px] font-light text-white'>
+                            <div className='mb-8 w-full -translate-y-20 text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Welcome to Senate!
                             </div>
                         </Transition.Child>
@@ -80,7 +80,7 @@ const Home = () => {
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='mb-8 w-[447px] -translate-y-20 text-center text-[24px] font-light text-white'>
+                            <div className='mb-8 w-full -translate-y-20 text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 The place where you can keep track of{' '}
                                 <span className='bg-[#5EF413] font-semibold text-black'>
                                     off-chain and on-chain proposals
@@ -98,7 +98,7 @@ const Home = () => {
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='mb-8 w-[447px] -translate-y-20 text-center text-[24px] font-light text-white'>
+                            <div className='mb-8 w-full -translate-y-20 text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Also, you’ll never miss a vote ever again with
                                 our{' '}
                                 <span className='bg-[#5EF413] font-semibold text-black'>
@@ -117,10 +117,10 @@ const Home = () => {
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='w-[447px] -translate-y-20 whitespace-pre text-center text-[24px] font-light text-white'>
+                            <div className='w-full -translate-y-20 whitespace-pre text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Does that sound cool to you?
                             </div>
-                            <div className='w-[447px] -translate-y-20 whitespace-pre text-center text-[24px] font-light text-white'>
+                            <div className='w-full -translate-y-20 whitespace-pre text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Then go ahead, and...
                             </div>
                             <div className='flex flex-row items-center'>

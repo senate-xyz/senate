@@ -6,7 +6,7 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className='pl-[92px]'>
+        <div className='lg:pl-[92px]'>
             <Header title='Settings' />
             <div className='bg-[#1E1B20]'>
                 <div

@@ -7,14 +7,14 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className='pl-[92px]'>
+        <div className='lg:pl-[92px]'>
             <Header title='Proposals' />
-            <div className='relative bg-[#1E1B20]'>
+            <div className='relative w-full bg-[#1E1B20]'>
                 <div
                     className={`flex min-h-screen w-full grow flex-col pt-[192px]`}
                 >
                     <SetupOtherAddress />
-                    <div className={`p-10`}>{children}</div>
+                    <div className='p-4 lg:p-10'>{children}</div>
                 </div>
             </div>
         </div>

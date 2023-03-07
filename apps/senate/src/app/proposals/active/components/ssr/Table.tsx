@@ -165,7 +165,7 @@ export default async function Table(props: {
     return (
         <div className={`mt-[16px] flex flex-col`}>
             <table className='w-full table-auto border-separate border-spacing-y-[4px] text-left'>
-                <thead className='h-[56px] bg-black text-white'>
+                <thead className='hidden h-[56px] bg-black text-white lg:table-header-group'>
                     <tr>
                         <th className='h-[56px] w-[200px] items-center pl-[16px]'>
                             <div className='flex gap-1'>
@@ -225,8 +225,108 @@ const ActiveProposal = async (props: {
     }
 }) => {
     return (
-        <tr className='h-[96px] w-full items-center justify-evenly bg-[#121212] text-[#EDEDED]'>
-            <td>
+        <tr className='h-[96px] w-full items-center justify-evenly bg-[#121212] text-[#EDEDED] '>
+            <td className='lg:hidden'>
+                <div className='m-[12px] flex flex-col gap-2'>
+                    <div className='flex flex-col items-center gap-2'>
+                        <div className='w-[64px] border border-b-2 border-r-2 border-t-0 border-l-0'>
+                            <Image
+                                width={64}
+                                height={64}
+                                src={props.proposal.daoPicture + '.svg'}
+                                alt={props.proposal.daoName}
+                            />
+                        </div>
+
+                        <div>
+                            {props.proposal.onchain ? (
+                                <Image
+                                    width={94}
+                                    height={26}
+                                    src={'/assets/Icon/OnChainProposal.svg'}
+                                    alt='off-chain'
+                                />
+                            ) : (
+                                <Image
+                                    width={94}
+                                    height={26}
+                                    src={'/assets/Icon/OffChainProposal.svg'}
+                                    alt='off-chain'
+                                />
+                            )}
+                        </div>
+                    </div>
+                    <div className='flex flex-col justify-end gap-2'>
+                        <div className='text-center text-[21px] font-semibold leading-[26px]'>
+                            {dayjs(props.proposal.timeEnd).fromNow()}
+                        </div>
+                        <div className='text-[15px] font-normal leading-[19px]'>
+                            {`on ${new Date(
+                                props.proposal.timeEnd
+                            ).toLocaleDateString('en-US', {
+                                month: 'long',
+                                day: 'numeric'
+                            })} at ${new Date(
+                                props.proposal.timeEnd
+                            ).toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit',
+                                timeZone: 'UTC',
+                                hour12: false
+                            })} UTC
+                    `}
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td className='lg:hidden'>
+                <div className='mx-[12px] flex grow flex-col'>
+                    <div className='cursor-pointer hover:underline'>
+                        <a
+                            href={
+                                props.proposal.proposalLink.includes(
+                                    'snapshot.org'
+                                )
+                                    ? props.proposal.proposalLink +
+                                      '?app=senate'
+                                    : props.proposal.proposalLink
+                            }
+                            target='_blank'
+                            rel='noreferrer'
+                        >
+                            <div className='pr-5 text-[18px] font-normal'>
+                                {props.proposal.proposalTitle}
+                            </div>
+                        </a>
+                    </div>
+                    <div className='self-end'>
+                        {props.proposal.voted ? (
+                            <div className='flex w-full flex-col items-center'>
+                                <Image
+                                    src='/assets/Icon/Voted.svg'
+                                    alt='voted'
+                                    width={32}
+                                    height={32}
+                                />
+                                <div className='text-[18px]'>Voted</div>
+                            </div>
+                        ) : (
+                            <div className='flex w-full flex-col items-center'>
+                                <Image
+                                    src='/assets/Icon/NotVotedYet.svg'
+                                    alt='voted'
+                                    width={32}
+                                    height={32}
+                                />
+                                <div className='text-[18px]'>Not Voted Yet</div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </td>
+
+            <td className='hidden lg:table-cell'>
                 <div className='m-[12px] flex w-max flex-row items-center gap-[8px]'>
                     <div className='border border-b-2 border-r-2 border-t-0 border-l-0'>
                         <Image
@@ -260,7 +360,7 @@ const ActiveProposal = async (props: {
                     </div>
                 </div>
             </td>
-            <td className='cursor-pointer hover:underline'>
+            <td className='hidden cursor-pointer hover:underline lg:table-cell'>
                 <a
                     href={
                         props.proposal.proposalLink.includes('snapshot.org')
@@ -275,7 +375,7 @@ const ActiveProposal = async (props: {
                     </div>
                 </a>
             </td>
-            <td>
+            <td className='hidden lg:table-cell'>
                 <div className='flex flex-col justify-between gap-2'>
                     <div className='text-[21px] font-semibold leading-[26px]'>
                         {dayjs(props.proposal.timeEnd).fromNow()}
@@ -299,7 +399,7 @@ const ActiveProposal = async (props: {
                     </div>
                 </div>
             </td>
-            <td>
+            <td className='hidden lg:table-cell'>
                 <div className='text-end'>
                     {props.proposal.voted ? (
                         <div className='flex w-full flex-col items-center'>

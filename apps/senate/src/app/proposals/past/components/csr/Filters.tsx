@@ -65,7 +65,7 @@ export const Filters = (props: {
     }, [from, end, voted, router, proxy])
 
     return (
-        <div className='mt-[16px] flex flex-col'>
+        <div className='mt-[16px] flex flex-col overflow-hidden'>
             <div className='flex flex-row gap-5'>
                 <div className='flex h-[38px] w-[300px] flex-row items-center'>
                     <label
