@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { trpc } from '../server/trpcClient'
 import { useRouter } from 'next/navigation'
 import RootProvider from '../app/providers'
+import { Transition } from '@headlessui/react'
 
 const WrapperHome = () => {
     return (
@@ -66,12 +67,36 @@ const Home = () => {
                     />
                 </div>
                 <div className='flex w-0.5 grow flex-col items-center justify-center bg-white'>
-                    <Image
-                        src='/assets/Senate_Logo/Daily_Bulletin_Example.png'
-                        width={600}
-                        height={1987}
-                        alt={''}
-                    ></Image>
+                    <Transition appear={true} show={true}>
+                        <Transition.Child
+                            appear={true}
+                            enter='transition ease-in-out duration-[1000ms] delay-[500ms]'
+                            enterFrom='opacity-0'
+                            enterTo='opacity-100'
+                        >
+                            <Transition.Child
+                                appear={true}
+                                enter='transition ease-in-out duration-[6000ms] delay-[2000ms]'
+                                enterFrom='translate-y-[0px]'
+                                enterTo='-translate-y-[1000px]'
+                            >
+                                <Transition.Child
+                                    appear={true}
+                                    enter='transition ease-in-out duration-[6000ms] delay-[12000ms]'
+                                    enterFrom='translate-y-[0px]'
+                                    enterTo='translate-y-[1000px]'
+                                >
+                                    <Image
+                                        src='/assets/Senate_Logo/Daily_Bulletin_Example.png'
+                                        width={800}
+                                        height={1987}
+                                        alt={''}
+                                        quality={100}
+                                    />
+                                </Transition.Child>
+                            </Transition.Child>
+                        </Transition.Child>
+                    </Transition>
                 </div>
 
                 <div className='flex w-0.5 grow flex-col items-center bg-black pt-20'>
