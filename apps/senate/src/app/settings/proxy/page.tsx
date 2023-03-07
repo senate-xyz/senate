@@ -15,9 +15,7 @@ export default function Home() {
     const router = useRouter()
     const provider = useProvider()
 
-    const voters = trpc.accountSettings.voters.useQuery(undefined, {
-        refetchInterval: 5000
-    })
+    const voters = trpc.accountSettings.voters.useQuery()
 
     const addVoter = trpc.accountSettings.addVoter.useMutation()
 
