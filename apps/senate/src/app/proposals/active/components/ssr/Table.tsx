@@ -216,7 +216,7 @@ export default async function Table(props: {
 
             {proposals.length == 0 && (
                 <div className='h-[96px] w-full items-center justify-evenly pt-10 text-center text-[#EDEDED]'>
-                    Subscribe to some DAOs to see their proposals.
+                    There are no active proposals.
                 </div>
             )}
         </div>
