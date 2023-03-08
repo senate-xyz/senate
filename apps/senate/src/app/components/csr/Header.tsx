@@ -42,7 +42,7 @@ export const Header = (props: { title: string }) => {
 
     return (
         <div
-            className={`${headerHeight} fixed z-20 flex h-[96px] w-full items-center justify-between border border-x-0 border-t-0 border-[#545454] bg-black px-10 transition-all`}
+            className={`${headerHeight} fixed z-20 flex h-[96px] w-full items-center justify-between border border-x-0 border-t-0 border-[#545454] bg-black  px-4 transition-all lg:px-10`}
         >
             <h1
                 className={`${titleSize} text-[52px] font-extrabold text-white transition`}
@@ -50,7 +50,7 @@ export const Header = (props: { title: string }) => {
                 {props.title}
             </h1>
 
-            <div className='left-4 flex text-white lg:hidden'>
+            <div className='flex justify-self-end text-white lg:hidden'>
                 <Menu as='div'>
                     <div>
                         <Menu.Button>
