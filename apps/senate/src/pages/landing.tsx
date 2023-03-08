@@ -35,19 +35,19 @@ const Home = () => {
 
     return (
         <div className='flex min-h-screen w-full flex-row bg-black'>
-            <div className='flex min-h-full w-full flex-col'>
-                <div className='flex h-full w-full flex-row items-center justify-center px-4'>
+            <div className='flex min-h-screen w-full flex-col'>
+                <div className='flex h-full min-h-screen w-full flex-row items-center justify-center px-4'>
                     <Transition appear={true} show={true}>
                         <Transition.Child
                             appear={true}
                             enter='transition ease-in-out duration-[5000ms] delay-[3000ms]'
-                            enterFrom='translate-y-28'
-                            enterTo='-translate-y-28'
+                            enterFrom='translate-y-36'
+                            enterTo='translate-y-0'
                             leave='ease-out'
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='flex justify-center'>
+                            <div className='mt-4 flex justify-center'>
                                 <Image
                                     src='/assets/Senate_Logo/Senate_Animation.gif'
                                     priority={true}
@@ -66,7 +66,7 @@ const Home = () => {
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='mb-8 w-full -translate-y-20 text-center text-[24px] font-light text-white lg:w-[447px]'>
+                            <div className='mt-4 mb-8 w-full text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Welcome to Senate!
                             </div>
                         </Transition.Child>
@@ -80,7 +80,7 @@ const Home = () => {
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='mb-8 w-full -translate-y-20 text-center text-[24px] font-light text-white lg:w-[447px]'>
+                            <div className='mb-8 w-full text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 The place where you can keep track of{' '}
                                 <span className='bg-[#5EF413] font-semibold text-black'>
                                     off-chain and on-chain proposals
@@ -98,7 +98,7 @@ const Home = () => {
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='mb-8 w-full -translate-y-20 text-center text-[24px] font-light text-white lg:w-[447px]'>
+                            <div className='mb-8 w-full text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Also, you’ll never miss a vote ever again with
                                 our{' '}
                                 <span className='bg-[#5EF413] font-semibold text-black'>
@@ -117,13 +117,13 @@ const Home = () => {
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='w-full -translate-y-20 whitespace-pre text-center text-[24px] font-light text-white lg:w-[447px]'>
+                            <div className='w-full whitespace-pre text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Does that sound cool to you?
                             </div>
-                            <div className='w-full -translate-y-20 whitespace-pre text-center text-[24px] font-light text-white lg:w-[447px]'>
+                            <div className='w-full whitespace-pre text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Then go ahead, and...
                             </div>
-                            <div className='flex flex-row items-center px-4'>
+                            <div className='mt-4 flex flex-row items-center self-end px-4'>
                                 <input
                                     id='default-checkbox'
                                     type='checkbox'
@@ -169,11 +169,19 @@ const Home = () => {
                                     </Link>{' '}
                                 </label>
                             </div>
+
+                            {warning && !terms && (
+                                <div className='mt-4 text-center text-[12px] font-normal text-[#FF3D00]'>
+                                    Please accept the Terms of Service, Privacy
+                                    Policy and Cookie Policy above.
+                                </div>
+                            )}
+
                             <div
                                 className={
                                     terms
-                                        ? `mt-8 flex h-[42px] w-full cursor-pointer flex-col justify-center bg-white text-center text-black`
-                                        : `mt-8 flex h-[42px] w-full cursor-pointer flex-col justify-center bg-gray-500 text-center text-gray-700`
+                                        ? `mb-8 mt-4 flex h-[42px] w-full cursor-pointer flex-col justify-center self-end bg-white text-center text-black`
+                                        : `mb-8 mt-4 flex h-[42px] w-full cursor-pointer flex-col justify-center self-end bg-gray-500 text-center text-gray-700`
                                 }
                                 onClick={() => {
                                     if (!terms) {
@@ -190,13 +198,6 @@ const Home = () => {
                             >
                                 Enter the Senate
                             </div>
-
-                            {warning && !terms && (
-                                <div className='mt-4 text-center text-[12px] font-normal text-[#FF3D00]'>
-                                    Please accept the Terms of Service, Privacy
-                                    Policy and Cookie Policy above.
-                                </div>
-                            )}
                         </Transition.Child>
                     </Transition>
                 </div>

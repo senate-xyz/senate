@@ -14,7 +14,7 @@ const Home = () => {
     return (
         <div className='flex min-h-screen w-full flex-row bg-black'>
             <div className='flex min-h-full w-full flex-col'>
-                <div className='flex h-full w-full flex-row items-center justify-center'>
+                <div className='flex h-full w-full flex-row items-center justify-center px-4'>
                     <Transition appear={true} show={true}>
                         <Transition.Child
                             appear={true}
@@ -45,7 +45,7 @@ const Home = () => {
                             leaveFrom='opacity-100'
                             leaveTo='opacity-0'
                         >
-                            <div className='mb-8 w-[447px] -translate-y-20 text-center text-[24px] font-light text-white'>
+                            <div className='mb-8 -translate-y-20 text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 The app is being updated and will be back up
                                 soon.
                             </div>
