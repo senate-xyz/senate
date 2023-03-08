@@ -23,7 +23,7 @@ export default async function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className='flex grow flex-col bg-[#1E1B20]'>
+        <div className='flex grow flex-col'>
             <div className='flex w-full flex-row gap-10 overflow-x-auto overflow-y-hidden leading-[36px]'>
                 {tabs.map((tab) => {
                     return (

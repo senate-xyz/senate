@@ -18,7 +18,7 @@ export default function Home() {
     const { openAccountModal } = useAccountModal()
 
     return (
-        <div className='flex flex-col gap-12'>
+        <div className='flex min-h-screen flex-col gap-12'>
             <div className='flex flex-col gap-4'>
                 {!account.address || session.status != 'authenticated' ? (
                     <NotConnected />
