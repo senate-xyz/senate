@@ -24,7 +24,7 @@ const SetupOtherAddress = () => {
                         .
                     </div>
                     <button
-                        className='flex w-full justify-end'
+                        className='flex min-w-[24px] justify-end'
                         onClick={() =>
                             setCookie('proposalsBannedDismissed', true)
                         }
