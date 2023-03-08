@@ -11,6 +11,7 @@ export const NavBar = () => {
             <Link href='/' className='my-[4rem]'>
                 <Image
                     loading='eager'
+                    priority={true}
                     src='/assets/Senate_Logo/64/White.svg'
                     width={64}
                     height={64}
@@ -24,6 +25,7 @@ export const NavBar = () => {
                         <div className='flex flex-col items-center'>
                             <Image
                                 loading='eager'
+                                priority={true}
                                 src='/assets/Icon/DAOs/Active.svg'
                                 width={64}
                                 height={64}
@@ -35,6 +37,7 @@ export const NavBar = () => {
                         <div className='flex flex-col items-center'>
                             <Image
                                 loading='eager'
+                                priority={true}
                                 src='/assets/Icon/DAOs/Inactive.svg'
                                 width={64}
                                 height={64}
@@ -50,6 +53,7 @@ export const NavBar = () => {
                         <div className='flex flex-col items-center'>
                             <Image
                                 loading='eager'
+                                priority={true}
                                 src='/assets/Icon/Proposals/Active.svg'
                                 width={64}
                                 height={64}
@@ -61,6 +65,7 @@ export const NavBar = () => {
                         <div className='flex flex-col items-center'>
                             <Image
                                 loading='eager'
+                                priority={true}
                                 src='/assets/Icon/Proposals/Inactive.svg'
                                 width={64}
                                 height={64}
@@ -78,6 +83,7 @@ export const NavBar = () => {
                         <div className='flex flex-col items-center'>
                             <Image
                                 loading='eager'
+                                priority={true}
                                 src='/assets/Icon/Settings/Active.svg'
                                 width={64}
                                 height={64}
@@ -89,6 +95,7 @@ export const NavBar = () => {
                         <div className='flex flex-col items-center'>
                             <Image
                                 loading='eager'
+                                priority={true}
                                 src='/assets/Icon/Settings/Inactive.svg'
                                 width={64}
                                 height={64}
@@ -106,6 +113,7 @@ export const NavBar = () => {
                 <Link href='https://twitter.com/SenateLabs'>
                     <Image
                         loading='eager'
+                        priority={true}
                         src='/assets/Icon/Twitter.svg'
                         alt='twitter'
                         width={24}
@@ -116,6 +124,7 @@ export const NavBar = () => {
                 <Link href='https://discord.gg/shtxfNqazd'>
                     <Image
                         loading='eager'
+                        priority={true}
                         src='/assets/Icon/DiscordWhite.svg'
                         alt='twitter'
                         width={24}
@@ -126,6 +135,7 @@ export const NavBar = () => {
                 <Link href='https://github.com/senate-xyz/senate'>
                     <Image
                         loading='eager'
+                        priority={true}
                         src='/assets/Icon/Github.svg'
                         alt='twitter'
                         width={24}
