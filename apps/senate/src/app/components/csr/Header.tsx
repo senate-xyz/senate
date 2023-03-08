@@ -4,10 +4,13 @@ import { Fragment, useEffect, useState } from 'react'
 import WalletConnect from './WalletConnect'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import { Menu, Transition } from '@headlessui/react'
+import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 
 export const Header = (props: { title: string }) => {
     const [headerHeight, setHeaderHeight] = useState('lg:h-[192px]')
     const [titleSize, setTitleSize] = useState('lg:text-[78px]')
+    const pathname = usePathname()
 
     if (typeof window != 'undefined') {
         window.addEventListener('wheel', () => {
@@ -64,39 +67,123 @@ export const Header = (props: { title: string }) => {
                         leaveTo='transform opacity-0 scale-95'
                     >
                         <Menu.Items className='absolute left-0 top-0 h-screen w-screen gap-4 divide-y divide-white bg-black p-4 text-[52px] font-extrabold text-white transition'>
+                            <div className='flex flex-row justify-between pb-4'>
+                                <Menu.Item>
+                                    {({}) => (
+                                        <a href='/daos'>
+                                            <Image
+                                                src='/assets/Senate_Logo/64/White.svg'
+                                                width={64}
+                                                height={64}
+                                                alt={'Senate logo'}
+                                            />
+                                        </a>
+                                    )}
+                                </Menu.Item>
+                                <Menu.Item>
+                                    {({ close }) => (
+                                        <a onClick={close}>
+                                            <Image
+                                                src='/assets/Icon/Close.svg'
+                                                width={64}
+                                                height={64}
+                                                alt={'Senate logo'}
+                                            />
+                                        </a>
+                                    )}
+                                </Menu.Item>
+                            </div>
+
                             <div className='p-1 '>
                                 <Menu.Item>
                                     {({ active }) => (
-                                        <a
-                                            className={`${active && 'w-full'}`}
-                                            href='/daos'
-                                        >
-                                            DAOs
-                                        </a>
+                                        <div className='flex flex-row'>
+                                            {pathname?.includes('daos') ? (
+                                                <Image
+                                                    src='/assets/Icon/DAOs/Active.svg'
+                                                    width={64}
+                                                    height={64}
+                                                    alt={'Senate logo'}
+                                                />
+                                            ) : (
+                                                <Image
+                                                    src='/assets/Icon/DAOs/Inactive.svg'
+                                                    width={64}
+                                                    height={64}
+                                                    alt={'Senate logo'}
+                                                />
+                                            )}
+                                            <a
+                                                className={`${
+                                                    active && 'w-full'
+                                                }`}
+                                                href='/daos'
+                                            >
+                                                DAOs
+                                            </a>
+                                        </div>
                                     )}
                                 </Menu.Item>
                             </div>
                             <div className='p-1'>
                                 <Menu.Item>
                                     {({ active }) => (
-                                        <a
-                                            className={`${active && 'w-full'}`}
-                                            href='/proposals/active'
-                                        >
-                                            Proposals
-                                        </a>
+                                        <div className='flex flex-row'>
+                                            {pathname?.includes('proposals') ? (
+                                                <Image
+                                                    src='/assets/Icon/Proposals/Active.svg'
+                                                    width={64}
+                                                    height={64}
+                                                    alt={'Senate logo'}
+                                                />
+                                            ) : (
+                                                <Image
+                                                    src='/assets/Icon/Proposals/Inactive.svg'
+                                                    width={64}
+                                                    height={64}
+                                                    alt={'Senate logo'}
+                                                />
+                                            )}
+                                            <a
+                                                className={`${
+                                                    active && 'w-full'
+                                                }`}
+                                                href='/proposals/active'
+                                            >
+                                                Proposals
+                                            </a>
+                                        </div>
                                     )}
                                 </Menu.Item>
                             </div>
                             <div className='p-1'>
                                 <Menu.Item>
                                     {({ active }) => (
-                                        <a
-                                            className={`${active && 'w-full'}`}
-                                            href='/settings/account'
-                                        >
-                                            Account settings
-                                        </a>
+                                        <div className='flex flex-row'>
+                                            {pathname?.includes('settings') ? (
+                                                <Image
+                                                    src='/assets/Icon/Settings/Active.svg'
+                                                    width={64}
+                                                    height={64}
+                                                    alt={'Senate logo'}
+                                                />
+                                            ) : (
+                                                <Image
+                                                    src='/assets/Icon/Settings/Inactive.svg'
+                                                    width={64}
+                                                    height={64}
+                                                    alt={'Senate logo'}
+                                                />
+                                            )}
+                                            <a
+                                                className={`${
+                                                    active && 'w-full'
+                                                }`}
+                                                href='/settings/account'
+                                            >
+                                                Settings
+                                            </a>
+                                        </div>
                                     )}
                                 </Menu.Item>
                             </div>

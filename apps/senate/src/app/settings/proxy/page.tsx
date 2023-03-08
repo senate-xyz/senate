@@ -128,7 +128,7 @@ const Voter = ({ address }: { address: string }) => {
                 <div className='font-mono text-[18px] font-normal leading-[23px] text-white'>
                     {voterEns}
                 </div>
-                <div className='overflow-hidden font-mono text-[18px] font-light leading-[23px] text-[#ABABAB]'>
+                <div className='break-all font-mono text-[18px] font-light leading-[23px] text-[#ABABAB]'>
                     {address}
                 </div>
             </div>
