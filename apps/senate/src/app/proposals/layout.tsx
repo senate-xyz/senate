@@ -9,12 +9,12 @@ export default function RootLayout({
     return (
         <div className='lg:pl-[92px]'>
             <Header title='Proposals' />
-            <div className='relative w-full bg-[#1E1B20]'>
+            <div className='bg-[#1E1B20] p-5 lg:p-10'>
                 <div
                     className={`flex min-h-screen w-full grow flex-col pt-[92px] lg:pt-[192px]`}
                 >
                     <SetupOtherAddress />
-                    <div className='p-4 lg:p-10'>{children}</div>
+                    <div>{children}</div>
                 </div>
             </div>
         </div>

@@ -188,6 +188,7 @@ export default async function Table(props: {
                                 <div className='flex gap-1'>
                                     <div>Ends in</div>
                                     <Image
+                                        loading='eager'
                                         width={24}
                                         height={24}
                                         src={'/assets/Icon/SortDiscending.svg'}
@@ -239,6 +240,7 @@ const MobileActiveProposal = async (props: {
                     <div className='flex flex-col items-center gap-2'>
                         <div className='w-[48px] border border-b-2 border-r-2 border-t-0 border-l-0'>
                             <Image
+                                loading='eager'
                                 width={48}
                                 height={48}
                                 src={props.proposal.daoPicture + '.svg'}
@@ -249,6 +251,7 @@ const MobileActiveProposal = async (props: {
                         <div>
                             {props.proposal.onchain ? (
                                 <Image
+                                    loading='eager'
                                     width={50}
                                     height={15}
                                     src={'/assets/Icon/OnChainProposal.svg'}
@@ -256,6 +259,7 @@ const MobileActiveProposal = async (props: {
                                 />
                             ) : (
                                 <Image
+                                    loading='eager'
                                     width={50}
                                     height={14}
                                     src={'/assets/Icon/OffChainProposal.svg'}
@@ -312,6 +316,7 @@ const MobileActiveProposal = async (props: {
                         {props.proposal.voted ? (
                             <div className='flex w-full flex-col items-center'>
                                 <Image
+                                    loading='eager'
                                     src='/assets/Icon/Voted.svg'
                                     alt='voted'
                                     width={32}
@@ -321,6 +326,7 @@ const MobileActiveProposal = async (props: {
                         ) : (
                             <div className='flex w-full flex-col items-center'>
                                 <Image
+                                    loading='eager'
                                     src='/assets/Icon/NotVotedYet.svg'
                                     alt='voted'
                                     width={32}
@@ -353,6 +359,7 @@ const ActiveProposal = async (props: {
                     <div className='flex flex-col items-center gap-2'>
                         <div className='w-[64px] border border-b-2 border-r-2 border-t-0 border-l-0'>
                             <Image
+                                loading='eager'
                                 width={64}
                                 height={64}
                                 src={props.proposal.daoPicture + '.svg'}
@@ -363,6 +370,7 @@ const ActiveProposal = async (props: {
                         <div>
                             {props.proposal.onchain ? (
                                 <Image
+                                    loading='eager'
                                     width={94}
                                     height={26}
                                     src={'/assets/Icon/OnChainProposal.svg'}
@@ -370,6 +378,7 @@ const ActiveProposal = async (props: {
                                 />
                             ) : (
                                 <Image
+                                    loading='eager'
                                     width={94}
                                     height={26}
                                     src={'/assets/Icon/OffChainProposal.svg'}
@@ -427,6 +436,7 @@ const ActiveProposal = async (props: {
                         {props.proposal.voted ? (
                             <div className='flex w-full flex-col items-center'>
                                 <Image
+                                    loading='eager'
                                     src='/assets/Icon/Voted.svg'
                                     alt='voted'
                                     width={32}
@@ -437,6 +447,7 @@ const ActiveProposal = async (props: {
                         ) : (
                             <div className='flex w-full flex-col items-center'>
                                 <Image
+                                    loading='eager'
                                     src='/assets/Icon/NotVotedYet.svg'
                                     alt='voted'
                                     width={32}
@@ -453,6 +464,7 @@ const ActiveProposal = async (props: {
                 <div className='m-[12px] flex w-max flex-row items-center gap-[8px]'>
                     <div className='border border-b-2 border-r-2 border-t-0 border-l-0'>
                         <Image
+                            loading='eager'
                             width={64}
                             height={64}
                             src={props.proposal.daoPicture + '.svg'}
@@ -466,6 +478,7 @@ const ActiveProposal = async (props: {
                         <div>
                             {props.proposal.onchain ? (
                                 <Image
+                                    loading='eager'
                                     width={94}
                                     height={26}
                                     src={'/assets/Icon/OnChainProposal.svg'}
@@ -473,6 +486,7 @@ const ActiveProposal = async (props: {
                                 />
                             ) : (
                                 <Image
+                                    loading='eager'
                                     width={94}
                                     height={26}
                                     src={'/assets/Icon/OffChainProposal.svg'}
@@ -527,6 +541,7 @@ const ActiveProposal = async (props: {
                     {props.proposal.voted ? (
                         <div className='flex w-full flex-col items-center'>
                             <Image
+                                loading='eager'
                                 src='/assets/Icon/Voted.svg'
                                 alt='voted'
                                 width={32}
@@ -537,6 +552,7 @@ const ActiveProposal = async (props: {
                     ) : (
                         <div className='flex w-full flex-col items-center'>
                             <Image
+                                loading='eager'
                                 src='/assets/Icon/NotVotedYet.svg'
                                 alt='voted'
                                 width={32}
