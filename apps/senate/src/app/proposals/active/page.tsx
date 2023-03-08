@@ -89,7 +89,7 @@ export default async function Home({
     })
 
     return (
-        <div className='relative'>
+        <div className='relative min-h-screen'>
             <div className='z-10'>
                 <ConnectWalletModal />
             </div>
