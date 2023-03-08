@@ -164,51 +164,173 @@ export default async function Table(props: {
 
     return (
         <div className={`mt-[16px] flex flex-col`}>
-            <table className='w-full table-auto border-separate border-spacing-y-[4px] text-left'>
-                <thead className='hidden h-[56px] bg-black text-white lg:table-header-group'>
-                    <tr>
-                        <th className='h-[56px] w-[200px] items-center pl-[16px]'>
-                            <div className='flex gap-1'>
-                                <div>DAO</div>
-                            </div>
-                        </th>
-                        <th className='h-[56px] items-center'>
-                            <div className='flex gap-1'>
-                                <div>Proposal Title</div>
-                            </div>
-                        </th>
-                        <th className='h-[56px] w-[200px] items-center font-normal'>
-                            <div className='flex gap-1'>
-                                <div>Ends in</div>
-                                <Image
-                                    width={24}
-                                    height={24}
-                                    src={'/assets/Icon/SortDiscending.svg'}
-                                    alt='ends-in'
-                                />
-                            </div>
-                        </th>
-                        <th className='h-[56px] w-[200px] items-center text-center font-normal'>
-                            <div className='flex justify-center gap-1'>
-                                <div>Vote status</div>
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
+            <div className='flex w-full flex-col lg:hidden'>
+                {proposals.map((proposal, index) => (
+                    /* @ts-expect-error Server Component */
+                    <MobileActiveProposal key={index} proposal={proposal} />
+                ))}
+            </div>
+            <div className='hidden lg:flex'>
+                <table className='w-full table-auto border-separate border-spacing-y-[4px] text-left'>
+                    <thead className='h-[56px] bg-black text-white'>
+                        <tr>
+                            <th className='h-[56px] w-[200px] items-center pl-[16px]'>
+                                <div className='flex gap-1'>
+                                    <div>DAO</div>
+                                </div>
+                            </th>
+                            <th className='h-[56px] items-center'>
+                                <div className='flex gap-1'>
+                                    <div>Proposal Title</div>
+                                </div>
+                            </th>
+                            <th className='h-[56px] w-[200px] items-center font-normal'>
+                                <div className='flex gap-1'>
+                                    <div>Ends in</div>
+                                    <Image
+                                        width={24}
+                                        height={24}
+                                        src={'/assets/Icon/SortDiscending.svg'}
+                                        alt='ends-in'
+                                    />
+                                </div>
+                            </th>
+                            <th className='h-[56px] w-[200px] items-center text-center font-normal'>
+                                <div className='flex justify-center gap-1'>
+                                    <div>Vote status</div>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
 
-                <tbody>
-                    {proposals.map((proposal, index) => (
-                        /* @ts-expect-error Server Component */
-                        <ActiveProposal key={index} proposal={proposal} />
-                    ))}
-                </tbody>
-            </table>
+                    <tbody>
+                        {proposals.map((proposal, index) => (
+                            /* @ts-expect-error Server Component */
+                            <ActiveProposal key={index} proposal={proposal} />
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
             {proposals.length == 0 && (
                 <div className='h-[96px] w-full items-center justify-evenly pt-10 text-center text-[#EDEDED]'>
                     Subscribe to some DAOs to see their proposals.
                 </div>
             )}
+        </div>
+    )
+}
+
+const MobileActiveProposal = async (props: {
+    proposal: {
+        daoName: string
+        onchain: boolean
+        daoPicture: string
+        proposalTitle: string
+        proposalLink: string
+        timeEnd: Date
+        voted: boolean
+    }
+}) => {
+    return (
+        <div className='my-1 flex w-full flex-col items-start bg-[#121212] text-[#EDEDED]'>
+            <div className='flex w-full flex-col gap-2 p-2'>
+                <div className='flex flex-row gap-2'>
+                    <div className='flex flex-col items-center gap-2'>
+                        <div className='w-[48px] border border-b-2 border-r-2 border-t-0 border-l-0'>
+                            <Image
+                                width={48}
+                                height={48}
+                                src={props.proposal.daoPicture + '.svg'}
+                                alt={props.proposal.daoName}
+                            />
+                        </div>
+
+                        <div>
+                            {props.proposal.onchain ? (
+                                <Image
+                                    width={50}
+                                    height={15}
+                                    src={'/assets/Icon/OnChainProposal.svg'}
+                                    alt='off-chain'
+                                />
+                            ) : (
+                                <Image
+                                    width={50}
+                                    height={14}
+                                    src={'/assets/Icon/OffChainProposal.svg'}
+                                    alt='off-chain'
+                                />
+                            )}
+                        </div>
+                    </div>
+                    <div className='cursor-pointer self-center pb-5 hover:underline'>
+                        <a
+                            href={
+                                props.proposal.proposalLink.includes(
+                                    'snapshot.org'
+                                )
+                                    ? props.proposal.proposalLink +
+                                      '?app=senate'
+                                    : props.proposal.proposalLink
+                            }
+                            target='_blank'
+                            rel='noreferrer'
+                        >
+                            <div className='text-[15px] font-normal leading-[23px]'>
+                                {props.proposal.proposalTitle}
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div className='flex w-full flex-row items-end justify-between'>
+                    <div className='flex flex-col justify-end'>
+                        <div className='text-start text-[21px] font-semibold leading-[26px]'>
+                            {dayjs(props.proposal.timeEnd).fromNow()}
+                        </div>
+                        <div className='text-[12px] font-normal leading-[19px]'>
+                            {`on ${new Date(
+                                props.proposal.timeEnd
+                            ).toLocaleDateString('en-US', {
+                                month: 'long',
+                                day: 'numeric'
+                            })} at ${new Date(
+                                props.proposal.timeEnd
+                            ).toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit',
+                                timeZone: 'UTC',
+                                hour12: false
+                            })} UTC
+                    `}
+                        </div>
+                    </div>
+
+                    <div className='self-end p-2'>
+                        {props.proposal.voted ? (
+                            <div className='flex w-full flex-col items-center'>
+                                <Image
+                                    src='/assets/Icon/Voted.svg'
+                                    alt='voted'
+                                    width={32}
+                                    height={32}
+                                />
+                            </div>
+                        ) : (
+                            <div className='flex w-full flex-col items-center'>
+                                <Image
+                                    src='/assets/Icon/NotVotedYet.svg'
+                                    alt='voted'
+                                    width={32}
+                                    height={32}
+                                />
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
