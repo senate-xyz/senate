@@ -45,6 +45,7 @@ export const Header = (props: { title: string }) => {
         >
             <Image
                 loading='eager'
+                priority={true}
                 className='lg:hidden'
                 src='/assets/Senate_Logo/64/White.svg'
                 width={48}
@@ -63,6 +64,7 @@ export const Header = (props: { title: string }) => {
                         <Menu.Button>
                             <Image
                                 loading='eager'
+                                priority={true}
                                 src='/assets/Icon/MobileMenuOpen.svg'
                                 width={48}
                                 height={48}
@@ -86,6 +88,7 @@ export const Header = (props: { title: string }) => {
                                         <a href='/daos'>
                                             <Image
                                                 loading='eager'
+                                                priority={true}
                                                 src='/assets/Icon/MobileLogo.svg'
                                                 width={188}
                                                 height={48}
@@ -99,6 +102,7 @@ export const Header = (props: { title: string }) => {
                                         <a onClick={close}>
                                             <Image
                                                 loading='eager'
+                                                priority={true}
                                                 src='/assets/Icon/MobileMenuClose.svg'
                                                 width={48}
                                                 height={48}
@@ -115,6 +119,7 @@ export const Header = (props: { title: string }) => {
                                         {pathname?.includes('daos') ? (
                                             <Image
                                                 loading='eager'
+                                                priority={true}
                                                 src='/assets/Icon/DAOs/Active.svg'
                                                 width={48}
                                                 height={48}
@@ -123,6 +128,7 @@ export const Header = (props: { title: string }) => {
                                         ) : (
                                             <Image
                                                 loading='eager'
+                                                priority={true}
                                                 src='/assets/Icon/DAOs/Inactive.svg'
                                                 width={48}
                                                 height={48}
@@ -145,6 +151,7 @@ export const Header = (props: { title: string }) => {
                                         {pathname?.includes('proposals') ? (
                                             <Image
                                                 loading='eager'
+                                                priority={true}
                                                 src='/assets/Icon/Proposals/Active.svg'
                                                 width={48}
                                                 height={48}
@@ -153,6 +160,7 @@ export const Header = (props: { title: string }) => {
                                         ) : (
                                             <Image
                                                 loading='eager'
+                                                priority={true}
                                                 src='/assets/Icon/Proposals/Inactive.svg'
                                                 width={48}
                                                 height={48}
@@ -175,6 +183,7 @@ export const Header = (props: { title: string }) => {
                                         {pathname?.includes('settings') ? (
                                             <Image
                                                 loading='eager'
+                                                priority={true}
                                                 src='/assets/Icon/Settings/Active.svg'
                                                 width={48}
                                                 height={48}
@@ -183,6 +192,8 @@ export const Header = (props: { title: string }) => {
                                         ) : (
                                             <Image
                                                 loading='eager'
+                                                priority={true}
+                                                priority={true}
                                                 src='/assets/Icon/Settings/Inactive.svg'
                                                 width={48}
                                                 height={48}
