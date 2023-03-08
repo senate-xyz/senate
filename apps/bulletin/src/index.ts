@@ -48,8 +48,11 @@ interface EmailTemplateRow {
     countdownUrl: string
     result: {
         highestScoreChoice: string
-        highestScorePercentage: number
+        highestScorePercentage: string
+        barWidthPercentage: number
     }
+    resultDisplay: string
+    resultUnavailableDisplay: string
 }
 
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
@@ -154,16 +157,6 @@ const fetchUsersToBeNotifiedForProposal = async (
             },
             select: {
                 id: true
-            }
-        })
-
-        log_bul.log({
-            level: 'info',
-            message: 'Fetched users to be notified',
-            data: {
-                proposal: proposal,
-                type: type,
-                count: users.length
             }
         })
 
@@ -440,10 +433,13 @@ const formatEmailTemplateRow = async (
             : encodeURI(`${process.env.WEB_URL}/assets/Chain/Ethereum/eth.png`)
 
     let result = null
+
     if (notification.type === RoundupNotificationType.PAST) {
         let highestScore = 0
         let highestScoreIndex = 0
+        let highestScorePercentage = 0
         let highestScoreChoice = ''
+
         const scores = notification.proposal.scores as JsonArray
 
         for (const score of scores) {
@@ -457,11 +453,13 @@ const formatEmailTemplateRow = async (
             (notification.proposal.choices as JsonArray)[highestScoreIndex - 1]
         )
 
+        highestScorePercentage =
+            (highestScore / notification.proposal.scoresTotal) * 100
+
         result = {
-            highestScoreChoice: highestScoreChoice,
-            highestScorePercentage: Math.floor(
-                (highestScore / notification.proposal.scoresTotal) * 100
-            )
+            highestScoreChoice: highestScoreChoice.substring(0, 15),
+            highestScorePercentage: highestScorePercentage.toFixed(2),
+            barWidthPercentage: Math.floor(highestScorePercentage)
         }
     }
 
@@ -489,8 +487,22 @@ const formatEmailTemplateRow = async (
             emailProposalEndDateStringFormat
         ),
         countdownUrl: encodeURI(countdownUrl),
-        result: result
+        result: result,
+        resultDisplay: isMakerProposal(notification.proposal) ? 'hide' : 'show',
+        resultUnavailableDisplay: isMakerProposal(notification.proposal)
+            ? 'show'
+            : 'hide'
     }
+}
+
+const isMakerProposal = (
+    proposal: Proposal & { dao: DAO; daoHandler: DAOHandler }
+) => {
+    return (
+        proposal.daoHandler.type === DAOHandlerType.MAKER_EXECUTIVE ||
+        proposal.daoHandler.type === DAOHandlerType.MAKER_POLL ||
+        proposal.daoHandler.type === DAOHandlerType.MAKER_POLL_ARBITRUM
+    )
 }
 
 const formatTwoDigit = (timeUnit: number): string => {
