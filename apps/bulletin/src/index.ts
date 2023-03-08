@@ -1,11 +1,14 @@
 import {
     type Proposal,
+    DAOHandlerType,
     type UserWithVotingAddresses,
     type Voter,
     type DAO,
     type Notification,
     RoundupNotificationType,
-    prisma
+    JsonArray,
+    prisma,
+    DAOHandler
 } from '@senate/database'
 
 import axios from 'axios'
@@ -37,17 +40,16 @@ interface EmailTemplateRow {
     proposalName: string
     proposalUrl: string
     daoLogoUrl: string
+    chainLogoUrl: string
     daoName: string
     endHoursUTC: string
     endMinutesUTC: string
     endDateString: string
     countdownUrl: string
-    // result: {
-    //     choice: string
-    //     weight: number
-    //     quorum: boolean
-    //     imgUrl: string
-    // }
+    result: {
+        highestScoreChoice: string
+        highestScorePercentage: number
+    }
 }
 
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
@@ -69,16 +71,16 @@ schedule(
         try {
             await clearNotificationsTable()
 
-            const newProposals = await fetchNewProposals()
+            const newProposals: Proposal[] = await fetchNewProposals()
             await insertNotifications(newProposals, RoundupNotificationType.NEW)
 
-            const endingProposals = await fetchEndingProposals()
+            const endingProposals: Proposal[] = await fetchEndingProposals()
             await insertNotifications(
                 endingProposals,
                 RoundupNotificationType.ENDING_SOON
             )
 
-            const pastProposals = await fetchPastProposals()
+            const pastProposals: Proposal[] = await fetchPastProposals()
             await insertNotifications(
                 pastProposals,
                 RoundupNotificationType.PAST
@@ -374,7 +376,14 @@ const formatEmailTableData = async (
     try {
         const notifications = await prisma.notification.findMany({
             where: { userId: user.id, type: notificationType },
-            include: { proposal: { include: { dao: true } } }
+            include: {
+                proposal: {
+                    include: {
+                        dao: true,
+                        daoHandler: true
+                    }
+                }
+            }
         })
 
         const tableRows: EmailTemplateRow[] = []
@@ -395,7 +404,9 @@ const formatEmailTableData = async (
 }
 
 const formatEmailTemplateRow = async (
-    notification: Notification & { proposal: Proposal & { dao: DAO } },
+    notification: Notification & {
+        proposal: Proposal & { dao: DAO; daoHandler: DAOHandler }
+    },
     user: UserWithVotingAddresses
 ): Promise<EmailTemplateRow> => {
     const voted = await userVoted(
@@ -421,6 +432,39 @@ const formatEmailTemplateRow = async (
         ? `${process.env.WEB_URL}/assets/Icon/DidntVote.png`
         : `${process.env.WEB_URL}/assets/Icon/NotVotedYet.png`
 
+    const chainLogoUrl =
+        notification.proposal.daoHandler.type === DAOHandlerType.SNAPSHOT
+            ? encodeURI(
+                  `${process.env.WEB_URL}/assets/Chain/Snapshot/snapshot.png`
+              )
+            : encodeURI(`${process.env.WEB_URL}/assets/Chain/Ethereum/eth.png`)
+
+    let result = null
+    if (notification.type === RoundupNotificationType.PAST) {
+        let highestScore = 0
+        let highestScoreIndex = 0
+        let highestScoreChoice = ''
+        const scores = notification.proposal.scores as JsonArray
+
+        for (const score of scores) {
+            if (Number(score) > highestScore) {
+                highestScore = Number(score)
+                highestScoreIndex++
+            }
+        }
+
+        highestScoreChoice = String(
+            (notification.proposal.choices as JsonArray)[highestScoreIndex - 1]
+        )
+
+        result = {
+            highestScoreChoice: highestScoreChoice,
+            highestScorePercentage: Math.floor(
+                (highestScore / notification.proposal.scoresTotal) * 100
+            )
+        }
+    }
+
     return {
         votingStatus,
         votingStatusIconUrl: encodeURI(votingStatusIconUrl),
@@ -432,6 +476,7 @@ const formatEmailTemplateRow = async (
         daoLogoUrl: encodeURI(
             `${process.env.WEB_URL}${notification.proposal.dao.picture}_small.png`
         ),
+        chainLogoUrl: chainLogoUrl,
         daoName: notification.proposal.dao.name,
         endHoursUTC: formatTwoDigit(
             notification.proposal.timeEnd.getUTCHours()
@@ -443,7 +488,8 @@ const formatEmailTemplateRow = async (
             undefined,
             emailProposalEndDateStringFormat
         ),
-        countdownUrl: encodeURI(countdownUrl)
+        countdownUrl: encodeURI(countdownUrl),
+        result: result
     }
 }
 
@@ -631,7 +677,7 @@ const sendDailyBulletin = async () => {
                     : String(process.env.TEST_EMAIL)
 
             await client.sendEmailWithTemplate({
-                TemplateAlias: 'daily-bulletin',
+                TemplateAlias: 'daily-bulletin-1',
                 TemplateModel: {
                     senateLogoUrl: encodeURI(
                         process.env.WEB_URL + '/assets/Senate_Logo/64/White.png'
