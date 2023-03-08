@@ -40,7 +40,7 @@ export default function RootLayout({
 
     return (
         <>
-            <div className='flex grow flex-col bg-[#1E1B20] p-5 px-12'>
+            <div className='flex grow flex-col bg-[#1E1B20] p-5 lg:px-12'>
                 <div className='flex w-full flex-row gap-10 overflow-x-auto'>
                     {session.status == 'authenticated' ? (
                         tabs.map((tab) => {
