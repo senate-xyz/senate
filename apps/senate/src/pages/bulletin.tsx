@@ -60,6 +60,7 @@ const Home = () => {
                     }}
                 >
                     <Image
+                        loading='eager'
                         width='32'
                         height='32'
                         src='/assets/Icon/Close.svg'
@@ -87,6 +88,7 @@ const Home = () => {
                                     enterTo='translate-y-[1000px]'
                                 >
                                     <Image
+                                        loading='eager'
                                         src='/assets/Senate_Logo/Daily_Bulletin_Example.png'
                                         width={800}
                                         height={1987}
@@ -145,6 +147,7 @@ const Home = () => {
 
                 <div className='flex w-full grow flex-col items-center justify-center bg-white lg:hidden'>
                     <Image
+                        loading='eager'
                         src='/assets/Senate_Logo/Daily_Bulletin_Example.png'
                         width={800}
                         height={1987}

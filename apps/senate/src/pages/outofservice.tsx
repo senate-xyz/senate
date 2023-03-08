@@ -27,6 +27,7 @@ const Home = () => {
                         >
                             <div className='flex justify-center'>
                                 <Image
+                                    loading='eager'
                                     src='/assets/Senate_Logo/Senate_Animation.gif'
                                     priority={true}
                                     alt={''}

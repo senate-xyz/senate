@@ -67,6 +67,7 @@ export const UnsubscribedDAO = (props: {
             >
                 <div className='flex grow flex-col items-center justify-end px-6 pb-6'>
                     <Image
+                        loading='eager'
                         style={{
                             filter: 'saturate(0.2)'
                         }}
@@ -90,6 +91,7 @@ export const UnsubscribedDAO = (props: {
                                     case 'SNAPSHOT':
                                         return (
                                             <Image
+                                                loading='eager'
                                                 key={index}
                                                 width='24'
                                                 height='24'
@@ -104,6 +106,7 @@ export const UnsubscribedDAO = (props: {
                                     case 'MAKER_EXECUTIVE':
                                         return (
                                             <Image
+                                                loading='eager'
                                                 key={index}
                                                 width='24'
                                                 height='24'
@@ -114,6 +117,7 @@ export const UnsubscribedDAO = (props: {
                                     case 'MAKER_POLL_ARBITRUM':
                                         return (
                                             <Image
+                                                loading='eager'
                                                 key={index}
                                                 width='24'
                                                 height='24'
@@ -124,6 +128,7 @@ export const UnsubscribedDAO = (props: {
                                     default:
                                         return (
                                             <Image
+                                                loading='eager'
                                                 key={index}
                                                 width='24'
                                                 height='24'

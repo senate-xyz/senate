@@ -77,7 +77,7 @@ export default async function Home() {
 
     return (
         <main className='text-white'>
-            <div className='w-full'>
+            <div className='flex w-full flex-col gap-12'>
                 {!userBulletin && userDAOs && <SetupDailyBulletin />}
 
                 {

@@ -45,6 +45,7 @@ export const Header = (props: { title: string }) => {
             className={`${headerHeight} fixed z-20 flex h-[96px] w-full items-center justify-start border border-x-0 border-t-0 border-[#545454] bg-black  px-4 transition-all lg:px-10`}
         >
             <Image
+                loading='eager'
                 className='lg:hidden'
                 src='/assets/Senate_Logo/64/White.svg'
                 width={64}
@@ -79,6 +80,7 @@ export const Header = (props: { title: string }) => {
                                     {({}) => (
                                         <a href='/daos'>
                                             <Image
+                                                loading='eager'
                                                 src='/assets/Senate_Logo/64/White.svg'
                                                 width={64}
                                                 height={64}
@@ -91,6 +93,7 @@ export const Header = (props: { title: string }) => {
                                     {({ close }) => (
                                         <a onClick={close}>
                                             <Image
+                                                loading='eager'
                                                 src='/assets/Icon/Close.svg'
                                                 width={64}
                                                 height={64}
@@ -107,6 +110,7 @@ export const Header = (props: { title: string }) => {
                                         <div className='flex flex-row'>
                                             {pathname?.includes('daos') ? (
                                                 <Image
+                                                    loading='eager'
                                                     src='/assets/Icon/DAOs/Active.svg'
                                                     width={64}
                                                     height={64}
@@ -114,6 +118,7 @@ export const Header = (props: { title: string }) => {
                                                 />
                                             ) : (
                                                 <Image
+                                                    loading='eager'
                                                     src='/assets/Icon/DAOs/Inactive.svg'
                                                     width={64}
                                                     height={64}
@@ -138,6 +143,7 @@ export const Header = (props: { title: string }) => {
                                         <div className='flex flex-row'>
                                             {pathname?.includes('proposals') ? (
                                                 <Image
+                                                    loading='eager'
                                                     src='/assets/Icon/Proposals/Active.svg'
                                                     width={64}
                                                     height={64}
@@ -145,6 +151,7 @@ export const Header = (props: { title: string }) => {
                                                 />
                                             ) : (
                                                 <Image
+                                                    loading='eager'
                                                     src='/assets/Icon/Proposals/Inactive.svg'
                                                     width={64}
                                                     height={64}
@@ -169,6 +176,7 @@ export const Header = (props: { title: string }) => {
                                         <div className='flex flex-row'>
                                             {pathname?.includes('settings') ? (
                                                 <Image
+                                                    loading='eager'
                                                     src='/assets/Icon/Settings/Active.svg'
                                                     width={64}
                                                     height={64}
@@ -176,6 +184,7 @@ export const Header = (props: { title: string }) => {
                                                 />
                                             ) : (
                                                 <Image
+                                                    loading='eager'
                                                     src='/assets/Icon/Settings/Inactive.svg'
                                                     width={64}
                                                     height={64}
