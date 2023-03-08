@@ -14,7 +14,7 @@ const SetupOtherAddress = () => {
     return (
         <div>
             {!cookie.proposalsBannedDismissed && proxies.data?.length < 1 && (
-                <div className='flex w-full flex-row items-center justify-between bg-[#FFF1BF] p-6 lg:h-[72px]'>
+                <div className='flex w-full flex-row items-center justify-between bg-[#FFF1BF] p-6'>
                     <div className='text-[24px] font-light text-black'>
                         You can add other wallet addresses so that you can also
                         see the voting status of other wallets. You can do it in{' '}
