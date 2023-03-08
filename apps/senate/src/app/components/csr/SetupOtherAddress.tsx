@@ -26,7 +26,9 @@ const SetupOtherAddress = () => {
                     <button
                         className='flex min-w-[24px] justify-end'
                         onClick={() =>
-                            setCookie('proposalsBannedDismissed', true)
+                            setCookie('proposalsBannedDismissed', true, {
+                                maxAge: 60 * 60 * 24 * 365
+                            })
                         }
                     >
                         <Image

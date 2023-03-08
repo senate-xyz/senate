@@ -199,11 +199,18 @@ const Home = () => {
                                         if (!terms) {
                                             setWarning(true)
                                         } else {
-                                            setCookie('hasSeenLanding', true)
-                                            setCookie('acceptedTerms', true)
+                                            setCookie('hasSeenLanding', true, {
+                                                maxAge: 60 * 60 * 24 * 365
+                                            })
+                                            setCookie('acceptedTerms', true, {
+                                                maxAge: 60 * 60 * 24 * 365
+                                            })
                                             setCookie(
                                                 'acceptedTermsTimestamp',
-                                                Date.now()
+                                                Date.now(),
+                                                {
+                                                    maxAge: 60 * 60 * 24 * 365
+                                                }
                                             )
                                         }
                                     }}
