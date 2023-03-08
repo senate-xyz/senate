@@ -24,7 +24,7 @@ export default async function RootLayout({
 }) {
     return (
         <div className='flex grow flex-col bg-[#1E1B20]'>
-            <div className='flex w-full flex-row gap-10'>
+            <div className='flex w-full flex-row gap-10 overflow-auto'>
                 {tabs.map((tab) => {
                     return (
                         <Link

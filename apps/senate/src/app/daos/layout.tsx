@@ -10,7 +10,7 @@ export default function RootLayout({
             <Header title='DAOs' />
             <div className='relative bg-[#1E1B20]'>
                 <div
-                    className={`flex min-h-screen w-full grow flex-col pt-[192px]`}
+                    className={`flex min-h-screen w-full grow flex-col pt-[92px] lg:pt-[192px]`}
                 >
                     <div className='flex grow flex-col'>{children}</div>
                 </div>

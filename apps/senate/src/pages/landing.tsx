@@ -123,7 +123,7 @@ const Home = () => {
                             <div className='w-full -translate-y-20 whitespace-pre text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Then go ahead, and...
                             </div>
-                            <div className='flex flex-row items-center'>
+                            <div className='flex flex-row items-center px-4'>
                                 <input
                                     id='default-checkbox'
                                     type='checkbox'

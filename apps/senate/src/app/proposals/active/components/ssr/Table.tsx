@@ -280,8 +280,8 @@ const ActiveProposal = async (props: {
                     </div>
                 </div>
             </td>
-            <td className='lg:hidden'>
-                <div className='mx-[12px] flex grow flex-col'>
+            <td className='h-full lg:hidden'>
+                <div className='m-[12px] flex h-full flex-col gap-4'>
                     <div className='cursor-pointer hover:underline'>
                         <a
                             href={
@@ -300,6 +300,7 @@ const ActiveProposal = async (props: {
                             </div>
                         </a>
                     </div>
+
                     <div className='self-end'>
                         {props.proposal.voted ? (
                             <div className='flex w-full flex-col items-center'>

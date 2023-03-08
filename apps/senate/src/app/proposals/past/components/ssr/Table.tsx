@@ -258,8 +258,8 @@ const ActiveProposal = async (props: {
 }) => {
     return (
         <tr className='h-[96px] w-full items-center justify-evenly bg-[#121212] text-[#EDEDED] '>
-            <td className='lg:hidden'>
-                <div className='m-[12px] flex flex-col gap-2'>
+            <td className='h-full lg:hidden'>
+                <div className='m-[12px] flex h-full flex-col gap-2'>
                     <div className='flex flex-col items-center gap-2'>
                         <div className='w-[64px] border border-b-2 border-r-2 border-t-0 border-l-0'>
                             <Image
