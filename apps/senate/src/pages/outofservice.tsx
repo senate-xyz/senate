@@ -3,6 +3,8 @@
 import '../styles/globals.css'
 import Image from 'next/image'
 import { Transition } from '@headlessui/react'
+import Head from 'next/head'
+import Script from 'next/script'
 
 const WrapperHome = () => {
     return <Home />
@@ -13,6 +15,16 @@ export default WrapperHome
 const Home = () => {
     return (
         <div className='flex min-h-screen w-full flex-row bg-black'>
+            <Head>
+                <Script id='howuku'>
+                    {`(function(t,r,a,c,k){
+                c=['track','identify','converted'],t.o=t._init||{},
+                c.map(function(n){return t.o[n]=t.o[n]||function(){(t.o[n].q=t.o[n].q||[]).push(arguments);};}),t._init=t.o,
+                k=r.createElement("script"),k.type="text/javascript",k.async=true,k.src="https://cdn.howuku.com/js/track.js",k.setAttribute("key",a),
+                r.getElementsByTagName("head")[0].appendChild(k);
+                })(window, document, "9mv6yAGkYDZV0BJEzlN34O");`}
+                </Script>
+            </Head>
             <div className='flex min-h-full w-full flex-col'>
                 <div className='flex h-full w-full flex-row items-center justify-center px-4'>
                     <Transition appear={true} show={true}>

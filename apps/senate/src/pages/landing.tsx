@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation'
 import { useCookies } from 'react-cookie'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import Script from 'next/script'
+import Head from 'next/head'
 
 const WrapperHome = () => {
     return <Home />
@@ -35,6 +37,16 @@ const Home = () => {
 
     return (
         <div className='flex min-h-screen w-full flex-row bg-black'>
+            <Head>
+                <Script id='howuku'>
+                    {`(function(t,r,a,c,k){
+                c=['track','identify','converted'],t.o=t._init||{},
+                c.map(function(n){return t.o[n]=t.o[n]||function(){(t.o[n].q=t.o[n].q||[]).push(arguments);};}),t._init=t.o,
+                k=r.createElement("script"),k.type="text/javascript",k.async=true,k.src="https://cdn.howuku.com/js/track.js",k.setAttribute("key",a),
+                r.getElementsByTagName("head")[0].appendChild(k);
+                })(window, document, "9mv6yAGkYDZV0BJEzlN34O");`}
+                </Script>
+            </Head>
             <div className='flex min-h-screen w-full flex-col'>
                 <div className='flex h-full min-h-screen w-full flex-row items-center justify-center px-4'>
                     <Transition appear={true} show={true}>

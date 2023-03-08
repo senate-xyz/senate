@@ -8,6 +8,8 @@ import { trpc } from '../server/trpcClient'
 import { useRouter } from 'next/navigation'
 import RootProvider from '../app/providers'
 import { Transition } from '@headlessui/react'
+import Script from 'next/script'
+import Head from 'next/head'
 
 const WrapperHome = () => {
     return (
@@ -52,6 +54,16 @@ const Home = () => {
 
     return (
         <div className='flex min-h-screen w-full bg-black'>
+            <Head>
+                <Script id='howuku'>
+                    {`(function(t,r,a,c,k){
+                c=['track','identify','converted'],t.o=t._init||{},
+                c.map(function(n){return t.o[n]=t.o[n]||function(){(t.o[n].q=t.o[n].q||[]).push(arguments);};}),t._init=t.o,
+                k=r.createElement("script"),k.type="text/javascript",k.async=true,k.src="https://cdn.howuku.com/js/track.js",k.setAttribute("key",a),
+                r.getElementsByTagName("head")[0].appendChild(k);
+                })(window, document, "9mv6yAGkYDZV0BJEzlN34O");`}
+                </Script>
+            </Head>
             <div className='flex min-h-full w-full flex-col lg:flex-row'>
                 <div
                     className='absolute right-5 top-5 cursor-pointer'
