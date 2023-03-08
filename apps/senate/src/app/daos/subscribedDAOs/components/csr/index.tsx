@@ -45,6 +45,7 @@ export const SubscribedDAO = (props: {
                                 }}
                             >
                                 <Image
+                                    loading='eager'
                                     width='32'
                                     height='32'
                                     src='/assets/Icon/Close.svg'
@@ -101,6 +102,7 @@ export const SubscribedDAO = (props: {
                             }}
                         >
                             <Image
+                                loading='eager'
                                 width='32'
                                 height='32'
                                 src='/assets/Icon/Menu.svg'
@@ -110,6 +112,7 @@ export const SubscribedDAO = (props: {
                     </div>
                     <div className='flex grow flex-col items-center justify-end px-6 pb-6'>
                         <Image
+                            loading='eager'
                             style={{
                                 filter: 'saturate(0.2)'
                             }}
@@ -133,6 +136,7 @@ export const SubscribedDAO = (props: {
                                         case 'SNAPSHOT':
                                             return (
                                                 <Image
+                                                    loading='eager'
                                                     key={index}
                                                     width='24'
                                                     height='24'
@@ -147,6 +151,7 @@ export const SubscribedDAO = (props: {
                                         case 'MAKER_EXECUTIVE':
                                             return (
                                                 <Image
+                                                    loading='eager'
                                                     key={index}
                                                     width='24'
                                                     height='24'
@@ -157,6 +162,7 @@ export const SubscribedDAO = (props: {
                                         case 'MAKER_POLL_ARBITRUM':
                                             return (
                                                 <Image
+                                                    loading='eager'
                                                     key={index}
                                                     width='24'
                                                     height='24'
@@ -167,6 +173,7 @@ export const SubscribedDAO = (props: {
                                         default:
                                             return (
                                                 <Image
+                                                    loading='eager'
                                                     key={index}
                                                     width='24'
                                                     height='24'

@@ -70,7 +70,7 @@ export default async function SubscribedDAOs() {
     return (
         <div>
             {subscriptions.length > 0 && (
-                <main className='p-10'>
+                <main>
                     <p className='mb-4 w-full text-[36px] font-semibold text-white'>
                         Your DAOs
                     </p>
