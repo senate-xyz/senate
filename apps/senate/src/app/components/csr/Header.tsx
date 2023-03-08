@@ -42,15 +42,22 @@ export const Header = (props: { title: string }) => {
 
     return (
         <div
-            className={`${headerHeight} fixed z-20 flex h-[96px] w-full items-center justify-between border border-x-0 border-t-0 border-[#545454] bg-black  px-4 transition-all lg:px-10`}
+            className={`${headerHeight} fixed z-20 flex h-[96px] w-full items-center justify-start border border-x-0 border-t-0 border-[#545454] bg-black  px-4 transition-all lg:px-10`}
         >
+            <Image
+                className='lg:hidden'
+                src='/assets/Senate_Logo/64/White.svg'
+                width={64}
+                height={64}
+                alt={'Senate logo'}
+            />
             <h1
                 className={`${titleSize} text-[52px] font-extrabold text-white transition`}
             >
                 {props.title}
             </h1>
 
-            <div className='flex justify-self-end text-white lg:hidden'>
+            <div className='flex w-full justify-end text-white lg:hidden'>
                 <Menu as='div'>
                     <div>
                         <Menu.Button>
@@ -66,7 +73,7 @@ export const Header = (props: { title: string }) => {
                         leaveFrom='transform opacity-100 scale-100'
                         leaveTo='transform opacity-0 scale-95'
                     >
-                        <Menu.Items className='absolute left-0 top-0 h-screen w-screen gap-4 divide-y divide-white bg-black p-4 text-[52px] font-extrabold text-white transition'>
+                        <Menu.Items className='absolute left-0 top-0 h-screen w-screen gap-8 bg-black p-4 text-[52px] font-extrabold text-white transition'>
                             <div className='flex flex-row justify-between pb-4'>
                                 <Menu.Item>
                                     {({}) => (
@@ -197,7 +204,7 @@ export const Header = (props: { title: string }) => {
                 </Menu>
             </div>
 
-            <div className='hidden pr-20 lg:flex'>
+            <div className='hidden justify-end pr-20 lg:flex lg:w-full'>
                 <WalletConnect />
             </div>
         </div>
