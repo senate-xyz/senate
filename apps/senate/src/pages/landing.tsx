@@ -50,6 +50,7 @@ const Home = () => {
                             <div className='mt-4 flex justify-center'>
                                 <Image
                                     loading='eager'
+                                    priority={true}
                                     src='/assets/Senate_Logo/Senate_Animation.gif'
                                     priority={true}
                                     alt={''}

@@ -31,6 +31,7 @@ const SetupOtherAddress = () => {
                     >
                         <Image
                             loading='eager'
+                            priority={true}
                             width={12}
                             height={12}
                             src={'/assets/Icon/CloseButton.svg'}

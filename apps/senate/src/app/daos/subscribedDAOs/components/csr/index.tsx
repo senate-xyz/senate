@@ -46,6 +46,7 @@ export const SubscribedDAO = (props: {
                             >
                                 <Image
                                     loading='eager'
+                                    priority={true}
                                     width='32'
                                     height='32'
                                     src='/assets/Icon/Close.svg'
@@ -103,6 +104,7 @@ export const SubscribedDAO = (props: {
                         >
                             <Image
                                 loading='eager'
+                                priority={true}
                                 width='32'
                                 height='32'
                                 src='/assets/Icon/Menu.svg'
@@ -113,6 +115,7 @@ export const SubscribedDAO = (props: {
                     <div className='flex grow flex-col items-center justify-end px-6 pb-6'>
                         <Image
                             loading='eager'
+                            priority={true}
                             style={{
                                 filter: 'saturate(0.2)'
                             }}
@@ -137,6 +140,7 @@ export const SubscribedDAO = (props: {
                                             return (
                                                 <Image
                                                     loading='eager'
+                                                    priority={true}
                                                     key={index}
                                                     width='24'
                                                     height='24'
@@ -152,6 +156,7 @@ export const SubscribedDAO = (props: {
                                             return (
                                                 <Image
                                                     loading='eager'
+                                                    priority={true}
                                                     key={index}
                                                     width='24'
                                                     height='24'
@@ -163,6 +168,7 @@ export const SubscribedDAO = (props: {
                                             return (
                                                 <Image
                                                     loading='eager'
+                                                    priority={true}
                                                     key={index}
                                                     width='24'
                                                     height='24'
@@ -174,6 +180,7 @@ export const SubscribedDAO = (props: {
                                             return (
                                                 <Image
                                                     loading='eager'
+                                                    priority={true}
                                                     key={index}
                                                     width='24'
                                                     height='24'
