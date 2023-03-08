@@ -193,7 +193,6 @@ export const Header = (props: { title: string }) => {
                                             <Image
                                                 loading='eager'
                                                 priority={true}
-                                                priority={true}
                                                 src='/assets/Icon/Settings/Inactive.svg'
                                                 width={48}
                                                 height={48}
