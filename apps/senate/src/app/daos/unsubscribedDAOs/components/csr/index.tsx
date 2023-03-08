@@ -83,10 +83,7 @@ export const UnsubscribedDAO = (props: {
                     </div>
                     <div className='flex flex-row gap-4 pt-6 opacity-50'>
                         {props.daoHandlers
-                            .sort((a) => {
-                                if (a == 'SNAPSHOT') return 1
-                                else return -1
-                            })
+                            .sort((a, b) => a.localeCompare(b))
                             .map((handler, index: number) => {
                                 switch (handler) {
                                     case 'SNAPSHOT':
