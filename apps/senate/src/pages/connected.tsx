@@ -45,7 +45,9 @@ const Connected = () => {
                 },
                 {
                     onSuccess: () => {
-                        setCookie('connected', true)
+                        setCookie('connected', true, {
+                            maxAge: 60 * 60 * 24 * 365
+                        })
                     }
                 }
             )
