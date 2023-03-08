@@ -2,7 +2,6 @@
 
 import { Fragment, useEffect, useState } from 'react'
 import WalletConnect from './WalletConnect'
-import { GiHamburgerMenu } from 'react-icons/gi'
 import { Menu, Transition } from '@headlessui/react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -48,12 +47,12 @@ export const Header = (props: { title: string }) => {
                 loading='eager'
                 className='lg:hidden'
                 src='/assets/Senate_Logo/64/White.svg'
-                width={64}
-                height={64}
+                width={48}
+                height={48}
                 alt={'Senate logo'}
             />
             <h1
-                className={`${titleSize} text-[52px] font-extrabold text-white transition`}
+                className={`${titleSize} text-[26px] font-extrabold text-white transition`}
             >
                 {props.title}
             </h1>
@@ -62,7 +61,13 @@ export const Header = (props: { title: string }) => {
                 <Menu as='div'>
                     <div>
                         <Menu.Button>
-                            <GiHamburgerMenu size={24} />
+                            <Image
+                                loading='eager'
+                                src='/assets/Icon/MobileMenuOpen.svg'
+                                width={48}
+                                height={48}
+                                alt={'Senate logo'}
+                            />
                         </Menu.Button>
                     </div>
                     <Transition
@@ -74,16 +79,16 @@ export const Header = (props: { title: string }) => {
                         leaveFrom='transform opacity-100 scale-100'
                         leaveTo='transform opacity-0 scale-95'
                     >
-                        <Menu.Items className='absolute left-0 top-0 h-screen w-screen gap-8 bg-black p-4 text-[52px] font-extrabold text-white transition'>
-                            <div className='flex flex-row justify-between pb-4'>
+                        <Menu.Items className='absolute left-0 top-0 h-screen w-screen bg-black p-2 text-[26px] font-extrabold leading-[60px] text-white transition'>
+                            <div className='flex flex-row justify-between'>
                                 <Menu.Item>
                                     {({}) => (
                                         <a href='/daos'>
                                             <Image
                                                 loading='eager'
-                                                src='/assets/Senate_Logo/64/White.svg'
-                                                width={64}
-                                                height={64}
+                                                src='/assets/Icon/MobileLogo.svg'
+                                                width={188}
+                                                height={48}
                                                 alt={'Senate logo'}
                                             />
                                         </a>
@@ -94,9 +99,9 @@ export const Header = (props: { title: string }) => {
                                         <a onClick={close}>
                                             <Image
                                                 loading='eager'
-                                                src='/assets/Icon/Close.svg'
-                                                width={64}
-                                                height={64}
+                                                src='/assets/Icon/MobileMenuClose.svg'
+                                                width={48}
+                                                height={48}
                                                 alt={'Senate logo'}
                                             />
                                         </a>
@@ -104,106 +109,97 @@ export const Header = (props: { title: string }) => {
                                 </Menu.Item>
                             </div>
 
-                            <div className='p-1 '>
-                                <Menu.Item>
-                                    {({ active }) => (
-                                        <div className='flex flex-row'>
-                                            {pathname?.includes('daos') ? (
-                                                <Image
-                                                    loading='eager'
-                                                    src='/assets/Icon/DAOs/Active.svg'
-                                                    width={64}
-                                                    height={64}
-                                                    alt={'Senate logo'}
-                                                />
-                                            ) : (
-                                                <Image
-                                                    loading='eager'
-                                                    src='/assets/Icon/DAOs/Inactive.svg'
-                                                    width={64}
-                                                    height={64}
-                                                    alt={'Senate logo'}
-                                                />
-                                            )}
-                                            <a
-                                                className={`${
-                                                    active && 'w-full'
-                                                }`}
-                                                href='/daos'
-                                            >
-                                                DAOs
-                                            </a>
-                                        </div>
-                                    )}
-                                </Menu.Item>
-                            </div>
-                            <div className='p-1'>
-                                <Menu.Item>
-                                    {({ active }) => (
-                                        <div className='flex flex-row'>
-                                            {pathname?.includes('proposals') ? (
-                                                <Image
-                                                    loading='eager'
-                                                    src='/assets/Icon/Proposals/Active.svg'
-                                                    width={64}
-                                                    height={64}
-                                                    alt={'Senate logo'}
-                                                />
-                                            ) : (
-                                                <Image
-                                                    loading='eager'
-                                                    src='/assets/Icon/Proposals/Inactive.svg'
-                                                    width={64}
-                                                    height={64}
-                                                    alt={'Senate logo'}
-                                                />
-                                            )}
-                                            <a
-                                                className={`${
-                                                    active && 'w-full'
-                                                }`}
-                                                href='/proposals/active'
-                                            >
-                                                Proposals
-                                            </a>
-                                        </div>
-                                    )}
-                                </Menu.Item>
-                            </div>
-                            <div className='p-1'>
-                                <Menu.Item>
-                                    {({ active }) => (
-                                        <div className='flex flex-row'>
-                                            {pathname?.includes('settings') ? (
-                                                <Image
-                                                    loading='eager'
-                                                    src='/assets/Icon/Settings/Active.svg'
-                                                    width={64}
-                                                    height={64}
-                                                    alt={'Senate logo'}
-                                                />
-                                            ) : (
-                                                <Image
-                                                    loading='eager'
-                                                    src='/assets/Icon/Settings/Inactive.svg'
-                                                    width={64}
-                                                    height={64}
-                                                    alt={'Senate logo'}
-                                                />
-                                            )}
-                                            <a
-                                                className={`${
-                                                    active && 'w-full'
-                                                }`}
-                                                href='/settings/account'
-                                            >
-                                                Settings
-                                            </a>
-                                        </div>
-                                    )}
-                                </Menu.Item>
-                            </div>
-                            <div className='flex w-full justify-center pt-4 text-[18px] font-normal'>
+                            <Menu.Item>
+                                {({ active }) => (
+                                    <div className='relative flex flex-row items-center pl-6 pt-8'>
+                                        {pathname?.includes('daos') ? (
+                                            <Image
+                                                loading='eager'
+                                                src='/assets/Icon/DAOs/Active.svg'
+                                                width={48}
+                                                height={48}
+                                                alt={'Senate logo'}
+                                            />
+                                        ) : (
+                                            <Image
+                                                loading='eager'
+                                                src='/assets/Icon/DAOs/Inactive.svg'
+                                                width={48}
+                                                height={48}
+                                                alt={'Senate logo'}
+                                            />
+                                        )}
+                                        <a
+                                            className={`${active && 'w-full'}`}
+                                            href='/daos'
+                                        >
+                                            DAOs
+                                        </a>
+                                    </div>
+                                )}
+                            </Menu.Item>
+
+                            <Menu.Item>
+                                {({ active }) => (
+                                    <div className='relative flex flex-row items-center pl-6 pt-8'>
+                                        {pathname?.includes('proposals') ? (
+                                            <Image
+                                                loading='eager'
+                                                src='/assets/Icon/Proposals/Active.svg'
+                                                width={48}
+                                                height={48}
+                                                alt={'Senate logo'}
+                                            />
+                                        ) : (
+                                            <Image
+                                                loading='eager'
+                                                src='/assets/Icon/Proposals/Inactive.svg'
+                                                width={48}
+                                                height={48}
+                                                alt={'Senate logo'}
+                                            />
+                                        )}
+                                        <a
+                                            className={`${active && 'w-full'}`}
+                                            href='/proposals/active'
+                                        >
+                                            Proposals
+                                        </a>
+                                    </div>
+                                )}
+                            </Menu.Item>
+
+                            <Menu.Item>
+                                {({ active }) => (
+                                    <div className='relative flex flex-row items-center pl-6 pt-8'>
+                                        {pathname?.includes('settings') ? (
+                                            <Image
+                                                loading='eager'
+                                                src='/assets/Icon/Settings/Active.svg'
+                                                width={48}
+                                                height={48}
+                                                alt={'Senate logo'}
+                                            />
+                                        ) : (
+                                            <Image
+                                                loading='eager'
+                                                src='/assets/Icon/Settings/Inactive.svg'
+                                                width={48}
+                                                height={48}
+                                                alt={'Senate logo'}
+                                            />
+                                        )}
+                                        <a
+                                            className={`${active && 'w-full'}`}
+                                            href='/settings/account'
+                                        >
+                                            Settings
+                                        </a>
+                                    </div>
+                                )}
+                            </Menu.Item>
+
+                            <div className='flex w-full justify-center pt-8 text-[18px] font-normal'>
                                 <Menu.Item>
                                     <WalletConnect />
                                 </Menu.Item>
