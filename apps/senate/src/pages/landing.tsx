@@ -52,7 +52,6 @@ const Home = () => {
                                     loading='eager'
                                     priority={true}
                                     src='/assets/Senate_Logo/Senate_Animation.gif'
-                                    priority={true}
                                     alt={''}
                                     width={300}
                                     height={300}
