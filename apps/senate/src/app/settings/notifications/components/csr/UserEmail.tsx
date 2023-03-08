@@ -23,9 +23,9 @@ const UserEmail = () => {
                 Your Email Address
             </div>
 
-            <div className={`flex h-[46px] w-fit flex-row items-center`}>
+            <div className={`flex h-[46px] w-full flex-row items-center`}>
                 <input
-                    className={`h-full w-[320px] bg-[#D9D9D9] px-2 text-black focus:outline-none `}
+                    className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
                     value={currentEmail}
                     onChange={(e) => {
                         setCurrentEmail(String(e.target.value))

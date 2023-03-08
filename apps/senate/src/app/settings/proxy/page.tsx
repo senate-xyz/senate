@@ -43,13 +43,13 @@ export default function Home() {
     }
 
     return (
-        <div className='flex flex-col gap-12'>
+        <div className='flex min-h-screen flex-col gap-12'>
             <div className='flex flex-col gap-4'>
                 <div className='text-[24px] font-light leading-[30px] text-white'>
                     Your Other Addresses
                 </div>
 
-                <div className='w-[50%] text-[18px] font-light leading-[23px] text-white'>
+                <div className='text-[18px] font-light leading-[23px] text-white lg:w-[50%]'>
                     Here you can add other addresses to your Senate account, so
                     that you can see the voting activity for those addresses as
                     well.
@@ -64,7 +64,7 @@ export default function Home() {
 
                 <div className='mt-12 flex h-[46px] flex-row items-center'>
                     <input
-                        className={`h-full w-[480px] bg-[#D9D9D9] px-2 font-mono text-[18px] font-light leading-[23px] text-black`}
+                        className={`h-full w-full bg-[#D9D9D9] px-2 font-mono text-[18px] font-light leading-[23px] text-black lg:w-[480px]`}
                         value={proxyAddress}
                         onChange={(e) => setProxyAddress(e.target.value)}
                         onKeyDown={(e) => {
@@ -120,12 +120,15 @@ const Voter = ({ address }: { address: string }) => {
     const removeVoter = trpc.accountSettings.removeVoter.useMutation()
 
     return (
-        <div key={address} className='flex flex-row items-end gap-12'>
+        <div
+            key={address}
+            className='flex flex-col items-start gap-2 lg:flex-row lg:items-end lg:gap-12'
+        >
             <div className='flex flex-col'>
                 <div className='font-mono text-[18px] font-normal leading-[23px] text-white'>
                     {voterEns}
                 </div>
-                <div className='font-mono text-[18px] font-light leading-[23px] text-[#ABABAB]'>
+                <div className='break-all font-mono text-[18px] font-light leading-[23px] text-[#ABABAB]'>
                     {address}
                 </div>
             </div>

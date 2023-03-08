@@ -40,7 +40,7 @@ export default function RootLayout({
                             .
                         </div> */}
                         <div className='z-10 flex h-full min-h-screen w-full flex-row'>
-                            <div className='fixed'>
+                            <div className='fixed hidden lg:flex'>
                                 <NavBar />
                             </div>
 

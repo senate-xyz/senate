@@ -26,11 +26,11 @@ const UserAddress = () => {
                     Your Account Address
                 </div>
 
-                <div className='flex flex-col gap-2'>
+                <div className='flex flex-col gap-2 overflow-hidden'>
                     <div className='font-mono text-[18px] font-normal leading-[23px] text-white'>
                         {ens}
                     </div>
-                    <div className='font-mono text-[18px] font-light leading-[23px] text-[#ABABAB]'>
+                    <div className='break-all font-mono text-[18px] font-light leading-[23px] text-[#ABABAB]'>
                         {account.address}
                     </div>
                 </div>

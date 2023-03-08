@@ -45,6 +45,8 @@ export const SubscribedDAO = (props: {
                                 }}
                             >
                                 <Image
+                                    loading='eager'
+                                    priority={true}
                                     width='32'
                                     height='32'
                                     src='/assets/Icon/Close.svg'
@@ -101,6 +103,8 @@ export const SubscribedDAO = (props: {
                             }}
                         >
                             <Image
+                                loading='eager'
+                                priority={true}
                                 width='32'
                                 height='32'
                                 src='/assets/Icon/Menu.svg'
@@ -110,6 +114,8 @@ export const SubscribedDAO = (props: {
                     </div>
                     <div className='flex grow flex-col items-center justify-end px-6 pb-6'>
                         <Image
+                            loading='eager'
+                            priority={true}
                             style={{
                                 filter: 'saturate(0.2)'
                             }}
@@ -124,15 +130,14 @@ export const SubscribedDAO = (props: {
                         </div>
                         <div className='flex flex-row gap-4 pt-6 opacity-50'>
                             {props.daoHandlers
-                                .sort((a) => {
-                                    if (a == 'SNAPSHOT') return 1
-                                    else return -1
-                                })
+                                .sort((a, b) => a.localeCompare(b))
                                 .map((handler, index: number) => {
                                     switch (handler) {
                                         case 'SNAPSHOT':
                                             return (
                                                 <Image
+                                                    loading='eager'
+                                                    priority={true}
                                                     key={index}
                                                     width='24'
                                                     height='24'
@@ -147,6 +152,8 @@ export const SubscribedDAO = (props: {
                                         case 'MAKER_EXECUTIVE':
                                             return (
                                                 <Image
+                                                    loading='eager'
+                                                    priority={true}
                                                     key={index}
                                                     width='24'
                                                     height='24'
@@ -157,6 +164,8 @@ export const SubscribedDAO = (props: {
                                         case 'MAKER_POLL_ARBITRUM':
                                             return (
                                                 <Image
+                                                    loading='eager'
+                                                    priority={true}
                                                     key={index}
                                                     width='24'
                                                     height='24'
@@ -167,6 +176,8 @@ export const SubscribedDAO = (props: {
                                         default:
                                             return (
                                                 <Image
+                                                    loading='eager'
+                                                    priority={true}
                                                     key={index}
                                                     width='24'
                                                     height='24'
