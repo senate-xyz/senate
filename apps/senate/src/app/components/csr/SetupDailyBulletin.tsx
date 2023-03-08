@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 const SetupDailyBulletin = () => {
     const router = useRouter()
     return (
-        <div className='flex w-full flex-row items-center justify-between gap-2 bg-[#FFF1BF] p-6'>
+        <div className='flex w-full flex-col items-center justify-between gap-2 bg-[#FFF1BF] p-6 lg:flex-row'>
             <div className='text-[24px] font-light text-black'>
                 You can setup a daily email to notify you of the latest
                 proposals for the DAOs that you’re subscribed to on Senate.
