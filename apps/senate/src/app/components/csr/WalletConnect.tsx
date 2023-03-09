@@ -11,15 +11,22 @@ const WalletConnect = () => {
     const router = useRouter()
     const account = useAccount()
     const session = useSession()
-    const [cookie] = useCookies(['connected'])
+    const [cookie] = useCookies([
+        'acceptedTerms',
+        'acceptedTermsTimestamp',
+        'connected'
+    ])
 
     useEffect(() => {
         if (
             account.isConnected &&
             session.status == 'authenticated' &&
             !cookie.connected
-        )
-            router.push(`/connected?redirect=/daos`)
+        ) {
+            if (!cookie.acceptedTerms || !cookie.acceptedTermsTimestamp)
+                router.push('/landing')
+            else router.push(`/connected?redirect=/daos`)
+        }
     }, [account, session.status, cookie])
 
     useEffect(() => {
