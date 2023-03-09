@@ -416,7 +416,7 @@ const MobilePastProposal = async (props: {
                         )}
                         {props.proposal.voted == 'not-connected' && (
                             <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
-                                Connect your wallet to see the vote status
+                                Connect wallet to see your vote status
                             </div>
                         )}
                     </div>
@@ -579,7 +579,7 @@ const PastProposal = async (props: {
                     )}
                     {props.proposal.voted == 'not-connected' && (
                         <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
-                            Connect your wallet to see the vote status
+                            Connect wallet to see your vote status
                         </div>
                     )}
                 </div>
