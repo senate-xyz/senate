@@ -123,7 +123,11 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
 
                 log_pd.log({
                     level: 'warn',
-                    message: `Failed fetching proposal data from ${IPFS_GATEWAY_URLS[gatewayIndex]}. Retrying...`,
+                    message: `Failed fetching AAVE proposal data from ${IPFS_GATEWAY_URLS[gatewayIndex]}. Retrying...`,
+                    url:
+                        IPFS_GATEWAY_URLS[gatewayIndex] +
+                        'f01701220' +
+                        hexHash.substring(2),
                     retriesLeft: retries
                 })
             }
