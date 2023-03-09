@@ -88,14 +88,14 @@ export function authOptions(
             async signIn(message) {
                 const user = await prisma.user.findFirst({
                     where: {
-                        name: String(message.user.id)
+                        name: String(message.user.name)
                     }
                 })
 
                 if (user)
                     await prisma.user.update({
                         where: {
-                            name: String(message.user.id)
+                            name: String(message.user.name)
                         },
                         data: {
                             lastActive: new Date(),
