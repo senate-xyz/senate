@@ -4,9 +4,11 @@
 import { publicProcedure, router } from '../trpc'
 import { accountSettingsRouter } from './accountSettings'
 import { healthRouter } from './health'
+import { publicRouter } from './public'
 import { subscriptionsRouter } from './subscriptions'
 
 export const appRouter = router({
+    public: publicRouter,
     accountSettings: accountSettingsRouter,
     subscriptions: subscriptionsRouter,
     health: healthRouter,

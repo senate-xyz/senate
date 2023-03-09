@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useProvider } from 'wagmi'
+import { useAccount, useProvider } from 'wagmi'
+import { useSession } from 'next-auth/react'
 
 const endOptions: { name: string; time: number }[] = [
     {
@@ -46,6 +47,8 @@ export const Filters = (props: {
     subscriptions: { id: string; name: string }[]
     proxies: string[]
 }) => {
+    const session = useSession()
+    const account = useAccount()
     const searchParams = useSearchParams()
     const router = useRouter()
     const [from, setFrom] = useState('any')
@@ -86,9 +89,20 @@ export const Filters = (props: {
                         }}
                         value={from}
                     >
-                        <option key='any' value='any'>
-                            All Subscribed DAOs
-                        </option>
+                        {session.status === 'authenticated' &&
+                        account.address ? (
+                            <>
+                                <option key='any' value='any'>
+                                    All Subscribed DAOs
+                                </option>
+                            </>
+                        ) : (
+                            <>
+                                <option key='any' value='any'>
+                                    All DAOs
+                                </option>
+                            </>
+                        )}
                         {props.subscriptions.map((sub) => {
                             return (
                                 <option key={sub.name} value={sub.name}>

@@ -141,8 +141,11 @@ const getProposals = async (
                 proposalLink: proposal.url,
                 timeEnd: proposal.timeEnd,
                 voted: user
-                    ? proposal.votes.map((vote: Vote) => vote.choice).length > 0
-                    : false
+                    ? String(
+                          proposal.votes.map((vote: Vote) => vote.choice)
+                              .length > 0
+                      )
+                    : 'not-connected'
             }
         }) ?? []
 
@@ -231,7 +234,7 @@ const MobileActiveProposal = async (props: {
         proposalTitle: string
         proposalLink: string
         timeEnd: Date
-        voted: boolean
+        voted: string
     }
 }) => {
     return (
@@ -317,7 +320,7 @@ const MobileActiveProposal = async (props: {
                     </div>
 
                     <div className='self-end p-2'>
-                        {props.proposal.voted ? (
+                        {props.proposal.voted == 'true' && (
                             <div className='flex w-full flex-col items-center'>
                                 <Image
                                     loading='eager'
@@ -328,7 +331,8 @@ const MobileActiveProposal = async (props: {
                                     height={32}
                                 />
                             </div>
-                        ) : (
+                        )}
+                        {props.proposal.voted == 'false' && (
                             <div className='flex w-full flex-col items-center'>
                                 <Image
                                     loading='eager'
@@ -338,6 +342,11 @@ const MobileActiveProposal = async (props: {
                                     width={32}
                                     height={32}
                                 />
+                            </div>
+                        )}
+                        {props.proposal.voted == 'not-connected' && (
+                            <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
+                                Connect your wallet to see the vote status
                             </div>
                         )}
                     </div>
@@ -355,122 +364,11 @@ const ActiveProposal = async (props: {
         proposalTitle: string
         proposalLink: string
         timeEnd: Date
-        voted: boolean
+        voted: string
     }
 }) => {
     return (
         <tr className='h-[96px] w-full items-center justify-evenly bg-[#121212] text-[#EDEDED] '>
-            <td className='lg:hidden'>
-                <div className='m-[12px] flex flex-col gap-2'>
-                    <div className='flex flex-col items-center gap-2'>
-                        <div className='w-[64px] border border-b-2 border-r-2 border-t-0 border-l-0'>
-                            <Image
-                                loading='eager'
-                                priority={true}
-                                width={64}
-                                height={64}
-                                src={props.proposal.daoPicture + '.svg'}
-                                alt={props.proposal.daoName}
-                            />
-                        </div>
-
-                        <div>
-                            {props.proposal.onchain ? (
-                                <Image
-                                    loading='eager'
-                                    priority={true}
-                                    width={94}
-                                    height={26}
-                                    src={'/assets/Icon/OnChainProposal.svg'}
-                                    alt='off-chain'
-                                />
-                            ) : (
-                                <Image
-                                    loading='eager'
-                                    priority={true}
-                                    width={94}
-                                    height={26}
-                                    src={'/assets/Icon/OffChainProposal.svg'}
-                                    alt='off-chain'
-                                />
-                            )}
-                        </div>
-                    </div>
-                    <div className='flex flex-col justify-end gap-2'>
-                        <div className='text-center text-[21px] font-semibold leading-[26px]'>
-                            {dayjs(props.proposal.timeEnd).fromNow()}
-                        </div>
-                        <div className='text-[15px] font-normal leading-[19px]'>
-                            {`on ${new Date(
-                                props.proposal.timeEnd
-                            ).toLocaleDateString('en-US', {
-                                month: 'long',
-                                day: 'numeric'
-                            })} at ${new Date(
-                                props.proposal.timeEnd
-                            ).toLocaleTimeString('en-US', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit',
-                                timeZone: 'UTC',
-                                hour12: false
-                            })} UTC
-                    `}
-                        </div>
-                    </div>
-                </div>
-            </td>
-            <td className='h-full lg:hidden'>
-                <div className='m-[12px] flex h-full flex-col gap-4'>
-                    <div className='cursor-pointer hover:underline'>
-                        <a
-                            href={
-                                props.proposal.proposalLink.includes(
-                                    'snapshot.org'
-                                )
-                                    ? props.proposal.proposalLink +
-                                      '?app=senate'
-                                    : props.proposal.proposalLink
-                            }
-                            target='_blank'
-                            rel='noreferrer'
-                        >
-                            <div className='pr-5 text-[18px] font-normal'>
-                                {props.proposal.proposalTitle}
-                            </div>
-                        </a>
-                    </div>
-
-                    <div className='self-end'>
-                        {props.proposal.voted ? (
-                            <div className='flex w-full flex-col items-center'>
-                                <Image
-                                    loading='eager'
-                                    priority={true}
-                                    src='/assets/Icon/Voted.svg'
-                                    alt='voted'
-                                    width={32}
-                                    height={32}
-                                />
-                                <div className='text-[18px]'>Voted</div>
-                            </div>
-                        ) : (
-                            <div className='flex w-full flex-col items-center'>
-                                <Image
-                                    loading='eager'
-                                    priority={true}
-                                    src='/assets/Icon/NotVotedYet.svg'
-                                    alt='voted'
-                                    width={32}
-                                    height={32}
-                                />
-                                <div className='text-[18px]'>Not Voted Yet</div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </td>
-
             <td className='hidden lg:table-cell'>
                 <div className='m-[12px] flex w-max flex-row items-center gap-[8px]'>
                     <div className='border border-b-2 border-r-2 border-t-0 border-l-0'>
@@ -552,7 +450,7 @@ const ActiveProposal = async (props: {
             </td>
             <td className='hidden lg:table-cell'>
                 <div className='text-end'>
-                    {props.proposal.voted ? (
+                    {props.proposal.voted == 'true' && (
                         <div className='flex w-full flex-col items-center'>
                             <Image
                                 loading='eager'
@@ -564,7 +462,8 @@ const ActiveProposal = async (props: {
                             />
                             <div className='text-[18px]'>Voted</div>
                         </div>
-                    ) : (
+                    )}
+                    {props.proposal.voted == 'false' && (
                         <div className='flex w-full flex-col items-center'>
                             <Image
                                 loading='eager'
@@ -575,6 +474,11 @@ const ActiveProposal = async (props: {
                                 height={32}
                             />
                             <div className='text-[18px]'>Not Voted Yet</div>
+                        </div>
+                    )}
+                    {props.proposal.voted == 'not-connected' && (
+                        <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
+                            Connect your wallet to see the vote status
                         </div>
                     )}
                 </div>

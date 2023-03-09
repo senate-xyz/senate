@@ -1,9 +1,7 @@
 import { prisma } from '@senate/database'
 import { getServerSession } from 'next-auth'
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
-import ConnectWalletModal from '../components/csr/ConnectWalletModal'
 import { Filters } from './components/csr/Filters'
 import Table from './components/ssr/Table'
 
@@ -34,20 +32,18 @@ const getSubscribedDAOs = async () => {
             orderBy: {
                 name: 'asc'
             },
-            distinct: 'id',
-            include: {
-                handlers: true,
-                subscriptions: {
-                    where: {
-                        userId: { contains: user.id }
-                    }
-                },
-                proposals: { where: { timeEnd: { gt: new Date() } } }
-            }
+            distinct: 'id'
         })
         return daosList
     } catch (e) {
-        return []
+        const daosList = await prisma.dAO.findMany({
+            where: {},
+            orderBy: {
+                name: 'asc'
+            },
+            distinct: 'id'
+        })
+        return daosList
     }
 }
 
@@ -80,8 +76,6 @@ export default async function Home({
     searchParams?: { from: string; end: number; voted: string; proxy: string }
 }) {
     if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
-    const cookieStore = cookies()
-    if (!cookieStore.get('hasSeenLanding')) redirect('/landing')
 
     const subscribedDAOs = await getSubscribedDAOs()
     const proxies = await getProxies()
@@ -92,9 +86,9 @@ export default async function Home({
 
     return (
         <div className='relative min-h-screen'>
-            <div className='z-10'>
+            {/* <div className='z-10'>
                 <ConnectWalletModal />
-            </div>
+            </div> */}
             <div className='hidden lg:flex'>
                 <Filters subscriptions={subscripions} proxies={proxies} />
             </div>
