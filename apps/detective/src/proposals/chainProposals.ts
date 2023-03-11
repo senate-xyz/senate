@@ -1,4 +1,4 @@
-import { DAOHandlerType, JsonValue, prisma } from '@senate/database'
+import { JsonValue, prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import { aaveProposals } from './chain/aave'
 import { compoundProposals } from './chain/compound'
@@ -55,8 +55,10 @@ export const updateChainProposals = async (daoHandlerId: string) => {
 
     const minBlockNumber = Number(daoHandler.chainIndex)
 
-    const blockBatchSize =
-        daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE ? 100000 : 1000000
+    // const blockBatchSize =
+    //     daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE ? 100000 : 1000000
+
+    const blockBatchSize = 1000000
 
     const fromBlock = Math.max(minBlockNumber, 1920000)
     const toBlock =
