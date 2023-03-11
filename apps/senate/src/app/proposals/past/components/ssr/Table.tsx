@@ -72,6 +72,14 @@ const getProposals = async (
         }
     })
 
+    const dao = await (
+        await prisma.dAO.findMany({})
+    ).filter(
+        (dao) =>
+            dao.name.toLowerCase().replace(' ', '') ==
+            from.toLowerCase().replace(' ', '')
+    )[0]
+
     const userProposals = await prisma.proposal.findMany({
         where: {
             AND: [
@@ -82,9 +90,12 @@ const getProposals = async (
                                 ? {
                                       in: userSubscriptions.map(
                                           (sub) => sub.dao.name
-                                      )
+                                      ),
+                                      mode: 'insensitive'
                                   }
-                                : String(from)
+                                : {
+                                      equals: String(dao?.name)
+                                  }
                     }
                 },
                 {

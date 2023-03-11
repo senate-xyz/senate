@@ -105,7 +105,14 @@ export const Filters = (props: {
                         )}
                         {props.subscriptions.map((sub) => {
                             return (
-                                <option key={sub.name} value={sub.name}>
+                                <option
+                                    key={sub.name
+                                        .toLowerCase()
+                                        .replace(' ', '')}
+                                    value={sub.name
+                                        .toLowerCase()
+                                        .replace(' ', '')}
+                                >
                                     {sub.name}
                                 </option>
                             )
