@@ -87,9 +87,9 @@ export default async function Home({
             {/* <div className='z-10'>
                 <ConnectWalletModal />
             </div> */}
-            <div className='hidden lg:flex'>
-                <Filters subscriptions={subscripions} proxies={proxies} />
-            </div>
+
+            <Filters subscriptions={subscripions} proxies={proxies} />
+
             {/* @ts-expect-error Server Component */}
             <Table
                 from={searchParams?.from}
