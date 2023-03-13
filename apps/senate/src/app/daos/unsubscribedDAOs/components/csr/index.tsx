@@ -4,7 +4,7 @@ import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useCookies } from 'react-cookie'
 import { useAccount } from 'wagmi'
 import { trpc } from '../../../../../server/trpcClient'
@@ -16,6 +16,12 @@ export const UnsubscribedDAO = (props: {
     bgColor: string | undefined
     daoHandlers: string[]
 }) => {
+    const [imgSrc, setImgSrc] = useState(
+        props.daoPicture
+            ? props.daoPicture + '_medium.png'
+            : '/assets/Project_Icons/placeholder_medium.png'
+    )
+
     const [cookie, setCookie, removeCookie] = useCookies(['subscribe'])
 
     const account = useAccount()
@@ -74,7 +80,12 @@ export const UnsubscribedDAO = (props: {
                         }}
                         width='96'
                         height='96'
-                        src={props.daoPicture + '_medium.png'}
+                        src={imgSrc}
+                        onError={() => {
+                            setImgSrc(
+                                '/assets/Project_Icons/placeholder_medium.png'
+                            )
+                        }}
                         quality='100'
                         alt='dao logo'
                     />
