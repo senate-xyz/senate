@@ -585,6 +585,44 @@ const seedData = async () => {
         }
     })
 
+    const apwine = await prisma.dAO.upsert({
+        where: { name: 'APWine' },
+        update: {},
+        create: {
+            name: 'APWine',
+            picture: '/assets/Project_Icons/APWine',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'apwine.eth'
+                        }
+                    }
+                ]
+            }
+        }
+    })
+
+    const morpho = await prisma.dAO.upsert({
+        where: { name: 'Morpho' },
+        update: {},
+        create: {
+            name: 'Morpho',
+            picture: '/assets/Project_Icons/morpho',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'morpho.eth'
+                        }
+                    }
+                ]
+            }
+        }
+    })
+
     console.log('Inserting seed user')
     const seedUser = await prisma.user.upsert({
         where: {
@@ -846,6 +884,32 @@ const seedData = async () => {
                 create: {
                     userId: seedUser.id,
                     daoId: developerdao.id
+                },
+                update: {}
+            }),
+            prisma.subscription.upsert({
+                where: {
+                    userId_daoId: {
+                        userId: seedUser.id,
+                        daoId: apwine.id
+                    }
+                },
+                create: {
+                    userId: seedUser.id,
+                    daoId: apwine.id
+                },
+                update: {}
+            }),
+            prisma.subscription.upsert({
+                where: {
+                    userId_daoId: {
+                        userId: seedUser.id,
+                        daoId: morpho.id
+                    }
+                },
+                create: {
+                    userId: seedUser.id,
+                    daoId: morpho.id
                 },
                 update: {}
             })
