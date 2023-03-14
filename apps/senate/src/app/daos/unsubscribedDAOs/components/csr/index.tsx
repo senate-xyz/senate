@@ -17,9 +17,7 @@ export const UnsubscribedDAO = (props: {
     daoHandlers: string[]
 }) => {
     const [imgSrc, setImgSrc] = useState(
-        props.daoPicture
-            ? props.daoPicture + '_medium.png'
-            : '/assets/Project_Icons/placeholder_medium.png'
+        '/assets/Project_Icons/placeholder_medium.png'
     )
 
     useEffect(() => {
@@ -28,7 +26,7 @@ export const UnsubscribedDAO = (props: {
                 ? props.daoPicture + '_medium.png'
                 : '/assets/Project_Icons/placeholder_medium.png'
         )
-    }, [props])
+    }, [props.daoPicture])
 
     const [cookie, setCookie, removeCookie] = useCookies(['subscribe'])
 

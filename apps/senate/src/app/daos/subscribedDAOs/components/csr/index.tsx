@@ -16,9 +16,7 @@ export const SubscribedDAO = (props: {
     notificationsEnabled: boolean
 }) => {
     const [imgSrc, setImgSrc] = useState(
-        props.daoPicture
-            ? props.daoPicture + '_medium.png'
-            : '/assets/Project_Icons/placeholder_medium.png'
+        '/assets/Project_Icons/placeholder_medium.png'
     )
 
     useEffect(() => {
@@ -27,7 +25,7 @@ export const SubscribedDAO = (props: {
                 ? props.daoPicture + '_medium.png'
                 : '/assets/Project_Icons/placeholder_medium.png'
         )
-    }, [props])
+    }, [props.daoPicture])
 
     const [showMenu, setShowMenu] = useState(false)
     // const [getDailyEmails, setDailyEmails] = useState(
