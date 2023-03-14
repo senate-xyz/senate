@@ -57,9 +57,16 @@ export default async function SubscribedDAOs() {
     const backgroundColors = await Promise.all(
         subscriptions.map(async (sub) => {
             const color = await getAverageColor(
-                'https://senatelabs.xyz/' + sub.dao.picture + '.svg',
-                { mode: 'precision', algorithm: 'sqrt' }
-            ).then((color) => color)
+                process.env.WEB_URL + sub.dao.picture + '.svg',
+                {
+                    mode: 'precision',
+                    algorithm: 'sqrt'
+                }
+            )
+                .then((color) => color)
+                .catch(() => {
+                    return { hex: '#5A5A5A' }
+                })
             return {
                 daoId: sub.id,
                 color: `${color.hex}`

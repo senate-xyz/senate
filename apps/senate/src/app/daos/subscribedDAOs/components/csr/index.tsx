@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -15,6 +15,18 @@ export const SubscribedDAO = (props: {
     activeProposals: number
     notificationsEnabled: boolean
 }) => {
+    const [imgSrc, setImgSrc] = useState(
+        '/assets/Project_Icons/placeholder_medium.png'
+    )
+
+    useEffect(() => {
+        setImgSrc(
+            props.daoPicture
+                ? props.daoPicture + '_medium.png'
+                : '/assets/Project_Icons/placeholder_medium.png'
+        )
+    }, [props.daoPicture])
+
     const [showMenu, setShowMenu] = useState(false)
     // const [getDailyEmails, setDailyEmails] = useState(
     //     props.notificationsEnabled
@@ -121,7 +133,12 @@ export const SubscribedDAO = (props: {
                             }}
                             width='96'
                             height='96'
-                            src={props.daoPicture + '_medium.png'}
+                            src={imgSrc}
+                            onError={() => {
+                                setImgSrc(
+                                    '/assets/Project_Icons/placeholder_medium.png'
+                                )
+                            }}
                             quality='100'
                             alt='dao logo'
                         />

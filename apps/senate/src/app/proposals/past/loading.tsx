@@ -2,7 +2,7 @@ export default function Loading() {
     return (
         <div className='flex flex-col gap-10 pt-8'>
             <div className='relative w-full overflow-hidden bg-[#262626] p-4 shadow hover:shadow-md'>
-                <div className='flex animate-pulse flex-row items-center gap-5'>
+                <div className='flex animate-pulse flex-col lg:flex-row items-center gap-5'>
                     <div className='h-10 w-[280px] bg-[#545454]' />
                     <div className='h-10 w-[280px] bg-[#545454]' />
                     <div className='h-10 w-[280px] bg-[#545454]' />

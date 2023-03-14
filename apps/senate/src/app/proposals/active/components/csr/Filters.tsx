@@ -73,8 +73,8 @@ export const Filters = (props: {
 
     return (
         <div className='mt-[16px] flex flex-col overflow-hidden'>
-            <div className='flex flex-row gap-5'>
-                <div className='flex h-[38px] w-[300px] flex-row items-center'>
+            <div className='flex flex-col lg:flex-row gap-5'>
+                <div className='flex h-[38px] w-full lg:w-[300px] flex-row items-center'>
                     <label
                         className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
                         htmlFor='from'
@@ -120,7 +120,7 @@ export const Filters = (props: {
                     </select>
                 </div>
 
-                <div className='flex h-[38px] w-[300px] flex-row items-center'>
+                <div className='flex h-[38px] w-full lg:w-[300px] flex-row items-center'>
                     <label
                         className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
                         htmlFor='end'
@@ -149,7 +149,7 @@ export const Filters = (props: {
                 </div>
 
                 {session.status === 'authenticated' && account.address && (
-                    <div className='flex h-[38px] w-[300px] flex-row items-center'>
+                    <div className='flex h-[38px] w-full lg:w-[300px] flex-row items-center'>
                         <label
                             className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
                             htmlFor='voted'
@@ -178,7 +178,7 @@ export const Filters = (props: {
                     </div>
                 )}
                 {props.proxies.length > 1 && (
-                    <div className='flex h-[38px] w-[300px] flex-row items-center'>
+                    <div className='flex h-[38px] w-full lg:w-[300px] flex-row items-center'>
                         <label
                             className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
                             htmlFor='voted'
