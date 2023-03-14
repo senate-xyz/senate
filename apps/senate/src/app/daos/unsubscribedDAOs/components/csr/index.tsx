@@ -22,6 +22,14 @@ export const UnsubscribedDAO = (props: {
             : '/assets/Project_Icons/placeholder_medium.png'
     )
 
+    useEffect(() => {
+        setImgSrc(
+            props.daoPicture
+                ? props.daoPicture + '_medium.png'
+                : '/assets/Project_Icons/placeholder_medium.png'
+        )
+    }, [props])
+
     const [cookie, setCookie, removeCookie] = useCookies(['subscribe'])
 
     const account = useAccount()

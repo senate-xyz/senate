@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -20,6 +20,14 @@ export const SubscribedDAO = (props: {
             ? props.daoPicture + '_medium.png'
             : '/assets/Project_Icons/placeholder_medium.png'
     )
+
+    useEffect(() => {
+        setImgSrc(
+            props.daoPicture
+                ? props.daoPicture + '_medium.png'
+                : '/assets/Project_Icons/placeholder_medium.png'
+        )
+    }, [props])
 
     const [showMenu, setShowMenu] = useState(false)
     // const [getDailyEmails, setDailyEmails] = useState(
