@@ -39,14 +39,14 @@ type GraphQLProposal = {
 }
 
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
-schedule('15 * * * *', async () => {
+schedule('30 * * * *', async () => {
     log_sanity.log({
         level: 'info',
         message: 'Starting sanity check for snapshot votes and proposals',
         date: new Date(Date.now())
     })
 
-    const SEARCH_FROM: number = Date.now() - 6 * 60 * 60 * 1000 // minutes * seconds * milliseconds
+    const SEARCH_FROM: number = Date.now() - 12 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
     const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
 
     try {
@@ -321,52 +321,62 @@ const fetchVotesFromSnapshotAPI = async (
     voterAddresses: string[],
     space: string
 ) => {
-    const graphqlQuery = `{
-        votes(
-            first:1000,
-            orderBy: "created",
-            orderDirection: asc,
-            where: {
-                voter_in: [${voterAddresses.map((voter) => `"${voter}"`)}],
-                space: "${space}",
-                created_gte: ${searchFrom},
-                created_lte: ${searchTo}
-            }
-        )
-        {
-            id
-            voter
-            choice
-            reason
-            vp
-            created
-            proposal {
-                id
-                title
-                body
-                created
-                start
-                end
-                link
-            }
-        }
-    }`
+    
+    let result : GraphQLVote[] = []
+    for (let i=0; i<voterAddresses.length; i+=100) {
+        let addresses = voterAddresses.slice(i, Math.min(i+100, voterAddresses.length))
 
-    return (await superagent
-        .get('https://hub.snapshot.org/graphql')
-        .query({
-            query: graphqlQuery
-        })
-        .timeout({
-            response: 10000,
-            deadline: 30000
-        })
-        .retry(3, (err, res) => {
-            if (err) return true
-            if (res.status == 200) return false
-            return true
-        })
-        .then((response: { body: { data: { votes: GraphQLVote[] } } }) => {
-            return response.body.data.votes
-        })) as GraphQLVote[]
+        const graphqlQuery = `{
+            votes(
+                first:1000,
+                orderBy: "created",
+                orderDirection: asc,
+                where: {
+                    voter_in: [${addresses.map((voter) => `"${voter}"`)}],
+                    space: "${space}",
+                    created_gte: ${searchFrom},
+                    created_lte: ${searchTo}
+                }
+            )
+            {
+                id
+                voter
+                choice
+                reason
+                vp
+                created
+                proposal {
+                    id
+                    title
+                    body
+                    created
+                    start
+                    end
+                    link
+                }
+            }
+        }`
+    
+        const votes : GraphQLVote[] = (await superagent
+            .get('https://hub.snapshot.org/graphql')
+            .query({
+                query: graphqlQuery
+            })
+            .timeout({
+                response: 10000,
+                deadline: 30000
+            })
+            .retry(3, (err, res) => {
+                if (err) return true
+                if (res.status == 200) return false
+                return true
+            })
+            .then((response: { body: { data: { votes: GraphQLVote[] } } }) => {
+                return response.body.data.votes
+            })) as GraphQLVote[]
+
+        result = result.concat(votes);
+    } 
+
+    return result
 }
