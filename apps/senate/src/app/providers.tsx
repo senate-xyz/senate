@@ -44,28 +44,26 @@ export default function RootProvider({
     children: React.ReactNode
 }) {
     return (
-        <TrpcClientProvider>
-            <WagmiConfig client={wagmiClient}>
-                <SessionProvider refetchInterval={60}>
-                    <RainbowKitSiweNextAuthProvider
-                        getSiweMessageOptions={getSiweMessageOptions}
+        <WagmiConfig client={wagmiClient}>
+            <SessionProvider refetchInterval={60}>
+                <RainbowKitSiweNextAuthProvider
+                    getSiweMessageOptions={getSiweMessageOptions}
+                >
+                    <RainbowKitProvider
+                        chains={chains}
+                        modalSize='compact'
+                        theme={darkTheme({
+                            accentColor: '#262626',
+                            accentColorForeground: 'white',
+                            borderRadius: 'none',
+                            overlayBlur: 'small',
+                            fontStack: 'rounded'
+                        })}
                     >
-                        <RainbowKitProvider
-                            chains={chains}
-                            modalSize='compact'
-                            theme={darkTheme({
-                                accentColor: '#262626',
-                                accentColorForeground: 'white',
-                                borderRadius: 'none',
-                                overlayBlur: 'small',
-                                fontStack: 'rounded'
-                            })}
-                        >
-                            {children}
-                        </RainbowKitProvider>
-                    </RainbowKitSiweNextAuthProvider>
-                </SessionProvider>
-            </WagmiConfig>
-        </TrpcClientProvider>
+                        <TrpcClientProvider>{children}</TrpcClientProvider>
+                    </RainbowKitProvider>
+                </RainbowKitSiweNextAuthProvider>
+            </SessionProvider>
+        </WagmiConfig>
     )
 }
