@@ -10,6 +10,7 @@ import { gitcoinProposals } from './chain/gitcoin'
 import { hopProposals } from './chain/hop'
 import { dydxProposals } from './chain/dydx'
 import { log_pd } from '@senate/axiom'
+import { DAOHandlerType } from '@senate/database'
 
 interface Result {
     externalId: string
@@ -191,6 +192,13 @@ export const updateChainProposals = async (daoHandlerId: string) => {
         } else {
             newIndex = toBlock
         }
+
+        log_pd.log({
+            level: 'info',
+            message: `${daoHandler.type} open proposals`,
+            openProposals: openProposals,
+            newIndex: newIndex
+        })
 
         await prisma.dAOHandler.update({
             where: {
