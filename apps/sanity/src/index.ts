@@ -39,7 +39,7 @@ type GraphQLProposal = {
 }
 
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
-schedule('30 * * * *', async () => {
+schedule('03 * * * *', async () => {
     log_sanity.log({
         level: 'info',
         message: 'Starting sanity check for snapshot votes and proposals',
@@ -357,26 +357,83 @@ const fetchVotesFromSnapshotAPI = async (
             }
         }`
     
-        const votes : GraphQLVote[] = (await superagent
-            .get('https://hub.snapshot.org/graphql')
-            .query({
-                query: graphqlQuery
-            })
-            .timeout({
-                response: 10000,
-                deadline: 30000
-            })
-            .retry(3, (err, res) => {
-                if (err) return true
-                if (res.status == 200) return false
-                return true
-            })
-            .then((response: { body: { data: { votes: GraphQLVote[] } } }) => {
-                return response.body.data.votes
-            })) as GraphQLVote[]
+        // const votes : GraphQLVote[] = (await superagent
+        //     .get('https://hub.snapshot.org/graphql')
+        //     .query({
+        //         query: graphqlQuery
+        //     })
+        //     .timeout({
+        //         response: 10000,
+        //         deadline: 30000
+        //     })
+        //     .retry(3, (err, res) => {
+        //         if (err) return true
+        //         if (res.status == 200) return false
+        //         return true
+        //     })
+        //     .then((response: { body: { data: { votes: GraphQLVote[] } } }) => {
+        //         return response.body.data.votes
+            // })) as GraphQLVote[]
 
-        result = result.concat(votes);
+        const data = await callApiWithDelayedRetries(graphqlQuery, 5)
+        result = result.concat(data.votes as GraphQLVote[]);
     } 
 
     return result
+}
+
+const callApiWithDelayedRetries = async (graphqlQuery: string, retries: number) => {
+
+        let result
+        let retriesLeft = retries
+        while (retriesLeft) {
+            try {
+                result = (await superagent
+                    .get('https://hub.snapshot.org/graphql')
+                    .query({
+                        query: graphqlQuery
+                    })
+                    .timeout({
+                        response: 10000,
+                        deadline: 30000
+                    })
+                    .then((response: { body: { data: any } }) => {
+                        return response.body.data
+                    })) 
+
+                break
+            } catch (e) {
+                retriesLeft--
+
+                if (!retriesLeft) {
+                    throw e
+                }
+
+                await new Promise((resolve) =>
+                    setTimeout(
+                        resolve,
+                        calculateExponentialBackoffTimeInMs(
+                            retries,
+                            retriesLeft
+                        )
+                    )
+                )
+                
+                log_sanity.log({
+                    level: 'warm',
+                    message: "Failed to fetch data from snapshot. Retrying...",
+                    retriesLeft: retriesLeft
+                })
+            }
+        }
+    
+
+    return result
+}
+
+const calculateExponentialBackoffTimeInMs = (
+    totalRetries: number,
+    retriesLeft: number
+) => {
+    return 1000 * Math.pow(2, totalRetries - retriesLeft)
 }
