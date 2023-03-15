@@ -7,6 +7,8 @@ const config = {
     swcMinify: true,
     images: {
         domains: [
+            'localhost',
+            'senatelabs.xyz',
             's2.coinmarketcap.com',
             'avatars.githubusercontent.com',
             'assets.coingecko.com',
