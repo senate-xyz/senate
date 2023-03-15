@@ -10,7 +10,6 @@ import { gitcoinProposals } from './chain/gitcoin'
 import { hopProposals } from './chain/hop'
 import { dydxProposals } from './chain/dydx'
 import { log_pd } from '@senate/axiom'
-import { DAOHandlerType } from '@senate/database'
 
 interface Result {
     externalId: string
