@@ -653,7 +653,7 @@ const seedData = async () => {
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
-                            space: 'starknet.eth.eth'
+                            space: 'starknet.eth'
                         }
                     }
                 ]
