@@ -622,7 +622,7 @@ const seedData = async () => {
             }
         }
     })
-    
+
     const lido = await prisma.dAO.upsert({
         where: { name: 'Lido DAO' },
         update: {},
@@ -641,7 +641,7 @@ const seedData = async () => {
             }
         }
     })
-    
+
     const starknet = await prisma.dAO.upsert({
         where: { name: 'Starknet' },
         update: {},
@@ -955,12 +955,12 @@ const seedData = async () => {
                 where: {
                     userId_daoId: {
                         userId: seedUser.id,
-                        daoId: lidodao.id
+                        daoId: lido.id
                     }
                 },
                 create: {
                     userId: seedUser.id,
-                    daoId: lidodao.id
+                    daoId: lido.id
                 },
                 update: {}
             }),
@@ -976,7 +976,7 @@ const seedData = async () => {
                     daoId: starknet.id
                 },
                 update: {}
-            }),
+            })
         ],
         {
             isolationLevel: 'ReadCommitted'
