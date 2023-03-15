@@ -622,6 +622,25 @@ const seedData = async () => {
             }
         }
     })
+    
+    const lido = await prisma.dAO.upsert({
+        where: { name: 'Lido DAO' },
+        update: {},
+        create: {
+            name: 'Lido DAO',
+            picture: '/assets/Project_Icons/Lido',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'lido-snapshot.eth'
+                        }
+                    }
+                ]
+            }
+        }
+    })
 
     console.log('Inserting seed user')
     const seedUser = await prisma.user.upsert({
@@ -912,7 +931,20 @@ const seedData = async () => {
                     daoId: morpho.id
                 },
                 update: {}
-            })
+            }),
+            prisma.subscription.upsert({
+                where: {
+                    userId_daoId: {
+                        userId: seedUser.id,
+                        daoId: lidodao.id
+                    }
+                },
+                create: {
+                    userId: seedUser.id,
+                    daoId: lidodao.id
+                },
+                update: {}
+            }),
         ],
         {
             isolationLevel: 'ReadCommitted'
