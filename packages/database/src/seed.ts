@@ -628,13 +628,32 @@ const seedData = async () => {
         update: {},
         create: {
             name: 'Lido DAO',
-            picture: '/assets/Project_Icons/Lido',
+            picture: '/assets/Project_Icons/lido',
             handlers: {
                 create: [
                     {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'lido-snapshot.eth'
+                        }
+                    }
+                ]
+            }
+        }
+    })
+    
+    const starknet = await prisma.dAO.upsert({
+        where: { name: 'Starknet' },
+        update: {},
+        create: {
+            name: 'Starknet',
+            picture: '/assets/Project_Icons/starknet',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'starknet.eth.eth'
                         }
                     }
                 ]
@@ -942,6 +961,19 @@ const seedData = async () => {
                 create: {
                     userId: seedUser.id,
                     daoId: lidodao.id
+                },
+                update: {}
+            }),
+            prisma.subscription.upsert({
+                where: {
+                    userId_daoId: {
+                        userId: seedUser.id,
+                        daoId: starknet.id
+                    }
+                },
+                create: {
+                    userId: seedUser.id,
+                    daoId: starknet.id
                 },
                 update: {}
             }),
