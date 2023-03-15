@@ -248,6 +248,25 @@ const MobileActiveProposal = async (props: {
         voted: string
     }
 }) => {
+    let daoPicture = await fetch(
+        process.env.WEB_URL + props.proposal.daoPicture + '.svg'
+    )
+        .then((res) => {
+            if (res.ok)
+                return process.env.WEB_URL + props.proposal.daoPicture + '.svg'
+            else
+                return (
+                    process.env.WEB_URL +
+                    '/assets/Project_Icons/placeholder_medium.png'
+                )
+        })
+        .catch(() => {
+            return (
+                process.env.WEB_URL +
+                '/assets/Project_Icons/placeholder_medium.png'
+            )
+        })
+
     return (
         <div className='my-1 flex w-full flex-col items-start bg-[#121212] text-[#EDEDED]'>
             <div className='flex w-full flex-col gap-2 p-2'>
@@ -259,7 +278,7 @@ const MobileActiveProposal = async (props: {
                                 priority={true}
                                 width={48}
                                 height={48}
-                                src={props.proposal.daoPicture + '.svg'}
+                                src={daoPicture}
                                 alt={props.proposal.daoName}
                             />
                         </div>
@@ -378,6 +397,25 @@ const ActiveProposal = async (props: {
         voted: string
     }
 }) => {
+    let daoPicture = await fetch(
+        process.env.WEB_URL + props.proposal.daoPicture + '.svg'
+    )
+        .then((res) => {
+            if (res.ok)
+                return process.env.WEB_URL + props.proposal.daoPicture + '.svg'
+            else
+                return (
+                    process.env.WEB_URL +
+                    '/assets/Project_Icons/placeholder_medium.png'
+                )
+        })
+        .catch(() => {
+            return (
+                process.env.WEB_URL +
+                '/assets/Project_Icons/placeholder_medium.png'
+            )
+        })
+
     return (
         <tr className='h-[96px] w-full items-center justify-evenly bg-[#121212] text-[#EDEDED] '>
             <td className='hidden lg:table-cell'>
@@ -388,7 +426,7 @@ const ActiveProposal = async (props: {
                             priority={true}
                             width={64}
                             height={64}
-                            src={props.proposal.daoPicture + '.svg'}
+                            src={daoPicture}
                             alt={props.proposal.daoName}
                         />
                     </div>

@@ -16,7 +16,9 @@ export const SubscribedDAO = (props: {
     notificationsEnabled: boolean
 }) => {
     const [imgSrc, setImgSrc] = useState(
-        '/assets/Project_Icons/placeholder_medium.png'
+        props.daoPicture
+            ? props.daoPicture + '_medium.png'
+            : '/assets/Project_Icons/placeholder_medium.png'
     )
 
     useEffect(() => {
