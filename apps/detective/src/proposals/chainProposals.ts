@@ -192,6 +192,13 @@ export const updateChainProposals = async (daoHandlerId: string) => {
             newIndex = toBlock
         }
 
+        log_pd.log({
+            level: 'info',
+            message: `${daoHandler.type} open proposals`,
+            openProposals: openProposals,
+            newIndex: newIndex
+        })
+
         await prisma.dAOHandler.update({
             where: {
                 id: daoHandler.id
