@@ -102,13 +102,6 @@ const getProposalTitle = async (
                     )
                 )
 
-                log_pd.log({
-                    level: 'warn',
-                    message: `Retrying fetching title for Maker poll ${onChainId}`,
-                    data: {
-                        retriesLeft: retriesLeft
-                    }
-                })
             }
         }
     } catch (e) {
