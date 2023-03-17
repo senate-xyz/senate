@@ -661,6 +661,25 @@ const seedData = async () => {
         }
     })
 
+    const invicta = await prisma.dAO.upsert({
+        where: { name: 'InvictaDAO' },
+        update: {},
+        create: {
+            name: 'InvictaDAO',
+            picture: '/assets/Project_Icons/invicta',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'invictadao.eth'
+                        }
+                    }
+                ]
+            }
+        }
+    })
+
     console.log('Inserting seed user')
     const seedUser = await prisma.user.upsert({
         where: {
@@ -974,6 +993,19 @@ const seedData = async () => {
                 create: {
                     userId: seedUser.id,
                     daoId: starknet.id
+                },
+                update: {}
+            }),
+            prisma.subscription.upsert({
+                where: {
+                    userId_daoId: {
+                        userId: seedUser.id,
+                        daoId: invicta.id
+                    }
+                },
+                create: {
+                    userId: seedUser.id,
+                    daoId: invicta.id
                 },
                 update: {}
             })
