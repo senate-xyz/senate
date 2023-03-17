@@ -55,6 +55,13 @@ interface EmailTemplateRow {
     resultUnavailableDisplay: string
 }
 
+interface BulletinData {
+    todaysDate: string
+    newProposals: EmailTemplateRow[]
+    endingProposals: EmailTemplateRow[]
+    pastProposals: EmailTemplateRow[]
+}
+
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
 schedule(
     String(process.env.BULLETIN_CRON_INTERVAL) ?? '* * 31 2 *',
@@ -103,7 +110,7 @@ schedule(
             if (errorsDetected) {
                 await sendSorryPlsEmail()
             } else {
-                await sendDailyBulletin()
+                await formatDataAndSendBulletin()
             }
 
             log_bul.log({
@@ -649,18 +656,13 @@ const fetchUsersToBeNotified = async (): Promise<UserWithVotingAddresses[]> => {
     }
 }
 
-const sendDailyBulletin = async () => {
+const formatDataAndSendBulletin = async () => {
     const dateOptions: Intl.DateTimeFormatOptions = {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric'
     }
-
-    const todaysDate = new Date(Date.now()).toLocaleDateString(
-        undefined,
-        dateOptions
-    )
 
     try {
         const users = await fetchUsersToBeNotified()
@@ -688,62 +690,88 @@ const sendDailyBulletin = async () => {
                     ? String(user.email)
                     : String(process.env.TEST_EMAIL)
 
-            await client.sendEmailWithTemplate({
-                TemplateAlias: 'daily-bulletin-1',
-                TemplateModel: {
-                    senateLogoUrl: encodeURI(
-                        process.env.WEB_URL + '/assets/Senate_Logo/64/White.png'
-                    ),
-                    todaysDate: todaysDate,
-                    endingSoonProposals: endingSoonProposalsData,
-                    endingSoonProposalsTableCssClass:
-                        endingSoonProposalsData.length > 0 ? 'show' : 'hide',
-                    endingSoonProposalsNoDataBoxCssClass:
-                        endingSoonProposalsData.length > 0 ? 'hide' : 'show',
+            const todaysDate = new Date(Date.now()).toLocaleDateString(
+                undefined,
+                dateOptions
+            )
 
-                    newProposals: newProposalsData,
-                    newProposalsTableCssClass:
-                        newProposalsData.length > 0 ? 'show' : 'hide',
-                    newProposalsNoDataBoxCssClass:
-                        newProposalsData.length > 0 ? 'hide' : 'show',
-
-                    pastProposals: pastProposalsData,
-                    pastProposalsTableCssClass:
-                        pastProposalsData.length > 0 ? 'show' : 'hide',
-                    pastProposalsNoDataBoxCssClass:
-                        pastProposalsData.length > 0 ? 'hide' : 'show',
-
-                    twitterIconUrl: encodeURI(
-                        process.env.WEB_URL + '/assets/Icon/TwitterWhite.png'
-                    ),
-                    discordIconUrl: encodeURI(
-                        process.env.WEB_URL + '/assets/Icon/DiscordWhite.png'
-                    ),
-                    githubIconUrl: encodeURI(
-                        process.env.WEB_URL + '/assets/Icon/GithubWhite.png'
-                    )
-                },
-                InlineCss: true,
-                From: 'info@senatelabs.xyz',
-                To: to,
-                Bcc: process.env.BULLETIN_BCC_EMAILS ?? '',
-                Tag: 'Daily Bulletin',
-                TrackOpens: true,
-                MessageStream: 'outbound'
-            })
-
-            log_bul.log({
-                level: 'info',
-                message: 'Sent daily bulletin to user',
-                data: {
-                    email: user.email
-                }
+            await sendEmail(to, {
+                todaysDate: todaysDate,
+                newProposals: newProposalsData,
+                endingProposals: endingSoonProposalsData,
+                pastProposals: pastProposalsData
             })
         }
     } catch (e) {
         log_bul.log({
             level: 'error',
-            message: 'Could not send daily bulletin',
+            message: 'Something went wrong with sending emails',
+            data: {
+                errorName: (e as Error).name,
+                errorMessage: (e as Error).message,
+                errorStack: (e as Error).stack
+            }
+        })
+    }
+}
+
+const sendEmail = async (to: string, data: BulletinData) => {
+    try {
+        await client.sendEmailWithTemplate({
+            TemplateAlias: 'daily-bulletin-1',
+            TemplateModel: {
+                senateLogoUrl: encodeURI(
+                    process.env.WEB_URL + '/assets/Senate_Logo/64/White.png'
+                ),
+                todaysDate: data.todaysDate,
+                endingSoonProposals: data.endingProposals,
+                endingSoonProposalsTableCssClass:
+                    data.endingProposals.length > 0 ? 'show' : 'hide',
+                endingSoonProposalsNoDataBoxCssClass:
+                    data.endingProposals.length > 0 ? 'hide' : 'show',
+
+                newProposals: data.newProposals,
+                newProposalsTableCssClass:
+                    data.newProposals.length > 0 ? 'show' : 'hide',
+                newProposalsNoDataBoxCssClass:
+                    data.newProposals.length > 0 ? 'hide' : 'show',
+
+                pastProposals: data.pastProposals,
+                pastProposalsTableCssClass:
+                    data.pastProposals.length > 0 ? 'show' : 'hide',
+                pastProposalsNoDataBoxCssClass:
+                    data.pastProposals.length > 0 ? 'hide' : 'show',
+
+                twitterIconUrl: encodeURI(
+                    process.env.WEB_URL + '/assets/Icon/TwitterWhite.png'
+                ),
+                discordIconUrl: encodeURI(
+                    process.env.WEB_URL + '/assets/Icon/DiscordWhite.png'
+                ),
+                githubIconUrl: encodeURI(
+                    process.env.WEB_URL + '/assets/Icon/GithubWhite.png'
+                )
+            },
+            InlineCss: true,
+            From: 'info@senatelabs.xyz',
+            To: to,
+            Bcc: process.env.BULLETIN_BCC_EMAILS ?? '',
+            Tag: 'Daily Bulletin',
+            TrackOpens: true,
+            MessageStream: 'outbound'
+        })
+
+        log_bul.log({
+            level: 'info',
+            message: 'Sent daily bulletin to user',
+            data: {
+                email: to
+            }
+        })
+    } catch (e) {
+        log_bul.log({
+            level: 'error',
+            message: `Failed to send daily bulletin to ${to}`,
             data: {
                 errorName: (e as Error).name,
                 errorMessage: (e as Error).message,
