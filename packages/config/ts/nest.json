@@ -8,6 +8,6 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "noEmit": false,
-        "importsNotUsedAsValues": "preserve"
+        "verbatimModuleSyntax": false
     }
 }

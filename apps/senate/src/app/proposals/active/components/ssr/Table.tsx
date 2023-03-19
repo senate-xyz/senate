@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import dayjs, { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { Vote, prisma } from '@senate/database'
+import { type Vote, prisma } from '@senate/database'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
 
@@ -248,7 +248,7 @@ const MobileActiveProposal = async (props: {
         voted: string
     }
 }) => {
-    let daoPicture = await fetch(
+    const daoPicture = await fetch(
         process.env.WEB_URL + props.proposal.daoPicture + '.svg'
     )
         .then((res) => {
@@ -397,7 +397,7 @@ const ActiveProposal = async (props: {
         voted: string
     }
 }) => {
-    let daoPicture = await fetch(
+    const daoPicture = await fetch(
         process.env.WEB_URL + props.proposal.daoPicture + '.svg'
     )
         .then((res) => {

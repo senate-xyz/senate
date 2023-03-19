@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client'
-import { IBackOffOptions, backOff } from 'exponential-backoff'
+import { type IBackOffOptions, backOff } from 'exponential-backoff'
 import { log_prisma } from '@senate/axiom'
 import type { InterfaceAbi } from 'ethers'
 

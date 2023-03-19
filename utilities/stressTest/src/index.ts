@@ -1,9 +1,9 @@
 import {
     prisma,
-    User,
+    type User,
     DAOHandlerType,
-    DAOHandler,
-    Decoder
+    type DAOHandler,
+    type Decoder
 } from '@senate/database'
 import axios from 'axios'
 import promptSync from 'prompt-sync'

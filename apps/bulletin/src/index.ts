@@ -6,9 +6,9 @@ import {
     type DAO,
     type Notification,
     RoundupNotificationType,
-    JsonArray,
+    type JsonArray,
     prisma,
-    DAOHandler
+    type DAOHandler
 } from '@senate/database'
 
 import axios from 'axios'

@@ -8,12 +8,10 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "moduleResolution": "node",
-        "isolatedModules": true,
         "resolveJsonModule": true,
         "noEmit": true,
         "declaration": true,
         "removeComments": true,
-
         "strict": true,
         "strictNullChecks": false,
         "allowUnusedLabels": false,
@@ -24,7 +22,7 @@
         "noUncheckedIndexedAccess": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "importsNotUsedAsValues": "error",
+        "verbatimModuleSyntax": true,
         "checkJs": true
     }
 }

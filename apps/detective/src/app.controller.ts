@@ -1,9 +1,9 @@
 import {
-    ArgumentsHost,
+    type ArgumentsHost,
     Body,
     Catch,
     Controller,
-    ExceptionFilter,
+    type ExceptionFilter,
     type HttpAdapterHost,
     HttpException,
     HttpStatus,

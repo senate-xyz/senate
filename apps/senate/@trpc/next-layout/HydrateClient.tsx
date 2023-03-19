@@ -1,6 +1,6 @@
 'use client'
 
-import { DehydratedState, Hydrate } from '@tanstack/react-query'
+import { type DehydratedState, Hydrate } from '@tanstack/react-query'
 import type { DataTransformer } from '@trpc/server'
 import { useMemo } from 'react'
 

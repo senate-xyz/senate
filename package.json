@@ -46,11 +46,11 @@
   },
   "devDependencies": {
     "prettier": "^2.8.4",
-    "tsx": "^3.12.3",
+    "tsx": "^3.12.5",
     "turbo": "^1.8.3"
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {
-    "rimraf": "^4.1.2"
+    "rimraf": "^4.4.0"
   }
 }
