@@ -17,7 +17,7 @@ export const getMakerPollVotesFromArbitrum = async (
 ) => {
     const abi = await getAbi(
         (daoHandler.decoder as Decoder).address_vote,
-        'ethereum'
+        'arbitrum'
     )
 
     const logs = await provider.getLogs({

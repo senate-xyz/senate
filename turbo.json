@@ -55,6 +55,7 @@
         "DETECTIVE_URL",
         "IPFS_GATEWAY_URL",
         "ETHERSCAN_API_KEY",
+        "ARBISCAN_API_KEY",
 
         "BULLETIN_ENABLE",
         "BULLETIN_BCC_EMAILS",

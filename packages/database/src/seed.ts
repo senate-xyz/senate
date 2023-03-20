@@ -65,6 +65,7 @@ const seedData = async () => {
                     },
                     {
                         type: DAOHandlerType.MAKER_POLL_ARBITRUM,
+                        chainIndex: 24755861,
                         decoder: {
                             address_vote:
                                 '0x4f4e551b4920a5417F8d4e7f8f099660dAdadcEC'
