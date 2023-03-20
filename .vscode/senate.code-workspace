@@ -21,6 +21,10 @@
       "path": "../apps/senate"
     },
     {
+      "name": "🌐 @senate/stats",
+      "path": "../apps/stats"
+    },
+    {
       "name": "⚙️ @senate/config",
       "path": "../packages/config"
     },
@@ -31,6 +35,14 @@
     {
       "name": "📦 @senate/axiom",
       "path": "../packages/axiom"
+    },
+    {
+      "name": "🛠️ @senate/stressTest",
+      "path": "../utilities/stressTest"
+    },
+    {
+      "name": "🛠️ @senate/userMigration",
+      "path": "../utilities/userMigration"
     }
   ],
   "settings": {
