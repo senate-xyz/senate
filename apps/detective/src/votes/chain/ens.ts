@@ -1,6 +1,6 @@
 import { log_pd } from '@senate/axiom'
 import { DAOHandlerWithDAO, Decoder, prisma } from '@senate/database'
-import { ethers, Log, zeroPadValue, hexlify } from 'ethers'
+import { ethers, Log, zeroPadValue, hexlify, InterfaceAbi } from 'ethers'
 import getAbi from '../../utils'
 
 export const getENSVotes = async (
@@ -29,7 +29,7 @@ export const getENSVotes = async (
 
     const result = await Promise.all(
         voterAddresses.map((voterAddress) => {
-            return getVotesForVoter(logs, daoHandler, voterAddress)
+            return getVotesForVoter(logs, daoHandler, voterAddress, abi)
         })
     )
 
@@ -39,13 +39,10 @@ export const getENSVotes = async (
 export const getVotesForVoter = async (
     logs: Log[],
     daoHandler: DAOHandlerWithDAO,
-    voterAddress: string
+    voterAddress: string,
+    abi: InterfaceAbi
 ) => {
     let success = true
-    const abi = await getAbi(
-        (daoHandler.decoder as Decoder).address,
-        'ethereum'
-    )
 
     const votes =
         (

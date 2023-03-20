@@ -1,8 +1,9 @@
 import { log_pd } from '@senate/axiom'
 import { Decoder } from '@senate/database'
 import { DAOHandlerWithDAO, prisma } from '@senate/database'
-import { ethers, Log, zeroPadValue } from 'ethers'
+import { ethers, InterfaceAbi, Log, zeroPadValue } from 'ethers'
 import { hexlify } from 'ethers'
+import getAbi from '../../utils'
 
 export const getUniswapVotes = async (
     provider: ethers.JsonRpcProvider,
@@ -11,8 +12,9 @@ export const getUniswapVotes = async (
     fromBlock: number,
     toBlock: number
 ) => {
-    const govBravoIface = new ethers.Interface(
-        (daoHandler.decoder as Decoder).abi
+    const abi = await getAbi(
+        (daoHandler.decoder as Decoder).address,
+        'ethereum'
     )
 
     const logs = await provider.getLogs({
@@ -20,7 +22,7 @@ export const getUniswapVotes = async (
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address,
         topics: [
-            govBravoIface.getEvent('VoteCast').topicHash,
+            new ethers.Interface(abi).getEvent('VoteCast').topicHash,
             voterAddresses.map((voterAddress) =>
                 hexlify(zeroPadValue(voterAddress, 32))
             )
@@ -29,7 +31,7 @@ export const getUniswapVotes = async (
 
     const result = await Promise.all(
         voterAddresses.map((voterAddress) => {
-            return getVotesForVoter(logs, daoHandler, voterAddress)
+            return getVotesForVoter(logs, daoHandler, voterAddress, abi)
         })
     )
 
@@ -39,17 +41,16 @@ export const getUniswapVotes = async (
 export const getVotesForVoter = async (
     logs: Log[],
     daoHandler: DAOHandlerWithDAO,
-    voterAddress: string
+    voterAddress: string,
+    abi: InterfaceAbi
 ) => {
     let success = true
-    const govBravoIface = new ethers.Interface(
-        (daoHandler.decoder as Decoder).abi
-    )
+
     const votes = (
         await Promise.all(
             logs.map(async (log: Log) => {
                 try {
-                    const eventData = govBravoIface.parseLog({
+                    const eventData = new ethers.Interface(abi).parseLog({
                         topics: log.topics as string[],
                         data: log.data
                     }).args
