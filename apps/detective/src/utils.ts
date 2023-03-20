@@ -2,13 +2,14 @@ import { prisma } from '@senate/database'
 import superagent from 'superagent'
 
 const getAbi = async (address: string, provider: 'ethereum' | 'arbitrum') => {
-    const abi = await prisma.abis
+    const contract = await prisma.contract
         .findFirstOrThrow({
             where: {
                 address: address
             }
         })
         .catch(async () => {
+            const result = { abi: 'none' }
             if (provider === 'ethereum') {
                 await superagent
                     .get(
@@ -25,22 +26,21 @@ const getAbi = async (address: string, provider: 'ethereum' | 'arbitrum') => {
                     })
                     .then((res) => res.body)
                     .then(async (data) => {
-                        console.log(`Got new abi for ${address}`)
-                        if (data.message == 'OK') {
-                            const abi = await prisma.abis.create({
-                                data: {
-                                    address: address,
-                                    abi: data.result
-                                }
-                            })
-                            return abi
-                        } else return ''
+                        await prisma.contract.create({
+                            data: {
+                                address: address,
+                                abi: data.result
+                            }
+                        })
+                        result.abi = data.result
                     })
             } else if (provider === 'arbitrum') {
-            } else return
+                result.abi = 'none'
+            }
+            return result
         })
 
-    return abi
+    return contract.abi
 }
 
 export default getAbi

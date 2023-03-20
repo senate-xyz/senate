@@ -176,9 +176,9 @@ Table Config {
   value String [not null]
 }
 
-Table Abis {
+Table Contract {
   address String [unique, not null]
-  abi Json [not null]
+  abi String [not null]
 }
 
 Enum RoundupNotificationType {

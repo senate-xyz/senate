@@ -1,5 +1,6 @@
 import { DAOHandler, prisma, Proposal, Decoder } from '@senate/database'
 import { ethers, hexlify, zeroPadValue } from 'ethers'
+import getAbi from '../../utils'
 
 interface DecodedLog {
     txBlock: number
@@ -14,14 +15,17 @@ export const getMakerPollVotesFromArbitrum = async (
     fromBlock: number,
     toBlock: number
 ) => {
-    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi_vote)
+    const abi = await getAbi(
+        (daoHandler.decoder as Decoder).address_vote,
+        'ethereum'
+    )
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address_vote,
         topics: [
-            iface.getEvent('Voted').topicHash,
+            new ethers.Interface(abi).getEvent('Voted').topicHash,
             voterAddresses.map((voterAddress) =>
                 hexlify(zeroPadValue(voterAddress, 32))
             )
@@ -31,7 +35,7 @@ export const getMakerPollVotesFromArbitrum = async (
     const decodedLogs: DecodedLog[] = logs.map((log) => ({
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
-        eventData: iface.parseLog({
+        eventData: new ethers.Interface(abi).parseLog({
             topics: log.topics as string[],
             data: log.data
         }).args

@@ -215,9 +215,9 @@ model Config {
   value String
 }
 
-model Abis {
+model Contract {
   address String
-  abi     Json
+  abi     String
 
   @@unique([address])
 }

@@ -3,6 +3,7 @@ import { Decoder } from '@senate/database'
 import { DAOHandlerWithDAO, prisma } from '@senate/database'
 import { ethers, Log, zeroPadValue } from 'ethers'
 import { hexlify } from 'ethers'
+import getAbi from '../../utils'
 
 export const getMakerExecutiveVotes = async (
     provider: ethers.JsonRpcProvider,
@@ -47,10 +48,15 @@ export const getVotesForVoter = async (
 
     const voteSingleActionTopic =
         '0xa69beaba00000000000000000000000000000000000000000000000000000000'
-    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi)
+
+    const abi = await getAbi(
+        (daoHandler.decoder as Decoder).address,
+        'ethereum'
+    )
+
     const chiefContract = new ethers.Contract(
         (daoHandler.decoder as Decoder).address,
-        (daoHandler.decoder as Decoder).abi,
+        abi,
         provider
     )
 
@@ -65,12 +71,21 @@ export const getVotesForVoter = async (
         )
             continue
 
-        const eventArgs = iface.decodeEventLog('LogNote', log.data)
+        const eventArgs = new ethers.Interface(abi).decodeEventLog(
+            'LogNote',
+            log.data
+        )
 
         const decodedFunctionData =
             log.topics[0] === voteSingleActionTopic
-                ? iface.decodeFunctionData('vote(bytes32)', eventArgs.fax)
-                : iface.decodeFunctionData('vote(address[])', eventArgs.fax)
+                ? new ethers.Interface(abi).decodeFunctionData(
+                      'vote(bytes32)',
+                      eventArgs.fax
+                  )
+                : new ethers.Interface(abi).decodeFunctionData(
+                      'vote(address[])',
+                      eventArgs.fax
+                  )
 
         const spells: string[] =
             decodedFunctionData.yays !== undefined

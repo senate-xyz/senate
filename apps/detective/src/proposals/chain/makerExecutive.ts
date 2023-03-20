@@ -3,6 +3,7 @@ import { DAOHandler } from '@senate/database'
 import { Decoder } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
+import getAbi from '../../utils'
 
 const VOTE_MULTIPLE_ACTIONS_TOPIC =
     '0xed08132900000000000000000000000000000000000000000000000000000000'
@@ -16,10 +17,14 @@ export const makerExecutiveProposals = async (
     fromBlock: number,
     toBlock: number
 ) => {
-    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi)
+    const abi = await getAbi(
+        (daoHandler.decoder as Decoder).address,
+        'ethereum'
+    )
+
     const chiefContract = new ethers.Contract(
         (daoHandler.decoder as Decoder).address,
-        (daoHandler.decoder as Decoder).abi,
+        abi,
         provider
     )
 
@@ -32,7 +37,7 @@ export const makerExecutiveProposals = async (
 
     const spellAddresses = await getSpellAddressArrayFromLogs(
         logs,
-        iface,
+        new ethers.Interface(abi),
         chiefContract
     )
 

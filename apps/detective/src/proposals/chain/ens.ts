@@ -1,6 +1,7 @@
 import { log_pd } from '@senate/axiom'
 import { DAOHandler, Decoder } from '@senate/database'
 import { ethers } from 'ethers'
+import getAbi from '../../utils'
 
 export const ensProposals = async (
     provider: ethers.JsonRpcProvider,
@@ -8,21 +9,24 @@ export const ensProposals = async (
     fromBlock: number,
     toBlock: number
 ) => {
-    const ozGovernorInterface = new ethers.Interface(
-        (daoHandler.decoder as Decoder).abi
+    const abi = await getAbi(
+        (daoHandler.decoder as Decoder).address,
+        'ethereum'
     )
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address,
-        topics: [ozGovernorInterface.getEvent('ProposalCreated').topicHash]
+        topics: [
+            new ethers.Interface(abi).getEvent('ProposalCreated').topicHash
+        ]
     })
 
     const args = logs.map((log) => ({
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
-        eventData: ozGovernorInterface.parseLog({
+        eventData: new ethers.Interface(abi).parseLog({
             topics: log.topics as string[],
             data: log.data
         }).args
@@ -30,7 +34,7 @@ export const ensProposals = async (
 
     const govContract = new ethers.Contract(
         (daoHandler.decoder as Decoder).address,
-        (daoHandler.decoder as Decoder).abi,
+        abi,
         provider
     )
 

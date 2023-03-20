@@ -3,6 +3,7 @@ import { DAOHandler } from '@senate/database'
 import { Decoder } from '@senate/database'
 import axios from 'axios'
 import { ethers } from 'ethers'
+import getAbi from '../../utils'
 
 export const makerPolls = async (
     provider: ethers.JsonRpcProvider,
@@ -10,20 +11,21 @@ export const makerPolls = async (
     fromBlock: number,
     toBlock: number
 ) => {
-    const pollingContractIface = new ethers.Interface(
-        (daoHandler.decoder as Decoder).abi_create
+    const abi = new ethers.Interface(
+        await getAbi((daoHandler.decoder as Decoder).address_create, 'ethereum')
     )
+
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address_create,
-        topics: [pollingContractIface.getEvent('PollCreated').topicHash]
+        topics: [abi.getEvent('PollCreated').topicHash]
     })
 
     const args = logs.map((log) => ({
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
-        eventData: pollingContractIface.parseLog({
+        eventData: abi.parseLog({
             topics: log.topics as string[],
             data: log.data
         }).args

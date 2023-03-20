@@ -16,7 +16,9 @@ async function bootstrap() {
         port: PORT
     })
 
-    getAbi('0xEC568fffba86c094cf06b22134B23074DFE2252c', 'ethereum')
+    console.log(
+        await getAbi('0xEC568fffba86c094cf06b22134B23074DFE2252c', 'ethereum')
+    )
 
     setInterval(async () => {
         log_pd.log({

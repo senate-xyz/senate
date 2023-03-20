@@ -1,6 +1,7 @@
 import { log_pd } from '@senate/axiom'
 import { DAOHandlerWithDAO, Decoder, prisma } from '@senate/database'
 import { ethers, Log, zeroPadValue, hexlify } from 'ethers'
+import getAbi from '../../utils'
 
 export const getENSVotes = async (
     provider: ethers.JsonRpcProvider,
@@ -9,14 +10,17 @@ export const getENSVotes = async (
     fromBlock: number,
     toBlock: number
 ) => {
-    const iface = new ethers.Interface((daoHandler.decoder as Decoder).abi)
+    const abi = await getAbi(
+        (daoHandler.decoder as Decoder).address,
+        'ethereum'
+    )
 
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address,
         topics: [
-            iface.getEvent('VoteCast').topicHash,
+            new ethers.Interface(abi).getEvent('VoteCast').topicHash,
             voterAddresses.map((voterAddress) =>
                 hexlify(zeroPadValue(voterAddress, 32))
             )
@@ -38,15 +42,17 @@ export const getVotesForVoter = async (
     voterAddress: string
 ) => {
     let success = true
-    const govBravoIface = new ethers.Interface(
-        (daoHandler.decoder as Decoder).abi
+    const abi = await getAbi(
+        (daoHandler.decoder as Decoder).address,
+        'ethereum'
     )
+
     const votes =
         (
             await Promise.all(
                 logs.map(async (log) => {
                     try {
-                        const eventData = govBravoIface.parseLog({
+                        const eventData = new ethers.Interface(abi).parseLog({
                             topics: log.topics as string[],
                             data: log.data
                         }).args
