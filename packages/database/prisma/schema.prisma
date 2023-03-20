@@ -92,6 +92,7 @@ model Proposal {
   choices     Json
   scores      Json
   scoresTotal Float
+  quorum      Float
 
   blockCreated BigInt?  @default(420)
   timeCreated  DateTime
@@ -212,6 +213,13 @@ model RefreshQueue {
 model Config {
   param String @unique
   value String
+}
+
+model Abis {
+  address String
+  abi     Json
+
+  @@unique([address])
 }
 
 enum RoundupNotificationType {

@@ -41,7 +41,6 @@ export const proposalSanity = schedule('15 * * * *', async () => {
             SEARCH_FROM,
             SEARCH_TO
         )
-        
     } catch (error) {
         log_sanity.log({
             level: 'error',

@@ -10,6 +10,7 @@ type GraphQLProposal = {
     choices: any
     scores: number[]
     scores_total: number
+    quorum: number
     created: number
     start: number
     end: number
@@ -55,6 +56,7 @@ export const updateSnapshotProposals = async (
             created
             start
             end
+            quorum
             state
             link
             space
@@ -103,6 +105,7 @@ export const updateSnapshotProposals = async (
                         choices: proposal.choices,
                         scores: proposal.scores,
                         scoresTotal: proposal.scores_total,
+                        quorum: proposal.quorum,
                         timeCreated: new Date(proposal.created * 1000),
                         timeStart: new Date(proposal.start * 1000),
                         timeEnd: new Date(proposal.end * 1000),

@@ -1,5 +1,5 @@
-import {proposalSanity} from './proposals'
-import {votesSanity} from './votes'
+import { proposalSanity } from './proposals'
+import { votesSanity } from './votes'
 
-proposalSanity.start();
-votesSanity.start();
+proposalSanity.start()
+votesSanity.start()

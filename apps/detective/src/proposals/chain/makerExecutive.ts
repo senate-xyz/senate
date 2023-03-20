@@ -40,12 +40,6 @@ export const makerExecutiveProposals = async (
         spellAddresses.map(async (spellAddress) => {
             const proposalData = await getProposalData(spellAddress)
 
-            if (
-                proposalData.title === 'Unknown' ||
-                proposalData.spellData.expiration.getTime() == 0
-            )
-                return Promise.resolve(null)
-
             const proposalBlock = await axios
                 .get(
                     `https://coins.llama.fi/block/ethereum/${Math.floor(
@@ -67,12 +61,16 @@ export const makerExecutiveProposals = async (
                 choices: ['Yes', 'No'],
                 scores: [0, 0],
                 scoresTotal: 0,
+                quorum: 0,
                 url: (daoHandler.decoder as Decoder).proposalUrl + spellAddress
             }
         })
     )
 
-    return proposals.filter((proposal) => proposal !== null)
+    return proposals.filter(
+        (proposal) =>
+            proposal.name === 'Unknown' || proposal.timeEnd.getTime() == 0
+    )
 }
 
 const getProposalData = async (spellAddress: string) => {
@@ -84,7 +82,7 @@ const getProposalData = async (spellAddress: string) => {
         date: new Date(0)
     }
     try {
-        let retriesNumber = 5
+        const retriesNumber = 5
         let retriesLeft = retriesNumber
         while (retriesLeft) {
             try {

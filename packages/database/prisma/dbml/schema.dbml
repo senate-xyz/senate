@@ -69,6 +69,7 @@ Table Proposal {
   choices Json [not null]
   scores Json [not null]
   scoresTotal Float [not null]
+  quorum Float [not null]
   blockCreated BigInt [default: 420]
   timeCreated DateTime [not null]
   timeStart DateTime [not null]
@@ -173,6 +174,11 @@ Table RefreshQueue {
 Table Config {
   param String [unique, not null]
   value String [not null]
+}
+
+Table Abis {
+  address String [unique, not null]
+  abi Json [not null]
 }
 
 Enum RoundupNotificationType {

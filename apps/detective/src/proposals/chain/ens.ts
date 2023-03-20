@@ -78,6 +78,7 @@ export const ensProposals = async (
                             parseFloat(onchainProposal.forVotes) +
                             parseFloat(onchainProposal.abstainVotes) +
                             parseFloat(onchainProposal.againstVotes),
+                        quorum: 0,
                         url: proposalUrl
                     }
                 })

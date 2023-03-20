@@ -82,6 +82,7 @@ export const dydxProposals = async (
                 scoresTotal:
                     parseFloat(onchainProposal.forVotes) +
                     parseFloat(onchainProposal.againstVotes),
+                quorum: 0,
                 url: proposalUrl
             }
         })
@@ -124,7 +125,6 @@ const fetchTitleFromIPFS = async (
                 }
 
                 gatewayIndex = (gatewayIndex + 1) % IPFS_GATEWAY_URLS.length
-
             }
         }
     } catch (e) {

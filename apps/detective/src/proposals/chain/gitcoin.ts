@@ -73,6 +73,7 @@ export const gitcoinProposals = async (
                         scoresTotal:
                             parseFloat(onchainProposal.forVotes) +
                             parseFloat(onchainProposal.againstVotes),
+                        quorum: 0,
                         url: proposalUrl
                     }
                 })

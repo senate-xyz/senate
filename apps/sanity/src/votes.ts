@@ -1,9 +1,9 @@
 import {
     prisma,
-    DAOHandler,
+    type DAOHandler,
     DAOHandlerType,
-    Decoder,
-    JsonValue
+    type Decoder,
+    type JsonValue
 } from '@senate/database'
 
 import { schedule } from 'node-cron'
@@ -44,7 +44,6 @@ export const votesSanity = schedule('30 * * * *', async () => {
         })
 
         await checkAndSanitizeVotesRoutine(daoHandlers, SEARCH_FROM, SEARCH_TO)
-        
     } catch (error) {
         log_sanity.log({
             level: 'error',
@@ -171,10 +170,12 @@ const fetchVotesFromSnapshotAPI = async (
     voterAddresses: string[],
     space: string
 ) => {
-    
-    let result : GraphQLVote[] = []
-    for (let i=0; i<voterAddresses.length; i+=100) {
-        let addresses = voterAddresses.slice(i, Math.min(i+100, voterAddresses.length))
+    let result: GraphQLVote[] = []
+    for (let i = 0; i < voterAddresses.length; i += 100) {
+        const addresses = voterAddresses.slice(
+            i,
+            Math.min(i + 100, voterAddresses.length)
+        )
 
         const graphqlQuery = `{
             votes(
@@ -208,57 +209,57 @@ const fetchVotesFromSnapshotAPI = async (
         }`
 
         const data = await callApiWithDelayedRetries(graphqlQuery, 5)
-        result = result.concat(data.votes as GraphQLVote[]);
-    } 
+        result = result.concat(data.votes as GraphQLVote[])
+    }
 
     return result
 }
 
-const callApiWithDelayedRetries = async (graphqlQuery: string, retries: number) => {
-
-        let result
-        let retriesLeft = retries
-        while (retriesLeft) {
-            try {
-                result = (await superagent
-                    .get('https://hub.snapshot.org/graphql')
-                    .query({
-                        query: graphqlQuery
-                    })
-                    .timeout({
-                        response: 10000,
-                        deadline: 30000
-                    })
-                    .then((response: { body: { data: any } }) => {
-                        return response.body.data
-                    })) 
-
-                break
-            } catch (e) {
-                retriesLeft--
-
-                if (!retriesLeft) {
-                    throw e
-                }
-
-                await new Promise((resolve) =>
-                    setTimeout(
-                        resolve,
-                        calculateExponentialBackoffTimeInMs(
-                            retries,
-                            retriesLeft
-                        )
-                    )
-                )
-                
-                log_sanity.log({
-                    level: 'warn',
-                    message: "Failed to fetch data from snapshot. Retrying...",
-                    retriesLeft: retriesLeft
+const callApiWithDelayedRetries = async (
+    graphqlQuery: string,
+    retries: number
+) => {
+    let result
+    let retriesLeft = retries
+    while (retriesLeft) {
+        try {
+            result = await superagent
+                .get('https://hub.snapshot.org/graphql')
+                .query({
+                    query: graphqlQuery
                 })
+                .timeout({
+                    response: 10000,
+                    deadline: 30000
+                })
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .then((response: { body: { data: any } }) => {
+                    return response.body.data
+                })
+
+            break
+        } catch (e) {
+            retriesLeft--
+
+            if (!retriesLeft) {
+                throw e
             }
+
+            await new Promise((resolve) =>
+                setTimeout(
+                    resolve,
+                    calculateExponentialBackoffTimeInMs(retries, retriesLeft)
+                )
+            )
+
+            log_sanity.log({
+                level: 'warn',
+                message: 'Failed to fetch data from snapshot. Retrying...',
+                retriesLeft: retriesLeft
+            })
         }
-    
+    }
+
     return result
 }
 

@@ -30,6 +30,7 @@ module.exports = {
         project: [
             './../axiom/tsconfig.json',
             './../database/tsconfig.json',
+            './../../apps/sanity/tsconfig.json',
             './../../apps/bulletin/tsconfig.json',
             './../../apps/detective/tsconfig.json',
             './../../apps/refresher/tsconfig.json',

@@ -23,6 +23,7 @@ interface Result {
     choices: JsonValue
     scores: JsonValue
     scoresTotal: number
+    quorum: number
     url: string
 }
 
@@ -167,6 +168,7 @@ export const updateChainProposals = async (daoHandlerId: string) => {
                         choices: proposal.choices,
                         scores: proposal.scores,
                         scoresTotal: proposal.scoresTotal,
+                        quorum: proposal.quorum,
                         blockCreated: proposal.blockCreated,
                         timeCreated: proposal.timeCreated,
                         timeStart: proposal.timeStart,

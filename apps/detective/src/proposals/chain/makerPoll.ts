@@ -55,6 +55,7 @@ export const makerPolls = async (
                 choices: ['For', 'Against'],
                 scores: [0, 0],
                 scoresTotal: 0,
+                quorum: 0,
                 url: proposalUrl
             }
         })
@@ -101,7 +102,6 @@ const getProposalTitle = async (
                         calculateExponentialBackoffTimeInMs(retriesLeft)
                     )
                 )
-
             }
         }
     } catch (e) {
