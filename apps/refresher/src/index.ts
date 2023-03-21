@@ -7,6 +7,9 @@ import { processChainProposals } from './process/chainProposals'
 import { processChainDaoVotes } from './process/chainDaoVotes'
 import { log_ref } from '@senate/axiom'
 import { addChainProposalsToQueue } from './populate/addChainProposals'
+import { addChainDaoVotes } from './populate/addChainDaoVotes'
+import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
+import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 
 const main = async () => {
     log_ref.log({
@@ -25,11 +28,11 @@ const main = async () => {
         await loadConfig()
         await createVoterHandlers()
 
-        // await addSnapshotProposalsToQueue()
-        // await addSnapshotDaoVotes()
+        await addSnapshotProposalsToQueue()
+        await addSnapshotDaoVotes()
 
         await addChainProposalsToQueue()
-        // await addChainDaoVotes()
+        await addChainDaoVotes()
     }, 1000)
 
     while (true) {
