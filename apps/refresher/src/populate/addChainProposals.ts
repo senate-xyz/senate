@@ -4,8 +4,8 @@ import {
     RefreshStatus,
     RefreshType
 } from '@senate/database'
-import { log_ref } from '@senate/axiom'
 import { config } from '../config'
+import { log_ref } from '@senate/axiom'
 
 export const addChainProposalsToQueue = async () => {
     await prisma.$transaction(
@@ -34,24 +34,26 @@ export const addChainProposalsToQueue = async () => {
                             DAOHandlerType.DYDX_CHAIN
                         ]
                     },
-                    refreshStatus: {
-                        in: [
-                            RefreshStatus.DONE,
-                            RefreshStatus.PENDING,
-                            RefreshStatus.NEW
-                        ]
-                    },
-                    lastRefresh: {
-                        lt: {
-                            [RefreshStatus.DONE]: normalRefresh,
-                            [RefreshStatus.PENDING]: forceRefresh,
-                            [RefreshStatus.NEW]: newRefresh
-                        }[
-                            RefreshStatus.DONE ||
-                                RefreshStatus.PENDING ||
-                                RefreshStatus.NEW
-                        ]
-                    }
+                    OR: [
+                        {
+                            refreshStatus: RefreshStatus.DONE,
+                            lastRefresh: {
+                                lt: normalRefresh
+                            }
+                        },
+                        {
+                            refreshStatus: RefreshStatus.PENDING,
+                            lastRefresh: {
+                                lt: forceRefresh
+                            }
+                        },
+                        {
+                            refreshStatus: RefreshStatus.NEW,
+                            lastRefresh: {
+                                lt: newRefresh
+                            }
+                        }
+                    ]
                 },
                 include: {
                     dao: true

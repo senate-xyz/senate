@@ -38,26 +38,23 @@ export const addChainDaoVotes = async () => {
                     },
                     voterHandlers: {
                         some: {
-                            AND: [
+                            OR: [
                                 {
-                                    refreshStatus: {
-                                        in: [
-                                            RefreshStatus.DONE,
-                                            RefreshStatus.PENDING,
-                                            RefreshStatus.NEW
-                                        ]
-                                    },
+                                    refreshStatus: RefreshStatus.DONE,
                                     lastRefresh: {
-                                        lt: {
-                                            [RefreshStatus.DONE]: normalRefresh,
-                                            [RefreshStatus.PENDING]:
-                                                forceRefresh,
-                                            [RefreshStatus.NEW]: newRefresh
-                                        }[
-                                            RefreshStatus.DONE ||
-                                                RefreshStatus.PENDING ||
-                                                RefreshStatus.NEW
-                                        ]
+                                        lt: normalRefresh
+                                    }
+                                },
+                                {
+                                    refreshStatus: RefreshStatus.PENDING,
+                                    lastRefresh: {
+                                        lt: forceRefresh
+                                    }
+                                },
+                                {
+                                    refreshStatus: RefreshStatus.NEW,
+                                    lastRefresh: {
+                                        lt: newRefresh
                                     }
                                 }
                             ]
@@ -67,26 +64,23 @@ export const addChainDaoVotes = async () => {
                 include: {
                     voterHandlers: {
                         where: {
-                            AND: [
+                            OR: [
                                 {
-                                    refreshStatus: {
-                                        in: [
-                                            RefreshStatus.DONE,
-                                            RefreshStatus.PENDING,
-                                            RefreshStatus.NEW
-                                        ]
-                                    },
+                                    refreshStatus: RefreshStatus.DONE,
                                     lastRefresh: {
-                                        lt: {
-                                            [RefreshStatus.DONE]: normalRefresh,
-                                            [RefreshStatus.PENDING]:
-                                                forceRefresh,
-                                            [RefreshStatus.NEW]: newRefresh
-                                        }[
-                                            RefreshStatus.DONE ||
-                                                RefreshStatus.PENDING ||
-                                                RefreshStatus.NEW
-                                        ]
+                                        lt: normalRefresh
+                                    }
+                                },
+                                {
+                                    refreshStatus: RefreshStatus.PENDING,
+                                    lastRefresh: {
+                                        lt: forceRefresh
+                                    }
+                                },
+                                {
+                                    refreshStatus: RefreshStatus.NEW,
+                                    lastRefresh: {
+                                        lt: newRefresh
                                     }
                                 }
                             ]

@@ -5,10 +5,10 @@ import {
     type VoterHandler,
     prisma
 } from '@senate/database'
+import { config } from '../config'
 import { bin } from 'd3-array'
 import { thresholdsTime } from '../utils'
 import { log_ref } from '@senate/axiom'
-import { config } from '../config'
 
 export const addSnapshotDaoVotes = async () => {
     await prisma.$transaction(
@@ -27,26 +27,23 @@ export const addSnapshotDaoVotes = async () => {
                     type: DAOHandlerType.SNAPSHOT,
                     voterHandlers: {
                         some: {
-                            AND: [
+                            OR: [
                                 {
-                                    refreshStatus: {
-                                        in: [
-                                            RefreshStatus.DONE,
-                                            RefreshStatus.PENDING,
-                                            RefreshStatus.NEW
-                                        ]
-                                    },
+                                    refreshStatus: RefreshStatus.DONE,
                                     lastRefresh: {
-                                        lt: {
-                                            [RefreshStatus.DONE]: normalRefresh,
-                                            [RefreshStatus.PENDING]:
-                                                forceRefresh,
-                                            [RefreshStatus.NEW]: newRefresh
-                                        }[
-                                            RefreshStatus.DONE ||
-                                                RefreshStatus.PENDING ||
-                                                RefreshStatus.NEW
-                                        ]
+                                        lt: normalRefresh
+                                    }
+                                },
+                                {
+                                    refreshStatus: RefreshStatus.PENDING,
+                                    lastRefresh: {
+                                        lt: forceRefresh
+                                    }
+                                },
+                                {
+                                    refreshStatus: RefreshStatus.NEW,
+                                    lastRefresh: {
+                                        lt: newRefresh
                                     }
                                 }
                             ]
@@ -56,26 +53,23 @@ export const addSnapshotDaoVotes = async () => {
                 include: {
                     voterHandlers: {
                         where: {
-                            AND: [
+                            OR: [
                                 {
-                                    refreshStatus: {
-                                        in: [
-                                            RefreshStatus.DONE,
-                                            RefreshStatus.PENDING,
-                                            RefreshStatus.NEW
-                                        ]
-                                    },
+                                    refreshStatus: RefreshStatus.DONE,
                                     lastRefresh: {
-                                        lt: {
-                                            [RefreshStatus.DONE]: normalRefresh,
-                                            [RefreshStatus.PENDING]:
-                                                forceRefresh,
-                                            [RefreshStatus.NEW]: newRefresh
-                                        }[
-                                            RefreshStatus.DONE ||
-                                                RefreshStatus.PENDING ||
-                                                RefreshStatus.NEW
-                                        ]
+                                        lt: normalRefresh
+                                    }
+                                },
+                                {
+                                    refreshStatus: RefreshStatus.PENDING,
+                                    lastRefresh: {
+                                        lt: forceRefresh
+                                    }
+                                },
+                                {
+                                    refreshStatus: RefreshStatus.NEW,
+                                    lastRefresh: {
+                                        lt: newRefresh
                                     }
                                 }
                             ]
