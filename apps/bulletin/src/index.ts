@@ -16,7 +16,6 @@ import { config } from 'dotenv'
 import { schedule } from 'node-cron'
 import { ServerClient } from 'postmark'
 import { log_bul } from '@senate/axiom'
-import { initLoggers } from '@senate/axiom'
 
 config()
 
@@ -62,8 +61,6 @@ interface BulletinData {
     endingProposals: EmailTemplateRow[]
     pastProposals: EmailTemplateRow[]
 }
-
-initLoggers()
 
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
 schedule(

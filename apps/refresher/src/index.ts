@@ -5,7 +5,7 @@ import { processSnapshotProposals } from './process/snapshotProposals'
 import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
 import { processChainProposals } from './process/chainProposals'
 import { processChainDaoVotes } from './process/chainDaoVotes'
-import { initLoggers, log_ref } from '@senate/axiom'
+import { log_ref } from '@senate/axiom'
 import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { addChainDaoVotes } from './populate/addChainDaoVotes'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
@@ -13,8 +13,6 @@ import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 import { prismaLogs, sleep } from './utils'
 
 const main = async () => {
-    initLoggers()
-
     log_ref.log({
         level: 'info',
         message: `Started refresher`

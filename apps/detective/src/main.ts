@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
-import { initLoggers, log_pd } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { prisma } from '@senate/database'
 
 const PORT = process.env.PORT || 3100
@@ -8,8 +8,6 @@ const PORT = process.env.PORT || 3100
 async function bootstrap() {
     const app = await NestFactory.create(AppModule)
     await app.listen(PORT)
-
-    initLoggers()
 
     log_pd.log({
         level: 'info',
