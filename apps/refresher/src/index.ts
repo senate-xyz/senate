@@ -11,6 +11,7 @@ import { addChainDaoVotes } from './populate/addChainDaoVotes'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 import { prismaLogs, sleep } from './utils'
+import { scheduleJob } from 'node-schedule'
 
 const main = async () => {
     log_ref.log({
@@ -21,11 +22,7 @@ const main = async () => {
     await loadConfig()
     await createVoterHandlers()
 
-    setInterval(async () => {
-        await prismaLogs()
-    }, 10000)
-
-    setInterval(async () => {
+    scheduleJob({ second: 0 }, async () => {
         await loadConfig()
         await createVoterHandlers()
 
@@ -34,7 +31,11 @@ const main = async () => {
 
         await addChainProposalsToQueue()
         await addChainDaoVotes()
-    }, 1000)
+    })
+
+    scheduleJob({ second: 10 }, async () => {
+        await prismaLogs()
+    })
 
     while (true) {
         const start = Date.now()

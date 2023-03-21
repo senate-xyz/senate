@@ -33,12 +33,14 @@
         "d3-array": "^3.2.2",
         "d3-scale": "^4.0.2",
         "node-cron": "^3.0.2",
+        "node-schedule": "^2.1.1",
         "superagent": "^8.0.9"
     },
     "devDependencies": {
         "@types/d3-array": "^3.0.4",
         "@types/d3-scale": "^4.0.3",
         "@types/node-cron": "^3.0.7",
+        "@types/node-schedule": "^2.1.0",
         "tsup": "^6.7.0",
         "typescript": "^5.0.2"
     },
