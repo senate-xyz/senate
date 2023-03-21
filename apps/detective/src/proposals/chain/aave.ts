@@ -68,6 +68,38 @@ export const aaveProposals = async (
                 proposalOnChainId
             )
 
+            const executorAbi = await getAbi(
+                onchainProposal.executor,
+                'ethereum'
+            )
+
+            const executorContract = new ethers.Contract(
+                onchainProposal.executor,
+                executorAbi,
+                provider
+            )
+
+            const strategyAbi = await getAbi(
+                onchainProposal.strategy,
+                'ethereum'
+            )
+
+            const strategyContract = new ethers.Contract(
+                onchainProposal.strategy,
+                strategyAbi,
+                provider
+            )
+
+            const totalVotingPowerAt =
+                await strategyContract.getTotalVotingSupplyAt(arg.txBlock)
+
+            const minQuorum = await executorContract.MINIMUM_QUORUM()
+            const oneHundedWithPrecision =
+                await executorContract.ONE_HUNDRED_WITH_PRECISION()
+
+            const quorum =
+                (totalVotingPowerAt * minQuorum) / oneHundedWithPrecision
+
             return {
                 externalId: proposalOnChainId,
                 name: String(title).slice(0, 1024),
@@ -85,7 +117,7 @@ export const aaveProposals = async (
                 scoresTotal:
                     parseFloat(onchainProposal.forVotes) +
                     parseFloat(onchainProposal.againstVotes),
-                quorum: 0,
+                quorum: Number(quorum),
                 url: proposalUrl
             }
         })

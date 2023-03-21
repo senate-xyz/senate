@@ -62,6 +62,8 @@ export const gitcoinProposals = async (
                         proposalOnChainId
                     )
 
+                    const quorum = await govContract.quorumVotes()
+
                     return {
                         externalId: proposalOnChainId,
                         name: String(title).slice(0, 1024),
@@ -79,7 +81,7 @@ export const gitcoinProposals = async (
                         scoresTotal:
                             parseFloat(onchainProposal.forVotes) +
                             parseFloat(onchainProposal.againstVotes),
-                        quorum: 0,
+                        quorum: parseFloat(quorum),
                         url: proposalUrl
                     }
                 })

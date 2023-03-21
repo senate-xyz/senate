@@ -63,6 +63,8 @@ export const hopProposals = async (
                         proposalOnChainId
                     )
 
+                    const quorum = await govContract.quorum(arg.txBlock)
+
                     return {
                         externalId: proposalOnChainId,
                         name: String(title).slice(0, 1024),
@@ -82,7 +84,7 @@ export const hopProposals = async (
                             parseFloat(onchainProposal.forVotes) +
                             parseFloat(onchainProposal.abstainVotes) +
                             parseFloat(onchainProposal.againstVotes),
-                        quorum: 0,
+                        quorum: parseFloat(quorum),
                         url: proposalUrl
                     }
                 })
