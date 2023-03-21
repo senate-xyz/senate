@@ -2,12 +2,12 @@ import {
     RefreshStatus,
     RefreshType,
     prisma,
-    DAOHandlerWithDAO,
-    RefreshQueue
+    type DAOHandlerWithDAO,
+    type RefreshQueue
 } from '@senate/database'
 import superagent from 'superagent'
-import { DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE } from '../config'
 import { log_ref } from '@senate/axiom'
+import { config } from '../config'
 
 export const processChainProposals = async () => {
     let item: RefreshQueue, daoHandler: DAOHandlerWithDAO
@@ -50,8 +50,10 @@ export const processChainProposals = async () => {
 
         .type('application/json')
         .timeout({
-            response: DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000 - 5000,
-            deadline: DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000 - 5000
+            response:
+                config.DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000 - 5000,
+            deadline:
+                config.DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000 - 5000
         })
         .retry(3, (err, res) => {
             if (res.status == 201) return false

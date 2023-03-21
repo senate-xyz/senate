@@ -1,5 +1,5 @@
 import { prisma } from '@senate/database'
-import { loadConfig, REFRESH_PROCESS_INTERVAL_MS } from './config'
+import { config, loadConfig } from './config'
 import { createVoterHandlers } from './createHandlers'
 import { processSnapshotProposals } from './process/snapshotProposals'
 import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
@@ -10,6 +10,7 @@ import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { addChainDaoVotes } from './populate/addChainDaoVotes'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
+import { prismaLogs, sleep } from './utils'
 
 const main = async () => {
     log_ref.log({
@@ -47,54 +48,10 @@ const main = async () => {
             processChainDaoVotes()
         }
 
-        while (Date.now() - start < REFRESH_PROCESS_INTERVAL_MS) {
+        while (Date.now() - start < config.REFRESH_PROCESS_INTERVAL_MS) {
             await sleep(10)
         }
     }
 }
 
 main()
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
-const prismaLogs = async () =>
-    log_ref.log({
-        level: 'info',
-        message: 'Prisma metrics',
-
-        prisma_client_queries_total: (
-            await prisma.$metrics.json()
-        ).counters.find((metric) => metric.key == 'prisma_client_queries_total')
-            ?.value,
-        prisma_datasource_queries_total: (
-            await prisma.$metrics.json()
-        ).counters.find(
-            (metric) => metric.key == 'prisma_datasource_queries_total'
-        )?.value,
-        prisma_pool_connections_open: (
-            await prisma.$metrics.json()
-        ).counters.find(
-            (metric) => metric.key == 'prisma_pool_connections_open'
-        )?.value,
-
-        prisma_client_queries_active: (
-            await prisma.$metrics.json()
-        ).gauges.find((metric) => metric.key == 'prisma_client_queries_active')
-            ?.value,
-        prisma_client_queries_wait: (await prisma.$metrics.json()).gauges.find(
-            (metric) => metric.key == 'prisma_client_queries_wait'
-        )?.value,
-        prisma_pool_connections_busy: (
-            await prisma.$metrics.json()
-        ).gauges.find((metric) => metric.key == 'prisma_pool_connections_busy')
-            ?.value,
-        prisma_pool_connections_idle: (
-            await prisma.$metrics.json()
-        ).gauges.find((metric) => metric.key == 'prisma_pool_connections_idle')
-            ?.value,
-        prisma_pool_connections_opened_total: (
-            await prisma.$metrics.json()
-        ).gauges.find(
-            (metric) => metric.key == 'prisma_pool_connections_opened_total'
-        )?.value
-    })

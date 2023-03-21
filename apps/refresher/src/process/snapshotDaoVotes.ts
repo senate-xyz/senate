@@ -1,14 +1,14 @@
 import {
-    DAOHandlerWithDAO,
+    type DAOHandlerWithDAO,
     prisma,
-    RefreshArgs,
-    RefreshQueue,
+    type RefreshArgs,
+    type RefreshQueue,
     RefreshStatus,
     RefreshType
 } from '@senate/database'
 import superagent from 'superagent'
-import { DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE } from '../config'
 import { log_ref } from '@senate/axiom'
+import { config } from '../config'
 
 export const processSnapshotDaoVotes = async () => {
     let item: RefreshQueue, daoHandler: DAOHandlerWithDAO
@@ -51,8 +51,10 @@ export const processSnapshotDaoVotes = async () => {
         .send({ daoHandlerId: daoHandler.id, voters: voters })
         .type('application/json')
         .timeout({
-            response: DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000,
-            deadline: DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000
+            response:
+                config.DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000,
+            deadline:
+                config.DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE * 60 * 1000 - 5000
         })
         .retry(3, (err, res) => {
             if (res.status == 201) return false

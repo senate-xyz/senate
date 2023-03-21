@@ -4,20 +4,18 @@ import {
     RefreshStatus,
     RefreshType
 } from '@senate/database'
-import {
-    DAOS_PROPOSALS_CHAIN_INTERVAL,
-    DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE
-} from '../config'
 import { log_ref } from '@senate/axiom'
+import { config } from '../config'
 
 export const addChainProposalsToQueue = async () => {
     await prisma.$transaction(
         async (tx) => {
             const normalRefresh = new Date(
-                Date.now() - DAOS_PROPOSALS_CHAIN_INTERVAL * 60 * 1000
+                Date.now() - config.DAOS_PROPOSALS_CHAIN_INTERVAL * 60 * 1000
             )
             const forceRefresh = new Date(
-                Date.now() - DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000
+                Date.now() -
+                    config.DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000
             )
             const newRefresh = new Date(Date.now() - 15 * 1000)
 
@@ -36,26 +34,24 @@ export const addChainProposalsToQueue = async () => {
                             DAOHandlerType.DYDX_CHAIN
                         ]
                     },
-                    OR: [
-                        {
-                            refreshStatus: RefreshStatus.DONE,
-                            lastRefresh: {
-                                lt: normalRefresh
-                            }
-                        },
-                        {
-                            refreshStatus: RefreshStatus.PENDING,
-                            lastRefresh: {
-                                lt: forceRefresh
-                            }
-                        },
-                        {
-                            refreshStatus: RefreshStatus.NEW,
-                            lastRefresh: {
-                                lt: newRefresh
-                            }
-                        }
-                    ]
+                    refreshStatus: {
+                        in: [
+                            RefreshStatus.DONE,
+                            RefreshStatus.PENDING,
+                            RefreshStatus.NEW
+                        ]
+                    },
+                    lastRefresh: {
+                        lt: {
+                            [RefreshStatus.DONE]: normalRefresh,
+                            [RefreshStatus.PENDING]: forceRefresh,
+                            [RefreshStatus.NEW]: newRefresh
+                        }[
+                            RefreshStatus.DONE ||
+                                RefreshStatus.PENDING ||
+                                RefreshStatus.NEW
+                        ]
+                    }
                 },
                 include: {
                     dao: true
