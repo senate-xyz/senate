@@ -17,6 +17,10 @@
       "path": "../apps/bulletin"
     },
     {
+      "name": "🚀 @senate/sanity",
+      "path": "../apps/sanity"
+    },
+    {
       "name": "🌐 @senate/senate",
       "path": "../apps/senate"
     },
