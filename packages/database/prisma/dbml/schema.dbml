@@ -1,0 +1,243 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  name String [unique, not null]
+  email String [not null, default: '']
+  notifications Notification [not null]
+  subscriptions Subscription [not null]
+  voters Voter [not null]
+  newUser Boolean [not null, default: true]
+  acceptedTerms Boolean [not null, default: false]
+  acceptedTermsTimestamp DateTime
+  dailyBulletin Boolean [not null, default: false]
+  lastActive DateTime [default: `now()`, not null]
+  sessionCount Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Voter {
+  id String [pk]
+  address String [unique, not null]
+  votes Vote [not null]
+  voterHandlers VoterHandler [not null]
+  users User [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table DAO {
+  id String [pk]
+  name String [unique, not null]
+  picture String [not null]
+  handlers DAOHandler [not null]
+  proposals Proposal [not null]
+  subscriptions Subscription [not null]
+  votes Vote [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table DAOHandler {
+  id String [pk]
+  type DAOHandlerType [not null]
+  decoder Json [not null]
+  chainIndex BigInt [default: 1920000]
+  snapshotIndex DateTime [default: 2009-01-09T04:54:25+00:00]
+  lastRefresh DateTime [not null, default: 2009-01-09T04:54:25+00:00]
+  refreshStatus RefreshStatus [not null, default: 'NEW']
+  daoId String [not null]
+  dao DAO [not null]
+  proposals Proposal [not null]
+  voterHandlers VoterHandler [not null]
+  votes Vote [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (daoId, type) [unique]
+  }
+}
+
+Table Proposal {
+  id String [pk]
+  name String [not null]
+  externalId String [not null]
+  choices Json [not null]
+  scores Json [not null]
+  scoresTotal Float [not null]
+  quorum Float [not null]
+  blockCreated BigInt [default: 420]
+  timeCreated DateTime [not null]
+  timeStart DateTime [not null]
+  timeEnd DateTime [not null]
+  url String [not null]
+  notifications Notification [not null]
+  daoHandlerId String [not null]
+  daoHandler DAOHandler [not null]
+  daoId String [not null]
+  dao DAO [not null]
+  votes Vote [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (externalId, daoId) [unique]
+  }
+}
+
+Table Notification {
+  id String [pk]
+  type RoundupNotificationType [not null]
+  userId String [not null]
+  user User [not null]
+  proposalId String [not null]
+  proposal Proposal [not null]
+  daoId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (proposalId, userId, type) [unique]
+  }
+}
+
+Table Vote {
+  id String [pk]
+  choice Json [not null]
+  votingPower Float [not null]
+  reason String [not null]
+  voterAddress String [not null]
+  voter Voter [not null]
+  proposalId String [not null]
+  proposal Proposal [not null]
+  daoId String [not null]
+  dao DAO [not null]
+  daoHandlerId String [not null]
+  daoHandler DAOHandler [not null]
+  blockCreated BigInt [default: 420]
+  timeCreated DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (voterAddress, daoId, proposalId) [unique]
+  }
+}
+
+Table VoterHandler {
+  id String [pk]
+  chainIndex BigInt [default: 1920000]
+  snapshotIndex DateTime [default: 2009-01-09T04:54:25+00:00]
+  lastRefresh DateTime [not null, default: 2009-01-09T04:54:25+00:00]
+  refreshStatus RefreshStatus [not null, default: 'NEW']
+  daoHandlerId String [not null]
+  daoHandler DAOHandler [not null]
+  voterId String [not null]
+  voter Voter [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (voterId, daoHandlerId) [unique]
+  }
+}
+
+Table Subscription {
+  id String [pk]
+  notificationsEnabled Boolean [not null, default: true]
+  userId String [not null]
+  user User [not null]
+  daoId String [not null]
+  dao DAO [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (userId, daoId) [unique]
+  }
+}
+
+Table RefreshQueue {
+  id String [pk]
+  refreshType RefreshType [not null]
+  handlerId String [not null]
+  args Json [not null]
+  priority BigInt [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Config {
+  param String [unique, not null]
+  value String [not null]
+}
+
+Table Contract {
+  address String [unique, not null]
+  abi String [not null]
+}
+
+Enum RoundupNotificationType {
+  NEW
+  ENDING_SOON
+  PAST
+}
+
+Enum DAOHandlerType {
+  AAVE_CHAIN
+  COMPOUND_CHAIN
+  UNISWAP_CHAIN
+  ENS_CHAIN
+  GITCOIN_CHAIN
+  HOP_CHAIN
+  DYDX_CHAIN
+  MAKER_EXECUTIVE
+  MAKER_POLL
+  MAKER_POLL_ARBITRUM
+  SNAPSHOT
+}
+
+Enum RefreshStatus {
+  NEW
+  PENDING
+  DONE
+}
+
+Enum RefreshType {
+  DAOCHAINPROPOSALS
+  DAOSNAPSHOTPROPOSALS
+  DAOCHAINVOTES
+  DAOSNAPSHOTVOTES
+  VOTERCHAINVOTES
+  VOTERSNAPSHOTVOTES
+}
+
+Ref: DAOHandler.daoId > DAO.id [delete: Cascade]
+
+Ref: Proposal.daoHandlerId > DAOHandler.id [delete: Cascade]
+
+Ref: Proposal.daoId > DAO.id [delete: Cascade]
+
+Ref: Notification.userId > User.id [delete: Cascade]
+
+Ref: Notification.proposalId > Proposal.id [delete: Cascade]
+
+Ref: Vote.voterAddress > Voter.address [delete: Cascade]
+
+Ref: Vote.proposalId > Proposal.id [delete: Cascade]
+
+Ref: Vote.daoId > DAO.id [delete: Cascade]
+
+Ref: Vote.daoHandlerId > DAOHandler.id [delete: Cascade]
+
+Ref: VoterHandler.daoHandlerId > DAOHandler.id [delete: Cascade]
+
+Ref: VoterHandler.voterId > Voter.id [delete: Cascade]
+
+Ref: Subscription.userId > User.id [delete: Cascade]
+
+Ref: Subscription.daoId > DAO.id [delete: Cascade]

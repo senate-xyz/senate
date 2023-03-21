@@ -1,31 +1,56 @@
 {
   "name": "senate",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
+  "author": "Senate",
   "private": true,
-  "scripts": {
-    "dev": "yarn workspaces foreach -ip -t -j unlimited run dev",
-    "web": "yarn workspace web-nextapp dev",
-    "build": "yarn workspaces foreach -ip -j unlimited run build",
-    "start": "yarn workspaces foreach -ip -j unlimited run start"
-  },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} ./prisma/seed.ts",
-    "schema": "./prisma/schema.prisma"
-  },
+  "license": "MIT",
   "workspaces": [
-    "web-nextapp",
-    "services/proposal-detective",
-    "services/notifications-orchestrator",
-    "services/bot-discord",
-    "services/bot-slack"
+    "apps/*",
+    "packages/*",
+    "utilities/stressTest"
   ],
-  "devDependencies": {
-    "foreach": "^2.0.6"
+  "prisma": {
+    "schema": "packages/database/prisma/schema.prisma",
+    "seed": "tsx packages/database/src/seed.ts"
   },
-  "packageManager": "yarn@3.2.3",
+  "scripts": {
+    "build": "turbo run build",
+    "build:senate": "turbo run build:senate",
+    "build:detective": "turbo run build:detective",
+    "build:refresher": "turbo run build:refresher",
+    "build:bulletin": "turbo run build:bulletin",
+    "build:sanity": "turbo run build:sanity",
+    "build:db": "turbo run build:db",
+    "build:axiom": "turbo run build:axiom",
+    "start": "turbo run start",
+    "start:senate": "turbo run start:senate",
+    "start:detective": "turbo run start:detective",
+    "start:refresher": "turbo run start:refresher",
+    "start:bulletin": "turbo run start:bulletin",
+    "start:sanity": "turbo run start:sanity",
+    "dev": "turbo run dev --parallel",
+    "dev:senate": "turbo run dev:senate",
+    "dev:detective": "turbo run dev:detective",
+    "dev:refresher": "turbo run dev:refresher",
+    "dev:bulletin": "turbo run dev:bulletin",
+    "dev:sanity": "turbo run dev:sanity",
+    "test:senate": "turbo run test:senate",
+    "test:e2e": "turbo run test:e2e",
+    "db:push": "turbo run db:push",
+    "db:seed": "turbo run db:seed",
+    "db:generate": "turbo run db:generate",
+    "clean": "turbo run clean && rimraf node_modules",
+    "prettier": "turbo run prettier",
+    "prettier:fix": "turbo run prettier:fix",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.5",
+    "tsx": "^3.12.5",
+    "turbo": "^1.8.4"
+  },
+  "packageManager": "yarn@1.22.19",
   "dependencies": {
-    "yarn": "^1.22.19"
+    "rimraf": "^4.4.0"
   }
 }

@@ -1,0 +1,71 @@
+{
+  "folders": [
+    {
+      "name": "📂 root",
+      "path": ".."
+    },
+    {
+      "name": "🚀 @senate/detective",
+      "path": "../apps/detective"
+    },
+    {
+      "name": "🚀 @senate/refresher",
+      "path": "../apps/refresher"
+    },
+    {
+      "name": "🚀 @senate/bulletin",
+      "path": "../apps/bulletin"
+    },
+    {
+      "name": "🌐 @senate/senate",
+      "path": "../apps/senate"
+    },
+    {
+      "name": "🌐 @senate/stats",
+      "path": "../apps/stats"
+    },
+    {
+      "name": "⚙️ @senate/config",
+      "path": "../packages/config"
+    },
+    {
+      "name": "📦 @senate/database",
+      "path": "../packages/database"
+    },
+    {
+      "name": "📦 @senate/axiom",
+      "path": "../packages/axiom"
+    },
+    {
+      "name": "🛠️ @senate/stressTest",
+      "path": "../utilities/stressTest"
+    },
+    {
+      "name": "🛠️ @senate/userMigration",
+      "path": "../utilities/userMigration"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true,
+      "source.fixAll.eslint": true
+    },
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "typescript.tsdk": "📂 root/node_modules/typescript/lib",
+    "[prisma]": {
+      "editor.defaultFormatter": "Prisma.prisma"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "ms-vscode.vscode-typescript-next",
+      "esbenp.prettier-vscode",
+      "Prisma.prisma",
+      "bradlc.vscode-tailwindcss",
+      "VisualStudioExptTeam.vscodeintellicode",
+      "VisualStudioExptTeam.intellicode-api-usage-examples"
+    ]
+  }
+}

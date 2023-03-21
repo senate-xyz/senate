@@ -126,6 +126,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 .DS_Store
-package-lock.json
-web-nextapp/prisma/migrations
-prisma/dev.db
+packages/database/prisma/db.sqlite
+
+/apps/web/tests/e2e/screenshots
+/apps/web/tests/e2e/videos

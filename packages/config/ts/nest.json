@@ -1,0 +1,13 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "display": "Nestjs",
+    "extends": "./base.json",
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2017",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "noEmit": false,
+        "verbatimModuleSyntax": false
+    }
+}

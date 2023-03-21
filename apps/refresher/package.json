@@ -1,0 +1,46 @@
+{
+    "name": "@senate/refresher",
+    "version": "1.0.0",
+    "description": "This service takes care of keeping proposals and votes up to date",
+    "author": "Senate",
+    "private": true,
+    "license": "MIT",
+    "type": "module",
+    "main": "./dist/index",
+    "typings": "./dist/index",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist/**"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "build:refresher": "tsup",
+        "start": "node dist/index",
+        "start:refresher": "node dist/index",
+        "dev": "tsup && node dist/index",
+        "dev:refresher": "tsup && node dist/index",
+        "clean": "rimraf .turbo node_modules dist",
+        "lint": "eslint src",
+        "lint:fix": "eslint src --fix",
+        "prettier": "prettier src --check",
+        "prettier:fix": "prettier src --write"
+    },
+    "dependencies": {
+        "@senate/axiom": "*",
+        "@senate/config": "*",
+        "@senate/database": "*",
+        "d3-array": "^3.2.2",
+        "d3-scale": "^4.0.2",
+        "node-cron": "^3.0.2",
+        "superagent": "^8.0.9"
+    },
+    "devDependencies": {
+        "@types/d3-array": "^3.0.4",
+        "@types/d3-scale": "^4.0.3",
+        "@types/node-cron": "^3.0.7",
+        "tsup": "^6.7.0",
+        "typescript": "^5.0.2"
+    },
+    "packageManager": "yarn@1.22.19"
+}

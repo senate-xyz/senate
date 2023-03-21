@@ -1,0 +1,113 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build:db", "^build:axiom"],
+      "cache": false
+    },
+
+    "build:senate": {
+      "dependsOn": ["^build:db", "^build:axiom"],
+      "cache": false
+    },
+
+    "build:detective": {
+      "dependsOn": ["^build:db", "^build:axiom"],
+      "cache": false
+    },
+
+    "build:refresher": {
+      "dependsOn": ["^build:db", "^build:axiom"],
+      "cache": false
+    },
+
+    "build:bulletin": {
+      "dependsOn": ["^build:db", "^build:axiom"],
+      "cache": false
+    },
+
+    "build:sanity": {
+      "dependsOn": ["^build:db", "^build:axiom"],
+      "cache": false
+    },
+
+    "build:db": {
+      "cache": false,
+      "dependsOn": ["^db:generate", "^build:axiom"]
+    },
+    "db:push": { "cache": false },
+    "db:seed": { "cache": false },
+    "db:generate": {},
+
+    "build:axiom": { "cache": false },
+
+    "*": {
+      "env": [
+        "NODE_ENV",
+        "EXEC_ENV",
+        "PORT",
+
+        "WEB_URL",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY",
+        "NEXT_PUBLIC_PROVIDER_URL",
+
+        "DETECTIVE_URL",
+        "IPFS_GATEWAY_URL",
+        "ETHERSCAN_API_KEY",
+        "ARBISCAN_API_KEY",
+
+        "BULLETIN_ENABLE",
+        "BULLETIN_BCC_EMAILS",
+        "BULLETIN_CRON_INTERVAL",
+        "TEST_EMAIL",
+        "POSTMARK_TOKEN",
+        "VOTING_COUNTDOWN_TOKEN",
+
+        "SENATE_NODE_URL",
+        "INFURA_NODE_URL",
+        "ARBITRUM_NODE_URL",
+
+        "AXIOM_TOKEN",
+        "AXIOM_ORG_ID",
+        "AXIOM_DATASET",
+
+        "DATABASE_URL_PARAMS"
+      ]
+    },
+    "start": {},
+    "start:senate": {},
+    "start:detective": {},
+    "start:refresher": {},
+    "start:bulletin": {},
+    "start:sanity": {},
+
+    "dev": { "dependsOn": ["^db:generate", "^build:db", "^build:axiom"] },
+    "dev:senate": {
+      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    },
+    "dev:detective": {
+      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    },
+    "dev:refresher": {
+      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    },
+    "dev:bulletin": {
+      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    },
+    "dev:sanity": {
+      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    },
+
+    "test:web": { "cache": false },
+    "test:e2e": { "cache": false },
+
+    "lint": { "cache": false },
+    "lint:fix": { "cache": false },
+
+    "prettier": { "cache": false },
+    "prettier:fix": { "cache": false },
+
+    "clean": { "cache": false }
+  }
+}

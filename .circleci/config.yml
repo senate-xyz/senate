@@ -1,0 +1,59 @@
+version: 2.1
+orbs:
+  node: circleci/node@5.0.3
+
+executors:
+  macos-executor:
+    macos:
+      xcode: 13.4.1
+
+commands:
+  deps-command:
+    steps:
+      - checkout
+      - node/install:
+          install-yarn: true
+          node-version: "16"
+      - run:
+          name: Install Chrome
+          command: brew install google-chrome
+          no_output_timeout: 30m
+      - run:
+          name: Install deps
+          command: yarn
+          no_output_timeout: 30m
+
+  build-command:
+    steps:
+      - run:
+          name: Build
+          command: yarn build
+          no_output_timeout: 30m
+
+  test-command:
+    steps:
+      - run:
+          name: Test
+          command: yarn test:web
+          no_output_timeout: 30m
+
+  store-results-command:
+    steps:
+      - store_artifacts:
+          path: /Users/distiller/project/apps/web/tests/e2e/screenshots/
+      - store_artifacts:
+          path: /Users/distiller/project/apps/web/tests/e2e/videos/
+
+jobs:
+  synpress-e2e-job:
+    executor: macos-executor
+    steps:
+      - deps-command
+      - build-command
+      - test-command
+      - store-results-command
+
+workflows:
+  synpress-e2e:
+    jobs:
+      - synpress-e2e-job

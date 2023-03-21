@@ -1,0 +1,31 @@
+{
+    "include": ["src", "prisma"],
+    "exclude": ["node_modules", "dist"],
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "noEmit": true,
+        "declaration": true,
+        "removeComments": true,
+        "strict": true,
+        "strictNullChecks": false,
+        "allowUnusedLabels": false,
+        "allowUnreachableCode": false,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noUncheckedIndexedAccess": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "verbatimModuleSyntax": true,
+        "checkJs": true,
+        "composite": true,
+        "declarationMap": true,
+        "allowJs": true
+    }
+}
