@@ -1,5 +1,4 @@
 import { Prisma, PrismaClient } from '@prisma/client'
-import { log_prisma } from '@senate/axiom'
 
 export type { JsonArray, JsonValue } from 'type-fest'
 
@@ -62,41 +61,42 @@ export type UserWithVotingAddresses = Prisma.UserGetPayload<{
     }
 }>
 
-function RetryTransactions() {
-    return Prisma.defineExtension((prisma) =>
-        prisma.$extends({
-            client: {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                $transaction(...args: any) {
-                    // eslint-disable-next-line prefer-spread
-                    let retries = 3
+// function RetryTransactions() {
+//     return Prisma.defineExtension((prisma) =>
+//         prisma.$extends({
+//             client: {
+//                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//                 $transaction(...args: any) {
+//                     // eslint-disable-next-line prefer-spread
+//                     let retries = 3
 
-                    while (retries) {
-                        try {
-                            // eslint-disable-next-line prefer-spread
-                            prisma.$transaction.apply(prisma, args)
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        } catch (e: any) {
-                            log_prisma.log({
-                                level: 'warn',
-                                message: `Retrying prisma transaction - attempt ${retries}`,
-                                error: e
-                            })
-                            if (e.code === 'P2034' || e.code === 'P1001')
-                                retries--
-                            if (!retries) {
-                                throw e
-                            }
-                        }
-                    }
-                }
-            } as { $transaction: (typeof prisma)['$transaction'] }
-        })
-    )
-}
+//                     while (retries) {
+//                         try {
+//                             // eslint-disable-next-line prefer-spread
+//                             prisma.$transaction.apply(prisma, args)
+//                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//                         } catch (e: any) {
+//                             log_prisma.log({
+//                                 level: 'warn',
+//                                 message: `Retrying prisma transaction - attempt ${retries}`,
+//                                 error: e
+//                             })
+//                             if (e.code === 'P2034' || e.code === 'P1001')
+//                                 retries--
+//                             if (!retries) {
+//                                 throw e
+//                             }
+//                         }
+//                     }
+//                 }
+//             } as { $transaction: (typeof prisma)['$transaction'] }
+//         })
+//     )
+// }
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
 const p = globalForPrisma.prisma || new PrismaClient()
 
-export const prisma = p.$extends(RetryTransactions())
+export const prisma = p
+//.$extends(RetryTransactions())
