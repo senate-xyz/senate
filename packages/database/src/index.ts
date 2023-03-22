@@ -1,6 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client'
 import { type IBackOffOptions, backOff } from 'exponential-backoff'
-import { log_prisma } from '@senate/axiom'
 
 export type { JsonArray, JsonValue } from 'type-fest'
 
@@ -76,11 +75,6 @@ function RetryTransactions(options?: Partial<IBackOffOptions>) {
                             retry: (e) => {
                                 // Retry the transaction only if the error was due to a write conflict or deadlock
                                 // See: https://www.prisma.io/docs/reference/api-reference/error-reference#p2034
-                                log_prisma.log({
-                                    level: 'warn',
-                                    message: `Retrying prisma transaction`,
-                                    error: e
-                                })
                                 return e.code === 'P2034' || e.code === 'P1001'
                             },
                             ...options

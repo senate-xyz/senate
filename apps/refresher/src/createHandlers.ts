@@ -6,7 +6,7 @@ export const createVoterHandlers = async () => {
     const voterHandlersCnt = await prisma.voterHandler.count({})
 
     if (voterHandlersCnt >= votersCnt * daoHandlersCnt) {
-        return true
+        return
     }
 
     const voters = await prisma.voter.findMany({})
@@ -25,5 +25,5 @@ export const createVoterHandlers = async () => {
         })
     }
 
-    return true
+    return
 }

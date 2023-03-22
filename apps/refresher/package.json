@@ -18,7 +18,7 @@
         "build:refresher": "tsup",
         "start": "node dist/index",
         "start:refresher": "node dist/index",
-        "dev": "tsup && node --inspect dist/index",
+        "dev": "tsup && node --inspect-brk dist/index",
         "dev:refresher": "tsup && node dist/index",
         "clean": "rimraf .turbo node_modules dist",
         "lint": "eslint src",

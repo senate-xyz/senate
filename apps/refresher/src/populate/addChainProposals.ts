@@ -4,8 +4,9 @@ import {
     RefreshStatus,
     RefreshType
 } from '@senate/database'
-import { config } from '../config'
+
 import { log_ref } from '@senate/axiom'
+import { config } from '../config'
 
 export const addChainProposalsToQueue = async () => {
     await prisma.$transaction(

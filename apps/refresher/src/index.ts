@@ -22,7 +22,7 @@ const main = async () => {
     await loadConfig()
     await createVoterHandlers()
 
-    scheduleJob({ second: 0 }, async () => {
+    scheduleJob('* * * * * *', async () => {
         await loadConfig()
         await createVoterHandlers()
 
@@ -33,12 +33,14 @@ const main = async () => {
         await addChainDaoVotes()
     })
 
-    scheduleJob({ second: 10 }, async () => {
+    scheduleJob('*/10 * * * * *', async () => {
         await prismaLogs()
     })
 
+    let start = Date.now()
+
     while (true) {
-        const start = Date.now()
+        start = Date.now()
 
         const hasQueue = await prisma.refreshQueue.count()
 

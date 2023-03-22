@@ -35,14 +35,7 @@ const createLogger = (label: string) => {
 }
 
 const initLoggers = () => {
-    const logLabels = [
-        'proposal-detective',
-        'refresher',
-        'bulletin',
-        'node',
-        'prisma',
-        'sanity'
-    ]
+    const logLabels = ['proposal-detective', 'refresher', 'bulletin', 'sanity']
 
     logLabels.forEach((label) => {
         loggers.add(label, createLogger(label))
@@ -54,6 +47,4 @@ initLoggers()
 export const log_pd = loggers.get('proposal-detective')
 export const log_ref = loggers.get('refresher')
 export const log_bul = loggers.get('bulletin')
-export const log_node = loggers.get('node')
-export const log_prisma = loggers.get('prisma')
 export const log_sanity = loggers.get('sanity')
