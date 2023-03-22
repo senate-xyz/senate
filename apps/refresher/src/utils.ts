@@ -1,4 +1,4 @@
-import { log_ref } from '@senate/axiom'
+//import { log_ref } from '@senate/axiom'
 import { prisma } from '@senate/database'
 import { type NumberValue, scaleTime } from 'd3-scale'
 
@@ -54,9 +54,9 @@ export const prismaLogs = async () => {
         )?.value
     }
 
-    log_ref.log({
-        level: 'info',
-        message: 'Prisma metrics',
-        ...logMetrics
-    })
+    // log_ref.log({
+    //     level: 'info',
+    //     message: 'Prisma metrics',
+    //     ...logMetrics
+    // })
 }
