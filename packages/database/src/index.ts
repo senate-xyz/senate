@@ -103,6 +103,9 @@ const p = globalForPrisma.prisma || new PrismaClient()
 
 export const prisma = p.$extends(
     RetryTransactions({
-        numOfAttempts: 3
+        numOfAttempts: 3,
+        startingDelay: 100,
+        timeMultiple: 2,
+        delayFirstAttempt: false
     })
 )
