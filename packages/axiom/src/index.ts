@@ -45,6 +45,6 @@ const initLoggers = () => {
 initLoggers()
 
 export const log_pd = loggers.get('proposal-detective')
-export const log_ref = loggers.get('refresher')
+//export const log_ref = loggers.get('refresher')
 export const log_bul = loggers.get('bulletin')
 export const log_sanity = loggers.get('sanity')
