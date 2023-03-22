@@ -5,7 +5,7 @@ import { processSnapshotProposals } from './process/snapshotProposals'
 import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
 import { processChainProposals } from './process/chainProposals'
 import { processChainDaoVotes } from './process/chainDaoVotes'
-//import { log_ref } from '@senate/axiom'
+import { log_ref } from '@senate/axiom'
 import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { addChainDaoVotes } from './populate/addChainDaoVotes'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
@@ -14,10 +14,10 @@ import { prismaLogs, sleep } from './utils'
 import { scheduleJob } from 'node-schedule'
 
 const main = async () => {
-    // log_ref.log({
-    //     level: 'info',
-    //     message: `Started refresher`
-    // })
+    log_ref.log({
+        level: 'info',
+        message: `Started refresher`
+    })
 
     await loadConfig()
     await createVoterHandlers()
