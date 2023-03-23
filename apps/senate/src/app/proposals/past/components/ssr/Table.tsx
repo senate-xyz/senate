@@ -185,7 +185,8 @@ const getProposals = async (
                     : 'not-connected',
                 highestScoreChoice: highestScoreChoice,
                 highestScore: highestScore,
-                scoresTotal: proposal.scoresTotal
+                scoresTotal: proposal.scoresTotal,
+                passedQuorum: proposal.quorum < proposal.scoresTotal
             }
         }) ?? []
 
@@ -468,6 +469,7 @@ const PastProposal = async (props: {
         highestScoreChoice: string
         highestScore: number
         scoresTotal: number
+        passedQuorum: boolean
     }
 }) => {
     const daoPicture = await fetch(
@@ -550,7 +552,21 @@ const PastProposal = async (props: {
                 <div className='flex h-[96px] flex-col justify-between py-2'>
                     {props.proposal.highestScoreChoice != 'undefined' ? (
                         <div>
-                            <div className='flex flex-row'>
+                            <div className='mb-1 flex flex-row gap-2'>
+                                {props.proposal.passedQuorum ? (
+                                    <div className='h-[24px] w-[24px] bg-[#D9D9D9]'>
+                                        <Image
+                                            loading='eager'
+                                            priority={true}
+                                            width={24}
+                                            height={24}
+                                            src={'/assets/Icon/Check.svg'}
+                                            alt='off-chain'
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className='h-[24px] w-[24px] bg-[#D9D9D9]'></div>
+                                )}
                                 <div className='text-[21px] leading-[26px] text-white'>
                                     {props.proposal.highestScoreChoice}
                                 </div>
