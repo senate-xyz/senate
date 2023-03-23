@@ -45,12 +45,12 @@
     "lint:fix": "turbo run lint:fix"
   },
   "devDependencies": {
-    "prettier": "^2.8.5",
-    "tsx": "^3.12.5",
-    "turbo": "^1.8.3"
+    "prettier": "^2.8.6",
+    "tsx": "^3.12.6",
+    "turbo": "^1.8.5"
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {
-    "rimraf": "^4.4.0"
+    "rimraf": "^4.4.1"
   }
 }

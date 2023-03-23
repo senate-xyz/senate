@@ -30,7 +30,7 @@
         "@senate/axiom": "*",
         "@senate/config": "*",
         "@senate/database": "*",
-        "d3-array": "^3.2.2",
+        "d3-array": "^3.2.3",
         "d3-scale": "^4.0.2",
         "node-cron": "^3.0.2",
         "superagent": "^8.0.9"

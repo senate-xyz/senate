@@ -21,10 +21,6 @@
       "path": "../apps/senate"
     },
     {
-      "name": "🌐 @senate/stats",
-      "path": "../apps/stats"
-    },
-    {
       "name": "⚙️ @senate/config",
       "path": "../packages/config"
     },
