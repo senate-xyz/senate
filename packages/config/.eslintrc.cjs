@@ -3,7 +3,8 @@ module.exports = {
     extends: [
         'plugin:tailwindcss/recommended',
         'plugin:@typescript-eslint/recommended',
-        'plugin:prettier/recommended'
+        'plugin:prettier/recommended',
+        'plugin:@next/next/recommended'
     ],
     plugins: [
         'tailwindcss',
