@@ -1,6 +1,11 @@
 import { Prisma, PrismaClient } from '@prisma/client'
 import type { InterfaceAbi } from 'ethers'
 
+declare global {
+    // eslint-disable-next-line no-var
+    var prisma: PrismaClient | undefined
+}
+
 export type { JsonArray, JsonValue } from 'type-fest'
 
 export {
@@ -65,11 +70,6 @@ export type UserWithVotingAddresses = Prisma.UserGetPayload<{
         voters: true
     }
 }>
-
-declare global {
-    // eslint-disable-next-line no-var
-    var prisma: PrismaClient | undefined
-}
 
 export const prisma = global.prisma || new PrismaClient()
 
