@@ -8,7 +8,7 @@ import {
 import superagent from 'superagent'
 import type { RefreshArgs } from '@senate/database'
 import { config } from '../config'
-import { log_ref } from '@senate/axiom'
+
 
 export const processChainDaoVotes = async () => {
     let item: RefreshQueue, daoHandler: DAOHandlerWithDAO
@@ -102,17 +102,7 @@ export const processChainDaoVotes = async () => {
                 })
             ])
 
-            log_ref.log({
-                level: 'info',
-                message: `Process refresh items`,
-                dao: daoHandler.dao.name,
-                daoHandler: daoHandler.id,
-                type: RefreshType.DAOCHAINVOTES,
-                voters: voters,
-                postRequest: `${process.env.DETECTIVE_URL}/updateChainDaoVotes`,
-                postBody: { daoHandlerId: daoHandler.id, voters: voters },
-                response: data
-            })
+           
 
             return
         })
@@ -133,17 +123,6 @@ export const processChainDaoVotes = async () => {
                 }
             })
 
-            log_ref.log({
-                level: 'error',
-                message: `Process refresh items`,
-                dao: daoHandler.dao.name,
-                daoHandler: daoHandler.id,
-                type: RefreshType.DAOCHAINVOTES,
-                voters: voters,
-                postRequest: `${process.env.DETECTIVE_URL}/updateChainDaoVotes`,
-                postBody: { daoHandlerId: daoHandler.id, voters: voters },
-                errorMessage: e.message,
-                errorStack: e.stack
-            })
+          
         })
 }
