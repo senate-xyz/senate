@@ -9,7 +9,7 @@ import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { addChainDaoVotes } from './populate/addChainDaoVotes'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
-import { prismaLogs, sleep } from './utils'
+import { sleep } from './utils'
 import { scheduleJob } from 'node-schedule'
 import { log_ref } from '@senate/axiom'
 
@@ -30,10 +30,6 @@ const main = async () => {
 
         await addChainProposalsToQueue()
         await addChainDaoVotes()
-    })
-
-    scheduleJob('*/10 * * * * *', async () => {
-        await prismaLogs()
     })
 
     let start = Date.now()
