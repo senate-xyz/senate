@@ -24,6 +24,4 @@ export const createVoterHandlers = async () => {
             skipDuplicates: true
         })
     }
-
-    return
 }

@@ -17,7 +17,6 @@ const main = async () => {
     await createVoterHandlers()
 
     scheduleJob('* * * * * *', async () => {
-        await loadConfig()
         await createVoterHandlers()
 
         await addSnapshotProposalsToQueue()
