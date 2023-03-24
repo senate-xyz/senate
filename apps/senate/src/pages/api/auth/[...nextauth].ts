@@ -81,6 +81,34 @@ export function authOptions(
                 return session
             }
         },
+        cookies: {
+            sessionToken: {
+                name: `__Secure-next-auth.session-token`,
+                options: {
+                    path: '/',
+                    httpOnly: true,
+                    sameSite: 'none',
+                    secure: true
+                }
+            },
+            callbackUrl: {
+                name: `__Secure-next-auth.callback-url`,
+                options: {
+                    path: '/',
+                    sameSite: 'none',
+                    secure: true
+                }
+            },
+            csrfToken: {
+                name: `__Host-next-auth.csrf-token`,
+                options: {
+                    path: '/',
+                    httpOnly: true,
+                    sameSite: 'none',
+                    secure: true
+                }
+            }
+        },
         secret: process.env.NEXTAUTH_SECRET,
         events: {
             async signIn(message) {
