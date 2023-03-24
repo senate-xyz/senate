@@ -6,6 +6,7 @@ import {
     type RefreshQueue
 } from '@senate/database'
 import superagent from 'superagent'
+import { log_ref } from '@senate/axiom'
 import { config } from '../config'
 
 export const processChainProposals = async () => {
@@ -93,7 +94,19 @@ export const processChainProposals = async () => {
                 })
             ])
 
-         
+            log_ref.log({
+                level: 'info',
+                message: `Process refresh items`,
+                dao: daoHandler.dao.name,
+                daoHandler: daoHandler.id,
+                type: RefreshType.DAOCHAINPROPOSALS,
+                postReqeust: `${process.env.DETECTIVE_URL}/updateChainProposals`,
+                postBody: {
+                    daoHandlerId: item.handlerId,
+                    minBlockNumber: daoHandler?.chainIndex?.valueOf()
+                },
+                response: data
+            })
 
             return
         })
@@ -109,6 +122,19 @@ export const processChainProposals = async () => {
                 }
             })
 
-           
+            log_ref.log({
+                level: 'error',
+                message: `Process refresh items`,
+                dao: daoHandler.dao.name,
+                daoHandler: daoHandler.id,
+                type: RefreshType.DAOCHAINPROPOSALS,
+                postReqeust: `${process.env.DETECTIVE_URL}/updateChainProposals`,
+                postBody: {
+                    daoHandlerId: item.handlerId,
+                    minBlockNumber: daoHandler?.chainIndex?.valueOf()
+                },
+                errorMessage: e.message,
+                errorStack: e.stack
+            })
         })
 }

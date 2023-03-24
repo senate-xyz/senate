@@ -5,6 +5,7 @@ import {
     RefreshType
 } from '@senate/database'
 
+import { log_ref } from '@senate/axiom'
 import { config } from '../config'
 
 export const addSnapshotProposalsToQueue = async () => {
@@ -71,6 +72,16 @@ export const addSnapshotProposalsToQueue = async () => {
                     }
                 })
             })
+
+            daoHandlers.map((daoHandler) =>
+                log_ref.log({
+                    level: 'info',
+                    message: `Added refresh items to queue`,
+                    dao: daoHandler.dao.name,
+                    daoHandler: daoHandler.id,
+                    type: RefreshType.DAOSNAPSHOTPROPOSALS
+                })
+            )
 
             await tx.dAOHandler.updateMany({
                 where: {

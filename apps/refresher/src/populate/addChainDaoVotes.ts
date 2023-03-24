@@ -1,3 +1,4 @@
+import { log_ref } from '@senate/axiom'
 import {
     DAOHandlerType,
     prisma,
@@ -164,6 +165,16 @@ export const addChainDaoVotes = async () => {
                             }
                         })
                         .filter((el) => el.item.args.voters.length)
+
+                    log_ref.log({
+                        level: 'info',
+                        message: `Added refresh items to queue`,
+                        dao: daoHandler.dao.name,
+                        daoHandler: daoHandler.id,
+                        type: RefreshType.DAOCHAINVOTES,
+                        noOfBuckets: refreshItemsDao.length,
+                        items: refreshItemsDao
+                    })
 
                     return refreshItemsDao
                 })

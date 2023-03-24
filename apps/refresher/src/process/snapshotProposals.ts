@@ -6,6 +6,7 @@ import {
     type DAOHandlerWithDAO
 } from '@senate/database'
 import superagent from 'superagent'
+import { log_ref } from '@senate/axiom'
 import { config } from '../config'
 
 export const processSnapshotProposals = async () => {
@@ -94,6 +95,20 @@ export const processSnapshotProposals = async () => {
                 })
             ])
 
+            log_ref.log({
+                level: 'info',
+                message: `Process refresh items`,
+                dao: daoHandler.dao.name,
+                daoHandler: daoHandler.id,
+                type: RefreshType.DAOSNAPSHOTPROPOSALS,
+                postRequest: `${process.env.DETECTIVE_URL}/updateSnapshotProposals`,
+                postBody: {
+                    daoHandlerId: item.handlerId,
+                    minCreatedAt: daoHandler?.snapshotIndex?.valueOf()
+                },
+                response: data
+            })
+
             return
         })
         .catch(async (e) => {
@@ -106,6 +121,21 @@ export const processSnapshotProposals = async () => {
                     lastRefresh: new Date(),
                     snapshotIndex: new Date('2009-01-09T04:54:25.00Z')
                 }
+            })
+
+            log_ref.log({
+                level: 'error',
+                message: `Process refresh items`,
+                dao: daoHandler.dao.name,
+                daoHandler: daoHandler.id,
+                type: RefreshType.DAOSNAPSHOTPROPOSALS,
+                postRequest: `${process.env.DETECTIVE_URL}/updateSnapshotProposals`,
+                postBody: {
+                    daoHandlerId: item.handlerId,
+                    minCreatedAt: daoHandler?.snapshotIndex?.valueOf()
+                },
+                errorMessage: e.message,
+                errorStack: e.stack
             })
         })
 }

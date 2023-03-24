@@ -5,9 +5,10 @@ import {
     type VoterHandler,
     prisma
 } from '@senate/database'
-import { config } from '../config'
 import { bin } from 'd3-array'
 import { thresholdsTime } from '../utils'
+import { log_ref } from '@senate/axiom'
+import { config } from '../config'
 
 export const addSnapshotDaoVotes = async () => {
     await prisma.$transaction(
@@ -156,6 +157,16 @@ export const addSnapshotDaoVotes = async () => {
                             }
                         })
                         .filter((el) => el.item.args.voters.length)
+
+                    log_ref.log({
+                        level: 'info',
+                        message: `Added refresh items to queue`,
+                        dao: daoHandler.dao.name,
+                        daoHandler: daoHandler.id,
+                        type: RefreshType.DAOSNAPSHOTVOTES,
+                        noOfBuckets: refreshItemsDao.length,
+                        items: refreshItemsDao
+                    })
 
                     return refreshItemsDao
                 })
