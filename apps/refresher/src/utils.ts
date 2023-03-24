@@ -1,3 +1,4 @@
+import { log_ref } from '@senate/axiom'
 import { prisma } from '@senate/database'
 import { type NumberValue, scaleTime } from 'd3-scale'
 
@@ -52,4 +53,10 @@ export const prismaLogs = async () => {
             (metric) => metric.key === 'prisma_pool_connections_opened_total'
         )?.value
     }
+
+    log_ref.log({
+        level: 'info',
+        message: 'Prisma metrics',
+        ...logMetrics
+    })
 }
