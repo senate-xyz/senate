@@ -83,7 +83,7 @@ export function authOptions(
         },
         cookies: {
             sessionToken: {
-                name: `__Secure-next-auth.session-token`,
+                name: `next-auth.session-token`,
                 options: {
                     path: '/',
                     httpOnly: true,
@@ -92,7 +92,7 @@ export function authOptions(
                 }
             },
             callbackUrl: {
-                name: `__Secure-next-auth.callback-url`,
+                name: `next-auth.callback-url`,
                 options: {
                     path: '/',
                     sameSite: 'none',
@@ -100,7 +100,7 @@ export function authOptions(
                 }
             },
             csrfToken: {
-                name: `__Host-next-auth.csrf-token`,
+                name: `next-auth.csrf-token`,
                 options: {
                     path: '/',
                     httpOnly: true,
