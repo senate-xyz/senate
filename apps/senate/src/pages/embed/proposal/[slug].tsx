@@ -9,6 +9,7 @@ import '../../../styles/globals.css'
 dayjs.extend(relativeTime)
 
 const EmbeddedProposalHome = () => {
+    console.log('test')
     return (
         <TrpcClientProvider>
             <EmbeddedProposal />
@@ -18,8 +19,9 @@ const EmbeddedProposalHome = () => {
 
 const EmbeddedProposal = () => {
     const router = useRouter()
-    const { slug } = router.query
+    const { slug, url } = router.query
 
+    console.log(url)
     const { data: proposalData } = trpc.public.proposal.useQuery({
         id: String(slug) ?? ''
     })
@@ -28,6 +30,9 @@ const EmbeddedProposal = () => {
         <div>
             {proposalData && (
                 <div>
+                    <div className='text-white'>
+                        This request is coming from {url}
+                    </div>
                     <Proposal proposal={proposalData} />
                 </div>
             )}
@@ -154,6 +159,40 @@ const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
                             })} UTC
                     `}
                         </div>
+                    </div>
+
+                    <div className='mx-6 text-end'>
+                        {props.proposal.voted == 'true' && (
+                            <div className='flex w-full flex-col items-center'>
+                                <Image
+                                    loading='eager'
+                                    priority={true}
+                                    src='/assets/Icon/Voted.svg'
+                                    alt='voted'
+                                    width={32}
+                                    height={32}
+                                />
+                                <div className='text-[18px]'>Voted</div>
+                            </div>
+                        )}
+                        {props.proposal.voted == 'false' && (
+                            <div className='flex w-full flex-col items-center'>
+                                <Image
+                                    loading='eager'
+                                    priority={true}
+                                    src='/assets/Icon/DidntVote.svg'
+                                    alt='voted'
+                                    width={32}
+                                    height={32}
+                                />
+                                <div className='text-[18px]'>Didn’t Vote</div>
+                            </div>
+                        )}
+                        {props.proposal.voted == 'not-connected' && (
+                            <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
+                                Connect wallet to see your vote status
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
