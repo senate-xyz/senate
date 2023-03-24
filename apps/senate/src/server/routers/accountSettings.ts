@@ -176,44 +176,6 @@ export const accountSettingsRouter = router({
             return result
         }),
 
-    setTerms: privateProcedure
-        .input(
-            z.object({
-                value: z.boolean(),
-                timestamp: z.number()
-            })
-        )
-        .mutation(async ({ input, ctx }) => {
-            const username = await ctx.user.name
-
-            const user = await prisma.user.upsert({
-                where: {
-                    name: String(username)
-                },
-                create: {
-                    name: String(username),
-                    acceptedTerms: input.value,
-                    acceptedTermsTimestamp: new Date(input.timestamp),
-                    voters: {
-                        connectOrCreate: {
-                            where: {
-                                address: String(username)
-                            },
-                            create: {
-                                address: String(username)
-                            }
-                        }
-                    }
-                },
-                update: {
-                    acceptedTerms: input.value,
-                    acceptedTermsTimestamp: new Date(input.timestamp)
-                }
-            })
-
-            return user
-        }),
-
     getUser: privateProcedure.query(async ({ ctx }) => {
         const username = await ctx.user.name
 

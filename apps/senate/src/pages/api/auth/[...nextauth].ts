@@ -39,23 +39,21 @@ export function authOptions(
                     })
 
                     if (result.success) {
-                        const user = await prisma.user.findFirst({
+                        await prisma.user.upsert({
                             where: {
                                 name: siwe.address
+                            },
+                            create: {
+                                name: siwe.address,
+                                acceptedTerms: true,
+                                acceptedTermsTimestamp: new Date()
+                            },
+                            update: {
+                                lastActive: new Date(),
+                                sessionCount: { increment: 1 },
+                                newUser: false
                             }
                         })
-
-                        if (user)
-                            await prisma.user.update({
-                                where: {
-                                    name: siwe.address
-                                },
-                                data: {
-                                    lastActive: new Date(),
-                                    sessionCount: { increment: 1 },
-                                    newUser: false
-                                }
-                            })
 
                         return {
                             id: siwe.address

@@ -5,8 +5,7 @@ import Image from 'next/image'
 import { Transition } from '@headlessui/react'
 import { useRouter } from 'next/navigation'
 import { useCookies } from 'react-cookie'
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import Script from 'next/script'
 
 const WrapperHome = () => {
@@ -17,21 +16,10 @@ export default WrapperHome
 
 const Home = () => {
     const router = useRouter()
-    const [cookie, setCookie] = useCookies([
-        'hasSeenLanding',
-        'acceptedTerms',
-        'acceptedTermsTimestamp'
-    ])
-    const [terms, setTerms] = useState(false)
-    const [warning, setWarning] = useState(false)
+    const [cookie, setCookie] = useCookies(['hasSeenLanding'])
 
     useEffect(() => {
-        if (
-            cookie.acceptedTerms &&
-            cookie.acceptedTermsTimestamp > 0 &&
-            cookie.hasSeenLanding
-        )
-            router.push('/daos')
+        if (cookie.hasSeenLanding) router.push('/daos')
     }, [cookie])
 
     return (
@@ -96,84 +84,13 @@ const Home = () => {
                             <div className='w-full whitespace-pre text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Then go ahead, and...
                             </div>
-                            <div className='mt-4 flex flex-row items-center self-end px-4'>
-                                <input
-                                    id='default-checkbox'
-                                    type='checkbox'
-                                    checked={terms}
-                                    onChange={(e) => {
-                                        setTerms(e.target.checked)
-                                    }}
-                                    className='h-4 w-4 rounded border-gray-300 bg-gray-100  accent-gray-100 checked:bg-gray-600 focus:ring-2'
-                                />
-                                <label
-                                    className='ml-2 select-none text-sm font-light text-white'
-                                    onClick={() => setTerms(!terms)}
-                                >
-                                    I agree to the{' '}
-                                    <Link
-                                        href={
-                                            'https://senate.notion.site/Senate-Labs-Terms-of-Service-990ca9e655094b6f9673a3ead572956a'
-                                        }
-                                        className='underline'
-                                        target='_blank'
-                                    >
-                                        Terms of Service
-                                    </Link>
-                                    ,{' '}
-                                    <Link
-                                        href={
-                                            'https://senate.notion.site/Senate-Labs-Privacy-Policy-494e23d8a4e34d0189bfe07e0ae01bde'
-                                        }
-                                        className='underline'
-                                        target='_blank'
-                                    >
-                                        Privacy Policy
-                                    </Link>{' '}
-                                    and{' '}
-                                    <Link
-                                        href={
-                                            'https://senate.notion.site/Senate-Labs-Cookie-Policy-b429fe7b181e4cfda95f404f480bfdc7'
-                                        }
-                                        className='underline'
-                                        target='_blank'
-                                    >
-                                        Cookie Policy
-                                    </Link>{' '}
-                                </label>
-                            </div>
-
-                            {warning && !terms && (
-                                <div className='mt-4 text-center text-[12px] font-normal text-[#FF3D00]'>
-                                    Please accept the Terms of Service, Privacy
-                                    Policy and Cookie Policy above.
-                                </div>
-                            )}
 
                             <div
-                                className={
-                                    terms
-                                        ? `mb-8 mt-4 flex h-[42px] w-full cursor-pointer flex-col justify-center self-end bg-white text-center text-black`
-                                        : `mb-8 mt-4 flex h-[42px] w-full cursor-pointer flex-col justify-center self-end bg-gray-500 text-center text-gray-700`
-                                }
+                                className={`my-12 flex h-[42px] w-full cursor-pointer flex-col justify-center self-end bg-white text-center text-black`}
                                 onClick={() => {
-                                    if (!terms) {
-                                        setWarning(true)
-                                    } else {
-                                        setCookie('hasSeenLanding', true, {
-                                            maxAge: 60 * 60 * 24 * 365
-                                        })
-                                        setCookie('acceptedTerms', true, {
-                                            maxAge: 60 * 60 * 24 * 365
-                                        })
-                                        setCookie(
-                                            'acceptedTermsTimestamp',
-                                            Date.now(),
-                                            {
-                                                maxAge: 60 * 60 * 24 * 365
-                                            }
-                                        )
-                                    }
+                                    setCookie('hasSeenLanding', true, {
+                                        maxAge: 60 * 60 * 24 * 365
+                                    })
                                 }}
                             >
                                 Enter the Senate
