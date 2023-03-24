@@ -9,8 +9,14 @@
  */
 
 import type { Context } from './context'
-import { initTRPC, TRPCError } from '@trpc/server'
+import {
+    inferRouterInputs,
+    inferRouterOutputs,
+    initTRPC,
+    TRPCError
+} from '@trpc/server'
 import superjson from 'superjson'
+import { AppRouter } from './routers/_app'
 
 const t = initTRPC.context<Context>().create({
     /**
@@ -70,3 +76,16 @@ export const privateProcedure = t.procedure.use((opts) => {
         }
     })
 })
+/**
+ * Inference helper for inputs.
+ *
+ * @example type HelloInput = RouterInputs['example']['hello']
+ */
+export type RouterInputs = inferRouterInputs<AppRouter>
+
+/**
+ * Inference helper for outputs.
+ *
+ * @example type HelloOutput = RouterOutputs['example']['hello']
+ */
+export type RouterOutputs = inferRouterOutputs<AppRouter>

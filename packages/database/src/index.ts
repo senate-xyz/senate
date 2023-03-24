@@ -66,8 +66,15 @@ export type UserWithVotingAddresses = Prisma.UserGetPayload<{
     }
 }>
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
+declare global {
+    // eslint-disable-next-line no-var
+    var prisma: PrismaClient | undefined
+}
 
-const p = globalForPrisma.prisma || new PrismaClient()
+export const prisma =
+    global.prisma ||
+    new PrismaClient({
+        log: ['query']
+    })
 
-export const prisma = p
+if (process.env.NODE_ENV != 'production') global.prisma = prisma
