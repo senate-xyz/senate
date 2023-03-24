@@ -24,7 +24,7 @@
     },
     "dependencies": {
         "@headlessui/react": "^1.7.13",
-        "@rainbow-me/rainbowkit": "^0.12.3",
+        "@rainbow-me/rainbowkit": "^0.12.4",
         "@rainbow-me/rainbowkit-siwe-next-auth": "^0.1.8",
         "@senate/config": "*",
         "@senate/database": "*",
@@ -38,7 +38,7 @@
         "dayjs": "^1.11.7",
         "ethers": "5.7.2",
         "fast-average-color-node": "^2.6.0",
-        "framer-motion": "^10.8.5",
+        "framer-motion": "^10.9.1",
         "next": "13.2.4",
         "next-auth": "^4.20.1",
         "react": "18.2.0",
@@ -54,8 +54,8 @@
     },
     "devDependencies": {
         "@synthetixio/synpress": "^3.5.1",
-        "@types/node": "18.15.5",
-        "@types/react": "18.0.28",
+        "@types/node": "18.15.7",
+        "@types/react": "18.0.29",
         "@types/react-dom": "18.0.11",
         "@typescript-eslint/eslint-plugin": "^5.56.0",
         "@typescript-eslint/parser": "^5.56.0",
