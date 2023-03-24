@@ -1,20 +1,26 @@
+'use client'
+
 import { useRouter } from 'next/router'
-import { TrpcClientProvider, trpc } from '../../../server/trpcClient'
+import { trpc } from '../../../server/trpcClient'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { RouterOutputs } from '../../../server/trpc'
 import Image from 'next/image'
 import '../../../styles/globals.css'
-import WalletConnect from '../../../app/components/csr/WalletConnect'
+import RootProvider from '../../../app/providers'
+import '@rainbow-me/rainbowkit/styles.css'
+import { useEffect } from 'react'
+import { useAccount } from 'wagmi'
+import { useSession } from 'next-auth/react'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 dayjs.extend(relativeTime)
 
 const EmbeddedProposalHome = () => {
-    console.log('test')
     return (
-        <TrpcClientProvider>
+        <RootProvider>
             <EmbeddedProposal />
-        </TrpcClientProvider>
+        </RootProvider>
     )
 }
 
@@ -22,19 +28,25 @@ const EmbeddedProposal = () => {
     const router = useRouter()
     const { slug, url } = router.query
 
-    console.log(url)
-    const { data: proposalData } = trpc.public.proposal.useQuery({
+    const proposal = trpc.public.proposal.useQuery({
         id: String(slug) ?? ''
     })
 
+    const account = useAccount()
+    const session = useSession()
+
+    useEffect(() => {
+        proposal.refetch()
+    }, [account.isConnected, account.isDisconnected, session.status])
+
     return (
         <div>
-            {proposalData && (
+            {proposal.data && (
                 <div>
                     <div className='text-white'>
                         This request is coming from {url}
                     </div>
-                    <Proposal proposal={proposalData} />
+                    <Proposal proposal={proposal.data} />
                 </div>
             )}
         </div>
@@ -190,7 +202,9 @@ const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
                             </div>
                         )}
                         {props.proposal.voted == 'not-connected' && (
-                            <WalletConnect />
+                            <div className='p-3'>
+                                <ConnectButton showBalance={false} />
+                            </div>
                         )}
                     </div>
                 </div>
