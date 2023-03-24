@@ -5,6 +5,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { RouterOutputs } from '../../../server/trpc'
 import Image from 'next/image'
 import '../../../styles/globals.css'
+import WalletConnect from '../../../app/components/csr/WalletConnect'
 
 dayjs.extend(relativeTime)
 
@@ -189,9 +190,7 @@ const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
                             </div>
                         )}
                         {props.proposal.voted == 'not-connected' && (
-                            <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
-                                Connect wallet to see your vote status
-                            </div>
+                            <WalletConnect />
                         )}
                     </div>
                 </div>
