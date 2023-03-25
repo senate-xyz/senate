@@ -11,7 +11,7 @@ export const publicRouter = router({
     proposal: publicProcedure
         .input(
             z.object({
-                id: z.string()
+                url: z.string()
             })
         )
         .query(async ({ input, ctx }) => {
@@ -26,7 +26,7 @@ export const publicRouter = router({
 
             const proposal = await prisma.proposal.findFirstOrThrow({
                 where: {
-                    id: input.id
+                    url: input.url
                 },
                 include: {
                     dao: true,

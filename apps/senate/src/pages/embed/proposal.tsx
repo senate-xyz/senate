@@ -1,13 +1,13 @@
 'use client'
 
 import { useRouter } from 'next/router'
-import { trpc } from '../../../server/trpcClient'
+import { trpc } from '../../server/trpcClient'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { RouterOutputs } from '../../../server/trpc'
+import { RouterOutputs } from '../../server/trpc'
 import Image from 'next/image'
-import '../../../styles/globals.css'
-import RootProvider from '../../../app/providers'
+import '../../styles/globals.css'
+import RootProvider from '../../app/providers'
 import '@rainbow-me/rainbowkit/styles.css'
 import { useEffect } from 'react'
 import { useAccount } from 'wagmi'
@@ -26,10 +26,11 @@ const EmbeddedProposalHome = () => {
 
 const EmbeddedProposal = () => {
     const router = useRouter()
-    const { slug, url } = router.query
+    const { url } = router.query
 
+    console.log(url)
     const proposal = trpc.public.proposal.useQuery({
-        id: String(slug) ?? ''
+        url: String(url) ?? ''
     })
 
     const account = useAccount()
@@ -43,9 +44,6 @@ const EmbeddedProposal = () => {
         <div>
             {proposal.data && (
                 <div>
-                    <div className='text-white'>
-                        This request is coming from {url}
-                    </div>
                     <Proposal proposal={proposal.data} />
                 </div>
             )}
@@ -55,7 +53,7 @@ const EmbeddedProposal = () => {
 
 const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
     return (
-        <div className='my-1 flex w-full flex-col items-start bg-[#121212] text-[#EDEDED]'>
+        <div className='flex h-screen w-full flex-col items-start bg-[#121212] text-[#EDEDED]'>
             <div className='flex w-full flex-col gap-2 p-2'>
                 <div className='flex flex-row gap-2'>
                     <div className='flex flex-col items-center justify-start gap-2'>
@@ -198,7 +196,9 @@ const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
                                     width={32}
                                     height={32}
                                 />
-                                <div className='text-[18px]'>Didn’t Vote</div>
+                                <div className='text-center text-[18px]'>
+                                    Didn’t Vote
+                                </div>
                             </div>
                         )}
                         {props.proposal.voted == 'not-connected' && (
