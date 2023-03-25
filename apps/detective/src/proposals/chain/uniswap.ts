@@ -1,4 +1,4 @@
-//import { log_pd } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { DAOHandler } from '@senate/database'
 import { Decoder } from '@senate/database'
 import { ethers } from 'ethers'
@@ -100,11 +100,11 @@ const formatTitle = async (text: string): Promise<string> => {
     const temp = text.split('\n')[0]
 
     if (!temp) {
-        // log_pd.log({
-        //     level: 'warn',
-        //     message: `Could not get proposal title`,
-        //     text: text
-        // })
+        log_pd.log({
+            level: 'warn',
+            message: `Could not get proposal title`,
+            text: text
+        })
         return 'Title unavailable'
     }
 

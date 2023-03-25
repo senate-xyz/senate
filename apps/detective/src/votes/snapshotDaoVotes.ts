@@ -1,4 +1,4 @@
-//import { log_pd } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { prisma, Decoder, JsonValue } from '@senate/database'
 import { ethers } from 'ethers'
 import superagent from 'superagent'
@@ -93,6 +93,7 @@ export const updateSnapshotDaoVotes = async (
         }
     }`
 
+    let votes
     try {
         const votes = (
             (await superagent
@@ -217,22 +218,22 @@ export const updateSnapshotDaoVotes = async (
 
         voters.map((voter) => result.set(voter, 'ok'))
     } catch (e) {
-        // log_pd.log({
-        //     level: 'error',
-        //     message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
-        //     searchType: 'VOTES',
-        //     sourceType: 'SNAPSHOT',
-        //     created_gte: searchFromTimestamp
-        //         ? Math.floor(searchFromTimestamp / 1000)
-        //         : 0,
-        //     space: (daoHandler.decoder as Decoder).space,
-        //     query: graphqlQuery,
-        //     voters: voters,
-        //     votes: votes,
-        //     errorName: (e as Error).name,
-        //     errorMessage: (e as Error).message,
-        //     errorStack: (e as Error).stack
-        // })
+        log_pd.log({
+            level: 'error',
+            message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
+            searchType: 'VOTES',
+            sourceType: 'SNAPSHOT',
+            created_gte: searchFromTimestamp
+                ? Math.floor(searchFromTimestamp / 1000)
+                : 0,
+            space: (daoHandler.decoder as Decoder).space,
+            query: graphqlQuery,
+            voters: voters,
+            votes: votes,
+            errorName: (e as Error).name,
+            errorMessage: (e as Error).message,
+            errorStack: (e as Error).stack
+        })
     }
 
     const res = Array.from(result, ([name, value]) => ({
@@ -240,20 +241,20 @@ export const updateSnapshotDaoVotes = async (
         response: value
     }))
 
-    // log_pd.log({
-    //     level: 'info',
-    //     message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
-    //     searchType: 'VOTES',
-    //     sourceType: 'SNAPSHOT',
-    //     created_gte: searchFromTimestamp
-    //         ? Math.floor(searchFromTimestamp / 1000)
-    //         : 0,
-    //     space: (daoHandler.decoder as Decoder).space,
-    //     query: graphqlQuery,
-    //     voters: voters,
-    //     votes: votes,
-    //     response: res
-    // })
+    log_pd.log({
+        level: 'info',
+        message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
+        searchType: 'VOTES',
+        sourceType: 'SNAPSHOT',
+        created_gte: searchFromTimestamp
+            ? Math.floor(searchFromTimestamp / 1000)
+            : 0,
+        space: (daoHandler.decoder as Decoder).space,
+        query: graphqlQuery,
+        voters: voters,
+        votes: votes,
+        response: res
+    })
 
     return res
 }

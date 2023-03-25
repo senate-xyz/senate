@@ -1,4 +1,4 @@
-//import { log_pd } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { DAOHandler } from '@senate/database'
 import { Decoder } from '@senate/database'
 import axios from 'axios'
@@ -75,16 +75,16 @@ const formatTitle = (text: string): string => {
 
 const getProposalTitle = async (
     url: string,
-    _onChainId: string
+    onChainId: string
 ): Promise<string> => {
     let response
 
     //check if url is valid - when not valid, axios throws an error which does not get caught by the catch block
     if (!url || !(url.startsWith('https://') || url.startsWith('http://'))) {
-        // log_pd.log({
-        //     level: 'error',
-        //     message: `URL Invalid! Cannot fetch title for Maker poll ${onChainId}`
-        // })
+        log_pd.log({
+            level: 'error',
+            message: `URL Invalid! Cannot fetch title for Maker poll ${onChainId}`
+        })
         return 'Unknown'
     }
 
@@ -107,10 +107,10 @@ const getProposalTitle = async (
             }
         }
     } catch (e) {
-        // log_pd.log({
-        //     level: 'error',
-        //     message: `Error fetching title for Maker poll ${onChainId}`
-        // })
+        log_pd.log({
+            level: 'error',
+            message: `Error fetching title for Maker poll ${onChainId}`
+        })
     }
 
     return response ? formatTitle(response) : 'Unknown'

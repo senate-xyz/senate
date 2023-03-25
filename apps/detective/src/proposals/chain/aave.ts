@@ -1,4 +1,4 @@
-//import { log_pd } from '@senate/axiom'
+import { log_pd } from '@senate/axiom'
 import { DAOHandler } from '@senate/database'
 import { Decoder } from '@senate/database'
 import axios from 'axios'
@@ -140,11 +140,11 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
                 )
 
                 if (!response.data || !response.data.title) {
-                    // log_pd.log({
-                    //     level: 'warn',
-                    //     message: `Could not find proposal title in response`,
-                    //     responseData: response.data
-                    // })
+                    log_pd.log({
+                        level: 'warn',
+                        message: `Could not find proposal title in response`,
+                        responseData: response.data
+                    })
                 }
 
                 title = response.data.title
@@ -160,15 +160,15 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
             }
         }
     } catch (e) {
-        // log_pd.log({
-        //     level: 'warn',
-        //     message: `Could not get proposal title`,
-        //     hexHash: hexHash,
-        //     url: IPFS_GATEWAY_URLS[0] + 'f01701220' + hexHash.substring(2),
-        //     errorName: (e as Error).name,
-        //     errorMessage: (e as Error).message,
-        //     errorStack: (e as Error).stack
-        // })
+        log_pd.log({
+            level: 'warn',
+            message: `Could not get proposal title`,
+            hexHash: hexHash,
+            url: IPFS_GATEWAY_URLS[0] + 'f01701220' + hexHash.substring(2),
+            errorName: (e as Error).name,
+            errorMessage: (e as Error).message,
+            errorStack: (e as Error).stack
+        })
     }
 
     return title
