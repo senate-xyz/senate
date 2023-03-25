@@ -11,13 +11,13 @@ import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 import { sleep } from './utils'
 import { scheduleJob } from 'node-schedule'
-import { log_ref } from '@senate/axiom'
+//import { log_ref } from '@senate/axiom'
 
 const main = async () => {
-    log_ref.log({
-        level: 'info',
-        message: `Started refresher`
-    })
+    // log_ref.log({
+    //     level: 'info',
+    //     message: `Started refresher`
+    // })
 
     await loadConfig()
     await createVoterHandlers()

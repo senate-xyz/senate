@@ -1,4 +1,4 @@
-import { log_pd } from '@senate/axiom'
+//import { log_pd } from '@senate/axiom'
 import { DAOHandlerType, JsonValue, prisma } from '@senate/database'
 import { ethers } from 'ethers'
 import { getAaveVotes } from './chain/aave'
@@ -289,21 +289,21 @@ export const updateChainDaoVotes = async (
             result.set(res.voterAddress, 'ok')
         })
     } catch (e) {
-        log_pd.log({
-            level: 'error',
-            message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
-            searchType: 'VOTES',
-            sourceType: 'CHAIN',
-            currentBlock: currentBlock,
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            voters: voters,
-            votes: votes,
-            provider: provider._getConnection().url,
-            errorName: (e as Error).name,
-            errorMessage: (e as Error).message,
-            errorStack: (e as Error).stack
-        })
+        // log_pd.log({
+        //     level: 'error',
+        //     message: `Search for votes ${daoHandler.dao.name} - ${daoHandler.type}`,
+        //     searchType: 'VOTES',
+        //     sourceType: 'CHAIN',
+        //     currentBlock: currentBlock,
+        //     fromBlock: fromBlock,
+        //     toBlock: toBlock,
+        //     voters: voters,
+        //     votes: votes,
+        //     provider: provider._getConnection().url,
+        //     errorName: (e as Error).name,
+        //     errorMessage: (e as Error).message,
+        //     errorStack: (e as Error).stack
+        // })
     }
 
     const res = Array.from(result, ([name, value]) => ({
@@ -311,19 +311,19 @@ export const updateChainDaoVotes = async (
         response: value
     }))
 
-    log_pd.log({
-        level: 'info',
-        message: `FINISHED updating voters ${daoHandler.dao.name} - ${daoHandler.type}`,
-        searchType: 'VOTES',
-        sourceType: 'CHAIN',
-        currentBlock: currentBlock,
-        fromBlock: fromBlock,
-        toBlock: toBlock,
-        voters: voters,
-        votes: votes,
-        provider: provider._getConnection().url,
-        response: res
-    })
+    // log_pd.log({
+    //     level: 'info',
+    //     message: `FINISHED updating voters ${daoHandler.dao.name} - ${daoHandler.type}`,
+    //     searchType: 'VOTES',
+    //     sourceType: 'CHAIN',
+    //     currentBlock: currentBlock,
+    //     fromBlock: fromBlock,
+    //     toBlock: toBlock,
+    //     voters: voters,
+    //     votes: votes,
+    //     provider: provider._getConnection().url,
+    //     response: res
+    // })
 
     return res
 }

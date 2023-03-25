@@ -9,7 +9,7 @@ import { ensProposals } from './chain/ens'
 import { gitcoinProposals } from './chain/gitcoin'
 import { hopProposals } from './chain/hop'
 import { dydxProposals } from './chain/dydx'
-import { log_pd } from '@senate/axiom'
+//import { log_pd } from '@senate/axiom'
 
 interface Result {
     externalId: string
@@ -194,12 +194,12 @@ export const updateChainProposals = async (daoHandlerId: string) => {
             newIndex = toBlock
         }
 
-        log_pd.log({
-            level: 'info',
-            message: `${daoHandler.type} open proposals`,
-            openProposals: openProposals,
-            newIndex: newIndex
-        })
+        // log_pd.log({
+        //     level: 'info',
+        //     message: `${daoHandler.type} open proposals`,
+        //     openProposals: openProposals,
+        //     newIndex: newIndex
+        // })
 
         await prisma.dAOHandler.update({
             where: {
@@ -213,35 +213,35 @@ export const updateChainProposals = async (daoHandlerId: string) => {
 
         response = 'ok'
     } catch (e) {
-        log_pd.log({
-            level: 'error',
-            message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
-            searchType: 'PROPOSALS',
-            sourceType: 'CHAIN',
-            currentBlock: currentBlock,
-            fromBlock: fromBlock,
-            toBlock: toBlock,
-            proposals: proposals,
-            provider: provider._getConnection().url,
-            errorName: (e as Error).name,
-            errorMessage: (e as Error).message,
-            errorStack: (e as Error).stack
-        })
+        // log_pd.log({
+        //     level: 'error',
+        //     message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+        //     searchType: 'PROPOSALS',
+        //     sourceType: 'CHAIN',
+        //     currentBlock: currentBlock,
+        //     fromBlock: fromBlock,
+        //     toBlock: toBlock,
+        //     proposals: proposals,
+        //     provider: provider._getConnection().url,
+        //     errorName: (e as Error).name,
+        //     errorMessage: (e as Error).message,
+        //     errorStack: (e as Error).stack
+        // })
     }
 
     const res = [{ daoHandlerId: daoHandlerId, response: response }]
-    log_pd.log({
-        level: 'info',
-        message: `FINISHED updating proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
-        searchType: 'PROPOSALS',
-        sourceType: 'CHAIN',
-        currentBlock: currentBlock,
-        fromBlock: fromBlock,
-        toBlock: toBlock,
-        proposals: proposals,
-        provider: provider._getConnection().url,
-        response: res
-    })
+    // log_pd.log({
+    //     level: 'info',
+    //     message: `FINISHED updating proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+    //     searchType: 'PROPOSALS',
+    //     sourceType: 'CHAIN',
+    //     currentBlock: currentBlock,
+    //     fromBlock: fromBlock,
+    //     toBlock: toBlock,
+    //     proposals: proposals,
+    //     provider: provider._getConnection().url,
+    //     response: res
+    // })
 
     return res
 }

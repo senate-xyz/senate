@@ -4,8 +4,7 @@ import {
     RefreshStatus,
     RefreshType
 } from '@senate/database'
-
-import { log_ref } from '@senate/axiom'
+//import { log_ref } from '@senate/axiom'
 import { config } from '../config'
 
 export const addChainProposalsToQueue = async () => {
@@ -74,15 +73,15 @@ export const addChainProposalsToQueue = async () => {
                 select: { priority: true }
             })) ?? { priority: 1 }
 
-            daoHandlers.map((daoHandler) =>
-                log_ref.log({
-                    level: 'info',
-                    message: `Added refresh items to queue`,
-                    dao: daoHandler.dao.name,
-                    daoHandler: daoHandler.id,
-                    type: RefreshType.DAOCHAINPROPOSALS
-                })
-            )
+            // daoHandlers.map((daoHandler) =>
+            //     log_ref.log({
+            //         level: 'info',
+            //         message: `Added refresh items to queue`,
+            //         dao: daoHandler.dao.name,
+            //         daoHandler: daoHandler.id,
+            //         type: RefreshType.DAOCHAINPROPOSALS
+            //     })
+            // )
 
             await tx.refreshQueue.createMany({
                 data: daoHandlers.map((daoHandler) => {

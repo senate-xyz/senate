@@ -1,4 +1,4 @@
-import { log_pd } from '@senate/axiom'
+//import { log_pd } from '@senate/axiom'
 import { Decoder } from '@senate/database'
 import { DAOHandlerWithDAO, prisma } from '@senate/database'
 import { ethers, InterfaceAbi, Log, zeroPadValue } from 'ethers'
@@ -87,14 +87,14 @@ export const getVotesForVoter = async (
                             proposal.timeEnd.getTime() > new Date().getTime()
                     }
                 } catch (e) {
-                    log_pd.log({
-                        level: 'error',
-                        message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
-                        logs: logs,
-                        errorName: (e as Error).name,
-                        errorMessage: (e as Error).message,
-                        errorStack: (e as Error).stack
-                    })
+                    // log_pd.log({
+                    //     level: 'error',
+                    //     message: `Error fetching votes for ${voterAddress} - ${daoHandler.dao.name} - ${daoHandler.type}`,
+                    //     logs: logs,
+                    //     errorName: (e as Error).name,
+                    //     errorMessage: (e as Error).message,
+                    //     errorStack: (e as Error).stack
+                    // })
                     success = false
                     return null
                 }

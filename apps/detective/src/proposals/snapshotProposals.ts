@@ -1,5 +1,5 @@
 import { prisma, Decoder } from '@senate/database'
-import { log_pd } from '@senate/axiom'
+//import { log_pd } from '@senate/axiom'
 import superagent from 'superagent'
 
 type GraphQLProposal = {
@@ -155,30 +155,30 @@ export const updateSnapshotProposals = async (
 
         response = 'ok'
     } catch (e) {
-        log_pd.log({
-            level: 'error',
-            message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
-            searchType: 'PROPOSALS',
-            sourceType: 'SNAPSHOT',
-            created_gt: Math.floor(oldIndex / 1000),
-            proposals: proposals,
-            errorName: (e as Error).name,
-            errorMessage: (e as Error).message,
-            errorStack: (e as Error).stack
-        })
+        // log_pd.log({
+        //     level: 'error',
+        //     message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+        //     searchType: 'PROPOSALS',
+        //     sourceType: 'SNAPSHOT',
+        //     created_gt: Math.floor(oldIndex / 1000),
+        //     proposals: proposals,
+        //     errorName: (e as Error).name,
+        //     errorMessage: (e as Error).message,
+        //     errorStack: (e as Error).stack
+        // })
     }
 
     const res = [{ daoHandlerId: daoHandlerId, response: response }]
 
-    log_pd.log({
-        level: 'info',
-        message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
-        searchType: 'PROPOSALS',
-        sourceType: 'SNAPSHOT',
-        created_gt: Math.floor(oldIndex / 1000),
-        proposals: proposals,
-        response: res
-    })
+    // log_pd.log({
+    //     level: 'info',
+    //     message: `Search for proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
+    //     searchType: 'PROPOSALS',
+    //     sourceType: 'SNAPSHOT',
+    //     created_gt: Math.floor(oldIndex / 1000),
+    //     proposals: proposals,
+    //     response: res
+    // })
 
     return res
 }

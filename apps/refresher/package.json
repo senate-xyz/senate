@@ -29,7 +29,6 @@
     "dependencies": {
         "@senate/config": "*",
         "@senate/database": "*",
-        "@senate/axiom": "*",
         "d3-array": "^3.2.3",
         "d3-scale": "^4.0.2",
         "node-cron": "^3.0.2",

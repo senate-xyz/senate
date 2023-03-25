@@ -1,4 +1,4 @@
-import { log_pd } from '@senate/axiom'
+//import { log_pd } from '@senate/axiom'
 import { DAOHandler } from '@senate/database'
 import { Decoder } from '@senate/database'
 import axios from 'axios'
@@ -131,10 +131,10 @@ const getProposalData = async (spellAddress: string) => {
             }
         }
     } catch (err) {
-        log_pd.log({
-            level: 'warn',
-            message: `Error fetching Maker executive proposal data for ${spellAddress}`
-        })
+        // log_pd.log({
+        //     level: 'warn',
+        //     message: `Error fetching Maker executive proposal data for ${spellAddress}`
+        // })
     }
 
     return response
