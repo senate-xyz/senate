@@ -27,7 +27,6 @@
         "prettier:fix": "prettier src --write"
     },
     "dependencies": {
-        "@scout_apm/scout-apm": "^0.2.3",
         "@senate/config": "*",
         "@senate/database": "*",
         "d3-array": "^3.2.3",
