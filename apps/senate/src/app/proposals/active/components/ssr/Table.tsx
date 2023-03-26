@@ -249,20 +249,24 @@ const MobileActiveProposal = async (props: {
     }
 }) => {
     const daoPicture = await fetch(
-        process.env.WEB_URL + props.proposal.daoPicture + '.svg'
+        process.env.NEXT_PUBLIC_WEB_URL + props.proposal.daoPicture + '.svg'
     )
         .then((res) => {
             if (res.ok)
-                return process.env.WEB_URL + props.proposal.daoPicture + '.svg'
+                return (
+                    process.env.NEXT_PUBLIC_WEB_URL +
+                    props.proposal.daoPicture +
+                    '.svg'
+                )
             else
                 return (
-                    process.env.WEB_URL +
+                    process.env.NEXT_PUBLIC_WEB_URL +
                     '/assets/Project_Icons/placeholder_medium.png'
                 )
         })
         .catch(() => {
             return (
-                process.env.WEB_URL +
+                process.env.NEXT_PUBLIC_WEB_URL +
                 '/assets/Project_Icons/placeholder_medium.png'
             )
         })
@@ -398,20 +402,24 @@ const ActiveProposal = async (props: {
     }
 }) => {
     const daoPicture = await fetch(
-        process.env.WEB_URL + props.proposal.daoPicture + '.svg'
+        process.env.NEXT_PUBLIC_WEB_URL + props.proposal.daoPicture + '.svg'
     )
         .then((res) => {
             if (res.ok)
-                return process.env.WEB_URL + props.proposal.daoPicture + '.svg'
+                return (
+                    process.env.NEXT_PUBLIC_WEB_URL +
+                    props.proposal.daoPicture +
+                    '.svg'
+                )
             else
                 return (
-                    process.env.WEB_URL +
+                    process.env.NEXT_PUBLIC_WEB_URL +
                     '/assets/Project_Icons/placeholder_medium.png'
                 )
         })
         .catch(() => {
             return (
-                process.env.WEB_URL +
+                process.env.NEXT_PUBLIC_WEB_URL +
                 '/assets/Project_Icons/placeholder_medium.png'
             )
         })

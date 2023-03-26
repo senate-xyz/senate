@@ -47,15 +47,8 @@
         "EXEC_ENV",
         "PORT",
 
-        "WEB_URL",
-        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
-        "CLERK_SECRET_KEY",
-        "NEXT_PUBLIC_PROVIDER_URL",
-
+        "NEXT_PUBLIC_WEB_URL",
         "DETECTIVE_URL",
-        "IPFS_GATEWAY_URL",
-        "ETHERSCAN_API_KEY",
-        "ARBISCAN_API_KEY",
 
         "BULLETIN_ENABLE",
         "BULLETIN_BCC_EMAILS",
@@ -67,12 +60,16 @@
         "SENATE_NODE_URL",
         "INFURA_NODE_URL",
         "ARBITRUM_NODE_URL",
+        "IPFS_GATEWAY_URL",
+        "ETHERSCAN_API_KEY",
+        "ARBISCAN_API_KEY",
+        "NEXT_PUBLIC_PROVIDER_URL",
 
         "AXIOM_TOKEN",
         "AXIOM_ORG_ID",
         "AXIOM_DATASET",
 
-        "DATABASE_URL_PARAMS"
+        "DATABASE_URL"
       ]
     },
     "start": {},

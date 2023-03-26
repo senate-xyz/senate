@@ -57,7 +57,7 @@ export default async function SubscribedDAOs() {
     const backgroundColors = await Promise.all(
         subscriptions.map(async (sub) => {
             const color = await getAverageColor(
-                process.env.WEB_URL + sub.dao.picture + '.svg',
+                process.env.NEXT_PUBLIC_WEB_URL + sub.dao.picture + '.svg',
                 {
                     mode: 'precision',
                     algorithm: 'sqrt'

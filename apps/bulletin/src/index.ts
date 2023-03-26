@@ -427,17 +427,19 @@ const formatEmailTemplateRow = async (
         : 'Not voted yet'
 
     const votingStatusIconUrl = voted
-        ? `${process.env.WEB_URL}/assets/Icon/Voted.png`
+        ? `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/Voted.png`
         : notification.type === RoundupNotificationType.PAST
-        ? `${process.env.WEB_URL}/assets/Icon/DidntVote.png`
-        : `${process.env.WEB_URL}/assets/Icon/NotVotedYet.png`
+        ? `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/DidntVote.png`
+        : `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/NotVotedYet.png`
 
     const chainLogoUrl =
         notification.proposal.daoHandler.type === DAOHandlerType.SNAPSHOT
             ? encodeURI(
-                  `${process.env.WEB_URL}/assets/Chain/Snapshot/snapshot.png`
+                  `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Chain/Snapshot/snapshot.png`
               )
-            : encodeURI(`${process.env.WEB_URL}/assets/Chain/Ethereum/eth.png`)
+            : encodeURI(
+                  `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Chain/Ethereum/eth.png`
+              )
 
     let result = null
 
@@ -479,7 +481,7 @@ const formatEmailTemplateRow = async (
                 : notification.proposal.name,
         proposalUrl: encodeURI(notification.proposal.url),
         daoLogoUrl: encodeURI(
-            `${process.env.WEB_URL}${notification.proposal.dao.picture}_small.png`
+            `${process.env.NEXT_PUBLIC_WEB_URL}${notification.proposal.dao.picture}_small.png`
         ),
         chainLogoUrl: chainLogoUrl,
         daoName: notification.proposal.dao.name,
@@ -721,7 +723,8 @@ const sendEmail = async (to: string, data: BulletinData) => {
             TemplateAlias: 'daily-bulletin-1',
             TemplateModel: {
                 senateLogoUrl: encodeURI(
-                    process.env.WEB_URL + '/assets/Senate_Logo/64/White.png'
+                    process.env.NEXT_PUBLIC_WEB_URL +
+                        '/assets/Senate_Logo/64/White.png'
                 ),
                 todaysDate: data.todaysDate,
                 endingSoonProposals: data.endingProposals,
@@ -743,13 +746,16 @@ const sendEmail = async (to: string, data: BulletinData) => {
                     data.pastProposals.length > 0 ? 'hide' : 'show',
 
                 twitterIconUrl: encodeURI(
-                    process.env.WEB_URL + '/assets/Icon/TwitterWhite.png'
+                    process.env.NEXT_PUBLIC_WEB_URL +
+                        '/assets/Icon/TwitterWhite.png'
                 ),
                 discordIconUrl: encodeURI(
-                    process.env.WEB_URL + '/assets/Icon/DiscordWhite.png'
+                    process.env.NEXT_PUBLIC_WEB_URL +
+                        '/assets/Icon/DiscordWhite.png'
                 ),
                 githubIconUrl: encodeURI(
-                    process.env.WEB_URL + '/assets/Icon/GithubWhite.png'
+                    process.env.NEXT_PUBLIC_WEB_URL +
+                        '/assets/Icon/GithubWhite.png'
                 )
             },
             InlineCss: true,
