@@ -8,6 +8,3 @@ export const thresholdsTime =
         max: Date | NumberValue
     ) =>
         scaleTime().domain([min, max]).ticks(n)
-
-export const sleep = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms))

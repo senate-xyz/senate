@@ -9,7 +9,6 @@ import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { addChainDaoVotes } from './populate/addChainDaoVotes'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
-import { sleep } from './utils'
 import { scheduleJob } from 'node-schedule'
 import { log_ref } from '@senate/axiom'
 
@@ -32,11 +31,7 @@ const main = async () => {
         await addChainDaoVotes()
     })
 
-    let start = Date.now()
-
-    while (true) {
-        start = Date.now()
-
+    setInterval(async () => {
         const hasQueue = await prisma.refreshQueue.count()
 
         if (hasQueue) {
@@ -45,11 +40,7 @@ const main = async () => {
             processChainProposals()
             processChainDaoVotes()
         }
-
-        while (Date.now() - start < config.REFRESH_PROCESS_INTERVAL_MS) {
-            await sleep(10)
-        }
-    }
+    }, config.REFRESH_PROCESS_INTERVAL_MS)
 }
 
 main()
