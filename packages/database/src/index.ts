@@ -66,11 +66,14 @@ export type UserWithVotingAddresses = Prisma.UserGetPayload<{
     }
 }>
 
-declare global {
-    // eslint-disable-next-line no-var
-    var prisma: PrismaClient | undefined
+interface CustomNodeJsGlobal {
+    prisma: PrismaClient
 }
 
-export const prisma = global.prisma || new PrismaClient()
+declare const global: CustomNodeJsGlobal
 
-if (process.env.NODE_ENV !== 'production') global.prisma = prisma
+const prisma = global.prisma || new PrismaClient()
+
+if (process.env.NODE_ENV === 'development') global.prisma = prisma
+
+export default prisma

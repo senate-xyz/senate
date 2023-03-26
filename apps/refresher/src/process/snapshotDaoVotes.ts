@@ -13,34 +13,29 @@ import { config } from '../config'
 export const processSnapshotDaoVotes = async () => {
     let item: RefreshQueue, daoHandler: DAOHandlerWithDAO
 
-    await prisma.$transaction(
-        async (tx) => {
-            item = await tx.refreshQueue.findFirst({
-                where: {
-                    refreshType: RefreshType.DAOSNAPSHOTVOTES
-                },
-                orderBy: {
-                    priority: 'asc'
-                }
-            })
+    await prisma.$transaction(async (tx) => {
+        item = await tx.refreshQueue.findFirst({
+            where: {
+                refreshType: RefreshType.DAOSNAPSHOTVOTES
+            },
+            orderBy: {
+                priority: 'asc'
+            }
+        })
 
-            if (!item) return
+        if (!item) return
 
-            await tx.refreshQueue.delete({
-                where: {
-                    id: item.id
-                }
-            })
+        await tx.refreshQueue.delete({
+            where: {
+                id: item.id
+            }
+        })
 
-            daoHandler = await tx.dAOHandler.findFirst({
-                where: { id: item.handlerId },
-                include: { dao: true }
-            })
-        },
-        {
-            maxWait: 30000
-        }
-    )
+        daoHandler = await tx.dAOHandler.findFirst({
+            where: { id: item.handlerId },
+            include: { dao: true }
+        })
+    })
 
     if (!item) return
 
