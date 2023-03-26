@@ -1,6 +1,6 @@
 import { log_ref } from '@senate/axiom'
 import { config } from '../config'
-import { DAOHandlerType, prisma } from '..'
+import { DAOHandlerType, RefreshStatus, prisma } from '..'
 
 export const addChainProposalsToQueue = async () => {
     await prisma.$transaction(async (tx) => {
