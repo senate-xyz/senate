@@ -1,6 +1,5 @@
 import {
     type DAOHandlerWithDAO,
-    prisma,
     type RefreshQueue,
     RefreshStatus,
     RefreshType
@@ -9,6 +8,7 @@ import superagent from 'superagent'
 import { log_ref } from '@senate/axiom'
 import type { RefreshArgs } from '@senate/database'
 import { config } from '../config'
+import { prisma } from '..'
 
 export const processChainDaoVotes = async () => {
     let item: RefreshQueue, daoHandler: DAOHandlerWithDAO

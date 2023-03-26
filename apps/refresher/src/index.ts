@@ -1,4 +1,4 @@
-import { prisma } from '@senate/database'
+import { prisma as prismadb } from '@senate/database'
 import { config, loadConfig } from './config'
 import { createVoterHandlers } from './createHandlers'
 import { processSnapshotProposals } from './process/snapshotProposals'
@@ -12,6 +12,7 @@ import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 import { scheduleJob } from 'node-schedule'
 import { log_ref } from '@senate/axiom'
 
+export const prisma = prismadb
 const main = async () => {
     log_ref.log({
         level: 'info',
