@@ -1,14 +1,14 @@
-import {
-    DAOHandlerType,
-    RefreshStatus,
-    RefreshType,
-    type VoterHandler
-} from '@senate/database'
 import { bin } from 'd3-array'
 import { thresholdsTime } from '../utils'
 import { log_ref } from '@senate/axiom'
 import { config } from '../config'
-import { prisma } from '..'
+import {
+    DAOHandlerType,
+    RefreshStatus,
+    RefreshType,
+    prisma,
+    type VoterHandler
+} from '..'
 
 export const addSnapshotDaoVotes = async () => {
     await prisma.$transaction(async (tx) => {

@@ -1,5 +1,4 @@
-import { RefreshStatus } from '@senate/database'
-import { prisma } from '.'
+import { RefreshStatus, prisma } from '.'
 
 export const createVoterHandlers = async () => {
     const votersCnt = await prisma.voter.count({})

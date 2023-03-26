@@ -1,13 +1,13 @@
 import { log_ref } from '@senate/axiom'
+import { bin } from 'd3-array'
+import { config } from '../config'
 import {
     DAOHandlerType,
     RefreshStatus,
     RefreshType,
+    prisma,
     type VoterHandler
-} from '@senate/database'
-import { bin } from 'd3-array'
-import { config } from '../config'
-import { prisma } from '..'
+} from '..'
 
 export const addChainDaoVotes = async () => {
     await prisma.$transaction(async (tx) => {
