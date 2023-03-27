@@ -10,15 +10,15 @@ import {
 } from '..'
 
 export const addChainDaoVotes = async () => {
-    await prisma.$transaction(async (tx) => {
-        const normalRefresh = new Date(
-            Date.now() - config.DAOS_VOTES_CHAIN_INTERVAL * 60 * 1000
-        )
-        const forceRefresh = new Date(
-            Date.now() - config.DAOS_VOTES_CHAIN_INTERVAL_FORCE * 60 * 1000
-        )
-        const newRefresh = new Date(Date.now() - 5 * 1000)
+    const normalRefresh = new Date(
+        Date.now() - config.DAOS_VOTES_CHAIN_INTERVAL * 60 * 1000
+    )
+    const forceRefresh = new Date(
+        Date.now() - config.DAOS_VOTES_CHAIN_INTERVAL_FORCE * 60 * 1000
+    )
+    const newRefresh = new Date(Date.now() - 5 * 1000)
 
+    await prisma.$transaction(async (tx) => {
         let daoHandlers = await tx.dAOHandler.findMany({
             where: {
                 type: {

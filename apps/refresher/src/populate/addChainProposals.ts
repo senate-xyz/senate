@@ -1,17 +1,17 @@
 import { log_ref } from '@senate/axiom'
-import { config } from '../config'
 import { DAOHandlerType, RefreshStatus, RefreshType, prisma } from '..'
+import { config } from '../config'
 
 export const addChainProposalsToQueue = async () => {
-    await prisma.$transaction(async (tx) => {
-        const normalRefresh = new Date(
-            Date.now() - config.DAOS_PROPOSALS_CHAIN_INTERVAL * 60 * 1000
-        )
-        const forceRefresh = new Date(
-            Date.now() - config.DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000
-        )
-        const newRefresh = new Date(Date.now() - 15 * 1000)
+    const normalRefresh = new Date(
+        Date.now() - config.DAOS_PROPOSALS_CHAIN_INTERVAL * 60 * 1000
+    )
+    const forceRefresh = new Date(
+        Date.now() - config.DAOS_PROPOSALS_CHAIN_INTERVAL_FORCE * 60 * 1000
+    )
+    const newRefresh = new Date(Date.now() - 15 * 1000)
 
+    await prisma.$transaction(async (tx) => {
         const daoHandlers = await tx.dAOHandler.findMany({
             where: {
                 type: {

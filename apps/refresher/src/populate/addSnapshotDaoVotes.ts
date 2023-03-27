@@ -1,7 +1,6 @@
 import { bin } from 'd3-array'
 import { thresholdsTime } from '../utils'
 import { log_ref } from '@senate/axiom'
-import { config } from '../config'
 import {
     DAOHandlerType,
     RefreshStatus,
@@ -9,17 +8,18 @@ import {
     prisma,
     type VoterHandler
 } from '..'
+import { config } from '../config'
 
 export const addSnapshotDaoVotes = async () => {
-    await prisma.$transaction(async (tx) => {
-        const normalRefresh = new Date(
-            Date.now() - config.DAOS_VOTES_SNAPSHOT_INTERVAL * 60 * 1000
-        )
-        const forceRefresh = new Date(
-            Date.now() - config.DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE * 60 * 1000
-        )
-        const newRefresh = new Date(Date.now() - 5 * 1000)
+    const normalRefresh = new Date(
+        Date.now() - config.DAOS_VOTES_SNAPSHOT_INTERVAL * 60 * 1000
+    )
+    const forceRefresh = new Date(
+        Date.now() - config.DAOS_VOTES_SNAPSHOT_INTERVAL_FORCE * 60 * 1000
+    )
+    const newRefresh = new Date(Date.now() - 5 * 1000)
 
+    await prisma.$transaction(async (tx) => {
         let daoHandlers = await tx.dAOHandler.findMany({
             where: {
                 type: DAOHandlerType.SNAPSHOT,
