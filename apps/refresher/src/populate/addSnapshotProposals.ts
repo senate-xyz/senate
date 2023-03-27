@@ -1,6 +1,11 @@
-import { DAOHandlerType, RefreshStatus, RefreshType, prisma } from '..'
 import { log_ref } from '@senate/axiom'
 import { config } from '../config'
+import {
+    DAOHandlerType,
+    RefreshStatus,
+    RefreshType,
+    prisma
+} from '@senate/database'
 
 export const addSnapshotProposalsToQueue = async () => {
     const normalRefresh = new Date(

@@ -7,7 +7,7 @@ import {
     RefreshType,
     prisma,
     type VoterHandler
-} from '..'
+} from '@senate/database'
 
 export const addChainDaoVotes = async () => {
     const normalRefresh = new Date(

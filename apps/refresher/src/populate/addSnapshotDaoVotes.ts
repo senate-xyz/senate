@@ -1,14 +1,14 @@
 import { bin } from 'd3-array'
 import { thresholdsTime } from '../utils'
 import { log_ref } from '@senate/axiom'
+import { config } from '../config'
 import {
     DAOHandlerType,
     RefreshStatus,
     RefreshType,
     prisma,
     type VoterHandler
-} from '..'
-import { config } from '../config'
+} from '@senate/database'
 
 export const addSnapshotDaoVotes = async () => {
     const normalRefresh = new Date(

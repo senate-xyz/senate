@@ -2,16 +2,14 @@ import superagent from 'superagent'
 import { log_ref } from '@senate/axiom'
 import { config } from '../config'
 import {
+    type RefreshQueue,
+    type RefreshArgs,
     RefreshStatus,
     RefreshType,
-    prisma,
-    type RefreshArgs,
-    type RefreshQueue
-} from '..'
+    prisma
+} from '@senate/database'
 
 export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
-    if (!item) return
-
     const voters = [...(item.args as RefreshArgs).voters]
 
     await superagent

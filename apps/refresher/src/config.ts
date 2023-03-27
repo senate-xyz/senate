@@ -1,4 +1,4 @@
-import { prisma } from '.'
+import { prisma } from '@senate/database'
 
 interface Config {
     REFRESH_PROCESS_INTERVAL_MS: number
