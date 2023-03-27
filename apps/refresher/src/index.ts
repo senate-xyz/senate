@@ -21,10 +21,9 @@ export enum RefreshType {
 export type RefreshQueueType = {
     handlerId: string
     refreshType: RefreshType
-    priority: number
     args: object
 }
-export let refreshQueue: RefreshQueueType[] = []
+export const refreshQueue: RefreshQueueType[] = []
 
 const main = async () => {
     log_ref.log({
@@ -49,34 +48,20 @@ const main = async () => {
         console.log(refreshQueue)
 
         if (refreshQueue.length) {
-            process(RefreshType.DAOSNAPSHOTPROPOSALS, processSnapshotProposals)
-            process(RefreshType.DAOSNAPSHOTVOTES, processSnapshotDaoVotes)
-            process(RefreshType.DAOCHAINPROPOSALS, processChainProposals)
-            process(RefreshType.DAOCHAINVOTES, processChainDaoVotes)
+            process(processSnapshotProposals)
+            process(processSnapshotDaoVotes)
+            process(processChainProposals)
+            process(processChainDaoVotes)
         }
     }, config.REFRESH_PROCESS_INTERVAL_MS)
 }
 
 const process = async (
-    refreshType: RefreshType,
     processHandler: (item: RefreshQueueType) => Promise<void>
 ) => {
-    const item = refreshQueue
-        .filter((o) => o.refreshType == refreshType)
-        .reduce(
-            (prev, current) => {
-                return prev.priority < current.priority ? prev : current
-            },
-            {
-                handlerId: '',
-                refreshType: 0,
-                priority: Number.MAX_VALUE,
-                args: {}
-            }
-        )
+    const item = refreshQueue.pop()
 
-    if (item && item.handlerId != '') {
-        refreshQueue = refreshQueue.filter((o) => o !== item)
+    if (item) {
         await processHandler(item)
     }
 }

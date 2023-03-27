@@ -102,13 +102,6 @@ export const addChainDaoVotes = async () => {
                 return
             }
 
-            const previousPrio = Math.max(
-                ...refreshQueue
-                    .filter((o) => o.refreshType == RefreshType.DAOCHAINVOTES)
-                    .map((o) => o.priority),
-                0
-            )
-
             let voterHandlerToRefresh: VoterHandler[] = []
 
             const refreshEntries = daoHandlers
@@ -155,8 +148,7 @@ export const addChainDaoVotes = async () => {
                                     voters: bucketVh.map(
                                         (vhandler) => vhandler.voter.address
                                     )
-                                },
-                                priority: Number(previousPrio) + 1
+                                }
                             }
                         })
                         .filter((el) => el.args.voters.length)

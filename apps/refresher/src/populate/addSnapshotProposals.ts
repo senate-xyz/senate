@@ -47,21 +47,11 @@ export const addSnapshotProposalsToQueue = async () => {
                 return
             }
 
-            const previousPrio = Math.max(
-                ...refreshQueue
-                    .filter(
-                        (o) => o.refreshType == RefreshType.DAOSNAPSHOTPROPOSALS
-                    )
-                    .map((o) => o.priority),
-                0
-            )
-
             refreshQueue.push(
                 ...daoHandlers.map((daoHandler) => {
                     return {
                         handlerId: daoHandler.id,
                         refreshType: RefreshType.DAOSNAPSHOTPROPOSALS,
-                        priority: Number(previousPrio) + 1,
                         args: {}
                     }
                 })

@@ -59,15 +59,6 @@ export const addChainProposalsToQueue = async () => {
                 return
             }
 
-            const previousPrio = Math.max(
-                ...refreshQueue
-                    .filter(
-                        (o) => o.refreshType == RefreshType.DAOCHAINPROPOSALS
-                    )
-                    .map((o) => o.priority),
-                0
-            )
-
             daoHandlers.map((daoHandler) =>
                 log_ref.log({
                     level: 'info',
@@ -83,7 +74,6 @@ export const addChainProposalsToQueue = async () => {
                     return {
                         handlerId: daoHandler.id,
                         refreshType: RefreshType.DAOCHAINPROPOSALS,
-                        priority: Number(previousPrio) + 1,
                         args: {}
                     }
                 })
