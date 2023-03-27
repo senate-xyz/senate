@@ -11,80 +11,84 @@ export const addSnapshotProposalsToQueue = async () => {
     )
     const newRefresh = new Date(Date.now() - 15 * 1000)
 
-    await prisma.$transaction(async (tx) => {
-        const daoHandlers = await tx.dAOHandler.findMany({
-            where: {
-                type: DAOHandlerType.SNAPSHOT,
-                OR: [
-                    {
-                        refreshStatus: RefreshStatus.DONE,
-                        lastRefresh: {
-                            lt: normalRefresh
+    await prisma
+        .$transaction(async (tx) => {
+            const daoHandlers = await tx.dAOHandler.findMany({
+                where: {
+                    type: DAOHandlerType.SNAPSHOT,
+                    OR: [
+                        {
+                            refreshStatus: RefreshStatus.DONE,
+                            lastRefresh: {
+                                lt: normalRefresh
+                            }
+                        },
+                        {
+                            refreshStatus: RefreshStatus.PENDING,
+                            lastRefresh: {
+                                lt: forceRefresh
+                            }
+                        },
+                        {
+                            refreshStatus: RefreshStatus.NEW,
+                            lastRefresh: {
+                                lt: newRefresh
+                            }
                         }
-                    },
-                    {
-                        refreshStatus: RefreshStatus.PENDING,
-                        lastRefresh: {
-                            lt: forceRefresh
-                        }
-                    },
-                    {
-                        refreshStatus: RefreshStatus.NEW,
-                        lastRefresh: {
-                            lt: newRefresh
-                        }
+                    ]
+                },
+                include: {
+                    dao: true
+                }
+            })
+
+            if (!daoHandlers.length) {
+                return
+            }
+
+            const previousPrio = (await tx.refreshQueue.findFirst({
+                where: {
+                    refreshType: RefreshType.DAOSNAPSHOTPROPOSALS
+                },
+                orderBy: { priority: 'desc' },
+                take: 1,
+                select: { priority: true }
+            })) ?? { priority: 1 }
+
+            await tx.refreshQueue.createMany({
+                data: daoHandlers.map((daoHandler) => {
+                    return {
+                        handlerId: daoHandler.id,
+                        refreshType: RefreshType.DAOSNAPSHOTPROPOSALS,
+                        priority: Number(previousPrio.priority) + 1,
+                        args: {}
                     }
-                ]
-            },
-            include: {
-                dao: true
-            }
-        })
+                })
+            })
 
-        if (!daoHandlers.length) {
-            return
-        }
+            daoHandlers.map((daoHandler) =>
+                log_ref.log({
+                    level: 'info',
+                    message: `Added refresh items to queue`,
+                    dao: daoHandler.dao.name,
+                    daoHandler: daoHandler.id,
+                    type: RefreshType.DAOSNAPSHOTPROPOSALS
+                })
+            )
 
-        const previousPrio = (await tx.refreshQueue.findFirst({
-            where: {
-                refreshType: RefreshType.DAOSNAPSHOTPROPOSALS
-            },
-            orderBy: { priority: 'desc' },
-            take: 1,
-            select: { priority: true }
-        })) ?? { priority: 1 }
-
-        await tx.refreshQueue.createMany({
-            data: daoHandlers.map((daoHandler) => {
-                return {
-                    handlerId: daoHandler.id,
-                    refreshType: RefreshType.DAOSNAPSHOTPROPOSALS,
-                    priority: Number(previousPrio.priority) + 1,
-                    args: {}
+            await tx.dAOHandler.updateMany({
+                where: {
+                    id: {
+                        in: daoHandlers.map((daoHandler) => daoHandler.id)
+                    }
+                },
+                data: {
+                    refreshStatus: RefreshStatus.PENDING,
+                    lastRefresh: new Date()
                 }
             })
         })
-
-        daoHandlers.map((daoHandler) =>
-            log_ref.log({
-                level: 'info',
-                message: `Added refresh items to queue`,
-                dao: daoHandler.dao.name,
-                daoHandler: daoHandler.id,
-                type: RefreshType.DAOSNAPSHOTPROPOSALS
-            })
-        )
-
-        await tx.dAOHandler.updateMany({
-            where: {
-                id: {
-                    in: daoHandlers.map((daoHandler) => daoHandler.id)
-                }
-            },
-            data: {
-                refreshStatus: RefreshStatus.PENDING,
-                lastRefresh: new Date()
-            }
+        .then(async () => {
+            await prisma.$disconnect()
         })
-    })
 }
