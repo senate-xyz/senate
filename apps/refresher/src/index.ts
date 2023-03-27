@@ -19,8 +19,8 @@ export enum RefreshType {
 }
 
 export type RefreshQueueType = {
-    handlerId: string
     refreshType: RefreshType
+    handlerId: string
     args: object
 }
 export const refreshQueue: RefreshQueueType[] = []
@@ -45,25 +45,25 @@ const main = async () => {
     })
 
     setInterval(async () => {
-        console.log(refreshQueue)
-
         if (refreshQueue.length) {
-            process(processSnapshotProposals)
-            process(processSnapshotDaoVotes)
-            process(processChainProposals)
-            process(processChainDaoVotes)
+            const item = refreshQueue.pop()
+
+            switch (item.refreshType) {
+                case RefreshType.DAOSNAPSHOTPROPOSALS:
+                    processSnapshotProposals(item)
+                    break
+                case RefreshType.DAOSNAPSHOTVOTES:
+                    processSnapshotDaoVotes(item)
+                    break
+                case RefreshType.DAOCHAINPROPOSALS:
+                    processChainProposals(item)
+                    break
+                case RefreshType.DAOCHAINVOTES:
+                    processChainDaoVotes(item)
+                    break
+            }
         }
     }, config.REFRESH_PROCESS_INTERVAL_MS)
-}
-
-const process = async (
-    processHandler: (item: RefreshQueueType) => Promise<void>
-) => {
-    const item = refreshQueue.pop()
-
-    if (item) {
-        await processHandler(item)
-    }
 }
 
 main()
