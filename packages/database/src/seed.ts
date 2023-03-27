@@ -6,7 +6,7 @@ import { ethers } from 'ethers'
 const seedData = async () => {
     console.log('Inserting DAOs')
 
-    const aave = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Aave' },
         update: {},
         create: {
@@ -35,7 +35,7 @@ const seedData = async () => {
         }
     })
 
-    const maker = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'MakerDAO' },
         update: {},
         create: {
@@ -76,7 +76,7 @@ const seedData = async () => {
         }
     })
 
-    const balancer = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Balancer' },
         update: {},
         create: {
@@ -95,7 +95,7 @@ const seedData = async () => {
         }
     })
 
-    const optimism = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Optimism' },
         update: {},
         create: {
@@ -114,7 +114,7 @@ const seedData = async () => {
         }
     })
 
-    const elementFinance = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Element' },
         update: {},
         create: {
@@ -133,7 +133,7 @@ const seedData = async () => {
         }
     })
 
-    const oneInch = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: '1inch' },
         update: {},
         create: {
@@ -152,7 +152,7 @@ const seedData = async () => {
         }
     })
 
-    const hop = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Hop Protocol' },
         update: {},
         create: {
@@ -181,7 +181,7 @@ const seedData = async () => {
         }
     })
 
-    const safe = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'SafeDAO' },
         update: {},
         create: {
@@ -200,7 +200,7 @@ const seedData = async () => {
         }
     })
 
-    const compound = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Compound' },
         update: {},
         create: {
@@ -231,7 +231,7 @@ const seedData = async () => {
         }
     })
 
-    const synthetix = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Synthetix' },
         update: {},
         create: {
@@ -250,7 +250,7 @@ const seedData = async () => {
         }
     })
 
-    const dydx = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'dYdX' },
         update: {},
         create: {
@@ -279,7 +279,7 @@ const seedData = async () => {
         }
     })
 
-    const uniswap = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Uniswap' },
         update: {},
         create: {
@@ -309,7 +309,7 @@ const seedData = async () => {
         }
     })
 
-    const ens = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'ENS' },
         update: {},
         create: {
@@ -338,7 +338,7 @@ const seedData = async () => {
         }
     })
 
-    const fwb = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'FWB' },
         update: {},
         create: {
@@ -357,7 +357,7 @@ const seedData = async () => {
         }
     })
 
-    const gnosis = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'GnosisDAO' },
         update: {},
         create: {
@@ -379,7 +379,7 @@ const seedData = async () => {
         }
     })
 
-    const indexCoop = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Index Coop' },
         update: {},
         create: {
@@ -398,7 +398,7 @@ const seedData = async () => {
         }
     })
 
-    const paladin = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Paladin' },
         update: {},
         create: {
@@ -417,7 +417,7 @@ const seedData = async () => {
         }
     })
 
-    const sushi = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Sushi' },
         update: {},
         create: {
@@ -436,7 +436,7 @@ const seedData = async () => {
         }
     })
 
-    const instadapp = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Instadapp' },
         update: {},
         create: {
@@ -455,7 +455,7 @@ const seedData = async () => {
         }
     })
 
-    const gitcoin = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Gitcoin' },
         update: {},
         create: {
@@ -484,7 +484,7 @@ const seedData = async () => {
         }
     })
 
-    const gearbox = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Gearbox' },
         update: {},
         create: {
@@ -503,7 +503,7 @@ const seedData = async () => {
         }
     })
 
-    const euler = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Euler' },
         update: {},
         create: {
@@ -522,7 +522,7 @@ const seedData = async () => {
         }
     })
 
-    const aura = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Aura Finance' },
         update: {},
         create: {
@@ -541,7 +541,7 @@ const seedData = async () => {
         }
     })
 
-    const developerdao = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Developer DAO' },
         update: {},
         create: {
@@ -560,7 +560,7 @@ const seedData = async () => {
         }
     })
 
-    const apwine = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'APWine' },
         update: {},
         create: {
@@ -579,7 +579,7 @@ const seedData = async () => {
         }
     })
 
-    const morpho = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Morpho' },
         update: {},
         create: {
@@ -598,7 +598,7 @@ const seedData = async () => {
         }
     })
 
-    const lido = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Lido DAO' },
         update: {},
         create: {
@@ -617,7 +617,7 @@ const seedData = async () => {
         }
     })
 
-    const starknet = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'Starknet' },
         update: {},
         create: {
@@ -636,7 +636,7 @@ const seedData = async () => {
         }
     })
 
-    const invicta = await prisma.dAO.upsert({
+    await prisma.dAO.upsert({
         where: { name: 'InvictaDAO' },
         update: {},
         create: {
@@ -671,324 +671,17 @@ const seedData = async () => {
     })
 
     console.log('Inserting subscriptions')
-    await prisma.$transaction(
-        [
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: aave.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: aave.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: maker.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: maker.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: balancer.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: balancer.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: optimism.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: optimism.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: {
-                        userId: seedUser.id,
-                        daoId: elementFinance.id
-                    }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: elementFinance.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: oneInch.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: oneInch.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: hop.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: hop.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: safe.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: safe.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: compound.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: compound.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: synthetix.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: synthetix.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: dydx.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: dydx.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: uniswap.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: uniswap.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: ens.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: ens.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: fwb.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: fwb.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: gnosis.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: gnosis.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: indexCoop.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: indexCoop.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: paladin.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: paladin.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: sushi.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: sushi.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: instadapp.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: instadapp.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: gitcoin.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: gitcoin.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: gearbox.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: gearbox.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: euler.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: euler.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: { userId: seedUser.id, daoId: aura.id }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: aura.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: {
-                        userId: seedUser.id,
-                        daoId: developerdao.id
-                    }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: developerdao.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: {
-                        userId: seedUser.id,
-                        daoId: apwine.id
-                    }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: apwine.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: {
-                        userId: seedUser.id,
-                        daoId: morpho.id
-                    }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: morpho.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: {
-                        userId: seedUser.id,
-                        daoId: lido.id
-                    }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: lido.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: {
-                        userId: seedUser.id,
-                        daoId: starknet.id
-                    }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: starknet.id
-                },
-                update: {}
-            }),
-            prisma.subscription.upsert({
-                where: {
-                    userId_daoId: {
-                        userId: seedUser.id,
-                        daoId: invicta.id
-                    }
-                },
-                create: {
-                    userId: seedUser.id,
-                    daoId: invicta.id
-                },
-                update: {}
-            })
-        ],
-        {
-            isolationLevel: 'ReadCommitted'
-        }
-    )
+    const allDAOs = await prisma.dAO.findMany({})
+
+    await prisma.subscription.createMany({
+        data: allDAOs.map((dao) => {
+            return {
+                userId: seedUser.id,
+                daoId: dao.id
+            }
+        }),
+        skipDuplicates: true
+    })
 }
 
 const seedVoters = async () => {

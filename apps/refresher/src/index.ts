@@ -8,6 +8,8 @@ import { processChainDaoVotes } from './process/chainDaoVotes'
 import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
 import { processSnapshotProposals } from './process/snapshotProposals'
 import { processChainProposals } from './process/chainProposals'
+import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
+import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 
 export enum RefreshType {
     DAOCHAINPROPOSALS,
@@ -36,8 +38,8 @@ const main = async () => {
     scheduleJob('* * * * * *', async () => {
         await createVoterHandlers()
 
-        // await addSnapshotProposalsToQueue()
-        // await addSnapshotDaoVotes()
+        await addSnapshotProposalsToQueue()
+        await addSnapshotDaoVotes()
 
         await addChainProposalsToQueue()
         await addChainDaoVotes()
