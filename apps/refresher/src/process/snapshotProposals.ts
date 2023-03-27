@@ -1,14 +1,10 @@
 import superagent from 'superagent'
 import { log_ref } from '@senate/axiom'
 import { config } from '../config'
-import {
-    type RefreshQueue,
-    RefreshStatus,
-    RefreshType,
-    prisma
-} from '@senate/database'
+import { RefreshStatus, prisma } from '@senate/database'
+import { RefreshType, type RefreshQueueType } from '..'
 
-export const processSnapshotProposals = async (item: RefreshQueue) => {
+export const processSnapshotProposals = async (item: RefreshQueueType) => {
     await superagent
         .post(`${process.env.DETECTIVE_URL}/updateSnapshotProposals`)
         .send({

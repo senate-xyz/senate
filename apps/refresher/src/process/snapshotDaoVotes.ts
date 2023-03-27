@@ -1,15 +1,10 @@
 import superagent from 'superagent'
 import { log_ref } from '@senate/axiom'
 import { config } from '../config'
-import {
-    type RefreshQueue,
-    type RefreshArgs,
-    RefreshStatus,
-    RefreshType,
-    prisma
-} from '@senate/database'
+import { type RefreshArgs, RefreshStatus, prisma } from '@senate/database'
+import { RefreshType, type RefreshQueueType } from '..'
 
-export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
+export const processSnapshotDaoVotes = async (item: RefreshQueueType) => {
     const voters = [...(item.args as RefreshArgs).voters]
 
     await superagent

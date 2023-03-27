@@ -12,12 +12,10 @@ export {
     type VoterHandler,
     type Vote,
     type Subscription,
-    type RefreshQueue,
     type DAO,
     type Notification,
     type User,
     RefreshStatus,
-    RefreshType,
     DAOHandlerType,
     RoundupNotificationType,
     type DAOHandler
@@ -67,6 +65,8 @@ export type UserWithVotingAddresses = Prisma.UserGetPayload<{
         voters: true
     }
 }>
+
+export const Serializable = Prisma.TransactionIsolationLevel.Serializable
 
 function RetryTransactions(options?: Partial<IBackOffOptions>) {
     return Prisma.defineExtension((prisma) =>

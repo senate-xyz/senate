@@ -161,16 +161,6 @@ Table Subscription {
   }
 }
 
-Table RefreshQueue {
-  id String [pk]
-  refreshType RefreshType [not null]
-  handlerId String [not null]
-  args Json [not null]
-  priority BigInt [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-}
-
 Table Config {
   param String [unique, not null]
   value String [not null]
@@ -205,15 +195,6 @@ Enum RefreshStatus {
   NEW
   PENDING
   DONE
-}
-
-Enum RefreshType {
-  DAOCHAINPROPOSALS
-  DAOSNAPSHOTPROPOSALS
-  DAOCHAINVOTES
-  DAOSNAPSHOTVOTES
-  VOTERCHAINVOTES
-  VOTERSNAPSHOTVOTES
 }
 
 Ref: DAOHandler.daoId > DAO.id [delete: Cascade]
