@@ -35,6 +35,8 @@ const main = async () => {
     await createVoterHandlers()
 
     scheduleJob('* * * * * *', async () => {
+        global.gc()
+
         await createVoterHandlers()
 
         await addSnapshotProposalsToQueue()
