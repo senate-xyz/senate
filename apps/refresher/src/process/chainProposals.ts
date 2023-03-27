@@ -1,19 +1,11 @@
 import superagent from 'superagent'
 import { log_ref } from '@senate/axiom'
 import { config } from '../config'
-import {
-    RefreshStatus,
-    RefreshType,
-    prisma,
-    type DAOHandlerWithDAO,
-    type RefreshQueue
-} from '..'
+import { RefreshStatus, RefreshType, prisma } from '..'
 
 export const processChainProposals = async () => {
-    let item: RefreshQueue, daoHandler: DAOHandlerWithDAO
-
-    await prisma.$transaction(async (tx) => {
-        item = await tx.refreshQueue.findFirst({
+    const [item, daoHandler] = await prisma.$transaction(async (tx) => {
+        const item = await tx.refreshQueue.findFirst({
             where: {
                 refreshType: RefreshType.DAOCHAINPROPOSALS
             },
@@ -22,7 +14,12 @@ export const processChainProposals = async () => {
             }
         })
 
-        if (!item) return
+        if (item == null) return [null, null]
+
+        const daoHandler = await tx.dAOHandler.findFirst({
+            where: { id: item.handlerId },
+            include: { dao: true }
+        })
 
         await tx.refreshQueue.delete({
             where: {
@@ -30,13 +27,11 @@ export const processChainProposals = async () => {
             }
         })
 
-        daoHandler = await tx.dAOHandler.findFirst({
-            where: { id: item.handlerId },
-            include: { dao: true }
-        })
+        return [item, daoHandler]
     })
 
     if (!item) return
+
     await superagent
         .post(`${process.env.DETECTIVE_URL}/updateChainProposals`)
         .send({

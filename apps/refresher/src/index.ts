@@ -28,6 +28,10 @@ export {
     type DAOHandler
 } from '@prisma/client'
 import type { InterfaceAbi } from 'ethers'
+import { processChainDaoVotes } from './process/chainDaoVotes'
+import { processChainProposals } from './process/chainProposals'
+import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
+import { processSnapshotProposals } from './process/snapshotProposals'
 
 export type Decoder = {
     abi?: InterfaceAbi
@@ -97,10 +101,10 @@ const main = async () => {
         const hasQueue = await prisma.refreshQueue.count()
 
         if (hasQueue) {
-            // processSnapshotProposals()
-            // processSnapshotDaoVotes()
-            // processChainProposals()
-            // processChainDaoVotes()
+            processSnapshotProposals()
+            processSnapshotDaoVotes()
+            processChainProposals()
+            processChainDaoVotes()
         }
     }, config.REFRESH_PROCESS_INTERVAL_MS)
 }
