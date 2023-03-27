@@ -1,42 +1,22 @@
 import superagent from 'superagent'
 import { log_ref } from '@senate/axiom'
 import { config } from '../config'
-import { RefreshStatus, RefreshType, prisma, type RefreshArgs } from '..'
+import {
+    RefreshStatus,
+    RefreshType,
+    prisma,
+    type RefreshArgs,
+    type RefreshQueue
+} from '..'
 
-export const processSnapshotDaoVotes = async () => {
-    const [item, daoHandler] = await prisma.$transaction(async (tx) => {
-        const item = await tx.refreshQueue.findFirst({
-            where: {
-                refreshType: RefreshType.DAOSNAPSHOTVOTES
-            },
-            orderBy: {
-                priority: 'asc'
-            }
-        })
-
-        if (item == null) return [null, null]
-
-        const daoHandler = await tx.dAOHandler.findFirst({
-            where: { id: item.handlerId },
-            include: { dao: true }
-        })
-
-        await tx.refreshQueue.delete({
-            where: {
-                id: item.id
-            }
-        })
-
-        return [item, daoHandler]
-    })
-
+export const processSnapshotDaoVotes = async (item: RefreshQueue) => {
     if (!item) return
 
     const voters = [...(item.args as RefreshArgs).voters]
 
     await superagent
         .post(`${process.env.DETECTIVE_URL}/updateSnapshotDaoVotes`)
-        .send({ daoHandlerId: daoHandler.id, voters: voters })
+        .send({ daoHandlerId: item.handlerId, voters: voters })
         .type('application/json')
         .timeout({
             response:
@@ -64,7 +44,7 @@ export const processSnapshotDaoVotes = async () => {
                                     .map((result) => result.voterAddress)
                             }
                         },
-                        daoHandlerId: daoHandler?.id
+                        daoHandlerId: item.handlerId
                     },
                     data: {
                         refreshStatus: RefreshStatus.DONE,
@@ -83,7 +63,7 @@ export const processSnapshotDaoVotes = async () => {
                                     .map((result) => result.voterAddress)
                             }
                         },
-                        daoHandlerId: daoHandler?.id
+                        daoHandlerId: item.handlerId
                     },
                     data: {
                         refreshStatus: RefreshStatus.NEW,
@@ -95,12 +75,11 @@ export const processSnapshotDaoVotes = async () => {
             log_ref.log({
                 level: 'info',
                 message: `Process refresh items`,
-                dao: daoHandler.dao.name,
-                daoHandler: daoHandler.id,
+                daoHandler: item.handlerId,
                 type: RefreshType.DAOSNAPSHOTVOTES,
                 voters: voters,
                 postRequest: `${process.env.DETECTIVE_URL}/updateChainDaoVotes`,
-                postBody: { daoHandlerId: daoHandler.id, voters: voters },
+                postBody: { daoHandlerId: item.handlerId, voters: voters },
                 response: data
             })
 
@@ -114,7 +93,7 @@ export const processSnapshotDaoVotes = async () => {
                             in: voters.map((voter) => voter)
                         }
                     },
-                    daoHandlerId: daoHandler?.id
+                    daoHandlerId: item.handlerId
                 },
                 data: {
                     refreshStatus: RefreshStatus.NEW,
@@ -126,12 +105,11 @@ export const processSnapshotDaoVotes = async () => {
             log_ref.log({
                 level: 'error',
                 message: `Process refresh items`,
-                dao: daoHandler.dao.name,
-                daoHandler: daoHandler.id,
+                daoHandler: item.handlerId,
                 type: RefreshType.DAOSNAPSHOTVOTES,
                 voters: voters,
                 postRequest: `${process.env.DETECTIVE_URL}/updateChainDaoVotes`,
-                postBody: { daoHandlerId: daoHandler.id, voters: voters },
+                postBody: { daoHandlerId: item.handlerId, voters: voters },
                 errorMessage: e.message,
                 errorStack: e.stack
             })

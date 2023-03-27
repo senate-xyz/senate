@@ -1,35 +1,9 @@
 import superagent from 'superagent'
 import { log_ref } from '@senate/axiom'
 import { config } from '../config'
-import { RefreshStatus, RefreshType, prisma } from '..'
+import { RefreshStatus, RefreshType, prisma, type RefreshQueue } from '..'
 
-export const processChainProposals = async () => {
-    const [item, daoHandler] = await prisma.$transaction(async (tx) => {
-        const item = await tx.refreshQueue.findFirst({
-            where: {
-                refreshType: RefreshType.DAOCHAINPROPOSALS
-            },
-            orderBy: {
-                priority: 'asc'
-            }
-        })
-
-        if (item == null) return [null, null]
-
-        const daoHandler = await tx.dAOHandler.findFirst({
-            where: { id: item.handlerId },
-            include: { dao: true }
-        })
-
-        await tx.refreshQueue.delete({
-            where: {
-                id: item.id
-            }
-        })
-
-        return [item, daoHandler]
-    })
-
+export const processChainProposals = async (item: RefreshQueue) => {
     if (!item) return
 
     await superagent
@@ -87,13 +61,11 @@ export const processChainProposals = async () => {
             log_ref.log({
                 level: 'info',
                 message: `Process refresh items`,
-                dao: daoHandler.dao.name,
-                daoHandler: daoHandler.id,
+                daoHandler: item.handlerId,
                 type: RefreshType.DAOCHAINPROPOSALS,
                 postReqeust: `${process.env.DETECTIVE_URL}/updateChainProposals`,
                 postBody: {
-                    daoHandlerId: item.handlerId,
-                    minBlockNumber: daoHandler?.chainIndex?.valueOf()
+                    daoHandlerId: item.handlerId
                 },
                 response: data
             })
@@ -115,13 +87,11 @@ export const processChainProposals = async () => {
             log_ref.log({
                 level: 'error',
                 message: `Process refresh items`,
-                dao: daoHandler.dao.name,
-                daoHandler: daoHandler.id,
+                daoHandler: item.handlerId,
                 type: RefreshType.DAOCHAINPROPOSALS,
                 postReqeust: `${process.env.DETECTIVE_URL}/updateChainProposals`,
                 postBody: {
-                    daoHandlerId: item.handlerId,
-                    minBlockNumber: daoHandler?.chainIndex?.valueOf()
+                    daoHandlerId: item.handlerId
                 },
                 errorMessage: e.message,
                 errorStack: e.stack

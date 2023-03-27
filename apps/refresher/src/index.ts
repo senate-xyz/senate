@@ -6,7 +6,7 @@ import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 import { scheduleJob } from 'node-schedule'
 import { log_ref } from '@senate/axiom'
-import { Prisma, PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient, RefreshType } from '@prisma/client'
 
 export const prisma = new PrismaClient()
 
@@ -30,8 +30,8 @@ export {
 import type { InterfaceAbi } from 'ethers'
 import { processChainDaoVotes } from './process/chainDaoVotes'
 import { processChainProposals } from './process/chainProposals'
-import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
 import { processSnapshotProposals } from './process/snapshotProposals'
+import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
 
 export type Decoder = {
     abi?: InterfaceAbi
@@ -99,14 +99,42 @@ const main = async () => {
 
     setInterval(async () => {
         const hasQueue = await prisma.refreshQueue.count()
-
+        let item
         if (hasQueue) {
-            processSnapshotProposals()
-            processSnapshotDaoVotes()
-            processChainProposals()
-            processChainDaoVotes()
+            item = await refreshItemForProcess(RefreshType.DAOSNAPSHOTPROPOSALS)
+            processSnapshotProposals(item)
+            item = await refreshItemForProcess(RefreshType.DAOSNAPSHOTVOTES)
+            processSnapshotDaoVotes(item)
+            item = await refreshItemForProcess(RefreshType.DAOCHAINPROPOSALS)
+            processChainProposals(item)
+            item = await refreshItemForProcess(RefreshType.DAOCHAINVOTES)
+            processChainDaoVotes(item)
         }
     }, config.REFRESH_PROCESS_INTERVAL_MS)
+}
+
+const refreshItemForProcess = async (refreshType: RefreshType) => {
+    const item = await prisma.$transaction(async (tx) => {
+        const item = await tx.refreshQueue.findFirst({
+            where: {
+                refreshType: refreshType
+            },
+            orderBy: {
+                priority: 'asc'
+            }
+        })
+
+        if (item == null) return null
+
+        await tx.refreshQueue.delete({
+            where: {
+                id: item.id
+            }
+        })
+
+        return item
+    })
+    return item
 }
 
 main()
