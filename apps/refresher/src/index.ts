@@ -1,9 +1,5 @@
 import { config, loadConfig } from './config'
 import { createVoterHandlers } from './createHandlers'
-import { processSnapshotProposals } from './process/snapshotProposals'
-import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
-import { processChainProposals } from './process/chainProposals'
-import { processChainDaoVotes } from './process/chainDaoVotes'
 import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { addChainDaoVotes } from './populate/addChainDaoVotes'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
@@ -101,10 +97,10 @@ const main = async () => {
         const hasQueue = await prisma.refreshQueue.count()
 
         if (hasQueue) {
-            processSnapshotProposals()
-            processSnapshotDaoVotes()
-            processChainProposals()
-            processChainDaoVotes()
+            // processSnapshotProposals()
+            // processSnapshotDaoVotes()
+            // processChainProposals()
+            // processChainDaoVotes()
         }
     }, config.REFRESH_PROCESS_INTERVAL_MS)
 }
