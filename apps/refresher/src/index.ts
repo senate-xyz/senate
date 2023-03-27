@@ -1,15 +1,10 @@
 import { config, loadConfig } from './config'
 import { createVoterHandlers } from './createHandlers'
-import { addChainProposalsToQueue } from './populate/addChainProposals'
-import { addChainDaoVotes } from './populate/addChainDaoVotes'
-import { scheduleJob } from 'node-schedule'
 import { log_ref } from '@senate/axiom'
 import { processChainDaoVotes } from './process/chainDaoVotes'
 import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
 import { processSnapshotProposals } from './process/snapshotProposals'
 import { processChainProposals } from './process/chainProposals'
-import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
-import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 
 export enum RefreshType {
     DAOCHAINPROPOSALS,
@@ -34,19 +29,19 @@ const main = async () => {
     await loadConfig()
     await createVoterHandlers()
 
-    scheduleJob('* * * * * *', async () => {
-        global.gc()
+    // scheduleJob('* * * * * *', () => {
+    //     global.gc()
 
-        await createVoterHandlers()
+    //     createVoterHandlers()
 
-        await addSnapshotProposalsToQueue()
-        await addSnapshotDaoVotes()
+    //     addSnapshotProposalsToQueue()
+    //     addSnapshotDaoVotes()
 
-        await addChainProposalsToQueue()
-        await addChainDaoVotes()
-    })
+    //     addChainProposalsToQueue()
+    //     addChainDaoVotes()
+    // })
 
-    setInterval(async () => {
+    setInterval(() => {
         if (refreshQueue.length) {
             const item = refreshQueue.pop()
 
