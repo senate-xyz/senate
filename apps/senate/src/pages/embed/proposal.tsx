@@ -28,7 +28,6 @@ const EmbeddedProposal = () => {
     const router = useRouter()
     const { url } = router.query
 
-    console.log(url)
     const proposal = trpc.public.proposal.useQuery({
         url: String(url) ?? ''
     })
