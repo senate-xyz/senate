@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["metrics", "clientExtensions"]
+  previewFeatures = ["metrics", "clientExtensions", "jsonProtocol"]
 }
 
 generator dbml {

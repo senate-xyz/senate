@@ -4,7 +4,6 @@ import { RefreshStatus, prisma } from '@senate/database'
 import { RefreshType, type RefreshQueueType } from '..'
 
 export const processChainProposals = async (item: RefreshQueueType) => {
-    console.log(`refresh ${item.handlerId}`)
     await superagent
         .post(`${process.env.DETECTIVE_URL}/updateChainProposals`)
         .send({
