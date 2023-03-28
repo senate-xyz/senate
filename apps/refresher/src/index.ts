@@ -1,5 +1,5 @@
 import { scheduleJob } from 'node-schedule'
-import { config, loadConfig } from './config'
+import { loadConfig } from './config'
 import { createVoterHandlers } from './createHandlers'
 import { log_ref } from '@senate/axiom'
 
@@ -30,10 +30,10 @@ const main = async () => {
         //createVoterHandlers()
 
         //refreshQueue.push(...(await addSnapshotProposalsToQueue()))
-        // refreshQueue.push(...(await addSnapshotDaoVotes()))
+        //refreshQueue.push(...(await addSnapshotDaoVotes()))
 
         //refreshQueue.push(...(await addChainProposalsToQueue()))
-        // refreshQueue.push(...(await addChainDaoVotes()))
+        //refreshQueue.push(...(await addChainDaoVotes()))
 
         console.log(refreshQueue, refreshQueue.length)
     })
@@ -59,7 +59,7 @@ const main = async () => {
                     break
             }
         }
-    }, config.REFRESH_PROCESS_INTERVAL_MS)
+    }, 300)
 }
 
 main()
