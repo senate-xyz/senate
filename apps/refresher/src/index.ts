@@ -1,5 +1,4 @@
 import { scheduleJob } from 'node-schedule'
-import { loadConfig } from './config'
 import { createVoterHandlers } from './createHandlers'
 import { log_ref } from '@senate/axiom'
 import { addChainDaoVotes } from './populate/addChainDaoVotes'
@@ -31,17 +30,18 @@ const main = async () => {
         message: `Started refresher`
     })
 
-    scheduleJob('* * * * * *', async () => {
-        await loadConfig()
+    scheduleJob('*/10 * * * * *', async () => {
         await createVoterHandlers()
+    })
 
+    scheduleJob('* * * * * *', async () => {
         refreshQueue.push(...(await addSnapshotProposalsToQueue()))
         refreshQueue.push(...(await addSnapshotDaoVotes()))
 
         refreshQueue.push(...(await addChainProposalsToQueue()))
         refreshQueue.push(...(await addChainDaoVotes()))
 
-        console.log(refreshQueue.length)
+        console.log(`${refreshQueue.length} items in queue.`)
     })
 
     setInterval(() => {
