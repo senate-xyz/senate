@@ -1,15 +1,11 @@
 import { scheduleJob } from 'node-schedule'
-import { config, loadConfig } from './config'
+import { loadConfig } from './config'
 import { createVoterHandlers } from './createHandlers'
 import { log_ref } from '@senate/axiom'
 import { addChainDaoVotes } from './populate/addChainDaoVotes'
 import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
-import { processChainDaoVotes } from './process/chainDaoVotes'
-import { processChainProposals } from './process/chainProposals'
-import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
-import { processSnapshotProposals } from './process/snapshotProposals'
 
 export enum RefreshType {
     DAOCHAINPROPOSALS,
@@ -44,26 +40,26 @@ const main = async () => {
         addChainDaoVotes()
     })
 
-    setInterval(() => {
-        if (refreshQueue.length) {
-            const item = refreshQueue.pop()
+    // setInterval(() => {
+    //     if (refreshQueue.length) {
+    //         const item = refreshQueue.pop()
 
-            switch (item.refreshType) {
-                case RefreshType.DAOSNAPSHOTPROPOSALS:
-                    processSnapshotProposals(item)
-                    break
-                case RefreshType.DAOSNAPSHOTVOTES:
-                    processSnapshotDaoVotes(item)
-                    break
-                case RefreshType.DAOCHAINPROPOSALS:
-                    processChainProposals(item)
-                    break
-                case RefreshType.DAOCHAINVOTES:
-                    processChainDaoVotes(item)
-                    break
-            }
-        }
-    }, config.REFRESH_PROCESS_INTERVAL_MS)
+    //         switch (item.refreshType) {
+    //             case RefreshType.DAOSNAPSHOTPROPOSALS:
+    //                 processSnapshotProposals(item)
+    //                 break
+    //             case RefreshType.DAOSNAPSHOTVOTES:
+    //                 processSnapshotDaoVotes(item)
+    //                 break
+    //             case RefreshType.DAOCHAINPROPOSALS:
+    //                 processChainProposals(item)
+    //                 break
+    //             case RefreshType.DAOCHAINVOTES:
+    //                 processChainDaoVotes(item)
+    //                 break
+    //         }
+    //     }
+    // }, config.REFRESH_PROCESS_INTERVAL_MS)
 }
 
 main()
