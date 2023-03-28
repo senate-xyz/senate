@@ -31,7 +31,7 @@ const main = async () => {
     await createVoterHandlers()
 
     scheduleJob('* * * * * *', async () => {
-        createVoterHandlers()
+        //createVoterHandlers()
 
         refreshQueue.push(...(await addSnapshotProposalsToQueue()))
         refreshQueue.push(...(await addSnapshotDaoVotes()))
