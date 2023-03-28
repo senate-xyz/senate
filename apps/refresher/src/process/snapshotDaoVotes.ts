@@ -27,43 +27,43 @@ export const processSnapshotDaoVotes = async (item: RefreshQueueType) => {
             if (!data) return
             if (!Array.isArray(data)) return
 
-            await prisma.$transaction([
-                prisma.voterHandler.updateMany({
-                    where: {
-                        voter: {
-                            address: {
-                                in: data
-                                    .filter((result) => result.response == 'ok')
-                                    .map((result) => result.voterAddress)
-                            }
-                        },
-                        daoHandlerId: item.handlerId
-                    },
-                    data: {
-                        refreshStatus: RefreshStatus.DONE,
-                        lastRefresh: new Date()
-                    }
-                }),
+            // await prisma.$transaction([
+            //     prisma.voterHandler.updateMany({
+            //         where: {
+            //             voter: {
+            //                 address: {
+            //                     in: data
+            //                         .filter((result) => result.response == 'ok')
+            //                         .map((result) => result.voterAddress)
+            //                 }
+            //             },
+            //             daoHandlerId: item.handlerId
+            //         },
+            //         data: {
+            //             refreshStatus: RefreshStatus.DONE,
+            //             lastRefresh: new Date()
+            //         }
+            //     }),
 
-                prisma.voterHandler.updateMany({
-                    where: {
-                        voter: {
-                            address: {
-                                in: data
-                                    .filter(
-                                        (result) => result.response == 'nok'
-                                    )
-                                    .map((result) => result.voterAddress)
-                            }
-                        },
-                        daoHandlerId: item.handlerId
-                    },
-                    data: {
-                        refreshStatus: RefreshStatus.NEW,
-                        lastRefresh: new Date()
-                    }
-                })
-            ])
+            //     prisma.voterHandler.updateMany({
+            //         where: {
+            //             voter: {
+            //                 address: {
+            //                     in: data
+            //                         .filter(
+            //                             (result) => result.response == 'nok'
+            //                         )
+            //                         .map((result) => result.voterAddress)
+            //                 }
+            //             },
+            //             daoHandlerId: item.handlerId
+            //         },
+            //         data: {
+            //             refreshStatus: RefreshStatus.NEW,
+            //             lastRefresh: new Date()
+            //         }
+            //     })
+            // ])
 
             log_ref.log({
                 level: 'info',
