@@ -2,8 +2,6 @@ import { scheduleJob } from 'node-schedule'
 import { config, loadConfig } from './config'
 import { createVoterHandlers } from './createHandlers'
 import { log_ref } from '@senate/axiom'
-import { addChainProposalsToQueue } from './populate/addChainProposals'
-import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 
 export enum RefreshType {
     DAOCHAINPROPOSALS,
@@ -31,10 +29,10 @@ const main = async () => {
     scheduleJob('* * * * * *', async () => {
         //createVoterHandlers()
 
-        refreshQueue.push(...(await addSnapshotProposalsToQueue()))
+        //refreshQueue.push(...(await addSnapshotProposalsToQueue()))
         // refreshQueue.push(...(await addSnapshotDaoVotes()))
 
-        refreshQueue.push(...(await addChainProposalsToQueue()))
+        //refreshQueue.push(...(await addChainProposalsToQueue()))
         // refreshQueue.push(...(await addChainDaoVotes()))
 
         console.log(refreshQueue, refreshQueue.length)
