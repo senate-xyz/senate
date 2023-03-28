@@ -6,7 +6,6 @@ import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 import { processChainDaoVotes } from './process/chainDaoVotes'
-import { processChainProposals } from './process/chainProposals'
 import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
 import { processSnapshotProposals } from './process/snapshotProposals'
 
@@ -56,7 +55,7 @@ const main = async () => {
                     processSnapshotDaoVotes(item)
                     break
                 case RefreshType.DAOCHAINPROPOSALS:
-                    processChainProposals(item)
+                    //processChainProposals(item)
                     break
                 case RefreshType.DAOCHAINVOTES:
                     processChainDaoVotes(item)
