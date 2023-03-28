@@ -2,10 +2,6 @@ import { scheduleJob } from 'node-schedule'
 import { loadConfig } from './config'
 import { createVoterHandlers } from './createHandlers'
 import { log_ref } from '@senate/axiom'
-import { processChainDaoVotes } from './process/chainDaoVotes'
-import { processChainProposals } from './process/chainProposals'
-import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
-import { processSnapshotProposals } from './process/snapshotProposals'
 import { addChainDaoVotes } from './populate/addChainDaoVotes'
 import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
@@ -43,7 +39,7 @@ const main = async () => {
         refreshQueue.push(...(await addChainProposalsToQueue()))
         refreshQueue.push(...(await addChainDaoVotes()))
 
-        console.log(JSON.stringify(refreshQueue))
+        console.log(refreshQueue.length)
     })
 
     setInterval(() => {
@@ -52,16 +48,16 @@ const main = async () => {
 
             switch (item.refreshType) {
                 case RefreshType.DAOSNAPSHOTPROPOSALS:
-                    processSnapshotProposals(item)
+                    //processSnapshotProposals(item)
                     break
                 case RefreshType.DAOSNAPSHOTVOTES:
-                    processSnapshotDaoVotes(item)
+                    //processSnapshotDaoVotes(item)
                     break
                 case RefreshType.DAOCHAINPROPOSALS:
-                    processChainProposals(item)
+                    //processChainProposals(item)
                     break
                 case RefreshType.DAOCHAINVOTES:
-                    processChainDaoVotes(item)
+                    //processChainDaoVotes(item)
                     break
                 default:
                     break
