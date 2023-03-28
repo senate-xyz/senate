@@ -1,7 +1,6 @@
 import superagent from 'superagent'
 import { log_ref } from '@senate/axiom'
 import { RefreshStatus, type RefreshArgs, prisma } from '@senate/database'
-import { config } from '../config'
 import { RefreshType, type RefreshQueueType } from '..'
 
 export const processChainDaoVotes = async (item: RefreshQueueType) => {
@@ -11,15 +10,6 @@ export const processChainDaoVotes = async (item: RefreshQueueType) => {
         .post(`${process.env.DETECTIVE_URL}/updateChainDaoVotes`)
         .send({ daoHandlerId: item.handlerId, voters: voters })
         .type('application/json')
-        .timeout({
-            response: config.DAOS_VOTES_CHAIN_INTERVAL_FORCE * 60 * 1000 - 5000,
-            deadline: config.DAOS_VOTES_CHAIN_INTERVAL_FORCE * 60 * 1000 - 5000
-        })
-        .retry(3, (err, res) => {
-            if (res.status == 201) return false
-            if (err) return true
-            return false
-        })
         .then(async (response) => response.body)
         .then(async (data) => {
             if (!data) return
