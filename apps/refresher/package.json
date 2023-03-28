@@ -17,7 +17,7 @@
         "build": "tsup",
         "build:refresher": "tsup",
         "start": "node dist/index",
-        "start:refresher": "node --inspect=$PORT dist/index",
+        "start:refresher": "node --inspect=0.0.0.0:$PORT dist/index",
         "dev": "tsup && node dist/index",
         "dev:refresher": "tsup && node dist/index",
         "clean": "rimraf .turbo node_modules dist",
