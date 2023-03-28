@@ -57,6 +57,8 @@ const main = async () => {
                 case RefreshType.DAOCHAINVOTES:
                     //processChainDaoVotes(item)
                     break
+                default:
+                    break
             }
         }
     }, config.REFRESH_PROCESS_INTERVAL_MS)
