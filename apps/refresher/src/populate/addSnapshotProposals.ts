@@ -1,7 +1,7 @@
-import { log_ref } from '@senate/axiom'
 import { config } from '../config'
 import { DAOHandlerType, RefreshStatus, prisma } from '@senate/database'
-import { RefreshType, refreshQueue } from '..'
+import { RefreshType } from '..'
+import { log_ref } from '@senate/axiom'
 
 export const addSnapshotProposalsToQueue = async () => {
     const normalRefresh = new Date(
@@ -12,7 +12,7 @@ export const addSnapshotProposalsToQueue = async () => {
     )
     const newRefresh = new Date(Date.now() - 15 * 1000)
 
-    await prisma.$transaction(
+    const queueItems = await prisma.$transaction(
         async (tx) => {
             const daoHandlers = await tx.dAOHandler.findMany({
                 where: {
@@ -44,28 +44,8 @@ export const addSnapshotProposalsToQueue = async () => {
             })
 
             if (!daoHandlers.length) {
-                return
+                return []
             }
-
-            refreshQueue.push(
-                ...daoHandlers.map((daoHandler) => {
-                    return {
-                        handlerId: daoHandler.id,
-                        refreshType: RefreshType.DAOSNAPSHOTPROPOSALS,
-                        args: {}
-                    }
-                })
-            )
-
-            daoHandlers.map((daoHandler) =>
-                log_ref.log({
-                    level: 'info',
-                    message: `Added refresh items to queue`,
-                    dao: daoHandler.dao.name,
-                    daoHandler: daoHandler.id,
-                    type: RefreshType.DAOSNAPSHOTPROPOSALS
-                })
-            )
 
             await tx.dAOHandler.updateMany({
                 where: {
@@ -78,10 +58,31 @@ export const addSnapshotProposalsToQueue = async () => {
                     lastRefresh: new Date()
                 }
             })
+
+            daoHandlers.map((daoHandler) =>
+                log_ref.log({
+                    level: 'info',
+                    message: `Added refresh items to queue`,
+                    dao: daoHandler.dao.name,
+                    daoHandler: daoHandler.id,
+                    type: RefreshType.DAOSNAPSHOTPROPOSALS
+                })
+            )
+
+            const refreshEntries = daoHandlers.map((daoHandler) => {
+                return {
+                    handlerId: daoHandler.id,
+                    refreshType: RefreshType.DAOSNAPSHOTPROPOSALS,
+                    args: {}
+                }
+            })
+
+            return refreshEntries
         },
         {
             maxWait: 50000,
             timeout: 10000
         }
     )
+    return queueItems
 }

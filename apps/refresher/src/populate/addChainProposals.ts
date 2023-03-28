@@ -1,7 +1,7 @@
 import { log_ref } from '@senate/axiom'
 import { config } from '../config'
 import { DAOHandlerType, RefreshStatus, prisma } from '@senate/database'
-import { RefreshType, refreshQueue } from '..'
+import { RefreshType } from '..'
 
 export const addChainProposalsToQueue = async () => {
     const normalRefresh = new Date(
@@ -12,7 +12,7 @@ export const addChainProposalsToQueue = async () => {
     )
     const newRefresh = new Date(Date.now() - 15 * 1000)
 
-    await prisma.$transaction(
+    const queueItems = await prisma.$transaction(
         async (tx) => {
             const daoHandlers = await tx.dAOHandler.findMany({
                 where: {
@@ -56,28 +56,8 @@ export const addChainProposalsToQueue = async () => {
             })
 
             if (!daoHandlers.length) {
-                return
+                return []
             }
-
-            daoHandlers.map((daoHandler) =>
-                log_ref.log({
-                    level: 'info',
-                    message: `Added refresh items to queue`,
-                    dao: daoHandler.dao.name,
-                    daoHandler: daoHandler.id,
-                    type: RefreshType.DAOCHAINPROPOSALS
-                })
-            )
-
-            refreshQueue.push(
-                ...daoHandlers.map((daoHandler) => {
-                    return {
-                        handlerId: daoHandler.id,
-                        refreshType: RefreshType.DAOCHAINPROPOSALS,
-                        args: {}
-                    }
-                })
-            )
 
             await tx.dAOHandler.updateMany({
                 where: {
@@ -90,10 +70,31 @@ export const addChainProposalsToQueue = async () => {
                     lastRefresh: new Date()
                 }
             })
+
+            daoHandlers.map((daoHandler) =>
+                log_ref.log({
+                    level: 'info',
+                    message: `Added refresh items to queue`,
+                    dao: daoHandler.dao.name,
+                    daoHandler: daoHandler.id,
+                    type: RefreshType.DAOCHAINPROPOSALS
+                })
+            )
+
+            const refreshEntries = daoHandlers.map((daoHandler) => {
+                return {
+                    handlerId: daoHandler.id,
+                    refreshType: RefreshType.DAOCHAINPROPOSALS,
+                    args: {}
+                }
+            })
+
+            return refreshEntries
         },
         {
             maxWait: 50000,
             timeout: 10000
         }
     )
+    return queueItems
 }

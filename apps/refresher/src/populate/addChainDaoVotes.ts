@@ -7,7 +7,7 @@ import {
     prisma,
     type VoterHandler
 } from '@senate/database'
-import { RefreshType, refreshQueue } from '..'
+import { RefreshType } from '..'
 
 export const addChainDaoVotes = async () => {
     const normalRefresh = new Date(
@@ -18,7 +18,7 @@ export const addChainDaoVotes = async () => {
     )
     const newRefresh = new Date(Date.now() - 5 * 1000)
 
-    await prisma.$transaction(
+    const queueItems = await prisma.$transaction(
         async (tx) => {
             let daoHandlers = await tx.dAOHandler.findMany({
                 where: {
@@ -99,7 +99,7 @@ export const addChainDaoVotes = async () => {
             )
 
             if (!daoHandlers.length) {
-                return
+                return []
             }
 
             let voterHandlerToRefresh: VoterHandler[] = []
@@ -167,8 +167,6 @@ export const addChainDaoVotes = async () => {
                 })
                 .flat(2)
 
-            refreshQueue.push(...refreshEntries)
-
             await tx.voterHandler.updateMany({
                 where: { id: { in: voterHandlerToRefresh.map((v) => v.id) } },
                 data: {
@@ -176,10 +174,13 @@ export const addChainDaoVotes = async () => {
                     lastRefresh: new Date()
                 }
             })
+
+            return refreshEntries
         },
         {
             maxWait: 50000,
             timeout: 10000
         }
     )
+    return queueItems
 }
