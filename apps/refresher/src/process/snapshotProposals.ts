@@ -28,34 +28,34 @@ export const processSnapshotProposals = async (item: RefreshQueueType) => {
             if (!data) return
             if (!Array.isArray(data)) return
 
-            await prisma.$transaction([
-                prisma.dAOHandler.updateMany({
-                    where: {
-                        id: {
-                            in: data
-                                .filter((result) => result.response == 'ok')
-                                .map((result) => result.daoHandlerId)
-                        }
-                    },
-                    data: {
-                        refreshStatus: RefreshStatus.DONE,
-                        lastRefresh: new Date()
-                    }
-                }),
-                prisma.dAOHandler.updateMany({
-                    where: {
-                        id: {
-                            in: data
-                                .filter((result) => result.response == 'nok')
-                                .map((result) => result.daoHandlerId)
-                        }
-                    },
-                    data: {
-                        refreshStatus: RefreshStatus.NEW,
-                        lastRefresh: new Date()
-                    }
-                })
-            ])
+            // await prisma.$transaction([
+            //     prisma.dAOHandler.updateMany({
+            //         where: {
+            //             id: {
+            //                 in: data
+            //                     .filter((result) => result.response == 'ok')
+            //                     .map((result) => result.daoHandlerId)
+            //             }
+            //         },
+            //         data: {
+            //             refreshStatus: RefreshStatus.DONE,
+            //             lastRefresh: new Date()
+            //         }
+            //     }),
+            //     prisma.dAOHandler.updateMany({
+            //         where: {
+            //             id: {
+            //                 in: data
+            //                     .filter((result) => result.response == 'nok')
+            //                     .map((result) => result.daoHandlerId)
+            //             }
+            //         },
+            //         data: {
+            //             refreshStatus: RefreshStatus.NEW,
+            //             lastRefresh: new Date()
+            //         }
+            //     })
+            // ])
 
             log_ref.log({
                 level: 'info',
