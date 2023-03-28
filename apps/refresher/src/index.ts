@@ -407,17 +407,17 @@ const main = async () => {
         )
     })
 
-    scheduleJob('* * * * * *', async () => {
-        createVoterHandlers()
+    // scheduleJob('* * * * * *', async () => {
+    //     createVoterHandlers()
 
-        //refreshQueue.push(...(await addSnapshotProposalsToQueue()))
-        //refreshQueue.push(...(await addSnapshotDaoVotes()))
+    //     //refreshQueue.push(...(await addSnapshotProposalsToQueue()))
+    //     //refreshQueue.push(...(await addSnapshotDaoVotes()))
 
-        //refreshQueue.push(...(await addChainProposalsToQueue()))
-        //refreshQueue.push(...(await addChainDaoVotes()))
+    //     //refreshQueue.push(...(await addChainProposalsToQueue()))
+    //     //refreshQueue.push(...(await addChainDaoVotes()))
 
-        console.log(JSON.stringify(refreshQueue))
-    })
+    //     console.log(JSON.stringify(refreshQueue))
+    // })
 
     setInterval(() => {
         if (refreshQueue.length) {
