@@ -46,7 +46,7 @@ const main = async () => {
 
     setInterval(() => {
         if (refreshQueue.length) {
-            const item = refreshQueue.pop()
+            const item = refreshQueue.shift()
 
             switch (item.refreshType) {
                 case RefreshType.DAOSNAPSHOTPROPOSALS:
