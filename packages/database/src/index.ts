@@ -97,13 +97,22 @@ function RetryTransactions(options?: Partial<IBackOffOptions>) {
     )
 }
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
+interface CustomNodeJsGlobal {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    prisma: any
+}
 
-const p = globalForPrisma.prisma || new PrismaClient()
+declare const global: CustomNodeJsGlobal
 
-export const prisma = p.$extends(
-    RetryTransactions({
-        jitter: 'full',
-        numOfAttempts: 3
-    })
-)
+const prisma =
+    global.prisma ||
+    new PrismaClient().$extends(
+        RetryTransactions({
+            jitter: 'full',
+            numOfAttempts: 3
+        })
+    )
+
+if (process.env.NODE_ENV === 'development') global.prisma = prisma
+
+export default prisma

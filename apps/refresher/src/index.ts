@@ -6,6 +6,10 @@ import { addChainDaoVotes } from './populate/addChainDaoVotes'
 import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
+import { processChainDaoVotes } from './process/chainDaoVotes'
+import { processChainProposals } from './process/chainProposals'
+import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
+import { processSnapshotProposals } from './process/snapshotProposals'
 
 export enum RefreshType {
     DAOCHAINPROPOSALS,
@@ -27,11 +31,9 @@ const main = async () => {
         message: `Started refresher`
     })
 
-    await loadConfig()
-    await createVoterHandlers()
-
     scheduleJob('* * * * * *', async () => {
-        createVoterHandlers()
+        await loadConfig()
+        await createVoterHandlers()
 
         refreshQueue.push(...(await addSnapshotProposalsToQueue()))
         refreshQueue.push(...(await addSnapshotDaoVotes()))
@@ -48,16 +50,16 @@ const main = async () => {
 
             switch (item.refreshType) {
                 case RefreshType.DAOSNAPSHOTPROPOSALS:
-                    //processSnapshotProposals(item)
+                    processSnapshotProposals(item)
                     break
                 case RefreshType.DAOSNAPSHOTVOTES:
-                    //processSnapshotDaoVotes(item)
+                    processSnapshotDaoVotes(item)
                     break
                 case RefreshType.DAOCHAINPROPOSALS:
-                    //processChainProposals(item)
+                    processChainProposals(item)
                     break
                 case RefreshType.DAOCHAINVOTES:
-                    //processChainDaoVotes(item)
+                    processChainDaoVotes(item)
                     break
                 default:
                     break
