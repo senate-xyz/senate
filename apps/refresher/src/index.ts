@@ -45,8 +45,6 @@ const main = async () => {
 
         refreshQueue.push(...newChainProposals)
         refreshQueue.push(...newChainVotes)
-
-        console.log(`${refreshQueue.length} items in queue.`)
     })
 
     setInterval(() => {

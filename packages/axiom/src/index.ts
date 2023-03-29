@@ -1,5 +1,5 @@
 import { WinstonTransport as AxiomTransport } from '@axiomhq/axiom-node'
-import { format, loggers } from 'winston'
+import { format, loggers, transports } from 'winston'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ;(BigInt.prototype as any).toJSON = function () {
     return this.toString()
@@ -23,18 +23,30 @@ const defaultLoggerOptions = {
             token: process.env.AXIOM_TOKEN,
             orgId: process.env.AXIOM_ORG_ID
         })
-        // new transports.Console()
     ]
 }
 
 const createLogger = (label: string) => {
-    return {
-        ...defaultLoggerOptions,
-        format: format.combine(
-            defaultLoggerOptions.format,
-            format.label({ label })
-        )
-    }
+    if (process.env.NODE_ENV !== 'production')
+        return {
+            ...defaultLoggerOptions,
+            format: format.combine(
+                defaultLoggerOptions.format,
+                format.label({ label })
+            ),
+            transports: [
+                ...defaultLoggerOptions.transports,
+                new transports.Console()
+            ]
+        }
+    else
+        return {
+            ...defaultLoggerOptions,
+            format: format.combine(
+                defaultLoggerOptions.format,
+                format.label({ label })
+            )
+        }
 }
 
 const initLoggers = () => {
