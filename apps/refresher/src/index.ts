@@ -35,16 +35,25 @@ const main = async () => {
     })
 
     scheduleJob('* * * * * *', async () => {
-        const newSnapshotProposals = await addSnapshotProposalsToQueue()
-        const newSnapshotVotes = await addSnapshotDaoVotes()
-        const newChainProposals = await addChainProposalsToQueue()
-        const newChainVotes = await addChainDaoVotesToQueue()
+        const newSnapshotProposals = JSON.parse(
+            JSON.stringify(await addSnapshotProposalsToQueue())
+        )
+        const newSnapshotVotes = JSON.parse(
+            JSON.stringify(await addSnapshotDaoVotes())
+        )
+        const newChainProposals = JSON.parse(
+            JSON.stringify(await addChainProposalsToQueue())
+        )
+        const newChainVotes = JSON.parse(
+            JSON.stringify(await addChainDaoVotesToQueue())
+        )
 
         refreshQueue.push(...newSnapshotProposals)
         refreshQueue.push(...newSnapshotVotes)
 
         refreshQueue.push(...newChainProposals)
         refreshQueue.push(...newChainVotes)
+        global.gc()
     })
 
     setInterval(() => {
