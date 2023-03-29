@@ -276,7 +276,7 @@ const MobileActiveProposal = async (props: {
             <div className='flex w-full flex-col gap-2 p-2'>
                 <div className='flex flex-row gap-2'>
                     <div className='flex flex-col items-center gap-2'>
-                        <div className='w-[48px] border border-b-2 border-r-2 border-t-0 border-l-0'>
+                        <div className='w-[48px] border border-b-2 border-l-0 border-r-2 border-t-0'>
                             <Image
                                 loading='eager'
                                 priority={true}
@@ -428,7 +428,7 @@ const ActiveProposal = async (props: {
         <tr className='h-[96px] w-full items-center justify-evenly bg-[#121212] text-[#EDEDED] '>
             <td className='hidden lg:table-cell'>
                 <div className='m-[12px] flex w-max flex-row items-center gap-[8px]'>
-                    <div className='border border-b-2 border-r-2 border-t-0 border-l-0'>
+                    <div className='border border-b-2 border-l-0 border-r-2 border-t-0'>
                         <Image
                             loading='eager'
                             priority={true}

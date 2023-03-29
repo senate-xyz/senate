@@ -56,7 +56,7 @@ const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
             <div className='flex w-full flex-col gap-2 p-2'>
                 <div className='flex flex-row gap-2'>
                     <div className='flex flex-col items-center justify-start gap-2'>
-                        <div className='w-[48px] border border-b-2 border-r-2 border-t-0 border-l-0'>
+                        <div className='w-[48px] border border-b-2 border-l-0 border-r-2 border-t-0'>
                             <Image
                                 loading='eager'
                                 priority={true}

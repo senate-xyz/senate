@@ -76,7 +76,7 @@ export const Filters = (props: {
             <div className='flex flex-col gap-5 lg:flex-row'>
                 <div className='flex h-[38px] w-full flex-row items-center lg:w-[300px]'>
                     <label
-                        className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
+                        className='flex h-full min-w-max items-center bg-black px-[12px] py-[9px] text-[15px] text-white'
                         htmlFor='from'
                     >
                         From
@@ -122,7 +122,7 @@ export const Filters = (props: {
 
                 <div className='flex h-[38px] w-full flex-row items-center lg:w-[300px]'>
                     <label
-                        className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
+                        className='flex h-full min-w-max items-center bg-black px-[12px] py-[9px] text-[15px] text-white'
                         htmlFor='end'
                     >
                         <div>Ending in</div>
@@ -151,7 +151,7 @@ export const Filters = (props: {
                 {session.status === 'authenticated' && account.address && (
                     <div className='flex h-[38px] w-full flex-row items-center lg:w-[300px]'>
                         <label
-                            className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
+                            className='flex h-full min-w-max items-center bg-black px-[12px] py-[9px] text-[15px] text-white'
                             htmlFor='voted'
                         >
                             <div>With Vote Status of</div>
@@ -180,7 +180,7 @@ export const Filters = (props: {
                 {props.proxies.length > 1 && (
                     <div className='flex h-[38px] w-full flex-row items-center lg:w-[300px]'>
                         <label
-                            className='flex h-full min-w-max items-center bg-black py-[9px] px-[12px] text-[15px] text-white'
+                            className='flex h-full min-w-max items-center bg-black px-[12px] py-[9px] text-[15px] text-white'
                             htmlFor='voted'
                         >
                             <div>And Showing Votes From</div>

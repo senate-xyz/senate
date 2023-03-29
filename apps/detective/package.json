@@ -8,10 +8,10 @@
     "scripts": {
         "prebuild": "rimraf dist",
         "build": "nest build",
-        "start": "nest start",
+        "start": "node --max-old-space-size=1024 dist/main",
         "dev": "nest start --watch",
         "build:detective": "nest build",
-        "start:detective": "nest start",
+        "start:detective": "node --max-old-space-size=1024 dist/main",
         "dev:detective": "nest start --watch",
         "test": "jest",
         "test:watch": "jest --watch",

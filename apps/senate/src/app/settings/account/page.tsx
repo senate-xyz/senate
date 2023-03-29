@@ -26,7 +26,7 @@ export default function Home() {
                     <>
                         <UserAddress />
                         <button
-                            className='w-fit bg-black py-2 px-4 font-bold text-white hover:scale-105'
+                            className='w-fit bg-black px-4 py-2 font-bold text-white hover:scale-105'
                             onClick={() => {
                                 openAccountModal ? openAccountModal() : null
                             }}

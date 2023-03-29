@@ -64,7 +64,7 @@ export default function RootLayout({
                         </Link>
                     )}
                 </div>
-                <div className='pt-10 pl-2 lg:w-[1150px]'>{children}</div>
+                <div className='pl-2 pt-10 lg:w-[1150px]'>{children}</div>
             </div>
         </>
     )

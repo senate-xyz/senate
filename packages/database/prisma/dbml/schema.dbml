@@ -161,11 +161,6 @@ Table Subscription {
   }
 }
 
-Table Config {
-  param String [unique, not null]
-  value String [not null]
-}
-
 Table Contract {
   address String [unique, not null]
   abi String [not null]

@@ -57,7 +57,7 @@ const Home = () => {
                                 />
                             </div>
 
-                            <div className='mt-4 mb-8 w-full text-center text-[24px] font-light text-white lg:w-[447px]'>
+                            <div className='mb-8 mt-4 w-full text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Welcome to Senate!
                             </div>
 

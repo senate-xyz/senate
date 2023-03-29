@@ -198,11 +198,6 @@ model Subscription {
   @@index([daoId])
 }
 
-model Config {
-  param String @unique
-  value String
-}
-
 model Contract {
   address String
   abi     String

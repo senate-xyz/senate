@@ -109,7 +109,7 @@ export const SubscribedDAO = (props: {
                     }}
                     className='relative flex h-full w-full flex-col rounded text-sm font-bold text-white shadow'
                 >
-                    <div className='absolute flex w-full flex-col items-end pt-4 pr-4'>
+                    <div className='absolute flex w-full flex-col items-end pr-4 pt-4'>
                         <div
                             className='cursor-pointer'
                             onClick={() => {
@@ -210,8 +210,8 @@ export const SubscribedDAO = (props: {
                         <div
                             className={
                                 props.activeProposals
-                                    ? 'cursor-pointer pt-6 pb-1 text-[15px] font-thin underline decoration-from-font underline-offset-2'
-                                    : 'pt-6 pb-1 text-[15px] font-thin'
+                                    ? 'cursor-pointer pb-1 pt-6 text-[15px] font-thin underline decoration-from-font underline-offset-2'
+                                    : 'pb-1 pt-6 text-[15px] font-thin'
                             }
                         >
                             {props.activeProposals ? (

@@ -16,7 +16,7 @@
     "scripts": {
         "build": "tsup",
         "build:refresher": "tsup",
-        "start": "node dist/index",
+        "start": "node --max-old-space-size=128 dist/index",
         "start:refresher": "node --max-old-space-size=128 dist/index",
         "dev": "tsup && node --inspect --max-old-space-size=128 dist/index",
         "dev:refresher": "tsup && node dist/index",
