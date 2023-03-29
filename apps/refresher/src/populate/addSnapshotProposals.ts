@@ -4,7 +4,7 @@ import { log_ref } from '@senate/axiom'
 
 export const addSnapshotProposalsToQueue = async () => {
     const normalRefresh = new Date(Date.now() - 1 * 60 * 1000)
-    const forceRefresh = new Date(Date.now() - 2 * 60 * 1000)
+    const forceRefresh = new Date(Date.now() - 10 * 60 * 1000)
     const newRefresh = new Date(Date.now() - 15 * 1000)
 
     const queueItems = await prisma.$transaction(

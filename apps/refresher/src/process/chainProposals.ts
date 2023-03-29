@@ -9,7 +9,8 @@ export const processChainProposals = async (item: RefreshQueueType) => {
             `${process.env.DETECTIVE_URL}/updateChainProposals`,
             {
                 daoHandlerId: item.handlerId
-            }
+            },
+            { timeout: 5 * 60 * 1000 }
         )
 
         const data = response.data

@@ -9,7 +9,8 @@ export const processSnapshotDaoVotes = async (item: RefreshQueueType) => {
     try {
         const response = await axios.post(
             `${process.env.DETECTIVE_URL}/updateSnapshotDaoVotes`,
-            { daoHandlerId: item.handlerId, voters: voters }
+            { daoHandlerId: item.handlerId, voters: voters },
+            { timeout: 5 * 60 * 1000 }
         )
 
         const data = response.data

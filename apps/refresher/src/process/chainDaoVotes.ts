@@ -12,7 +12,8 @@ export const processChainDaoVotes = async (item: RefreshQueueType) => {
             {
                 daoHandlerId: item.handlerId,
                 voters: voters
-            }
+            },
+            { timeout: 5 * 60 * 1000 }
         )
 
         const data = response.data

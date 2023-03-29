@@ -11,7 +11,7 @@ import { RefreshType } from '..'
 
 export const addSnapshotDaoVotes = async () => {
     const normalRefresh = new Date(Date.now() - 1 * 60 * 1000)
-    const forceRefresh = new Date(Date.now() - 2 * 60 * 1000)
+    const forceRefresh = new Date(Date.now() - 10 * 60 * 1000)
     const newRefresh = new Date(Date.now() - 5 * 1000)
 
     const queueItems = await prisma.$transaction(
