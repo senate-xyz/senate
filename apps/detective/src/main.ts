@@ -15,6 +15,10 @@ async function bootstrap() {
         port: PORT
     })
 
+    setInterval(() => {
+        if (global.gc) global.gc()
+    }, 5 * 30 * 1000)
+
     setInterval(async () => {
         log_pd.log({
             level: 'info',

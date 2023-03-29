@@ -30,6 +30,10 @@ const main = async () => {
         message: `Started refresher`
     })
 
+    setInterval(() => {
+        if (global.gc) global.gc()
+    }, 5 * 30 * 1000)
+
     scheduleJob('*/10 * * * * *', async () => {
         await createVoterHandlers()
     })
@@ -53,7 +57,6 @@ const main = async () => {
 
         refreshQueue.push(...newChainProposals)
         refreshQueue.push(...newChainVotes)
-        global.gc()
     })
 
     setInterval(() => {
