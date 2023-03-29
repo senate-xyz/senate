@@ -16,7 +16,7 @@ export const addSnapshotDaoVotes = async () => {
 
     const queueItems = await prisma.$transaction(
         async (tx) => {
-            let daoHandlers = await tx.dAOHandler.findMany({
+            const daoHandlers = await tx.dAOHandler.findMany({
                 where: {
                     type: DAOHandlerType.SNAPSHOT,
                     voterHandlers: {
@@ -75,17 +75,17 @@ export const addSnapshotDaoVotes = async () => {
                 }
             })
 
-            daoHandlers = daoHandlers.filter(
+            const filteredDaoHandlers = daoHandlers.filter(
                 (daoHandlers) => daoHandlers.proposals.length
             )
 
-            if (!daoHandlers.length) {
+            if (!filteredDaoHandlers.length) {
                 return []
             }
 
             let voterHandlerToRefresh: VoterHandler[] = []
 
-            const refreshEntries = daoHandlers
+            const refreshEntries = filteredDaoHandlers
                 .map((daoHandler) => {
                     const voterHandlers = daoHandler.voterHandlers
 

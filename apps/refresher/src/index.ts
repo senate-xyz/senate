@@ -1,7 +1,7 @@
 import { scheduleJob } from 'node-schedule'
 import { createVoterHandlers } from './createHandlers'
 import { log_ref } from '@senate/axiom'
-import { addChainDaoVotes } from './populate/addChainDaoVotes'
+import { addChainDaoVotesToQueue } from './populate/addChainDaoVotes'
 import { addChainProposalsToQueue } from './populate/addChainProposals'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
@@ -35,11 +35,16 @@ const main = async () => {
     })
 
     scheduleJob('* * * * * *', async () => {
-        refreshQueue.push(...(await addSnapshotProposalsToQueue()))
-        refreshQueue.push(...(await addSnapshotDaoVotes()))
+        const newSnapshotProposals = await addSnapshotProposalsToQueue()
+        const newSnapshotVotes = await addSnapshotDaoVotes()
+        const newChainProposals = await addChainProposalsToQueue()
+        const newChainVotes = await addChainDaoVotesToQueue()
 
-        refreshQueue.push(...(await addChainProposalsToQueue()))
-        refreshQueue.push(...(await addChainDaoVotes()))
+        refreshQueue.push(...newSnapshotProposals)
+        refreshQueue.push(...newSnapshotVotes)
+
+        refreshQueue.push(...newChainProposals)
+        refreshQueue.push(...newChainVotes)
 
         console.log(`${refreshQueue.length} items in queue.`)
     })

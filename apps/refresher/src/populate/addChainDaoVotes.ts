@@ -8,14 +8,14 @@ import {
 } from '@senate/database'
 import { RefreshType } from '..'
 
-export const addChainDaoVotes = async () => {
+export const addChainDaoVotesToQueue = async () => {
     const normalRefresh = new Date(Date.now() - 1 * 60 * 1000)
     const forceRefresh = new Date(Date.now() - 10 * 60 * 1000)
     const newRefresh = new Date(Date.now() - 5 * 1000)
 
     const queueItems = await prisma.$transaction(
         async (tx) => {
-            let daoHandlers = await tx.dAOHandler.findMany({
+            const daoHandlers = await tx.dAOHandler.findMany({
                 where: {
                     type: {
                         in: [
@@ -87,19 +87,19 @@ export const addChainDaoVotes = async () => {
                 }
             })
 
-            daoHandlers = daoHandlers.filter(
+            const filteredDaoHandlers = daoHandlers.filter(
                 (daoHandler) =>
                     daoHandler.proposals.length &&
                     daoHandler.type != DAOHandlerType.MAKER_POLL_ARBITRUM
             )
 
-            if (!daoHandlers.length) {
+            if (!filteredDaoHandlers.length) {
                 return []
             }
 
             let voterHandlerToRefresh: VoterHandler[] = []
 
-            const refreshEntries = daoHandlers
+            const refreshEntries = filteredDaoHandlers
                 .map((daoHandler) => {
                     const voterHandlers = daoHandler.voterHandlers
 
