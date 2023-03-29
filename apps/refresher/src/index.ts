@@ -8,6 +8,7 @@ import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 import { processChainDaoVotes } from './process/chainDaoVotes'
 import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
 import { processSnapshotProposals } from './process/snapshotProposals'
+import { processChainProposals } from './process/chainProposals'
 
 export enum RefreshType {
     DAOCHAINPROPOSALS,
@@ -55,7 +56,7 @@ const main = async () => {
                     processSnapshotDaoVotes(item)
                     break
                 case RefreshType.DAOCHAINPROPOSALS:
-                    //processChainProposals(item)
+                    processChainProposals(item)
                     break
                 case RefreshType.DAOCHAINVOTES:
                     processChainDaoVotes(item)
