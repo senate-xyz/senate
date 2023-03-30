@@ -129,7 +129,7 @@ export const addChainDaoVotesToQueue = async () => {
                                         Number(voterHandler.chainindex) <
                                             bucketMax
                                 )
-                                .slice(0, 25)
+                                .slice(0, 100)
 
                             voterHandlerToRefresh = [
                                 ...voterHandlerToRefresh,

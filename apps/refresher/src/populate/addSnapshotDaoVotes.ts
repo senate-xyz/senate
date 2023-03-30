@@ -116,7 +116,7 @@ export const addSnapshotDaoVotes = async () => {
                                             voterHandler.snapshotindex?.getTime()
                                         ) < bucketMax
                                 )
-                                .slice(0, 25)
+                                .slice(0, 100)
 
                             voterHandlerToRefresh = [
                                 ...voterHandlerToRefresh,
