@@ -95,14 +95,16 @@ export const updateSnapshotDaoVotes = async (
 
     let votes
     try {
-        const votes = (await axios
-            .get('https://hub.snapshot.org/graphql', {
-                params: { query: graphqlQuery },
-                timeout: 5 * 60 * 1000
-            })
-            .then((response) => {
-                return response.data.data.votes
-            })) as GraphQLVote[]
+        const votes = (
+            (await axios
+                .get('https://hub.snapshot.org/graphql', {
+                    params: { query: graphqlQuery },
+                    timeout: 5 * 60 * 1000
+                })
+                .then((response) => {
+                    return response.data.data.votes
+                })) as GraphQLVote[]
+        ).filter((vote) => vote.proposal != null && vote.proposal.id != null)
 
         const proposalIds = [...new Set(votes.map((vote) => vote.proposal.id))]
 
