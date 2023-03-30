@@ -57,7 +57,7 @@ export const makerExecutiveProposals = async (
             return {
                 externalId: spellAddress,
                 name: proposalData.title.slice(0, 1024),
-                daoId: daoHandler.daoId,
+                daoId: daoHandler.daoid,
                 daoHandlerId: daoHandler.id,
                 timeEnd: new Date(proposalData.spellData.expiration),
                 timeStart: new Date(proposalData.date),

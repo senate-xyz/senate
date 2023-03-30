@@ -10,19 +10,13 @@ import {
 } from '@rainbow-me/rainbowkit-siwe-next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { configureChains, mainnet, createClient, WagmiConfig } from 'wagmi'
-import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
+import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { TrpcClientProvider } from '../server/trpcClient'
 import Link from 'next/link'
 
 const { chains, provider } = configureChains(
     [mainnet],
-    [
-        jsonRpcProvider({
-            rpc: () => ({
-                http: String(process.env.NEXT_PUBLIC_PROVIDER_URL)
-            })
-        })
-    ]
+    [alchemyProvider({ apiKey: '4fIvNq7_9CmJ4721zCsSd6_CoeAwDg9_' })]
 )
 
 const { connectors } = getDefaultWallets({

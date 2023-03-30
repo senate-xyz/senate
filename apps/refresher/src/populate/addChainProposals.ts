@@ -9,7 +9,7 @@ export const addChainProposalsToQueue = async () => {
 
     const queueItems = await prisma.$transaction(
         async (tx) => {
-            const daoHandlers = await tx.dAOHandler.findMany({
+            const daoHandlers = await tx.daohandler.findMany({
                 where: {
                     type: {
                         in: [
@@ -26,20 +26,20 @@ export const addChainProposalsToQueue = async () => {
                     },
                     OR: [
                         {
-                            refreshStatus: RefreshStatus.DONE,
-                            lastRefresh: {
+                            refreshstatus: RefreshStatus.DONE,
+                            lastrefresh: {
                                 lt: normalRefresh
                             }
                         },
                         {
-                            refreshStatus: RefreshStatus.PENDING,
-                            lastRefresh: {
+                            refreshstatus: RefreshStatus.PENDING,
+                            lastrefresh: {
                                 lt: forceRefresh
                             }
                         },
                         {
-                            refreshStatus: RefreshStatus.NEW,
-                            lastRefresh: {
+                            refreshstatus: RefreshStatus.NEW,
+                            lastrefresh: {
                                 lt: newRefresh
                             }
                         }
@@ -54,15 +54,15 @@ export const addChainProposalsToQueue = async () => {
                 return []
             }
 
-            await tx.dAOHandler.updateMany({
+            await tx.daohandler.updateMany({
                 where: {
                     id: {
                         in: daoHandlers.map((daoHandler) => daoHandler.id)
                     }
                 },
                 data: {
-                    refreshStatus: RefreshStatus.PENDING,
-                    lastRefresh: new Date()
+                    refreshstatus: RefreshStatus.PENDING,
+                    lastrefresh: new Date()
                 }
             })
 

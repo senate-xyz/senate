@@ -1,9 +1,9 @@
 import {
     prisma,
-    DAOHandler,
+    type DAOHandler,
     DAOHandlerType,
-    Decoder,
-    Proposal
+    type Decoder,
+    type Proposal
 } from '@senate/database'
 
 import { schedule } from 'node-cron'
@@ -30,7 +30,7 @@ export const proposalSanity = schedule('15 * * * *', async () => {
     const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
 
     try {
-        const daoHandlers: DAOHandler[] = await prisma.dAOHandler.findMany({
+        const daoHandlers: DAOHandler[] = await prisma.daohandler.findMany({
             where: {
                 type: DAOHandlerType.SNAPSHOT
             }
@@ -78,14 +78,14 @@ const checkAndSanitizeProposalsRoutine = async (
             (proposal: Proposal) => {
                 return !proposalsFromSnapshotAPI
                     .map((proposal: GraphQLProposal) => proposal.id)
-                    .includes(proposal.externalId)
+                    .includes(proposal.externalid)
             }
         )
 
         const proposalsNotInDatabase: GraphQLProposal[] =
             proposalsFromSnapshotAPI.filter((proposal: GraphQLProposal) => {
                 return !proposalsFromDatabase
-                    .map((proposal: Proposal) => proposal.externalId)
+                    .map((proposal: Proposal) => proposal.externalid)
                     .includes(proposal.id)
             })
 
@@ -101,7 +101,7 @@ const checkAndSanitizeProposalsRoutine = async (
 
             await prisma.proposal.deleteMany({
                 where: {
-                    daoHandlerId: daoHandler.id,
+                    daohandlerid: daoHandler.id,
                     id: {
                         in: proposalsNotOnSnapshot.map(
                             (proposal) => proposal.id
@@ -179,8 +179,8 @@ const fetchProposalsFromDatabase = async (
 ): Promise<Proposal[]> => {
     return await prisma.proposal.findMany({
         where: {
-            daoHandlerId: daoHandlerId,
-            timeCreated: {
+            externalid: daoHandlerId,
+            timecreated: {
                 gte: searchFrom,
                 lte: searchTo
             }

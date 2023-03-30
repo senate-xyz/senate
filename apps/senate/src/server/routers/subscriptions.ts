@@ -23,18 +23,18 @@ export const subscriptionsRouter = router({
 
             const result = await prisma.subscription.upsert({
                 where: {
-                    userId_daoId: {
-                        userId: user.id,
-                        daoId: input.daoId
+                    userid_daoid: {
+                        userid: user.id,
+                        daoid: input.daoId
                     }
                 },
                 update: {
-                    notificationsEnabled: input.notificationsEnabled
+                    notificationsenabled: input.notificationsEnabled
                 },
                 create: {
-                    userId: user.id,
-                    daoId: input.daoId,
-                    notificationsEnabled: input.notificationsEnabled
+                    userid: user.id,
+                    daoid: input.daoId,
+                    notificationsenabled: input.notificationsEnabled
                 }
             })
 
@@ -60,9 +60,9 @@ export const subscriptionsRouter = router({
 
             const result = await prisma.subscription.delete({
                 where: {
-                    userId_daoId: {
-                        userId: user?.id,
-                        daoId: input.daoId
+                    userid_daoid: {
+                        userid: user?.id,
+                        daoid: input.daoId
                     }
                 }
             })
@@ -90,13 +90,13 @@ export const subscriptionsRouter = router({
 
             const result = await prisma.subscription.update({
                 where: {
-                    userId_daoId: {
-                        userId: user.id,
-                        daoId: input.daoId
+                    userid_daoid: {
+                        userid: user.id,
+                        daoid: input.daoId
                     }
                 },
                 data: {
-                    notificationsEnabled: input.notificationsEnabled
+                    notificationsenabled: input.notificationsEnabled
                 }
             })
 

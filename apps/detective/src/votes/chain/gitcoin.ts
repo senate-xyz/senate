@@ -71,11 +71,11 @@ export const getVotesForVoter = async (
                     try {
                         const proposal = await prisma.proposal.findFirst({
                             where: {
-                                externalId: BigInt(
+                                externalid: BigInt(
                                     log.eventData.proposalId
                                 ).toString(),
-                                daoId: daoHandler.daoId,
-                                daoHandlerId: daoHandler.id
+                                daoid: daoHandler.daoid,
+                                daohandlerid: daoHandler.id
                             }
                         })
 
@@ -85,16 +85,16 @@ export const getVotesForVoter = async (
                         }
 
                         return {
-                            blockCreated: log.txBlock,
-                            voterAddress: ethers.getAddress(voterAddress),
-                            daoId: daoHandler.daoId,
-                            proposalId: proposal.id,
-                            daoHandlerId: daoHandler.id,
+                            blockcreated: log.txBlock,
+                            voteraddress: ethers.getAddress(voterAddress),
+                            daoid: daoHandler.daoid,
+                            proposalid: proposal.id,
+                            daohandlerid: daoHandler.id,
                             choice: String(log.eventData.support) ? 1 : 2,
                             reason: '',
-                            votingPower: parseFloat(log.eventData.votes),
-                            proposalActive:
-                                proposal.timeEnd.getTime() >
+                            votingpower: parseFloat(log.eventData.votes),
+                            proposalactive:
+                                proposal.timeend.getTime() >
                                 new Date().getTime()
                         }
                     } catch (e) {
@@ -113,5 +113,5 @@ export const getVotesForVoter = async (
             )
         ).filter((n) => n) ?? []
 
-    return { success, votes, voterAddress }
+    return { success, votes, voteraddress: voterAddress }
 }

@@ -49,11 +49,12 @@ const getAbi = async (
 
             if (data.message === 'OK') {
                 try {
-                    await prisma.contract.create({
+                    await prisma.contract.createMany({
                         data: {
                             address: address,
                             abi: data.result
-                        }
+                        },
+                        skipDuplicates: true
                     })
                 } catch (err) {
                     console.error(err)

@@ -7,18 +7,18 @@ export type { JsonArray, JsonValue } from 'type-fest'
 
 export {
     type PrismaClient,
-    type Proposal,
-    type Voter,
-    type VoterHandler,
-    type Vote,
-    type Subscription,
-    type DAO,
-    type Notification,
-    type User,
+    type proposal as Proposal,
+    type voter as Voter,
+    type voterhandler as VoterHandler,
+    type vote as Vote,
+    type subscription as Subscription,
+    type dao as DAO,
+    type notification as Notification,
+    type user as User,
     RefreshStatus,
     DAOHandlerType,
     RoundupNotificationType,
-    type DAOHandler
+    type daohandler as DAOHandler
 } from '@prisma/client'
 
 export type Decoder = {
@@ -41,26 +41,26 @@ export type RefreshArgs = {
     voters: string[]
 }
 
-export type ProposalType = Prisma.ProposalGetPayload<{
+export type ProposalType = Prisma.proposalGetPayload<{
     include: { votes: true; dao: true }
 }>
 
-export type SubscriptionType = Prisma.SubscriptionGetPayload<{
+export type SubscriptionType = Prisma.subscriptionGetPayload<{
     include: { dao: true }
 }>
 
-export type DAOHandlerWithDAO = Prisma.DAOHandlerGetPayload<{
+export type DAOHandlerWithDAO = Prisma.daohandlerGetPayload<{
     include: { dao: true }
 }>
 
-export type DAOType = Prisma.DAOGetPayload<{
+export type DAOType = Prisma.daoGetPayload<{
     include: {
         handlers: true
         subscriptions: true
     }
 }>
 
-export type UserWithVotingAddresses = Prisma.UserGetPayload<{
+export type UserWithVotingAddresses = Prisma.userGetPayload<{
     include: {
         voters: true
     }

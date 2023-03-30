@@ -25,13 +25,13 @@ const getSubscribedDAOs = async () => {
 
     const subscriptionsList = await prisma.subscription.findMany({
         where: {
-            userId: user.id
+            userid: user.id
         },
         include: {
             dao: {
                 include: {
                     handlers: true,
-                    proposals: { where: { timeEnd: { gt: new Date() } } }
+                    proposals: { where: { timeend: { gt: new Date() } } }
                 }
             }
         },
@@ -100,7 +100,7 @@ export default async function SubscribedDAOs() {
                                     )}
                                     activeProposals={sub.dao.proposals.length}
                                     notificationsEnabled={
-                                        sub.notificationsEnabled
+                                        sub.notificationsenabled
                                     }
                                 />
                             )

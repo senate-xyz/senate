@@ -13,27 +13,23 @@ import { getMakerPollVotesFromArbitrum } from './chain/makerPollArbitrum'
 import { getCompoundVotes } from './chain/compound'
 import superagent from 'superagent'
 
-const infuraProvider = new ethers.JsonRpcProvider(
-    String(process.env.INFURA_NODE_URL)
-)
-
-const senateProvider = new ethers.JsonRpcProvider(
-    String(process.env.SENATE_NODE_URL)
+const rpcprovider = new ethers.JsonRpcProvider(
+    String(process.env.ALCHEMY_NODE_URL)
 )
 
 interface Result {
-    voterAddress: string
+    voteraddress: string
     success: boolean
     votes: {
-        blockCreated: number
-        voterAddress: string
-        daoId: string
-        proposalId: string
-        daoHandlerId: string
+        blockcreated: number
+        voteraddress: string
+        daoid: string
+        proposalid: string
+        daohandlerid: string
         choice: JsonValue
         reason: string
-        votingPower: number
-        proposalActive: boolean
+        votingpower: number
+        proposalactive: boolean
     }[]
 }
 
@@ -44,7 +40,7 @@ export const updateChainDaoVotes = async (
     const result = new Map()
     voters.map((voter) => result.set(voter, 'nok'))
 
-    const daoHandler = await prisma.dAOHandler.findFirstOrThrow({
+    const daoHandler = await prisma.daohandler.findFirstOrThrow({
         where: { id: daoHandlerId },
         include: {
             dao: true,
@@ -52,9 +48,9 @@ export const updateChainDaoVotes = async (
         }
     })
 
-    const voterHandlers = await prisma.voterHandler.findMany({
+    const voterHandlers = await prisma.voterhandler.findMany({
         where: {
-            daoHandlerId: daoHandlerId,
+            daohandlerid: daoHandlerId,
             voter: {
                 address: { in: voters }
             }
@@ -64,8 +60,8 @@ export const updateChainDaoVotes = async (
     const firstProposalTimestamp = Math.floor(
         Math.min(
             ...daoHandler.proposals
-                .filter((p) => p.timeCreated.valueOf() > 0)
-                .map((p) => p.timeCreated.valueOf())
+                .filter((p) => p.timecreated.valueOf() > 0)
+                .map((p) => p.timecreated.valueOf())
         ) / 1000
     )
 
@@ -79,21 +75,18 @@ export const updateChainDaoVotes = async (
         })
 
     const oldestVoteBlock = Math.min(
-        ...voterHandlers.map((voterHandler) => Number(voterHandler.chainIndex))
+        ...voterHandlers.map((voterHandler) => Number(voterHandler.chainindex))
     )
 
-    let votes: Result[] = [],
-        currentBlock: number
+    let votes: Result[] = []
 
-    try {
-        currentBlock = await senateProvider.getBlockNumber()
-    } catch (e) {
-        currentBlock = await infuraProvider.getBlockNumber()
-    }
+    const currentBlock = await rpcprovider.getBlockNumber()
 
     let blockBatchSize = Math.floor(40000000 / voters.length)
     if (daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE)
         blockBatchSize = Math.floor(blockBatchSize / 10)
+
+    if (blockBatchSize > 100000) blockBatchSize = 100000
 
     let fromBlock = Math.max(oldestVoteBlock, 0)
 
@@ -106,8 +99,7 @@ export const updateChainDaoVotes = async (
 
     if (fromBlock > toBlock) fromBlock = toBlock
 
-    const provider: ethers.JsonRpcProvider =
-        currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
+    const provider: ethers.JsonRpcProvider = rpcprovider
 
     try {
         switch (daoHandler.type) {
@@ -198,7 +190,7 @@ export const updateChainDaoVotes = async (
                 break
             case 'DYDX_CHAIN':
                 votes = await getDydxVotes(
-                    infuraProvider,
+                    provider,
                     daoHandler,
                     voters,
                     fromBlock,
@@ -216,21 +208,21 @@ export const updateChainDaoVotes = async (
             .flat(2)
 
         const closedVotes = successfulVotes
-            .filter((vote) => vote.proposalActive == false)
+            .filter((vote) => vote.proposalactive == false)
             .map((vote) => {
                 return {
-                    voterAddress: vote.voterAddress,
-                    daoId: vote.daoId,
-                    proposalId: vote.proposalId,
-                    daoHandlerId: vote.daoHandlerId,
+                    voteraddress: vote.voteraddress,
+                    daoid: vote.daoid,
+                    proposalid: vote.proposalid,
+                    daohandlerid: vote.daohandlerid,
                     choice: vote.choice,
                     reason: vote.reason,
-                    votingPower: vote.votingPower
+                    votingpower: vote.votingpower
                 }
             })
 
         const openVotes = successfulVotes.filter(
-            (vote) => vote.proposalActive == true
+            (vote) => vote.proposalactive == true
         )
 
         await prisma.vote.createMany({
@@ -242,51 +234,51 @@ export const updateChainDaoVotes = async (
             openVotes.map((vote) => {
                 return prisma.vote.upsert({
                     where: {
-                        voterAddress_daoId_proposalId: {
-                            voterAddress: vote.voterAddress,
-                            daoId: vote.daoId,
-                            proposalId: vote.proposalId
+                        voteraddress_daoid_proposalid: {
+                            voteraddress: vote.voteraddress,
+                            daoid: vote.daoid,
+                            proposalid: vote.proposalid
                         }
                     },
                     create: {
-                        blockCreated: vote.blockCreated,
+                        blockcreated: vote.blockcreated,
                         choice: vote.choice,
-                        votingPower: vote.votingPower,
+                        votingpower: vote.votingpower,
                         reason: vote.reason,
 
-                        voterAddress: vote.voterAddress,
-                        daoId: vote.daoId,
-                        proposalId: vote.proposalId,
-                        daoHandlerId: vote.daoHandlerId
+                        voteraddress: vote.voteraddress,
+                        daoid: vote.daoid,
+                        proposalid: vote.proposalid,
+                        daohandlerid: vote.daohandlerid
                     },
                     update: {
                         choice: vote.choice,
-                        votingPower: vote.votingPower,
+                        votingpower: vote.votingpower,
                         reason: vote.reason
                     }
                 })
             })
         )
 
-        const newIndex = Math.min(Number(daoHandler.chainIndex), toBlock)
+        const newIndex = Math.min(Number(daoHandler.chainindex), toBlock)
 
-        await prisma.voterHandler.updateMany({
+        await prisma.voterhandler.updateMany({
             where: {
                 voter: {
                     address: {
-                        in: successfulResults.map((res) => res.voterAddress)
+                        in: successfulResults.map((res) => res.voteraddress)
                     }
                 },
-                daoHandlerId: daoHandler.id
+                daohandlerid: daoHandler.id
             },
             data: {
-                chainIndex: newIndex,
-                snapshotIndex: new Date('2009-01-09T04:54:25.00Z')
+                chainindex: newIndex,
+                snapshotindex: new Date('2009-01-09T04:54:25.00Z')
             }
         })
 
         successfulResults.map((res) => {
-            result.set(res.voterAddress, 'ok')
+            result.set(res.voteraddress, 'ok')
         })
     } catch (e) {
         log_pd.log({
@@ -302,14 +294,13 @@ export const updateChainDaoVotes = async (
             provider: provider._getConnection().url,
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
-            errorStack: (e as Error).stack
+            errorStack: (e as Error).stack,
+            response: Array.from(result, ([name, value]) => ({
+                voterAddress: name,
+                response: value
+            }))
         })
     }
-
-    const res = Array.from(result, ([name, value]) => ({
-        voterAddress: name,
-        response: value
-    }))
 
     log_pd.log({
         level: 'info',
@@ -322,8 +313,14 @@ export const updateChainDaoVotes = async (
         voters: voters,
         votes: votes,
         provider: provider._getConnection().url,
-        response: res
+        response: Array.from(result, ([name, value]) => ({
+            voterAddress: name,
+            response: value
+        }))
     })
 
-    return res
+    return Array.from(result, ([name, value]) => ({
+        voterAddress: name,
+        response: value
+    }))
 }

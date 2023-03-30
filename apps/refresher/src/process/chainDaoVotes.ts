@@ -13,16 +13,16 @@ export const processChainDaoVotes = async (item: RefreshQueueType) => {
                 daoHandlerId: item.handlerId,
                 voters: voters
             },
-            { timeout: 5 * 60 * 1000 }
+            { timeout: 60 * 1000 }
         )
 
-        const data = response.data
+        const { data } = response
 
         if (!data) return
         if (!Array.isArray(data)) return
 
         await prisma.$transaction([
-            prisma.voterHandler.updateMany({
+            prisma.voterhandler.updateMany({
                 where: {
                     voter: {
                         address: {
@@ -31,15 +31,15 @@ export const processChainDaoVotes = async (item: RefreshQueueType) => {
                                 .map((result) => result.voterAddress)
                         }
                     },
-                    daoHandlerId: item.handlerId
+                    daohandlerid: item.handlerId
                 },
                 data: {
-                    refreshStatus: RefreshStatus.DONE,
-                    lastRefresh: new Date()
+                    refreshstatus: RefreshStatus.DONE,
+                    lastrefresh: new Date()
                 }
             }),
 
-            prisma.voterHandler.updateMany({
+            prisma.voterhandler.updateMany({
                 where: {
                     voter: {
                         address: {
@@ -48,11 +48,12 @@ export const processChainDaoVotes = async (item: RefreshQueueType) => {
                                 .map((result) => result.voterAddress)
                         }
                     },
-                    daoHandlerId: item.handlerId
+                    daohandlerid: item.handlerId
                 },
                 data: {
-                    refreshStatus: RefreshStatus.NEW,
-                    lastRefresh: new Date()
+                    refreshstatus: RefreshStatus.NEW,
+                    chainindex: { decrement: 10000 },
+                    lastrefresh: new Date()
                 }
             })
         ])
@@ -68,19 +69,19 @@ export const processChainDaoVotes = async (item: RefreshQueueType) => {
             response: data
         })
     } catch (e) {
-        await prisma.voterHandler.updateMany({
+        await prisma.voterhandler.updateMany({
             where: {
                 voter: {
                     address: {
                         in: voters.map((voter) => voter)
                     }
                 },
-                daoHandlerId: item.handlerId
+                daohandlerid: item.handlerId
             },
             data: {
-                refreshStatus: RefreshStatus.NEW,
-                lastRefresh: new Date(),
-                chainIndex: { decrement: 50000 }
+                refreshstatus: RefreshStatus.NEW,
+                chainindex: { decrement: 10000 },
+                lastrefresh: new Date()
             }
         })
 

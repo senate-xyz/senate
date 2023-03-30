@@ -1,8 +1,7 @@
 import { log_pd } from '@senate/axiom'
 import { Decoder } from '@senate/database'
 import { DAOHandlerWithDAO, prisma } from '@senate/database'
-import { ethers, Log, zeroPadValue } from 'ethers'
-import { hexlify } from 'ethers'
+import { ethers } from 'ethers'
 import getAbi from '../../utils'
 
 export const getMakerExecutiveVotes = async (
@@ -24,7 +23,7 @@ export const getMakerExecutiveVotes = async (
         topics: [
             [voteMultipleActionsTopic, voteSingleActionTopic],
             voterAddresses.map((voterAddress) =>
-                hexlify(zeroPadValue(voterAddress, 32))
+                ethers.hexlify(ethers.zeroPadValue(voterAddress, 32))
             )
         ]
     })
@@ -39,7 +38,7 @@ export const getMakerExecutiveVotes = async (
 }
 
 export const getVotesForVoter = async (
-    logs: Log[],
+    logs: ethers.Log[],
     daoHandler: DAOHandlerWithDAO,
     voterAddress: string,
     provider: ethers.JsonRpcProvider
@@ -67,7 +66,7 @@ export const getVotesForVoter = async (
 
         if (
             String(log.topics[1]).toLowerCase() !=
-            hexlify(voterAddress).toLowerCase()
+            ethers.hexlify(ethers.zeroPadValue(voterAddress, 32)).toLowerCase()
         )
             continue
 
@@ -104,24 +103,24 @@ export const getVotesForVoter = async (
                 try {
                     const proposal = await prisma.proposal.findFirstOrThrow({
                         where: {
-                            externalId: vote,
-                            daoId: daoHandler.daoId,
-                            daoHandlerId: daoHandler.id
+                            externalid: vote,
+                            daoid: daoHandler.daoid,
+                            daohandlerid: daoHandler.id
                         }
                     })
 
                     return {
                         //TODO: Implement setting created block number
-                        blockCreated: 420,
-                        voterAddress: ethers.getAddress(voterAddress),
-                        daoId: daoHandler.daoId,
-                        proposalId: proposal.id,
-                        daoHandlerId: daoHandler.id,
+                        blockcreated: 420,
+                        voteraddress: ethers.getAddress(voterAddress),
+                        daoid: daoHandler.daoid,
+                        proposalid: proposal.id,
+                        daohandlerid: daoHandler.id,
                         choice: 1,
                         reason: '',
-                        votingPower: 0,
-                        proposalActive:
-                            proposal.timeEnd.getTime() > new Date().getTime()
+                        votingpower: 0,
+                        proposalactive:
+                            proposal.timeend.getTime() > new Date().getTime()
                     }
                 } catch (e) {
                     log_pd.log({
@@ -139,7 +138,7 @@ export const getVotesForVoter = async (
         )
     ).filter((vote) => vote != null)
 
-    return { success, votes, voterAddress }
+    return { success, votes, voteraddress: voterAddress }
 }
 
 const getSlateYays = async (chiefContract: ethers.Contract, slate: string) => {

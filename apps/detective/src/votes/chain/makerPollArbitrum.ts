@@ -1,5 +1,5 @@
 import { DAOHandler, prisma, Proposal, Decoder } from '@senate/database'
-import { ethers, hexlify, zeroPadValue } from 'ethers'
+import { ethers } from 'ethers'
 import getAbi from '../../utils'
 
 interface DecodedLog {
@@ -27,7 +27,7 @@ export const getMakerPollVotesFromArbitrum = async (
         topics: [
             new ethers.Interface(abi).getEvent('Voted').topicHash,
             voterAddresses.map((voterAddress) =>
-                hexlify(zeroPadValue(voterAddress, 32))
+                ethers.hexlify(ethers.zeroPadValue(voterAddress, 32))
             )
         ]
     })
@@ -68,27 +68,27 @@ export const getVotesForVoter = async (
 
     const proposals = await prisma.proposal.findMany({
         where: {
-            externalId: {
+            externalid: {
                 in: Array.from(uniquePollIds)
             },
-            daoId: daoHandler.daoId
+            daoid: daoHandler.daoid
         }
     })
 
     if (proposals.length < uniquePollIds.size) {
         success = false
-        return { success, votes: [], voterAddress }
+        return { success, votes: [], voteraddress: voterAddress }
     }
 
     const proposalsMap: Map<string, Proposal> = new Map(
         proposals.map((proposal) => {
-            return [proposal.externalId, proposal]
+            return [proposal.externalid, proposal]
         })
     )
 
     const votes = await formatVotes(voterLogs, proposalsMap)
 
-    return { success, votes, voterAddress }
+    return { success, votes, voteraddress: voterAddress }
 }
 
 const formatVotes = async (
@@ -100,15 +100,15 @@ const formatVotes = async (
             BigInt(log.eventData.pollId).toString()
         )
         return {
-            blockCreated: log.txBlock,
-            voterAddress: log.eventData.voter,
-            daoId: proposal.daoId,
-            proposalId: proposal.id,
-            daoHandlerId: proposal.daoHandlerId,
+            blockcreated: log.txBlock,
+            voteraddress: log.eventData.voter,
+            daoid: proposal.daoid,
+            proposalid: proposal.id,
+            daohandlerid: proposal.daohandlerid,
             choice: BigInt(log.eventData.optionId).toString() ? 1 : 2,
             reason: '',
-            votingPower: 0,
-            proposalActive: proposal.timeEnd.getTime() > new Date().getTime()
+            votingpower: 0,
+            proposalactive: proposal.timeend.getTime() > new Date().getTime()
         }
     })
 }

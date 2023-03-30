@@ -16,27 +16,27 @@ export const addSnapshotDaoVotes = async () => {
 
     const queueItems = await prisma.$transaction(
         async (tx) => {
-            const daoHandlers = await tx.dAOHandler.findMany({
+            const daoHandlers = await tx.daohandler.findMany({
                 where: {
                     type: DAOHandlerType.SNAPSHOT,
-                    voterHandlers: {
+                    voterhandlers: {
                         some: {
                             OR: [
                                 {
-                                    refreshStatus: RefreshStatus.DONE,
-                                    lastRefresh: {
+                                    refreshstatus: RefreshStatus.DONE,
+                                    lastrefresh: {
                                         lt: normalRefresh
                                     }
                                 },
                                 {
-                                    refreshStatus: RefreshStatus.PENDING,
-                                    lastRefresh: {
+                                    refreshstatus: RefreshStatus.PENDING,
+                                    lastrefresh: {
                                         lt: forceRefresh
                                     }
                                 },
                                 {
-                                    refreshStatus: RefreshStatus.NEW,
-                                    lastRefresh: {
+                                    refreshstatus: RefreshStatus.NEW,
+                                    lastrefresh: {
                                         lt: newRefresh
                                     }
                                 }
@@ -45,24 +45,24 @@ export const addSnapshotDaoVotes = async () => {
                     }
                 },
                 include: {
-                    voterHandlers: {
+                    voterhandlers: {
                         where: {
                             OR: [
                                 {
-                                    refreshStatus: RefreshStatus.DONE,
-                                    lastRefresh: {
+                                    refreshstatus: RefreshStatus.DONE,
+                                    lastrefresh: {
                                         lt: normalRefresh
                                     }
                                 },
                                 {
-                                    refreshStatus: RefreshStatus.PENDING,
-                                    lastRefresh: {
+                                    refreshstatus: RefreshStatus.PENDING,
+                                    lastrefresh: {
                                         lt: forceRefresh
                                     }
                                 },
                                 {
-                                    refreshStatus: RefreshStatus.NEW,
-                                    lastRefresh: {
+                                    refreshstatus: RefreshStatus.NEW,
+                                    lastrefresh: {
                                         lt: newRefresh
                                     }
                                 }
@@ -87,10 +87,10 @@ export const addSnapshotDaoVotes = async () => {
 
             const refreshEntries = filteredDaoHandlers
                 .map((daoHandler) => {
-                    const voterHandlers = daoHandler.voterHandlers
+                    const voterHandlers = daoHandler.voterhandlers
 
                     const voteTimestamps = voterHandlers.map((voterHandler) =>
-                        Number(voterHandler.snapshotIndex?.getTime())
+                        Number(voterHandler.snapshotindex?.getTime())
                     )
 
                     const voteTimestampBuckets = bin<number, Date>()
@@ -110,13 +110,13 @@ export const addSnapshotDaoVotes = async () => {
                                     (voterHandler) =>
                                         bucketMin <=
                                             Number(
-                                                voterHandler.snapshotIndex?.getTime()
+                                                voterHandler.snapshotindex?.getTime()
                                             ) &&
                                         Number(
-                                            voterHandler.snapshotIndex?.getTime()
+                                            voterHandler.snapshotindex?.getTime()
                                         ) < bucketMax
                                 )
-                                .slice(0, 100)
+                                .slice(0, 25)
 
                             voterHandlerToRefresh = [
                                 ...voterHandlerToRefresh,
@@ -149,11 +149,11 @@ export const addSnapshotDaoVotes = async () => {
                 })
                 .flat(2)
 
-            await tx.voterHandler.updateMany({
+            await tx.voterhandler.updateMany({
                 where: { id: { in: voterHandlerToRefresh.map((v) => v.id) } },
                 data: {
-                    refreshStatus: RefreshStatus.PENDING,
-                    lastRefresh: new Date()
+                    refreshstatus: RefreshStatus.PENDING,
+                    lastrefresh: new Date()
                 }
             })
 

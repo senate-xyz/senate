@@ -15,7 +15,7 @@ export const addChainDaoVotesToQueue = async () => {
 
     const queueItems = await prisma.$transaction(
         async (tx) => {
-            const daoHandlers = await tx.dAOHandler.findMany({
+            const daoHandlers = await tx.daohandler.findMany({
                 where: {
                     type: {
                         in: [
@@ -31,24 +31,24 @@ export const addChainDaoVotesToQueue = async () => {
                             DAOHandlerType.DYDX_CHAIN
                         ]
                     },
-                    voterHandlers: {
+                    voterhandlers: {
                         some: {
                             OR: [
                                 {
-                                    refreshStatus: RefreshStatus.DONE,
-                                    lastRefresh: {
+                                    refreshstatus: RefreshStatus.DONE,
+                                    lastrefresh: {
                                         lt: normalRefresh
                                     }
                                 },
                                 {
-                                    refreshStatus: RefreshStatus.PENDING,
-                                    lastRefresh: {
+                                    refreshstatus: RefreshStatus.PENDING,
+                                    lastrefresh: {
                                         lt: forceRefresh
                                     }
                                 },
                                 {
-                                    refreshStatus: RefreshStatus.NEW,
-                                    lastRefresh: {
+                                    refreshstatus: RefreshStatus.NEW,
+                                    lastrefresh: {
                                         lt: newRefresh
                                     }
                                 }
@@ -57,24 +57,24 @@ export const addChainDaoVotesToQueue = async () => {
                     }
                 },
                 include: {
-                    voterHandlers: {
+                    voterhandlers: {
                         where: {
                             OR: [
                                 {
-                                    refreshStatus: RefreshStatus.DONE,
-                                    lastRefresh: {
+                                    refreshstatus: RefreshStatus.DONE,
+                                    lastrefresh: {
                                         lt: normalRefresh
                                     }
                                 },
                                 {
-                                    refreshStatus: RefreshStatus.PENDING,
-                                    lastRefresh: {
+                                    refreshstatus: RefreshStatus.PENDING,
+                                    lastrefresh: {
                                         lt: forceRefresh
                                     }
                                 },
                                 {
-                                    refreshStatus: RefreshStatus.NEW,
-                                    lastRefresh: {
+                                    refreshstatus: RefreshStatus.NEW,
+                                    lastrefresh: {
                                         lt: newRefresh
                                     }
                                 }
@@ -101,10 +101,10 @@ export const addChainDaoVotesToQueue = async () => {
 
             const refreshEntries = filteredDaoHandlers
                 .map((daoHandler) => {
-                    const voterHandlers = daoHandler.voterHandlers
+                    const voterHandlers = daoHandler.voterhandlers
 
                     const voteTimestamps = voterHandlers.map((voterHandler) =>
-                        Number(voterHandler.chainIndex)
+                        Number(voterHandler.chainindex)
                     )
 
                     const domainLimit =
@@ -125,11 +125,11 @@ export const addChainDaoVotesToQueue = async () => {
                                 .filter(
                                     (voterHandler) =>
                                         bucketMin <=
-                                            Number(voterHandler.chainIndex) &&
-                                        Number(voterHandler.chainIndex) <
+                                            Number(voterHandler.chainindex) &&
+                                        Number(voterHandler.chainindex) <
                                             bucketMax
                                 )
-                                .slice(0, 100)
+                                .slice(0, 25)
 
                             voterHandlerToRefresh = [
                                 ...voterHandlerToRefresh,
@@ -162,11 +162,11 @@ export const addChainDaoVotesToQueue = async () => {
                 })
                 .flat(2)
 
-            await tx.voterHandler.updateMany({
+            await tx.voterhandler.updateMany({
                 where: { id: { in: voterHandlerToRefresh.map((v) => v.id) } },
                 data: {
-                    refreshStatus: RefreshStatus.PENDING,
-                    lastRefresh: new Date()
+                    refreshstatus: RefreshStatus.PENDING,
+                    lastrefresh: new Date()
                 }
             })
 

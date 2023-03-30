@@ -23,7 +23,7 @@ const getSubscribedDAOs = async () => {
             return { id: '0' }
         })
 
-    const daosList = await prisma.dAO.findMany({
+    const daosList = await prisma.dao.findMany({
         where: {
             subscriptions: {
                 some: {
@@ -38,7 +38,7 @@ const getSubscribedDAOs = async () => {
             handlers: true,
             subscriptions: {
                 where: {
-                    userId: { contains: user.id }
+                    userid: { contains: user.id }
                 }
             }
         }
@@ -47,7 +47,7 @@ const getSubscribedDAOs = async () => {
 }
 
 const getAllDAOs = async () => {
-    const daosList = await prisma.dAO.findMany({
+    const daosList = await prisma.dao.findMany({
         where: {},
         orderBy: {
             name: 'asc'

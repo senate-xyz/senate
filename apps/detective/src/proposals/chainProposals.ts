@@ -27,17 +27,13 @@ interface Result {
     url: string
 }
 
-const infuraProvider = new ethers.JsonRpcProvider(
-    String(process.env.INFURA_NODE_URL)
-)
-
-const senateProvider = new ethers.JsonRpcProvider(
-    String(process.env.SENATE_NODE_URL)
+const rpcprovider = new ethers.JsonRpcProvider(
+    String(process.env.ALCHEMY_NODE_URL)
 )
 
 export const updateChainProposals = async (daoHandlerId: string) => {
     let response = 'nok'
-    const daoHandler = await prisma.dAOHandler.findFirstOrThrow({
+    const daoHandler = await prisma.daohandler.findFirstOrThrow({
         where: { id: daoHandlerId },
         include: { dao: true }
     })
@@ -46,20 +42,16 @@ export const updateChainProposals = async (daoHandlerId: string) => {
         return [{ daoHandlerId: daoHandlerId, response: 'nok' }]
     }
 
-    let proposals: Result[], currentBlock: number
+    let proposals: Result[]
 
-    try {
-        currentBlock = await senateProvider.getBlockNumber()
-    } catch (e) {
-        currentBlock = await infuraProvider.getBlockNumber()
-    }
+    const currentBlock = await rpcprovider.getBlockNumber()
 
-    const minBlockNumber = Number(daoHandler.chainIndex)
+    const minBlockNumber = Number(daoHandler.chainindex)
 
     // const blockBatchSize =
     //     daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE ? 100000 : 1000000
 
-    const blockBatchSize = 1000000
+    const blockBatchSize = Number(daoHandler.refreshspeed)
 
     const fromBlock = Math.max(minBlockNumber, 1920000)
     const toBlock =
@@ -67,8 +59,7 @@ export const updateChainProposals = async (daoHandlerId: string) => {
             ? fromBlock + blockBatchSize
             : currentBlock
 
-    const provider: ethers.JsonRpcProvider =
-        currentBlock - 50 > fromBlock ? infuraProvider : senateProvider
+    const provider: ethers.JsonRpcProvider = rpcprovider
 
     try {
         switch (daoHandler.type) {
@@ -152,31 +143,31 @@ export const updateChainProposals = async (daoHandlerId: string) => {
             proposals.map((proposal) => {
                 return prisma.proposal.upsert({
                     where: {
-                        externalId_daoId: {
-                            externalId: proposal.externalId,
-                            daoId: proposal.daoId
+                        externalid_daoid: {
+                            externalid: proposal.externalId,
+                            daoid: proposal.daoId
                         }
                     },
                     update: {
                         choices: proposal.choices,
                         scores: proposal.scores,
-                        scoresTotal: proposal.scoresTotal
+                        scorestotal: proposal.scoresTotal
                     },
                     create: {
                         name: proposal.name,
-                        externalId: proposal.externalId,
+                        externalid: proposal.externalId,
                         choices: proposal.choices,
                         scores: proposal.scores,
-                        scoresTotal: proposal.scoresTotal,
+                        scorestotal: proposal.scoresTotal,
                         quorum: proposal.quorum,
-                        blockCreated: proposal.blockCreated,
-                        timeCreated: proposal.timeCreated,
-                        timeStart: proposal.timeStart,
-                        timeEnd: proposal.timeEnd,
+                        blockcreated: proposal.blockCreated,
+                        timecreated: proposal.timeCreated,
+                        timestart: proposal.timeStart,
+                        timeend: proposal.timeEnd,
                         url: proposal.url,
 
-                        daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id
+                        daoid: daoHandler.daoid,
+                        daohandlerid: daoHandler.id
                     }
                 })
             })
@@ -201,13 +192,13 @@ export const updateChainProposals = async (daoHandlerId: string) => {
             newIndex: newIndex
         })
 
-        await prisma.dAOHandler.update({
+        await prisma.daohandler.update({
             where: {
                 id: daoHandler.id
             },
             data: {
-                chainIndex: newIndex,
-                snapshotIndex: new Date('2009-01-09T04:54:25.00Z')
+                chainindex: newIndex,
+                snapshotindex: new Date('2009-01-09T04:54:25.00Z')
             }
         })
 
@@ -225,11 +216,11 @@ export const updateChainProposals = async (daoHandlerId: string) => {
             provider: provider._getConnection().url,
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
-            errorStack: (e as Error).stack
+            errorStack: (e as Error).stack,
+            response: [{ daoHandlerId: daoHandlerId, response: response }]
         })
     }
 
-    const res = [{ daoHandlerId: daoHandlerId, response: response }]
     log_pd.log({
         level: 'info',
         message: `FINISHED updating proposals ${daoHandler.dao.name} - ${daoHandler.type}`,
@@ -240,8 +231,8 @@ export const updateChainProposals = async (daoHandlerId: string) => {
         toBlock: toBlock,
         proposals: proposals,
         provider: provider._getConnection().url,
-        response: res
+        response: [{ daoHandlerId: daoHandlerId, response: response }]
     })
 
-    return res
+    return [{ daoHandlerId: daoHandlerId, response: response }]
 }

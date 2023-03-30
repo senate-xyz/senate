@@ -47,13 +47,13 @@ export function authOptions(
                             },
                             create: {
                                 name: siwe.address,
-                                acceptedTerms: true,
-                                acceptedTermsTimestamp: new Date()
+                                acceptedterms: true,
+                                acceptedtermstimestamp: new Date()
                             },
                             update: {
-                                lastActive: new Date(),
-                                sessionCount: { increment: 1 },
-                                newUser: false
+                                lastactive: new Date(),
+                                sessioncount: { increment: 1 },
+                                newuser: false
                             }
                         })
 
@@ -126,8 +126,8 @@ export function authOptions(
                             name: String(message.user.name)
                         },
                         data: {
-                            lastActive: new Date(),
-                            sessionCount: { increment: 1 }
+                            lastactive: new Date(),
+                            sessioncount: { increment: 1 }
                         }
                     })
             },
@@ -150,7 +150,7 @@ export function authOptions(
                             name: String(message.session.user?.name)
                         },
                         data: {
-                            lastActive: new Date()
+                            lastactive: new Date()
                         }
                     })
             }

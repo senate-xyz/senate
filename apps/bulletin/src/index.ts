@@ -154,11 +154,11 @@ const fetchUsersToBeNotifiedForProposal = async (
                 email: {
                     not: ''
                 },
-                dailyBulletin: true,
+                dailybulletin: true,
                 subscriptions: {
                     some: {
-                        daoId: proposal.daoId,
-                        notificationsEnabled: true
+                        daoid: proposal.daoid,
+                        notificationsenabled: true
                     }
                 }
             },
@@ -201,17 +201,17 @@ const insertNotifications = async (
                 users.map((user) => {
                     return prisma.notification.upsert({
                         where: {
-                            proposalId_userId_type: {
-                                proposalId: proposal.id,
-                                userId: user.id,
+                            proposalid_userid_type: {
+                                proposalid: proposal.id,
+                                userid: user.id,
                                 type: type
                             }
                         },
                         update: {},
                         create: {
-                            userId: user.id,
-                            proposalId: proposal.id,
-                            daoId: proposal.daoId,
+                            userid: user.id,
+                            proposalid: proposal.id,
+                            daoid: proposal.daoid,
                             type: type
                         }
                     })
@@ -246,12 +246,12 @@ const fetchNewProposals = async () => {
     try {
         const proposals = await prisma.proposal.findMany({
             where: {
-                timeCreated: {
+                timecreated: {
                     gte: new Date(Date.now() - oneDay)
                 }
             },
             orderBy: {
-                timeEnd: 'asc'
+                timeend: 'asc'
             }
         })
 
@@ -285,19 +285,19 @@ const fetchEndingProposals = async () => {
             where: {
                 AND: [
                     {
-                        timeEnd: {
+                        timeend: {
                             lte: new Date(Date.now() + threeDays)
                         }
                     },
                     {
-                        timeEnd: {
+                        timeend: {
                             gt: new Date(Date.now())
                         }
                     }
                 ]
             },
             orderBy: {
-                timeEnd: 'asc'
+                timeend: 'asc'
             }
         })
 
@@ -330,19 +330,19 @@ const fetchPastProposals = async () => {
             where: {
                 AND: [
                     {
-                        timeEnd: {
+                        timeend: {
                             lte: new Date(Date.now())
                         }
                     },
                     {
-                        timeEnd: {
+                        timeend: {
                             gte: new Date(Date.now() - oneDay)
                         }
                     }
                 ]
             },
             orderBy: {
-                timeEnd: 'desc'
+                timeend: 'desc'
             }
         })
 
@@ -375,12 +375,12 @@ const formatEmailTableData = async (
 ): Promise<EmailTemplateRow[]> => {
     try {
         const notifications = await prisma.notification.findMany({
-            where: { userId: user.id, type: notificationType },
+            where: { userid: user.id, type: notificationType },
             include: {
                 proposal: {
                     include: {
                         dao: true,
-                        daoHandler: true
+                        daohandler: true
                     }
                 }
             }
@@ -405,19 +405,19 @@ const formatEmailTableData = async (
 
 const formatEmailTemplateRow = async (
     notification: Notification & {
-        proposal: Proposal & { dao: DAO; daoHandler: DAOHandler }
+        proposal: Proposal & { dao: DAO; daohandler: DAOHandler }
     },
     user: UserWithVotingAddresses
 ): Promise<EmailTemplateRow> => {
     const voted = await userVoted(
         user.voters,
-        notification.proposalId,
-        notification.daoId
+        notification.proposalid,
+        notification.daoid
     )
 
     await delay(1000)
     const countdownUrl = await generateCountdownGifUrl(
-        notification.proposal.timeEnd
+        notification.proposal.timeend
     )
 
     const votingStatus = voted
@@ -433,7 +433,7 @@ const formatEmailTemplateRow = async (
         : `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/NotVotedYet.png`
 
     const chainLogoUrl =
-        notification.proposal.daoHandler.type === DAOHandlerType.SNAPSHOT
+        notification.proposal.daohandler.type === DAOHandlerType.SNAPSHOT
             ? encodeURI(
                   `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Chain/Snapshot/snapshot.png`
               )
@@ -463,7 +463,7 @@ const formatEmailTemplateRow = async (
         )
 
         highestScorePercentage =
-            (highestScore / notification.proposal.scoresTotal) * 100
+            (highestScore / notification.proposal.scorestotal) * 100
 
         result = {
             highestScoreChoice: highestScoreChoice.substring(0, 15),
@@ -486,12 +486,12 @@ const formatEmailTemplateRow = async (
         chainLogoUrl: chainLogoUrl,
         daoName: notification.proposal.dao.name,
         endHoursUTC: formatTwoDigit(
-            notification.proposal.timeEnd.getUTCHours()
+            notification.proposal.timeend.getUTCHours()
         ),
         endMinutesUTC: formatTwoDigit(
-            notification.proposal.timeEnd.getUTCMinutes()
+            notification.proposal.timeend.getUTCMinutes()
         ),
-        endDateString: notification.proposal.timeEnd.toLocaleDateString(
+        endDateString: notification.proposal.timeend.toLocaleDateString(
             undefined,
             emailProposalEndDateStringFormat
         ),
@@ -505,12 +505,12 @@ const formatEmailTemplateRow = async (
 }
 
 const isMakerProposal = (
-    proposal: Proposal & { dao: DAO; daoHandler: DAOHandler }
+    proposal: Proposal & { dao: DAO; daohandler: DAOHandler }
 ) => {
     return (
-        proposal.daoHandler.type === DAOHandlerType.MAKER_EXECUTIVE ||
-        proposal.daoHandler.type === DAOHandlerType.MAKER_POLL ||
-        proposal.daoHandler.type === DAOHandlerType.MAKER_POLL_ARBITRUM
+        proposal.daohandler.type === DAOHandlerType.MAKER_EXECUTIVE ||
+        proposal.daohandler.type === DAOHandlerType.MAKER_POLL ||
+        proposal.daohandler.type === DAOHandlerType.MAKER_POLL_ARBITRUM
     )
 }
 
@@ -625,10 +625,10 @@ const fetchUsersToBeNotified = async (): Promise<UserWithVotingAddresses[]> => {
                 email: {
                     not: ''
                 },
-                dailyBulletin: true,
+                dailybulletin: true,
                 subscriptions: {
                     some: {
-                        notificationsEnabled: true
+                        notificationsenabled: true
                     }
                 }
             },
@@ -805,9 +805,9 @@ const userVoted = async (
         for (const voter of voters) {
             const vote = await prisma.vote.findFirst({
                 where: {
-                    voterAddress: voter.address,
-                    daoId: daoId,
-                    proposalId: proposalId
+                    voteraddress: voter.address,
+                    daoid: daoId,
+                    proposalid: proposalId
                 }
             })
 

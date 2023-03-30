@@ -14,14 +14,14 @@ const hasUserBulletin = async () => {
                 name: { equals: userAddress }
             },
             select: {
-                dailyBulletin: true
+                dailybulletin: true
             }
         })
         .catch(() => {
-            return { dailyBulletin: false }
+            return { dailybulletin: false }
         })
 
-    return user.dailyBulletin
+    return user.dailybulletin
 }
 
 const hasSubscribedDAOs = async () => {
@@ -43,13 +43,13 @@ const hasSubscribedDAOs = async () => {
 
     const subscriptionsList = await prisma.subscription.findMany({
         where: {
-            userId: user.id
+            userid: user.id
         },
         include: {
             dao: {
                 include: {
                     handlers: true,
-                    proposals: { where: { timeEnd: { gt: new Date() } } }
+                    proposals: { where: { timeend: { gt: new Date() } } }
                 }
             }
         },

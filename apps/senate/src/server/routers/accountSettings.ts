@@ -19,7 +19,7 @@ export const accountSettingsRouter = router({
                 create: {
                     name: String(username),
                     email: input.email,
-                    dailyBulletin: true,
+                    dailybulletin: true,
                     voters: {
                         connectOrCreate: {
                             where: {
@@ -31,7 +31,7 @@ export const accountSettingsRouter = router({
                         }
                     }
                 },
-                update: { email: input.email, dailyBulletin: true }
+                update: { email: input.email, dailybulletin: true }
             })
 
             return user
@@ -205,9 +205,9 @@ export const accountSettingsRouter = router({
                 },
                 create: {
                     name: String(username),
-                    dailyBulletin: input.dailyBulletin
+                    dailybulletin: input.dailyBulletin
                 },
-                update: { dailyBulletin: input.dailyBulletin }
+                update: { dailybulletin: input.dailyBulletin }
             })
 
             return user

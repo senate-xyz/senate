@@ -37,7 +37,7 @@ export const votesSanity = schedule('30 * * * *', async () => {
     const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
 
     try {
-        const daoHandlers: DAOHandler[] = await prisma.dAOHandler.findMany({
+        const daoHandlers: DAOHandler[] = await prisma.daohandler.findMany({
             where: {
                 type: DAOHandlerType.SNAPSHOT
             }
@@ -67,9 +67,9 @@ const checkAndSanitizeVotesRoutine = async (
 
     for (const daoHandler of daoHandlers) {
         const voterAddresses: string[] = (
-            await prisma.voterHandler.findMany({
+            await prisma.voterhandler.findMany({
                 where: {
-                    daoHandlerId: daoHandler.id
+                    daohandlerid: daoHandler.id
                 },
                 select: {
                     voter: {
@@ -98,9 +98,9 @@ const checkAndSanitizeVotesRoutine = async (
             (vote) => {
                 return !votesFromDatabase.some(
                     (voteFromDatabase) =>
-                        voteFromDatabase.proposal.externalId ===
+                        voteFromDatabase.proposal.externalid ===
                             vote.proposal.id &&
-                        voteFromDatabase.voterAddress === vote.voter
+                        voteFromDatabase.voteraddress === vote.voter
                 )
             }
         )
@@ -144,20 +144,20 @@ const fetchVotesFromDatabase = async (
 ) => {
     return await prisma.vote.findMany({
         where: {
-            daoHandlerId: daoHandlerId,
-            voterAddress: {
+            daohandlerid: daoHandlerId,
+            voteraddress: {
                 in: voterAddresses
             },
-            timeCreated: {
+            timecreated: {
                 gte: SEARCH_FROM,
                 lte: SEARCH_TO
             }
         },
         select: {
-            voterAddress: true,
+            voteraddress: true,
             proposal: {
                 select: {
-                    externalId: true
+                    externalid: true
                 }
             }
         }

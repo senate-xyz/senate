@@ -4,7 +4,7 @@ import { JsonArray, Vote, prisma } from '@senate/database'
 
 export const publicRouter = router({
     allDAOs: publicProcedure.query(async () => {
-        const allDAOs = await prisma.dAO.findMany({})
+        const allDAOs = await prisma.dao.findMany({})
 
         return allDAOs
     }),
@@ -30,10 +30,10 @@ export const publicRouter = router({
                 },
                 include: {
                     dao: true,
-                    daoHandler: true,
+                    daohandler: true,
                     votes: {
                         where: {
-                            voterAddress: {
+                            voteraddress: {
                                 in: user?.voters.map((voter) => voter.address)
                             }
                         }
@@ -69,15 +69,15 @@ export const publicRouter = router({
 
             const result = {
                 daoName: proposal.dao.name,
-                onchain: proposal.daoHandler.type == 'SNAPSHOT' ? false : true,
+                onchain: proposal.daohandler.type == 'SNAPSHOT' ? false : true,
                 daoPicture: proposal.dao.picture,
                 proposalTitle: proposal.name,
                 proposalLink: proposal.url,
-                timeEnd: proposal.timeEnd,
+                timeEnd: proposal.timeend,
                 highestScoreChoice: highestScoreChoice,
                 highestScore: highestScore,
-                scoresTotal: proposal.scoresTotal,
-                passedQuorum: proposal.quorum < proposal.scoresTotal,
+                scoresTotal: proposal.scorestotal,
+                passedQuorum: proposal.quorum < proposal.scorestotal,
                 voted: user
                     ? String(
                           proposal.votes.map((vote: Vote) => vote.choice)

@@ -10,16 +10,16 @@ export const processSnapshotProposals = async (item: RefreshQueueType) => {
             {
                 daoHandlerId: item.handlerId
             },
-            { timeout: 5 * 60 * 1000 }
+            { timeout: 60 * 1000 }
         )
 
-        const data = response.data
+        const { data } = response
 
         if (!data) return
         if (!Array.isArray(data)) return
 
         await prisma.$transaction([
-            prisma.dAOHandler.updateMany({
+            prisma.daohandler.updateMany({
                 where: {
                     id: {
                         in: data
@@ -28,12 +28,12 @@ export const processSnapshotProposals = async (item: RefreshQueueType) => {
                     }
                 },
                 data: {
-                    refreshStatus: RefreshStatus.DONE,
-                    lastRefresh: new Date()
+                    refreshstatus: RefreshStatus.DONE,
+                    lastrefresh: new Date()
                 }
             }),
 
-            prisma.dAOHandler.updateMany({
+            prisma.daohandler.updateMany({
                 where: {
                     id: {
                         in: data
@@ -42,8 +42,8 @@ export const processSnapshotProposals = async (item: RefreshQueueType) => {
                     }
                 },
                 data: {
-                    refreshStatus: RefreshStatus.NEW,
-                    lastRefresh: new Date()
+                    refreshstatus: RefreshStatus.NEW,
+                    lastrefresh: new Date()
                 }
             })
         ])
@@ -60,14 +60,14 @@ export const processSnapshotProposals = async (item: RefreshQueueType) => {
             response: data
         })
     } catch (e) {
-        await prisma.dAOHandler.update({
+        await prisma.daohandler.update({
             where: {
                 id: item.handlerId
             },
             data: {
-                refreshStatus: RefreshStatus.NEW,
-                lastRefresh: new Date(),
-                snapshotIndex: new Date('2009-01-09T04:54:25.00Z')
+                refreshstatus: RefreshStatus.NEW,
+                lastrefresh: new Date(),
+                snapshotindex: new Date('2009-01-09T04:54:25.00Z')
             }
         })
 

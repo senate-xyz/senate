@@ -23,7 +23,7 @@ export default function Home() {
     }, [account])
 
     useEffect(() => {
-        if (user.data) setDailyEmails(user.data.dailyBulletin)
+        if (user.data) setDailyEmails(user.data.dailybulletin)
     }, [user.data])
 
     const updateNotifications =

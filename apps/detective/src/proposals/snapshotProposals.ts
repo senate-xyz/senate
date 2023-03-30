@@ -1,6 +1,6 @@
 import { prisma, Decoder } from '@senate/database'
 import { log_pd } from '@senate/axiom'
-import superagent from 'superagent'
+import axios from 'axios'
 
 type GraphQLProposal = {
     id: string
@@ -25,12 +25,12 @@ export const updateSnapshotProposals = async (
 ): Promise<Array<{ daoHandlerId: string; response: string }>> => {
     let response = 'nok'
 
-    const daoHandler = await prisma.dAOHandler.findFirstOrThrow({
+    const daoHandler = await prisma.daohandler.findFirstOrThrow({
         where: { id: daoHandlerId },
         include: { dao: true }
     })
 
-    const oldIndex = await daoHandler.snapshotIndex.getTime()
+    const oldIndex = await daoHandler.snapshotindex.getTime()
 
     const space = (daoHandler.decoder as Decoder).space
 
@@ -67,52 +67,43 @@ export const updateSnapshotProposals = async (
     }`
 
     try {
-        proposals = (await superagent
-            .get('https://hub.snapshot.org/graphql')
-            .query({
-                query: graphqlQuery
-            })
-            .timeout({
-                response: 10000,
-                deadline: 30000
-            })
-            .retry(3, (err, res) => {
-                if (err) return true
-                if (res.status == 200) return false
-                return true
+        const proposals = (await axios
+            .get('https://hub.snapshot.org/graphql', {
+                params: { query: graphqlQuery },
+                timeout: 5 * 60 * 1000
             })
             .then((response) => {
-                return response.body.data.proposals
+                return response.data.data.proposals
             })) as GraphQLProposal[]
 
         await prisma.$transaction(
             proposals.map((proposal) => {
                 return prisma.proposal.upsert({
                     where: {
-                        externalId_daoId: {
-                            externalId: proposal.id,
-                            daoId: daoHandler.daoId
+                        externalid_daoid: {
+                            externalid: proposal.id,
+                            daoid: daoHandler.daoid
                         }
                     },
                     update: {
                         choices: proposal.choices,
                         scores: proposal.scores,
-                        scoresTotal: proposal.scores_total
+                        scorestotal: proposal.scores_total
                     },
                     create: {
                         name: String(proposal.title),
-                        externalId: proposal.id,
+                        externalid: proposal.id,
                         choices: proposal.choices,
                         scores: proposal.scores,
-                        scoresTotal: proposal.scores_total,
+                        scorestotal: proposal.scores_total,
                         quorum: proposal.quorum,
-                        timeCreated: new Date(proposal.created * 1000),
-                        timeStart: new Date(proposal.start * 1000),
-                        timeEnd: new Date(proposal.end * 1000),
+                        timecreated: new Date(proposal.created * 1000),
+                        timestart: new Date(proposal.start * 1000),
+                        timeend: new Date(proposal.end * 1000),
                         url: proposal.link,
 
-                        daoId: daoHandler.daoId,
-                        daoHandlerId: daoHandler.id
+                        daoid: daoHandler.daoid,
+                        daohandlerid: daoHandler.id
                     }
                 })
             })
@@ -143,13 +134,13 @@ export const updateSnapshotProposals = async (
             newIndex = oldIndex
         }
 
-        await prisma.dAOHandler.update({
+        await prisma.daohandler.update({
             where: {
                 id: daoHandler.id
             },
             data: {
-                chainIndex: 1920000,
-                snapshotIndex: new Date(newIndex)
+                chainindex: 1920000,
+                snapshotindex: new Date(newIndex)
             }
         })
 
@@ -164,11 +155,10 @@ export const updateSnapshotProposals = async (
             proposals: proposals,
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
-            errorStack: (e as Error).stack
+            errorStack: (e as Error).stack,
+            response: [{ daoHandlerId: daoHandlerId, response: response }]
         })
     }
-
-    const res = [{ daoHandlerId: daoHandlerId, response: response }]
 
     log_pd.log({
         level: 'info',
@@ -177,8 +167,8 @@ export const updateSnapshotProposals = async (
         sourceType: 'SNAPSHOT',
         created_gt: Math.floor(oldIndex / 1000),
         proposals: proposals,
-        response: res
+        response: [{ daoHandlerId: daoHandlerId, response: response }]
     })
 
-    return res
+    return [{ daoHandlerId: daoHandlerId, response: response }]
 }

@@ -66,7 +66,7 @@ async function main() {
 }
 
 async function fetchSnapshotSpacesFromDb(): Promise<Array<string>> {
-    const handlers: DAOHandler[] = await prisma.dAOHandler.findMany({
+    const handlers: DAOHandler[] = await prisma.daohandler.findMany({
         where: {
             type: DAOHandlerType.SNAPSHOT
         }
@@ -193,14 +193,14 @@ async function bootstrapStressTestUserWithSubscriptions(): Promise<User> {
             daos.map((dao) => {
                 return prisma.subscription.upsert({
                     where: {
-                        userId_daoId: {
-                            userId: stressTestUser.id,
-                            daoId: dao.id
+                        userid_daoid: {
+                            userid: stressTestUser.id,
+                            daoid: dao.id
                         }
                     },
                     create: {
-                        userId: stressTestUser.id,
-                        daoId: dao.id
+                        userid: stressTestUser.id,
+                        daoid: dao.id
                     },
                     update: {}
                 })
@@ -227,7 +227,7 @@ async function createStressTestUser(): Promise<User> {
 }
 
 async function fetchDaos() {
-    return await prisma.dAO.findMany()
+    return await prisma.dao.findMany()
 }
 
 main()

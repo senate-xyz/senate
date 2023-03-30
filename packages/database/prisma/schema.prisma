@@ -12,193 +12,194 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model user {
   id String @id @default(cuid())
 
   name  String @unique
   email String @default("")
 
-  notifications Notification[]
-  subscriptions Subscription[]
-  voters        Voter[]
+  notifications notification[]
+  subscriptions subscription[]
+  voters        voter[]
 
-  newUser                Boolean   @default(true)
-  acceptedTerms          Boolean   @default(false)
-  acceptedTermsTimestamp DateTime?
-  dailyBulletin          Boolean   @default(false)
-  lastActive             DateTime  @default(now())
-  sessionCount           Int       @default(0)
+  newuser                Boolean   @default(true)
+  acceptedterms          Boolean   @default(false)
+  acceptedtermstimestamp DateTime?
+  dailybulletin          Boolean   @default(false)
+  lastactive             DateTime  @default(now())
+  sessioncount           Int       @default(0)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
 }
 
-model Voter {
+model voter {
   id String @id @default(cuid())
 
   address String @unique
 
-  votes         Vote[]
-  voterHandlers VoterHandler[]
-  users         User[]
+  votes         vote[]
+  voterhandlers voterhandler[]
+  users         user[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
 }
 
-model DAO {
+model dao {
   id String @id @default(cuid())
 
   name    String @unique
   picture String
 
-  handlers      DAOHandler[]
-  proposals     Proposal[]
-  subscriptions Subscription[]
-  votes         Vote[]
+  handlers      daohandler[]
+  proposals     proposal[]
+  subscriptions subscription[]
+  votes         vote[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
 }
 
-model DAOHandler {
+model daohandler {
   id String @id @default(cuid())
 
   type          DAOHandlerType
   decoder       Json
-  chainIndex    BigInt?        @default(1920000)
-  snapshotIndex DateTime?      @default("2009-01-09T04:54:25.00Z")
-  lastRefresh   DateTime       @default("2009-01-09T04:54:25.00Z")
-  refreshStatus RefreshStatus  @default(NEW)
+  chainindex    BigInt?        @default(1920000)
+  snapshotindex DateTime?      @default("2009-01-09T04:54:25.00Z")
+  lastrefresh   DateTime       @default("2009-01-09T04:54:25.00Z")
+  refreshstatus RefreshStatus  @default(NEW)
+  refreshspeed  BigInt         @default(1000000)
 
-  daoId         String
-  dao           DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
-  proposals     Proposal[]
-  voterHandlers VoterHandler[]
-  votes         Vote[]
+  daoid         String
+  dao           dao            @relation(fields: [daoid], references: [id], onDelete: Cascade)
+  proposals     proposal[]
+  voterhandlers voterhandler[]
+  votes         vote[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
 
-  @@unique([daoId, type])
+  @@unique([daoid, type])
 }
 
-model Proposal {
+model proposal {
   id String @id @default(cuid())
 
   name       String @db.VarChar(2048)
-  externalId String
+  externalid String
 
   choices     Json
   scores      Json
-  scoresTotal Float
+  scorestotal Float
   quorum      Float
 
-  blockCreated BigInt?  @default(420)
-  timeCreated  DateTime
-  timeStart    DateTime
-  timeEnd      DateTime
+  blockcreated BigInt?  @default(420)
+  timecreated  DateTime
+  timestart    DateTime
+  timeend      DateTime
   url          String   @db.VarChar(1024)
 
-  notifications Notification[]
-  daoHandlerId  String
-  daoHandler    DAOHandler     @relation(fields: [daoHandlerId], references: [id], onDelete: Cascade)
-  daoId         String
-  dao           DAO            @relation(fields: [daoId], references: [id], onDelete: Cascade)
-  votes         Vote[]
+  notifications notification[]
+  daohandlerid  String
+  daohandler    daohandler     @relation(fields: [daohandlerid], references: [id], onDelete: Cascade)
+  daoid         String
+  dao           dao            @relation(fields: [daoid], references: [id], onDelete: Cascade)
+  votes         vote[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
 
-  @@unique([externalId, daoId])
-  @@index([daoId])
-  @@index([daoHandlerId])
+  @@unique([externalid, daoid])
+  @@index([daoid])
+  @@index([daohandlerid])
 }
 
-model Notification {
+model notification {
   id String @id @default(cuid())
 
   type RoundupNotificationType
 
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  proposalId String
-  proposal   Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
-  daoId      String
+  userid     String
+  user       user     @relation(fields: [userid], references: [id], onDelete: Cascade)
+  proposalid String
+  proposal   proposal @relation(fields: [proposalid], references: [id], onDelete: Cascade)
+  daoid      String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
 
-  @@unique([proposalId, userId, type])
-  @@index([userId])
-  @@index([proposalId])
+  @@unique([proposalid, userid, type])
+  @@index([userid])
+  @@index([proposalid])
 }
 
-model Vote {
+model vote {
   id String @id @default(cuid())
 
   choice      Json
-  votingPower Float
+  votingpower Float
   reason      String @db.VarChar(2048)
 
-  voterAddress String
-  voter        Voter      @relation(fields: [voterAddress], references: [address], onDelete: Cascade)
-  proposalId   String
-  proposal     Proposal   @relation(fields: [proposalId], references: [id], onDelete: Cascade)
-  daoId        String
-  dao          DAO        @relation(fields: [daoId], references: [id], onDelete: Cascade)
-  daoHandlerId String
-  daoHandler   DAOHandler @relation(fields: [daoHandlerId], references: [id], onDelete: Cascade)
+  voteraddress String
+  voter        voter      @relation(fields: [voteraddress], references: [address], onDelete: Cascade)
+  proposalid   String
+  proposal     proposal   @relation(fields: [proposalid], references: [id], onDelete: Cascade)
+  daoid        String
+  dao          dao        @relation(fields: [daoid], references: [id], onDelete: Cascade)
+  daohandlerid String
+  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade)
 
-  blockCreated BigInt?   @default(420)
-  timeCreated  DateTime?
+  blockcreated BigInt?   @default(420)
+  timecreated  DateTime?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
 
-  @@unique([voterAddress, daoId, proposalId])
-  @@index([proposalId])
-  @@index([daoId])
+  @@unique([voteraddress, daoid, proposalid])
+  @@index([proposalid])
+  @@index([daoid])
 }
 
-model VoterHandler {
+model voterhandler {
   id String @id @default(cuid())
 
-  chainIndex    BigInt?       @default(1920000)
-  snapshotIndex DateTime?     @default("2009-01-09T04:54:25.00Z")
-  lastRefresh   DateTime      @default("2009-01-09T04:54:25.00Z")
-  refreshStatus RefreshStatus @default(NEW)
+  chainindex    BigInt?       @default(1920000)
+  snapshotindex DateTime?     @default("2009-01-09T04:54:25.00Z")
+  lastrefresh   DateTime      @default("2009-01-09T04:54:25.00Z")
+  refreshstatus RefreshStatus @default(NEW)
 
-  daoHandlerId String
-  daoHandler   DAOHandler @relation(fields: [daoHandlerId], references: [id], onDelete: Cascade)
-  voterId      String
-  voter        Voter      @relation(fields: [voterId], references: [id], onDelete: Cascade)
+  daohandlerid String
+  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade)
+  voterid      String
+  voter        voter      @relation(fields: [voterid], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
 
-  @@unique([voterId, daoHandlerId])
-  @@index([daoHandlerId])
+  @@unique([voterid, daohandlerid])
+  @@index([daohandlerid])
 }
 
-model Subscription {
+model subscription {
   id String @id @default(cuid())
 
-  notificationsEnabled Boolean @default(true)
+  notificationsenabled Boolean @default(true)
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  daoId  String
-  dao    DAO    @relation(fields: [daoId], references: [id], onDelete: Cascade)
+  userid String
+  user   user   @relation(fields: [userid], references: [id], onDelete: Cascade)
+  daoid  String
+  dao    dao    @relation(fields: [daoid], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
 
-  @@unique([userId, daoId])
-  @@index([daoId])
+  @@unique([userid, daoid])
+  @@index([daoid])
 }
 
-model Contract {
+model contract {
   address String
   abi     String
 

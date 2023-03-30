@@ -1,6 +1,6 @@
 import { log_pd } from '@senate/axiom'
 import { DAOHandlerWithDAO, Decoder, prisma } from '@senate/database'
-import { hexlify, zeroPadValue, ethers } from 'ethers'
+import { ethers } from 'ethers'
 import getAbi from '../../utils'
 
 interface DecodedLog {
@@ -28,7 +28,7 @@ export const getHopVotes = async (
         topics: [
             new ethers.Interface(abi).getEvent('VoteCast').topicHash,
             voterAddresses.map((voterAddress) =>
-                hexlify(zeroPadValue(voterAddress, 32))
+                ethers.hexlify(ethers.zeroPadValue(voterAddress, 32))
             )
         ]
     })
@@ -70,11 +70,11 @@ export const getVotesForVoter = async (
                     try {
                         const proposal = await prisma.proposal.findFirst({
                             where: {
-                                externalId: BigInt(
+                                externalid: BigInt(
                                     log.eventData.proposalId
                                 ).toString(),
-                                daoId: daoHandler.daoId,
-                                daoHandlerId: daoHandler.id
+                                daoid: daoHandler.daoid,
+                                daohandlerid: daoHandler.id
                             }
                         })
 
@@ -84,16 +84,16 @@ export const getVotesForVoter = async (
                         }
 
                         return {
-                            blockCreated: log.txBlock,
-                            voterAddress: ethers.getAddress(voterAddress),
-                            daoId: daoHandler.daoId,
-                            proposalId: proposal.id,
-                            daoHandlerId: daoHandler.id,
+                            blockcreated: log.txBlock,
+                            voteraddress: ethers.getAddress(voterAddress),
+                            daoid: daoHandler.daoid,
+                            proposalid: proposal.id,
+                            daohandlerid: daoHandler.id,
                             choice: String(log.eventData.support) ? 1 : 3,
                             reason: String(log.eventData.reason),
-                            votingPower: parseFloat(log.eventData.weight),
-                            proposalActive:
-                                proposal.timeEnd.getTime() >
+                            votingpower: parseFloat(log.eventData.weight),
+                            proposalactive:
+                                proposal.timeend.getTime() >
                                 new Date().getTime()
                         }
                     } catch (e) {
@@ -112,5 +112,5 @@ export const getVotesForVoter = async (
             )
         ).filter((n) => n) ?? []
 
-    return { success, votes, voterAddress }
+    return { success, votes, voteraddress: voterAddress }
 }

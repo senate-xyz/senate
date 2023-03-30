@@ -65,7 +65,7 @@ const getProposals = async (
 
     const userSubscriptions = await prisma.subscription.findMany({
         where: {
-            userId: user?.id
+            userid: user?.id
         },
         include: {
             dao: true
@@ -73,7 +73,7 @@ const getProposals = async (
     })
 
     const dao = await (
-        await prisma.dAO.findMany({})
+        await prisma.dao.findMany({})
     ).filter(
         (dao) =>
             dao.name.toLowerCase().replace(' ', '') ==
@@ -99,7 +99,7 @@ const getProposals = async (
                     }
                 },
                 {
-                    timeEnd: Boolean(active)
+                    timeend: Boolean(active)
                         ? {
                               lte: new Date(
                                   Date.now() + Number(end * 24 * 60 * 60 * 1000)
@@ -112,7 +112,7 @@ const getProposals = async (
                           }
                 },
                 {
-                    timeEnd: Boolean(active)
+                    timeend: Boolean(active)
                         ? {
                               gte: new Date()
                           }
@@ -124,14 +124,14 @@ const getProposals = async (
             ]
         },
         orderBy: {
-            timeEnd: Boolean(active) ? 'asc' : 'desc'
+            timeend: Boolean(active) ? 'asc' : 'desc'
         },
         include: {
             dao: true,
-            daoHandler: true,
+            daohandler: true,
             votes: {
                 where: {
-                    voterAddress: {
+                    voteraddress: {
                         in:
                             proxy == 'any'
                                 ? user?.voters.map((voter) => voter.address)
@@ -172,11 +172,11 @@ const getProposals = async (
 
             return {
                 daoName: proposal.dao.name,
-                onchain: proposal.daoHandler.type == 'SNAPSHOT' ? false : true,
+                onchain: proposal.daohandler.type == 'SNAPSHOT' ? false : true,
                 daoPicture: proposal.dao.picture,
                 proposalTitle: proposal.name,
                 proposalLink: proposal.url,
-                timeEnd: proposal.timeEnd,
+                timeEnd: proposal.timeend,
                 voted: user
                     ? String(
                           proposal.votes.map((vote: Vote) => vote.choice)
@@ -185,8 +185,8 @@ const getProposals = async (
                     : 'not-connected',
                 highestScoreChoice: highestScoreChoice,
                 highestScore: highestScore,
-                scoresTotal: proposal.scoresTotal,
-                passedQuorum: proposal.quorum < proposal.scoresTotal
+                scoresTotal: proposal.scorestotal,
+                passedQuorum: proposal.quorum < proposal.scorestotal
             }
         }) ?? []
 

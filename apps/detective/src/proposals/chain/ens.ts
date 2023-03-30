@@ -14,19 +14,19 @@ export const ensProposals = async (
         'ethereum'
     )
 
+    const govIface = new ethers.Interface(abi)
+
     const logs = await provider.getLogs({
         fromBlock: fromBlock,
         toBlock: toBlock,
         address: (daoHandler.decoder as Decoder).address,
-        topics: [
-            new ethers.Interface(abi).getEvent('ProposalCreated').topicHash
-        ]
+        topics: [govIface.getEvent('ProposalCreated').topicHash]
     })
 
     const args = logs.map((log) => ({
         txBlock: log.blockNumber,
         txHash: log.transactionHash,
-        eventData: new ethers.Interface(abi).parseLog({
+        eventData: govIface.parseLog({
             topics: log.topics as string[],
             data: log.data
         }).args
@@ -68,7 +68,7 @@ export const ensProposals = async (
                     return {
                         externalId: proposalOnChainId,
                         name: String(title).slice(0, 1024),
-                        daoId: daoHandler.daoId,
+                        daoId: daoHandler.daoid,
                         daoHandlerId: daoHandler.id,
                         timeEnd: new Date(votingEndsTimestamp * 1000),
                         timeStart: new Date(votingStartsTimestamp * 1000),

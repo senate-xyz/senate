@@ -4,22 +4,25 @@ import { RefreshType, type RefreshQueueType } from '..'
 import axios from 'axios'
 
 export const processChainProposals = async (item: RefreshQueueType) => {
+    const daoHandler = await prisma.daohandler.findFirst({
+        where: { id: item.handlerId }
+    })
     try {
         const response = await axios.post(
             `${process.env.DETECTIVE_URL}/updateChainProposals`,
             {
                 daoHandlerId: item.handlerId
             },
-            { timeout: 5 * 60 * 1000 }
+            { timeout: 60 * 1000 }
         )
 
-        const data = response.data
+        const { data } = response
 
         if (!data) return
         if (!Array.isArray(data)) return
 
         await prisma.$transaction([
-            prisma.dAOHandler.updateMany({
+            prisma.daohandler.updateMany({
                 where: {
                     id: {
                         in: data
@@ -28,12 +31,20 @@ export const processChainProposals = async (item: RefreshQueueType) => {
                     }
                 },
                 data: {
-                    refreshStatus: RefreshStatus.DONE,
-                    lastRefresh: new Date()
+                    refreshstatus: RefreshStatus.DONE,
+                    lastrefresh: new Date(),
+                    refreshspeed: {
+                        increment:
+                            daoHandler.refreshspeed < 1000000
+                                ? Math.round(
+                                      Number(daoHandler.refreshspeed) / 10
+                                  )
+                                : 0
+                    }
                 }
             }),
 
-            prisma.dAOHandler.updateMany({
+            prisma.daohandler.updateMany({
                 where: {
                     id: {
                         in: data
@@ -42,8 +53,15 @@ export const processChainProposals = async (item: RefreshQueueType) => {
                     }
                 },
                 data: {
-                    refreshStatus: RefreshStatus.NEW,
-                    lastRefresh: new Date()
+                    refreshstatus: RefreshStatus.NEW,
+                    chainindex: {
+                        decrement: daoHandler.chainindex > 10000 ? 10000 : 0
+                    },
+                    refreshspeed: {
+                        decrement:
+                            Math.floor(Number(daoHandler.refreshspeed) / 5) + 1
+                    },
+                    lastrefresh: new Date()
                 }
             })
         ])
@@ -60,14 +78,20 @@ export const processChainProposals = async (item: RefreshQueueType) => {
             response: data
         })
     } catch (e) {
-        await prisma.dAOHandler.update({
+        await prisma.daohandler.update({
             where: {
                 id: item.handlerId
             },
             data: {
-                refreshStatus: RefreshStatus.NEW,
-                lastRefresh: new Date(),
-                chainIndex: { decrement: 50000 }
+                refreshstatus: RefreshStatus.NEW,
+                chainindex: {
+                    decrement: daoHandler.chainindex > 10000 ? 10000 : 0
+                },
+                refreshspeed: {
+                    decrement:
+                        Math.floor(Number(daoHandler.refreshspeed) / 2) + 1
+                },
+                lastrefresh: new Date()
             }
         })
 

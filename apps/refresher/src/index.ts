@@ -3,8 +3,6 @@ import { createVoterHandlers } from './createHandlers'
 import { log_ref } from '@senate/axiom'
 import { addChainDaoVotesToQueue } from './populate/addChainDaoVotes'
 import { addChainProposalsToQueue } from './populate/addChainProposals'
-import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
-import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 import { processChainDaoVotes } from './process/chainDaoVotes'
 import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
 import { processSnapshotProposals } from './process/snapshotProposals'
@@ -39,21 +37,14 @@ const main = async () => {
     })
 
     scheduleJob('* * * * * *', async () => {
-        const newSnapshotProposals = JSON.parse(
-            JSON.stringify(await addSnapshotProposalsToQueue())
-        )
-        const newSnapshotVotes = JSON.parse(
-            JSON.stringify(await addSnapshotDaoVotes())
-        )
-        const newChainProposals = JSON.parse(
-            JSON.stringify(await addChainProposalsToQueue())
-        )
-        const newChainVotes = JSON.parse(
-            JSON.stringify(await addChainDaoVotesToQueue())
-        )
+        // const newSnapshotProposals = await addSnapshotProposalsToQueue()
+        // const newSnapshotVotes = await addSnapshotDaoVotes()
 
-        refreshQueue.push(...newSnapshotProposals)
-        refreshQueue.push(...newSnapshotVotes)
+        // refreshQueue.push(...newSnapshotProposals)
+        // refreshQueue.push(...newSnapshotVotes)
+
+        const newChainProposals = await addChainProposalsToQueue()
+        const newChainVotes = await addChainDaoVotesToQueue()
 
         refreshQueue.push(...newChainProposals)
         refreshQueue.push(...newChainVotes)
