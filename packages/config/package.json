@@ -13,7 +13,7 @@
         "clean": "rimraf .turbo node_modules dist"
     },
     "dependencies": {
-        "eslint": "^8.36.0"
+        "eslint": "^8.37.0"
     },
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^5.57.0",
@@ -22,7 +22,7 @@
         "eslint-plugin-tailwindcss": "^3.10.1",
         "eslint-plugin-unused-imports": "^2.0.0",
         "prettier": "2.8.7",
-        "typescript": "^5.0.2"
+        "typescript": "^5.0.3"
     },
     "packageManager": "yarn@1.22.19"
 }

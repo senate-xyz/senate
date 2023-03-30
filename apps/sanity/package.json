@@ -35,11 +35,11 @@
         "superagent": "^8.0.9"
     },
     "devDependencies": {
-        "@types/node": "^18.15.10",
+        "@types/node": "^18.15.11",
         "@types/node-cron": "^3.0.7",
         "dotenv": "^16.0.3",
         "ts-node": "^10.9.1",
-        "typescript": "^5.0.2"
+        "typescript": "^5.0.3"
     },
     "packageManager": "yarn@1.22.19"
 }
