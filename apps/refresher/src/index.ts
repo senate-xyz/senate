@@ -7,6 +7,8 @@ import { processChainDaoVotes } from './process/chainDaoVotes'
 import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
 import { processSnapshotProposals } from './process/snapshotProposals'
 import { processChainProposals } from './process/chainProposals'
+import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
+import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
 
 export enum RefreshType {
     DAOCHAINPROPOSALS,
@@ -37,11 +39,11 @@ const main = async () => {
     })
 
     scheduleJob('* * * * * *', async () => {
-        // const newSnapshotProposals = await addSnapshotProposalsToQueue()
-        // const newSnapshotVotes = await addSnapshotDaoVotes()
+        const newSnapshotProposals = await addSnapshotProposalsToQueue()
+        const newSnapshotVotes = await addSnapshotDaoVotes()
 
-        // refreshQueue.push(...newSnapshotProposals)
-        // refreshQueue.push(...newSnapshotVotes)
+        refreshQueue.push(...newSnapshotProposals)
+        refreshQueue.push(...newSnapshotVotes)
 
         const newChainProposals = await addChainProposalsToQueue()
         const newChainVotes = await addChainDaoVotesToQueue()
