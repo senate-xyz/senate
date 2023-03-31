@@ -1,11 +1,14 @@
 import { DAOHandlerType, RefreshStatus, prisma } from '@senate/database'
 import { RefreshType } from '..'
 import { log_ref } from '@senate/axiom'
+import { CONFIG } from '../config'
 
 export const addSnapshotProposalsToQueue = async () => {
-    const normalRefresh = new Date(Date.now() - 1 * 60 * 1000)
-    const forceRefresh = new Date(Date.now() - 10 * 60 * 1000)
-    const newRefresh = new Date(Date.now() - 15 * 1000)
+    const normalRefresh = new Date(
+        Date.now() - CONFIG.normal_snapshot_proposals
+    )
+    const forceRefresh = new Date(Date.now() - CONFIG.force_snapshot_proposals)
+    const newRefresh = new Date(Date.now() - CONFIG.new_snapshot_proposals)
 
     const queueItems = await prisma.$transaction(
         async (tx) => {

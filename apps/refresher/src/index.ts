@@ -9,6 +9,7 @@ import { processSnapshotProposals } from './process/snapshotProposals'
 import { processChainProposals } from './process/chainProposals'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
+import { CONFIG, loadConfig } from './config'
 
 export enum RefreshType {
     DAOCHAINPROPOSALS,
@@ -30,11 +31,14 @@ const main = async () => {
         message: `Started refresher`
     })
 
+    await loadConfig()
+
     setInterval(() => {
         if (global.gc) global.gc()
     }, 5 * 30 * 1000)
 
     scheduleJob('*/10 * * * * *', async () => {
+        await loadConfig()
         await createVoterHandlers()
     })
 
@@ -73,7 +77,7 @@ const main = async () => {
                     break
             }
         }
-    }, 300)
+    }, CONFIG.refresh_interval)
 }
 
 main()

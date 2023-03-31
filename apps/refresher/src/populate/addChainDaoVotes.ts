@@ -7,11 +7,12 @@ import {
     type VoterHandler
 } from '@senate/database'
 import { RefreshType } from '..'
+import { CONFIG } from '../config'
 
 export const addChainDaoVotesToQueue = async () => {
-    const normalRefresh = new Date(Date.now() - 1 * 60 * 1000)
-    const forceRefresh = new Date(Date.now() - 10 * 60 * 1000)
-    const newRefresh = new Date(Date.now() - 5 * 1000)
+    const normalRefresh = new Date(Date.now() - CONFIG.normal_chain_votes)
+    const forceRefresh = new Date(Date.now() - CONFIG.force_chain_votes)
+    const newRefresh = new Date(Date.now() - CONFIG.new_chain_votes)
 
     const queueItems = await prisma.$transaction(
         async (tx) => {
@@ -129,7 +130,7 @@ export const addChainDaoVotesToQueue = async () => {
                                         Number(voterHandler.chainindex) <
                                             bucketMax
                                 )
-                                .slice(0, 100)
+                                .slice(0, CONFIG.batch_chain_votes)
 
                             voterHandlerToRefresh = [
                                 ...voterHandlerToRefresh,

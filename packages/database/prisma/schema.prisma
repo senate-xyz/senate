@@ -206,6 +206,11 @@ model contract {
   @@unique([address])
 }
 
+model config {
+  key   String @id
+  value String
+}
+
 enum RoundupNotificationType {
   NEW
   ENDING_SOON
