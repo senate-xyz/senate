@@ -54,9 +54,6 @@ export const processChainProposals = async (item: RefreshQueueType) => {
                 },
                 data: {
                     refreshstatus: RefreshStatus.NEW,
-                    chainindex: {
-                        decrement: daoHandler.chainindex > 10000 ? 10000 : 0
-                    },
                     refreshspeed: {
                         decrement:
                             Math.floor(Number(daoHandler.refreshspeed) / 5) + 1
