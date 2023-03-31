@@ -13,6 +13,10 @@
       "path": "../apps/refresher"
     },
     {
+      "name": "☢ @senate/refresher-rust",
+      "path": "../apps/refresher-rust"
+    },
+    {
       "name": "🚀 @senate/bulletin",
       "path": "../apps/bulletin"
     },

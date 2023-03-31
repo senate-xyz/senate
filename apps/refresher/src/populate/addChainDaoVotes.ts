@@ -111,7 +111,7 @@ export const addChainDaoVotesToQueue = async () => {
                     const domainLimit =
                         daoHandler.type === DAOHandlerType.MAKER_POLL_ARBITRUM
                             ? 100000000
-                            : 17000000
+                            : 40000000
 
                     const voteTimestampBuckets = bin()
                         .domain([0, domainLimit])
