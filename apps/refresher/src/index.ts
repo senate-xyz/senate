@@ -33,10 +33,6 @@ const main = async () => {
 
     await loadConfig()
 
-    setInterval(() => {
-        if (global.gc) global.gc()
-    }, 5 * 30 * 1000)
-
     scheduleJob('*/10 * * * * *', async () => {
         await loadConfig()
         await createVoterHandlers()
