@@ -64,7 +64,7 @@ pub async fn get_snapshot_votes_queue(client: &PrismaClient, config: &Config) ->
 
     let filtered_dao_handlers: Vec<_> = dao_handlers
         .into_iter()
-        //.filter(|dao_handler| dao_handler.proposals.len() > 0)
+        .filter(|dao_handler| dao_handler.proposals.len() > 0)
         .collect();
 
     let refresh_queue: Vec<RefreshEntry> = filtered_dao_handlers

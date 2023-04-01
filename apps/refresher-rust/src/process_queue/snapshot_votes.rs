@@ -1,3 +1,5 @@
-use crate::RefreshEntry;
+use crate::{ RefreshEntry, prisma::PrismaClient };
 
-pub(crate) fn process_snapshot_votes(entry: RefreshEntry) {}
+pub(crate) async fn process_snapshot_votes(entry: RefreshEntry, client: &PrismaClient) {
+    println!("process {:?}", entry)
+}

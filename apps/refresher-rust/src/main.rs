@@ -58,16 +58,17 @@ async fn main() {
 
     let (tx, mut rx) = mpsc::channel(100);
 
+    let producer_client_clone = client.clone();
     let producer_task = tokio::spawn(async move {
         loop {
-            let client_clone = client.clone();
+            let inner_client_clone = producer_client_clone.clone();
             let tx_clone = tx.clone();
             let config_clone = (*CONFIG.read().unwrap()).clone();
 
-            load_config_from_db(&client_clone).await;
+            load_config_from_db(&inner_client_clone).await;
 
             tokio::spawn(async move {
-                let queue = create_queue(&client_clone, &config_clone).await;
+                let queue = create_queue(&inner_client_clone, &config_clone).await;
                 tx_clone.send(queue).await.unwrap();
             });
 
@@ -75,7 +76,10 @@ async fn main() {
         }
     });
 
+    let consumer_client_clone = client.clone();
     let consumer_task = tokio::spawn(async move {
+        let client_clone = consumer_client_clone.clone();
+
         while let Some(item) = rx.recv().await {
             println!("Consume queues: {:?}", item);
 
@@ -83,10 +87,13 @@ async fn main() {
                 println!("Consuming: {:?}", entry);
 
                 match entry.refresh_type {
-                    RefreshType::Daosnapshotproposals => process_snapshot_proposals(entry),
-                    RefreshType::Daosnapshotvotes => process_snapshot_votes(entry),
-                    RefreshType::Daochainproposals => process_chain_proposals(entry),
-                    RefreshType::Daochainvotes => process_chain_votes(entry),
+                    RefreshType::Daosnapshotproposals =>
+                        process_snapshot_proposals(entry, &client_clone).await,
+                    RefreshType::Daosnapshotvotes => {}
+                    // process_snapshot_votes(entry, &client_clone).await,
+                    RefreshType::Daochainproposals =>
+                        process_chain_proposals(entry, &client_clone).await,
+                    RefreshType::Daochainvotes => {} //process_chain_votes(entry, &client_clone).await,
                 }
                 sleep(Duration::from_millis(300)).await;
             }
