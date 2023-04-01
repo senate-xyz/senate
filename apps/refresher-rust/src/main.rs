@@ -13,10 +13,23 @@ mod create_queue {
     pub mod chain_votes;
     pub mod chain_proposals;
 }
+
+mod process_queue {
+    pub mod snapshot_proposals;
+    pub mod snapshot_votes;
+    pub mod chain_votes;
+    pub mod chain_proposals;
+}
+
 use crate::create_queue::snapshot_proposals::get_snapshot_proposals_queue;
 use crate::create_queue::snapshot_votes::get_snapshot_votes_queue;
 use crate::create_queue::chain_votes::get_chain_votes_queue;
 use crate::create_queue::chain_proposals::get_chain_proposals_queue;
+
+use crate::process_queue::snapshot_proposals::process_snapshot_proposals;
+use crate::process_queue::snapshot_votes::process_snapshot_votes;
+use crate::process_queue::chain_votes::process_chain_votes;
+use crate::process_queue::chain_proposals::process_chain_proposals;
 
 use config::{ load_config_from_db, CONFIG, Config };
 
@@ -45,13 +58,14 @@ async fn main() {
 
     let (tx, mut rx) = mpsc::channel(100);
 
-    load_config_from_db().await;
-
     let producer_task = tokio::spawn(async move {
         loop {
             let client_clone = client.clone();
             let tx_clone = tx.clone();
             let config_clone = (*CONFIG.read().unwrap()).clone();
+
+            load_config_from_db(&client_clone).await;
+
             tokio::spawn(async move {
                 let queue = create_queue(&client_clone, &config_clone).await;
                 tx_clone.send(queue).await.unwrap();
@@ -67,6 +81,13 @@ async fn main() {
 
             for entry in item {
                 println!("Consuming: {:?}", entry);
+
+                match entry.refresh_type {
+                    RefreshType::Daosnapshotproposals => process_snapshot_proposals(entry),
+                    RefreshType::Daosnapshotvotes => process_snapshot_votes(entry),
+                    RefreshType::Daochainproposals => process_chain_proposals(entry),
+                    RefreshType::Daochainvotes => process_chain_votes(entry),
+                }
                 sleep(Duration::from_millis(300)).await;
             }
         }

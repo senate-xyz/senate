@@ -35,10 +35,10 @@ lazy_static::lazy_static! {
             normal_snapshot_proposals: 60 * 1000,
             normal_snapshot_votes: 60 * 1000,
 
-            new_chain_proposals: 5 * 1000,
-            new_chain_votes: 5 * 1000,
-            new_snapshot_proposals: 5 * 1000,
-            new_snapshot_votes: 5 * 1000,
+            new_chain_proposals: 5 * 60 * 1000,
+            new_chain_votes: 5 * 60 * 1000,
+            new_snapshot_proposals: 5 * 60 * 1000,
+            new_snapshot_votes: 5 * 60 * 1000,
 
             force_chain_proposals: 5 * 1000,
             force_chain_votes: 5 * 1000,
@@ -68,10 +68,9 @@ async fn load_config_value(client: &PrismaClient, key: &str, default_value: u32)
         default_value
     }
 }
-pub(crate) async fn load_config_from_db() {
-    let client = PrismaClient::_builder().build().await.unwrap();
-
+pub(crate) async fn load_config_from_db(client: &PrismaClient) {
     let refresh_interval = load_config_value(&client, "refresh_interval", 300).await;
+
     let normal_chain_proposals = load_config_value(
         &client,
         "normal_chain_proposals",
@@ -88,14 +87,24 @@ pub(crate) async fn load_config_from_db() {
         "normal_snapshot_votes",
         60 * 1000
     ).await;
-    let force_chain_proposals = load_config_value(&client, "force_chain_proposals", 5 * 1000).await;
-    let force_chain_votes = load_config_value(&client, "force_chain_votes", 5 * 1000).await;
+
+    let force_chain_proposals = load_config_value(
+        &client,
+        "force_chain_proposals",
+        5 * 60 * 1000
+    ).await;
+    let force_chain_votes = load_config_value(&client, "force_chain_votes", 5 * 60 * 1000).await;
     let force_snapshot_proposals = load_config_value(
         &client,
         "force_snapshot_proposals",
-        5 * 1000
+        5 * 60 * 1000
     ).await;
-    let force_snapshot_votes = load_config_value(&client, "force_snapshot_votes", 5 * 1000).await;
+    let force_snapshot_votes = load_config_value(
+        &client,
+        "force_snapshot_votes",
+        5 * 60 * 1000
+    ).await;
+
     let new_chain_proposals = load_config_value(&client, "new_chain_proposals", 5 * 1000).await;
     let new_chain_votes = load_config_value(&client, "new_chain_votes", 5 * 1000).await;
     let new_snapshot_proposals = load_config_value(
@@ -104,8 +113,9 @@ pub(crate) async fn load_config_from_db() {
         5 * 1000
     ).await;
     let new_snapshot_votes = load_config_value(&client, "new_snapshot_votes", 5 * 1000).await;
+
     let batch_chain_votes = load_config_value(&client, "batch_chain_votes", 100).await;
-    let batch_snapshot_votes = load_config_value(&client, "batch_snapshot_votes", 5 * 1000).await;
+    let batch_snapshot_votes = load_config_value(&client, "batch_snapshot_votes", 100).await;
 
     let mut config = CONFIG.write().unwrap();
 

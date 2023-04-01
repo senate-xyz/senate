@@ -103,7 +103,7 @@ pub async fn get_snapshot_votes_queue(client: &PrismaClient, config: &Config) ->
                             let index = voter_handler.snapshotindex.unwrap().timestamp_millis();
                             bucket.min <= index && index <= bucket.max
                         })
-                        .take(100)
+                        .take(config.batch_snapshot_votes.try_into().unwrap())
                         .collect();
 
                     voter_handler_to_refresh.extend(bucket_vh.clone());

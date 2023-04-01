@@ -121,7 +121,7 @@ pub async fn get_chain_votes_queue(client: &PrismaClient, config: &Config) -> Ve
                             let index = voter_handler.chainindex.unwrap();
                             bucket.min <= index && index < bucket.max
                         })
-                        .take(100)
+                        .take(config.batch_chain_votes.try_into().unwrap())
                         .collect();
 
                     voter_handler_to_refresh.extend(bucket_vh.clone());
