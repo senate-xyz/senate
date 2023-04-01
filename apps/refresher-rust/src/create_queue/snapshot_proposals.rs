@@ -1,12 +1,16 @@
-use crate::{ prisma, RefreshEntry, RefreshType };
+use crate::{ prisma, RefreshEntry, RefreshType, config::Config };
 
 use prisma::{ PrismaClient, daohandler };
 use prisma_client_rust::{ chrono::{ Utc, Duration }, operator::{ or, and } };
 
-pub async fn get_snapshot_proposals_queue(client: &PrismaClient) -> Vec<RefreshEntry> {
-    let normal_refresh = Utc::now() - Duration::milliseconds(1);
-    let force_refresh = Utc::now() - Duration::minutes(5);
-    let new_refresh = Utc::now() - Duration::seconds(5);
+pub async fn get_snapshot_proposals_queue(
+    client: &PrismaClient,
+    config: &Config
+) -> Vec<RefreshEntry> {
+    let normal_refresh =
+        Utc::now() - Duration::milliseconds(config.normal_snapshot_proposals.into());
+    let force_refresh = Utc::now() - Duration::milliseconds(config.force_snapshot_proposals.into());
+    let new_refresh = Utc::now() - Duration::milliseconds(config.new_snapshot_proposals.into());
 
     let dao_handlers = client
         .daohandler()

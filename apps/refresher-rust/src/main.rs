@@ -18,7 +18,7 @@ use crate::create_queue::snapshot_votes::get_snapshot_votes_queue;
 use crate::create_queue::chain_votes::get_chain_votes_queue;
 use crate::create_queue::chain_proposals::get_chain_proposals_queue;
 
-use config::{ load_config_from_db };
+use config::{ load_config_from_db, CONFIG, Config };
 
 pub mod config;
 
@@ -51,8 +51,9 @@ async fn main() {
         loop {
             let client_clone = client.clone();
             let tx_clone = tx.clone();
+            let config_clone = (*CONFIG.read().unwrap()).clone();
             tokio::spawn(async move {
-                let queue = create_queue(&client_clone).await;
+                let queue = create_queue(&client_clone, &config_clone).await;
                 tx_clone.send(queue).await.unwrap();
             });
 
@@ -74,14 +75,14 @@ async fn main() {
     try_join!(producer_task, consumer_task).unwrap();
 }
 
-async fn create_queue(client: &PrismaClient) -> Vec<RefreshEntry> {
+async fn create_queue(client: &PrismaClient, config: &Config) -> Vec<RefreshEntry> {
     println!("+++ Create queue +++");
 
-    let snapshot_proposal_queue = get_snapshot_proposals_queue(client).await;
-    let snapshot_votes_queue = get_snapshot_votes_queue(client).await;
+    let snapshot_proposal_queue = get_snapshot_proposals_queue(client, config).await;
+    let snapshot_votes_queue = get_snapshot_votes_queue(client, config).await;
 
-    let chain_proposal_queue = get_chain_proposals_queue(client).await;
-    let chain_votes_queue = get_chain_votes_queue(client).await;
+    let chain_proposal_queue = get_chain_proposals_queue(client, config).await;
+    let chain_votes_queue = get_chain_votes_queue(client, config).await;
 
     println!("Snapshot proposals queue: {:?}", snapshot_proposal_queue);
     println!("Snapshot votes queue: {:?}", snapshot_votes_queue);

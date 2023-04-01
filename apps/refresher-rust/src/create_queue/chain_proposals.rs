@@ -1,12 +1,16 @@
 use crate::{ prisma, RefreshEntry, RefreshType };
+use crate::config::{ Config };
 
 use prisma::{ PrismaClient, daohandler };
 use prisma_client_rust::{ chrono::{ Utc, Duration }, operator::{ and, or } };
 
-pub async fn get_chain_proposals_queue(client: &PrismaClient) -> Vec<RefreshEntry> {
-    let normal_refresh = Utc::now() - Duration::minutes(1);
-    let force_refresh = Utc::now() - Duration::minutes(5);
-    let new_refresh = Utc::now() - Duration::seconds(5);
+pub async fn get_chain_proposals_queue(
+    client: &PrismaClient,
+    config: &Config
+) -> Vec<RefreshEntry> {
+    let normal_refresh = Utc::now() - Duration::milliseconds(config.normal_chain_proposals.into());
+    let force_refresh = Utc::now() - Duration::milliseconds(config.force_chain_proposals.into());
+    let new_refresh = Utc::now() - Duration::milliseconds(config.new_chain_proposals.into());
 
     let handler_types = vec![
         prisma::DaoHandlerType::AaveChain,
