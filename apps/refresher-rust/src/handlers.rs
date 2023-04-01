@@ -1,5 +1,53 @@
-use std::sync::Arc;
+use crate::prisma::{ PrismaClient, voterhandler, RefreshStatus };
 
-use crate::prisma::PrismaClient;
+pub(crate) async fn create_voter_handlers(client: &PrismaClient) {
+    let voters_count = client
+        .voter()
+        .count(vec![])
+        .exec().await
+        .unwrap();
 
-pub(crate) async fn create_handlers(_client: &Arc<PrismaClient>) {}
+    let daohandlers_count = client
+        .daohandler()
+        .count(vec![])
+        .exec().await
+        .unwrap();
+
+    let voterhandler_count = client
+        .voterhandler()
+        .count(vec![])
+        .exec().await
+        .unwrap();
+
+    if voters_count * daohandlers_count > voterhandler_count {
+        let daohandlers = client
+            .daohandler()
+            .find_many(vec![])
+            .exec().await
+            .unwrap();
+        let voters = client
+            .voter()
+            .find_many(vec![])
+            .exec().await
+            .unwrap();
+
+        for voter in voters {
+            let _ = client
+                .voterhandler()
+                .create_many(
+                    daohandlers
+                        .iter()
+                        .map(|daohandler|
+                            voterhandler::create_unchecked(
+                                daohandler.id.clone(),
+                                voter.id.clone(),
+                                vec![voterhandler::refreshstatus::set(RefreshStatus::New)]
+                            )
+                        )
+                        .collect()
+                )
+                .skip_duplicates()
+                .exec().await;
+        }
+    }
+}

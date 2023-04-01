@@ -61,7 +61,7 @@ pub(crate) async fn process_chain_proposals(entry: RefreshEntry, client: &Arc<Pr
                                                 if dao_handler_ref.refreshspeed < 1000000 {
                                                     dao_handler_ref.refreshspeed / 10
                                                 } else {
-                                                    0
+                                                    1
                                                 }
                                             )
                                         ]
@@ -80,7 +80,7 @@ pub(crate) async fn process_chain_proposals(entry: RefreshEntry, client: &Arc<Pr
                                                 if dao_handler_ref.refreshspeed > 1000 {
                                                     dao_handler_ref.refreshspeed / 5
                                                 } else {
-                                                    0
+                                                    1
                                                 }
                                             )
                                         ]
@@ -104,7 +104,7 @@ pub(crate) async fn process_chain_proposals(entry: RefreshEntry, client: &Arc<Pr
                                 if dao_handler_ref.refreshspeed > 1000 {
                                     dao_handler_ref.refreshspeed / 2
                                 } else {
-                                    0
+                                    1
                                 }
                             )
                         ]

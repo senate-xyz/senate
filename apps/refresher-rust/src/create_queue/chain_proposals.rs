@@ -56,7 +56,7 @@ pub async fn get_chain_proposals_queue(
         .exec().await
         .unwrap();
 
-    let updated_dao_handlers = client
+    let _updated_dao_handlers = client
         .daohandler()
         .update_many(
             vec![
@@ -74,7 +74,7 @@ pub async fn get_chain_proposals_queue(
         )
         .exec().await;
 
-    println!("Added {:?} chain proposal requests to queue", updated_dao_handlers.unwrap());
+    //println!("Added {:?} chain proposal requests to queue", updated_dao_handlers.unwrap());
 
     let refresh_queue: Vec<RefreshEntry> = dao_handlers
         .iter()

@@ -145,7 +145,7 @@ pub async fn get_chain_votes_queue(client: &PrismaClient, config: &Config) -> Ve
         })
         .collect();
 
-    let updated_voter_handlers = client
+    let _updated_voter_handlers = client
         .voterhandler()
         .update_many(
             vec![
@@ -163,7 +163,7 @@ pub async fn get_chain_votes_queue(client: &PrismaClient, config: &Config) -> Ve
         )
         .exec().await;
 
-    println!("Added {:?} chain voter requests to queue", updated_voter_handlers.unwrap());
+    //println!("Added {:?} chain voter requests to queue", updated_voter_handlers.unwrap());
 
     refresh_queue
 }

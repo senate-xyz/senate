@@ -127,7 +127,7 @@ pub async fn get_snapshot_votes_queue(client: &PrismaClient, config: &Config) ->
         })
         .collect();
 
-    let updated_voter_handlers = client
+    let _updated_voter_handlers = client
         .voterhandler()
         .update_many(
             vec![
@@ -145,7 +145,7 @@ pub async fn get_snapshot_votes_queue(client: &PrismaClient, config: &Config) ->
         )
         .exec().await;
 
-    println!("Added {:?} snapshot voter requests to queue", updated_voter_handlers.unwrap());
+    //println!("Added {:?} snapshot voter requests to queue", updated_voter_handlers.unwrap());
 
     refresh_queue
 }

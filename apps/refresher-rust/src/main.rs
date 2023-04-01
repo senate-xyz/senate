@@ -2,7 +2,7 @@ mod prisma;
 use std::sync::{ Arc };
 use std::time::Duration;
 
-use handlers::create_handlers;
+use handlers::create_voter_handlers;
 use prisma::{ PrismaClient };
 use tokio::sync::mpsc;
 use tokio::time::sleep;
@@ -58,22 +58,7 @@ pub struct RefreshEntry {
 async fn main() {
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
 
-    let (tx, mut rx) = mpsc::channel(100);
-
-    let handlers_client_clone = client.clone();
-    let handlers_task = tokio::spawn(async move {
-        loop {
-            let inner_client_clone = handlers_client_clone.clone();
-
-            load_config_from_db(&inner_client_clone).await;
-
-            tokio::spawn(async move {
-                create_handlers(&inner_client_clone).await;
-            });
-
-            sleep(Duration::from_secs(1)).await;
-        }
-    });
+    let (tx, mut rx) = mpsc::channel(10000);
 
     let create_client_clone = client.clone();
     let create_task = tokio::spawn(async move {
@@ -81,8 +66,6 @@ async fn main() {
             let inner_client_clone = create_client_clone.clone();
             let tx_clone = tx.clone();
             let config_clone = (*CONFIG.read().unwrap()).clone();
-
-            load_config_from_db(&inner_client_clone).await;
 
             tokio::spawn(async move {
                 let queue = create_queue(&inner_client_clone, &config_clone).await;
@@ -98,30 +81,38 @@ async fn main() {
         let client_clone = process_client_clone.clone();
 
         while let Some(item) = rx.recv().await {
-            println!("Consume queues: {:?}", item);
+            println!("Queue size: {:?}", item.len());
 
             for entry in item {
-                println!("Consuming: {:?}", entry);
+                println!("Consuming: {:?}", entry.refresh_type);
 
                 match entry.refresh_type {
-                    RefreshType::Daosnapshotproposals =>
-                        process_snapshot_proposals(entry, &client_clone).await,
-                    RefreshType::Daosnapshotvotes =>
-                        process_snapshot_votes(entry, &client_clone).await,
-                    RefreshType::Daochainproposals =>
-                        process_chain_proposals(entry, &client_clone).await,
-                    RefreshType::Daochainvotes => process_chain_votes(entry, &client_clone).await,
+                    RefreshType::Daosnapshotproposals => {
+                        process_snapshot_proposals(entry, &client_clone).await;
+                    }
+                    RefreshType::Daosnapshotvotes => {
+                        process_snapshot_votes(entry, &client_clone).await;
+                    }
+                    RefreshType::Daochainproposals => {
+                        process_chain_proposals(entry, &client_clone).await;
+                    }
+                    RefreshType::Daochainvotes => {
+                        process_chain_votes(entry, &client_clone).await;
+                    }
                 }
                 sleep(Duration::from_millis(300)).await;
             }
         }
     });
 
-    try_join!(create_task, process_task, handlers_task).unwrap();
+    try_join!(create_task, process_task).unwrap();
 }
 
 async fn create_queue(client: &PrismaClient, config: &Config) -> Vec<RefreshEntry> {
     println!("+++ Create queue +++");
+
+    load_config_from_db(client).await;
+    create_voter_handlers(client).await;
 
     let snapshot_proposal_queue = get_snapshot_proposals_queue(client, config).await;
     let snapshot_votes_queue = get_snapshot_votes_queue(client, config).await;
