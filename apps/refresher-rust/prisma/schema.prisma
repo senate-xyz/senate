@@ -1,6 +1,6 @@
 generator client {
-  provider      = "cargo prisma"
-  output        = "../src/prisma.rs"
+  provider = "cargo prisma"
+  output   = "../src/prisma.rs"
 }
 
 datasource db {
@@ -204,7 +204,7 @@ model contract {
 
 model config {
   key   String @id
-  value String
+  value Int
 }
 
 enum RoundupNotificationType {

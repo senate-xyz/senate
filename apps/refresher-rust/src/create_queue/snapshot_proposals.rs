@@ -4,7 +4,7 @@ use prisma::{ PrismaClient, daohandler };
 use prisma_client_rust::{ chrono::{ Utc, Duration }, operator::{ or, and } };
 
 pub async fn get_snapshot_proposals_queue(client: &PrismaClient) -> Vec<RefreshEntry> {
-    let normal_refresh = Utc::now() - Duration::minutes(1);
+    let normal_refresh = Utc::now() - Duration::milliseconds(1);
     let force_refresh = Utc::now() - Duration::minutes(5);
     let new_refresh = Utc::now() - Duration::seconds(5);
 
@@ -40,33 +40,36 @@ pub async fn get_snapshot_proposals_queue(client: &PrismaClient) -> Vec<RefreshE
         .exec().await
         .unwrap();
 
-    client.daohandler().update_many(
-        vec![
-            daohandler::id::in_vec(
-                vec![
+    let updated_dao_handlers = client
+        .daohandler()
+        .update_many(
+            vec![
+                daohandler::id::in_vec(
                     dao_handlers
                         .iter()
                         .map(|dao| dao.id.clone())
                         .collect()
-                ]
-            )
-        ],
-        vec![
-            daohandler::refreshstatus::set(prisma::RefreshStatus::Pending),
-            daohandler::lastrefresh::set(Utc::now().into())
-        ]
-    );
+                )
+            ],
+            vec![
+                daohandler::refreshstatus::set(prisma::RefreshStatus::Pending),
+                daohandler::lastrefresh::set(Utc::now().into())
+            ]
+        )
+        .exec().await;
+
+    println!("Added {:?} snapshot proposal requests to queue", updated_dao_handlers.unwrap());
 
     let refresh_queue: Vec<RefreshEntry> = dao_handlers
         .iter()
         .map(|dao_handler| {
             RefreshEntry {
                 handler_id: dao_handler.id.clone(),
-                refresh_type: RefreshType::DAOSNAPSHOTPROPOSALS,
+                refresh_type: RefreshType::Daosnapshotproposals,
                 voters: vec![],
             }
         })
         .collect();
 
-    return refresh_queue;
+    refresh_queue
 }

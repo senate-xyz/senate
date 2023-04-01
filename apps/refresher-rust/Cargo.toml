@@ -9,6 +9,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+lazy_static = "1.4.0"
 prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.7", default-features = false, features = ["postgresql"] }
 serde = "1.0.159"
-tokio = "1.27.0"
+tokio = { version = "1.27.0", features = ["full"] }

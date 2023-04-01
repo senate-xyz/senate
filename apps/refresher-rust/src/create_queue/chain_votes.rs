@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{ collections::HashMap };
 
 use crate::{ prisma::{ self, voterhandler }, RefreshEntry, RefreshType };
 
@@ -76,14 +76,26 @@ pub async fn get_chain_votes_queue(client: &PrismaClient) -> Vec<RefreshEntry> {
 
     let filtered_dao_handlers: Vec<_> = dao_handlers
         .into_iter()
-        .filter(|dao_handler| dao_handler.proposals.len() > 0)
+        //.filter(|dao_handler| dao_handler.proposals.len() > 0)
         .collect();
 
     let refresh_queue: Vec<RefreshEntry> = filtered_dao_handlers
         .iter()
         .cloned()
         .flat_map(|dao_handler| {
-            let voter_handlers = dao_handler.voterhandlers;
+            let voter_handlers: Vec<_> = dao_handler.voterhandlers
+                .iter()
+                .cloned()
+                .filter(
+                    |voter_handler|
+                        (voter_handler.refreshstatus == prisma::RefreshStatus::Done &&
+                            voter_handler.lastrefresh.lt(&normal_refresh)) ||
+                        (voter_handler.refreshstatus == prisma::RefreshStatus::Pending &&
+                            voter_handler.lastrefresh.lt(&force_refresh)) ||
+                        (voter_handler.refreshstatus == prisma::RefreshStatus::New &&
+                            voter_handler.lastrefresh.lt(&new_refresh))
+                )
+                .collect();
 
             let vote_indexes: Vec<i64> = voter_handlers
                 .iter()
@@ -119,7 +131,7 @@ pub async fn get_chain_votes_queue(client: &PrismaClient) -> Vec<RefreshEntry> {
                     } else {
                         Some(RefreshEntry {
                             handler_id: dao_handler.id.clone(),
-                            refresh_type: RefreshType::DAOCHAINVOTES,
+                            refresh_type: RefreshType::Daochainvotes,
                             voters: bucket_vh
                                 .iter()
                                 .map(|vhandler| vhandler.voter.address.clone())
@@ -133,7 +145,27 @@ pub async fn get_chain_votes_queue(client: &PrismaClient) -> Vec<RefreshEntry> {
         })
         .collect();
 
-    return refresh_queue;
+    let updated_voter_handlers = client
+        .voterhandler()
+        .update_many(
+            vec![
+                voterhandler::id::in_vec(
+                    voter_handler_to_refresh
+                        .iter()
+                        .map(|vhandler| vhandler.id.clone())
+                        .collect()
+                )
+            ],
+            vec![
+                voterhandler::refreshstatus::set(prisma::RefreshStatus::Pending),
+                voterhandler::lastrefresh::set(Utc::now().into())
+            ]
+        )
+        .exec().await;
+
+    println!("Added {:?} chain voter requests to queue", updated_voter_handlers.unwrap());
+
+    refresh_queue
 }
 
 #[derive(Debug)]
