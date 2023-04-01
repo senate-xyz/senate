@@ -1,0 +1,234 @@
+generator client {
+  provider = "cargo prisma"
+  output   = "../src/prisma.rs"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id String @id @default(cuid())
+
+  name  String @unique
+  email String @default("")
+
+  notifications notification[]
+  subscriptions subscription[]
+  voters        voter[]
+
+  newuser                Boolean   @default(true)
+  acceptedterms          Boolean   @default(false)
+  acceptedtermstimestamp DateTime?
+  dailybulletin          Boolean   @default(false)
+  lastactive             DateTime  @default(now())
+  sessioncount           Int       @default(0)
+
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
+}
+
+model voter {
+  id String @id @default(cuid())
+
+  address String @unique
+
+  votes         vote[]
+  voterhandlers voterhandler[]
+  users         user[]
+
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
+}
+
+model dao {
+  id String @id @default(cuid())
+
+  name    String @unique
+  picture String
+
+  handlers      daohandler[]
+  proposals     proposal[]
+  subscriptions subscription[]
+  votes         vote[]
+
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
+}
+
+model daohandler {
+  id String @id @default(cuid())
+
+  type          DAOHandlerType
+  decoder       Json
+  chainindex    BigInt?        @default(1920000)
+  snapshotindex DateTime?      @default("2009-01-09T04:54:25.00Z")
+  lastrefresh   DateTime       @default("2009-01-09T04:54:25.00Z")
+  refreshstatus RefreshStatus  @default(NEW)
+  refreshspeed  BigInt         @default(1000000)
+
+  daoid         String
+  dao           dao            @relation(fields: [daoid], references: [id], onDelete: Cascade)
+  proposals     proposal[]
+  voterhandlers voterhandler[]
+  votes         vote[]
+
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
+
+  @@unique([daoid, type])
+}
+
+model proposal {
+  id String @id @default(cuid())
+
+  name       String @db.VarChar(2048)
+  externalid String
+
+  choices     Json
+  scores      Json
+  scorestotal Float
+  quorum      Float
+
+  blockcreated BigInt?  @default(420)
+  timecreated  DateTime
+  timestart    DateTime
+  timeend      DateTime
+  url          String   @db.VarChar(1024)
+
+  notifications notification[]
+  daohandlerid  String
+  daohandler    daohandler     @relation(fields: [daohandlerid], references: [id], onDelete: Cascade)
+  daoid         String
+  dao           dao            @relation(fields: [daoid], references: [id], onDelete: Cascade)
+  votes         vote[]
+
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
+
+  @@unique([externalid, daoid])
+  @@index([daoid])
+  @@index([daohandlerid])
+}
+
+model notification {
+  id String @id @default(cuid())
+
+  type RoundupNotificationType
+
+  userid     String
+  user       user     @relation(fields: [userid], references: [id], onDelete: Cascade)
+  proposalid String
+  proposal   proposal @relation(fields: [proposalid], references: [id], onDelete: Cascade)
+  daoid      String
+
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
+
+  @@unique([proposalid, userid, type])
+  @@index([userid])
+  @@index([proposalid])
+}
+
+model vote {
+  id String @id @default(cuid())
+
+  choice      Json
+  votingpower Float
+  reason      String @db.VarChar(2048)
+
+  voteraddress String
+  voter        voter      @relation(fields: [voteraddress], references: [address], onDelete: Cascade)
+  proposalid   String
+  proposal     proposal   @relation(fields: [proposalid], references: [id], onDelete: Cascade)
+  daoid        String
+  dao          dao        @relation(fields: [daoid], references: [id], onDelete: Cascade)
+  daohandlerid String
+  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade)
+
+  blockcreated BigInt?   @default(420)
+  timecreated  DateTime?
+
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
+
+  @@unique([voteraddress, daoid, proposalid])
+  @@index([proposalid])
+  @@index([daoid])
+}
+
+model voterhandler {
+  id String @id @default(cuid())
+
+  chainindex    BigInt?       @default(1920000)
+  snapshotindex DateTime?     @default("2009-01-09T04:54:25.00Z")
+  lastrefresh   DateTime      @default("2009-01-09T04:54:25.00Z")
+  refreshstatus RefreshStatus @default(NEW)
+
+  daohandlerid String
+  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade)
+  voterid      String
+  voter        voter      @relation(fields: [voterid], references: [id], onDelete: Cascade)
+
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
+
+  @@unique([voterid, daohandlerid])
+  @@index([daohandlerid])
+}
+
+model subscription {
+  id String @id @default(cuid())
+
+  notificationsenabled Boolean @default(true)
+
+  userid String
+  user   user   @relation(fields: [userid], references: [id], onDelete: Cascade)
+  daoid  String
+  dao    dao    @relation(fields: [daoid], references: [id], onDelete: Cascade)
+
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
+
+  @@unique([userid, daoid])
+  @@index([daoid])
+}
+
+model contract {
+  address String
+  abi     String
+
+  @@unique([address])
+}
+
+model config {
+  key   String @id
+  value Int
+}
+
+enum RoundupNotificationType {
+  NEW
+  ENDING_SOON
+  PAST
+}
+
+enum DAOHandlerType {
+  AAVE_CHAIN
+  COMPOUND_CHAIN
+  UNISWAP_CHAIN
+  ENS_CHAIN
+  GITCOIN_CHAIN
+  HOP_CHAIN
+  DYDX_CHAIN
+  MAKER_EXECUTIVE
+  MAKER_POLL
+  MAKER_POLL_ARBITRUM
+  SNAPSHOT
+}
+
+enum RefreshStatus {
+  NEW
+  PENDING
+  DONE
+}
