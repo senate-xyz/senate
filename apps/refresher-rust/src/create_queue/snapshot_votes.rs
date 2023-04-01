@@ -5,28 +5,16 @@ use crate::{ prisma::{ self, voterhandler }, RefreshEntry, RefreshType };
 use prisma::{ PrismaClient, daohandler };
 use prisma_client_rust::{ chrono::{ Utc, Duration }, operator::{ or, and } };
 
-pub async fn get_chain_votes_queue(client: &PrismaClient) -> Vec<RefreshEntry> {
+pub async fn get_snapshot_votes_queue(client: &PrismaClient) -> Vec<RefreshEntry> {
     let normal_refresh = Utc::now() - Duration::minutes(1);
     let force_refresh = Utc::now() - Duration::minutes(5);
     let new_refresh = Utc::now() - Duration::seconds(5);
-
-    let handler_types = vec![
-        prisma::DaoHandlerType::AaveChain,
-        prisma::DaoHandlerType::CompoundChain,
-        prisma::DaoHandlerType::MakerExecutive,
-        prisma::DaoHandlerType::MakerPoll,
-        prisma::DaoHandlerType::UniswapChain,
-        prisma::DaoHandlerType::EnsChain,
-        prisma::DaoHandlerType::GitcoinChain,
-        prisma::DaoHandlerType::HopChain,
-        prisma::DaoHandlerType::DydxChain
-    ];
 
     let dao_handlers = client
         .daohandler()
         .find_many(
             vec![
-                daohandler::r#type::in_vec(handler_types.clone()),
+                daohandler::r#type::equals(prisma::DaoHandlerType::Snapshot),
                 daohandler::voterhandlers::some(
                     vec![
                         or(
@@ -88,16 +76,10 @@ pub async fn get_chain_votes_queue(client: &PrismaClient) -> Vec<RefreshEntry> {
             let vote_indexes: Vec<i64> = voter_handlers
                 .iter()
                 .cloned()
-                .map(|voter_handler| voter_handler.chainindex.unwrap())
+                .map(|voter_handler| voter_handler.snapshotindex.unwrap().timestamp_millis())
                 .collect();
 
-            let domain_limit = if dao_handler.r#type == prisma::DaoHandlerType::MakerPollArbitrum {
-                100_000_000
-            } else {
-                20_000_000
-            };
-
-            let vote_indexes_buckets = bin(vote_indexes, 0, domain_limit, 10);
+            let vote_indexes_buckets = bin(vote_indexes, 10);
 
             let refresh_items: Vec<RefreshEntry> = vote_indexes_buckets
                 .iter()
@@ -106,8 +88,8 @@ pub async fn get_chain_votes_queue(client: &PrismaClient) -> Vec<RefreshEntry> {
                         .iter()
                         .cloned()
                         .filter(|voter_handler| {
-                            let index = voter_handler.chainindex.unwrap();
-                            bucket.min <= index && index < bucket.max
+                            let index = voter_handler.snapshotindex.unwrap().timestamp_millis();
+                            bucket.min <= index && index <= bucket.max
                         })
                         .take(100)
                         .collect();
@@ -119,7 +101,7 @@ pub async fn get_chain_votes_queue(client: &PrismaClient) -> Vec<RefreshEntry> {
                     } else {
                         Some(RefreshEntry {
                             handler_id: dao_handler.id.clone(),
-                            refresh_type: RefreshType::DAOCHAINVOTES,
+                            refresh_type: RefreshType::DAOSNAPSHOTVOTES,
                             voters: bucket_vh
                                 .iter()
                                 .map(|vhandler| vhandler.voter.address.clone())
@@ -142,9 +124,12 @@ struct Bucket {
     max: i64,
 }
 
-fn bin(data: Vec<i64>, min: i64, max: i64, num_bins: i64) -> Vec<Bucket> {
+fn bin(data: Vec<i64>, num_bins: usize) -> Vec<Bucket> {
+    let min = data.iter().cloned().min().unwrap_or(0);
+    let max = data.iter().cloned().max().unwrap_or(0) + 1;
+
     let bin_width = ((max - min) as f64) / (num_bins as f64);
-    let mut bins: Vec<Bucket> = Vec::with_capacity(num_bins.try_into().unwrap());
+    let mut bins: Vec<Bucket> = Vec::with_capacity(num_bins);
 
     for i in 0..num_bins {
         bins.push(Bucket {
@@ -161,7 +146,7 @@ fn bin(data: Vec<i64>, min: i64, max: i64, num_bins: i64) -> Vec<Bucket> {
         *count += 1;
     }
 
-    let mut filled_bins: Vec<Bucket> = Vec::with_capacity(num_bins.try_into().unwrap());
+    let mut filled_bins: Vec<Bucket> = Vec::with_capacity(num_bins);
 
     for (bin_index, count) in data_counts.iter() {
         if *count > 0 {

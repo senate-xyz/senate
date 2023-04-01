@@ -1,15 +1,15 @@
 import { scheduleJob } from 'node-schedule'
 import { createVoterHandlers } from './createHandlers'
 import { log_ref } from '@senate/axiom'
+import { CONFIG, loadConfig } from './config'
 import { addChainDaoVotesToQueue } from './populate/addChainDaoVotes'
 import { addChainProposalsToQueue } from './populate/addChainProposals'
-import { processChainDaoVotes } from './process/chainDaoVotes'
-import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
-import { processSnapshotProposals } from './process/snapshotProposals'
-import { processChainProposals } from './process/chainProposals'
 import { addSnapshotDaoVotes } from './populate/addSnapshotDaoVotes'
 import { addSnapshotProposalsToQueue } from './populate/addSnapshotProposals'
-import { CONFIG, loadConfig } from './config'
+import { processChainDaoVotes } from './process/chainDaoVotes'
+import { processChainProposals } from './process/chainProposals'
+import { processSnapshotDaoVotes } from './process/snapshotDaoVotes'
+import { processSnapshotProposals } from './process/snapshotProposals'
 
 export enum RefreshType {
     DAOCHAINPROPOSALS,
