@@ -27,7 +27,7 @@ pub(crate) async fn process_chain_proposals(entry: RefreshEntry, client: &Arc<Pr
         .unwrap();
 
     let client_ref = client.clone();
-    let dao_handler_ref = dao_handler.clone();
+    let dao_handler_ref = dao_handler;
 
     task::spawn(async move {
         let response = http_client
@@ -38,7 +38,6 @@ pub(crate) async fn process_chain_proposals(entry: RefreshEntry, client: &Arc<Pr
         match response {
             Ok(res) => {
                 let data: Value = res.json().await.unwrap();
-                println!("{:?}", data);
 
                 let update_actions: Vec<_> = data
                     .as_array()

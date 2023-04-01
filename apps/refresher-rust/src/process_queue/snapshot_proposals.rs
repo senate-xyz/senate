@@ -31,7 +31,6 @@ pub(crate) async fn process_snapshot_proposals(entry: RefreshEntry, client: &Arc
         match response {
             Ok(res) => {
                 let data: Value = res.json().await.unwrap();
-                println!("{:?}", data);
 
                 let update_actions: Vec<_> = data
                     .as_array()
