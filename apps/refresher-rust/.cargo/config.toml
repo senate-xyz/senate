@@ -1,5 +1,0 @@
-[alias]
-prisma = "run -p prisma-cli --"
-leaksprofile = "instruments --time-limit 300000 -t Leaks"
-cpusprofile = "instruments --time-limit 300000 -t time"
-allocprofile = "instruments --time-limit 300000 -t alloc"
