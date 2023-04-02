@@ -5,7 +5,10 @@ use crate::{ prisma::{ self, voterhandler }, RefreshEntry, RefreshType, config::
 use prisma::{ PrismaClient, daohandler };
 use prisma_client_rust::{ chrono::{ Utc, Duration }, operator::{ or, and } };
 
-pub async fn get_snapshot_votes_queue(client: &PrismaClient, config: &Config) -> Vec<RefreshEntry> {
+pub async fn create_snapshot_votes_queue(
+    client: &PrismaClient,
+    config: &Config
+) -> Vec<RefreshEntry> {
     let normal_refresh = Utc::now() - Duration::milliseconds(config.normal_snapshot_votes.into());
     let force_refresh = Utc::now() - Duration::milliseconds(config.force_snapshot_votes.into());
     let new_refresh = Utc::now() - Duration::milliseconds(config.new_snapshot_votes.into());

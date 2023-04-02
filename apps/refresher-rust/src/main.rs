@@ -22,10 +22,10 @@ mod process_queue {
     pub mod chain_proposals;
 }
 
-use crate::create_queue::snapshot_proposals::get_snapshot_proposals_queue;
-use crate::create_queue::snapshot_votes::get_snapshot_votes_queue;
-use crate::create_queue::chain_votes::get_chain_votes_queue;
-use crate::create_queue::chain_proposals::get_chain_proposals_queue;
+use crate::create_queue::snapshot_proposals::create_snapshot_proposals_queue;
+use crate::create_queue::snapshot_votes::create_snapshot_votes_queue;
+use crate::create_queue::chain_votes::create_chain_votes_queue;
+use crate::create_queue::chain_proposals::create_chain_proposals_queue;
 
 use crate::process_queue::snapshot_proposals::process_snapshot_proposals;
 use crate::process_queue::snapshot_votes::process_snapshot_votes;
@@ -38,7 +38,6 @@ pub mod config;
 pub mod handlers;
 
 #[derive(Debug)]
-#[allow(dead_code)]
 enum RefreshType {
     Daochainproposals,
     Daosnapshotproposals,
@@ -47,7 +46,6 @@ enum RefreshType {
 }
 
 #[derive(Debug)]
-#[allow(dead_code)]
 pub struct RefreshEntry {
     handler_id: String,
     refresh_type: RefreshType,
@@ -57,6 +55,7 @@ pub struct RefreshEntry {
 #[tokio::main]
 async fn main() {
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
+    let config_clone = (*CONFIG.read().unwrap()).clone();
 
     let (tx, mut rx) = mpsc::channel(1000);
 
@@ -84,8 +83,6 @@ async fn main() {
             println!("Queue size: {:?}", item.len());
 
             for entry in item {
-                //println!("Consuming: {:?}", entry.refresh_type);
-
                 match entry.refresh_type {
                     RefreshType::Daosnapshotproposals => {
                         process_snapshot_proposals(entry, &client_clone).await;
@@ -100,7 +97,7 @@ async fn main() {
                         process_chain_votes(entry, &client_clone).await;
                     }
                 }
-                sleep(Duration::from_millis(300)).await;
+                sleep(Duration::from_millis(config_clone.refresh_interval.into())).await;
             }
         }
     });
@@ -114,11 +111,11 @@ async fn create_queue(client: &PrismaClient, config: &Config) -> Vec<RefreshEntr
     load_config_from_db(client).await;
     create_voter_handlers(client).await;
 
-    let snapshot_proposal_queue = get_snapshot_proposals_queue(client, config).await;
-    let snapshot_votes_queue = get_snapshot_votes_queue(client, config).await;
+    let snapshot_proposal_queue = create_snapshot_proposals_queue(client, config).await;
+    let snapshot_votes_queue = create_snapshot_votes_queue(client, config).await;
 
-    let chain_proposal_queue = get_chain_proposals_queue(client, config).await;
-    let chain_votes_queue = get_chain_votes_queue(client, config).await;
+    let chain_proposal_queue = create_chain_proposals_queue(client, config).await;
+    let chain_votes_queue = create_chain_votes_queue(client, config).await;
 
     println!("Snapshot proposals queue: {:?}", snapshot_proposal_queue.len());
     println!("Snapshot votes queue: {:?}", snapshot_votes_queue.len());
@@ -126,6 +123,12 @@ async fn create_queue(client: &PrismaClient, config: &Config) -> Vec<RefreshEntr
     println!("Chain votes queue: {:?}", chain_votes_queue.len());
 
     let mut complete_queue = Vec::new();
+    complete_queue.reserve(
+        snapshot_proposal_queue.len() +
+            snapshot_votes_queue.len() +
+            chain_proposal_queue.len() +
+            chain_votes_queue.len()
+    );
     complete_queue.extend(snapshot_proposal_queue);
     complete_queue.extend(snapshot_votes_queue);
     complete_queue.extend(chain_proposal_queue);

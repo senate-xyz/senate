@@ -4,7 +4,7 @@ use crate::config::{ Config };
 use prisma::{ PrismaClient, daohandler };
 use prisma_client_rust::{ chrono::{ Utc, Duration }, operator::{ and, or } };
 
-pub async fn get_chain_proposals_queue(
+pub async fn create_chain_proposals_queue(
     client: &PrismaClient,
     config: &Config
 ) -> Vec<RefreshEntry> {

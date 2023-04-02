@@ -3,7 +3,7 @@ use crate::{ prisma, RefreshEntry, RefreshType, config::Config };
 use prisma::{ PrismaClient, daohandler };
 use prisma_client_rust::{ chrono::{ Utc, Duration }, operator::{ or, and } };
 
-pub async fn get_snapshot_proposals_queue(
+pub async fn create_snapshot_proposals_queue(
     client: &PrismaClient,
     config: &Config
 ) -> Vec<RefreshEntry> {
