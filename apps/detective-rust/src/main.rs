@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use router::update_chain_votes::update_chain_votes;
 use router::update_snapshot_votes::update_snapshot_votes;
 use serde::{ Deserialize, Serialize };
@@ -12,6 +14,14 @@ mod router {
 
 #[macro_use]
 extern crate rocket;
+
+pub mod prisma;
+
+#[derive(Clone)]
+pub struct Context {
+    pub db: Arc<prisma::PrismaClient>,
+}
+pub type Ctx = rocket::State<Context>;
 
 #[allow(non_snake_case)]
 #[derive(Deserialize)]
@@ -50,9 +60,12 @@ fn index() -> &'static str {
 }
 
 #[launch]
-fn rocket() -> _ {
+async fn rocket() -> _ {
+    let db = Arc::new(prisma::new_client().await.expect("Failed to create Prisma client"));
+
     rocket
         ::build()
+        .manage(Context { db })
         .mount("/", routes![index])
         .mount("/proposals", routes![update_snapshot_proposals, update_chain_proposals])
         .mount("/votes", routes![update_chain_votes, update_snapshot_votes])
