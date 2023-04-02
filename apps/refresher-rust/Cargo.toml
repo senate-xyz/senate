@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "prisma-cli",
+    "prisma-cli", "."
 ]
 
 [package]
