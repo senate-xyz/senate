@@ -1970,6 +1970,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5b40af805b3121feab8a3c29f04d8ad262fa8e0561883e7653e024ae4479e6de"
 
 [[package]]
+name = "prisma-cli"
+version = "0.1.0"
+dependencies = [
+ "prisma-client-rust-cli",
+]
+
+[[package]]
 name = "prisma-client-rust"
 version = "0.6.7"
 source = "git+https://github.com/Brendonovich/prisma-client-rust?tag=0.6.7#f71ad9122537c4ed29bf496a4a643947a5fe9aef"
@@ -2430,7 +2437,6 @@ version = "0.1.0"
 dependencies = [
  "lazy_static",
  "prisma-client-rust",
- "prisma-client-rust-cli",
  "reqwest",
  "serde",
  "serde_json",
