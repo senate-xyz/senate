@@ -11,7 +11,7 @@ use crate::{ RefreshEntry, prisma::{ PrismaClient, daohandler, self } };
 #[allow(non_snake_case)]
 #[derive(Deserialize)]
 struct ApiResponse {
-    response: String,
+    result: String,
     voterAddress: String,
 }
 
@@ -23,7 +23,7 @@ pub(crate) async fn process_snapshot_votes(entry: RefreshEntry, client: &Arc<Pri
         None => panic!("$DETECTIVE_URL is not set"),
     };
 
-    let post_url = format!("{}/updateSnapshotDaoVotes", detective_url);
+    let post_url = format!("{}/votes/snapshot_votes", detective_url);
 
     let http_client = Client::builder().timeout(Duration::from_secs(60)).build().unwrap();
 
@@ -51,19 +51,19 @@ pub(crate) async fn process_snapshot_votes(entry: RefreshEntry, client: &Arc<Pri
                 // Filter data based on the "response" field
                 let ok_voters: Vec<String> = data
                     .iter()
-                    .filter(|result| result.response == "ok")
+                    .filter(|result| result.result == "ok")
                     .map(|result| result.voterAddress.clone())
                     .collect();
 
                 let nok_voters: Vec<String> = data
                     .iter()
-                    .filter(|result| result.response == "nok")
+                    .filter(|result| result.result == "nok")
                     .map(|result| result.voterAddress.clone())
                     .collect();
 
                 let ok_voter_ids = client_ref
                     .voter()
-                    .find_many(vec![prisma::voter::address::in_vec(ok_voters)])
+                    .find_many(vec![prisma::voter::address::in_vec(ok_voters.clone())])
                     .exec().await
                     .unwrap()
                     .iter()
@@ -72,7 +72,7 @@ pub(crate) async fn process_snapshot_votes(entry: RefreshEntry, client: &Arc<Pri
 
                 let nok_voter_ids = client_ref
                     .voter()
-                    .find_many(vec![prisma::voter::address::in_vec(nok_voters)])
+                    .find_many(vec![prisma::voter::address::in_vec(nok_voters.clone())])
                     .exec().await
                     .unwrap()
                     .iter()
@@ -108,7 +108,7 @@ pub(crate) async fn process_snapshot_votes(entry: RefreshEntry, client: &Arc<Pri
                             prisma::voterhandler::lastrefresh::set(Utc::now().into()),
                             prisma::voterhandler::snapshotindex::set(
                                 Some(
-                                    DateTime::parse_from_rfc3339("2009-01-09T04:54:25.00Z").unwrap()
+                                    DateTime::parse_from_rfc3339("2000-01-01T00:00:00.00Z").unwrap()
                                 )
                             )
                         ]
@@ -140,7 +140,7 @@ pub(crate) async fn process_snapshot_votes(entry: RefreshEntry, client: &Arc<Pri
                             prisma::voterhandler::lastrefresh::set(Utc::now().into()),
                             prisma::voterhandler::snapshotindex::set(
                                 Some(
-                                    DateTime::parse_from_rfc3339("2009-01-09T04:54:25.00Z").unwrap()
+                                    DateTime::parse_from_rfc3339("2000-01-01T00:00:00.00Z").unwrap()
                                 )
                             )
                         ]

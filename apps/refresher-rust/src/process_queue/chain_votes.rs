@@ -23,7 +23,7 @@ pub(crate) async fn process_chain_votes(entry: RefreshEntry, client: &Arc<Prisma
         None => panic!("$DETECTIVE_URL is not set"),
     };
 
-    let post_url = format!("{}/updateChainDaoVotes", detective_url);
+    let post_url = format!("{}/votes/chain_votes", detective_url);
 
     let http_client = Client::builder().timeout(Duration::from_secs(60)).build().unwrap();
 

@@ -13,7 +13,7 @@ pub(crate) async fn process_chain_proposals(entry: RefreshEntry, client: &Arc<Pr
         None => panic!("$DETECTIVE_URL is not set"),
     };
 
-    let post_url = format!("{}/updateChainProposals", detective_url);
+    let post_url = format!("{}/proposals/chain_proposals", detective_url);
 
     let http_client = Client::builder().timeout(Duration::from_secs(60)).build().unwrap();
 

@@ -4,6 +4,7 @@ use prisma_client_rust::chrono::{ Utc, DateTime, NaiveDateTime, FixedOffset };
 use reqwest::Client;
 use rocket::serde::json::Json;
 use serde::Deserialize;
+use serde_json::Value;
 
 use crate::{
     VotesRequest,
@@ -34,7 +35,7 @@ struct GraphQLVote {
     id: String,
     voter: String,
     reason: String,
-    choice: i32,
+    choice: Value,
     vp: f64,
     created: i64,
     proposal: GraphQLProposal,
@@ -45,7 +46,7 @@ struct Decoder {
     space: String,
 }
 
-#[post("/updateSnapshotProposals", data = "<data>")]
+#[post("/snapshot_votes", data = "<data>")]
 pub async fn update_snapshot_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>
@@ -169,7 +170,7 @@ pub async fn update_snapshot_votes<'a>(
                                         .iter()
                                         .map(|v|
                                             vote::create_unchecked(
-                                                v.choice.into(),
+                                                v.choice.clone(),
                                                 v.vp,
                                                 v.reason.clone(),
                                                 v.voter.clone(),
@@ -208,7 +209,7 @@ pub async fn update_snapshot_votes<'a>(
                                                     proposal.id.clone()
                                                 ),
                                                 vote::create(
-                                                    v.choice.into(),
+                                                    v.choice.clone(),
                                                     v.vp,
                                                     v.reason.clone(),
                                                     voter::address::equals(v.voter.clone()),
@@ -241,7 +242,7 @@ pub async fn update_snapshot_votes<'a>(
                                                             )
                                                         )
                                                     ),
-                                                    vote::choice::set(v.choice.into()),
+                                                    vote::choice::set(v.choice.clone()),
                                                     vote::votingpower::set(v.vp),
                                                     vote::reason::set(v.reason.clone())
                                                 ]
@@ -249,51 +250,52 @@ pub async fn update_snapshot_votes<'a>(
                                     )
                             );
                         }
-
-                        let search_to_timestamp = votes
-                            .clone()
-                            .into_iter()
-                            .map(|vote| vote.created * 1000)
-                            .chain(once(search_from_timestamp))
-                            .max()
-                            .unwrap_or(search_from_timestamp);
-
-                        let new_index = if
-                            dao_handler.snapshotindex.unwrap().timestamp() > search_to_timestamp
-                        {
-                            dao_handler.snapshotindex.unwrap().timestamp()
-                        } else {
-                            search_to_timestamp
-                        };
-
-                        let _ = ctx.db.voterhandler().update_many(
-                            vec![
-                                voterhandler::id::in_vec(
-                                    voter_handlers
-                                        .clone()
-                                        .iter()
-                                        .map(|vh| vh.id.clone())
-                                        .collect()
-                                ),
-                                voterhandler::daohandlerid::equals(dao_handler.id.clone())
-                            ],
-                            vec![
-                                voterhandler::snapshotindex::set(
-                                    Some(
-                                        DateTime::from_utc(
-                                            NaiveDateTime::from_timestamp_millis(
-                                                new_index * 1000
-                                            ).unwrap(),
-                                            FixedOffset::east_opt(0).unwrap()
-                                        )
-                                    )
-                                )
-                            ]
-                        );
                     }
                     Err(_) => panic!("{:?} proposal not found for {:?}", p.id, data.daoHandlerId),
                 }
             }
+
+            let search_to_timestamp = votes
+                .clone()
+                .into_iter()
+                .map(|vote| vote.created)
+                .chain(once(search_from_timestamp))
+                .max()
+                .unwrap();
+
+            let new_index = vec![
+                search_to_timestamp.clone(),
+                dao_handler.snapshotindex.unwrap().timestamp().clone()
+            ]
+                .into_iter()
+                .min()
+                .unwrap();
+
+            let _ = ctx.db
+                .voterhandler()
+                .update_many(
+                    vec![
+                        voterhandler::id::in_vec(
+                            voter_handlers
+                                .clone()
+                                .iter()
+                                .map(|vh| vh.id.clone())
+                                .collect()
+                        ),
+                        voterhandler::daohandlerid::equals(dao_handler.id.clone())
+                    ],
+                    vec![
+                        voterhandler::snapshotindex::set(
+                            Some(
+                                DateTime::from_utc(
+                                    NaiveDateTime::from_timestamp_millis(new_index * 1000).unwrap(),
+                                    FixedOffset::east_opt(0).unwrap()
+                                )
+                            )
+                        )
+                    ]
+                )
+                .exec().await;
         }
         Err(e) => {
             println!("{:?}", e);

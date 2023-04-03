@@ -22,7 +22,7 @@ pub(crate) async fn process_snapshot_proposals(entry: RefreshEntry, client: &Arc
         None => panic!("$DETECTIVE_URL is not set"),
     };
 
-    let post_url = format!("{}/proposals/updateSnapshotProposals", detective_url);
+    let post_url = format!("{}/proposals/snapshot_proposals", detective_url);
 
     let http_client = Client::builder().timeout(Duration::from_secs(60)).build().unwrap();
 
@@ -75,7 +75,7 @@ pub(crate) async fn process_snapshot_proposals(entry: RefreshEntry, client: &Arc
                             daohandler::lastrefresh::set(Utc::now().into()),
                             daohandler::snapshotindex::set(
                                 Some(
-                                    DateTime::parse_from_rfc3339("2009-01-09T04:54:25.00Z").unwrap()
+                                    DateTime::parse_from_rfc3339("2000-01-01T00:00:00.00Z").unwrap()
                                 )
                             )
                         ]

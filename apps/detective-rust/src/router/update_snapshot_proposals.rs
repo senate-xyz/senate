@@ -50,7 +50,7 @@ struct Decoder {
     space: String,
 }
 
-#[post("/updateSnapshotProposals", data = "<data>")]
+#[post("/snapshot_proposals", data = "<data>")]
 pub async fn update_snapshot_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>

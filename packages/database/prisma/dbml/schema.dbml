@@ -45,9 +45,9 @@ Table daohandler {
   id String [pk]
   type DAOHandlerType [not null]
   decoder Json [not null]
-  chainindex BigInt [default: 1920000]
-  snapshotindex DateTime [default: 2009-01-09T04:54:25+00:00]
-  lastrefresh DateTime [not null, default: 2009-01-09T04:54:25+00:00]
+  chainindex BigInt [default: 0]
+  snapshotindex DateTime [default: 2000-01-01T00:00:00+00:00]
+  lastrefresh DateTime [not null, default: 2000-01-01T00:00:00+00:00]
   refreshstatus RefreshStatus [not null, default: 'NEW']
   refreshspeed BigInt [not null, default: 1000000]
   daoid String [not null]
@@ -71,7 +71,7 @@ Table proposal {
   scores Json [not null]
   scorestotal Float [not null]
   quorum Float [not null]
-  blockcreated BigInt [default: 420]
+  blockcreated BigInt [default: 0]
   timecreated DateTime [not null]
   timestart DateTime [not null]
   timeend DateTime [not null]
@@ -119,7 +119,7 @@ Table vote {
   dao dao [not null]
   daohandlerid String [not null]
   daohandler daohandler [not null]
-  blockcreated BigInt [default: 420]
+  blockcreated BigInt [default: 0]
   timecreated DateTime
   createdat DateTime [default: `now()`, not null]
   updatedat DateTime [not null]
@@ -131,9 +131,9 @@ Table vote {
 
 Table voterhandler {
   id String [pk]
-  chainindex BigInt [default: 1920000]
-  snapshotindex DateTime [default: 2009-01-09T04:54:25+00:00]
-  lastrefresh DateTime [not null, default: 2009-01-09T04:54:25+00:00]
+  chainindex BigInt [default: 0]
+  snapshotindex DateTime [default: 2000-01-01T00:00:00+00:00]
+  lastrefresh DateTime [not null, default: 2000-01-01T00:00:00+00:00]
   refreshstatus RefreshStatus [not null, default: 'NEW']
   daohandlerid String [not null]
   daohandler daohandler [not null]
@@ -169,7 +169,7 @@ Table contract {
 
 Table config {
   key String [pk]
-  value String [not null]
+  value Int [not null]
 }
 
 Enum RoundupNotificationType {

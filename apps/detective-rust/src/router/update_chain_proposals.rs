@@ -2,7 +2,7 @@ use rocket::serde::json::Json;
 
 use crate::{ ProposalsRequest, ProposalsResponse, Ctx, prisma::daohandler };
 
-#[post("/updateChainProposals", data = "<data>")]
+#[post("/chain_proposals", data = "<data>")]
 pub async fn update_chain_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>

@@ -2,7 +2,7 @@ use rocket::serde::json::Json;
 
 use crate::{ VotesRequest, VotesResponse, Ctx, prisma::daohandler };
 
-#[post("/updateChainVotes", data = "<data>")]
+#[post("/chain_votes", data = "<data>")]
 pub async fn update_chain_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>
