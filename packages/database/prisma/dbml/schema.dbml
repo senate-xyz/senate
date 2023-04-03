@@ -167,6 +167,11 @@ Table contract {
   abi String [not null]
 }
 
+Table config {
+  key String [pk]
+  value String [not null]
+}
+
 Enum RoundupNotificationType {
   NEW
   ENDING_SOON

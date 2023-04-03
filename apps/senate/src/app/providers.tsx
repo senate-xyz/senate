@@ -16,7 +16,7 @@ import Link from 'next/link'
 
 const { chains, provider } = configureChains(
     [mainnet],
-    [alchemyProvider({ apiKey: '4fIvNq7_9CmJ4721zCsSd6_CoeAwDg9_' })]
+    [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? '' })]
 )
 
 const { connectors } = getDefaultWallets({

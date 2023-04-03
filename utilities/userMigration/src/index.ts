@@ -43,6 +43,7 @@ async function main() {
                 }
             }
         ])
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .then((answers: any) => {
             if (answers.run === 'export') {
                 exportUsers(answers.file)
@@ -59,7 +60,7 @@ export type OldUserType = PrismaOld.UserGetPayload<{
     }
 }>
 
-export type NewUsertype = PrismaNew.UserGetPayload<{
+export type NewUsertype = PrismaNew.userGetPayload<{
     include: {
         subscriptions: { include: { dao: true } }
     }
@@ -102,11 +103,11 @@ const importUsers = async (fromFile: string) => {
             create: {
                 name: user.name,
                 email: user.email,
-                newUser: user.newUser,
-                acceptedTerms: user.acceptedTerms,
-                lastActive: user.lastActive,
-                sessionCount: user.sessionCount,
-                dailyBulletin: user.dailyBulletin,
+                newuser: user.newUser,
+                acceptedterms: user.acceptedTerms,
+                lastactive: user.lastActive,
+                sessioncount: user.sessionCount,
+                dailybulletin: user.dailyBulletin,
                 voters: {
                     connectOrCreate: user.voters.map((voter) => ({
                         where: {
@@ -121,11 +122,11 @@ const importUsers = async (fromFile: string) => {
             update: {
                 name: user.name,
                 email: user.email,
-                newUser: user.newUser,
-                acceptedTerms: user.acceptedTerms,
-                lastActive: user.lastActive,
-                sessionCount: user.sessionCount,
-                dailyBulletin: user.dailyBulletin,
+                newuser: user.newUser,
+                acceptedterms: user.acceptedTerms,
+                lastactive: user.lastActive,
+                sessioncount: user.sessionCount,
+                dailybulletin: user.dailyBulletin,
                 voters: {
                     connectOrCreate: user.voters.map((voter) => ({
                         where: {
@@ -140,16 +141,16 @@ const importUsers = async (fromFile: string) => {
         })
 
         for (const subscription of user.subscriptions) {
-            const dao = await newPrisma.dAO.findFirst({
+            const dao = await newPrisma.dao.findFirst({
                 where: {
                     name: subscription.dao.name
                 }
             })
             await newPrisma.subscription.upsert({
                 where: {
-                    userId_daoId: {
-                        userId: newUser.id,
-                        daoId: dao.id
+                    userid_daoid: {
+                        userid: newUser.id,
+                        daoid: dao.id
                     }
                 },
                 create: {

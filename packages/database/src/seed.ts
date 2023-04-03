@@ -36,10 +36,10 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Makerdao' },
+        where: { name: 'MakerDAO' },
         update: {},
         create: {
-            name: 'Makerdao',
+            name: 'MakerDAO',
             picture: '/assets/Project_Icons/makerdao',
             handlers: {
                 create: [
@@ -182,7 +182,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Safedao' },
+        where: { name: 'SafeDAO' },
         update: {},
         create: {
             name: 'Safedao',
@@ -358,10 +358,10 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Gnosisdao' },
+        where: { name: 'GnosisDAO' },
         update: {},
         create: {
-            name: 'Gnosisdao',
+            name: 'GnosisDAO',
             picture: '/assets/Project_Icons/gnosis',
             handlers: {
                 create: [
@@ -542,10 +542,10 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Developer dao' },
+        where: { name: 'Developer DAO' },
         update: {},
         create: {
-            name: 'Developer dao',
+            name: 'Developer DAO',
             picture: '/assets/Project_Icons/developerdao',
             handlers: {
                 create: [
@@ -599,10 +599,10 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Lido dao' },
+        where: { name: 'Lido DAO' },
         update: {},
         create: {
-            name: 'Lido dao',
+            name: 'Lido DAO',
             picture: '/assets/Project_Icons/lido',
             handlers: {
                 create: [
@@ -629,25 +629,6 @@ const seedData = async () => {
                         type: DAOHandlerType.SNAPSHOT,
                         decoder: {
                             space: 'starknet.eth'
-                        }
-                    }
-                ]
-            }
-        }
-    })
-
-    await prisma.dao.upsert({
-        where: { name: 'Invictadao' },
-        update: {},
-        create: {
-            name: 'Invictadao',
-            picture: '/assets/Project_Icons/invicta',
-            handlers: {
-                create: [
-                    {
-                        type: DAOHandlerType.SNAPSHOT,
-                        decoder: {
-                            space: 'invictadao.eth'
                         }
                     }
                 ]
