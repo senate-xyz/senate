@@ -264,8 +264,8 @@ pub async fn update_snapshot_votes<'a>(
                 .unwrap();
 
             let new_index = vec![
-                search_to_timestamp.clone(),
-                dao_handler.snapshotindex.unwrap().timestamp().clone()
+                search_to_timestamp,
+                dao_handler.snapshotindex.unwrap().timestamp()
             ]
                 .into_iter()
                 .min()
