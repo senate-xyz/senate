@@ -8,8 +8,6 @@ use tokio::task;
 use crate::{ RefreshEntry, prisma::{ PrismaClient, daohandler, self } };
 
 pub(crate) async fn process_chain_proposals(entry: RefreshEntry, client: &Arc<PrismaClient>) {
-    //println!("process {:?}", entry);
-
     let detective_url = match env::var_os("DETECTIVE_URL") {
         Some(v) => v.into_string().unwrap(),
         None => panic!("$DETECTIVE_URL is not set"),
