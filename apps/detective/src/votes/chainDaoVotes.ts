@@ -13,7 +13,7 @@ import { getMakerPollVotesFromArbitrum } from './chain/makerPollArbitrum'
 import { getCompoundVotes } from './chain/compound'
 import superagent from 'superagent'
 
-const rpcprovider = new ethers.JsonRpcProvider(
+const provider = new ethers.JsonRpcProvider(
     String(process.env.ALCHEMY_NODE_URL)
 )
 
@@ -80,7 +80,7 @@ export const updateChainDaoVotes = async (
 
     let votes: Result[] = []
 
-    const currentBlock = await rpcprovider.getBlockNumber()
+    const currentBlock = await provider.getBlockNumber()
 
     let blockBatchSize = Math.floor(40000000 / voters.length)
     if (daoHandler.type == DAOHandlerType.MAKER_EXECUTIVE)
@@ -99,7 +99,6 @@ export const updateChainDaoVotes = async (
 
     if (fromBlock > toBlock) fromBlock = toBlock
 
-    const provider: ethers.JsonRpcProvider = rpcprovider
 
     try {
         switch (daoHandler.type) {

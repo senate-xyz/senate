@@ -27,7 +27,7 @@ interface Result {
     url: string
 }
 
-const rpcprovider = new ethers.JsonRpcProvider(
+const provider = new ethers.JsonRpcProvider(
     String(process.env.ALCHEMY_NODE_URL)
 )
 
@@ -44,7 +44,7 @@ export const updateChainProposals = async (daoHandlerId: string) => {
 
     let proposals: Result[]
 
-    const currentBlock = await rpcprovider.getBlockNumber()
+    const currentBlock = await provider.getBlockNumber()
 
     const minBlockNumber = Number(daoHandler.chainindex)
 
@@ -58,8 +58,6 @@ export const updateChainProposals = async (daoHandlerId: string) => {
         currentBlock - fromBlock > blockBatchSize
             ? fromBlock + blockBatchSize
             : currentBlock
-
-    const provider: ethers.JsonRpcProvider = rpcprovider
 
     try {
         switch (daoHandler.type) {
