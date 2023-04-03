@@ -49,7 +49,7 @@ pub struct VotesRequest<'r> {
 #[derive(Serialize, Debug, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct VotesResponse {
-    voterAddress: String,
+    voter_address: String,
     result: &'static str,
 }
 

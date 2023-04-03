@@ -12,6 +12,6 @@ pub async fn update_chain_votes<'a>(
         .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
         .exec().await;
 
-    let result: VotesResponse = VotesResponse { voterAddress: "voter".to_string(), result: "ok" };
+    let result: VotesResponse = VotesResponse { voter_address: "voter".to_string(), result: "ok" };
     Json(vec![result])
 }

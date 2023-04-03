@@ -12,7 +12,7 @@ use crate::{ RefreshEntry, prisma::{ PrismaClient, daohandler, self } };
 #[derive(Deserialize)]
 struct ApiResponse {
     response: String,
-    voterAddress: String,
+    voter_address: String,
 }
 
 pub(crate) async fn process_chain_votes(entry: RefreshEntry, client: &Arc<PrismaClient>) {
@@ -52,13 +52,13 @@ pub(crate) async fn process_chain_votes(entry: RefreshEntry, client: &Arc<Prisma
                 let ok_voters: Vec<String> = data
                     .iter()
                     .filter(|result| result.response == "ok")
-                    .map(|result| result.voterAddress.clone())
+                    .map(|result| result.voter_address.clone())
                     .collect();
 
                 let nok_voters: Vec<String> = data
                     .iter()
                     .filter(|result| result.response == "nok")
-                    .map(|result| result.voterAddress.clone())
+                    .map(|result| result.voter_address.clone())
                     .collect();
 
                 let ok_voter_ids = client_ref

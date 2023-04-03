@@ -306,7 +306,7 @@ pub async fn update_snapshot_votes<'a>(
 
     let result: Vec<VotesResponse> = voters
         .into_iter()
-        .map(|v| VotesResponse { voterAddress: v, result: "ok" })
+        .map(|v| VotesResponse { voter_address: v, result: "ok" })
         .collect();
 
     Json(result)
