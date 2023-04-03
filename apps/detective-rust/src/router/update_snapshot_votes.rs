@@ -30,6 +30,7 @@ struct GraphQLProposal {
     id: String,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Deserialize)]
 struct GraphQLVote {
     id: String,

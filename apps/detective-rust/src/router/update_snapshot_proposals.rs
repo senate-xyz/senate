@@ -23,12 +23,14 @@ struct GraphQLResponseInner {
     proposals: Vec<GraphQLProposal>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Deserialize)]
 struct GraphQLSpace {
     id: String,
     name: String,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Deserialize)]
 struct GraphQLProposal {
     id: String,
