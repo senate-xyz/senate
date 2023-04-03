@@ -62,8 +62,6 @@ pub async fn create_snapshot_proposals_queue(
         )
         .exec().await;
 
-    //println!("Added {:?} snapshot proposal requests to queue", updated_dao_handlers.unwrap());
-
     let refresh_queue: Vec<RefreshEntry> = dao_handlers
         .iter()
         .map(|dao_handler| {

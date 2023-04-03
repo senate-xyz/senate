@@ -74,8 +74,6 @@ pub async fn create_chain_proposals_queue(
         )
         .exec().await;
 
-    //println!("Added {:?} chain proposal requests to queue", updated_dao_handlers.unwrap());
-
     let refresh_queue: Vec<RefreshEntry> = dao_handlers
         .iter()
         .map(|dao_handler| {
