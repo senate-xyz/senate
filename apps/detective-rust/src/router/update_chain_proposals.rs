@@ -7,7 +7,7 @@ pub async fn update_chain_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>
 ) -> Json<ProposalsResponse<'a>> {
-    let dao_handler = ctx.db
+    let _dao_handler = ctx.db
         .daohandler()
         .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
         .exec().await;

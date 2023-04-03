@@ -1,6 +1,6 @@
 use std::{ time::Duration };
 
-use prisma_client_rust::chrono::{ DateTime, self, FixedOffset, NaiveDateTime, Utc };
+use prisma_client_rust::chrono::{ DateTime, FixedOffset, NaiveDateTime, Utc };
 use reqwest::Client;
 use rocket::serde::json::Json;
 use serde::Deserialize;
@@ -63,11 +63,18 @@ pub async fn update_snapshot_proposals<'a>(
             .unwrap()
     {
         Some(data) => data,
-        None => panic!("daoHandlerId not found"),
+        None => panic!("{:?} daoHandlerId not found", data.daoHandlerId),
     };
 
-    let decoder: Decoder = serde_json::from_value(dao_handler.decoder).unwrap();
-    let old_index = dao_handler.snapshotindex.unwrap().timestamp();
+    let decoder: Decoder = match serde_json::from_value(dao_handler.decoder) {
+        Ok(data) => data,
+        Err(_) => panic!("{:?} decoder not found", data.daoHandlerId),
+    };
+
+    let old_index = match dao_handler.snapshotindex {
+        Some(data) => data.timestamp(),
+        None => 0,
+    };
 
     let graphql_query = format!(
         r#"
@@ -182,13 +189,13 @@ pub async fn update_snapshot_proposals<'a>(
 
             let new_index;
 
-            if open_proposals.len() > 0 {
+            if !open_proposals.is_empty() {
                 new_index = open_proposals
                     .iter()
                     .map(|proposal| proposal.created)
                     .max()
                     .unwrap_or(old_index);
-            } else if closed_proposals.len() > 0 {
+            } else if !closed_proposals.is_empty() {
                 new_index = open_proposals
                     .iter()
                     .map(|proposal| proposal.created)
@@ -215,11 +222,11 @@ pub async fn update_snapshot_proposals<'a>(
                 )
                 .exec().await;
 
-            return Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "ok" });
+            Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "ok" })
         }
         Err(e) => {
             println!("{:?}", e);
-            return Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" });
+            Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" })
         }
     }
 }

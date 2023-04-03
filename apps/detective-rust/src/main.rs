@@ -46,12 +46,11 @@ pub struct VotesRequest<'r> {
     voters: Vec<String>,
 }
 
-#[allow(non_snake_case)]
-#[derive(Serialize)]
+#[derive(Serialize, Debug, Clone)]
 #[serde(crate = "rocket::serde")]
-pub struct VotesResponse<'r> {
-    voterAddress: &'r str,
-    response: &'static str,
+pub struct VotesResponse {
+    voterAddress: String,
+    result: &'static str,
 }
 
 #[get("/")]

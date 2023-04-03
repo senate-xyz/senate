@@ -6,10 +6,12 @@ use crate::{ VotesRequest, VotesResponse, Ctx, prisma::daohandler };
 pub async fn update_chain_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>
-) -> Json<VotesResponse<'a>> {
-    let dao_handler = ctx.db
+) -> Json<Vec<VotesResponse>> {
+    let _dao_handler = ctx.db
         .daohandler()
         .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
         .exec().await;
-    Json(VotesResponse { voterAddress: "voter", response: "ok" })
+
+    let result: VotesResponse = VotesResponse { voterAddress: "voter".to_string(), result: "ok" };
+    Json(vec![result])
 }
