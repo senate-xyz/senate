@@ -63,26 +63,24 @@ export const makerExecutiveProposals = async (
                 timeStart: new Date(proposalData.date),
                 timeCreated: new Date(proposalData.date),
                 blockCreated: proposalBlock,
-                choices: ['Yes', 'No'],
-                scores: [0, 0],
-                scoresTotal: 0,
+                choices: ['Yes'],
+                scores: [proposalData.spellData.mkrSupport],
+                scoresTotal: proposalData.spellData.mkrSupport,
                 quorum: 0,
                 url: (daoHandler.decoder as Decoder).proposalUrl + spellAddress
             }
         })
     )
 
-    return proposals.filter(
-        (proposal) =>
-            proposal.name === 'Unknown' || proposal.timeEnd.getTime() == 0
-    )
+    return proposals.filter(proposal => proposal.name !== 'Unknown')
 }
 
 const getProposalData = async (spellAddress: string) => {
     let response = {
         title: 'Unknown',
         spellData: {
-            expiration: new Date(0)
+            expiration: new Date(0),
+            mkrSupport: 0
         },
         date: new Date(0)
     }
@@ -108,7 +106,8 @@ const getProposalData = async (spellAddress: string) => {
                     response = {
                         title: data.title,
                         spellData: {
-                            expiration: new Date(data.spellData.expiration)
+                            expiration: new Date(data.spellData.expiration),
+                            mkrSupport: parseFloat(data.spellData.mkrSupport)
                         },
                         date: new Date(data.date)
                     }
@@ -130,10 +129,13 @@ const getProposalData = async (spellAddress: string) => {
                 )
             }
         }
-    } catch (err) {
+    } catch (e) {
         log_pd.log({
             level: 'warn',
-            message: `Error fetching Maker executive proposal data for ${spellAddress}`
+            message: `Error fetching Maker executive proposal data for ${spellAddress}`,
+            errorName: (e as Error).name,
+            errorMessage: (e as Error).message,
+            errorStack: (e as Error).stack,
         })
     }
 
