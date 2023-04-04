@@ -1,10 +1,10 @@
-use std::{ error::Error, f32::consts::E };
+
 
 use crate::{
     contracts::{ aavegov::{ self, ProposalCreatedFilter }, aaveexecutor, aavestrategy },
     Ctx,
 };
-use ethers::{ providers::{ Middleware, Provider }, types::U256, addressbook::Contract };
+use ethers::{ providers::{ Middleware }, types::U256 };
 use futures::stream::{ FuturesUnordered, StreamExt };
 use prisma_client_rust::{ chrono::{ DateTime, NaiveDateTime, Utc }, bigdecimal::ToPrimitive };
 use crate::{ prisma::daohandler, router::update_chain_proposals::ChainProposal };
@@ -35,8 +35,8 @@ pub async fn aave_proposals(
 
     let events = gov_contract
         .event::<aavegov::ProposalCreatedFilter>()
-        .from_block(from_block.clone())
-        .to_block(to_block.clone());
+        .from_block(*from_block)
+        .to_block(*to_block);
 
     let proposals = events.query_with_meta().await.unwrap();
 
@@ -47,9 +47,9 @@ pub async fn aave_proposals(
             match
                 data_for_proposal(
                     p.clone(),
-                    &ctx,
+                    ctx,
                     &decoder,
-                    &dao_handler,
+                    dao_handler,
                     gov_contract.clone()
                 ).await
             {
@@ -118,7 +118,7 @@ async fn data_for_proposal(
             ),
     };
 
-    let _proposal_url = format!("{}{}", decoder.proposalUrl, log.id.as_u32().to_string());
+    let _proposal_url = format!("{}{}", decoder.proposalUrl, log.id.as_u32());
 
     let _proposal_external_id = log.id.as_u32().to_string();
 

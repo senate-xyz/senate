@@ -55,7 +55,7 @@ pub async fn update_chain_proposals<'a>(
 
     let proposals: Vec<ChainProposal> = match dao_handler.r#type {
         crate::prisma::DaoHandlerType::AaveChain => {
-            aave_proposals(&ctx, &dao_handler, &from_block, &to_block).await
+            aave_proposals(ctx, &dao_handler, &from_block, &to_block).await
         }
         crate::prisma::DaoHandlerType::CompoundChain => { vec![] }
         crate::prisma::DaoHandlerType::UniswapChain => { vec![] }
@@ -103,8 +103,8 @@ pub async fn update_chain_proposals<'a>(
                     proposal::create(
                         proposal.name.clone(),
                         proposal.external_id.clone(),
-                        proposal.choices.clone().into(),
-                        proposal.scores.clone().into(),
+                        proposal.choices.clone(),
+                        proposal.scores.clone(),
                         proposal.scores_total,
                         proposal.quorum,
                         proposal.time_created.with_timezone(&fixed_offset.unwrap()),
@@ -116,8 +116,8 @@ pub async fn update_chain_proposals<'a>(
                         vec![]
                     ),
                     vec![
-                        proposal::choices::set(proposal.choices.clone().into()),
-                        proposal::scores::set(proposal.scores.clone().into()),
+                        proposal::choices::set(proposal.choices.clone()),
+                        proposal::scores::set(proposal.scores.clone()),
                         proposal::scorestotal::set(proposal.scores_total),
                         proposal::quorum::set(proposal.quorum)
                     ]
