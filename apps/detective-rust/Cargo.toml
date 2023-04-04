@@ -14,7 +14,7 @@ codegen-units = 1
 
 [dependencies]
 dotenv = "0.15.0"
-ethers = { git = "https://github.com/gakonst/ethers-rs", branch="master", features = ["rustls", "openssl", "abigen"] }
+ethers = { version="2.0.2", features = ["rustls", "openssl", "abigen"] }
 lazy_static = "1.4.0"
 prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.7", default-features = false, features = ["postgresql"] }
 reqwest = {version = "0.11.16", features = ["json"]}
@@ -27,4 +27,4 @@ tokio = { version = "1.27.0", features = ["full"] }
 
 
 [build-dependencies]
-ethers = { git = "https://github.com/gakonst/ethers-rs", branch="master", features = ["rustls", "openssl", "abigen"] }
+ethers = { version="2.0.2", features = ["rustls", "openssl", "abigen"] }
