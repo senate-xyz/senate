@@ -1,28 +1,29 @@
 use ethers::{ providers::Middleware };
-use prisma_client_rust::chrono::{ Utc, DateTime };
+use prisma_client_rust::chrono::{ Utc, DateTime, FixedOffset };
 use rocket::serde::json::Json;
 use serde_json::Value;
 
+use crate::prisma::{ proposal, dao };
 use crate::{ ProposalsRequest, ProposalsResponse, Ctx, prisma::daohandler };
 
 use crate::handlers::proposals::aave::aave_proposals;
 
 #[allow(dead_code)]
 #[derive(Clone)]
-pub struct Proposal {
-    external_id: String,
-    name: String,
-    dao_id: String,
-    dao_handler_id: String,
-    time_start: DateTime<Utc>,
-    time_end: DateTime<Utc>,
-    time_created: DateTime<Utc>,
-    block_created: i64,
-    choices: Value,
-    scores: Value,
-    scores_total: f64,
-    quorum: i64,
-    url: String,
+pub struct ChainProposal {
+    pub(crate) external_id: String,
+    pub(crate) name: String,
+    pub(crate) dao_id: String,
+    pub(crate) dao_handler_id: String,
+    pub(crate) time_start: DateTime<Utc>,
+    pub(crate) time_end: DateTime<Utc>,
+    pub(crate) time_created: DateTime<Utc>,
+    pub(crate) block_created: i64,
+    pub(crate) choices: Value,
+    pub(crate) scores: Value,
+    pub(crate) scores_total: f64,
+    pub(crate) quorum: f64,
+    pub(crate) url: String,
 }
 
 #[post("/chain_proposals", data = "<data>")]
@@ -52,7 +53,7 @@ pub async fn update_chain_proposals<'a>(
         current_block.as_u64() as i64
     };
 
-    let proposals: Vec<Proposal> = match dao_handler.r#type {
+    let proposals: Vec<ChainProposal> = match dao_handler.r#type {
         crate::prisma::DaoHandlerType::AaveChain => {
             aave_proposals(&ctx, &dao_handler, &from_block, &to_block).await
         }
@@ -68,7 +69,7 @@ pub async fn update_chain_proposals<'a>(
         crate::prisma::DaoHandlerType::Snapshot => panic!("chain request on snapshot daohandler!"),
     };
 
-    let open_proposals: Vec<Proposal> = proposals
+    let open_proposals: Vec<ChainProposal> = proposals
         .iter()
         .filter(|p| p.time_end > Utc::now())
         .cloned()
@@ -85,6 +86,45 @@ pub async fn update_chain_proposals<'a>(
     } else {
         new_index = to_block;
     }
+
+    let fixed_offset = FixedOffset::east_opt(0);
+
+    let upserts = proposals
+        .clone()
+        .into_iter()
+        .map(|proposal|
+            ctx.db
+                .proposal()
+                .upsert(
+                    proposal::externalid_daoid(
+                        proposal.external_id.to_string(),
+                        data.daoHandlerId.to_string()
+                    ),
+                    proposal::create(
+                        proposal.name.clone(),
+                        proposal.external_id.clone(),
+                        proposal.choices.clone().into(),
+                        proposal.scores.clone().into(),
+                        proposal.scores_total,
+                        proposal.quorum,
+                        proposal.time_created.with_timezone(&fixed_offset.unwrap()),
+                        proposal.time_start.with_timezone(&fixed_offset.unwrap()),
+                        proposal.time_end.with_timezone(&fixed_offset.unwrap()),
+                        proposal.url,
+                        daohandler::id::equals(dao_handler.id.to_string()),
+                        dao::id::equals(dao_handler.daoid.to_string()),
+                        vec![]
+                    ),
+                    vec![
+                        proposal::choices::set(proposal.choices.clone().into()),
+                        proposal::scores::set(proposal.scores.clone().into()),
+                        proposal::scorestotal::set(proposal.scores_total),
+                        proposal::quorum::set(proposal.quorum)
+                    ]
+                )
+        );
+
+    let _ = ctx.db._batch(upserts).await;
 
     let _ = ctx.db
         .daohandler()

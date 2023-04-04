@@ -967,6 +967,7 @@ version = "0.1.0"
 dependencies = [
  "dotenv",
  "ethers",
+ "futures",
  "lazy_static",
  "prisma-client-rust",
  "reqwest",
