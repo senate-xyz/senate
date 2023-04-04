@@ -40,7 +40,7 @@ pub async fn update_chain_proposals<'a>(
         None => panic!("{:?} daoHandlerId not found", data.daoHandlerId),
     };
 
-    let current_block = ctx.provider.get_block_number().await.unwrap_or_default();
+    let current_block = ctx.client.get_block_number().await.unwrap_or_default();
     let min_block = dao_handler.chainindex;
     let batch_size = dao_handler.refreshspeed;
 
@@ -90,8 +90,8 @@ pub async fn update_chain_proposals<'a>(
         .update(
             daohandler::id::equals(dao_handler.id.to_string()),
             vec![daohandler::chainindex::set(new_index.into())]
-        );
-    //.exec().await;
+        )
+        .exec().await;
 
     Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "ok" })
 }

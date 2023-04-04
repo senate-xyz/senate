@@ -31,7 +31,7 @@ pub mod prisma;
 #[derive(Clone)]
 pub struct Context {
     pub db: Arc<prisma::PrismaClient>,
-    pub provider: Arc<Provider<Http>>,
+    pub client: Arc<Provider<Http>>,
 }
 pub type Ctx = rocket::State<Context>;
 
@@ -78,12 +78,13 @@ async fn rocket() -> _ {
         None => panic!("$ALCHEMY_NODE_URL is not set"),
     };
 
-    let provider = Arc::new(Provider::<Http>::try_from(rpc_url).unwrap());
+    let provider = Provider::<Http>::try_from(rpc_url).unwrap();
+    let client = Arc::new(provider);
     let db = Arc::new(prisma::new_client().await.expect("Failed to create Prisma client"));
 
     rocket
         ::build()
-        .manage(Context { db, provider })
+        .manage(Context { db, client })
         .mount("/", routes![index])
         .mount("/proposals", routes![update_snapshot_proposals, update_chain_proposals])
         .mount("/votes", routes![update_chain_votes, update_snapshot_votes])

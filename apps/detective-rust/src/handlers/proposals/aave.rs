@@ -1,9 +1,11 @@
 use crate::{
-    contracts::aavegov::{self, ProposalCreatedFilter},
+    contracts::{ aavegov::{ self, ProposalCreatedFilter }, aaveexecutor, aavestrategy },
     Ctx,
 };
-use crate::{prisma::daohandler, router::update_chain_proposals::Proposal};
-use ethers::{prelude::LogMeta, types::Address};
+use ethers::{ providers::Middleware, types::U256 };
+use prisma_client_rust::{ chrono::{ DateTime, NaiveDateTime, Utc }, bigdecimal::ToPrimitive };
+use crate::{ prisma::daohandler, router::update_chain_proposals::Proposal };
+use ethers::{ prelude::LogMeta, types::Address };
 use serde::Deserialize;
 
 #[allow(non_snake_case)]
@@ -17,7 +19,7 @@ pub async fn aave_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
     from_block: &i64,
-    to_block: &i64,
+    to_block: &i64
 ) -> Vec<Proposal> {
     let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
         Ok(data) => data,
@@ -26,7 +28,7 @@ pub async fn aave_proposals(
 
     let address = decoder.address.parse::<Address>().unwrap();
 
-    let gov_contract = aavegov::aavegov::aavegov::new(address, ctx.provider.clone());
+    let gov_contract = aavegov::aavegov::aavegov::new(address, ctx.client.clone());
 
     let events = gov_contract
         .event::<aavegov::ProposalCreatedFilter>()
@@ -38,45 +40,89 @@ pub async fn aave_proposals(
     for p in proposals {
         let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
 
-        let created_timestamp = ctx
-            .provider
-            .get_block(meta.clone().block_number)
-            .await
+        let created_timestamp = ctx.client
+            .get_block(meta.clone().block_number).await
+            .unwrap()
             .unwrap()
             .time()
             .unwrap();
 
-        let voting_starts_timestamp = ctx
-            .provider
-            .get_block(log.clone().start_block.as_u64())
-            .await
-            .unwrap()
-            .time()
-            .unwrap();
+        let voting_starts_block = log.clone().start_block.as_u64();
+        let voting_ends_block = log.clone().end_block.as_u64();
 
-        let voting_ends_timestamp = ctx
-            .provider
-            .get_block(log.clone().end_block.as_u64())
-            .await
-            .unwrap()
-            .time()
-            .unwrap();
+        let voting_starts_timestamp = match
+            ctx.client.get_block(voting_starts_block).await.unwrap()
+        {
+            Some(block) => block.time().unwrap(),
+            None =>
+                DateTime::from_utc(
+                    NaiveDateTime::from_timestamp_millis(
+                        created_timestamp.timestamp() * 1000 +
+                            (log.start_block.as_u64().to_i64().unwrap() -
+                                meta.block_number.as_u64().to_i64().unwrap()) *
+                                12 *
+                                1000
+                    ).unwrap(),
+                    Utc
+                ),
+        };
+
+        let voting_ends_timestamp = match ctx.client.get_block(voting_ends_block).await.unwrap() {
+            Some(block) => block.time().unwrap(),
+            None =>
+                DateTime::from_utc(
+                    NaiveDateTime::from_timestamp_millis(
+                        created_timestamp.timestamp() * 1000 +
+                            (log.end_block.as_u64().to_i64().unwrap() -
+                                meta.block_number.as_u64().to_i64().unwrap()) *
+                                12 *
+                                1000
+                    ).unwrap(),
+                    Utc
+                ),
+        };
 
         let proposal_url = format!("{}{}", decoder.proposalUrl, log.id.as_u32().to_string());
 
         let proposal_external_id = log.id.as_u32().to_string();
 
+        let executor_contract = aaveexecutor::aaveexecutor::aaveexecutor::new(
+            log.executor,
+            ctx.client.clone()
+        );
+
+        let strategy_contract = aavestrategy::aavestrategy::aavestrategy::new(
+            log.strategy,
+            ctx.client.clone()
+        );
+
+        let total_voting_power = strategy_contract
+            .get_total_voting_supply_at(U256::from(meta.block_number.as_u64())).await
+            .unwrap();
+
+        let min_quorum = executor_contract.minimum_quorum().await.unwrap();
+
+        let one_hunded_with_precision = executor_contract
+            .one_hundred_with_precision().await
+            .unwrap();
+
+        let quorum = (total_voting_power * min_quorum) / one_hunded_with_precision;
+
+        let onchain_proposal = gov_contract.get_proposal_by_id(log.id).call().await.unwrap();
+
+        let choices = vec!["For", "Against"];
+
+        let scores = vec![onchain_proposal.for_votes, onchain_proposal.against_votes];
+
+        let scores_total = onchain_proposal.for_votes + onchain_proposal.against_votes;
+
         println!(
-            "{} {} {} {} {}",
-            created_timestamp,
+            "{}\n{} \n\n",
+
             voting_starts_timestamp,
-            voting_ends_timestamp,
-            proposal_url,
-            proposal_external_id
+            voting_ends_timestamp
         );
     }
-
-    println!("{:?}", proposals);
 
     vec![]
 }
