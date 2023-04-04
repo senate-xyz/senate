@@ -15,15 +15,13 @@ mod router {
     pub mod update_snapshot_votes;
 }
 
-pub mod utils {
-    pub mod abi;
-}
-
 pub mod handlers {
     pub mod proposals {
         pub mod aave;
     }
 }
+
+pub mod contracts;
 
 #[macro_use]
 extern crate rocket;

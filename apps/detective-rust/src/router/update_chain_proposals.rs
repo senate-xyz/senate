@@ -90,8 +90,8 @@ pub async fn update_chain_proposals<'a>(
         .update(
             daohandler::id::equals(dao_handler.id.to_string()),
             vec![daohandler::chainindex::set(new_index.into())]
-        )
-        .exec().await;
+        );
+    //.exec().await;
 
     Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "ok" })
 }
