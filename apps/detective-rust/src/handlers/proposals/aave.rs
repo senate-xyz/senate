@@ -82,9 +82,9 @@ pub async fn aave_proposals(
                 ),
         };
 
-        let proposal_url = format!("{}{}", decoder.proposalUrl, log.id.as_u32().to_string());
+        let _proposal_url = format!("{}{}", decoder.proposalUrl, log.id.as_u32().to_string());
 
-        let proposal_external_id = log.id.as_u32().to_string();
+        let _proposal_external_id = log.id.as_u32().to_string();
 
         let executor_contract = aaveexecutor::aaveexecutor::aaveexecutor::new(
             log.executor,
@@ -106,15 +106,15 @@ pub async fn aave_proposals(
             .one_hundred_with_precision().await
             .unwrap();
 
-        let quorum = (total_voting_power * min_quorum) / one_hunded_with_precision;
+        let _quorum = (total_voting_power * min_quorum) / one_hunded_with_precision;
 
         let onchain_proposal = gov_contract.get_proposal_by_id(log.id).call().await.unwrap();
 
-        let choices = vec!["For", "Against"];
+        let _choices = vec!["For", "Against"];
 
-        let scores = vec![onchain_proposal.for_votes, onchain_proposal.against_votes];
+        let _scores = vec![onchain_proposal.for_votes, onchain_proposal.against_votes];
 
-        let scores_total = onchain_proposal.for_votes + onchain_proposal.against_votes;
+        let _scores_total = onchain_proposal.for_votes + onchain_proposal.against_votes;
 
         println!(
             "{}\n{} \n\n",
