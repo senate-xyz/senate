@@ -1,5 +1,8 @@
+use std::env;
 use std::sync::Arc;
 
+use dotenv::dotenv;
+use ethers::providers::{ Provider, Http };
 use router::update_chain_votes::update_chain_votes;
 use router::update_snapshot_votes::update_snapshot_votes;
 use serde::{ Deserialize, Serialize };
@@ -12,6 +15,16 @@ mod router {
     pub mod update_snapshot_votes;
 }
 
+pub mod utils {
+    pub mod abi;
+}
+
+pub mod handlers {
+    pub mod proposals {
+        pub mod aave;
+    }
+}
+
 #[macro_use]
 extern crate rocket;
 
@@ -20,6 +33,7 @@ pub mod prisma;
 #[derive(Clone)]
 pub struct Context {
     pub db: Arc<prisma::PrismaClient>,
+    pub provider: Arc<Provider<Http>>,
 }
 pub type Ctx = rocket::State<Context>;
 
@@ -60,11 +74,18 @@ fn index() -> &'static str {
 
 #[launch]
 async fn rocket() -> _ {
+    dotenv().ok();
+    let rpc_url = match env::var_os("ALCHEMY_NODE_URL") {
+        Some(v) => v.into_string().unwrap(),
+        None => panic!("$ALCHEMY_NODE_URL is not set"),
+    };
+
+    let provider = Arc::new(Provider::<Http>::try_from(rpc_url).unwrap());
     let db = Arc::new(prisma::new_client().await.expect("Failed to create Prisma client"));
 
     rocket
         ::build()
-        .manage(Context { db })
+        .manage(Context { db, provider })
         .mount("/", routes![index])
         .mount("/proposals", routes![update_snapshot_proposals, update_chain_proposals])
         .mount("/votes", routes![update_chain_votes, update_snapshot_votes])
