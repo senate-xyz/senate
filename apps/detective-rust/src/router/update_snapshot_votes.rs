@@ -63,7 +63,7 @@ pub async fn update_snapshot_votes<'a>(
         None => panic!("daoHandlerId not found"),
     };
 
-    let decoder: Decoder = match serde_json::from_value(dao_handler.decoder) {
+    let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
         Ok(data) => data,
         Err(_) => panic!("decoder not found"),
     };
@@ -164,92 +164,19 @@ pub async fn update_snapshot_votes<'a>(
                             .collect();
 
                         if proposal.timeend < Utc::now() {
-                            let _ = ctx.db
-                                .vote()
-                                .create_many(
-                                    votes_for_proposal
-                                        .iter()
-                                        .map(|v|
-                                            vote::create_unchecked(
-                                                v.choice.clone(),
-                                                v.vp,
-                                                v.reason.clone(),
-                                                v.voter.clone(),
-                                                proposal.id.clone(),
-                                                dao_handler.daoid.clone(),
-                                                dao_handler.id.clone(),
-                                                vec![
-                                                    vote::timecreated::set(
-                                                        Some(
-                                                            DateTime::from_utc(
-                                                                NaiveDateTime::from_timestamp_millis(
-                                                                    v.created * 1000
-                                                                ).unwrap(),
-                                                                FixedOffset::east_opt(0).unwrap()
-                                                            )
-                                                        )
-                                                    )
-                                                ]
-                                            )
-                                        )
-                                        .collect()
-                                )
-                                .skip_duplicates()
-                                .exec().await;
+                            create_old_votes(
+                                ctx,
+                                votes_for_proposal,
+                                proposal.id,
+                                dao_handler.clone()
+                            ).await;
                         } else {
-                            let _ = ctx.db._batch(
-                                votes_for_proposal
-                                    .iter()
-                                    .map(|v|
-                                        ctx.db
-                                            .vote()
-                                            .upsert(
-                                                vote::voteraddress_daoid_proposalid(
-                                                    v.voter.clone(),
-                                                    dao_handler.daoid.clone(),
-                                                    proposal.id.clone()
-                                                ),
-                                                vote::create(
-                                                    v.choice.clone(),
-                                                    v.vp,
-                                                    v.reason.clone(),
-                                                    voter::address::equals(v.voter.clone()),
-                                                    proposal::id::equals(proposal.id.clone()),
-                                                    dao::id::equals(dao_handler.daoid.clone()),
-                                                    daohandler::id::equals(dao_handler.id.clone()),
-                                                    vec![
-                                                        vote::timecreated::set(
-                                                            Some(
-                                                                DateTime::from_utc(
-                                                                    NaiveDateTime::from_timestamp_millis(
-                                                                        v.created * 1000
-                                                                    ).unwrap(),
-                                                                    FixedOffset::east_opt(
-                                                                        0
-                                                                    ).unwrap()
-                                                                )
-                                                            )
-                                                        )
-                                                    ]
-                                                ),
-                                                vec![
-                                                    vote::timecreated::set(
-                                                        Some(
-                                                            DateTime::from_utc(
-                                                                NaiveDateTime::from_timestamp_millis(
-                                                                    v.created * 1000
-                                                                ).unwrap(),
-                                                                FixedOffset::east_opt(0).unwrap()
-                                                            )
-                                                        )
-                                                    ),
-                                                    vote::choice::set(v.choice.clone()),
-                                                    vote::votingpower::set(v.vp),
-                                                    vote::reason::set(v.reason.clone())
-                                                ]
-                                            )
-                                    )
-                            );
+                            update_or_create_current_votes(
+                                ctx,
+                                votes_for_proposal,
+                                proposal.id,
+                                dao_handler.clone()
+                            ).await;
                         }
                     }
                     Err(_) => panic!("{:?} proposal not found for {:?}", p.id, data.daoHandlerId),
@@ -311,4 +238,103 @@ pub async fn update_snapshot_votes<'a>(
         .collect();
 
     Json(result)
+}
+
+async fn create_old_votes(
+    ctx: &Ctx,
+    votes_for_proposal: Vec<GraphQLVote>,
+    proposal_id: String,
+    dao_handler: daohandler::Data
+) {
+    let _ = ctx.db
+        .vote()
+        .create_many(
+            votes_for_proposal
+                .iter()
+                .map(|v|
+                    vote::create_unchecked(
+                        v.choice.clone(),
+                        v.vp,
+                        v.reason.clone(),
+                        v.voter.clone(),
+                        proposal_id.clone(),
+                        dao_handler.daoid.clone(),
+                        dao_handler.id.clone(),
+                        vec![
+                            vote::timecreated::set(
+                                Some(
+                                    DateTime::from_utc(
+                                        NaiveDateTime::from_timestamp_millis(
+                                            v.created * 1000
+                                        ).unwrap(),
+                                        FixedOffset::east_opt(0).unwrap()
+                                    )
+                                )
+                            )
+                        ]
+                    )
+                )
+                .collect()
+        )
+        .skip_duplicates()
+        .exec().await;
+}
+
+async fn update_or_create_current_votes(
+    ctx: &Ctx,
+    votes_for_proposal: Vec<GraphQLVote>,
+    proposal_id: String,
+    dao_handler: daohandler::Data
+) {
+    let _ = ctx.db._batch(
+        votes_for_proposal
+            .iter()
+            .map(|v|
+                ctx.db
+                    .vote()
+                    .upsert(
+                        vote::voteraddress_daoid_proposalid(
+                            v.voter.clone(),
+                            dao_handler.daoid.clone(),
+                            proposal_id.clone()
+                        ),
+                        vote::create(
+                            v.choice.clone(),
+                            v.vp,
+                            v.reason.clone(),
+                            voter::address::equals(v.voter.clone()),
+                            proposal::id::equals(proposal_id.clone()),
+                            dao::id::equals(dao_handler.daoid.clone()),
+                            daohandler::id::equals(dao_handler.id.clone()),
+                            vec![
+                                vote::timecreated::set(
+                                    Some(
+                                        DateTime::from_utc(
+                                            NaiveDateTime::from_timestamp_millis(
+                                                v.created * 1000
+                                            ).unwrap(),
+                                            FixedOffset::east_opt(0).unwrap()
+                                        )
+                                    )
+                                )
+                            ]
+                        ),
+                        vec![
+                            vote::timecreated::set(
+                                Some(
+                                    DateTime::from_utc(
+                                        NaiveDateTime::from_timestamp_millis(
+                                            v.created * 1000
+                                        ).unwrap(),
+                                        FixedOffset::east_opt(0).unwrap()
+                                    )
+                                )
+                            ),
+                            vote::choice::set(v.choice.clone()),
+                            vote::votingpower::set(v.vp),
+                            vote::reason::set(v.reason.clone())
+                        ]
+                    )
+            )
+    );
 }
