@@ -68,8 +68,8 @@ async fn main() {
             let config_clone = (*CONFIG.read().unwrap()).clone();
 
             tokio::spawn(async move {
-                let queue = create_queue(&inner_client_clone, &config_clone).await.unwrap();
-                tx_clone.send(queue).await
+                let queue = create_queue(&inner_client_clone, &config_clone).await;
+                tx_clone.send(queue.unwrap()).await
             });
 
             sleep(Duration::from_secs(1)).await;
@@ -80,7 +80,9 @@ async fn main() {
     let process_task = tokio::spawn(async move {
         let client_clone = process_client_clone.clone();
 
-        while let item = rx.recv().await.unwrap() {
+        loop {
+            let item = rx.recv().await.unwrap();
+
             println!("Queue size: {:?}", item.len());
 
             for entry in item {
