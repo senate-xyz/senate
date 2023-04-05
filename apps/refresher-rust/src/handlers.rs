@@ -1,6 +1,7 @@
+use anyhow::Result;
 use crate::prisma::{ PrismaClient, voterhandler, RefreshStatus };
 
-pub(crate) async fn create_voter_handlers(client: &PrismaClient) {
+pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
     let voters_count = client
         .voter()
         .count(vec![])
@@ -47,7 +48,8 @@ pub(crate) async fn create_voter_handlers(client: &PrismaClient) {
                         .collect()
                 )
                 .skip_duplicates()
-                .exec().await;
+                .exec().await?;
         }
     }
+    Ok(())
 }

@@ -1,3 +1,4 @@
+use anyhow::Result;
 use std::sync::{ RwLock, Arc };
 use crate::{ prisma };
 use prisma::{ PrismaClient };
@@ -51,69 +52,73 @@ lazy_static::lazy_static! {
     );
 }
 
-async fn load_config_value(client: &PrismaClient, key: &str, default_value: u32) -> u32 {
+async fn load_config_value(client: &PrismaClient, key: &str, default_value: u32) -> Result<u32> {
     if
-        let Ok(Some(config_data)) = client
+        let Some(config_data) = client
             .config()
             .find_first(vec![prisma::config::key::equals(key.to_string())])
-            .exec().await
+            .exec().await?
     {
-        config_data.value as u32
+        Ok(config_data.value as u32)
     } else {
         let _ = client
             .config()
             .create(key.to_string(), default_value as i32, vec![])
-            .exec().await;
+            .exec().await?;
 
-        default_value
+        Ok(default_value)
     }
 }
-pub(crate) async fn load_config_from_db(client: &PrismaClient) {
-    let refresh_interval = load_config_value(client, "refresh_interval", 300).await;
+pub(crate) async fn load_config_from_db(client: &PrismaClient) -> Result<()> {
+    let refresh_interval = load_config_value(client, "refresh_interval", 300).await?;
 
     let normal_chain_proposals = load_config_value(
         client,
         "normal_chain_proposals",
         60 * 1000
-    ).await;
-    let normal_chain_votes = load_config_value(client, "normal_chain_votes", 60 * 1000).await;
+    ).await?;
+    let normal_chain_votes = load_config_value(client, "normal_chain_votes", 60 * 1000).await?;
     let normal_snapshot_proposals = load_config_value(
         client,
         "normal_snapshot_proposals",
         60 * 1000
-    ).await;
-    let normal_snapshot_votes = load_config_value(client, "normal_snapshot_votes", 60 * 1000).await;
+    ).await?;
+    let normal_snapshot_votes = load_config_value(
+        client,
+        "normal_snapshot_votes",
+        60 * 1000
+    ).await?;
 
     let force_chain_proposals = load_config_value(
         client,
         "force_chain_proposals",
         5 * 60 * 1000
-    ).await;
-    let force_chain_votes = load_config_value(client, "force_chain_votes", 5 * 60 * 1000).await;
+    ).await?;
+    let force_chain_votes = load_config_value(client, "force_chain_votes", 5 * 60 * 1000).await?;
     let force_snapshot_proposals = load_config_value(
         client,
         "force_snapshot_proposals",
         5 * 60 * 1000
-    ).await;
+    ).await?;
     let force_snapshot_votes = load_config_value(
         client,
         "force_snapshot_votes",
         5 * 60 * 1000
-    ).await;
+    ).await?;
 
-    let new_chain_proposals = load_config_value(client, "new_chain_proposals", 5 * 1000).await;
-    let new_chain_votes = load_config_value(client, "new_chain_votes", 5 * 1000).await;
+    let new_chain_proposals = load_config_value(client, "new_chain_proposals", 5 * 1000).await?;
+    let new_chain_votes = load_config_value(client, "new_chain_votes", 5 * 1000).await?;
     let new_snapshot_proposals = load_config_value(
         client,
         "new_snapshot_proposals",
         5 * 1000
-    ).await;
-    let new_snapshot_votes = load_config_value(client, "new_snapshot_votes", 5 * 1000).await;
+    ).await?;
+    let new_snapshot_votes = load_config_value(client, "new_snapshot_votes", 5 * 1000).await?;
 
-    let batch_chain_votes = load_config_value(client, "batch_chain_votes", 100).await;
-    let batch_snapshot_votes = load_config_value(client, "batch_snapshot_votes", 100).await;
+    let batch_chain_votes = load_config_value(client, "batch_chain_votes", 100).await?;
+    let batch_snapshot_votes = load_config_value(client, "batch_snapshot_votes", 100).await?;
 
-    let mut config = CONFIG.write().unwrap();
+    let mut config = CONFIG.write().expect("can not write lock config struct");
 
     config.refresh_interval = refresh_interval;
     config.normal_chain_proposals = normal_chain_proposals;
@@ -131,5 +136,5 @@ pub(crate) async fn load_config_from_db(client: &PrismaClient) {
     config.batch_chain_votes = batch_chain_votes;
     config.batch_snapshot_votes = batch_snapshot_votes;
 
-    //println!("Loaded config: {:?}", config)
+    Ok(())
 }
