@@ -1,3 +1,4 @@
+use anyhow::Result;
 use crate::{
     contracts::{ aavegov::{ self, ProposalCreatedFilter }, aaveexecutor, aavestrategy },
     Ctx,
@@ -21,13 +22,8 @@ pub async fn aave_proposals(
     dao_handler: &daohandler::Data,
     from_block: &i64,
     to_block: &i64
-) -> Result<Vec<ChainProposal>, String> {
-    let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
-        Ok(data) => data,
-        Err(_) => {
-            return Err(format!("{:?} decoder not found", dao_handler.id));
-        }
-    };
+) -> Result<Vec<ChainProposal>> {
+    let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder)?;
 
     let address = decoder.address.parse::<Address>().unwrap();
 
@@ -37,9 +33,8 @@ pub async fn aave_proposals(
         .event::<aavegov::ProposalCreatedFilter>()
         .from_block(*from_block)
         .to_block(*to_block);
-    let proposals = events
-        .query_with_meta().await
-        .map_err(|e| format!("Failed to query events: {}", e))?;
+
+    let proposals = events.query_with_meta().await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -63,36 +58,22 @@ async fn data_for_proposal(
     decoder: &Decoder,
     dao_handler: &daohandler::Data,
     gov_contract: aavegov::aavegov::aavegov<ethers::providers::Provider<ethers::providers::Http>>
-) -> Result<ChainProposal, String> {
+) -> Result<ChainProposal> {
     let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
 
     let block_created = meta.block_number;
 
-    let created_timestamp = ctx.client
-        .get_block(meta.clone().block_number).await
-        .map_err(|e| format!("Failed to get created_timestamp block: {}", e))?
-        .ok_or_else(||
-            format!(
-                "Failed to get created_timestamp block: block not found for number {}",
-                meta.block_number
-            )
-        )?
-        .time()
-        .map_err(|e| format!("Failed to get created_timestamp: {}", e))?;
+    let created_b = ctx.client.get_block(meta.clone().block_number).await?;
+    let voting_start_b = log.clone().start_block.as_u64();
+    let voting_end_b = log.clone().end_block.as_u64();
 
-    let voting_starts_block = log.clone().start_block.as_u64();
-    let voting_ends_block = log.clone().end_block.as_u64();
+    let created_timestamp = created_b.unwrap().time()?;
 
-    let voting_starts_timestamp = ctx.client
-        .get_block(voting_starts_block).await
-        .map_err(|e| format!("Failed to get voting_starts_timestamp block: {}", e))?
-        .ok_or_else(||
-            format!("Failed to get voting_starts_timestamp block: block not found for number {}", voting_starts_block)
-        )?
-        .time()
-        .map_err(|e| format!("Failed to get voting_starts_timestamp: {}", e))?;
+    let voting_starts_block = ctx.client.get_block(voting_start_b).await?;
+    let voting_ends_block = ctx.client.get_block(voting_end_b).await?;
 
-    let voting_ends_timestamp = match ctx.client.get_block(voting_ends_block).await.unwrap() {
+    let voting_starts_timestamp = voting_starts_block.unwrap().time()?;
+    let voting_ends_timestamp = match voting_ends_block {
         Some(block) => block.time().unwrap(),
         None =>
             DateTime::from_utc(
@@ -107,9 +88,9 @@ async fn data_for_proposal(
             ),
     };
 
-    let _proposal_url = format!("{}{}", decoder.proposalUrl, log.id.as_u32());
+    let proposal_url = format!("{}{}", decoder.proposalUrl, log.id.as_u32());
 
-    let _proposal_external_id = log.id.as_u32().to_string();
+    let proposal_external_id = log.id.as_u32().to_string();
 
     let executor_contract = aaveexecutor::aaveexecutor::aaveexecutor::new(
         log.executor,
@@ -121,24 +102,17 @@ async fn data_for_proposal(
         ctx.client.clone()
     );
 
-    let total_voting_power = strategy_contract
-        .get_total_voting_supply_at(U256::from(meta.block_number.as_u64())).await
-        .map_err(|e| format!("Failed to get total_voting_power: {}", e))?;
+    let total_voting_power = strategy_contract.get_total_voting_supply_at(
+        U256::from(meta.block_number.as_u64())
+    ).await?;
 
-    let min_quorum = executor_contract
-        .minimum_quorum().await
-        .map_err(|e| format!("Failed to get min_quorum: {}", e))?;
+    let min_quorum = executor_contract.minimum_quorum().await?;
 
-    let one_hunded_with_precision = executor_contract
-        .one_hundred_with_precision().await
-        .map_err(|e| format!("Failed to get one_hunded_with_precision: {}", e))?;
+    let one_hunded_with_precision = executor_contract.one_hundred_with_precision().await?;
 
     let _quorum = (total_voting_power * min_quorum) / one_hunded_with_precision;
 
-    let onchain_proposal = gov_contract
-        .get_proposal_by_id(log.id)
-        .call().await
-        .map_err(|e| format!("Failed to get onchain_proposal: {}", e))?;
+    let onchain_proposal = gov_contract.get_proposal_by_id(log.id).call().await?;
 
     let _choices = vec!["For", "Against"];
 
@@ -151,7 +125,7 @@ async fn data_for_proposal(
         onchain_proposal.for_votes.as_u128() + onchain_proposal.against_votes.as_u128();
 
     let proposal = ChainProposal {
-        external_id: _proposal_external_id,
+        external_id: proposal_external_id,
         name: "".to_string(),
         dao_id: dao_handler.clone().daoid,
         dao_handler_id: dao_handler.clone().id,
@@ -163,7 +137,7 @@ async fn data_for_proposal(
         scores: _scores.into(),
         scores_total: _scores_total.into(),
         quorum: _quorum.as_u128().into(),
-        url: _proposal_url,
+        url: proposal_url,
     };
 
     Ok(proposal)

@@ -67,8 +67,6 @@ pub async fn update_chain_proposals<'a>(
         to_block = current_block - 10;
     }
 
-    
-
     match dao_handler.r#type {
         crate::prisma::DaoHandlerType::AaveChain => {
             match aave_proposals(ctx, &dao_handler, &from_block, &to_block).await {
@@ -140,12 +138,10 @@ async fn insert_proposals(
             .iter()
             .map(|p| p.block_created)
             .min()
-            .unwrap();
+            .unwrap_or_default();
     } else {
         new_index = to_block;
     }
-
-    let fixed_offset = FixedOffset::east_opt(0);
 
     let upserts = proposals
         .clone()
@@ -165,9 +161,9 @@ async fn insert_proposals(
                         p.scores.clone(),
                         p.scores_total.clone(),
                         p.quorum.clone(),
-                        p.time_created.with_timezone(&fixed_offset.unwrap()),
-                        p.time_start.with_timezone(&fixed_offset.unwrap()),
-                        p.time_end.with_timezone(&fixed_offset.unwrap()),
+                        p.time_created.with_timezone(&FixedOffset::east_opt(0).unwrap()),
+                        p.time_start.with_timezone(&FixedOffset::east_opt(0).unwrap()),
+                        p.time_end.with_timezone(&FixedOffset::east_opt(0).unwrap()),
                         p.clone().url,
                         daohandler::id::equals(dao_handler.id.to_string()),
                         dao::id::equals(dao_handler.daoid.to_string()),
