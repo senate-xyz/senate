@@ -88,8 +88,8 @@ model proposal {
 
   choices     Json
   scores      Json
-  scorestotal Float
-  quorum      Float
+  scorestotal Json
+  quorum      Json
 
   blockcreated BigInt?  @default(0)
   timecreated  DateTime
@@ -135,7 +135,7 @@ model vote {
   id String @id @default(cuid())
 
   choice      Json
-  votingpower Float
+  votingpower Json
   reason      String @db.VarChar(2048)
 
   voteraddress String

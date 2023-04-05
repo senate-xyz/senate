@@ -21,8 +21,8 @@ pub struct ChainProposal {
     pub(crate) block_created: i64,
     pub(crate) choices: Value,
     pub(crate) scores: Value,
-    pub(crate) scores_total: f64,
-    pub(crate) quorum: f64,
+    pub(crate) scores_total: Value,
+    pub(crate) quorum: Value,
     pub(crate) url: String,
 }
 
@@ -92,34 +92,34 @@ pub async fn update_chain_proposals<'a>(
     let upserts = proposals
         .clone()
         .into_iter()
-        .map(|proposal|
+        .map(|p|
             ctx.db
                 .proposal()
                 .upsert(
                     proposal::externalid_daoid(
-                        proposal.external_id.to_string(),
+                        p.external_id.to_string(),
                         data.daoHandlerId.to_string()
                     ),
                     proposal::create(
-                        proposal.name.clone(),
-                        proposal.external_id.clone(),
-                        proposal.choices.clone(),
-                        proposal.scores.clone(),
-                        proposal.scores_total,
-                        proposal.quorum,
-                        proposal.time_created.with_timezone(&fixed_offset.unwrap()),
-                        proposal.time_start.with_timezone(&fixed_offset.unwrap()),
-                        proposal.time_end.with_timezone(&fixed_offset.unwrap()),
-                        proposal.url,
+                        p.name.clone(),
+                        p.external_id.clone(),
+                        p.choices.clone(),
+                        p.scores.clone(),
+                        p.scores_total.clone().into(),
+                        p.quorum.clone().into(),
+                        p.time_created.with_timezone(&fixed_offset.unwrap()),
+                        p.time_start.with_timezone(&fixed_offset.unwrap()),
+                        p.time_end.with_timezone(&fixed_offset.unwrap()),
+                        p.clone().url,
                         daohandler::id::equals(dao_handler.id.to_string()),
                         dao::id::equals(dao_handler.daoid.to_string()),
                         vec![]
                     ),
                     vec![
-                        proposal::choices::set(proposal.choices.clone()),
-                        proposal::scores::set(proposal.scores.clone()),
-                        proposal::scorestotal::set(proposal.scores_total),
-                        proposal::quorum::set(proposal.quorum)
+                        proposal::choices::set(p.choices.clone()),
+                        proposal::scores::set(p.scores.clone()),
+                        proposal::scorestotal::set(p.clone().scores_total),
+                        proposal::quorum::set(p.clone().quorum)
                     ]
                 )
         );

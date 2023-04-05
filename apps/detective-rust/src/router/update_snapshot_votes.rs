@@ -254,7 +254,7 @@ async fn create_old_votes(
                 .map(|v|
                     vote::create_unchecked(
                         v.choice.clone(),
-                        v.vp,
+                        v.vp.into(),
                         v.reason.clone(),
                         v.voter.clone(),
                         proposal_id.clone(),
@@ -300,7 +300,7 @@ async fn update_or_create_current_votes(
                         ),
                         vote::create(
                             v.choice.clone(),
-                            v.vp,
+                            v.vp.into(),
                             v.reason.clone(),
                             voter::address::equals(v.voter.clone()),
                             proposal::id::equals(proposal_id.clone()),
@@ -331,7 +331,7 @@ async fn update_or_create_current_votes(
                                 )
                             ),
                             vote::choice::set(v.choice.clone()),
-                            vote::votingpower::set(v.vp),
+                            vote::votingpower::set(v.vp.into()),
                             vote::reason::set(v.reason.clone())
                         ]
                     )

@@ -143,8 +143,8 @@ pub async fn update_snapshot_proposals<'a>(
                                 proposal.id.clone(),
                                 proposal.choices.clone().into(),
                                 proposal.scores.clone().into(),
-                                proposal.scores_total,
-                                proposal.quorum,
+                                proposal.scores_total.into(),
+                                proposal.quorum.into(),
                                 DateTime::from_utc(
                                     NaiveDateTime::from_timestamp_millis(
                                         proposal.created * 1000
@@ -171,8 +171,8 @@ pub async fn update_snapshot_proposals<'a>(
                             vec![
                                 proposal::choices::set(proposal.choices.clone().into()),
                                 proposal::scores::set(proposal.scores.clone().into()),
-                                proposal::scorestotal::set(proposal.scores_total),
-                                proposal::quorum::set(proposal.quorum)
+                                proposal::scorestotal::set(proposal.scores_total.into()),
+                                proposal::quorum::set(proposal.quorum.into())
                             ]
                         )
                 );

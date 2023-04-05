@@ -1,5 +1,3 @@
-
-
 use crate::{
     contracts::{ aavegov::{ self, ProposalCreatedFilter }, aaveexecutor, aavestrategy },
     Ctx,
@@ -45,13 +43,7 @@ pub async fn aave_proposals(
     for p in proposals.iter() {
         futures.push(async {
             match
-                data_for_proposal(
-                    p.clone(),
-                    ctx,
-                    &decoder,
-                    dao_handler,
-                    gov_contract.clone()
-                ).await
+                data_for_proposal(p.clone(), ctx, &decoder, dao_handler, gov_contract.clone()).await
             {
                 Ok(p) => p,
                 Err(e) => panic!("failed to get proposal {}", e),
@@ -147,12 +139,12 @@ async fn data_for_proposal(
     let _choices = vec!["For", "Against"];
 
     let _scores = vec![
-        onchain_proposal.for_votes.as_u64(),
-        onchain_proposal.against_votes.as_u64()
+        onchain_proposal.for_votes.as_u128(),
+        onchain_proposal.against_votes.as_u128()
     ];
 
     let _scores_total =
-        onchain_proposal.for_votes.as_u64() + onchain_proposal.against_votes.as_u64();
+        onchain_proposal.for_votes.as_u128() + onchain_proposal.against_votes.as_u128();
 
     let proposal = ChainProposal {
         external_id: _proposal_external_id,
@@ -165,8 +157,8 @@ async fn data_for_proposal(
         block_created: block_created.as_u64().to_i64().unwrap(),
         choices: _choices.into(),
         scores: _scores.into(),
-        scores_total: _scores_total.to_f64().unwrap(),
-        quorum: _quorum.as_u64().to_f64().unwrap(),
+        scores_total: _scores_total.into(),
+        quorum: _quorum.as_u128().into(),
         url: _proposal_url,
     };
 
