@@ -111,7 +111,7 @@ pub async fn update_snapshot_proposals<'a>(
         old_index
     );
 
-    match update_proposals(graphql_query, &ctx, dao_handler.clone(), old_index).await {
+    match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
         Ok(_) => Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "ok" }),
         Err(_) => Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" }),
     }
