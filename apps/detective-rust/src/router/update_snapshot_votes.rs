@@ -47,7 +47,6 @@ struct Decoder {
     space: String,
 }
 
-#[post("/snapshot_votes", data = "<data>")]
 pub async fn update_snapshot_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>
@@ -136,7 +135,10 @@ pub async fn update_snapshot_votes<'a>(
 
     match graphql_response {
         Ok(res) => {
-            let response_data: GraphQLResponse = res.json().await.unwrap();
+            let response_data: GraphQLResponse = match res.json().await {
+                Ok(res) => res,
+                Err(_) => todo!(),
+            };
 
             let votes: Vec<GraphQLVote> = response_data.data.votes;
 

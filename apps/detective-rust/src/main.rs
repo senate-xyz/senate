@@ -36,7 +36,7 @@ pub struct Context {
 pub type Ctx = rocket::State<Context>;
 
 #[allow(non_snake_case)]
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct ProposalsRequest<'r> {
     daoHandlerId: &'r str,
