@@ -1,3 +1,4 @@
+use anyhow::Result;
 mod prisma;
 use std::sync::{ Arc };
 use std::time::Duration;
@@ -67,8 +68,8 @@ async fn main() {
             let config_clone = (*CONFIG.read().unwrap()).clone();
 
             tokio::spawn(async move {
-                let queue = create_queue(&inner_client_clone, &config_clone).await;
-                tx_clone.send(queue).await.unwrap();
+                let queue = create_queue(&inner_client_clone, &config_clone).await.unwrap();
+                tx_clone.send(queue).await
             });
 
             sleep(Duration::from_secs(1)).await;
@@ -79,7 +80,7 @@ async fn main() {
     let process_task = tokio::spawn(async move {
         let client_clone = process_client_clone.clone();
 
-        while let Some(item) = rx.recv().await {
+        while let item = rx.recv().await.unwrap() {
             println!("Queue size: {:?}", item.len());
 
             for entry in item {
@@ -105,17 +106,17 @@ async fn main() {
     try_join!(create_task, process_task).unwrap();
 }
 
-async fn create_queue(client: &PrismaClient, config: &Config) -> Vec<RefreshEntry> {
+async fn create_queue(client: &PrismaClient, config: &Config) -> Result<Vec<RefreshEntry>> {
     println!("+++ Create queue +++");
 
-    load_config_from_db(client).await;
-    create_voter_handlers(client).await;
+    load_config_from_db(client).await?;
+    create_voter_handlers(client).await?;
 
-    let snapshot_proposal_queue = create_snapshot_proposals_queue(client, config).await;
-    let snapshot_votes_queue = create_snapshot_votes_queue(client, config).await;
+    let snapshot_proposal_queue = create_snapshot_proposals_queue(client, config).await?;
+    let snapshot_votes_queue = create_snapshot_votes_queue(client, config).await?;
 
-    let chain_proposal_queue = create_chain_proposals_queue(client, config).await;
-    let chain_votes_queue = create_chain_votes_queue(client, config).await;
+    let chain_proposal_queue = create_chain_proposals_queue(client, config).await?;
+    let chain_votes_queue = create_chain_votes_queue(client, config).await?;
 
     println!("Snapshot proposals queue: {:?}", snapshot_proposal_queue.len());
     println!("Snapshot votes queue: {:?}", snapshot_votes_queue.len());
@@ -136,5 +137,5 @@ async fn create_queue(client: &PrismaClient, config: &Config) -> Vec<RefreshEntr
 
     println!("--- Created queue ---");
 
-    complete_queue
+    Ok(complete_queue)
 }

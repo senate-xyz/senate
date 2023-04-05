@@ -1,3 +1,4 @@
+use anyhow::Result;
 use std::collections::HashMap;
 
 use crate::{ prisma::{ self, voterhandler }, RefreshEntry, RefreshType, config::Config };
@@ -8,7 +9,7 @@ use prisma_client_rust::{ chrono::{ Utc, Duration }, operator::{ or, and } };
 pub async fn create_snapshot_votes_queue(
     client: &PrismaClient,
     config: &Config
-) -> Vec<RefreshEntry> {
+) -> Result<Vec<RefreshEntry>> {
     let normal_refresh = Utc::now() - Duration::milliseconds(config.normal_snapshot_votes.into());
     let force_refresh = Utc::now() - Duration::milliseconds(config.force_snapshot_votes.into());
     let new_refresh = Utc::now() - Duration::milliseconds(config.new_snapshot_votes.into());
@@ -60,8 +61,7 @@ pub async fn create_snapshot_votes_queue(
                         include { voter }
                 })
         )
-        .exec().await
-        .unwrap();
+        .exec().await?;
 
     let mut voter_handler_to_refresh = Vec::new();
 
@@ -130,7 +130,7 @@ pub async fn create_snapshot_votes_queue(
         })
         .collect();
 
-    let _updated_voter_handlers = client
+    client
         .voterhandler()
         .update_many(
             vec![
@@ -146,11 +146,9 @@ pub async fn create_snapshot_votes_queue(
                 voterhandler::lastrefresh::set(Utc::now().into())
             ]
         )
-        .exec().await;
+        .exec().await?;
 
-    //println!("Added {:?} snapshot voter requests to queue", updated_voter_handlers.unwrap());
-
-    refresh_queue
+    Ok(refresh_queue)
 }
 
 #[derive(Debug)]
