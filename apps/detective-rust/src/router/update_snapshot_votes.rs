@@ -125,7 +125,7 @@ pub async fn update_snapshot_votes<'a>(
     );
 
     let response = match
-        update_votes(graphql_query, search_from_timestamp, dao_handler, voter_handlers, &ctx).await
+        update_votes(graphql_query, search_from_timestamp, dao_handler, voter_handlers, ctx).await
     {
         Ok(_) =>
             data.voters
@@ -170,10 +170,10 @@ async fn update_votes(
         .collect();
 
     for p in proposals {
-        update_votes_for_proposal(votes.clone(), p, dao_handler.clone(), &ctx).await?;
+        update_votes_for_proposal(votes.clone(), p, dao_handler.clone(), ctx).await?;
     }
 
-    update_refresh_statuses(votes, search_from_timestamp, dao_handler, voter_handlers, &ctx).await?;
+    update_refresh_statuses(votes, search_from_timestamp, dao_handler, voter_handlers, ctx).await?;
 
     Ok(())
 }
@@ -252,14 +252,14 @@ async fn update_votes_for_proposal(
 
                     if proposal.timeend < Utc::now() {
                         create_old_votes(
-                            &ctx,
+                            ctx,
                             votes_for_proposal,
                             proposal.id,
                             dao_handler.clone()
                         ).await?;
                     } else {
                         update_or_create_current_votes(
-                            &ctx,
+                            ctx,
                             votes_for_proposal,
                             proposal.id,
                             dao_handler.clone()
@@ -368,7 +368,7 @@ async fn update_or_create_current_votes(
                             ),
                             vote::choice::set(v.choice.clone()),
                             vote::votingpower::set(v.vp.into()),
-                            vote::reason::set(v.reason.clone())
+                            vote::reason::set(v.reason)
                         ]
                     )
             )

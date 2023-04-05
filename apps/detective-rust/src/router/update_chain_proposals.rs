@@ -67,7 +67,9 @@ pub async fn update_chain_proposals<'a>(
         to_block = current_block - 10;
     }
 
-    let result = match dao_handler.r#type {
+    
+
+    match dao_handler.r#type {
         crate::prisma::DaoHandlerType::AaveChain => {
             match aave_proposals(ctx, &dao_handler, &from_block, &to_block).await {
                 Ok(p) => {
@@ -116,9 +118,7 @@ pub async fn update_chain_proposals<'a>(
         crate::prisma::DaoHandlerType::Snapshot => {
             Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" })
         }
-    };
-
-    result
+    }
 }
 
 async fn insert_proposals(
@@ -163,8 +163,8 @@ async fn insert_proposals(
                         p.external_id.clone(),
                         p.choices.clone(),
                         p.scores.clone(),
-                        p.scores_total.clone().into(),
-                        p.quorum.clone().into(),
+                        p.scores_total.clone(),
+                        p.quorum.clone(),
                         p.time_created.with_timezone(&fixed_offset.unwrap()),
                         p.time_start.with_timezone(&fixed_offset.unwrap()),
                         p.time_end.with_timezone(&fixed_offset.unwrap()),
@@ -177,7 +177,7 @@ async fn insert_proposals(
                         proposal::choices::set(p.choices.clone()),
                         proposal::scores::set(p.scores.clone()),
                         proposal::scorestotal::set(p.clone().scores_total),
-                        proposal::quorum::set(p.clone().quorum)
+                        proposal::quorum::set(p.quorum)
                     ]
                 )
         );
