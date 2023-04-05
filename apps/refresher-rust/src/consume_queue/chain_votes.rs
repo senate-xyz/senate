@@ -1,3 +1,4 @@
+use anyhow::{ Result };
 use std::{ env, time::Duration, sync::Arc };
 
 use prisma_client_rust::chrono::{ Utc };
@@ -15,9 +16,10 @@ struct ApiResponse {
     voter_address: String,
 }
 
-pub(crate) async fn process_chain_votes(entry: RefreshEntry, client: &Arc<PrismaClient>) {
-    //println!("process {:?}", entry);
-
+pub(crate) async fn process_chain_votes(
+    entry: RefreshEntry,
+    client: &Arc<PrismaClient>
+) -> Result<()> {
     let detective_url = match env::var_os("DETECTIVE_URL") {
         Some(v) => v.into_string().unwrap(),
         None => panic!("$DETECTIVE_URL is not set"),
@@ -141,4 +143,6 @@ pub(crate) async fn process_chain_votes(entry: RefreshEntry, client: &Arc<Prisma
             }
         }
     });
+
+    Ok(())
 }

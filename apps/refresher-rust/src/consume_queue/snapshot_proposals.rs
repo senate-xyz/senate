@@ -1,6 +1,7 @@
+use anyhow::{ Result };
 use std::{ env, time::Duration, sync::Arc };
 
-use prisma_client_rust::chrono::Utc;
+use prisma_client_rust::chrono::{ Utc, DateTime };
 use reqwest::Client;
 use serde::Deserialize;
 use tokio::task;
@@ -14,25 +15,21 @@ struct ProposalsResponse {
     response: String,
 }
 
-pub(crate) async fn process_chain_proposals(entry: RefreshEntry, client: &Arc<PrismaClient>) {
+pub(crate) async fn process_snapshot_proposals(
+    entry: RefreshEntry,
+    client: &Arc<PrismaClient>
+) -> Result<()> {
     let detective_url = match env::var_os("DETECTIVE_URL") {
         Some(v) => v.into_string().unwrap(),
         None => panic!("$DETECTIVE_URL is not set"),
     };
 
-    let post_url = format!("{}/proposals/chain_proposals", detective_url);
+    let post_url = format!("{}/proposals/snapshot_proposals", detective_url);
 
     let http_client = Client::builder().timeout(Duration::from_secs(60)).build().unwrap();
 
-    let dao_handler = client
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(entry.handler_id.to_string())])
-        .exec().await
-        .unwrap()
-        .unwrap();
-
     let client_ref = client.clone();
-    let dao_handler_ref = dao_handler;
+    let dao_handler_id_ref = entry.handler_id.clone();
 
     task::spawn(async move {
         let response = http_client
@@ -74,16 +71,14 @@ pub(crate) async fn process_chain_proposals(entry: RefreshEntry, client: &Arc<Pr
                 let _ = client_ref
                     .daohandler()
                     .update_many(
-                        vec![daohandler::id::equals(dao_handler_ref.id)],
+                        vec![daohandler::id::equals(dao_handler_id_ref.to_string())],
                         vec![
                             daohandler::refreshstatus::set(prisma::RefreshStatus::New),
                             daohandler::lastrefresh::set(Utc::now().into()),
-                            daohandler::refreshspeed::decrement(
-                                if dao_handler_ref.refreshspeed > 1000 {
-                                    dao_handler_ref.refreshspeed / 2
-                                } else {
-                                    1
-                                }
+                            daohandler::snapshotindex::set(
+                                Some(
+                                    DateTime::parse_from_rfc3339("2000-01-01T00:00:00.00Z").unwrap()
+                                )
                             )
                         ]
                     )
@@ -92,4 +87,5 @@ pub(crate) async fn process_chain_proposals(entry: RefreshEntry, client: &Arc<Pr
             }
         }
     });
+    Ok(())
 }
