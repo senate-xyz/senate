@@ -965,6 +965,7 @@ dependencies = [
 name = "detective-rust"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "dotenv",
  "ethers",
  "futures",

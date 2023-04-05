@@ -13,6 +13,7 @@ lto = true
 codegen-units = 1
 
 [dependencies]
+anyhow = "1.0.70"
 dotenv = "0.15.0"
 ethers = { version="2.0.2", features = ["rustls", "openssl", "abigen"] }
 futures = "0.3.28"

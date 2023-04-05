@@ -1,3 +1,4 @@
+use anyhow::{ Result };
 use std::{ time::Duration, iter::once };
 
 use prisma_client_rust::chrono::{ Utc, DateTime, NaiveDateTime, FixedOffset };
@@ -47,6 +48,7 @@ struct Decoder {
     space: String,
 }
 
+#[post("/snapshot_votes", data = "<data>")]
 pub async fn update_snapshot_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>
@@ -67,22 +69,18 @@ pub async fn update_snapshot_votes<'a>(
         Err(_) => panic!("decoder not found"),
     };
 
-    let voter_handlers = match
-        ctx.db
-            .voterhandler()
-            .find_many(
-                vec![
-                    voterhandler::voter::is(vec![voter::address::in_vec(data.voters.clone())]),
-                    voterhandler::daohandler::is(
-                        vec![daohandler::id::equals(data.daoHandlerId.to_string())]
-                    )
-                ]
-            )
-            .exec().await
-    {
-        Ok(data) => data,
-        Err(_) => panic!("voter handlers not found"),
-    };
+    let voter_handlers = ctx.db
+        .voterhandler()
+        .find_many(
+            vec![
+                voterhandler::voter::is(vec![voter::address::in_vec(data.voters.clone())]),
+                voterhandler::daohandler::is(
+                    vec![daohandler::id::equals(data.daoHandlerId.to_string())]
+                )
+            ]
+        )
+        .exec().await
+        .unwrap();
 
     let oldest_vote = voter_handlers
         .iter()
@@ -126,120 +124,154 @@ pub async fn update_snapshot_votes<'a>(
         search_from_timestamp
     );
 
+    let response = match
+        update_votes(graphql_query, search_from_timestamp, dao_handler, voter_handlers, &ctx).await
+    {
+        Ok(_) =>
+            data.voters
+                .clone()
+                .into_iter()
+                .map(|v| VotesResponse { voter_address: v, result: "ok" })
+                .collect(),
+        Err(e) => {
+            println!("{}", e);
+            data.voters
+                .clone()
+                .into_iter()
+                .map(|v| VotesResponse { voter_address: v, result: "nok" })
+                .collect()
+        }
+    };
+
+    Json(response)
+}
+
+async fn update_votes(
+    graphql_query: String,
+    search_from_timestamp: i64,
+    dao_handler: daohandler::Data,
+    voter_handlers: Vec<voterhandler::Data>,
+    ctx: &Ctx
+) -> Result<()> {
     let http_client = Client::builder().timeout(Duration::from_secs(10)).build().unwrap();
 
     let graphql_response = http_client
         .get("https://hub.snapshot.org/graphql")
         .json(&serde_json::json!({"query" : graphql_query}))
-        .send().await;
+        .send().await?;
 
-    match graphql_response {
-        Ok(res) => {
-            let response_data: GraphQLResponse = match res.json().await {
-                Ok(res) => res,
-                Err(_) => todo!(),
-            };
+    let response_data: GraphQLResponse = graphql_response.json().await?;
+    let votes: Vec<GraphQLVote> = response_data.data.votes;
 
-            let votes: Vec<GraphQLVote> = response_data.data.votes;
-
-            let proposals: Vec<GraphQLProposal> = votes
-                .clone()
-                .iter()
-                .map(|vote| vote.proposal.clone())
-                .collect();
-
-            for p in proposals {
-                let proposaldb = ctx.db
-                    .proposal()
-                    .find_unique(
-                        proposal::externalid_daoid(p.id.to_string(), dao_handler.daoid.to_string())
-                    )
-                    .exec().await;
-
-                match proposaldb {
-                    Ok(okp) => {
-                        let proposal = okp.unwrap();
-                        let votes_for_proposal: Vec<GraphQLVote> = votes
-                            .iter()
-                            .filter(|vote| vote.proposal.id == proposal.externalid)
-                            .cloned()
-                            .collect();
-
-                        if proposal.timeend < Utc::now() {
-                            create_old_votes(
-                                ctx,
-                                votes_for_proposal,
-                                proposal.id,
-                                dao_handler.clone()
-                            ).await;
-                        } else {
-                            update_or_create_current_votes(
-                                ctx,
-                                votes_for_proposal,
-                                proposal.id,
-                                dao_handler.clone()
-                            ).await;
-                        }
-                    }
-                    Err(_) => panic!("{:?} proposal not found for {:?}", p.id, data.daoHandlerId),
-                }
-            }
-
-            let search_to_timestamp = votes
-                .clone()
-                .into_iter()
-                .map(|vote| vote.created)
-                .chain(once(search_from_timestamp))
-                .max()
-                .unwrap();
-
-            let new_index = vec![
-                search_to_timestamp,
-                dao_handler.snapshotindex.unwrap().timestamp()
-            ]
-                .into_iter()
-                .min()
-                .unwrap();
-
-            let _ = ctx.db
-                .voterhandler()
-                .update_many(
-                    vec![
-                        voterhandler::id::in_vec(
-                            voter_handlers
-                                .clone()
-                                .iter()
-                                .map(|vh| vh.id.clone())
-                                .collect()
-                        ),
-                        voterhandler::daohandlerid::equals(dao_handler.id.clone())
-                    ],
-                    vec![
-                        voterhandler::snapshotindex::set(
-                            Some(
-                                DateTime::from_utc(
-                                    NaiveDateTime::from_timestamp_millis(new_index * 1000).unwrap(),
-                                    FixedOffset::east_opt(0).unwrap()
-                                )
-                            )
-                        )
-                    ]
-                )
-                .exec().await;
-        }
-        Err(e) => {
-            println!("{:?}", e);
-        }
-    }
-
-    let voters = data.voters.clone();
-
-    let result: Vec<VotesResponse> = voters
-        .into_iter()
-        .map(|v| VotesResponse { voter_address: v, result: "ok" })
+    let proposals: Vec<GraphQLProposal> = votes
+        .clone()
+        .iter()
+        .map(|vote| vote.proposal.clone())
         .collect();
 
-    Json(result)
+    for p in proposals {
+        update_votes_for_proposal(votes.clone(), p, dao_handler.clone(), &ctx).await?;
+    }
+
+    update_refresh_statuses(votes, search_from_timestamp, dao_handler, voter_handlers, &ctx).await?;
+
+    Ok(())
+}
+
+async fn update_refresh_statuses(
+    votes: Vec<GraphQLVote>,
+    search_from_timestamp: i64,
+    dao_handler: daohandler::Data,
+    voter_handlers: Vec<voterhandler::Data>,
+    ctx: &Ctx
+) -> Result<()> {
+    let search_to_timestamp = votes
+        .clone()
+        .into_iter()
+        .map(|vote| vote.created)
+        .chain(once(search_from_timestamp))
+        .max()
+        .unwrap();
+
+    let new_index = vec![search_to_timestamp, dao_handler.snapshotindex.unwrap().timestamp()]
+        .into_iter()
+        .min()
+        .unwrap();
+
+    ctx.db
+        .voterhandler()
+        .update_many(
+            vec![
+                voterhandler::id::in_vec(
+                    voter_handlers
+                        .clone()
+                        .iter()
+                        .map(|vh| vh.id.clone())
+                        .collect()
+                ),
+                voterhandler::daohandlerid::equals(dao_handler.id.clone())
+            ],
+            vec![
+                voterhandler::snapshotindex::set(
+                    Some(
+                        DateTime::from_utc(
+                            NaiveDateTime::from_timestamp_millis(new_index * 1000).unwrap(),
+                            FixedOffset::east_opt(0).unwrap()
+                        )
+                    )
+                )
+            ]
+        )
+        .exec().await?;
+
+    Ok(())
+}
+
+async fn update_votes_for_proposal(
+    votes: Vec<GraphQLVote>,
+    p: GraphQLProposal,
+    dao_handler: daohandler::Data,
+    ctx: &Ctx
+) -> Result<()> {
+    match
+        ctx.db
+            .proposal()
+            .find_unique(
+                proposal::externalid_daoid(p.id.to_string(), dao_handler.daoid.to_string())
+            )
+            .exec().await
+    {
+        Ok(r) =>
+            match r {
+                Some(proposal) => {
+                    let votes_for_proposal: Vec<GraphQLVote> = votes
+                        .iter()
+                        .filter(|vote| vote.proposal.id == proposal.externalid)
+                        .cloned()
+                        .collect();
+
+                    if proposal.timeend < Utc::now() {
+                        create_old_votes(
+                            &ctx,
+                            votes_for_proposal,
+                            proposal.id,
+                            dao_handler.clone()
+                        ).await?;
+                    } else {
+                        update_or_create_current_votes(
+                            &ctx,
+                            votes_for_proposal,
+                            proposal.id,
+                            dao_handler.clone()
+                        ).await?;
+                    }
+
+                    Ok(())
+                }
+                None => Err(anyhow::anyhow!("proposal not found")),
+            }
+        Err(_) => Err(anyhow::anyhow!("could not get proposal")),
+    }
 }
 
 async fn create_old_votes(
@@ -247,7 +279,7 @@ async fn create_old_votes(
     votes_for_proposal: Vec<GraphQLVote>,
     proposal_id: String,
     dao_handler: daohandler::Data
-) {
+) -> Result<()> {
     let _ = ctx.db
         .vote()
         .create_many(
@@ -279,7 +311,9 @@ async fn create_old_votes(
                 .collect()
         )
         .skip_duplicates()
-        .exec().await;
+        .exec().await?;
+
+    Ok(())
 }
 
 async fn update_or_create_current_votes(
@@ -287,10 +321,10 @@ async fn update_or_create_current_votes(
     votes_for_proposal: Vec<GraphQLVote>,
     proposal_id: String,
     dao_handler: daohandler::Data
-) {
+) -> Result<()> {
     let _ = ctx.db._batch(
         votes_for_proposal
-            .iter()
+            .into_iter()
             .map(|v|
                 ctx.db
                     .vote()
@@ -338,5 +372,7 @@ async fn update_or_create_current_votes(
                         ]
                     )
             )
-    );
+    ).await?;
+
+    Ok(())
 }
