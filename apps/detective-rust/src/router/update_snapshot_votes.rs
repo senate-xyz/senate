@@ -53,16 +53,12 @@ pub async fn update_snapshot_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>
 ) -> Json<Vec<VotesResponse>> {
-    let dao_handler = match
-        ctx.db
-            .daohandler()
-            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-            .exec().await
-            .unwrap()
-    {
-        Some(data) => data,
-        None => panic!("daoHandlerId not found"),
-    };
+    let dao_handler = ctx.db
+        .daohandler()
+        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+        .exec().await
+        .expect("bad prisma result")
+        .expect("daoHandlerId not found");
 
     let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
         Ok(data) => data,
@@ -80,11 +76,11 @@ pub async fn update_snapshot_votes<'a>(
             ]
         )
         .exec().await
-        .unwrap();
+        .expect("bad prisma result");
 
     let oldest_vote = voter_handlers
         .iter()
-        .map(|voterhandler| voterhandler.snapshotindex.unwrap().timestamp())
+        .map(|voterhandler| voterhandler.snapshotindex.expect("bad snapshotindex").timestamp())
         .max()
         .unwrap_or(0);
 
@@ -153,7 +149,10 @@ async fn update_votes(
     voter_handlers: Vec<voterhandler::Data>,
     ctx: &Ctx
 ) -> Result<()> {
-    let http_client = Client::builder().timeout(Duration::from_secs(10)).build().unwrap();
+    let http_client = Client::builder()
+        .timeout(Duration::from_secs(10))
+        .build()
+        .expect("can not create http client");
 
     let graphql_response = http_client
         .get("https://hub.snapshot.org/graphql")
@@ -191,12 +190,15 @@ async fn update_refresh_statuses(
         .map(|vote| vote.created)
         .chain(once(search_from_timestamp))
         .max()
-        .unwrap();
+        .expect("bad search_to_timestamp");
 
-    let new_index = vec![search_to_timestamp, dao_handler.snapshotindex.unwrap().timestamp()]
+    let new_index = vec![
+        search_to_timestamp,
+        dao_handler.snapshotindex.expect("bad snapshotindex").timestamp()
+    ]
         .into_iter()
         .min()
-        .unwrap();
+        .expect("bad new_index");
 
     ctx.db
         .voterhandler()
@@ -215,7 +217,9 @@ async fn update_refresh_statuses(
                 voterhandler::snapshotindex::set(
                     Some(
                         DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(new_index * 1000).unwrap(),
+                            NaiveDateTime::from_timestamp_millis(new_index * 1000).expect(
+                                "bad new_index timestamp"
+                            ),
                             FixedOffset::east_opt(0).unwrap()
                         )
                     )
@@ -300,7 +304,7 @@ async fn create_old_votes(
                                     DateTime::from_utc(
                                         NaiveDateTime::from_timestamp_millis(
                                             v.created * 1000
-                                        ).unwrap(),
+                                        ).expect("bad created timestamp"),
                                         FixedOffset::east_opt(0).unwrap()
                                     )
                                 )
@@ -348,7 +352,7 @@ async fn update_or_create_current_votes(
                                         DateTime::from_utc(
                                             NaiveDateTime::from_timestamp_millis(
                                                 v.created * 1000
-                                            ).unwrap(),
+                                            ).expect("bad created timestamp"),
                                             FixedOffset::east_opt(0).unwrap()
                                         )
                                     )
@@ -361,7 +365,7 @@ async fn update_or_create_current_votes(
                                     DateTime::from_utc(
                                         NaiveDateTime::from_timestamp_millis(
                                             v.created * 1000
-                                        ).unwrap(),
+                                        ).expect("bad created timestamp"),
                                         FixedOffset::east_opt(0).unwrap()
                                     )
                                 )

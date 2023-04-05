@@ -32,16 +32,12 @@ pub async fn update_chain_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>
 ) -> Json<ProposalsResponse<'a>> {
-    let dao_handler = match
-        ctx.db
-            .daohandler()
-            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-            .exec().await
-            .unwrap()
-    {
-        Some(data) => data,
-        None => panic!("{:?} daoHandlerId not found", data.daoHandlerId),
-    };
+    let dao_handler = ctx.db
+        .daohandler()
+        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+        .exec().await
+        .expect("bad prisma result")
+        .expect("daoHandlerId not found");
 
     let min_block = dao_handler.chainindex;
     let batch_size = dao_handler.refreshspeed;

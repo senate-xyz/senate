@@ -58,16 +58,12 @@ pub async fn update_snapshot_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>
 ) -> Json<ProposalsResponse<'a>> {
-    let dao_handler = match
-        ctx.db
-            .daohandler()
-            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-            .exec().await
-            .unwrap()
-    {
-        Some(data) => data,
-        None => panic!("{:?} daoHandlerId not found", data.daoHandlerId),
-    };
+    let dao_handler = ctx.db
+        .daohandler()
+        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+        .exec().await
+        .expect("bad prisma result")
+        .expect("daoHandlerId not found");
 
     let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
         Ok(data) => data,
@@ -127,7 +123,10 @@ async fn update_proposals(
     dao_handler: daohandler::Data,
     old_index: i64
 ) -> Result<()> {
-    let http_client = Client::builder().timeout(Duration::from_secs(10)).build().unwrap();
+    let http_client = Client::builder()
+        .timeout(Duration::from_secs(10))
+        .build()
+        .expect("can not create http client");
 
     let graphql_response = http_client
         .get("https://hub.snapshot.org/graphql")
@@ -154,15 +153,21 @@ async fn update_proposals(
                         proposal.scores_total.into(),
                         proposal.quorum.into(),
                         DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(proposal.created * 1000).unwrap(),
+                            NaiveDateTime::from_timestamp_millis(proposal.created * 1000).expect(
+                                "can not create timecreated"
+                            ),
                             FixedOffset::east_opt(0).unwrap()
                         ),
                         DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(proposal.start * 1000).unwrap(),
+                            NaiveDateTime::from_timestamp_millis(proposal.start * 1000).expect(
+                                "can not create timestart"
+                            ),
                             FixedOffset::east_opt(0).unwrap()
                         ),
                         DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(proposal.end * 1000).unwrap(),
+                            NaiveDateTime::from_timestamp_millis(proposal.end * 1000).expect(
+                                "can not create timeend"
+                            ),
                             FixedOffset::east_opt(0).unwrap()
                         ),
                         proposal.link.clone(),
@@ -217,7 +222,9 @@ async fn update_proposals(
                 daohandler::snapshotindex::set(
                     Some(
                         DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(new_index * 1000).unwrap(),
+                            NaiveDateTime::from_timestamp_millis(new_index * 1000).expect(
+                                "can not create snapshotindex"
+                            ),
                             FixedOffset::east_opt(0).unwrap()
                         )
                     )

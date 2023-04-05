@@ -25,7 +25,7 @@ pub async fn aave_proposals(
 ) -> Result<Vec<ChainProposal>> {
     let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder)?;
 
-    let address = decoder.address.parse::<Address>().unwrap();
+    let address = decoder.address.parse::<Address>().expect("bad address");
 
     let gov_contract = aavegov::aavegov::aavegov::new(address, ctx.client.clone());
 
@@ -67,23 +67,23 @@ async fn data_for_proposal(
     let voting_start_b = log.clone().start_block.as_u64();
     let voting_end_b = log.clone().end_block.as_u64();
 
-    let created_timestamp = created_b.unwrap().time()?;
+    let created_timestamp = created_b.expect("bad block").time()?;
 
     let voting_starts_block = ctx.client.get_block(voting_start_b).await?;
     let voting_ends_block = ctx.client.get_block(voting_end_b).await?;
 
-    let voting_starts_timestamp = voting_starts_block.unwrap().time()?;
+    let voting_starts_timestamp = voting_starts_block.expect("bad block").time()?;
     let voting_ends_timestamp = match voting_ends_block {
-        Some(block) => block.time().unwrap(),
+        Some(block) => block.time().expect("bad block timestamp"),
         None =>
             DateTime::from_utc(
                 NaiveDateTime::from_timestamp_millis(
                     created_timestamp.timestamp() * 1000 +
-                        (log.end_block.as_u64().to_i64().unwrap() -
-                            meta.block_number.as_u64().to_i64().unwrap()) *
+                        (log.end_block.as_u64().to_i64().expect("bad conversion") -
+                            meta.block_number.as_u64().to_i64().expect("bad conversion")) *
                             12 *
                             1000
-                ).unwrap(),
+                ).expect("bad timestamp"),
                 Utc
             ),
     };
@@ -132,7 +132,7 @@ async fn data_for_proposal(
         time_start: voting_starts_timestamp,
         time_end: voting_ends_timestamp,
         time_created: created_timestamp,
-        block_created: block_created.as_u64().to_i64().unwrap(),
+        block_created: block_created.as_u64().to_i64().expect("bad conversion"),
         choices: _choices.into(),
         scores: _scores.into(),
         scores_total: _scores_total.into(),
