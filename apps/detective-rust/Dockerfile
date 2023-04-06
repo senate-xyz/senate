@@ -1,5 +1,6 @@
 ARG DETECTIVE_URL
 ARG DATABASE_URL
+ARG ALCHEMY_NODE_URL
 
 FROM lukemathwalker/cargo-chef:latest AS chef
 WORKDIR /app
@@ -22,3 +23,5 @@ RUN apt install openssl ca-certificates -y
 WORKDIR /app
 COPY --from=builder /app/target/release/detective-rust /usr/local/bin
 ENTRYPOINT ["/usr/local/bin/detective-rust"]
+
+EXPOSE 8000

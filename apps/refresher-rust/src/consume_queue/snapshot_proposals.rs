@@ -18,7 +18,7 @@ struct ProposalsResponse {
     response: String,
 }
 
-pub(crate) async fn process_snapshot_proposals(
+pub(crate) async fn consume_snapshot_proposals(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
 ) -> Result<()> {
@@ -66,9 +66,11 @@ pub(crate) async fn process_snapshot_proposals(
                     _ => panic!("Unexpected response"),
                 };
 
-                client_ref._batch(dbupdate).await.unwrap()
+                let _ = client_ref._batch(dbupdate).await.unwrap();
             }
             Err(e) => {
+                println!("{:#?}", e);
+
                 let _ = client_ref
                     .daohandler()
                     .update_many(
@@ -83,7 +85,6 @@ pub(crate) async fn process_snapshot_proposals(
                     )
                     .exec()
                     .await;
-                panic!("http error: {:?}", e);
             }
         }
     });

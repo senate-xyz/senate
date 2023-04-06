@@ -18,7 +18,7 @@ struct ProposalsResponse {
     response: String,
 }
 
-pub(crate) async fn process_chain_proposals(
+pub(crate) async fn consume_chain_proposals(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
 ) -> Result<()> {
@@ -62,6 +62,13 @@ pub(crate) async fn process_chain_proposals(
                         vec![
                             daohandler::refreshstatus::set(prisma::RefreshStatus::Done),
                             daohandler::lastrefresh::set(Utc::now().into()),
+                            daohandler::refreshspeed::increment(
+                                if dao_handler_ref.refreshspeed < 1000000 {
+                                    dao_handler_ref.refreshspeed / 10
+                                } else {
+                                    0
+                                },
+                            ),
                         ],
                     ),
                     "nok" => client_ref.daohandler().update_many(
@@ -69,14 +76,23 @@ pub(crate) async fn process_chain_proposals(
                         vec![
                             daohandler::refreshstatus::set(prisma::RefreshStatus::New),
                             daohandler::lastrefresh::set(Utc::now().into()),
+                            daohandler::refreshspeed::decrement(
+                                if dao_handler_ref.refreshspeed > 1000 {
+                                    dao_handler_ref.refreshspeed / 5
+                                } else {
+                                    0
+                                },
+                            ),
                         ],
                     ),
                     _ => panic!("Unexpected response"),
                 };
 
-                client_ref._batch(dbupdate).await.unwrap()
+                let _ = client_ref._batch(dbupdate).await;
             }
             Err(e) => {
+                println!("{:#?}", e);
+
                 let _ = client_ref
                     .daohandler()
                     .update_many(
@@ -88,14 +104,13 @@ pub(crate) async fn process_chain_proposals(
                                 if dao_handler_ref.refreshspeed > 1000 {
                                     dao_handler_ref.refreshspeed / 2
                                 } else {
-                                    1
+                                    0
                                 },
                             ),
                         ],
                     )
                     .exec()
                     .await;
-                panic!("http error: {:?}", e);
             }
         }
     });

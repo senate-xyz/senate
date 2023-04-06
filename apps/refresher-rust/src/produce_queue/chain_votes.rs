@@ -13,7 +13,7 @@ use prisma_client_rust::{
     operator::{and, or},
 };
 
-pub async fn create_chain_votes_queue(
+pub async fn produce_chain_votes_queue(
     client: &PrismaClient,
     config: &Config,
 ) -> Result<Vec<RefreshEntry>> {
@@ -132,6 +132,7 @@ pub async fn create_chain_votes_queue(
 
             refresh_items
         })
+        .take(25)
         .collect();
 
     client

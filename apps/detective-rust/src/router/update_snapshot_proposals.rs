@@ -1,8 +1,7 @@
 use anyhow::{Context, Result};
-use std::time::Duration;
-
 use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime, Utc};
-use reqwest::Client;
+use reqwest_middleware::ClientBuilder;
+use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use rocket::serde::json::Json;
 use serde::Deserialize;
 
@@ -17,7 +16,7 @@ struct GraphQLResponse {
     data: GraphQLResponseInner,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize, Debug)]
 struct GraphQLResponseInner {
     proposals: Vec<GraphQLProposal>,
 }
@@ -115,10 +114,14 @@ pub async fn update_snapshot_proposals<'a>(
             daoHandlerId: data.daoHandlerId,
             response: "ok",
         }),
-        Err(_) => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "nok",
-        }),
+        Err(e) => {
+            println!("{:#?}", e);
+
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            })
+        }
     }
 }
 
@@ -128,10 +131,11 @@ async fn update_proposals(
     dao_handler: daohandler::Data,
     old_index: i64,
 ) -> Result<()> {
-    let http_client = Client::builder()
-        .timeout(Duration::from_secs(10))
-        .build()
-        .expect("can not create http client");
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+
+    let http_client = ClientBuilder::new(reqwest::Client::new())
+        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build();
 
     let graphql_response = http_client
         .get("https://hub.snapshot.org/graphql")
@@ -142,13 +146,13 @@ async fn update_proposals(
     let response_data: GraphQLResponse = graphql_response
         .json()
         .await
-        .context("bad graphql response")?;
+        .with_context(|| format!("bad graphql response {}", graphql_query))?;
 
     let proposals: Vec<GraphQLProposal> = response_data.data.proposals;
 
     let upserts = proposals.clone().into_iter().map(|proposal| {
         ctx.db.proposal().upsert(
-            proposal::externalid_daoid(proposal.id.to_string(), dao_handler.id.to_string()),
+            proposal::externalid_daoid(proposal.id.to_string(), dao_handler.daoid.to_string()),
             proposal::create(
                 proposal.title.clone(),
                 proposal.id.clone(),
@@ -185,7 +189,10 @@ async fn update_proposals(
         )
     });
 
-    ctx.db._batch(upserts).await?;
+    ctx.db
+        ._batch(upserts)
+        .await
+        .context("failed to upsert proposals")?;
 
     let closed_proposals: Vec<&GraphQLProposal> = proposals
         .iter()
@@ -227,7 +234,8 @@ async fn update_proposals(
             )))],
         )
         .exec()
-        .await?;
+        .await
+        .context("failed to update daohandler")?;
 
     Ok(())
 }

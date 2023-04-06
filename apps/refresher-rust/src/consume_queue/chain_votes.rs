@@ -15,11 +15,11 @@ use crate::{
 #[allow(non_snake_case)]
 #[derive(Deserialize)]
 struct ApiResponse {
-    response: String,
     voter_address: String,
+    result: String,
 }
 
-pub(crate) async fn process_chain_votes(
+pub(crate) async fn consume_chain_votes(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
 ) -> Result<()> {
@@ -58,22 +58,21 @@ pub(crate) async fn process_chain_votes(
             Ok(res) => {
                 let data: Vec<ApiResponse> = res.json().await.unwrap();
 
-                // Filter data based on the "response" field
                 let ok_voters: Vec<String> = data
                     .iter()
-                    .filter(|result| result.response == "ok")
+                    .filter(|result| result.result == "ok")
                     .map(|result| result.voter_address.clone())
                     .collect();
 
                 let nok_voters: Vec<String> = data
                     .iter()
-                    .filter(|result| result.response == "nok")
+                    .filter(|result| result.result == "nok")
                     .map(|result| result.voter_address.clone())
                     .collect();
 
                 let ok_voter_ids = client_ref
                     .voter()
-                    .find_many(vec![prisma::voter::address::in_vec(ok_voters)])
+                    .find_many(vec![prisma::voter::address::in_vec(ok_voters.clone())])
                     .exec()
                     .await
                     .unwrap()
@@ -83,7 +82,7 @@ pub(crate) async fn process_chain_votes(
 
                 let nok_voter_ids = client_ref
                     .voter()
-                    .find_many(vec![prisma::voter::address::in_vec(nok_voters)])
+                    .find_many(vec![prisma::voter::address::in_vec(nok_voters.clone())])
                     .exec()
                     .await
                     .unwrap()
@@ -119,6 +118,8 @@ pub(crate) async fn process_chain_votes(
                     .unwrap();
             }
             Err(e) => {
+                println!("{:#?}", e);
+
                 let voter_ids = client_ref
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(voters_ref)])
@@ -146,7 +147,6 @@ pub(crate) async fn process_chain_votes(
                     )
                     .exec()
                     .await;
-                panic!("http error: {:?}", e);
             }
         }
     });

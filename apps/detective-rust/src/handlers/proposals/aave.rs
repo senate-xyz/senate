@@ -17,8 +17,7 @@ use prisma_client_rust::{
 };
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
-use std::{str, time::Duration};
-use tokio::time::sleep;
+use std::str;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -40,7 +39,7 @@ pub async fn aave_proposals(
     let gov_contract = aavegov::aavegov::aavegov::new(address, ctx.client.clone());
 
     let events = gov_contract
-        .event::<aavegov::ProposalCreatedFilter>()
+        .proposal_created_filter()
         .from_block(*from_block)
         .to_block(*to_block);
 
@@ -82,7 +81,20 @@ async fn data_for_proposal(
     let voting_starts_block = ctx.client.get_block(voting_start_b).await?;
     let voting_ends_block = ctx.client.get_block(voting_end_b).await?;
 
-    let voting_starts_timestamp = voting_starts_block.expect("bad block").time()?;
+    let voting_starts_timestamp = match voting_starts_block {
+        Some(block) => block.time().expect("bad block timestamp"),
+        None => DateTime::from_utc(
+            NaiveDateTime::from_timestamp_millis(
+                created_timestamp.timestamp() * 1000
+                    + (log.start_block.as_u64().to_i64().expect("bad conversion")
+                        - meta.block_number.as_u64().to_i64().expect("bad conversion"))
+                        * 12
+                        * 1000,
+            )
+            .expect("bad timestamp"),
+            Utc,
+        ),
+    };
     let voting_ends_timestamp = match voting_ends_block {
         Some(block) => block.time().expect("bad block timestamp"),
         None => DateTime::from_utc(
@@ -178,17 +190,24 @@ async fn get_title(hexhash: String) -> Result<String> {
                 };
                 return Ok(ipfs_data.title);
             }
-            Err(e) => {
-                if e.status().unwrap() == StatusCode::TOO_MANY_REQUESTS {
+            Err(e) => match e.status() {
+                Some(status) => {
+                    if status == StatusCode::TOO_MANY_REQUESTS {
+                        retries += 1;
+                        if retries > 30 {
+                            bail!("could not get proposal title");
+                        }
+                    } else {
+                        bail!("can't get title")
+                    }
+                }
+                None => {
                     retries += 1;
                     if retries > 30 {
                         bail!("could not get proposal title");
                     }
-                    sleep(Duration::from_secs(2_u64.pow(retries))).await;
-                } else {
-                    bail!("can't get title")
                 }
-            }
+            },
         }
     }
 }

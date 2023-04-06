@@ -7,7 +7,7 @@ use prisma_client_rust::{
     operator::{and, or},
 };
 
-pub async fn create_snapshot_proposals_queue(
+pub async fn produce_snapshot_proposals_queue(
     client: &PrismaClient,
     config: &Config,
 ) -> Result<Vec<RefreshEntry>> {

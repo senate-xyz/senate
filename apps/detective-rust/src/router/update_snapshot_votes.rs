@@ -1,10 +1,11 @@
-use anyhow::{Context, Result};
-use std::{iter::once, time::Duration};
+use anyhow::{bail, Context, Result};
+use reqwest_middleware::ClientBuilder;
+use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
+use std::iter::once;
 
 use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime, Utc};
-use reqwest::Client;
 use rocket::serde::json::Json;
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 use serde_json::Value;
 
 use crate::{
@@ -38,7 +39,15 @@ struct GraphQLVote {
     choice: Value,
     vp: f64,
     created: i64,
+    #[serde(deserialize_with = "parse_proposal")]
     proposal: GraphQLProposal,
+}
+
+fn parse_proposal<'de, D>(d: D) -> Result<GraphQLProposal, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Deserialize::deserialize(d).map(|x: Option<_>| x.unwrap_or(GraphQLProposal { id: "".into() }))
 }
 
 #[derive(Debug, Deserialize)]
@@ -143,7 +152,8 @@ pub async fn update_snapshot_votes<'a>(
             })
             .collect(),
         Err(e) => {
-            println!("{}", e);
+            println!("{:#?}", e);
+
             data.voters
                 .clone()
                 .into_iter()
@@ -165,10 +175,11 @@ async fn update_votes(
     voter_handlers: Vec<voterhandler::Data>,
     ctx: &Ctx,
 ) -> Result<()> {
-    let http_client = Client::builder()
-        .timeout(Duration::from_secs(10))
-        .build()
-        .expect("can not create http client");
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+
+    let http_client = ClientBuilder::new(reqwest::Client::new())
+        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build();
 
     let graphql_response = http_client
         .get("https://hub.snapshot.org/graphql")
@@ -179,9 +190,14 @@ async fn update_votes(
     let response_data: GraphQLResponse = graphql_response
         .json()
         .await
-        .context("bad graphql response")?;
+        .with_context(|| format!("bad graphql response {}", graphql_query))?;
 
-    let votes: Vec<GraphQLVote> = response_data.data.votes;
+    let votes: Vec<GraphQLVote> = response_data
+        .data
+        .votes
+        .into_iter()
+        .filter(|v| v.proposal.id != "") //snapshot sometimes returns votes with null proposal :-/
+        .collect();
 
     let proposals: Vec<GraphQLProposal> = votes
         .clone()
@@ -295,9 +311,9 @@ async fn update_votes_for_proposal(
 
                 Ok(())
             }
-            None => Err(anyhow::anyhow!("proposal not found")),
+            None => bail!("proposal not found"),
         },
-        Err(_) => Err(anyhow::anyhow!("could not get proposal")),
+        Err(_) => bail!("could not get proposal"),
     }
 }
 

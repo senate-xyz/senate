@@ -19,7 +19,7 @@ struct ApiResponse {
     voter_address: String,
 }
 
-pub(crate) async fn process_snapshot_votes(
+pub(crate) async fn consume_snapshot_votes(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
 ) -> Result<()> {
@@ -122,6 +122,8 @@ pub(crate) async fn process_snapshot_votes(
                     .unwrap();
             }
             Err(e) => {
+                println!("{:#?}", e);
+
                 let voter_ids = client_ref
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(voters_ref)])

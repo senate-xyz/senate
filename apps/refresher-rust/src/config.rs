@@ -31,10 +31,10 @@ lazy_static::lazy_static! {
         RwLock::new(Config {
             refresh_interval: 300,
 
-            normal_chain_proposals: 60 * 1000,
-            normal_chain_votes: 60 * 1000,
-            normal_snapshot_proposals: 60 * 1000,
-            normal_snapshot_votes: 60 * 1000,
+            normal_chain_proposals: 2* 60 * 1000,
+            normal_chain_votes: 2* 60 * 1000,
+            normal_snapshot_proposals:2* 60 * 1000,
+            normal_snapshot_votes:2*  60 * 1000,
 
             new_chain_proposals: 5 * 60 * 1000,
             new_chain_votes: 5 * 60 * 1000,
@@ -74,12 +74,12 @@ pub(crate) async fn load_config_from_db(client: &PrismaClient) -> Result<()> {
     let refresh_interval = load_config_value(client, "refresh_interval", 300).await?;
 
     let normal_chain_proposals =
-        load_config_value(client, "normal_chain_proposals", 60 * 1000).await?;
-    let normal_chain_votes = load_config_value(client, "normal_chain_votes", 60 * 1000).await?;
+        load_config_value(client, "normal_chain_proposals", 2 * 60 * 1000).await?;
+    let normal_chain_votes = load_config_value(client, "normal_chain_votes", 2 * 60 * 1000).await?;
     let normal_snapshot_proposals =
-        load_config_value(client, "normal_snapshot_proposals", 60 * 1000).await?;
+        load_config_value(client, "normal_snapshot_proposals", 2 * 60 * 1000).await?;
     let normal_snapshot_votes =
-        load_config_value(client, "normal_snapshot_votes", 60 * 1000).await?;
+        load_config_value(client, "normal_snapshot_votes", 2 * 60 * 1000).await?;
 
     let force_chain_proposals =
         load_config_value(client, "force_chain_proposals", 5 * 60 * 1000).await?;

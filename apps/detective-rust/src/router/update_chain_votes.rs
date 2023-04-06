@@ -1,4 +1,4 @@
-use anyhow::{Result};
+use anyhow::{Context, Result};
 use std::ops::Div;
 
 use ethers::{providers::Middleware, types::U64};
@@ -59,11 +59,10 @@ pub async fn update_chain_votes<'a>(
         .await
         .expect("bad prisma result");
 
-    let first_proposal_block = first_proposal
-        .first()
-        .expect("first proposal not found")
-        .blockcreated
-        .unwrap_or(0);
+    let first_proposal_block = match first_proposal.first() {
+        Some(s) => s.blockcreated.unwrap_or(0),
+        None => 0,
+    };
 
     let voter_handlers = ctx
         .db
@@ -84,8 +83,8 @@ pub async fn update_chain_votes<'a>(
         .iter()
         .map(|vh| vh.chainindex)
         .min()
-        .unwrap()
-        .unwrap();
+        .unwrap_or_default()
+        .unwrap_or(0);
 
     let current_block = ctx
         .client
@@ -148,10 +147,8 @@ pub async fn update_chain_votes<'a>(
                                 })
                                 .collect(),
                             Err(e) => {
-                                eprintln!(
-                                    "Application error, from:{}, to:{}, current:{}, {},",
-                                    from_block, to_block, current_block, e
-                                );
+                                println!("{:#?}", e);
+
                                 voters
                                     .into_iter()
                                     .map(|v| VotesResponse {
@@ -164,10 +161,8 @@ pub async fn update_chain_votes<'a>(
                     res
                 }
                 Err(e) => {
-                    eprintln!(
-                        "Application error, from:{}, to:{}, current:{}, {},",
-                        from_block, to_block, current_block, e
-                    );
+                    println!("{:#?}", e);
+
                     voters
                         .into_iter()
                         .map(|v| VotesResponse {
@@ -259,6 +254,9 @@ async fn insert_votes(
     ctx: &Ctx,
     dao_handler: daohandler::Data,
 ) -> Result<Vec<VoteResult>> {
+    let successful_voters: Vec<VoteResult> =
+        votes.clone().into_iter().filter(|v| v.success).collect();
+
     let successful_votes: Vec<Vote> = votes
         .into_iter()
         .filter(|v| v.success)
@@ -288,15 +286,16 @@ async fn insert_votes(
                         v.choice.clone(),
                         v.voting_power.clone(),
                         v.reason.clone(),
-                        v.voter_address.clone(),
+                        v.voter_address.to_string(),
                         v.proposal_id.clone(),
                         dao_handler.daoid.clone(),
                         dao_handler.id.clone(),
-                        vec![],
+                        vec![vote::blockcreated::set(v.block_created.into())],
                     )
                 })
                 .collect(),
         )
+        .skip_duplicates()
         .exec()
         .await?;
 
@@ -336,7 +335,7 @@ async fn insert_votes(
         .update_many(
             vec![
                 voterhandler::voter::is(vec![voter::address::in_vec(
-                    successful_votes
+                    successful_voters
                         .iter()
                         .map(|v| v.clone().voter_address)
                         .collect(),
@@ -346,9 +345,14 @@ async fn insert_votes(
             vec![voterhandler::chainindex::set(new_index.into())],
         )
         .exec()
-        .await?;
+        .await
+        .context("failed to update voterhandlers")?;
 
-    let _ = ctx.db._batch(upserts).await?;
+    let _ = ctx
+        .db
+        ._batch(upserts)
+        .await
+        .context("failed to add votes")?;
 
     Ok(votes.clone())
 }

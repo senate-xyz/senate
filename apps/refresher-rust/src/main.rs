@@ -23,15 +23,15 @@ mod consume_queue {
     pub mod snapshot_votes;
 }
 
-use crate::produce_queue::chain_proposals::create_chain_proposals_queue;
-use crate::produce_queue::chain_votes::create_chain_votes_queue;
-use crate::produce_queue::snapshot_proposals::create_snapshot_proposals_queue;
-use crate::produce_queue::snapshot_votes::create_snapshot_votes_queue;
+use crate::produce_queue::chain_proposals::produce_chain_proposals_queue;
+use crate::produce_queue::chain_votes::produce_chain_votes_queue;
+use crate::produce_queue::snapshot_proposals::produce_snapshot_proposals_queue;
+use crate::produce_queue::snapshot_votes::produce_snapshot_votes_queue;
 
-use crate::consume_queue::chain_proposals::process_chain_proposals;
-use crate::consume_queue::chain_votes::process_chain_votes;
-use crate::consume_queue::snapshot_proposals::process_snapshot_proposals;
-use crate::consume_queue::snapshot_votes::process_snapshot_votes;
+use crate::consume_queue::chain_proposals::consume_chain_proposals;
+use crate::consume_queue::chain_votes::consume_chain_votes;
+use crate::consume_queue::snapshot_proposals::consume_snapshot_proposals;
+use crate::consume_queue::snapshot_votes::consume_snapshot_votes;
 
 use config::{load_config_from_db, Config, CONFIG};
 
@@ -72,7 +72,8 @@ async fn main() {
                 let queue = match producer_task(&inner_client_clone, &config_clone).await {
                     Ok(r) => r,
                     Err(e) => {
-                        println!("err! {:?}", e);
+                        println!("{:#?}", e);
+
                         vec![]
                     }
                 };
@@ -97,7 +98,7 @@ async fn main() {
                     match comsumer_task(entry, &client_clone).await {
                         Ok(_) => {}
                         Err(e) => {
-                            println!("err! {:?}", e);
+                            println!("{:#?}", e);
                         }
                     }
                 });
@@ -112,40 +113,30 @@ async fn main() {
 async fn comsumer_task(entry: RefreshEntry, client: &Arc<PrismaClient>) -> Result<()> {
     match entry.refresh_type {
         RefreshType::Daosnapshotproposals => {
-            process_snapshot_proposals(entry, client).await?;
+            consume_snapshot_proposals(entry, client).await?;
         }
         RefreshType::Daosnapshotvotes => {
-            process_snapshot_votes(entry, client).await?;
+            consume_snapshot_votes(entry, client).await?;
         }
         RefreshType::Daochainproposals => {
-            process_chain_proposals(entry, client).await?;
+            consume_chain_proposals(entry, client).await?;
         }
         RefreshType::Daochainvotes => {
-            process_chain_votes(entry, client).await?;
+            consume_chain_votes(entry, client).await?;
         }
     }
     Ok(())
 }
 
 async fn producer_task(client: &PrismaClient, config: &Config) -> Result<Vec<RefreshEntry>> {
-    println!("+++ Create queue +++");
-
     load_config_from_db(client).await?;
     create_voter_handlers(client).await?;
 
-    let snapshot_proposal_queue = create_snapshot_proposals_queue(client, config).await?;
-    let snapshot_votes_queue = create_snapshot_votes_queue(client, config).await?;
+    let snapshot_proposal_queue = produce_snapshot_proposals_queue(client, config).await?;
+    let snapshot_votes_queue = produce_snapshot_votes_queue(client, config).await?;
 
-    let chain_proposal_queue = create_chain_proposals_queue(client, config).await?;
-    let chain_votes_queue = create_chain_votes_queue(client, config).await?;
-
-    println!(
-        "Snapshot proposals queue: {:?}",
-        snapshot_proposal_queue.len()
-    );
-    println!("Snapshot votes queue: {:?}", snapshot_votes_queue.len());
-    println!("Chain proposals queue: {:?}", chain_proposal_queue.len());
-    println!("Chain votes queue: {:?}", chain_votes_queue.len());
+    let chain_proposal_queue = produce_chain_proposals_queue(client, config).await?;
+    let chain_votes_queue = produce_chain_votes_queue(client, config).await?;
 
     let mut complete_queue = Vec::new();
     complete_queue.reserve(
@@ -158,8 +149,6 @@ async fn producer_task(client: &PrismaClient, config: &Config) -> Result<Vec<Ref
     complete_queue.extend(snapshot_votes_queue);
     complete_queue.extend(chain_proposal_queue);
     complete_queue.extend(chain_votes_queue);
-
-    println!("--- Created queue ---");
 
     Ok(complete_queue)
 }

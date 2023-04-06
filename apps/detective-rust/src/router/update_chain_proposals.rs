@@ -78,10 +78,8 @@ pub async fn update_chain_proposals<'a>(
                     })
                 }
                 Err(e) => {
-                    eprintln!(
-                        "Application error, from:{}, to:{}, current:{}, {},",
-                        from_block, to_block, current_block, e
-                    );
+                    println!("{:#?}", e);
+
                     Json(ProposalsResponse {
                         daoHandlerId: data.daoHandlerId,
                         response: "nok",
