@@ -1,5 +1,8 @@
-import { proposalSanity } from './proposals'
-import { votesSanity } from './votes'
+import { snapshotProposalsSanity } from './proposals/snapshot'
+import { makerPollsSanity} from './proposals/makerPolls'
+import { snapshotVotesSanity } from './votes/snapshot'
 
-proposalSanity.start()
-votesSanity.start()
+snapshotProposalsSanity.start()
+makerPollsSanity.start()
+
+snapshotVotesSanity.start()

@@ -26,7 +26,7 @@ type GraphQLVote = {
 }
 
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
-export const votesSanity = schedule('30 * * * *', async () => {
+export const snapshotVotesSanity = schedule('30 * * * *', async () => {
     log_sanity.log({
         level: 'info',
         message: '[VOTES] Starting sanity check for snapshot votes',

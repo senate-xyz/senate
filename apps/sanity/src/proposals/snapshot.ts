@@ -19,7 +19,7 @@ type GraphQLProposal = {
     link: string
 }
 
-export const proposalSanity = schedule('15 * * * *', async () => {
+export const snapshotProposalsSanity = schedule('15 * * * *', async () => {
     log_sanity.log({
         level: 'info',
         message: '[PROPOSALS] Starting sanity check for snapshot proposals',
@@ -36,11 +36,14 @@ export const proposalSanity = schedule('15 * * * *', async () => {
             }
         })
 
-        await checkAndSanitizeProposalsRoutine(
-            daoHandlers,
-            SEARCH_FROM,
-            SEARCH_TO
-        )
+        for (const daoHandler of daoHandlers) {
+            await checkAndSanitizeProposalsRoutine(
+                daoHandler,
+                SEARCH_FROM,
+                SEARCH_TO
+            )
+        }
+        
     } catch (error) {
         log_sanity.log({
             level: 'error',
@@ -56,69 +59,67 @@ export const proposalSanity = schedule('15 * * * *', async () => {
 })
 
 const checkAndSanitizeProposalsRoutine = async (
-    daoHandlers: DAOHandler[],
+    daoHandler: DAOHandler,
     fromTimestamp: number,
     toTimestamp: number
 ) => {
-    for (const daoHandler of daoHandlers) {
-        const proposalsFromDatabase = await fetchProposalsFromDatabase(
-            daoHandler.id,
-            new Date(fromTimestamp),
-            new Date(toTimestamp)
+    const proposalsFromDatabase = await fetchProposalsFromDatabase(
+        daoHandler.id,
+        new Date(fromTimestamp),
+        new Date(toTimestamp)
+    )
+
+    const proposalsFromSnapshotAPI: GraphQLProposal[] =
+        await fetchProposalsFromSnapshotAPI(
+            (daoHandler.decoder as Decoder).space,
+            Math.floor(fromTimestamp / 1000),
+            Math.floor(toTimestamp / 1000)
         )
 
-        const proposalsFromSnapshotAPI: GraphQLProposal[] =
-            await fetchProposalsFromSnapshotAPI(
-                (daoHandler.decoder as Decoder).space,
-                Math.floor(fromTimestamp / 1000),
-                Math.floor(toTimestamp / 1000)
-            )
+    const proposalsNotOnSnapshot: Proposal[] = proposalsFromDatabase.filter(
+        (proposal: Proposal) => {
+            return !proposalsFromSnapshotAPI
+                .map((proposal: GraphQLProposal) => proposal.id)
+                .includes(proposal.externalid)
+        }
+    )
 
-        const proposalsNotOnSnapshot: Proposal[] = proposalsFromDatabase.filter(
-            (proposal: Proposal) => {
-                return !proposalsFromSnapshotAPI
-                    .map((proposal: GraphQLProposal) => proposal.id)
-                    .includes(proposal.externalid)
-            }
-        )
+    const proposalsNotInDatabase: GraphQLProposal[] =
+        proposalsFromSnapshotAPI.filter((proposal: GraphQLProposal) => {
+            return !proposalsFromDatabase
+                .map((proposal: Proposal) => proposal.externalid)
+                .includes(proposal.id)
+        })
 
-        const proposalsNotInDatabase: GraphQLProposal[] =
-            proposalsFromSnapshotAPI.filter((proposal: GraphQLProposal) => {
-                return !proposalsFromDatabase
-                    .map((proposal: Proposal) => proposal.externalid)
-                    .includes(proposal.id)
-            })
+    console.log(proposalsNotOnSnapshot, proposalsNotInDatabase)
 
-        console.log(proposalsNotOnSnapshot, proposalsNotInDatabase)
+    if (proposalsNotOnSnapshot.length > 0) {
+        // we have proposals which have been removed from snapshot. need to purge them from the database.
+        log_sanity.log({
+            level: 'warn',
+            message: `Found ${proposalsNotOnSnapshot.length} proposals to remove`,
+            proposals: proposalsNotOnSnapshot
+        })
 
-        if (proposalsNotOnSnapshot.length > 0) {
-            // we have proposals which have been removed from snapshot. need to purge them from the database.
-            log_sanity.log({
-                level: 'warn',
-                message: `Found ${proposalsNotOnSnapshot.length} proposals to remove`,
-                proposals: proposalsNotOnSnapshot
-            })
-
-            await prisma.proposal.deleteMany({
-                where: {
-                    daohandlerid: daoHandler.id,
-                    id: {
-                        in: proposalsNotOnSnapshot.map(
-                            (proposal) => proposal.id
-                        )
-                    }
+        await prisma.proposal.deleteMany({
+            where: {
+                daohandlerid: daoHandler.id,
+                id: {
+                    in: proposalsNotOnSnapshot.map(
+                        (proposal) => proposal.id
+                    )
                 }
-            })
-        }
+            }
+        })
+    }
 
-        if (proposalsNotInDatabase.length > 0) {
-            // we are missing proposals from the database. need to set the snapshotIndex backwards to fetch them
-            log_sanity.log({
-                level: 'warn',
-                message: `Missing proposals: ${proposalsFromDatabase.length} proposals `,
-                proposals: proposalsNotOnSnapshot
-            })
-        }
+    if (proposalsNotInDatabase.length > 0) {
+        // we are missing proposals from the database. need to set the snapshotIndex backwards to fetch them
+        log_sanity.log({
+            level: 'warn',
+            message: `Missing proposals: ${proposalsFromDatabase.length} proposals `,
+            proposals: proposalsNotOnSnapshot
+        })
     }
 }
 

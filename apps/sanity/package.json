@@ -30,6 +30,7 @@
         "@senate/config": "*",
         "@senate/database": "*",
         "axios": "^1.3.4",
+        "ethers": "^6.2.3",
         "node-cron": "^3.0.2",
         "postmark": "^3.0.15",
         "superagent": "^8.0.9"
