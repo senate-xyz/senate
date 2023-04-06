@@ -18,6 +18,7 @@ COPY . .
 RUN cargo prisma generate && cargo build --release --bin detective-rust
 
 FROM debian:bullseye-slim AS runtime
+ENV ROCKET_PORT=${PORT}
 RUN apt update
 RUN apt install openssl ca-certificates -y
 WORKDIR /app
