@@ -2,21 +2,27 @@ use std::env;
 use std::sync::Arc;
 
 use dotenv::dotenv;
-use ethers::providers::{ Provider, Http };
+use ethers::providers::{ Http, Provider };
+
+use crate::router::update_chain_proposals::update_chain_proposals;
+use crate::router::update_snapshot_proposals::update_snapshot_proposals;
+use prisma::PrismaClient;
 use router::update_chain_votes::update_chain_votes;
 use router::update_snapshot_votes::update_snapshot_votes;
 use serde::{ Deserialize, Serialize };
-use crate::router::update_snapshot_proposals::update_snapshot_proposals;
-use crate::router::update_chain_proposals::update_chain_proposals;
 mod router {
-    pub mod update_snapshot_proposals;
     pub mod update_chain_proposals;
     pub mod update_chain_votes;
+    pub mod update_snapshot_proposals;
     pub mod update_snapshot_votes;
 }
+pub mod prisma;
 
 pub mod handlers {
     pub mod proposals {
+        pub mod aave;
+    }
+    pub mod votes {
         pub mod aave;
     }
 }
@@ -26,11 +32,9 @@ pub mod contracts;
 #[macro_use]
 extern crate rocket;
 
-pub mod prisma;
-
 #[derive(Clone)]
 pub struct Context {
-    pub db: Arc<prisma::PrismaClient>,
+    pub db: Arc<PrismaClient>,
     pub client: Arc<Provider<Http>>,
 }
 pub type Ctx = rocket::State<Context>;

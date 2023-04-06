@@ -1,19 +1,19 @@
-use anyhow::{ Result };
-use std::{ time::Duration, iter::once };
+use anyhow::{ Result, Context };
+use std::{ iter::once, time::Duration };
 
-use prisma_client_rust::chrono::{ Utc, DateTime, NaiveDateTime, FixedOffset };
+use prisma_client_rust::chrono::{ DateTime, FixedOffset, NaiveDateTime, Utc };
 use reqwest::Client;
 use rocket::serde::json::Json;
 use serde::Deserialize;
 use serde_json::Value;
 
 use crate::{
+    prisma::proposal,
+    prisma::{ dao, daohandler, vote },
+    prisma::{ voter, voterhandler },
+    Ctx,
     VotesRequest,
     VotesResponse,
-    Ctx,
-    prisma::{ daohandler, vote, dao },
-    prisma::proposal,
-    prisma::{ voterhandler, voter },
 };
 
 #[derive(Debug, Deserialize)]
@@ -80,7 +80,7 @@ pub async fn update_snapshot_votes<'a>(
 
     let oldest_vote = voter_handlers
         .iter()
-        .map(|voterhandler| voterhandler.snapshotindex.expect("bad snapshotindex").timestamp())
+        .map(|voterhandler| { voterhandler.snapshotindex.expect("bad snapshotindex").timestamp() })
         .max()
         .unwrap_or(0);
 
@@ -127,14 +127,20 @@ pub async fn update_snapshot_votes<'a>(
             data.voters
                 .clone()
                 .into_iter()
-                .map(|v| VotesResponse { voter_address: v, result: "ok" })
+                .map(|v| VotesResponse {
+                    voter_address: v,
+                    result: "ok",
+                })
                 .collect(),
         Err(e) => {
             println!("{}", e);
             data.voters
                 .clone()
                 .into_iter()
-                .map(|v| VotesResponse { voter_address: v, result: "nok" })
+                .map(|v| VotesResponse {
+                    voter_address: v,
+                    result: "nok",
+                })
                 .collect()
         }
     };
@@ -156,10 +162,13 @@ async fn update_votes(
 
     let graphql_response = http_client
         .get("https://hub.snapshot.org/graphql")
-        .json(&serde_json::json!({"query" : graphql_query}))
+        .json(&serde_json::json!({ "query": graphql_query }))
         .send().await?;
 
-    let response_data: GraphQLResponse = graphql_response.json().await?;
+    let response_data: GraphQLResponse = graphql_response
+        .json().await
+        .context("bad graphql response")?;
+
     let votes: Vec<GraphQLVote> = response_data.data.votes;
 
     let proposals: Vec<GraphQLProposal> = votes
@@ -289,7 +298,7 @@ async fn create_old_votes(
         .create_many(
             votes_for_proposal
                 .iter()
-                .map(|v|
+                .map(|v| {
                     vote::create_unchecked(
                         v.choice.clone(),
                         v.vp.into(),
@@ -311,7 +320,7 @@ async fn create_old_votes(
                             )
                         ]
                     )
-                )
+                })
                 .collect()
         )
         .skip_duplicates()
@@ -329,7 +338,7 @@ async fn update_or_create_current_votes(
     let _ = ctx.db._batch(
         votes_for_proposal
             .into_iter()
-            .map(|v|
+            .map(|v| {
                 ctx.db
                     .vote()
                     .upsert(
@@ -375,7 +384,7 @@ async fn update_or_create_current_votes(
                             vote::reason::set(v.reason)
                         ]
                     )
-            )
+            })
     ).await?;
 
     Ok(())

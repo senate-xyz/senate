@@ -1,5 +1,5 @@
-use std::{ time::Duration };
-use anyhow::Result;
+use anyhow::{ Result, Context };
+use std::time::Duration;
 
 use prisma_client_rust::chrono::{ DateTime, FixedOffset, NaiveDateTime, Utc };
 use reqwest::Client;
@@ -7,11 +7,11 @@ use rocket::serde::json::Json;
 use serde::Deserialize;
 
 use crate::{
+    prisma::daohandler,
+    prisma::{ dao, proposal },
+    Ctx,
     ProposalsRequest,
     ProposalsResponse,
-    Ctx,
-    prisma::daohandler,
-    prisma::{ proposal, dao },
 };
 
 #[derive(Debug, Deserialize)]
@@ -112,8 +112,16 @@ pub async fn update_snapshot_proposals<'a>(
     );
 
     match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
-        Ok(_) => Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "ok" }),
-        Err(_) => Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" }),
+        Ok(_) =>
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "ok",
+            }),
+        Err(_) =>
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            }),
     }
 }
 
@@ -130,17 +138,19 @@ async fn update_proposals(
 
     let graphql_response = http_client
         .get("https://hub.snapshot.org/graphql")
-        .json(&serde_json::json!({"query" : graphql_query}))
+        .json(&serde_json::json!({ "query": graphql_query }))
         .send().await?;
 
-    let response_data: GraphQLResponse = graphql_response.json().await?;
+    let response_data: GraphQLResponse = graphql_response
+        .json().await
+        .context("bad graphql response")?;
 
     let proposals: Vec<GraphQLProposal> = response_data.data.proposals;
 
     let upserts = proposals
         .clone()
         .into_iter()
-        .map(|proposal|
+        .map(|proposal| {
             ctx.db
                 .proposal()
                 .upsert(
@@ -182,7 +192,7 @@ async fn update_proposals(
                         proposal::quorum::set(proposal.quorum.into())
                     ]
                 )
-        );
+        });
 
     ctx.db._batch(upserts).await?;
 

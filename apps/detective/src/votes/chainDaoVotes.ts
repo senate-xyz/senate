@@ -99,7 +99,6 @@ export const updateChainDaoVotes = async (
 
     if (fromBlock > toBlock) fromBlock = toBlock
 
-
     try {
         switch (daoHandler.type) {
             case 'AAVE_CHAIN':

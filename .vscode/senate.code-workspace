@@ -59,7 +59,8 @@
     "typescript.tsdk": "📂 root/node_modules/typescript/lib",
     "[prisma]": {
       "editor.defaultFormatter": "Prisma.prisma"
-    }
+    },
+    "rust-analyzer.showUnlinkedFileNotification": false
   },
   "extensions": {
     "recommendations": [

@@ -1,11 +1,11 @@
+use ethers::providers::Middleware;
 use ethers::types::U64;
-use ethers::{ providers::Middleware };
-use prisma_client_rust::chrono::{ Utc, DateTime, FixedOffset };
+use prisma_client_rust::chrono::{ DateTime, FixedOffset, Utc };
 use rocket::serde::json::Json;
 use serde_json::Value;
 
-use crate::prisma::{ proposal, dao };
-use crate::{ ProposalsRequest, ProposalsResponse, Ctx, prisma::daohandler };
+use crate::prisma::{ dao, proposal, DaoHandlerType };
+use crate::{ prisma::daohandler, Ctx, ProposalsRequest, ProposalsResponse };
 
 use crate::handlers::proposals::aave::aave_proposals;
 
@@ -64,11 +64,14 @@ pub async fn update_chain_proposals<'a>(
     }
 
     match dao_handler.r#type {
-        crate::prisma::DaoHandlerType::AaveChain => {
+        DaoHandlerType::AaveChain => {
             match aave_proposals(ctx, &dao_handler, &from_block, &to_block).await {
                 Ok(p) => {
                     insert_proposals(p, to_block, ctx.clone(), dao_handler.clone()).await;
-                    Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "ok" })
+                    Json(ProposalsResponse {
+                        daoHandlerId: data.daoHandlerId,
+                        response: "ok",
+                    })
                 }
                 Err(e) => {
                     eprintln!(
@@ -78,40 +81,63 @@ pub async fn update_chain_proposals<'a>(
                         current_block,
                         e
                     );
-                    Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" })
+                    Json(ProposalsResponse {
+                        daoHandlerId: data.daoHandlerId,
+                        response: "nok",
+                    })
                 }
             }
         }
-        crate::prisma::DaoHandlerType::CompoundChain => {
-            Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" })
-        }
-        crate::prisma::DaoHandlerType::UniswapChain => {
-            Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" })
-        }
-        crate::prisma::DaoHandlerType::EnsChain => {
-            Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" })
-        }
-        crate::prisma::DaoHandlerType::GitcoinChain => {
-            Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" })
-        }
-        crate::prisma::DaoHandlerType::HopChain => {
-            Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" })
-        }
-        crate::prisma::DaoHandlerType::DydxChain => {
-            Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" })
-        }
-        crate::prisma::DaoHandlerType::MakerExecutive => {
-            Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" })
-        }
-        crate::prisma::DaoHandlerType::MakerPoll => {
-            Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" })
-        }
-        crate::prisma::DaoHandlerType::MakerPollArbitrum => {
-            Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" })
-        }
-        crate::prisma::DaoHandlerType::Snapshot => {
-            Json(ProposalsResponse { daoHandlerId: data.daoHandlerId, response: "nok" })
-        }
+        DaoHandlerType::CompoundChain =>
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            }),
+        DaoHandlerType::UniswapChain =>
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            }),
+        DaoHandlerType::EnsChain =>
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            }),
+        DaoHandlerType::GitcoinChain =>
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            }),
+        DaoHandlerType::HopChain =>
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            }),
+        DaoHandlerType::DydxChain =>
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            }),
+        DaoHandlerType::MakerExecutive =>
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            }),
+        DaoHandlerType::MakerPoll =>
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            }),
+        DaoHandlerType::MakerPollArbitrum =>
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            }),
+        DaoHandlerType::Snapshot =>
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            }),
     }
 }
 
@@ -142,7 +168,7 @@ async fn insert_proposals(
     let upserts = proposals
         .clone()
         .into_iter()
-        .map(|p|
+        .map(|p| {
             ctx.db
                 .proposal()
                 .upsert(
@@ -169,10 +195,11 @@ async fn insert_proposals(
                         proposal::choices::set(p.choices.clone()),
                         proposal::scores::set(p.scores.clone()),
                         proposal::scorestotal::set(p.clone().scores_total),
-                        proposal::quorum::set(p.quorum)
+                        proposal::quorum::set(p.quorum),
+                        proposal::blockcreated::set(p.block_created.into())
                     ]
                 )
-        );
+        });
 
     let _ = ctx.db._batch(upserts).await;
 

@@ -1,13 +1,20 @@
-use anyhow::Result;
 use crate::{
-    contracts::{ aavegov::{ self, ProposalCreatedFilter }, aaveexecutor, aavestrategy },
+    contracts::{
+        aaveexecutor,
+        aavegov::{self, ProposalCreatedFilter},
+        aavestrategy,
+    },
     Ctx,
 };
-use ethers::{ providers::{ Middleware }, types::U256 };
-use futures::stream::{ FuturesUnordered, StreamExt };
-use prisma_client_rust::{ chrono::{ DateTime, NaiveDateTime, Utc }, bigdecimal::ToPrimitive };
-use crate::{ prisma::daohandler, router::update_chain_proposals::ChainProposal };
-use ethers::{ prelude::LogMeta, types::Address };
+use crate::{prisma::daohandler, router::update_chain_proposals::ChainProposal};
+use anyhow::Result;
+use ethers::{prelude::LogMeta, types::Address};
+use ethers::{providers::Middleware, types::U256};
+use futures::stream::{FuturesUnordered, StreamExt};
+use prisma_client_rust::{
+    bigdecimal::ToPrimitive,
+    chrono::{DateTime, NaiveDateTime, Utc},
+};
 use serde::Deserialize;
 
 #[allow(non_snake_case)]
@@ -21,7 +28,7 @@ pub async fn aave_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
     from_block: &i64,
-    to_block: &i64
+    to_block: &i64,
 ) -> Result<Vec<ChainProposal>> {
     let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder)?;
 
@@ -57,7 +64,7 @@ async fn data_for_proposal(
     ctx: &Ctx,
     decoder: &Decoder,
     dao_handler: &daohandler::Data,
-    gov_contract: aavegov::aavegov::aavegov<ethers::providers::Provider<ethers::providers::Http>>
+    gov_contract: aavegov::aavegov::aavegov<ethers::providers::Provider<ethers::providers::Http>>,
 ) -> Result<ChainProposal> {
     let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
 
@@ -75,36 +82,32 @@ async fn data_for_proposal(
     let voting_starts_timestamp = voting_starts_block.expect("bad block").time()?;
     let voting_ends_timestamp = match voting_ends_block {
         Some(block) => block.time().expect("bad block timestamp"),
-        None =>
-            DateTime::from_utc(
-                NaiveDateTime::from_timestamp_millis(
-                    created_timestamp.timestamp() * 1000 +
-                        (log.end_block.as_u64().to_i64().expect("bad conversion") -
-                            meta.block_number.as_u64().to_i64().expect("bad conversion")) *
-                            12 *
-                            1000
-                ).expect("bad timestamp"),
-                Utc
-            ),
+        None => DateTime::from_utc(
+            NaiveDateTime::from_timestamp_millis(
+                created_timestamp.timestamp() * 1000
+                    + (log.end_block.as_u64().to_i64().expect("bad conversion")
+                        - meta.block_number.as_u64().to_i64().expect("bad conversion"))
+                        * 12
+                        * 1000,
+            )
+            .expect("bad timestamp"),
+            Utc,
+        ),
     };
 
     let proposal_url = format!("{}{}", decoder.proposalUrl, log.id.as_u32());
 
     let proposal_external_id = log.id.as_u32().to_string();
 
-    let executor_contract = aaveexecutor::aaveexecutor::aaveexecutor::new(
-        log.executor,
-        ctx.client.clone()
-    );
+    let executor_contract =
+        aaveexecutor::aaveexecutor::aaveexecutor::new(log.executor, ctx.client.clone());
 
-    let strategy_contract = aavestrategy::aavestrategy::aavestrategy::new(
-        log.strategy,
-        ctx.client.clone()
-    );
+    let strategy_contract =
+        aavestrategy::aavestrategy::aavestrategy::new(log.strategy, ctx.client.clone());
 
-    let total_voting_power = strategy_contract.get_total_voting_supply_at(
-        U256::from(meta.block_number.as_u64())
-    ).await?;
+    let total_voting_power = strategy_contract
+        .get_total_voting_supply_at(U256::from(meta.block_number.as_u64()))
+        .await?;
 
     let min_quorum = executor_contract.minimum_quorum().await?;
 
@@ -118,7 +121,7 @@ async fn data_for_proposal(
 
     let _scores = vec![
         onchain_proposal.for_votes.as_u128(),
-        onchain_proposal.against_votes.as_u128()
+        onchain_proposal.against_votes.as_u128(),
     ];
 
     let _scores_total =

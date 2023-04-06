@@ -93,13 +93,14 @@ async fn main() {
             for entry in item {
                 let client_clone = consumer_client_clone.clone();
 
-                match comsumer_task(entry, &client_clone).await {
-                    Ok(_) => {}
-                    Err(e) => {
-                        println!("err! {:?}", e);
-                        ();
+                tokio::spawn(async move {
+                    match comsumer_task(entry, &client_clone).await {
+                        Ok(_) => {}
+                        Err(e) => {
+                            println!("err! {:?}", e);
+                        }
                     }
-                }
+                });
                 sleep(Duration::from_millis(config_clone.refresh_interval.into())).await;
             }
         }
