@@ -1,17 +1,15 @@
-use anyhow::{ Result, Context };
+use anyhow::{Context, Result};
 use std::time::Duration;
 
-use prisma_client_rust::chrono::{ DateTime, FixedOffset, NaiveDateTime, Utc };
+use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime, Utc};
 use reqwest::Client;
 use rocket::serde::json::Json;
 use serde::Deserialize;
 
 use crate::{
     prisma::daohandler,
-    prisma::{ dao, proposal },
-    Ctx,
-    ProposalsRequest,
-    ProposalsResponse,
+    prisma::{dao, proposal},
+    Ctx, ProposalsRequest, ProposalsResponse,
 };
 
 #[derive(Debug, Deserialize)]
@@ -56,12 +54,14 @@ struct Decoder {
 #[post("/snapshot_proposals", data = "<data>")]
 pub async fn update_snapshot_proposals<'a>(
     ctx: &Ctx,
-    data: Json<ProposalsRequest<'a>>
+    data: Json<ProposalsRequest<'a>>,
 ) -> Json<ProposalsResponse<'a>> {
-    let dao_handler = ctx.db
+    let dao_handler = ctx
+        .db
         .daohandler()
         .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-        .exec().await
+        .exec()
+        .await
         .expect("bad prisma result")
         .expect("daoHandlerId not found");
 
@@ -107,21 +107,18 @@ pub async fn update_snapshot_proposals<'a>(
             }}
         }}
     "#,
-        decoder.space,
-        old_index
+        decoder.space, old_index
     );
 
     match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
-        Ok(_) =>
-            Json(ProposalsResponse {
-                daoHandlerId: data.daoHandlerId,
-                response: "ok",
-            }),
-        Err(_) =>
-            Json(ProposalsResponse {
-                daoHandlerId: data.daoHandlerId,
-                response: "nok",
-            }),
+        Ok(_) => Json(ProposalsResponse {
+            daoHandlerId: data.daoHandlerId,
+            response: "ok",
+        }),
+        Err(_) => Json(ProposalsResponse {
+            daoHandlerId: data.daoHandlerId,
+            response: "nok",
+        }),
     }
 }
 
@@ -129,7 +126,7 @@ async fn update_proposals(
     graphql_query: String,
     ctx: &Ctx,
     dao_handler: daohandler::Data,
-    old_index: i64
+    old_index: i64,
 ) -> Result<()> {
     let http_client = Client::builder()
         .timeout(Duration::from_secs(10))
@@ -139,60 +136,54 @@ async fn update_proposals(
     let graphql_response = http_client
         .get("https://hub.snapshot.org/graphql")
         .json(&serde_json::json!({ "query": graphql_query }))
-        .send().await?;
+        .send()
+        .await?;
 
     let response_data: GraphQLResponse = graphql_response
-        .json().await
+        .json()
+        .await
         .context("bad graphql response")?;
 
     let proposals: Vec<GraphQLProposal> = response_data.data.proposals;
 
-    let upserts = proposals
-        .clone()
-        .into_iter()
-        .map(|proposal| {
-            ctx.db
-                .proposal()
-                .upsert(
-                    proposal::externalid_daoid(proposal.id.to_string(), dao_handler.id.to_string()),
-                    proposal::create(
-                        proposal.title.clone(),
-                        proposal.id.clone(),
-                        proposal.choices.clone().into(),
-                        proposal.scores.clone().into(),
-                        proposal.scores_total.into(),
-                        proposal.quorum.into(),
-                        DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(proposal.created * 1000).expect(
-                                "can not create timecreated"
-                            ),
-                            FixedOffset::east_opt(0).unwrap()
-                        ),
-                        DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(proposal.start * 1000).expect(
-                                "can not create timestart"
-                            ),
-                            FixedOffset::east_opt(0).unwrap()
-                        ),
-                        DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(proposal.end * 1000).expect(
-                                "can not create timeend"
-                            ),
-                            FixedOffset::east_opt(0).unwrap()
-                        ),
-                        proposal.link.clone(),
-                        daohandler::id::equals(dao_handler.id.to_string()),
-                        dao::id::equals(dao_handler.daoid.to_string()),
-                        vec![]
-                    ),
-                    vec![
-                        proposal::choices::set(proposal.choices.clone().into()),
-                        proposal::scores::set(proposal.scores.clone().into()),
-                        proposal::scorestotal::set(proposal.scores_total.into()),
-                        proposal::quorum::set(proposal.quorum.into())
-                    ]
-                )
-        });
+    let upserts = proposals.clone().into_iter().map(|proposal| {
+        ctx.db.proposal().upsert(
+            proposal::externalid_daoid(proposal.id.to_string(), dao_handler.id.to_string()),
+            proposal::create(
+                proposal.title.clone(),
+                proposal.id.clone(),
+                proposal.choices.clone().into(),
+                proposal.scores.clone().into(),
+                proposal.scores_total.into(),
+                proposal.quorum.into(),
+                DateTime::from_utc(
+                    NaiveDateTime::from_timestamp_millis(proposal.created * 1000)
+                        .expect("can not create timecreated"),
+                    FixedOffset::east_opt(0).unwrap(),
+                ),
+                DateTime::from_utc(
+                    NaiveDateTime::from_timestamp_millis(proposal.start * 1000)
+                        .expect("can not create timestart"),
+                    FixedOffset::east_opt(0).unwrap(),
+                ),
+                DateTime::from_utc(
+                    NaiveDateTime::from_timestamp_millis(proposal.end * 1000)
+                        .expect("can not create timeend"),
+                    FixedOffset::east_opt(0).unwrap(),
+                ),
+                proposal.link.clone(),
+                daohandler::id::equals(dao_handler.id.to_string()),
+                dao::id::equals(dao_handler.daoid.to_string()),
+                vec![],
+            ),
+            vec![
+                proposal::choices::set(proposal.choices.clone().into()),
+                proposal::scores::set(proposal.scores.clone().into()),
+                proposal::scorestotal::set(proposal.scores_total.into()),
+                proposal::quorum::set(proposal.quorum.into()),
+            ],
+        )
+    });
 
     ctx.db._batch(upserts).await?;
 
@@ -224,24 +215,19 @@ async fn update_proposals(
         new_index = old_index;
     }
 
-    let _ = ctx.db
+    let _ = ctx
+        .db
         .daohandler()
         .update(
             daohandler::id::equals(dao_handler.id),
-            vec![
-                daohandler::snapshotindex::set(
-                    Some(
-                        DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(new_index * 1000).expect(
-                                "can not create snapshotindex"
-                            ),
-                            FixedOffset::east_opt(0).unwrap()
-                        )
-                    )
-                )
-            ]
+            vec![daohandler::snapshotindex::set(Some(DateTime::from_utc(
+                NaiveDateTime::from_timestamp_millis(new_index * 1000)
+                    .expect("can not create snapshotindex"),
+                FixedOffset::east_opt(0).unwrap(),
+            )))],
         )
-        .exec().await?;
+        .exec()
+        .await?;
 
     Ok(())
 }

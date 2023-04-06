@@ -1,39 +1,39 @@
 use anyhow::Result;
 use tokio::try_join;
 mod prisma;
-use std::sync::{ Arc };
+use std::sync::Arc;
 use std::time::Duration;
 
 use handlers::create_voter_handlers;
-use prisma::{ PrismaClient };
+use prisma::PrismaClient;
 use tokio::sync::mpsc;
 use tokio::time::sleep;
 
 mod produce_queue {
+    pub mod chain_proposals;
+    pub mod chain_votes;
     pub mod snapshot_proposals;
     pub mod snapshot_votes;
-    pub mod chain_votes;
-    pub mod chain_proposals;
 }
 
 mod consume_queue {
+    pub mod chain_proposals;
+    pub mod chain_votes;
     pub mod snapshot_proposals;
     pub mod snapshot_votes;
-    pub mod chain_votes;
-    pub mod chain_proposals;
 }
 
+use crate::produce_queue::chain_proposals::create_chain_proposals_queue;
+use crate::produce_queue::chain_votes::create_chain_votes_queue;
 use crate::produce_queue::snapshot_proposals::create_snapshot_proposals_queue;
 use crate::produce_queue::snapshot_votes::create_snapshot_votes_queue;
-use crate::produce_queue::chain_votes::create_chain_votes_queue;
-use crate::produce_queue::chain_proposals::create_chain_proposals_queue;
 
+use crate::consume_queue::chain_proposals::process_chain_proposals;
+use crate::consume_queue::chain_votes::process_chain_votes;
 use crate::consume_queue::snapshot_proposals::process_snapshot_proposals;
 use crate::consume_queue::snapshot_votes::process_snapshot_votes;
-use crate::consume_queue::chain_votes::process_chain_votes;
-use crate::consume_queue::chain_proposals::process_chain_proposals;
 
-use config::{ load_config_from_db, CONFIG, Config };
+use config::{load_config_from_db, Config, CONFIG};
 
 pub mod config;
 pub mod handlers;
@@ -139,17 +139,20 @@ async fn producer_task(client: &PrismaClient, config: &Config) -> Result<Vec<Ref
     let chain_proposal_queue = create_chain_proposals_queue(client, config).await?;
     let chain_votes_queue = create_chain_votes_queue(client, config).await?;
 
-    println!("Snapshot proposals queue: {:?}", snapshot_proposal_queue.len());
+    println!(
+        "Snapshot proposals queue: {:?}",
+        snapshot_proposal_queue.len()
+    );
     println!("Snapshot votes queue: {:?}", snapshot_votes_queue.len());
     println!("Chain proposals queue: {:?}", chain_proposal_queue.len());
     println!("Chain votes queue: {:?}", chain_votes_queue.len());
 
     let mut complete_queue = Vec::new();
     complete_queue.reserve(
-        snapshot_proposal_queue.len() +
-            snapshot_votes_queue.len() +
-            chain_proposal_queue.len() +
-            chain_votes_queue.len()
+        snapshot_proposal_queue.len()
+            + snapshot_votes_queue.len()
+            + chain_proposal_queue.len()
+            + chain_votes_queue.len(),
     );
     complete_queue.extend(snapshot_proposal_queue);
     complete_queue.extend(snapshot_votes_queue);

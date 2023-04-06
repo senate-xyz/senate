@@ -1,12 +1,15 @@
-use anyhow::{ Result };
-use std::{ env, time::Duration, sync::Arc };
+use anyhow::Result;
+use std::{env, sync::Arc, time::Duration};
 
-use prisma_client_rust::chrono::{ Utc, DateTime };
+use prisma_client_rust::chrono::{DateTime, Utc};
 use reqwest::Client;
 use serde::Deserialize;
 use tokio::task;
 
-use crate::{ RefreshEntry, prisma::{ PrismaClient, daohandler, self } };
+use crate::{
+    prisma::{self, daohandler, PrismaClient},
+    RefreshEntry,
+};
 
 #[derive(Deserialize)]
 #[allow(non_snake_case)]
@@ -17,7 +20,7 @@ struct ProposalsResponse {
 
 pub(crate) async fn process_snapshot_proposals(
     entry: RefreshEntry,
-    client: &Arc<PrismaClient>
+    client: &Arc<PrismaClient>,
 ) -> Result<()> {
     let detective_url = match env::var_os("DETECTIVE_URL") {
         Some(v) => v.into_string().unwrap(),
@@ -26,7 +29,10 @@ pub(crate) async fn process_snapshot_proposals(
 
     let post_url = format!("{}/proposals/snapshot_proposals", detective_url);
 
-    let http_client = Client::builder().timeout(Duration::from_secs(60)).build().unwrap();
+    let http_client = Client::builder()
+        .timeout(Duration::from_secs(60))
+        .build()
+        .unwrap();
 
     let client_ref = client.clone();
     let dao_handler_id_ref = entry.handler_id.clone();
@@ -35,33 +41,28 @@ pub(crate) async fn process_snapshot_proposals(
         let response = http_client
             .post(&post_url)
             .json(&serde_json::json!({ "daoHandlerId": entry.handler_id }))
-            .send().await;
+            .send()
+            .await;
 
         match response {
             Ok(res) => {
                 let data: ProposalsResponse = res.json().await.unwrap();
 
                 let dbupdate = match data.response.as_str() {
-                    "ok" =>
-                        client_ref
-                            .daohandler()
-                            .update_many(
-                                vec![daohandler::id::equals(data.daoHandlerId.to_string())],
-                                vec![
-                                    daohandler::refreshstatus::set(prisma::RefreshStatus::Done),
-                                    daohandler::lastrefresh::set(Utc::now().into())
-                                ]
-                            ),
-                    "nok" =>
-                        client_ref
-                            .daohandler()
-                            .update_many(
-                                vec![daohandler::id::equals(data.daoHandlerId.to_string())],
-                                vec![
-                                    daohandler::refreshstatus::set(prisma::RefreshStatus::New),
-                                    daohandler::lastrefresh::set(Utc::now().into())
-                                ]
-                            ),
+                    "ok" => client_ref.daohandler().update_many(
+                        vec![daohandler::id::equals(data.daoHandlerId.to_string())],
+                        vec![
+                            daohandler::refreshstatus::set(prisma::RefreshStatus::Done),
+                            daohandler::lastrefresh::set(Utc::now().into()),
+                        ],
+                    ),
+                    "nok" => client_ref.daohandler().update_many(
+                        vec![daohandler::id::equals(data.daoHandlerId.to_string())],
+                        vec![
+                            daohandler::refreshstatus::set(prisma::RefreshStatus::New),
+                            daohandler::lastrefresh::set(Utc::now().into()),
+                        ],
+                    ),
                     _ => panic!("Unexpected response"),
                 };
 
@@ -75,14 +76,13 @@ pub(crate) async fn process_snapshot_proposals(
                         vec![
                             daohandler::refreshstatus::set(prisma::RefreshStatus::New),
                             daohandler::lastrefresh::set(Utc::now().into()),
-                            daohandler::snapshotindex::set(
-                                Some(
-                                    DateTime::parse_from_rfc3339("2000-01-01T00:00:00.00Z").unwrap()
-                                )
-                            )
-                        ]
+                            daohandler::snapshotindex::set(Some(
+                                DateTime::parse_from_rfc3339("2000-01-01T00:00:00.00Z").unwrap(),
+                            )),
+                        ],
                     )
-                    .exec().await;
+                    .exec()
+                    .await;
                 panic!("http error: {:?}", e);
             }
         }

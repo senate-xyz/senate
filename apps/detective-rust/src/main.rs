@@ -2,14 +2,14 @@ use std::env;
 use std::sync::Arc;
 
 use dotenv::dotenv;
-use ethers::providers::{ Http, Provider };
+use ethers::providers::{Http, Provider};
 
 use crate::router::update_chain_proposals::update_chain_proposals;
 use crate::router::update_snapshot_proposals::update_snapshot_proposals;
 use prisma::PrismaClient;
 use router::update_chain_votes::update_chain_votes;
 use router::update_snapshot_votes::update_snapshot_votes;
-use serde::{ Deserialize, Serialize };
+use serde::{Deserialize, Serialize};
 mod router {
     pub mod update_chain_proposals;
     pub mod update_chain_votes;
@@ -84,12 +84,18 @@ async fn rocket() -> _ {
 
     let provider = Provider::<Http>::try_from(rpc_url).unwrap();
     let client = Arc::new(provider);
-    let db = Arc::new(prisma::new_client().await.expect("Failed to create Prisma client"));
+    let db = Arc::new(
+        prisma::new_client()
+            .await
+            .expect("Failed to create Prisma client"),
+    );
 
-    rocket
-        ::build()
+    rocket::build()
         .manage(Context { db, client })
         .mount("/", routes![index])
-        .mount("/proposals", routes![update_snapshot_proposals, update_chain_proposals])
+        .mount(
+            "/proposals",
+            routes![update_snapshot_proposals, update_chain_proposals],
+        )
         .mount("/votes", routes![update_chain_votes, update_snapshot_votes])
 }

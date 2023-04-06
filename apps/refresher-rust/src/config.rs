@@ -1,7 +1,7 @@
+use crate::prisma;
 use anyhow::Result;
-use std::sync::{ RwLock, Arc };
-use crate::{ prisma };
-use prisma::{ PrismaClient };
+use prisma::PrismaClient;
+use std::sync::{Arc, RwLock};
 
 #[derive(Debug, Clone)]
 pub struct Config {
@@ -53,18 +53,19 @@ lazy_static::lazy_static! {
 }
 
 async fn load_config_value(client: &PrismaClient, key: &str, default_value: u32) -> Result<u32> {
-    if
-        let Some(config_data) = client
-            .config()
-            .find_first(vec![prisma::config::key::equals(key.to_string())])
-            .exec().await?
+    if let Some(config_data) = client
+        .config()
+        .find_first(vec![prisma::config::key::equals(key.to_string())])
+        .exec()
+        .await?
     {
         Ok(config_data.value as u32)
     } else {
         let _ = client
             .config()
             .create(key.to_string(), default_value as i32, vec![])
-            .exec().await?;
+            .exec()
+            .await?;
 
         Ok(default_value)
     }
@@ -72,47 +73,26 @@ async fn load_config_value(client: &PrismaClient, key: &str, default_value: u32)
 pub(crate) async fn load_config_from_db(client: &PrismaClient) -> Result<()> {
     let refresh_interval = load_config_value(client, "refresh_interval", 300).await?;
 
-    let normal_chain_proposals = load_config_value(
-        client,
-        "normal_chain_proposals",
-        60 * 1000
-    ).await?;
+    let normal_chain_proposals =
+        load_config_value(client, "normal_chain_proposals", 60 * 1000).await?;
     let normal_chain_votes = load_config_value(client, "normal_chain_votes", 60 * 1000).await?;
-    let normal_snapshot_proposals = load_config_value(
-        client,
-        "normal_snapshot_proposals",
-        60 * 1000
-    ).await?;
-    let normal_snapshot_votes = load_config_value(
-        client,
-        "normal_snapshot_votes",
-        60 * 1000
-    ).await?;
+    let normal_snapshot_proposals =
+        load_config_value(client, "normal_snapshot_proposals", 60 * 1000).await?;
+    let normal_snapshot_votes =
+        load_config_value(client, "normal_snapshot_votes", 60 * 1000).await?;
 
-    let force_chain_proposals = load_config_value(
-        client,
-        "force_chain_proposals",
-        5 * 60 * 1000
-    ).await?;
+    let force_chain_proposals =
+        load_config_value(client, "force_chain_proposals", 5 * 60 * 1000).await?;
     let force_chain_votes = load_config_value(client, "force_chain_votes", 5 * 60 * 1000).await?;
-    let force_snapshot_proposals = load_config_value(
-        client,
-        "force_snapshot_proposals",
-        5 * 60 * 1000
-    ).await?;
-    let force_snapshot_votes = load_config_value(
-        client,
-        "force_snapshot_votes",
-        5 * 60 * 1000
-    ).await?;
+    let force_snapshot_proposals =
+        load_config_value(client, "force_snapshot_proposals", 5 * 60 * 1000).await?;
+    let force_snapshot_votes =
+        load_config_value(client, "force_snapshot_votes", 5 * 60 * 1000).await?;
 
     let new_chain_proposals = load_config_value(client, "new_chain_proposals", 5 * 1000).await?;
     let new_chain_votes = load_config_value(client, "new_chain_votes", 5 * 1000).await?;
-    let new_snapshot_proposals = load_config_value(
-        client,
-        "new_snapshot_proposals",
-        5 * 1000
-    ).await?;
+    let new_snapshot_proposals =
+        load_config_value(client, "new_snapshot_proposals", 5 * 1000).await?;
     let new_snapshot_votes = load_config_value(client, "new_snapshot_votes", 5 * 1000).await?;
 
     let batch_chain_votes = load_config_value(client, "batch_chain_votes", 100).await?;
