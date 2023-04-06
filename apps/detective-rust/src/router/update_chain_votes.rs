@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::{Result};
 use std::ops::Div;
 
 use ethers::{providers::Middleware, types::U64};
