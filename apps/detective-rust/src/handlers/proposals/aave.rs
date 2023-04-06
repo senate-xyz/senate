@@ -7,7 +7,7 @@ use crate::{
     Ctx,
 };
 use crate::{prisma::daohandler, router::update_chain_proposals::ChainProposal};
-use anyhow::Result;
+use anyhow::{bail, Result};
 use ethers::{prelude::LogMeta, types::Address, utils::hex};
 use ethers::{providers::Middleware, types::U256};
 use futures::stream::{FuturesUnordered, StreamExt};
@@ -15,10 +15,10 @@ use prisma_client_rust::{
     bigdecimal::ToPrimitive,
     chrono::{DateTime, NaiveDateTime, Utc},
 };
-use reqwest_middleware::ClientBuilder;
-use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
+use reqwest::{Client, StatusCode};
 use serde::Deserialize;
-use std::str;
+use std::{str, time::Duration};
+use tokio::time::sleep;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -159,18 +159,36 @@ struct IpfsData {
 }
 
 async fn get_title(hexhash: String) -> Result<String> {
-    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(30);
+    let client = Client::new();
+    let mut retries = 0;
 
-    let client = ClientBuilder::new(reqwest::Client::new())
-        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
-        .build();
+    loop {
+        let response = client
+            .get(format!("https://ipfs.io/ipfs/f01701220{}", hexhash))
+            .send()
+            .await;
 
-    let response = client
-        .get(format!("https://ipfs.io/ipfs/f01701220{}", hexhash))
-        .send()
-        .await?;
-
-    let ipfs_data = response.json::<IpfsData>().await?;
-
-    Ok(ipfs_data.title)
+        match response {
+            Ok(r) => {
+                let ipfs_data = match r.json::<IpfsData>().await {
+                    Ok(r) => r,
+                    Err(_) => IpfsData {
+                        title: "Unknown".to_string(),
+                    },
+                };
+                return Ok(ipfs_data.title);
+            }
+            Err(e) => {
+                if e.status().unwrap() == StatusCode::TOO_MANY_REQUESTS {
+                    retries += 1;
+                    if retries > 30 {
+                        bail!("could not get proposal title");
+                    }
+                    sleep(Duration::from_secs(2_u64.pow(retries))).await;
+                } else {
+                    bail!("can't get title")
+                }
+            }
+        }
+    }
 }

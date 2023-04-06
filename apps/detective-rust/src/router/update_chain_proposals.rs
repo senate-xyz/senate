@@ -156,14 +156,13 @@ async fn insert_proposals(
                 p.clone().url,
                 daohandler::id::equals(dao_handler.id.to_string()),
                 dao::id::equals(dao_handler.daoid.to_string()),
-                vec![],
+                vec![proposal::blockcreated::set(p.block_created.clone().into())],
             ),
             vec![
                 proposal::choices::set(p.choices.clone()),
                 proposal::scores::set(p.scores.clone()),
                 proposal::scorestotal::set(p.clone().scores_total),
                 proposal::quorum::set(p.quorum),
-                proposal::blockcreated::set(p.block_created.into()),
             ],
         )
     });
