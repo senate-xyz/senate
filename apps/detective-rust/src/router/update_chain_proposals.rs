@@ -138,24 +138,6 @@ async fn insert_proposals(
     ctx: &Ctx,
     dao_handler: daohandler::Data,
 ) {
-    let open_proposals: Vec<ChainProposal> = proposals
-        .iter()
-        .filter(|p| p.time_end > Utc::now())
-        .cloned()
-        .collect();
-
-    let new_index;
-
-    if !open_proposals.is_empty() {
-        new_index = open_proposals
-            .iter()
-            .map(|p| p.block_created)
-            .min()
-            .unwrap_or_default();
-    } else {
-        new_index = to_block;
-    }
-
     let upserts = proposals.clone().into_iter().map(|p| {
         ctx.db.proposal().upsert(
             proposal::externalid_daoid(p.external_id.to_string(), dao_handler.id.to_string()),
@@ -187,6 +169,24 @@ async fn insert_proposals(
     });
 
     let _ = ctx.db._batch(upserts).await;
+
+    let open_proposals: Vec<ChainProposal> = proposals
+        .iter()
+        .filter(|p| p.time_end > Utc::now())
+        .cloned()
+        .collect();
+
+    let new_index;
+
+    if !open_proposals.is_empty() {
+        new_index = open_proposals
+            .iter()
+            .map(|p| p.block_created)
+            .min()
+            .unwrap_or_default();
+    } else {
+        new_index = to_block;
+    }
 
     let _ = ctx
         .db

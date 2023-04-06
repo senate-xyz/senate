@@ -8,6 +8,10 @@ pub async fn aave_votes(
     _to_block: &i64,
     voters: Vec<String>,
 ) -> Result<Vec<VoteResult>> {
+    println!("{:#?}", _dao_handler);
+    println!("{:#?} {:#?} ", _from_block, _to_block);
+    println!("{:#?}", voters);
+
     Ok(voters
         .iter()
         .map(|v| VoteResult {

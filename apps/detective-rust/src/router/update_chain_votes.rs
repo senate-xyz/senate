@@ -1,3 +1,4 @@
+use anyhow::Result;
 use std::ops::Div;
 
 use ethers::{providers::Middleware, types::U64};
@@ -8,11 +9,11 @@ use serde_json::Value;
 
 use crate::{
     handlers::votes::aave::aave_votes,
-    prisma::{daohandler, proposal, voter, voterhandler, DaoHandlerType},
+    prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType},
     Ctx, VotesRequest, VotesResponse,
 };
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Vote {
     pub block_created: i64,
     pub voter_address: String,
@@ -25,7 +26,7 @@ pub struct Vote {
     pub proposal_active: bool,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct VoteResult {
     pub voter_address: String,
     pub success: bool,
@@ -131,19 +132,36 @@ pub async fn update_chain_votes<'a>(
         DaoHandlerType::AaveChain => {
             match aave_votes(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await {
                 Ok(r) => {
-                    //insert_proposals(p, to_block, ctx.clone(), dao_handler.clone()).await;
-                    r.into_iter()
-                        .map(|v| VotesResponse {
-                            voter_address: v.voter_address,
-                            result: {
-                                if v.success {
-                                    "ok"
-                                } else {
-                                    "nok"
-                                }
-                            },
-                        })
-                        .collect()
+                    let res =
+                        match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
+                            Ok(r) => r
+                                .into_iter()
+                                .map(|v| VotesResponse {
+                                    voter_address: v.voter_address,
+                                    result: {
+                                        if v.success {
+                                            "ok"
+                                        } else {
+                                            "nok"
+                                        }
+                                    },
+                                })
+                                .collect(),
+                            Err(e) => {
+                                eprintln!(
+                                    "Application error, from:{}, to:{}, current:{}, {},",
+                                    from_block, to_block, current_block, e
+                                );
+                                voters
+                                    .into_iter()
+                                    .map(|v| VotesResponse {
+                                        voter_address: v,
+                                        result: "nok",
+                                    })
+                                    .collect()
+                            }
+                        };
+                    res
                 }
                 Err(e) => {
                     eprintln!(
@@ -233,4 +251,104 @@ pub async fn update_chain_votes<'a>(
     };
 
     Json(result)
+}
+
+async fn insert_votes(
+    votes: &Vec<VoteResult>,
+    to_block: i64,
+    ctx: &Ctx,
+    dao_handler: daohandler::Data,
+) -> Result<Vec<VoteResult>> {
+    let successful_votes: Vec<Vote> = votes
+        .into_iter()
+        .filter(|v| v.success)
+        .map(|v| v.clone().votes)
+        .flatten()
+        .collect();
+
+    let closed_votes: Vec<Vote> = successful_votes
+        .clone()
+        .into_iter()
+        .filter(|v| !v.proposal_active)
+        .collect();
+
+    let open_votes: Vec<Vote> = successful_votes
+        .clone()
+        .into_iter()
+        .filter(|v| v.proposal_active)
+        .collect();
+
+    ctx.db
+        .vote()
+        .create_many(
+            closed_votes
+                .iter()
+                .map(|v| {
+                    vote::create_unchecked(
+                        v.choice.clone(),
+                        v.voting_power.clone(),
+                        v.reason.clone(),
+                        v.voter_address.clone(),
+                        v.proposal_id.clone(),
+                        dao_handler.daoid.clone(),
+                        dao_handler.id.clone(),
+                        vec![],
+                    )
+                })
+                .collect(),
+        )
+        .exec()
+        .await?;
+
+    let upserts = open_votes.clone().into_iter().map(|v| {
+        ctx.db.vote().upsert(
+            vote::voteraddress_daoid_proposalid(
+                v.voter_address.to_string(),
+                dao_handler.daoid.to_string(),
+                v.proposal_id.clone(),
+            ),
+            vote::create(
+                v.choice.clone(),
+                v.voting_power.clone(),
+                v.reason.clone(),
+                voter::address::equals(v.voter_address.clone()),
+                proposal::id::equals(v.proposal_id.clone()),
+                dao::id::equals(dao_handler.daoid.clone()),
+                daohandler::id::equals(dao_handler.id.clone()),
+                vec![],
+            ),
+            vec![
+                vote::choice::set(v.choice.clone()),
+                vote::votingpower::set(v.voting_power.clone()),
+                vote::reason::set(v.reason.clone()),
+            ],
+        )
+    });
+
+    let new_index = if dao_handler.chainindex.unwrap() > to_block {
+        dao_handler.chainindex.unwrap()
+    } else {
+        to_block
+    };
+
+    ctx.db
+        .voterhandler()
+        .update_many(
+            vec![
+                voterhandler::voter::is(vec![voter::address::in_vec(
+                    successful_votes
+                        .iter()
+                        .map(|v| v.clone().voter_address)
+                        .collect(),
+                )]),
+                voterhandler::daohandlerid::equals(dao_handler.id.clone()),
+            ],
+            vec![voterhandler::chainindex::set(new_index.into())],
+        )
+        .exec()
+        .await?;
+
+    let _ = ctx.db._batch(upserts).await?;
+
+    Ok(votes.clone())
 }
