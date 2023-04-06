@@ -154,7 +154,7 @@ async fn insert_proposals(
                 p.clone().url,
                 daohandler::id::equals(dao_handler.id.to_string()),
                 dao::id::equals(dao_handler.daoid.to_string()),
-                vec![proposal::blockcreated::set(p.block_created.clone().into())],
+                vec![proposal::blockcreated::set(p.block_created.into())],
             ),
             vec![
                 proposal::choices::set(p.choices.clone()),

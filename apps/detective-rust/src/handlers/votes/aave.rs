@@ -1,13 +1,13 @@
 use crate::{
     contracts::aavegov::{self, VoteEmittedFilter},
-    prisma::{daohandler, proposal, voter},
+    prisma::{daohandler, proposal},
     router::update_chain_votes::{Vote, VoteResult},
     Ctx,
 };
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 use ethers::{
-    prelude::{Contract, LogMeta},
-    types::{Address, Filter, H160, H256},
+    prelude::{LogMeta},
+    types::{Address, H160, H256},
 };
 
 use futures::stream::{FuturesUnordered, StreamExt};
@@ -127,6 +127,6 @@ async fn get_votes_for_voter(
     Ok(VoteResult {
         voter_address: voter_address.clone(),
         success: true,
-        votes: votes,
+        votes,
     })
 }

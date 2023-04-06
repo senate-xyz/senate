@@ -196,7 +196,7 @@ async fn update_votes(
         .data
         .votes
         .into_iter()
-        .filter(|v| v.proposal.id != "") //snapshot sometimes returns votes with null proposal :-/
+        .filter(|v| !v.proposal.id.is_empty()) //snapshot sometimes returns votes with null proposal :-/
         .collect();
 
     let proposals: Vec<GraphQLProposal> = votes

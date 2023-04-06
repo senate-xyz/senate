@@ -100,7 +100,7 @@ pub async fn update_chain_votes<'a>(
     }
 
     if dao_handler.r#type == DaoHandlerType::MakerExecutive {
-        batch_size = batch_size / 10;
+        batch_size /= 10;
     }
 
     let mut from_block = {
@@ -111,7 +111,7 @@ pub async fn update_chain_votes<'a>(
         }
     };
 
-    if from_block.clone() < first_proposal_block {
+    if from_block < first_proposal_block {
         from_block = first_proposal_block;
     }
 
@@ -123,7 +123,7 @@ pub async fn update_chain_votes<'a>(
         to_block = current_block;
     }
 
-    if from_block.clone() > to_block.clone() {
+    if from_block > to_block {
         from_block = to_block;
     }
 
@@ -131,8 +131,8 @@ pub async fn update_chain_votes<'a>(
         DaoHandlerType::AaveChain => {
             match aave_votes(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await {
                 Ok(r) => {
-                    let res =
-                        match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
+                    
+                    match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
                             Ok(r) => r
                                 .into_iter()
                                 .map(|v| VotesResponse {
@@ -157,8 +157,7 @@ pub async fn update_chain_votes<'a>(
                                     })
                                     .collect()
                             }
-                        };
-                    res
+                        }
                 }
                 Err(e) => {
                     println!("{:#?}", e);
@@ -258,10 +257,9 @@ async fn insert_votes(
         votes.clone().into_iter().filter(|v| v.success).collect();
 
     let successful_votes: Vec<Vote> = votes
-        .into_iter()
+        .iter()
         .filter(|v| v.success)
-        .map(|v| v.clone().votes)
-        .flatten()
+        .flat_map(|v| v.clone().votes)
         .collect();
 
     let closed_votes: Vec<Vote> = successful_votes
@@ -319,7 +317,7 @@ async fn insert_votes(
             vec![
                 vote::choice::set(v.choice.clone()),
                 vote::votingpower::set(v.voting_power.clone()),
-                vote::reason::set(v.reason.clone()),
+                vote::reason::set(v.reason),
             ],
         )
     });
