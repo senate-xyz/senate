@@ -1,7 +1,6 @@
 ARG DETECTIVE_URL
 ARG DATABASE_URL
 ARG ALCHEMY_NODE_URL
-ARG PORT
 
 FROM lukemathwalker/cargo-chef:latest AS chef
 WORKDIR /app
@@ -19,7 +18,6 @@ COPY . .
 RUN cargo prisma generate && cargo build --release --bin detective-rust
 
 FROM debian:bullseye-slim AS runtime
-ENV ROCKET_PORT=${PORT}
 RUN apt update
 RUN apt install openssl ca-certificates -y
 WORKDIR /app
