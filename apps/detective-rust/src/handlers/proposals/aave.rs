@@ -8,14 +8,17 @@ use crate::{
 };
 use crate::{prisma::daohandler, router::update_chain_proposals::ChainProposal};
 use anyhow::Result;
-use ethers::{prelude::LogMeta, types::Address};
+use ethers::{prelude::LogMeta, types::Address, utils::hex};
 use ethers::{providers::Middleware, types::U256};
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{
     bigdecimal::ToPrimitive,
     chrono::{DateTime, NaiveDateTime, Utc},
 };
+use reqwest_middleware::ClientBuilder;
+use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
+use std::str;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -127,9 +130,13 @@ async fn data_for_proposal(
     let _scores_total =
         onchain_proposal.for_votes.as_u128() + onchain_proposal.against_votes.as_u128();
 
+    let hash: Vec<u8> = log.ipfs_hash.into();
+
+    let title = get_title(hex::encode(hash)).await?;
+
     let proposal = ChainProposal {
         external_id: proposal_external_id,
-        name: "".to_string(),
+        name: title,
         dao_id: dao_handler.clone().daoid,
         dao_handler_id: dao_handler.clone().id,
         time_start: voting_starts_timestamp,
@@ -144,4 +151,26 @@ async fn data_for_proposal(
     };
 
     Ok(proposal)
+}
+
+#[derive(Deserialize, Debug)]
+struct IpfsData {
+    title: String,
+}
+
+async fn get_title(hexhash: String) -> Result<String> {
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(30);
+
+    let client = ClientBuilder::new(reqwest::Client::new())
+        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build();
+
+    let response = client
+        .get(format!("https://ipfs.io/ipfs/f01701220{}", hexhash))
+        .send()
+        .await?;
+
+    let ipfs_data = response.json::<IpfsData>().await?;
+
+    Ok(ipfs_data.title)
 }

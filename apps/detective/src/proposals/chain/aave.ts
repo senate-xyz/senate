@@ -131,6 +131,7 @@ const fetchTitleFromIPFS = async (hexHash: string): Promise<string> => {
     try {
         let retries = 12
         let gatewayIndex = 0
+
         while (retries) {
             try {
                 const response = await axios.get(

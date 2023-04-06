@@ -10,7 +10,7 @@ use crate::{prisma::daohandler, Ctx, ProposalsRequest, ProposalsResponse};
 use crate::handlers::proposals::aave::aave_proposals;
 
 #[allow(dead_code)]
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct ChainProposal {
     pub(crate) external_id: String,
     pub(crate) name: String,

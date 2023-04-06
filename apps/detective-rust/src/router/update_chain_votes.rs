@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use std::ops::Div;
 
 use ethers::{providers::Middleware, types::U64};
@@ -326,9 +326,9 @@ async fn insert_votes(
     });
 
     let new_index = if dao_handler.chainindex.unwrap() > to_block {
-        dao_handler.chainindex.unwrap()
-    } else {
         to_block
+    } else {
+        dao_handler.chainindex.unwrap()
     };
 
     ctx.db
