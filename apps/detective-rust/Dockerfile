@@ -2,6 +2,7 @@ ARG DETECTIVE_URL
 ARG DATABASE_URL
 ARG ALCHEMY_NODE_URL
 ARG PORT
+ARG ROCKET_PORT=${PORT}
 
 FROM lukemathwalker/cargo-chef:latest AS chef
 WORKDIR /app
@@ -25,4 +26,4 @@ WORKDIR /app
 COPY --from=builder /app/target/release/detective-rust /usr/local/bin
 ENTRYPOINT ["/usr/local/bin/detective-rust"]
 
-EXPOSE $PORT
+EXPOSE $ROCKET_PORT
