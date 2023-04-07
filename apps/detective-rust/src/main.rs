@@ -24,6 +24,7 @@ pub mod handlers {
         pub mod compound;
         pub mod ens;
         pub mod gitcoin;
+        pub mod hop;
         pub mod uniswap;
     }
     pub mod votes {
@@ -31,6 +32,7 @@ pub mod handlers {
         pub mod compound;
         pub mod ens;
         pub mod gitcoin;
+        pub mod hop;
         pub mod uniswap;
     }
 }

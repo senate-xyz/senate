@@ -24,7 +24,7 @@ pub async fn produce_chain_proposals_queue(
         prisma::DaoHandlerType::UniswapChain,
         prisma::DaoHandlerType::EnsChain,
         prisma::DaoHandlerType::GitcoinChain,
-        // prisma::DaoHandlerType::HopChain,
+        prisma::DaoHandlerType::HopChain,
         // prisma::DaoHandlerType::DydxChain,
     ];
 

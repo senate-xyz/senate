@@ -9,5 +9,6 @@ pub mod aavestrategy;
 pub mod compoundgov;
 pub mod ensgov;
 pub mod gitcoingov;
+pub mod hopgov;
 pub mod shared_types;
 pub mod uniswapgov;
