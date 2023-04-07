@@ -463,7 +463,7 @@ const formatEmailTemplateRow = async (
         )
 
         highestScorePercentage =
-            (highestScore / notification.proposal.scorestotal) * 100
+            (highestScore / Number(notification.proposal.scorestotal)) * 100
 
         result = {
             highestScoreChoice: highestScoreChoice.substring(0, 15),

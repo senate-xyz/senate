@@ -15,8 +15,8 @@ use crate::{
 #[allow(non_snake_case)]
 #[derive(Deserialize)]
 struct ApiResponse {
-    result: String,
     voter_address: String,
+    success: bool,
 }
 
 pub(crate) async fn consume_snapshot_votes(
@@ -61,13 +61,13 @@ pub(crate) async fn consume_snapshot_votes(
                 // Filter data based on the "response" field
                 let ok_voters: Vec<String> = data
                     .iter()
-                    .filter(|result| result.result == "ok")
+                    .filter(|result| result.success)
                     .map(|result| result.voter_address.clone())
                     .collect();
 
                 let nok_voters: Vec<String> = data
                     .iter()
-                    .filter(|result| result.result == "nok")
+                    .filter(|result| !result.success)
                     .map(|result| result.voter_address.clone())
                     .collect();
 

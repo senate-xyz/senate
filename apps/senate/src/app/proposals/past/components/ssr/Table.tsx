@@ -186,7 +186,8 @@ const getProposals = async (
                 highestScoreChoice: highestScoreChoice,
                 highestScore: highestScore,
                 scoresTotal: proposal.scorestotal,
-                passedQuorum: proposal.quorum < proposal.scorestotal
+                passedQuorum:
+                    Number(proposal.quorum) < Number(proposal.scorestotal)
             }
         }) ?? []
 

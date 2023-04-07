@@ -66,7 +66,7 @@ pub struct VotesRequest<'r> {
 #[serde(crate = "rocket::serde")]
 pub struct VotesResponse {
     voter_address: String,
-    result: &'static str,
+    success: bool,
 }
 
 #[get("/")]

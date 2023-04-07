@@ -16,7 +16,7 @@ use crate::{
 #[derive(Deserialize)]
 struct ApiResponse {
     voter_address: String,
-    result: String,
+    success: bool,
 }
 
 pub(crate) async fn consume_chain_votes(
@@ -60,13 +60,13 @@ pub(crate) async fn consume_chain_votes(
 
                 let ok_voters: Vec<String> = data
                     .iter()
-                    .filter(|result| result.result == "ok")
+                    .filter(|result| result.success)
                     .map(|result| result.voter_address.clone())
                     .collect();
 
                 let nok_voters: Vec<String> = data
                     .iter()
-                    .filter(|result| result.result == "nok")
+                    .filter(|result| !result.success)
                     .map(|result| result.voter_address.clone())
                     .collect();
 

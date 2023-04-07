@@ -24,4 +24,5 @@ WORKDIR /app
 COPY --from=builder /app/target/release/detective-rust /usr/local/bin
 ENTRYPOINT ["/usr/local/bin/detective-rust"]
 ENV ROCKET_ADDRESS=0.0.0.0
+
 EXPOSE 8000

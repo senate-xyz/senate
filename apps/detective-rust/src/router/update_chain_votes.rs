@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use std::ops::Div;
+use std::{cmp, ops::Div};
 
 use ethers::{providers::Middleware, types::U64};
 use prisma_client_rust::Direction;
@@ -95,21 +95,15 @@ pub async fn update_chain_votes<'a>(
 
     let mut batch_size = (40000000_i64).div(voters.len() as i64);
 
-    if batch_size > 100000 {
-        batch_size = 100000;
-    }
-
     if dao_handler.r#type == DaoHandlerType::MakerExecutive {
         batch_size /= 10;
     }
 
-    let mut from_block = {
-        if oldest_vote_block > 0 {
-            oldest_vote_block
-        } else {
-            0
-        }
-    };
+    if batch_size > 100000 {
+        batch_size = 100000;
+    }
+
+    let mut from_block = cmp::max(oldest_vote_block, 0);
 
     if from_block < first_proposal_block {
         from_block = first_proposal_block;
@@ -130,45 +124,16 @@ pub async fn update_chain_votes<'a>(
     let result = match dao_handler.r#type {
         DaoHandlerType::AaveChain => {
             match aave_votes(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await {
-                Ok(r) => {
-                    
-                    match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
-                            Ok(r) => r
-                                .into_iter()
-                                .map(|v| VotesResponse {
-                                    voter_address: v.voter_address,
-                                    result: {
-                                        if v.success {
-                                            "ok"
-                                        } else {
-                                            "nok"
-                                        }
-                                    },
-                                })
-                                .collect(),
-                            Err(e) => {
-                                println!("{:#?}", e);
-
-                                voters
-                                    .into_iter()
-                                    .map(|v| VotesResponse {
-                                        voter_address: v,
-                                        result: "nok",
-                                    })
-                                    .collect()
-                            }
-                        }
-                }
+                Ok(r) => match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
+                    Ok(r) => success_response(r),
+                    Err(e) => {
+                        println!("{:#?}", e);
+                        failed_response(voters)
+                    }
+                },
                 Err(e) => {
                     println!("{:#?}", e);
-
-                    voters
-                        .into_iter()
-                        .map(|v| VotesResponse {
-                            voter_address: v,
-                            result: "nok",
-                        })
-                        .collect()
+                    failed_response(voters)
                 }
             }
         }
@@ -176,75 +141,94 @@ pub async fn update_chain_votes<'a>(
             .into_iter()
             .map(|v| VotesResponse {
                 voter_address: v,
-                result: "nok",
+                success: false,
             })
             .collect(),
         DaoHandlerType::UniswapChain => voters
             .into_iter()
             .map(|v| VotesResponse {
                 voter_address: v,
-                result: "nok",
+                success: false,
             })
             .collect(),
         DaoHandlerType::EnsChain => voters
             .into_iter()
             .map(|v| VotesResponse {
                 voter_address: v,
-                result: "nok",
+                success: false,
             })
             .collect(),
         DaoHandlerType::GitcoinChain => voters
             .into_iter()
             .map(|v| VotesResponse {
                 voter_address: v,
-                result: "nok",
+                success: false,
             })
             .collect(),
         DaoHandlerType::HopChain => voters
             .into_iter()
             .map(|v| VotesResponse {
                 voter_address: v,
-                result: "nok",
+                success: false,
             })
             .collect(),
         DaoHandlerType::DydxChain => voters
             .into_iter()
             .map(|v| VotesResponse {
                 voter_address: v,
-                result: "nok",
+                success: false,
             })
             .collect(),
         DaoHandlerType::MakerExecutive => voters
             .into_iter()
             .map(|v| VotesResponse {
                 voter_address: v,
-                result: "nok",
+                success: false,
             })
             .collect(),
         DaoHandlerType::MakerPoll => voters
             .into_iter()
             .map(|v| VotesResponse {
                 voter_address: v,
-                result: "nok",
+                success: false,
             })
             .collect(),
         DaoHandlerType::MakerPollArbitrum => voters
             .into_iter()
             .map(|v| VotesResponse {
                 voter_address: v,
-                result: "nok",
+                success: false,
             })
             .collect(),
         DaoHandlerType::Snapshot => voters
             .into_iter()
             .map(|v| VotesResponse {
                 voter_address: v,
-                result: "nok",
+                success: false,
             })
             .collect(),
     };
 
     Json(result)
+}
+
+fn success_response(r: Vec<VoteResult>) -> Vec<VotesResponse> {
+    r.into_iter()
+        .map(|v| VotesResponse {
+            voter_address: v.voter_address,
+            success: v.success,
+        })
+        .collect()
+}
+
+fn failed_response(voters: Vec<String>) -> Vec<VotesResponse> {
+    voters
+        .into_iter()
+        .map(|v| VotesResponse {
+            voter_address: v,
+            success: false,
+        })
+        .collect()
 }
 
 async fn insert_votes(

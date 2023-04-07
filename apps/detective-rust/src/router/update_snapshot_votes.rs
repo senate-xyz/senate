@@ -148,7 +148,7 @@ pub async fn update_snapshot_votes<'a>(
             .into_iter()
             .map(|v| VotesResponse {
                 voter_address: v,
-                result: "ok",
+                success: true,
             })
             .collect(),
         Err(e) => {
@@ -159,7 +159,7 @@ pub async fn update_snapshot_votes<'a>(
                 .into_iter()
                 .map(|v| VotesResponse {
                     voter_address: v,
-                    result: "nok",
+                    success: false,
                 })
                 .collect()
         }

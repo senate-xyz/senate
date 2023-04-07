@@ -77,7 +77,8 @@ export const publicRouter = router({
                 highestScoreChoice: highestScoreChoice,
                 highestScore: highestScore,
                 scoresTotal: proposal.scorestotal,
-                passedQuorum: proposal.quorum < proposal.scorestotal,
+                passedQuorum:
+                    Number(proposal.quorum) < Number(proposal.scorestotal),
                 voted: user
                     ? String(
                           proposal.votes.map((vote: Vote) => vote.choice)
