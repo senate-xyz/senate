@@ -1,4 +1,4 @@
-pub use compoundgov::*;
+pub use uniswapgov::*;
 /// This module was auto-generated with ethers-rs Abigen.
 /// More information at: <https://github.com/gakonst/ethers-rs>
 #[allow(
@@ -9,36 +9,36 @@ pub use compoundgov::*;
     dead_code,
     non_camel_case_types,
 )]
-pub mod compoundgov {
+pub mod uniswapgov {
     pub use super::super::shared_types::*;
     #[rustfmt::skip]
-    const __ABI: &str = "[\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"oldAdmin\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"newAdmin\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"NewAdmin\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"oldImplementation\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"newImplementation\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"NewImplementation\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"oldPendingAdmin\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"newPendingAdmin\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"NewPendingAdmin\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalCanceled\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"proposer\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address[]\",\n        \"name\": \"targets\",\n        \"type\": \"address[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256[]\",\n        \"name\": \"values\",\n        \"type\": \"uint256[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string[]\",\n        \"name\": \"signatures\",\n        \"type\": \"string[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"bytes[]\",\n        \"name\": \"calldatas\",\n        \"type\": \"bytes[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"startBlock\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"endBlock\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string\",\n        \"name\": \"description\",\n        \"type\": \"string\"\n      }\n    ],\n    \"name\": \"ProposalCreated\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalExecuted\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"eta\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalQueued\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"oldProposalThreshold\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"newProposalThreshold\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalThresholdSet\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"voter\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint8\",\n        \"name\": \"support\",\n        \"type\": \"uint8\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"votes\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string\",\n        \"name\": \"reason\",\n        \"type\": \"string\"\n      }\n    ],\n    \"name\": \"VoteCast\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"oldVotingDelay\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"newVotingDelay\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"VotingDelaySet\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"oldVotingPeriod\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"newVotingPeriod\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"VotingPeriodSet\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"account\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"expiration\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"WhitelistAccountExpirationSet\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"oldGuardian\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"newGuardian\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"WhitelistGuardianSet\",\n    \"type\": \"event\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"BALLOT_TYPEHASH\",\n    \"outputs\": [{ \"internalType\": \"bytes32\", \"name\": \"\", \"type\": \"bytes32\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"DOMAIN_TYPEHASH\",\n    \"outputs\": [{ \"internalType\": \"bytes32\", \"name\": \"\", \"type\": \"bytes32\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"MAX_PROPOSAL_THRESHOLD\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"MAX_VOTING_DELAY\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"MAX_VOTING_PERIOD\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"MIN_PROPOSAL_THRESHOLD\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"MIN_VOTING_DELAY\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"MIN_VOTING_PERIOD\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [],\n    \"name\": \"_acceptAdmin\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"address\", \"name\": \"governorAlpha\", \"type\": \"address\" }\n    ],\n    \"name\": \"_initiate\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"newPendingAdmin\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"_setPendingAdmin\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"newProposalThreshold\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"_setProposalThreshold\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"newVotingDelay\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"_setVotingDelay\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"newVotingPeriod\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"_setVotingPeriod\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"address\", \"name\": \"account\", \"type\": \"address\" },\n      { \"internalType\": \"uint256\", \"name\": \"expiration\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"_setWhitelistAccountExpiration\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"address\", \"name\": \"account\", \"type\": \"address\" }\n    ],\n    \"name\": \"_setWhitelistGuardian\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"admin\",\n    \"outputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"cancel\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint8\", \"name\": \"support\", \"type\": \"uint8\" }\n    ],\n    \"name\": \"castVote\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint8\", \"name\": \"support\", \"type\": \"uint8\" },\n      { \"internalType\": \"uint8\", \"name\": \"v\", \"type\": \"uint8\" },\n      { \"internalType\": \"bytes32\", \"name\": \"r\", \"type\": \"bytes32\" },\n      { \"internalType\": \"bytes32\", \"name\": \"s\", \"type\": \"bytes32\" }\n    ],\n    \"name\": \"castVoteBySig\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint8\", \"name\": \"support\", \"type\": \"uint8\" },\n      { \"internalType\": \"string\", \"name\": \"reason\", \"type\": \"string\" }\n    ],\n    \"name\": \"castVoteWithReason\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"comp\",\n    \"outputs\": [\n      {\n        \"internalType\": \"contract CompInterface\",\n        \"name\": \"\",\n        \"type\": \"address\"\n      }\n    ],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"execute\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"getActions\",\n    \"outputs\": [\n      { \"internalType\": \"address[]\", \"name\": \"targets\", \"type\": \"address[]\" },\n      { \"internalType\": \"uint256[]\", \"name\": \"values\", \"type\": \"uint256[]\" },\n      { \"internalType\": \"string[]\", \"name\": \"signatures\", \"type\": \"string[]\" },\n      { \"internalType\": \"bytes[]\", \"name\": \"calldatas\", \"type\": \"bytes[]\" }\n    ],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"address\", \"name\": \"voter\", \"type\": \"address\" }\n    ],\n    \"name\": \"getReceipt\",\n    \"outputs\": [\n      {\n        \"components\": [\n          { \"internalType\": \"bool\", \"name\": \"hasVoted\", \"type\": \"bool\" },\n          { \"internalType\": \"uint8\", \"name\": \"support\", \"type\": \"uint8\" },\n          { \"internalType\": \"uint96\", \"name\": \"votes\", \"type\": \"uint96\" }\n        ],\n        \"internalType\": \"struct GovernorBravoDelegateStorageV1.Receipt\",\n        \"name\": \"\",\n        \"type\": \"tuple\"\n      }\n    ],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"implementation\",\n    \"outputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"initialProposalId\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"address\", \"name\": \"timelock_\", \"type\": \"address\" },\n      { \"internalType\": \"address\", \"name\": \"comp_\", \"type\": \"address\" },\n      { \"internalType\": \"uint256\", \"name\": \"votingPeriod_\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"votingDelay_\", \"type\": \"uint256\" },\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalThreshold_\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"initialize\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [\n      { \"internalType\": \"address\", \"name\": \"account\", \"type\": \"address\" }\n    ],\n    \"name\": \"isWhitelisted\",\n    \"outputs\": [{ \"internalType\": \"bool\", \"name\": \"\", \"type\": \"bool\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"name\": \"latestProposalIds\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"name\",\n    \"outputs\": [{ \"internalType\": \"string\", \"name\": \"\", \"type\": \"string\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"pendingAdmin\",\n    \"outputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"proposalCount\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"proposalMaxOperations\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"proposalThreshold\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"name\": \"proposals\",\n    \"outputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"id\", \"type\": \"uint256\" },\n      { \"internalType\": \"address\", \"name\": \"proposer\", \"type\": \"address\" },\n      { \"internalType\": \"uint256\", \"name\": \"eta\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"startBlock\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"endBlock\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"forVotes\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"againstVotes\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"abstainVotes\", \"type\": \"uint256\" },\n      { \"internalType\": \"bool\", \"name\": \"canceled\", \"type\": \"bool\" },\n      { \"internalType\": \"bool\", \"name\": \"executed\", \"type\": \"bool\" }\n    ],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"address[]\", \"name\": \"targets\", \"type\": \"address[]\" },\n      { \"internalType\": \"uint256[]\", \"name\": \"values\", \"type\": \"uint256[]\" },\n      { \"internalType\": \"string[]\", \"name\": \"signatures\", \"type\": \"string[]\" },\n      { \"internalType\": \"bytes[]\", \"name\": \"calldatas\", \"type\": \"bytes[]\" },\n      { \"internalType\": \"string\", \"name\": \"description\", \"type\": \"string\" }\n    ],\n    \"name\": \"propose\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"queue\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"quorumVotes\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"state\",\n    \"outputs\": [\n      {\n        \"internalType\": \"enum GovernorBravoDelegateStorageV1.ProposalState\",\n        \"name\": \"\",\n        \"type\": \"uint8\"\n      }\n    ],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"timelock\",\n    \"outputs\": [\n      {\n        \"internalType\": \"contract TimelockInterface\",\n        \"name\": \"\",\n        \"type\": \"address\"\n      }\n    ],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"votingDelay\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"votingPeriod\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"name\": \"whitelistAccountExpirations\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"whitelistGuardian\",\n    \"outputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  }\n]";
+    const __ABI: &str = "[\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"oldAdmin\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"newAdmin\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"NewAdmin\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"oldImplementation\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"newImplementation\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"NewImplementation\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"oldPendingAdmin\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"newPendingAdmin\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"NewPendingAdmin\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalCanceled\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"proposer\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address[]\",\n        \"name\": \"targets\",\n        \"type\": \"address[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256[]\",\n        \"name\": \"values\",\n        \"type\": \"uint256[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string[]\",\n        \"name\": \"signatures\",\n        \"type\": \"string[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"bytes[]\",\n        \"name\": \"calldatas\",\n        \"type\": \"bytes[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"startBlock\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"endBlock\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string\",\n        \"name\": \"description\",\n        \"type\": \"string\"\n      }\n    ],\n    \"name\": \"ProposalCreated\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalExecuted\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"eta\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalQueued\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"oldProposalThreshold\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"newProposalThreshold\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalThresholdSet\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"voter\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint8\",\n        \"name\": \"support\",\n        \"type\": \"uint8\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"votes\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string\",\n        \"name\": \"reason\",\n        \"type\": \"string\"\n      }\n    ],\n    \"name\": \"VoteCast\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"oldVotingDelay\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"newVotingDelay\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"VotingDelaySet\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"oldVotingPeriod\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"newVotingPeriod\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"VotingPeriodSet\",\n    \"type\": \"event\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"BALLOT_TYPEHASH\",\n    \"outputs\": [{ \"internalType\": \"bytes32\", \"name\": \"\", \"type\": \"bytes32\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"DOMAIN_TYPEHASH\",\n    \"outputs\": [{ \"internalType\": \"bytes32\", \"name\": \"\", \"type\": \"bytes32\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"MAX_PROPOSAL_THRESHOLD\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"MAX_VOTING_DELAY\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"MAX_VOTING_PERIOD\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"MIN_PROPOSAL_THRESHOLD\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"MIN_VOTING_DELAY\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"MIN_VOTING_PERIOD\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [],\n    \"name\": \"_acceptAdmin\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalCount\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"_initiate\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"newPendingAdmin\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"_setPendingAdmin\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"newProposalThreshold\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"_setProposalThreshold\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"newVotingDelay\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"_setVotingDelay\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"newVotingPeriod\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"_setVotingPeriod\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"admin\",\n    \"outputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"cancel\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint8\", \"name\": \"support\", \"type\": \"uint8\" }\n    ],\n    \"name\": \"castVote\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint8\", \"name\": \"support\", \"type\": \"uint8\" },\n      { \"internalType\": \"uint8\", \"name\": \"v\", \"type\": \"uint8\" },\n      { \"internalType\": \"bytes32\", \"name\": \"r\", \"type\": \"bytes32\" },\n      { \"internalType\": \"bytes32\", \"name\": \"s\", \"type\": \"bytes32\" }\n    ],\n    \"name\": \"castVoteBySig\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint8\", \"name\": \"support\", \"type\": \"uint8\" },\n      { \"internalType\": \"string\", \"name\": \"reason\", \"type\": \"string\" }\n    ],\n    \"name\": \"castVoteWithReason\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"execute\",\n    \"outputs\": [],\n    \"payable\": true,\n    \"stateMutability\": \"payable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"getActions\",\n    \"outputs\": [\n      { \"internalType\": \"address[]\", \"name\": \"targets\", \"type\": \"address[]\" },\n      { \"internalType\": \"uint256[]\", \"name\": \"values\", \"type\": \"uint256[]\" },\n      { \"internalType\": \"string[]\", \"name\": \"signatures\", \"type\": \"string[]\" },\n      { \"internalType\": \"bytes[]\", \"name\": \"calldatas\", \"type\": \"bytes[]\" }\n    ],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"address\", \"name\": \"voter\", \"type\": \"address\" }\n    ],\n    \"name\": \"getReceipt\",\n    \"outputs\": [\n      {\n        \"components\": [\n          { \"internalType\": \"bool\", \"name\": \"hasVoted\", \"type\": \"bool\" },\n          { \"internalType\": \"uint8\", \"name\": \"support\", \"type\": \"uint8\" },\n          { \"internalType\": \"uint96\", \"name\": \"votes\", \"type\": \"uint96\" }\n        ],\n        \"internalType\": \"struct GovernorBravoDelegateStorageV1.Receipt\",\n        \"name\": \"\",\n        \"type\": \"tuple\"\n      }\n    ],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"implementation\",\n    \"outputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"initialProposalId\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"address\", \"name\": \"timelock_\", \"type\": \"address\" },\n      { \"internalType\": \"address\", \"name\": \"uni_\", \"type\": \"address\" },\n      { \"internalType\": \"uint256\", \"name\": \"votingPeriod_\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"votingDelay_\", \"type\": \"uint256\" },\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalThreshold_\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"initialize\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"name\": \"latestProposalIds\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"name\",\n    \"outputs\": [{ \"internalType\": \"string\", \"name\": \"\", \"type\": \"string\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"pendingAdmin\",\n    \"outputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"proposalCount\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"proposalMaxOperations\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"proposalThreshold\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"name\": \"proposals\",\n    \"outputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"id\", \"type\": \"uint256\" },\n      { \"internalType\": \"address\", \"name\": \"proposer\", \"type\": \"address\" },\n      { \"internalType\": \"uint256\", \"name\": \"eta\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"startBlock\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"endBlock\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"forVotes\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"againstVotes\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"abstainVotes\", \"type\": \"uint256\" },\n      { \"internalType\": \"bool\", \"name\": \"canceled\", \"type\": \"bool\" },\n      { \"internalType\": \"bool\", \"name\": \"executed\", \"type\": \"bool\" }\n    ],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"address[]\", \"name\": \"targets\", \"type\": \"address[]\" },\n      { \"internalType\": \"uint256[]\", \"name\": \"values\", \"type\": \"uint256[]\" },\n      { \"internalType\": \"string[]\", \"name\": \"signatures\", \"type\": \"string[]\" },\n      { \"internalType\": \"bytes[]\", \"name\": \"calldatas\", \"type\": \"bytes[]\" },\n      { \"internalType\": \"string\", \"name\": \"description\", \"type\": \"string\" }\n    ],\n    \"name\": \"propose\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": false,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"queue\",\n    \"outputs\": [],\n    \"payable\": false,\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"quorumVotes\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"state\",\n    \"outputs\": [\n      {\n        \"internalType\": \"enum GovernorBravoDelegateStorageV1.ProposalState\",\n        \"name\": \"\",\n        \"type\": \"uint8\"\n      }\n    ],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"timelock\",\n    \"outputs\": [\n      {\n        \"internalType\": \"contract TimelockInterface\",\n        \"name\": \"\",\n        \"type\": \"address\"\n      }\n    ],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"uni\",\n    \"outputs\": [\n      { \"internalType\": \"contract UniInterface\", \"name\": \"\", \"type\": \"address\" }\n    ],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"votingDelay\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"constant\": true,\n    \"inputs\": [],\n    \"name\": \"votingPeriod\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"payable\": false,\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  }\n]";
     ///The parsed JSON ABI of the contract.
-    pub static COMPOUNDGOV_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> = ::ethers::contract::Lazy::new(||
+    pub static UNISWAPGOV_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> = ::ethers::contract::Lazy::new(||
     ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid"));
-    pub struct compoundgov<M>(::ethers::contract::Contract<M>);
-    impl<M> ::core::clone::Clone for compoundgov<M> {
+    pub struct uniswapgov<M>(::ethers::contract::Contract<M>);
+    impl<M> ::core::clone::Clone for uniswapgov<M> {
         fn clone(&self) -> Self {
             Self(::core::clone::Clone::clone(&self.0))
         }
     }
-    impl<M> ::core::ops::Deref for compoundgov<M> {
+    impl<M> ::core::ops::Deref for uniswapgov<M> {
         type Target = ::ethers::contract::Contract<M>;
         fn deref(&self) -> &Self::Target {
             &self.0
         }
     }
-    impl<M> ::core::ops::DerefMut for compoundgov<M> {
+    impl<M> ::core::ops::DerefMut for uniswapgov<M> {
         fn deref_mut(&mut self) -> &mut Self::Target {
             &mut self.0
         }
     }
-    impl<M> ::core::fmt::Debug for compoundgov<M> {
+    impl<M> ::core::fmt::Debug for uniswapgov<M> {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-            f.debug_tuple(stringify!(compoundgov)).field(&self.address()).finish()
+            f.debug_tuple(stringify!(uniswapgov)).field(&self.address()).finish()
         }
     }
-    impl<M: ::ethers::providers::Middleware> compoundgov<M> {
+    impl<M: ::ethers::providers::Middleware> uniswapgov<M> {
         /// Creates a new contract instance with the specified `ethers` client at
         /// `address`. The contract derefs to a `ethers::Contract` object.
         pub fn new<T: Into<::ethers::core::types::Address>>(
@@ -48,7 +48,7 @@ pub mod compoundgov {
             Self(
                 ::ethers::contract::Contract::new(
                     address.into(),
-                    COMPOUNDGOV_ABI.clone(),
+                    UNISWAPGOV_ABI.clone(),
                     client,
                 ),
             )
@@ -123,13 +123,13 @@ pub mod compoundgov {
                 .method_hash([233, 199, 20, 242], ())
                 .expect("method not found (this should never happen)")
         }
-        ///Calls the contract's `_initiate` (0xf9d28b80) function
+        ///Calls the contract's `_initiate` (0x501b6ad3) function
         pub fn initiate(
             &self,
-            governor_alpha: ::ethers::core::types::Address,
+            proposal_count: ::ethers::core::types::U256,
         ) -> ::ethers::contract::builders::ContractCall<M, ()> {
             self.0
-                .method_hash([249, 210, 139, 128], governor_alpha)
+                .method_hash([80, 27, 106, 211], proposal_count)
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `_setPendingAdmin` (0xb71d1a0c) function
@@ -166,25 +166,6 @@ pub mod compoundgov {
         ) -> ::ethers::contract::builders::ContractCall<M, ()> {
             self.0
                 .method_hash([14, 162, 217, 140], new_voting_period)
-                .expect("method not found (this should never happen)")
-        }
-        ///Calls the contract's `_setWhitelistAccountExpiration` (0x4d6733d2) function
-        pub fn set_whitelist_account_expiration(
-            &self,
-            account: ::ethers::core::types::Address,
-            expiration: ::ethers::core::types::U256,
-        ) -> ::ethers::contract::builders::ContractCall<M, ()> {
-            self.0
-                .method_hash([77, 103, 51, 210], (account, expiration))
-                .expect("method not found (this should never happen)")
-        }
-        ///Calls the contract's `_setWhitelistGuardian` (0x99533365) function
-        pub fn set_whitelist_guardian(
-            &self,
-            account: ::ethers::core::types::Address,
-        ) -> ::ethers::contract::builders::ContractCall<M, ()> {
-            self.0
-                .method_hash([153, 83, 51, 101], account)
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `admin` (0xf851a440) function
@@ -239,17 +220,6 @@ pub mod compoundgov {
         ) -> ::ethers::contract::builders::ContractCall<M, ()> {
             self.0
                 .method_hash([123, 60, 113, 211], (proposal_id, support, reason))
-                .expect("method not found (this should never happen)")
-        }
-        ///Calls the contract's `comp` (0x109d0af8) function
-        pub fn comp(
-            &self,
-        ) -> ::ethers::contract::builders::ContractCall<
-            M,
-            ::ethers::core::types::Address,
-        > {
-            self.0
-                .method_hash([16, 157, 10, 248], ())
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `execute` (0xfe0d94c1) function
@@ -311,7 +281,7 @@ pub mod compoundgov {
         pub fn initialize(
             &self,
             timelock: ::ethers::core::types::Address,
-            comp: ::ethers::core::types::Address,
+            uni: ::ethers::core::types::Address,
             voting_period: ::ethers::core::types::U256,
             voting_delay: ::ethers::core::types::U256,
             proposal_threshold: ::ethers::core::types::U256,
@@ -319,17 +289,8 @@ pub mod compoundgov {
             self.0
                 .method_hash(
                     [209, 63, 144, 180],
-                    (timelock, comp, voting_period, voting_delay, proposal_threshold),
+                    (timelock, uni, voting_period, voting_delay, proposal_threshold),
                 )
-                .expect("method not found (this should never happen)")
-        }
-        ///Calls the contract's `isWhitelisted` (0x3af32abf) function
-        pub fn is_whitelisted(
-            &self,
-            account: ::ethers::core::types::Address,
-        ) -> ::ethers::contract::builders::ContractCall<M, bool> {
-            self.0
-                .method_hash([58, 243, 42, 191], account)
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `latestProposalIds` (0x17977c61) function
@@ -460,6 +421,17 @@ pub mod compoundgov {
                 .method_hash([211, 50, 25, 180], ())
                 .expect("method not found (this should never happen)")
         }
+        ///Calls the contract's `uni` (0xedc9af95) function
+        pub fn uni(
+            &self,
+        ) -> ::ethers::contract::builders::ContractCall<
+            M,
+            ::ethers::core::types::Address,
+        > {
+            self.0
+                .method_hash([237, 201, 175, 149], ())
+                .expect("method not found (this should never happen)")
+        }
         ///Calls the contract's `votingDelay` (0x3932abb1) function
         pub fn voting_delay(
             &self,
@@ -474,26 +446,6 @@ pub mod compoundgov {
         ) -> ::ethers::contract::builders::ContractCall<M, ::ethers::core::types::U256> {
             self.0
                 .method_hash([2, 162, 81, 163], ())
-                .expect("method not found (this should never happen)")
-        }
-        ///Calls the contract's `whitelistAccountExpirations` (0x38bd0dda) function
-        pub fn whitelist_account_expirations(
-            &self,
-            p0: ::ethers::core::types::Address,
-        ) -> ::ethers::contract::builders::ContractCall<M, ::ethers::core::types::U256> {
-            self.0
-                .method_hash([56, 189, 13, 218], p0)
-                .expect("method not found (this should never happen)")
-        }
-        ///Calls the contract's `whitelistGuardian` (0xc5a8425d) function
-        pub fn whitelist_guardian(
-            &self,
-        ) -> ::ethers::contract::builders::ContractCall<
-            M,
-            ::ethers::core::types::Address,
-        > {
-            self.0
-                .method_hash([197, 168, 66, 93], ())
                 .expect("method not found (this should never happen)")
         }
         ///Gets the contract's `NewAdmin` event
@@ -606,39 +558,19 @@ pub mod compoundgov {
         > {
             self.0.event()
         }
-        ///Gets the contract's `WhitelistAccountExpirationSet` event
-        pub fn whitelist_account_expiration_set_filter(
-            &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            WhitelistAccountExpirationSetFilter,
-        > {
-            self.0.event()
-        }
-        ///Gets the contract's `WhitelistGuardianSet` event
-        pub fn whitelist_guardian_set_filter(
-            &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            WhitelistGuardianSetFilter,
-        > {
-            self.0.event()
-        }
         /// Returns an `Event` builder for all the events of this contract.
         pub fn events(
             &self,
         ) -> ::ethers::contract::builders::Event<
             ::std::sync::Arc<M>,
             M,
-            compoundgovEvents,
+            uniswapgovEvents,
         > {
             self.0.event_with_filter(::core::default::Default::default())
         }
     }
     impl<M: ::ethers::providers::Middleware> From<::ethers::contract::Contract<M>>
-    for compoundgov<M> {
+    for uniswapgov<M> {
         fn from(contract: ::ethers::contract::Contract<M>) -> Self {
             Self::new(contract.address(), contract.client())
         }
@@ -826,45 +758,9 @@ pub mod compoundgov {
         pub old_voting_period: ::ethers::core::types::U256,
         pub new_voting_period: ::ethers::core::types::U256,
     }
-    #[derive(
-        Clone,
-        ::ethers::contract::EthEvent,
-        ::ethers::contract::EthDisplay,
-        Default,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash
-    )]
-    #[ethevent(
-        name = "WhitelistAccountExpirationSet",
-        abi = "WhitelistAccountExpirationSet(address,uint256)"
-    )]
-    pub struct WhitelistAccountExpirationSetFilter {
-        pub account: ::ethers::core::types::Address,
-        pub expiration: ::ethers::core::types::U256,
-    }
-    #[derive(
-        Clone,
-        ::ethers::contract::EthEvent,
-        ::ethers::contract::EthDisplay,
-        Default,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash
-    )]
-    #[ethevent(
-        name = "WhitelistGuardianSet",
-        abi = "WhitelistGuardianSet(address,address)"
-    )]
-    pub struct WhitelistGuardianSetFilter {
-        pub old_guardian: ::ethers::core::types::Address,
-        pub new_guardian: ::ethers::core::types::Address,
-    }
     ///Container type for all of the contract's events
     #[derive(Clone, ::ethers::contract::EthAbiType, Debug, PartialEq, Eq, Hash)]
-    pub enum compoundgovEvents {
+    pub enum uniswapgovEvents {
         NewAdminFilter(NewAdminFilter),
         NewImplementationFilter(NewImplementationFilter),
         NewPendingAdminFilter(NewPendingAdminFilter),
@@ -876,58 +772,48 @@ pub mod compoundgov {
         VoteCastFilter(VoteCastFilter),
         VotingDelaySetFilter(VotingDelaySetFilter),
         VotingPeriodSetFilter(VotingPeriodSetFilter),
-        WhitelistAccountExpirationSetFilter(WhitelistAccountExpirationSetFilter),
-        WhitelistGuardianSetFilter(WhitelistGuardianSetFilter),
     }
-    impl ::ethers::contract::EthLogDecode for compoundgovEvents {
+    impl ::ethers::contract::EthLogDecode for uniswapgovEvents {
         fn decode_log(
             log: &::ethers::core::abi::RawLog,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::Error> {
             if let Ok(decoded) = NewAdminFilter::decode_log(log) {
-                return Ok(compoundgovEvents::NewAdminFilter(decoded));
+                return Ok(uniswapgovEvents::NewAdminFilter(decoded));
             }
             if let Ok(decoded) = NewImplementationFilter::decode_log(log) {
-                return Ok(compoundgovEvents::NewImplementationFilter(decoded));
+                return Ok(uniswapgovEvents::NewImplementationFilter(decoded));
             }
             if let Ok(decoded) = NewPendingAdminFilter::decode_log(log) {
-                return Ok(compoundgovEvents::NewPendingAdminFilter(decoded));
+                return Ok(uniswapgovEvents::NewPendingAdminFilter(decoded));
             }
             if let Ok(decoded) = ProposalCanceledFilter::decode_log(log) {
-                return Ok(compoundgovEvents::ProposalCanceledFilter(decoded));
+                return Ok(uniswapgovEvents::ProposalCanceledFilter(decoded));
             }
             if let Ok(decoded) = ProposalCreatedFilter::decode_log(log) {
-                return Ok(compoundgovEvents::ProposalCreatedFilter(decoded));
+                return Ok(uniswapgovEvents::ProposalCreatedFilter(decoded));
             }
             if let Ok(decoded) = ProposalExecutedFilter::decode_log(log) {
-                return Ok(compoundgovEvents::ProposalExecutedFilter(decoded));
+                return Ok(uniswapgovEvents::ProposalExecutedFilter(decoded));
             }
             if let Ok(decoded) = ProposalQueuedFilter::decode_log(log) {
-                return Ok(compoundgovEvents::ProposalQueuedFilter(decoded));
+                return Ok(uniswapgovEvents::ProposalQueuedFilter(decoded));
             }
             if let Ok(decoded) = ProposalThresholdSetFilter::decode_log(log) {
-                return Ok(compoundgovEvents::ProposalThresholdSetFilter(decoded));
+                return Ok(uniswapgovEvents::ProposalThresholdSetFilter(decoded));
             }
             if let Ok(decoded) = VoteCastFilter::decode_log(log) {
-                return Ok(compoundgovEvents::VoteCastFilter(decoded));
+                return Ok(uniswapgovEvents::VoteCastFilter(decoded));
             }
             if let Ok(decoded) = VotingDelaySetFilter::decode_log(log) {
-                return Ok(compoundgovEvents::VotingDelaySetFilter(decoded));
+                return Ok(uniswapgovEvents::VotingDelaySetFilter(decoded));
             }
             if let Ok(decoded) = VotingPeriodSetFilter::decode_log(log) {
-                return Ok(compoundgovEvents::VotingPeriodSetFilter(decoded));
-            }
-            if let Ok(decoded) = WhitelistAccountExpirationSetFilter::decode_log(log) {
-                return Ok(
-                    compoundgovEvents::WhitelistAccountExpirationSetFilter(decoded),
-                );
-            }
-            if let Ok(decoded) = WhitelistGuardianSetFilter::decode_log(log) {
-                return Ok(compoundgovEvents::WhitelistGuardianSetFilter(decoded));
+                return Ok(uniswapgovEvents::VotingPeriodSetFilter(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData)
         }
     }
-    impl ::core::fmt::Display for compoundgovEvents {
+    impl ::core::fmt::Display for uniswapgovEvents {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
             match self {
                 Self::NewAdminFilter(element) => ::core::fmt::Display::fmt(element, f),
@@ -959,79 +845,62 @@ pub mod compoundgov {
                 Self::VotingPeriodSetFilter(element) => {
                     ::core::fmt::Display::fmt(element, f)
                 }
-                Self::WhitelistAccountExpirationSetFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::WhitelistGuardianSetFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
             }
         }
     }
-    impl ::core::convert::From<NewAdminFilter> for compoundgovEvents {
+    impl ::core::convert::From<NewAdminFilter> for uniswapgovEvents {
         fn from(value: NewAdminFilter) -> Self {
             Self::NewAdminFilter(value)
         }
     }
-    impl ::core::convert::From<NewImplementationFilter> for compoundgovEvents {
+    impl ::core::convert::From<NewImplementationFilter> for uniswapgovEvents {
         fn from(value: NewImplementationFilter) -> Self {
             Self::NewImplementationFilter(value)
         }
     }
-    impl ::core::convert::From<NewPendingAdminFilter> for compoundgovEvents {
+    impl ::core::convert::From<NewPendingAdminFilter> for uniswapgovEvents {
         fn from(value: NewPendingAdminFilter) -> Self {
             Self::NewPendingAdminFilter(value)
         }
     }
-    impl ::core::convert::From<ProposalCanceledFilter> for compoundgovEvents {
+    impl ::core::convert::From<ProposalCanceledFilter> for uniswapgovEvents {
         fn from(value: ProposalCanceledFilter) -> Self {
             Self::ProposalCanceledFilter(value)
         }
     }
-    impl ::core::convert::From<ProposalCreatedFilter> for compoundgovEvents {
+    impl ::core::convert::From<ProposalCreatedFilter> for uniswapgovEvents {
         fn from(value: ProposalCreatedFilter) -> Self {
             Self::ProposalCreatedFilter(value)
         }
     }
-    impl ::core::convert::From<ProposalExecutedFilter> for compoundgovEvents {
+    impl ::core::convert::From<ProposalExecutedFilter> for uniswapgovEvents {
         fn from(value: ProposalExecutedFilter) -> Self {
             Self::ProposalExecutedFilter(value)
         }
     }
-    impl ::core::convert::From<ProposalQueuedFilter> for compoundgovEvents {
+    impl ::core::convert::From<ProposalQueuedFilter> for uniswapgovEvents {
         fn from(value: ProposalQueuedFilter) -> Self {
             Self::ProposalQueuedFilter(value)
         }
     }
-    impl ::core::convert::From<ProposalThresholdSetFilter> for compoundgovEvents {
+    impl ::core::convert::From<ProposalThresholdSetFilter> for uniswapgovEvents {
         fn from(value: ProposalThresholdSetFilter) -> Self {
             Self::ProposalThresholdSetFilter(value)
         }
     }
-    impl ::core::convert::From<VoteCastFilter> for compoundgovEvents {
+    impl ::core::convert::From<VoteCastFilter> for uniswapgovEvents {
         fn from(value: VoteCastFilter) -> Self {
             Self::VoteCastFilter(value)
         }
     }
-    impl ::core::convert::From<VotingDelaySetFilter> for compoundgovEvents {
+    impl ::core::convert::From<VotingDelaySetFilter> for uniswapgovEvents {
         fn from(value: VotingDelaySetFilter) -> Self {
             Self::VotingDelaySetFilter(value)
         }
     }
-    impl ::core::convert::From<VotingPeriodSetFilter> for compoundgovEvents {
+    impl ::core::convert::From<VotingPeriodSetFilter> for uniswapgovEvents {
         fn from(value: VotingPeriodSetFilter) -> Self {
             Self::VotingPeriodSetFilter(value)
-        }
-    }
-    impl ::core::convert::From<WhitelistAccountExpirationSetFilter>
-    for compoundgovEvents {
-        fn from(value: WhitelistAccountExpirationSetFilter) -> Self {
-            Self::WhitelistAccountExpirationSetFilter(value)
-        }
-    }
-    impl ::core::convert::From<WhitelistGuardianSetFilter> for compoundgovEvents {
-        fn from(value: WhitelistGuardianSetFilter) -> Self {
-            Self::WhitelistGuardianSetFilter(value)
         }
     }
     ///Container type for all input parameters for the `BALLOT_TYPEHASH` function with signature `BALLOT_TYPEHASH()` and selector `0xdeaaa7cc`
@@ -1151,7 +1020,7 @@ pub mod compoundgov {
     )]
     #[ethcall(name = "_acceptAdmin", abi = "_acceptAdmin()")]
     pub struct AcceptAdminCall;
-    ///Container type for all input parameters for the `_initiate` function with signature `_initiate(address)` and selector `0xf9d28b80`
+    ///Container type for all input parameters for the `_initiate` function with signature `_initiate(uint256)` and selector `0x501b6ad3`
     #[derive(
         Clone,
         ::ethers::contract::EthCall,
@@ -1162,9 +1031,9 @@ pub mod compoundgov {
         Eq,
         Hash
     )]
-    #[ethcall(name = "_initiate", abi = "_initiate(address)")]
+    #[ethcall(name = "_initiate", abi = "_initiate(uint256)")]
     pub struct InitiateCall {
-        pub governor_alpha: ::ethers::core::types::Address,
+        pub proposal_count: ::ethers::core::types::U256,
     }
     ///Container type for all input parameters for the `_setPendingAdmin` function with signature `_setPendingAdmin(address)` and selector `0xb71d1a0c`
     #[derive(
@@ -1225,40 +1094,6 @@ pub mod compoundgov {
     #[ethcall(name = "_setVotingPeriod", abi = "_setVotingPeriod(uint256)")]
     pub struct SetVotingPeriodCall {
         pub new_voting_period: ::ethers::core::types::U256,
-    }
-    ///Container type for all input parameters for the `_setWhitelistAccountExpiration` function with signature `_setWhitelistAccountExpiration(address,uint256)` and selector `0x4d6733d2`
-    #[derive(
-        Clone,
-        ::ethers::contract::EthCall,
-        ::ethers::contract::EthDisplay,
-        Default,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash
-    )]
-    #[ethcall(
-        name = "_setWhitelistAccountExpiration",
-        abi = "_setWhitelistAccountExpiration(address,uint256)"
-    )]
-    pub struct SetWhitelistAccountExpirationCall {
-        pub account: ::ethers::core::types::Address,
-        pub expiration: ::ethers::core::types::U256,
-    }
-    ///Container type for all input parameters for the `_setWhitelistGuardian` function with signature `_setWhitelistGuardian(address)` and selector `0x99533365`
-    #[derive(
-        Clone,
-        ::ethers::contract::EthCall,
-        ::ethers::contract::EthDisplay,
-        Default,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash
-    )]
-    #[ethcall(name = "_setWhitelistGuardian", abi = "_setWhitelistGuardian(address)")]
-    pub struct SetWhitelistGuardianCall {
-        pub account: ::ethers::core::types::Address,
     }
     ///Container type for all input parameters for the `admin` function with signature `admin()` and selector `0xf851a440`
     #[derive(
@@ -1346,19 +1181,6 @@ pub mod compoundgov {
         pub support: u8,
         pub reason: ::std::string::String,
     }
-    ///Container type for all input parameters for the `comp` function with signature `comp()` and selector `0x109d0af8`
-    #[derive(
-        Clone,
-        ::ethers::contract::EthCall,
-        ::ethers::contract::EthDisplay,
-        Default,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash
-    )]
-    #[ethcall(name = "comp", abi = "comp()")]
-    pub struct CompCall;
     ///Container type for all input parameters for the `execute` function with signature `execute(uint256)` and selector `0xfe0d94c1`
     #[derive(
         Clone,
@@ -1448,25 +1270,10 @@ pub mod compoundgov {
     )]
     pub struct InitializeCall {
         pub timelock: ::ethers::core::types::Address,
-        pub comp: ::ethers::core::types::Address,
+        pub uni: ::ethers::core::types::Address,
         pub voting_period: ::ethers::core::types::U256,
         pub voting_delay: ::ethers::core::types::U256,
         pub proposal_threshold: ::ethers::core::types::U256,
-    }
-    ///Container type for all input parameters for the `isWhitelisted` function with signature `isWhitelisted(address)` and selector `0x3af32abf`
-    #[derive(
-        Clone,
-        ::ethers::contract::EthCall,
-        ::ethers::contract::EthDisplay,
-        Default,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash
-    )]
-    #[ethcall(name = "isWhitelisted", abi = "isWhitelisted(address)")]
-    pub struct IsWhitelistedCall {
-        pub account: ::ethers::core::types::Address,
     }
     ///Container type for all input parameters for the `latestProposalIds` function with signature `latestProposalIds(address)` and selector `0x17977c61`
     #[derive(
@@ -1637,6 +1444,19 @@ pub mod compoundgov {
     )]
     #[ethcall(name = "timelock", abi = "timelock()")]
     pub struct TimelockCall;
+    ///Container type for all input parameters for the `uni` function with signature `uni()` and selector `0xedc9af95`
+    #[derive(
+        Clone,
+        ::ethers::contract::EthCall,
+        ::ethers::contract::EthDisplay,
+        Default,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash
+    )]
+    #[ethcall(name = "uni", abi = "uni()")]
+    pub struct UniCall;
     ///Container type for all input parameters for the `votingDelay` function with signature `votingDelay()` and selector `0x3932abb1`
     #[derive(
         Clone,
@@ -1663,38 +1483,9 @@ pub mod compoundgov {
     )]
     #[ethcall(name = "votingPeriod", abi = "votingPeriod()")]
     pub struct VotingPeriodCall;
-    ///Container type for all input parameters for the `whitelistAccountExpirations` function with signature `whitelistAccountExpirations(address)` and selector `0x38bd0dda`
-    #[derive(
-        Clone,
-        ::ethers::contract::EthCall,
-        ::ethers::contract::EthDisplay,
-        Default,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash
-    )]
-    #[ethcall(
-        name = "whitelistAccountExpirations",
-        abi = "whitelistAccountExpirations(address)"
-    )]
-    pub struct WhitelistAccountExpirationsCall(pub ::ethers::core::types::Address);
-    ///Container type for all input parameters for the `whitelistGuardian` function with signature `whitelistGuardian()` and selector `0xc5a8425d`
-    #[derive(
-        Clone,
-        ::ethers::contract::EthCall,
-        ::ethers::contract::EthDisplay,
-        Default,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash
-    )]
-    #[ethcall(name = "whitelistGuardian", abi = "whitelistGuardian()")]
-    pub struct WhitelistGuardianCall;
     ///Container type for all of the contract's call
     #[derive(Clone, ::ethers::contract::EthAbiType, Debug, PartialEq, Eq, Hash)]
-    pub enum compoundgovCalls {
+    pub enum uniswapgovCalls {
         BallotTypehash(BallotTypehashCall),
         DomainTypehash(DomainTypehashCall),
         MaxProposalThreshold(MaxProposalThresholdCall),
@@ -1709,21 +1500,17 @@ pub mod compoundgov {
         SetProposalThreshold(SetProposalThresholdCall),
         SetVotingDelay(SetVotingDelayCall),
         SetVotingPeriod(SetVotingPeriodCall),
-        SetWhitelistAccountExpiration(SetWhitelistAccountExpirationCall),
-        SetWhitelistGuardian(SetWhitelistGuardianCall),
         Admin(AdminCall),
         Cancel(CancelCall),
         CastVote(CastVoteCall),
         CastVoteBySig(CastVoteBySigCall),
         CastVoteWithReason(CastVoteWithReasonCall),
-        Comp(CompCall),
         Execute(ExecuteCall),
         GetActions(GetActionsCall),
         GetReceipt(GetReceiptCall),
         Implementation(ImplementationCall),
         InitialProposalId(InitialProposalIdCall),
         Initialize(InitializeCall),
-        IsWhitelisted(IsWhitelistedCall),
         LatestProposalIds(LatestProposalIdsCall),
         Name(NameCall),
         PendingAdmin(PendingAdminCall),
@@ -1736,12 +1523,11 @@ pub mod compoundgov {
         QuorumVotes(QuorumVotesCall),
         State(StateCall),
         Timelock(TimelockCall),
+        Uni(UniCall),
         VotingDelay(VotingDelayCall),
         VotingPeriod(VotingPeriodCall),
-        WhitelistAccountExpirations(WhitelistAccountExpirationsCall),
-        WhitelistGuardian(WhitelistGuardianCall),
     }
-    impl ::ethers::core::abi::AbiDecode for compoundgovCalls {
+    impl ::ethers::core::abi::AbiDecode for uniswapgovCalls {
         fn decode(
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
@@ -1809,18 +1595,6 @@ pub mod compoundgov {
                 return Ok(Self::SetVotingPeriod(decoded));
             }
             if let Ok(decoded)
-                = <SetWhitelistAccountExpirationCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
-                return Ok(Self::SetWhitelistAccountExpiration(decoded));
-            }
-            if let Ok(decoded)
-                = <SetWhitelistGuardianCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
-                return Ok(Self::SetWhitelistGuardian(decoded));
-            }
-            if let Ok(decoded)
                 = <AdminCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Admin(decoded));
             }
@@ -1841,10 +1615,6 @@ pub mod compoundgov {
                     data,
                 ) {
                 return Ok(Self::CastVoteWithReason(decoded));
-            }
-            if let Ok(decoded)
-                = <CompCall as ::ethers::core::abi::AbiDecode>::decode(data) {
-                return Ok(Self::Comp(decoded));
             }
             if let Ok(decoded)
                 = <ExecuteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
@@ -1871,10 +1641,6 @@ pub mod compoundgov {
             if let Ok(decoded)
                 = <InitializeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Initialize(decoded));
-            }
-            if let Ok(decoded)
-                = <IsWhitelistedCall as ::ethers::core::abi::AbiDecode>::decode(data) {
-                return Ok(Self::IsWhitelisted(decoded));
             }
             if let Ok(decoded)
                 = <LatestProposalIdsCall as ::ethers::core::abi::AbiDecode>::decode(
@@ -1931,6 +1697,10 @@ pub mod compoundgov {
                 return Ok(Self::Timelock(decoded));
             }
             if let Ok(decoded)
+                = <UniCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+                return Ok(Self::Uni(decoded));
+            }
+            if let Ok(decoded)
                 = <VotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::VotingDelay(decoded));
             }
@@ -1938,22 +1708,10 @@ pub mod compoundgov {
                 = <VotingPeriodCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::VotingPeriod(decoded));
             }
-            if let Ok(decoded)
-                = <WhitelistAccountExpirationsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
-                return Ok(Self::WhitelistAccountExpirations(decoded));
-            }
-            if let Ok(decoded)
-                = <WhitelistGuardianCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
-                return Ok(Self::WhitelistGuardian(decoded));
-            }
             Err(::ethers::core::abi::Error::InvalidData.into())
         }
     }
-    impl ::ethers::core::abi::AbiEncode for compoundgovCalls {
+    impl ::ethers::core::abi::AbiEncode for uniswapgovCalls {
         fn encode(self) -> Vec<u8> {
             match self {
                 Self::BallotTypehash(element) => {
@@ -1998,12 +1756,6 @@ pub mod compoundgov {
                 Self::SetVotingPeriod(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::SetWhitelistAccountExpiration(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::SetWhitelistGuardian(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
                 Self::Admin(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Cancel(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::CastVote(element) => {
@@ -2015,7 +1767,6 @@ pub mod compoundgov {
                 Self::CastVoteWithReason(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::Comp(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Execute(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::GetActions(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
@@ -2030,9 +1781,6 @@ pub mod compoundgov {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
                 Self::Initialize(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::IsWhitelisted(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
                 Self::LatestProposalIds(element) => {
@@ -2063,22 +1811,17 @@ pub mod compoundgov {
                 Self::Timelock(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
+                Self::Uni(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::VotingDelay(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
                 Self::VotingPeriod(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::WhitelistAccountExpirations(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::WhitelistGuardian(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
             }
         }
     }
-    impl ::core::fmt::Display for compoundgovCalls {
+    impl ::core::fmt::Display for uniswapgovCalls {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
             match self {
                 Self::BallotTypehash(element) => ::core::fmt::Display::fmt(element, f),
@@ -2101,12 +1844,6 @@ pub mod compoundgov {
                 }
                 Self::SetVotingDelay(element) => ::core::fmt::Display::fmt(element, f),
                 Self::SetVotingPeriod(element) => ::core::fmt::Display::fmt(element, f),
-                Self::SetWhitelistAccountExpiration(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::SetWhitelistGuardian(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
                 Self::Admin(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Cancel(element) => ::core::fmt::Display::fmt(element, f),
                 Self::CastVote(element) => ::core::fmt::Display::fmt(element, f),
@@ -2114,14 +1851,12 @@ pub mod compoundgov {
                 Self::CastVoteWithReason(element) => {
                     ::core::fmt::Display::fmt(element, f)
                 }
-                Self::Comp(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Execute(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GetActions(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GetReceipt(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Implementation(element) => ::core::fmt::Display::fmt(element, f),
                 Self::InitialProposalId(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Initialize(element) => ::core::fmt::Display::fmt(element, f),
-                Self::IsWhitelisted(element) => ::core::fmt::Display::fmt(element, f),
                 Self::LatestProposalIds(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Name(element) => ::core::fmt::Display::fmt(element, f),
                 Self::PendingAdmin(element) => ::core::fmt::Display::fmt(element, f),
@@ -2136,238 +1871,210 @@ pub mod compoundgov {
                 Self::QuorumVotes(element) => ::core::fmt::Display::fmt(element, f),
                 Self::State(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Timelock(element) => ::core::fmt::Display::fmt(element, f),
+                Self::Uni(element) => ::core::fmt::Display::fmt(element, f),
                 Self::VotingDelay(element) => ::core::fmt::Display::fmt(element, f),
                 Self::VotingPeriod(element) => ::core::fmt::Display::fmt(element, f),
-                Self::WhitelistAccountExpirations(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::WhitelistGuardian(element) => ::core::fmt::Display::fmt(element, f),
             }
         }
     }
-    impl ::core::convert::From<BallotTypehashCall> for compoundgovCalls {
+    impl ::core::convert::From<BallotTypehashCall> for uniswapgovCalls {
         fn from(value: BallotTypehashCall) -> Self {
             Self::BallotTypehash(value)
         }
     }
-    impl ::core::convert::From<DomainTypehashCall> for compoundgovCalls {
+    impl ::core::convert::From<DomainTypehashCall> for uniswapgovCalls {
         fn from(value: DomainTypehashCall) -> Self {
             Self::DomainTypehash(value)
         }
     }
-    impl ::core::convert::From<MaxProposalThresholdCall> for compoundgovCalls {
+    impl ::core::convert::From<MaxProposalThresholdCall> for uniswapgovCalls {
         fn from(value: MaxProposalThresholdCall) -> Self {
             Self::MaxProposalThreshold(value)
         }
     }
-    impl ::core::convert::From<MaxVotingDelayCall> for compoundgovCalls {
+    impl ::core::convert::From<MaxVotingDelayCall> for uniswapgovCalls {
         fn from(value: MaxVotingDelayCall) -> Self {
             Self::MaxVotingDelay(value)
         }
     }
-    impl ::core::convert::From<MaxVotingPeriodCall> for compoundgovCalls {
+    impl ::core::convert::From<MaxVotingPeriodCall> for uniswapgovCalls {
         fn from(value: MaxVotingPeriodCall) -> Self {
             Self::MaxVotingPeriod(value)
         }
     }
-    impl ::core::convert::From<MinProposalThresholdCall> for compoundgovCalls {
+    impl ::core::convert::From<MinProposalThresholdCall> for uniswapgovCalls {
         fn from(value: MinProposalThresholdCall) -> Self {
             Self::MinProposalThreshold(value)
         }
     }
-    impl ::core::convert::From<MinVotingDelayCall> for compoundgovCalls {
+    impl ::core::convert::From<MinVotingDelayCall> for uniswapgovCalls {
         fn from(value: MinVotingDelayCall) -> Self {
             Self::MinVotingDelay(value)
         }
     }
-    impl ::core::convert::From<MinVotingPeriodCall> for compoundgovCalls {
+    impl ::core::convert::From<MinVotingPeriodCall> for uniswapgovCalls {
         fn from(value: MinVotingPeriodCall) -> Self {
             Self::MinVotingPeriod(value)
         }
     }
-    impl ::core::convert::From<AcceptAdminCall> for compoundgovCalls {
+    impl ::core::convert::From<AcceptAdminCall> for uniswapgovCalls {
         fn from(value: AcceptAdminCall) -> Self {
             Self::AcceptAdmin(value)
         }
     }
-    impl ::core::convert::From<InitiateCall> for compoundgovCalls {
+    impl ::core::convert::From<InitiateCall> for uniswapgovCalls {
         fn from(value: InitiateCall) -> Self {
             Self::Initiate(value)
         }
     }
-    impl ::core::convert::From<SetPendingAdminCall> for compoundgovCalls {
+    impl ::core::convert::From<SetPendingAdminCall> for uniswapgovCalls {
         fn from(value: SetPendingAdminCall) -> Self {
             Self::SetPendingAdmin(value)
         }
     }
-    impl ::core::convert::From<SetProposalThresholdCall> for compoundgovCalls {
+    impl ::core::convert::From<SetProposalThresholdCall> for uniswapgovCalls {
         fn from(value: SetProposalThresholdCall) -> Self {
             Self::SetProposalThreshold(value)
         }
     }
-    impl ::core::convert::From<SetVotingDelayCall> for compoundgovCalls {
+    impl ::core::convert::From<SetVotingDelayCall> for uniswapgovCalls {
         fn from(value: SetVotingDelayCall) -> Self {
             Self::SetVotingDelay(value)
         }
     }
-    impl ::core::convert::From<SetVotingPeriodCall> for compoundgovCalls {
+    impl ::core::convert::From<SetVotingPeriodCall> for uniswapgovCalls {
         fn from(value: SetVotingPeriodCall) -> Self {
             Self::SetVotingPeriod(value)
         }
     }
-    impl ::core::convert::From<SetWhitelistAccountExpirationCall> for compoundgovCalls {
-        fn from(value: SetWhitelistAccountExpirationCall) -> Self {
-            Self::SetWhitelistAccountExpiration(value)
-        }
-    }
-    impl ::core::convert::From<SetWhitelistGuardianCall> for compoundgovCalls {
-        fn from(value: SetWhitelistGuardianCall) -> Self {
-            Self::SetWhitelistGuardian(value)
-        }
-    }
-    impl ::core::convert::From<AdminCall> for compoundgovCalls {
+    impl ::core::convert::From<AdminCall> for uniswapgovCalls {
         fn from(value: AdminCall) -> Self {
             Self::Admin(value)
         }
     }
-    impl ::core::convert::From<CancelCall> for compoundgovCalls {
+    impl ::core::convert::From<CancelCall> for uniswapgovCalls {
         fn from(value: CancelCall) -> Self {
             Self::Cancel(value)
         }
     }
-    impl ::core::convert::From<CastVoteCall> for compoundgovCalls {
+    impl ::core::convert::From<CastVoteCall> for uniswapgovCalls {
         fn from(value: CastVoteCall) -> Self {
             Self::CastVote(value)
         }
     }
-    impl ::core::convert::From<CastVoteBySigCall> for compoundgovCalls {
+    impl ::core::convert::From<CastVoteBySigCall> for uniswapgovCalls {
         fn from(value: CastVoteBySigCall) -> Self {
             Self::CastVoteBySig(value)
         }
     }
-    impl ::core::convert::From<CastVoteWithReasonCall> for compoundgovCalls {
+    impl ::core::convert::From<CastVoteWithReasonCall> for uniswapgovCalls {
         fn from(value: CastVoteWithReasonCall) -> Self {
             Self::CastVoteWithReason(value)
         }
     }
-    impl ::core::convert::From<CompCall> for compoundgovCalls {
-        fn from(value: CompCall) -> Self {
-            Self::Comp(value)
-        }
-    }
-    impl ::core::convert::From<ExecuteCall> for compoundgovCalls {
+    impl ::core::convert::From<ExecuteCall> for uniswapgovCalls {
         fn from(value: ExecuteCall) -> Self {
             Self::Execute(value)
         }
     }
-    impl ::core::convert::From<GetActionsCall> for compoundgovCalls {
+    impl ::core::convert::From<GetActionsCall> for uniswapgovCalls {
         fn from(value: GetActionsCall) -> Self {
             Self::GetActions(value)
         }
     }
-    impl ::core::convert::From<GetReceiptCall> for compoundgovCalls {
+    impl ::core::convert::From<GetReceiptCall> for uniswapgovCalls {
         fn from(value: GetReceiptCall) -> Self {
             Self::GetReceipt(value)
         }
     }
-    impl ::core::convert::From<ImplementationCall> for compoundgovCalls {
+    impl ::core::convert::From<ImplementationCall> for uniswapgovCalls {
         fn from(value: ImplementationCall) -> Self {
             Self::Implementation(value)
         }
     }
-    impl ::core::convert::From<InitialProposalIdCall> for compoundgovCalls {
+    impl ::core::convert::From<InitialProposalIdCall> for uniswapgovCalls {
         fn from(value: InitialProposalIdCall) -> Self {
             Self::InitialProposalId(value)
         }
     }
-    impl ::core::convert::From<InitializeCall> for compoundgovCalls {
+    impl ::core::convert::From<InitializeCall> for uniswapgovCalls {
         fn from(value: InitializeCall) -> Self {
             Self::Initialize(value)
         }
     }
-    impl ::core::convert::From<IsWhitelistedCall> for compoundgovCalls {
-        fn from(value: IsWhitelistedCall) -> Self {
-            Self::IsWhitelisted(value)
-        }
-    }
-    impl ::core::convert::From<LatestProposalIdsCall> for compoundgovCalls {
+    impl ::core::convert::From<LatestProposalIdsCall> for uniswapgovCalls {
         fn from(value: LatestProposalIdsCall) -> Self {
             Self::LatestProposalIds(value)
         }
     }
-    impl ::core::convert::From<NameCall> for compoundgovCalls {
+    impl ::core::convert::From<NameCall> for uniswapgovCalls {
         fn from(value: NameCall) -> Self {
             Self::Name(value)
         }
     }
-    impl ::core::convert::From<PendingAdminCall> for compoundgovCalls {
+    impl ::core::convert::From<PendingAdminCall> for uniswapgovCalls {
         fn from(value: PendingAdminCall) -> Self {
             Self::PendingAdmin(value)
         }
     }
-    impl ::core::convert::From<ProposalCountCall> for compoundgovCalls {
+    impl ::core::convert::From<ProposalCountCall> for uniswapgovCalls {
         fn from(value: ProposalCountCall) -> Self {
             Self::ProposalCount(value)
         }
     }
-    impl ::core::convert::From<ProposalMaxOperationsCall> for compoundgovCalls {
+    impl ::core::convert::From<ProposalMaxOperationsCall> for uniswapgovCalls {
         fn from(value: ProposalMaxOperationsCall) -> Self {
             Self::ProposalMaxOperations(value)
         }
     }
-    impl ::core::convert::From<ProposalThresholdCall> for compoundgovCalls {
+    impl ::core::convert::From<ProposalThresholdCall> for uniswapgovCalls {
         fn from(value: ProposalThresholdCall) -> Self {
             Self::ProposalThreshold(value)
         }
     }
-    impl ::core::convert::From<ProposalsCall> for compoundgovCalls {
+    impl ::core::convert::From<ProposalsCall> for uniswapgovCalls {
         fn from(value: ProposalsCall) -> Self {
             Self::Proposals(value)
         }
     }
-    impl ::core::convert::From<ProposeCall> for compoundgovCalls {
+    impl ::core::convert::From<ProposeCall> for uniswapgovCalls {
         fn from(value: ProposeCall) -> Self {
             Self::Propose(value)
         }
     }
-    impl ::core::convert::From<QueueCall> for compoundgovCalls {
+    impl ::core::convert::From<QueueCall> for uniswapgovCalls {
         fn from(value: QueueCall) -> Self {
             Self::Queue(value)
         }
     }
-    impl ::core::convert::From<QuorumVotesCall> for compoundgovCalls {
+    impl ::core::convert::From<QuorumVotesCall> for uniswapgovCalls {
         fn from(value: QuorumVotesCall) -> Self {
             Self::QuorumVotes(value)
         }
     }
-    impl ::core::convert::From<StateCall> for compoundgovCalls {
+    impl ::core::convert::From<StateCall> for uniswapgovCalls {
         fn from(value: StateCall) -> Self {
             Self::State(value)
         }
     }
-    impl ::core::convert::From<TimelockCall> for compoundgovCalls {
+    impl ::core::convert::From<TimelockCall> for uniswapgovCalls {
         fn from(value: TimelockCall) -> Self {
             Self::Timelock(value)
         }
     }
-    impl ::core::convert::From<VotingDelayCall> for compoundgovCalls {
+    impl ::core::convert::From<UniCall> for uniswapgovCalls {
+        fn from(value: UniCall) -> Self {
+            Self::Uni(value)
+        }
+    }
+    impl ::core::convert::From<VotingDelayCall> for uniswapgovCalls {
         fn from(value: VotingDelayCall) -> Self {
             Self::VotingDelay(value)
         }
     }
-    impl ::core::convert::From<VotingPeriodCall> for compoundgovCalls {
+    impl ::core::convert::From<VotingPeriodCall> for uniswapgovCalls {
         fn from(value: VotingPeriodCall) -> Self {
             Self::VotingPeriod(value)
-        }
-    }
-    impl ::core::convert::From<WhitelistAccountExpirationsCall> for compoundgovCalls {
-        fn from(value: WhitelistAccountExpirationsCall) -> Self {
-            Self::WhitelistAccountExpirations(value)
-        }
-    }
-    impl ::core::convert::From<WhitelistGuardianCall> for compoundgovCalls {
-        fn from(value: WhitelistGuardianCall) -> Self {
-            Self::WhitelistGuardian(value)
         }
     }
     ///Container type for all return fields from the `BALLOT_TYPEHASH` function with signature `BALLOT_TYPEHASH()` and selector `0xdeaaa7cc`
@@ -2478,18 +2185,6 @@ pub mod compoundgov {
         Hash
     )]
     pub struct AdminReturn(pub ::ethers::core::types::Address);
-    ///Container type for all return fields from the `comp` function with signature `comp()` and selector `0x109d0af8`
-    #[derive(
-        Clone,
-        ::ethers::contract::EthAbiType,
-        ::ethers::contract::EthAbiCodec,
-        Default,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash
-    )]
-    pub struct CompReturn(pub ::ethers::core::types::Address);
     ///Container type for all return fields from the `getActions` function with signature `getActions(uint256)` and selector `0x328dd982`
     #[derive(
         Clone,
@@ -2543,18 +2238,6 @@ pub mod compoundgov {
         Hash
     )]
     pub struct InitialProposalIdReturn(pub ::ethers::core::types::U256);
-    ///Container type for all return fields from the `isWhitelisted` function with signature `isWhitelisted(address)` and selector `0x3af32abf`
-    #[derive(
-        Clone,
-        ::ethers::contract::EthAbiType,
-        ::ethers::contract::EthAbiCodec,
-        Default,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash
-    )]
-    pub struct IsWhitelistedReturn(pub bool);
     ///Container type for all return fields from the `latestProposalIds` function with signature `latestProposalIds(address)` and selector `0x17977c61`
     #[derive(
         Clone,
@@ -2698,6 +2381,18 @@ pub mod compoundgov {
         Hash
     )]
     pub struct TimelockReturn(pub ::ethers::core::types::Address);
+    ///Container type for all return fields from the `uni` function with signature `uni()` and selector `0xedc9af95`
+    #[derive(
+        Clone,
+        ::ethers::contract::EthAbiType,
+        ::ethers::contract::EthAbiCodec,
+        Default,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash
+    )]
+    pub struct UniReturn(pub ::ethers::core::types::Address);
     ///Container type for all return fields from the `votingDelay` function with signature `votingDelay()` and selector `0x3932abb1`
     #[derive(
         Clone,
@@ -2722,28 +2417,4 @@ pub mod compoundgov {
         Hash
     )]
     pub struct VotingPeriodReturn(pub ::ethers::core::types::U256);
-    ///Container type for all return fields from the `whitelistAccountExpirations` function with signature `whitelistAccountExpirations(address)` and selector `0x38bd0dda`
-    #[derive(
-        Clone,
-        ::ethers::contract::EthAbiType,
-        ::ethers::contract::EthAbiCodec,
-        Default,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash
-    )]
-    pub struct WhitelistAccountExpirationsReturn(pub ::ethers::core::types::U256);
-    ///Container type for all return fields from the `whitelistGuardian` function with signature `whitelistGuardian()` and selector `0xc5a8425d`
-    #[derive(
-        Clone,
-        ::ethers::contract::EthAbiType,
-        ::ethers::contract::EthAbiCodec,
-        Default,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash
-    )]
-    pub struct WhitelistGuardianReturn(pub ::ethers::core::types::Address);
 }

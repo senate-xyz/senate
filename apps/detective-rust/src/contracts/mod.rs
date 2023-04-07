@@ -7,3 +7,5 @@ pub mod aaveexecutor;
 pub mod aavegov;
 pub mod aavestrategy;
 pub mod compoundgov;
+pub mod shared_types;
+pub mod uniswapgov;

@@ -105,13 +105,19 @@ async fn data_for_proposal(
         ),
     };
 
-    let title = log
-        .description
-        .to_string()
-        .split("\n")
-        .nth(0)
-        .unwrap_or("Unknown")
-        .to_string();
+    let mut title = format!(
+        "{:.30}",
+        log.description
+            .to_string()
+            .split("\n")
+            .nth(0)
+            .unwrap_or("Unknown")
+            .to_string()
+    );
+
+    if title.is_empty() {
+        title = "Unknown".into()
+    }
 
     let proposal_url = format!("{}{}", decoder.proposalUrl, log.id.as_u32());
 

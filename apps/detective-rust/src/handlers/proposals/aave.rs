@@ -144,7 +144,11 @@ async fn data_for_proposal(
 
     let hash: Vec<u8> = log.ipfs_hash.into();
 
-    let title = get_title(hex::encode(hash)).await?;
+    let mut title = get_title(hex::encode(hash)).await?;
+
+    if title.is_empty() {
+        title = "Unknown".into()
+    }
 
     let proposal = ChainProposal {
         external_id: proposal_external_id,

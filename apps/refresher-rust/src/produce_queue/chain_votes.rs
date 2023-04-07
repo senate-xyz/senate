@@ -26,7 +26,7 @@ pub async fn produce_chain_votes_queue(
         prisma::DaoHandlerType::CompoundChain,
         // prisma::DaoHandlerType::MakerExecutive,
         // prisma::DaoHandlerType::MakerPoll,
-        // prisma::DaoHandlerType::UniswapChain,
+        prisma::DaoHandlerType::UniswapChain,
         // prisma::DaoHandlerType::EnsChain,
         // prisma::DaoHandlerType::GitcoinChain,
         // prisma::DaoHandlerType::HopChain,
