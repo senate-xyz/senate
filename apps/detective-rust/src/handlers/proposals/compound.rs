@@ -119,9 +119,9 @@ async fn data_for_proposal(
         title = "Unknown".into()
     }
 
-    let proposal_url = format!("{}{}", decoder.proposalUrl, log.id.as_u32());
+    let proposal_url = format!("{}{}", decoder.proposalUrl, log.id.to_string());
 
-    let proposal_external_id = log.id.as_u32().to_string();
+    let proposal_external_id = log.id.to_string();
 
     let onchain_proposal = gov_contract.proposals(log.id).call().await?;
 

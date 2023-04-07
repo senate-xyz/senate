@@ -22,11 +22,13 @@ pub mod handlers {
     pub mod proposals {
         pub mod aave;
         pub mod compound;
+        pub mod ens;
         pub mod uniswap;
     }
     pub mod votes {
         pub mod aave;
         pub mod compound;
+        pub mod ens;
         pub mod uniswap;
     }
 }

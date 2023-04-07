@@ -110,9 +110,9 @@ async fn data_for_proposal(
         ),
     };
 
-    let proposal_url = format!("{}{}", decoder.proposalUrl, log.id.as_u32());
+    let proposal_url = format!("{}{}", decoder.proposalUrl, log.id.to_string());
 
-    let proposal_external_id = log.id.as_u32().to_string();
+    let proposal_external_id = log.id.to_string();
 
     let executor_contract =
         aaveexecutor::aaveexecutor::aaveexecutor::new(log.executor, ctx.client.clone());
