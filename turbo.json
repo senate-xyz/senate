@@ -11,11 +11,6 @@
       "cache": false
     },
 
-    "build:detective": {
-      "dependsOn": ["^build:db", "^build:axiom"],
-      "cache": false
-    },
-
     "build:bulletin": {
       "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
@@ -71,15 +66,11 @@
     },
     "start": {},
     "start:senate": {},
-    "start:detective": {},
     "start:bulletin": {},
     "start:sanity": {},
 
     "dev": { "dependsOn": ["^db:generate", "^build:db", "^build:axiom"] },
     "dev:senate": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
-    },
-    "dev:detective": {
       "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
     },
     "dev:bulletin": {
