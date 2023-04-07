@@ -23,12 +23,14 @@ pub mod handlers {
         pub mod aave;
         pub mod compound;
         pub mod ens;
+        pub mod gitcoin;
         pub mod uniswap;
     }
     pub mod votes {
         pub mod aave;
         pub mod compound;
         pub mod ens;
+        pub mod gitcoin;
         pub mod uniswap;
     }
 }
