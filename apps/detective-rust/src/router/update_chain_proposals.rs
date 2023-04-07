@@ -77,7 +77,7 @@ pub async fn update_chain_proposals<'a>(
         DaoHandlerType::AaveChain => {
             match aave_proposals(ctx, &dao_handler, &from_block, &to_block).await {
                 Ok(p) => {
-                    insert_proposals(p, to_block, ctx.clone(), dao_handler.clone()).await;
+                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
                     Json(ProposalsResponse {
                         daoHandlerId: data.daoHandlerId,
                         response: "ok",
@@ -96,7 +96,7 @@ pub async fn update_chain_proposals<'a>(
         DaoHandlerType::CompoundChain => {
             match compound_proposals(ctx, &dao_handler, &from_block, &to_block).await {
                 Ok(p) => {
-                    insert_proposals(p, to_block, ctx.clone(), dao_handler.clone()).await;
+                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
                     Json(ProposalsResponse {
                         daoHandlerId: data.daoHandlerId,
                         response: "ok",
@@ -115,7 +115,7 @@ pub async fn update_chain_proposals<'a>(
         DaoHandlerType::UniswapChain => {
             match uniswap_proposals(ctx, &dao_handler, &from_block, &to_block).await {
                 Ok(p) => {
-                    insert_proposals(p, to_block, ctx.clone(), dao_handler.clone()).await;
+                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
                     Json(ProposalsResponse {
                         daoHandlerId: data.daoHandlerId,
                         response: "ok",
@@ -134,7 +134,7 @@ pub async fn update_chain_proposals<'a>(
         DaoHandlerType::EnsChain => {
             match ens_proposals(ctx, &dao_handler, &from_block, &to_block).await {
                 Ok(p) => {
-                    insert_proposals(p, to_block, ctx.clone(), dao_handler.clone()).await;
+                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
                     Json(ProposalsResponse {
                         daoHandlerId: data.daoHandlerId,
                         response: "ok",
@@ -153,7 +153,7 @@ pub async fn update_chain_proposals<'a>(
         DaoHandlerType::GitcoinChain => {
             match gitcoin_proposals(ctx, &dao_handler, &from_block, &to_block).await {
                 Ok(p) => {
-                    insert_proposals(p, to_block, ctx.clone(), dao_handler.clone()).await;
+                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
                     Json(ProposalsResponse {
                         daoHandlerId: data.daoHandlerId,
                         response: "ok",
@@ -172,7 +172,7 @@ pub async fn update_chain_proposals<'a>(
         DaoHandlerType::HopChain => {
             match hop_proposals(ctx, &dao_handler, &from_block, &to_block).await {
                 Ok(p) => {
-                    insert_proposals(p, to_block, ctx.clone(), dao_handler.clone()).await;
+                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
                     Json(ProposalsResponse {
                         daoHandlerId: data.daoHandlerId,
                         response: "ok",
@@ -191,7 +191,7 @@ pub async fn update_chain_proposals<'a>(
         DaoHandlerType::DydxChain => {
             match dydx_proposals(ctx, &dao_handler, &from_block, &to_block).await {
                 Ok(p) => {
-                    insert_proposals(p, to_block, ctx.clone(), dao_handler.clone()).await;
+                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
                     Json(ProposalsResponse {
                         daoHandlerId: data.daoHandlerId,
                         response: "ok",
@@ -273,17 +273,15 @@ async fn insert_proposals(
         .cloned()
         .collect();
 
-    let new_index;
-
-    if !open_proposals.is_empty() {
-        new_index = open_proposals
+    let new_index = if !open_proposals.is_empty() {
+        open_proposals
             .iter()
             .map(|p| p.block_created)
             .min()
-            .unwrap_or_default();
+            .unwrap_or_default()
     } else {
-        new_index = to_block;
-    }
+        to_block
+    };
 
     let _ = ctx
         .db

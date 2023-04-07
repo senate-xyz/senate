@@ -148,7 +148,7 @@ pub async fn update_chain_votes<'a>(
     let result = match dao_handler.r#type {
         DaoHandlerType::AaveChain => {
             match aave_votes(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await {
-                Ok(r) => match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
+                Ok(r) => match insert_votes(&r, to_block, ctx, dao_handler.clone()).await {
                     Ok(r) => success_response(r),
                     Err(e) => {
                         println!("{:#?}", e);
@@ -163,7 +163,7 @@ pub async fn update_chain_votes<'a>(
         }
         DaoHandlerType::CompoundChain => {
             match compound_votes(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await {
-                Ok(r) => match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
+                Ok(r) => match insert_votes(&r, to_block, ctx, dao_handler.clone()).await {
                     Ok(r) => success_response(r),
                     Err(e) => {
                         println!("{:#?}", e);
@@ -178,7 +178,7 @@ pub async fn update_chain_votes<'a>(
         }
         DaoHandlerType::UniswapChain => {
             match uniswap_votes(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await {
-                Ok(r) => match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
+                Ok(r) => match insert_votes(&r, to_block, ctx, dao_handler.clone()).await {
                     Ok(r) => success_response(r),
                     Err(e) => {
                         println!("{:#?}", e);
@@ -193,7 +193,7 @@ pub async fn update_chain_votes<'a>(
         }
         DaoHandlerType::EnsChain => {
             match ens_votes(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await {
-                Ok(r) => match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
+                Ok(r) => match insert_votes(&r, to_block, ctx, dao_handler.clone()).await {
                     Ok(r) => success_response(r),
                     Err(e) => {
                         println!("{:#?}", e);
@@ -208,7 +208,7 @@ pub async fn update_chain_votes<'a>(
         }
         DaoHandlerType::GitcoinChain => {
             match gitcoin_votes(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await {
-                Ok(r) => match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
+                Ok(r) => match insert_votes(&r, to_block, ctx, dao_handler.clone()).await {
                     Ok(r) => success_response(r),
                     Err(e) => {
                         println!("{:#?}", e);
@@ -223,7 +223,7 @@ pub async fn update_chain_votes<'a>(
         }
         DaoHandlerType::HopChain => {
             match hop_votes(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await {
-                Ok(r) => match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
+                Ok(r) => match insert_votes(&r, to_block, ctx, dao_handler.clone()).await {
                     Ok(r) => success_response(r),
                     Err(e) => {
                         println!("{:#?}", e);
@@ -238,7 +238,7 @@ pub async fn update_chain_votes<'a>(
         }
         DaoHandlerType::DydxChain => {
             match dydx_votes(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await {
-                Ok(r) => match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
+                Ok(r) => match insert_votes(&r, to_block, ctx, dao_handler.clone()).await {
                     Ok(r) => success_response(r),
                     Err(e) => {
                         println!("{:#?}", e);
@@ -304,13 +304,12 @@ fn failed_response(voters: Vec<String>) -> Vec<VotesResponse> {
 }
 
 async fn insert_votes(
-    votes: &Vec<VoteResult>,
+    votes: &[VoteResult],
     to_block: i64,
     ctx: &Ctx,
     dao_handler: daohandler::Data,
 ) -> Result<Vec<VoteResult>> {
-    let successful_voters: Vec<VoteResult> =
-        votes.clone().into_iter().filter(|v| v.success).collect();
+    let successful_voters: Vec<VoteResult> = votes.iter().cloned().filter(|v| v.success).collect();
 
     let successful_votes: Vec<Vote> = votes
         .iter()
@@ -408,5 +407,5 @@ async fn insert_votes(
         .await
         .context("failed to add votes")?;
 
-    Ok(votes.clone())
+    Ok(votes.to_owned())
 }

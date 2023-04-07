@@ -108,8 +108,7 @@ async fn data_for_proposal(
         "{:.120}",
         log.description
             .to_string()
-            .split("\n")
-            .nth(0)
+            .split('\n').next()
             .unwrap_or("Unknown")
             .to_string()
     );
@@ -118,7 +117,7 @@ async fn data_for_proposal(
         title = "Unknown".into()
     }
 
-    let proposal_url = format!("{}{}", decoder.proposalUrl, log.proposal_id.to_string());
+    let proposal_url = format!("{}{}", decoder.proposalUrl, log.proposal_id);
 
     let proposal_external_id = log.proposal_id.to_string();
 

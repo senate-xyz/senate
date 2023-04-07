@@ -110,7 +110,7 @@ async fn data_for_proposal(
         ),
     };
 
-    let proposal_url = format!("{}{}", decoder.proposalUrl, log.id.to_string());
+    let proposal_url = format!("{}{}", decoder.proposalUrl, log.id);
 
     let proposal_external_id = log.id.to_string();
 
