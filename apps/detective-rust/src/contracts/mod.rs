@@ -6,3 +6,4 @@
 pub mod aaveexecutor;
 pub mod aavegov;
 pub mod aavestrategy;
+pub mod compoundgov;

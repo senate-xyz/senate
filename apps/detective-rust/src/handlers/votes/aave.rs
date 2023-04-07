@@ -6,7 +6,7 @@ use crate::{
 };
 use anyhow::{bail, Result};
 use ethers::{
-    prelude::{LogMeta},
+    prelude::LogMeta,
     types::{Address, H160, H256},
 };
 
@@ -103,7 +103,7 @@ async fn get_votes_for_voter(
 
         let proposal = match p {
             Some(r) => r,
-            None => bail!("proposal for vote does not exist"),
+            None => bail!("proposal {} for vote does not exist", log.id.to_string()),
         };
 
         votes.push(Vote {
@@ -117,7 +117,7 @@ async fn get_votes_for_voter(
             dao_id: dao_handler.clone().daoid.to_string(),
             proposal_id: proposal.id,
             dao_handler_id: dao_handler.clone().id.to_string(),
-            choice: if log.support { 1.into() } else { 3.into() },
+            choice: if log.support { 1.into() } else { 2.into() },
             reason: "".to_string(),
             voting_power: log.voting_power.as_u128().into(),
             proposal_active: proposal.timeend > Utc::now(),

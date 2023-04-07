@@ -145,8 +145,8 @@ async fn producer_task(client: &PrismaClient, config: &Config) -> Result<Vec<Ref
             + chain_proposal_queue.len()
             + chain_votes_queue.len(),
     );
-    complete_queue.extend(snapshot_proposal_queue);
-    complete_queue.extend(snapshot_votes_queue);
+    // complete_queue.extend(snapshot_proposal_queue);
+    // complete_queue.extend(snapshot_votes_queue);
     complete_queue.extend(chain_proposal_queue);
     complete_queue.extend(chain_votes_queue);
 

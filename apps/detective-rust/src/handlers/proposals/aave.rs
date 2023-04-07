@@ -128,18 +128,18 @@ async fn data_for_proposal(
 
     let one_hunded_with_precision = executor_contract.one_hundred_with_precision().await?;
 
-    let _quorum = (total_voting_power * min_quorum) / one_hunded_with_precision;
+    let quorum = (total_voting_power * min_quorum) / one_hunded_with_precision;
 
     let onchain_proposal = gov_contract.get_proposal_by_id(log.id).call().await?;
 
-    let _choices = vec!["For", "Against"];
+    let choices = vec!["For", "Against"];
 
-    let _scores = vec![
+    let scores = vec![
         onchain_proposal.for_votes.as_u128(),
         onchain_proposal.against_votes.as_u128(),
     ];
 
-    let _scores_total =
+    let scores_total =
         onchain_proposal.for_votes.as_u128() + onchain_proposal.against_votes.as_u128();
 
     let hash: Vec<u8> = log.ipfs_hash.into();
@@ -155,10 +155,10 @@ async fn data_for_proposal(
         time_end: voting_ends_timestamp,
         time_created: created_timestamp,
         block_created: block_created.as_u64().to_i64().expect("bad conversion"),
-        choices: _choices.into(),
-        scores: _scores.into(),
-        scores_total: _scores_total.into(),
-        quorum: _quorum.as_u128().into(),
+        choices: choices.into(),
+        scores: scores.into(),
+        scores_total: scores_total.into(),
+        quorum: quorum.as_u128().into(),
         url: proposal_url,
     };
 

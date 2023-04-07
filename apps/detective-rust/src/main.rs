@@ -21,9 +21,11 @@ pub mod prisma;
 pub mod handlers {
     pub mod proposals {
         pub mod aave;
+        pub mod compound;
     }
     pub mod votes {
         pub mod aave;
+        pub mod compound;
     }
 }
 

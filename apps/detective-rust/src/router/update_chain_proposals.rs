@@ -4,6 +4,7 @@ use prisma_client_rust::chrono::{DateTime, FixedOffset, Utc};
 use rocket::serde::json::Json;
 use serde_json::Value;
 
+use crate::handlers::proposals::compound::compound_proposals;
 use crate::prisma::{dao, proposal, DaoHandlerType};
 use crate::{prisma::daohandler, Ctx, ProposalsRequest, ProposalsResponse};
 
@@ -87,10 +88,25 @@ pub async fn update_chain_proposals<'a>(
                 }
             }
         }
-        DaoHandlerType::CompoundChain => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "nok",
-        }),
+        DaoHandlerType::CompoundChain => {
+            match compound_proposals(ctx, &dao_handler, &from_block, &to_block).await {
+                Ok(p) => {
+                    insert_proposals(p, to_block, ctx.clone(), dao_handler.clone()).await;
+                    Json(ProposalsResponse {
+                        daoHandlerId: data.daoHandlerId,
+                        response: "ok",
+                    })
+                }
+                Err(e) => {
+                    println!("{:#?}", e);
+
+                    Json(ProposalsResponse {
+                        daoHandlerId: data.daoHandlerId,
+                        response: "nok",
+                    })
+                }
+            }
+        }
         DaoHandlerType::UniswapChain => Json(ProposalsResponse {
             daoHandlerId: data.daoHandlerId,
             response: "nok",
@@ -165,7 +181,11 @@ async fn insert_proposals(
         )
     });
 
-    let _ = ctx.db._batch(upserts).await;
+    let _ = ctx
+        .db
+        ._batch(upserts)
+        .await
+        .expect("failed to insert proposals");
 
     let open_proposals: Vec<ChainProposal> = proposals
         .iter()
@@ -193,5 +213,6 @@ async fn insert_proposals(
             vec![daohandler::chainindex::set(new_index.into())],
         )
         .exec()
-        .await;
+        .await
+        .expect("failed to update daohandlers");
 }

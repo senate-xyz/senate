@@ -8,7 +8,7 @@ use serde::Deserialize;
 use serde_json::Value;
 
 use crate::{
-    handlers::votes::aave::aave_votes,
+    handlers::votes::{aave::aave_votes, compound::compound_votes},
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType},
     Ctx, VotesRequest, VotesResponse,
 };
@@ -59,7 +59,24 @@ pub async fn update_chain_votes<'a>(
         .await
         .expect("bad prisma result");
 
+    let last_proposal = ctx
+        .db
+        .proposal()
+        .find_many(vec![proposal::daohandlerid::equals(
+            dao_handler.id.to_string(),
+        )])
+        .order_by(proposal::blockcreated::order(Direction::Desc))
+        .take(1)
+        .exec()
+        .await
+        .expect("bad prisma result");
+
     let first_proposal_block = match first_proposal.first() {
+        Some(s) => s.blockcreated.unwrap_or(0),
+        None => 0,
+    };
+
+    let last_proposal_block = match last_proposal.first() {
         Some(s) => s.blockcreated.unwrap_or(0),
         None => 0,
     };
@@ -109,12 +126,16 @@ pub async fn update_chain_votes<'a>(
         from_block = first_proposal_block;
     }
 
-    let to_block;
+    let mut to_block;
 
     if current_block - from_block > batch_size {
         to_block = from_block + batch_size;
     } else {
         to_block = current_block;
+    }
+
+    if to_block > last_proposal_block {
+        to_block = last_proposal_block;
     }
 
     if from_block > to_block {
@@ -137,13 +158,21 @@ pub async fn update_chain_votes<'a>(
                 }
             }
         }
-        DaoHandlerType::CompoundChain => voters
-            .into_iter()
-            .map(|v| VotesResponse {
-                voter_address: v,
-                success: false,
-            })
-            .collect(),
+        DaoHandlerType::CompoundChain => {
+            match compound_votes(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await {
+                Ok(r) => match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
+                    Ok(r) => success_response(r),
+                    Err(e) => {
+                        println!("{:#?}", e);
+                        failed_response(voters)
+                    }
+                },
+                Err(e) => {
+                    println!("{:#?}", e);
+                    failed_response(voters)
+                }
+            }
+        }
         DaoHandlerType::UniswapChain => voters
             .into_iter()
             .map(|v| VotesResponse {

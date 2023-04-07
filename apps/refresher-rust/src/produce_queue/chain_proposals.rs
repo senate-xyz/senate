@@ -19,13 +19,13 @@ pub async fn produce_chain_proposals_queue(
     let handler_types = vec![
         prisma::DaoHandlerType::AaveChain,
         prisma::DaoHandlerType::CompoundChain,
-        prisma::DaoHandlerType::MakerExecutive,
-        prisma::DaoHandlerType::MakerPoll,
-        prisma::DaoHandlerType::UniswapChain,
-        prisma::DaoHandlerType::EnsChain,
-        prisma::DaoHandlerType::GitcoinChain,
-        prisma::DaoHandlerType::HopChain,
-        prisma::DaoHandlerType::DydxChain,
+        // prisma::DaoHandlerType::MakerExecutive,
+        // prisma::DaoHandlerType::MakerPoll,
+        // prisma::DaoHandlerType::UniswapChain,
+        // prisma::DaoHandlerType::EnsChain,
+        // prisma::DaoHandlerType::GitcoinChain,
+        // prisma::DaoHandlerType::HopChain,
+        // prisma::DaoHandlerType::DydxChain,
     ];
 
     let dao_handlers = client
