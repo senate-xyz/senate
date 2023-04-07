@@ -22,6 +22,7 @@ pub mod handlers {
     pub mod proposals {
         pub mod aave;
         pub mod compound;
+        pub mod dydx;
         pub mod ens;
         pub mod gitcoin;
         pub mod hop;
@@ -30,6 +31,7 @@ pub mod handlers {
     pub mod votes {
         pub mod aave;
         pub mod compound;
+        pub mod dydx;
         pub mod ens;
         pub mod gitcoin;
         pub mod hop;

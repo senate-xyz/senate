@@ -1,2 +1,2 @@
 [global]
-log_level = "off"
+log_level = "critical"

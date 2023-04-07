@@ -105,7 +105,7 @@ async fn data_for_proposal(
     };
 
     let mut title = format!(
-        "{:.30}",
+        "{:.120}",
         log.description
             .to_string()
             .split("\n")

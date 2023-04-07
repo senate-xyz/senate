@@ -30,7 +30,7 @@ pub async fn produce_chain_votes_queue(
         prisma::DaoHandlerType::EnsChain,
         prisma::DaoHandlerType::GitcoinChain,
         prisma::DaoHandlerType::HopChain,
-        // prisma::DaoHandlerType::DydxChain,
+        prisma::DaoHandlerType::DydxChain,
     ];
 
     let dao_handlers = client

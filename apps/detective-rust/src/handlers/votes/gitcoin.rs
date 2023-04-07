@@ -33,15 +33,8 @@ pub async fn gitcoin_votes(
 
     let gov_contract = gitcoingov::gitcoingov::gitcoingov::new(address, ctx.client.clone());
 
-    let voters_addresses: Vec<H256> = voters
-        .clone()
-        .into_iter()
-        .map(|v| H256::from(v.parse::<H160>().unwrap()))
-        .collect();
-
     let events = gov_contract
         .event::<gitcoingov::VoteCastFilter>()
-        .topic1(voters_addresses)
         .from_block(*from_block)
         .to_block(*to_block);
 

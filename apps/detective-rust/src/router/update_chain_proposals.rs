@@ -5,6 +5,7 @@ use rocket::serde::json::Json;
 use serde_json::Value;
 
 use crate::handlers::proposals::compound::compound_proposals;
+use crate::handlers::proposals::dydx::dydx_proposals;
 use crate::handlers::proposals::ens::ens_proposals;
 use crate::handlers::proposals::gitcoin::gitcoin_proposals;
 use crate::handlers::proposals::hop::hop_proposals;
@@ -187,10 +188,25 @@ pub async fn update_chain_proposals<'a>(
                 }
             }
         }
-        DaoHandlerType::DydxChain => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "nok",
-        }),
+        DaoHandlerType::DydxChain => {
+            match dydx_proposals(ctx, &dao_handler, &from_block, &to_block).await {
+                Ok(p) => {
+                    insert_proposals(p, to_block, ctx.clone(), dao_handler.clone()).await;
+                    Json(ProposalsResponse {
+                        daoHandlerId: data.daoHandlerId,
+                        response: "ok",
+                    })
+                }
+                Err(e) => {
+                    println!("{:#?}", e);
+
+                    Json(ProposalsResponse {
+                        daoHandlerId: data.daoHandlerId,
+                        response: "nok",
+                    })
+                }
+            }
+        }
         DaoHandlerType::MakerExecutive => Json(ProposalsResponse {
             daoHandlerId: data.daoHandlerId,
             response: "nok",

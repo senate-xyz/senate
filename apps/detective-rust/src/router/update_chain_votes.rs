@@ -9,8 +9,8 @@ use serde_json::Value;
 
 use crate::{
     handlers::votes::{
-        aave::aave_votes, compound::compound_votes, ens::ens_votes, gitcoin::gitcoin_votes,
-        hop::hop_votes, uniswap::uniswap_votes,
+        aave::aave_votes, compound::compound_votes, dydx::dydx_votes, ens::ens_votes,
+        gitcoin::gitcoin_votes, hop::hop_votes, uniswap::uniswap_votes,
     },
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType},
     Ctx, VotesRequest, VotesResponse,
@@ -119,8 +119,8 @@ pub async fn update_chain_votes<'a>(
         batch_size /= 10;
     }
 
-    if batch_size > 1000000 {
-        batch_size = 1000000;
+    if batch_size > 10000000 {
+        batch_size = 10000000;
     }
 
     let mut from_block = cmp::max(oldest_vote_block, 0);
@@ -236,13 +236,21 @@ pub async fn update_chain_votes<'a>(
                 }
             }
         }
-        DaoHandlerType::DydxChain => voters
-            .into_iter()
-            .map(|v| VotesResponse {
-                voter_address: v,
-                success: false,
-            })
-            .collect(),
+        DaoHandlerType::DydxChain => {
+            match dydx_votes(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await {
+                Ok(r) => match insert_votes(&r, to_block, ctx.clone(), dao_handler.clone()).await {
+                    Ok(r) => success_response(r),
+                    Err(e) => {
+                        println!("{:#?}", e);
+                        failed_response(voters)
+                    }
+                },
+                Err(e) => {
+                    println!("{:#?}", e);
+                    failed_response(voters)
+                }
+            }
+        }
         DaoHandlerType::MakerExecutive => voters
             .into_iter()
             .map(|v| VotesResponse {
