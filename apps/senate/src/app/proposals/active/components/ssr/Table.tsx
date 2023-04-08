@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import dayjs, { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { type Vote, prisma } from '@senate/database'
+import { type Vote, prisma, DAOHandlerType } from '@senate/database'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
 
@@ -145,6 +145,7 @@ const getProposals = async (
     const result =
         userProposals.map((proposal) => {
             return {
+                daohandlerid: proposal.daohandlerid,
                 daoName: proposal.dao.name,
                 onchain: proposal.daohandler.type == 'SNAPSHOT' ? false : true,
                 daoPicture: proposal.dao.picture,
@@ -161,6 +162,52 @@ const getProposals = async (
         }) ?? []
 
     return result
+}
+
+const isLoading = async (daohandlerid: string) => {
+    const session = await getServerSession(authOptions())
+    const userAddress = session?.user?.name ?? ''
+
+    const user = await prisma.user.findFirst({
+        where: {
+            name: { equals: userAddress }
+        },
+        include: {
+            voters: {
+                include: {
+                    voterhandlers: true
+                }
+            }
+        }
+    })
+
+    const daoHandler = await prisma.daohandler.findFirst({
+        where: { id: daohandlerid }
+    })
+
+    let loading = false
+
+    user?.voters.forEach((vo) => {
+        vo.voterhandlers
+            .filter((vh) => vh.daohandlerid == daohandlerid)
+            .map((vh) => {
+                if (daoHandler?.type == DAOHandlerType.SNAPSHOT) {
+                    if (
+                        daoHandler.snapshotindex!.getTime() -
+                            vh.snapshotindex!.getTime() >
+                        30 * 24 * 60 * 60 * 1000
+                    ) {
+                        loading = true
+                    }
+                } else {
+                    if (daoHandler?.chainindex! - vh.chainindex! > 1000) {
+                        loading = true
+                    }
+                }
+            })
+    })
+
+    return loading
 }
 
 export default async function Table(props: {
@@ -239,6 +286,7 @@ export default async function Table(props: {
 
 const MobileActiveProposal = async (props: {
     proposal: {
+        daohandlerid: string
         daoName: string
         onchain: boolean
         daoPicture: string
@@ -248,6 +296,8 @@ const MobileActiveProposal = async (props: {
         voted: string
     }
 }) => {
+    const loading = await isLoading(props.proposal.daohandlerid)
+
     const daoPicture = await fetch(
         process.env.NEXT_PUBLIC_WEB_URL + props.proposal.daoPicture + '.svg'
     )
@@ -353,37 +403,54 @@ const MobileActiveProposal = async (props: {
                         </div>
                     </div>
 
-                    <div className='self-end p-2'>
-                        {props.proposal.voted == 'true' && (
+                    {loading && (
+                        <div className='self-end p-2'>
                             <div className='flex w-full flex-col items-center'>
                                 <Image
                                     loading='eager'
                                     priority={true}
-                                    src='/assets/Icon/Voted.svg'
-                                    alt='voted'
+                                    src='/assets/Senate_Logo/Loading/senate-loading-onDark.svg'
+                                    alt='loading'
                                     width={32}
                                     height={32}
                                 />
                             </div>
-                        )}
-                        {props.proposal.voted == 'false' && (
-                            <div className='flex w-full flex-col items-center'>
-                                <Image
-                                    loading='eager'
-                                    priority={true}
-                                    src='/assets/Icon/NotVotedYet.svg'
-                                    alt='voted'
-                                    width={32}
-                                    height={32}
-                                />
-                            </div>
-                        )}
-                        {props.proposal.voted == 'not-connected' && (
-                            <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
-                                Connect wallet to see your vote status
-                            </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
+
+                    {!loading && (
+                        <div className='self-end p-2'>
+                            {props.proposal.voted == 'true' && (
+                                <div className='flex w-full flex-col items-center'>
+                                    <Image
+                                        loading='eager'
+                                        priority={true}
+                                        src='/assets/Icon/Voted.svg'
+                                        alt='voted'
+                                        width={32}
+                                        height={32}
+                                    />
+                                </div>
+                            )}
+                            {props.proposal.voted == 'false' && (
+                                <div className='flex w-full flex-col items-center'>
+                                    <Image
+                                        loading='eager'
+                                        priority={true}
+                                        src='/assets/Icon/NotVotedYet.svg'
+                                        alt='voted'
+                                        width={32}
+                                        height={32}
+                                    />
+                                </div>
+                            )}
+                            {props.proposal.voted == 'not-connected' && (
+                                <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
+                                    Connect wallet to see your vote status
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -392,6 +459,7 @@ const MobileActiveProposal = async (props: {
 
 const ActiveProposal = async (props: {
     proposal: {
+        daohandlerid: string
         daoName: string
         onchain: boolean
         daoPicture: string
@@ -401,6 +469,8 @@ const ActiveProposal = async (props: {
         voted: string
     }
 }) => {
+    const loading = await isLoading(props.proposal.daohandlerid)
+
     const daoPicture = await fetch(
         process.env.NEXT_PUBLIC_WEB_URL + props.proposal.daoPicture + '.svg'
     )
@@ -506,39 +576,55 @@ const ActiveProposal = async (props: {
                 </div>
             </td>
             <td className='hidden lg:table-cell'>
-                <div className='text-end'>
-                    {props.proposal.voted == 'true' && (
+                {loading && (
+                    <div className='text-end'>
                         <div className='flex w-full flex-col items-center'>
                             <Image
                                 loading='eager'
                                 priority={true}
-                                src='/assets/Icon/Voted.svg'
-                                alt='voted'
+                                src='/assets/Senate_Logo/Loading/senate-loading-onDark.svg'
+                                alt='loading'
                                 width={32}
                                 height={32}
                             />
-                            <div className='text-[18px]'>Voted</div>
                         </div>
-                    )}
-                    {props.proposal.voted == 'false' && (
-                        <div className='flex w-full flex-col items-center'>
-                            <Image
-                                loading='eager'
-                                priority={true}
-                                src='/assets/Icon/NotVotedYet.svg'
-                                alt='voted'
-                                width={32}
-                                height={32}
-                            />
-                            <div className='text-[18px]'>Not Voted Yet</div>
-                        </div>
-                    )}
-                    {props.proposal.voted == 'not-connected' && (
-                        <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
-                            Connect wallet to see your vote status
-                        </div>
-                    )}
-                </div>
+                    </div>
+                )}
+                {!loading && (
+                    <div className='text-end'>
+                        {props.proposal.voted == 'true' && (
+                            <div className='flex w-full flex-col items-center'>
+                                <Image
+                                    loading='eager'
+                                    priority={true}
+                                    src='/assets/Icon/Voted.svg'
+                                    alt='voted'
+                                    width={32}
+                                    height={32}
+                                />
+                                <div className='text-[18px]'>Voted</div>
+                            </div>
+                        )}
+                        {props.proposal.voted == 'false' && (
+                            <div className='flex w-full flex-col items-center'>
+                                <Image
+                                    loading='eager'
+                                    priority={true}
+                                    src='/assets/Icon/NotVotedYet.svg'
+                                    alt='voted'
+                                    width={32}
+                                    height={32}
+                                />
+                                <div className='text-[18px]'>Not Voted Yet</div>
+                            </div>
+                        )}
+                        {props.proposal.voted == 'not-connected' && (
+                            <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
+                                Connect wallet to see your vote status
+                            </div>
+                        )}
+                    </div>
+                )}
             </td>
         </tr>
     )
