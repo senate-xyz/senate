@@ -1,5 +1,5 @@
 use anyhow::Result;
-use std::{env, sync::Arc, time::Duration};
+use std::{cmp, env, sync::Arc, time::Duration};
 
 use prisma_client_rust::chrono::Utc;
 use reqwest::Client;
@@ -62,13 +62,11 @@ pub(crate) async fn consume_chain_proposals(
                         vec![
                             daohandler::refreshstatus::set(prisma::RefreshStatus::Done),
                             daohandler::lastrefresh::set(Utc::now().into()),
-                            daohandler::refreshspeed::increment(
-                                if dao_handler_ref.refreshspeed < 1000000 {
-                                    dao_handler_ref.refreshspeed / 10
-                                } else {
-                                    0
-                                },
-                            ),
+                            daohandler::refreshspeed::set(cmp::min(
+                                dao_handler_ref.refreshspeed
+                                    + (dao_handler_ref.refreshspeed * 10 / 100),
+                                10000000,
+                            )),
                         ],
                     ),
                     "nok" => client_ref.daohandler().update_many(
@@ -76,13 +74,11 @@ pub(crate) async fn consume_chain_proposals(
                         vec![
                             daohandler::refreshstatus::set(prisma::RefreshStatus::New),
                             daohandler::lastrefresh::set(Utc::now().into()),
-                            daohandler::refreshspeed::decrement(
-                                if dao_handler_ref.refreshspeed > 1000 {
-                                    dao_handler_ref.refreshspeed / 5
-                                } else {
-                                    0
-                                },
-                            ),
+                            daohandler::refreshspeed::set(cmp::max(
+                                dao_handler_ref.refreshspeed
+                                    - (dao_handler_ref.refreshspeed * 25 / 100),
+                                100,
+                            )),
                         ],
                     ),
                     _ => panic!("Unexpected response"),
@@ -100,13 +96,11 @@ pub(crate) async fn consume_chain_proposals(
                         vec![
                             daohandler::refreshstatus::set(prisma::RefreshStatus::New),
                             daohandler::lastrefresh::set(Utc::now().into()),
-                            daohandler::refreshspeed::decrement(
-                                if dao_handler_ref.refreshspeed > 1000 {
-                                    dao_handler_ref.refreshspeed / 2
-                                } else {
-                                    0
-                                },
-                            ),
+                            daohandler::refreshspeed::set(cmp::max(
+                                dao_handler_ref.refreshspeed
+                                    - (dao_handler_ref.refreshspeed * 25 / 100),
+                                100,
+                            )),
                         ],
                     )
                     .exec()

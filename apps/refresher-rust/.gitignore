@@ -1,4 +1,3 @@
 target
 prisma-cli/target
 .env
-src/prisma.rs

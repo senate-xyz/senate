@@ -1,5 +1,5 @@
 use anyhow::Result;
-use std::{env, sync::Arc, time::Duration};
+use std::{cmp, env, sync::Arc, time::Duration};
 
 use prisma_client_rust::chrono::Utc;
 use reqwest::Client;
@@ -116,9 +116,50 @@ pub(crate) async fn consume_chain_votes(
                     ._batch((update_ok_voters, update_nok_voters))
                     .await
                     .unwrap();
+
+                if (ok_voters.len() > nok_voters.len()) {
+                    let _ = client_ref
+                        .daohandler()
+                        .update(
+                            daohandler::id::equals(dao_handler_ref.id),
+                            vec![daohandler::votersrefreshspeed::set(cmp::min(
+                                dao_handler_ref.votersrefreshspeed
+                                    + (dao_handler_ref.votersrefreshspeed * 75 / 100),
+                                100000000,
+                            ))],
+                        )
+                        .exec()
+                        .await;
+                } else {
+                    let _ = client_ref
+                        .daohandler()
+                        .update(
+                            daohandler::id::equals(dao_handler_ref.id),
+                            vec![daohandler::votersrefreshspeed::set(cmp::max(
+                                dao_handler_ref.votersrefreshspeed
+                                    - (dao_handler_ref.votersrefreshspeed * 50 / 100),
+                                100,
+                            ))],
+                        )
+                        .exec()
+                        .await;
+                };
             }
             Err(e) => {
                 println!("{:#?}", e);
+
+                let _ = client_ref
+                    .daohandler()
+                    .update(
+                        daohandler::id::equals(dao_handler_ref.clone().id),
+                        vec![daohandler::votersrefreshspeed::set(cmp::max(
+                            dao_handler_ref.votersrefreshspeed
+                                - (dao_handler_ref.votersrefreshspeed * 50 / 100),
+                            100,
+                        ))],
+                    )
+                    .exec()
+                    .await;
 
                 let voter_ids = client_ref
                     .voter()

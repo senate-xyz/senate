@@ -113,14 +113,10 @@ pub async fn update_chain_votes<'a>(
         .unwrap_or(U64::from(0))
         .as_u64() as i64;
 
-    let mut batch_size = (40000000_i64).div(voters.len() as i64);
+    let mut batch_size = (dao_handler.votersrefreshspeed).div(voters.len() as i64);
 
     if dao_handler.r#type == DaoHandlerType::MakerExecutive {
         batch_size /= 10;
-    }
-
-    if batch_size > 10000000 {
-        batch_size = 10000000;
     }
 
     let mut from_block = cmp::max(oldest_vote_block, 0);
