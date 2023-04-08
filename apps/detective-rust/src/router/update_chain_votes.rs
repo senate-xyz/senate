@@ -133,6 +133,10 @@ pub async fn update_chain_votes<'a>(
         to_block = current_block;
     }
 
+    // if to_block > last_proposal_block {
+    //     to_block = last_proposal_block;
+    // }
+
     if from_block > to_block {
         from_block = to_block;
     }
@@ -162,14 +166,12 @@ async fn get_results(
             Ok(ok_v)
         }
         DaoHandlerType::CompoundChain => {
-            let r =
-                compound_votes(ctx, dao_handler, from_block, to_block, voters.clone()).await?;
+            let r = compound_votes(ctx, dao_handler, from_block, to_block, voters.clone()).await?;
             let ok_v = insert_votes(&r, to_block, ctx, dao_handler).await?;
             Ok(ok_v)
         }
         DaoHandlerType::UniswapChain => {
-            let r =
-                uniswap_votes(ctx, dao_handler, from_block, to_block, voters.clone()).await?;
+            let r = uniswap_votes(ctx, dao_handler, from_block, to_block, voters.clone()).await?;
             let ok_v = insert_votes(&r, to_block, ctx, dao_handler).await?;
             Ok(ok_v)
         }
@@ -179,8 +181,7 @@ async fn get_results(
             Ok(ok_v)
         }
         DaoHandlerType::GitcoinChain => {
-            let r =
-                gitcoin_votes(ctx, dao_handler, from_block, to_block, voters.clone()).await?;
+            let r = gitcoin_votes(ctx, dao_handler, from_block, to_block, voters.clone()).await?;
             let ok_v = insert_votes(&r, to_block, ctx, dao_handler).await?;
             Ok(ok_v)
         }
