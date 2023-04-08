@@ -229,7 +229,7 @@ mod tests {
             .await
             .unwrap();
             assert_eq!(result, "Add MaticX to Aave v3 Polygon Pool");
-            cnt = cnt + 1;
+            cnt += 1;
             if cnt == 10 {
                 break;
             }
