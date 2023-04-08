@@ -247,7 +247,7 @@ async fn update_refresh_statuses(
     .min()
     .expect("bad new_index");
 
-    if search_to_timestamp == search_from_timestamp {
+    if search_to_timestamp == search_from_timestamp || votes.is_empty() {
         new_index = Utc::now().timestamp();
     }
 
