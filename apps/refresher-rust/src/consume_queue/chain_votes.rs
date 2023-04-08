@@ -117,7 +117,7 @@ pub(crate) async fn consume_chain_votes(
                     .await
                     .unwrap();
 
-                if (ok_voters.len() > nok_voters.len()) {
+                if ok_voters.len() > nok_voters.len() {
                     let _ = client_ref
                         .daohandler()
                         .update(
