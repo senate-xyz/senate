@@ -132,11 +132,7 @@ pub async fn update_chain_votes<'a>(
     } else {
         to_block = current_block;
     }
-
-    if to_block > last_proposal_block {
-        to_block = last_proposal_block;
-    }
-
+    
     if from_block > to_block {
         from_block = to_block;
     }
