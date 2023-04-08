@@ -79,7 +79,7 @@ pub async fn update_chain_votes<'a>(
         None => 0,
     };
 
-    let last_proposal_block = match last_proposal.first() {
+    let _last_proposal_block = match last_proposal.first() {
         Some(s) => s.blockcreated.unwrap_or(0),
         None => 0,
     };
@@ -125,14 +125,14 @@ pub async fn update_chain_votes<'a>(
         from_block = first_proposal_block;
     }
 
-    let mut to_block;
+    let to_block;
 
     if current_block - from_block > batch_size {
         to_block = from_block + batch_size;
     } else {
         to_block = current_block;
     }
-    
+
     if from_block > to_block {
         from_block = to_block;
     }
