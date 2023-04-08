@@ -38,7 +38,7 @@
         "@types/node-cron": "^3.0.7",
         "dotenv": "^16.0.3",
         "ts-node": "^10.9.1",
-        "typescript": "^5.0.3"
+        "typescript": "^5.0.4"
     },
     "packageManager": "yarn@1.22.19"
 }
