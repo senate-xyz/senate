@@ -236,7 +236,7 @@ async fn update_refresh_statuses(
         .max()
         .expect("bad search_to_timestamp");
 
-    let new_index = vec![
+    let mut new_index = vec![
         search_to_timestamp,
         dao_handler
             .snapshotindex
@@ -246,6 +246,10 @@ async fn update_refresh_statuses(
     .into_iter()
     .min()
     .expect("bad new_index");
+
+    if search_to_timestamp == search_from_timestamp {
+        new_index = Utc::now().timestamp();
+    }
 
     ctx.db
         .voterhandler()

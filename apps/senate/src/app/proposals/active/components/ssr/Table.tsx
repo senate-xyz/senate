@@ -143,8 +143,11 @@ const getProposals = async (
     })
 
     const result =
-        userProposals.map((proposal) => {
+        userProposals.map(async (proposal) => {
+            let loading = await isLoading(proposal.daohandlerid)
+
             return {
+                loading: loading,
                 daohandlerid: proposal.daohandlerid,
                 daoName: proposal.dao.name,
                 onchain: proposal.daohandler.type == 'SNAPSHOT' ? false : true,
@@ -161,7 +164,7 @@ const getProposals = async (
             }
         }) ?? []
 
-    return result
+    return Promise.all(result)
 }
 
 const isLoading = async (daohandlerid: string) => {
@@ -180,27 +183,25 @@ const isLoading = async (daohandlerid: string) => {
             }
         }
     })
-
     const daoHandler = await prisma.daohandler.findFirst({
         where: { id: daohandlerid }
     })
-
     let loading = false
 
     user?.voters.forEach((vo) => {
         vo.voterhandlers
             .filter((vh) => vh.daohandlerid == daohandlerid)
             .map((vh) => {
-                if (daoHandler?.type == DAOHandlerType.SNAPSHOT) {
-                    if (
-                        daoHandler.snapshotindex!.getTime() -
-                            vh.snapshotindex!.getTime() >
-                        30 * 24 * 60 * 60 * 1000
-                    ) {
+                if (daoHandler?.type != DAOHandlerType.SNAPSHOT) {
+                    if (daoHandler!.chainindex! - vh.chainindex! > 1000000) {
                         loading = true
                     }
                 } else {
-                    if (daoHandler?.chainindex! - vh.chainindex! > 1000) {
+                    if (
+                        daoHandler!.snapshotindex!.getTime() -
+                            vh.snapshotindex!.getTime() >
+                        365 * 30 * 24 * 60 * 1000
+                    ) {
                         loading = true
                     }
                 }
@@ -459,7 +460,7 @@ const MobileActiveProposal = async (props: {
 
 const ActiveProposal = async (props: {
     proposal: {
-        daohandlerid: string
+        loading: boolean
         daoName: string
         onchain: boolean
         daoPicture: string
@@ -469,8 +470,6 @@ const ActiveProposal = async (props: {
         voted: string
     }
 }) => {
-    const loading = await isLoading(props.proposal.daohandlerid)
-
     const daoPicture = await fetch(
         process.env.NEXT_PUBLIC_WEB_URL + props.proposal.daoPicture + '.svg'
     )
@@ -576,7 +575,7 @@ const ActiveProposal = async (props: {
                 </div>
             </td>
             <td className='hidden lg:table-cell'>
-                {loading && (
+                {props.proposal.loading && (
                     <div className='text-end'>
                         <div className='flex w-full flex-col items-center'>
                             <Image
@@ -590,7 +589,7 @@ const ActiveProposal = async (props: {
                         </div>
                     </div>
                 )}
-                {!loading && (
+                {!props.proposal.loading && (
                     <div className='text-end'>
                         {props.proposal.voted == 'true' && (
                             <div className='flex w-full flex-col items-center'>

@@ -198,7 +198,6 @@ async fn get_title(hexhash: String) -> Result<String> {
             _ if retries < 5 => {
                 retries += 1;
                 let backoff_duration = Duration::from_millis(2u64.pow(retries as u32) * 100);
-                println!("{:?}", backoff_duration);
                 tokio::time::sleep(backoff_duration).await;
             }
             _ => return Ok("Unknown".to_string()),
