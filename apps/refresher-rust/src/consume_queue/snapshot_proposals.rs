@@ -46,27 +46,50 @@ pub(crate) async fn consume_snapshot_proposals(
 
         match response {
             Ok(res) => {
-                let data: ProposalsResponse = res.json().await.unwrap();
+                let data: Result<ProposalsResponse, reqwest::Error> = res.json().await;
 
-                let dbupdate = match data.response.as_str() {
-                    "ok" => client_ref.daohandler().update_many(
-                        vec![daohandler::id::equals(data.daoHandlerId.to_string())],
-                        vec![
-                            daohandler::refreshstatus::set(prisma::RefreshStatus::Done),
-                            daohandler::lastrefresh::set(Utc::now().into()),
-                        ],
-                    ),
-                    "nok" => client_ref.daohandler().update_many(
-                        vec![daohandler::id::equals(data.daoHandlerId.to_string())],
-                        vec![
-                            daohandler::refreshstatus::set(prisma::RefreshStatus::New),
-                            daohandler::lastrefresh::set(Utc::now().into()),
-                        ],
-                    ),
-                    _ => panic!("Unexpected response"),
-                };
+                match data {
+                    Ok(data) => {
+                        let dbupdate = match data.response.as_str() {
+                            "ok" => client_ref.daohandler().update_many(
+                                vec![daohandler::id::equals(data.daoHandlerId.to_string())],
+                                vec![
+                                    daohandler::refreshstatus::set(prisma::RefreshStatus::Done),
+                                    daohandler::lastrefresh::set(Utc::now().into()),
+                                ],
+                            ),
+                            "nok" => client_ref.daohandler().update_many(
+                                vec![daohandler::id::equals(data.daoHandlerId.to_string())],
+                                vec![
+                                    daohandler::refreshstatus::set(prisma::RefreshStatus::New),
+                                    daohandler::lastrefresh::set(Utc::now().into()),
+                                ],
+                            ),
+                            _ => panic!("Unexpected response"),
+                        };
 
-                let _ = client_ref._batch(dbupdate).await.unwrap();
+                        let _ = client_ref._batch(dbupdate).await.unwrap();
+                    }
+                    Err(e) => {
+                        println!("{:#?}", e);
+
+                        let _ = client_ref
+                            .daohandler()
+                            .update_many(
+                                vec![daohandler::id::equals(dao_handler_id_ref.to_string())],
+                                vec![
+                                    daohandler::refreshstatus::set(prisma::RefreshStatus::New),
+                                    daohandler::lastrefresh::set(Utc::now().into()),
+                                    daohandler::snapshotindex::set(Some(
+                                        DateTime::parse_from_rfc3339("2000-01-01T00:00:00.00Z")
+                                            .unwrap(),
+                                    )),
+                                ],
+                            )
+                            .exec()
+                            .await;
+                    }
+                }
             }
             Err(e) => {
                 println!("{:#?}", e);
