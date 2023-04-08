@@ -7,7 +7,7 @@ use crate::{
     Ctx,
 };
 use crate::{prisma::daohandler, router::update_chain_proposals::ChainProposal};
-use anyhow::{bail, Result};
+use anyhow::Result;
 use ethers::{prelude::LogMeta, types::Address, utils::hex};
 use ethers::{providers::Middleware, types::U256};
 use futures::stream::{FuturesUnordered, StreamExt};
@@ -17,7 +17,7 @@ use prisma_client_rust::{
 };
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
-use std::str;
+use std::{str, time::Duration};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -181,12 +181,13 @@ async fn get_title(hexhash: String) -> Result<String> {
     loop {
         let response = client
             .get(format!("https://ipfs.io/ipfs/f01701220{}", hexhash))
+            .timeout(Duration::from_secs(5))
             .send()
             .await;
 
         match response {
-            Ok(r) => {
-                let ipfs_data = match r.json::<IpfsData>().await {
+            Ok(res) if res.status() == StatusCode::OK => {
+                let ipfs_data = match res.json::<IpfsData>().await {
                     Ok(r) => r,
                     Err(_) => IpfsData {
                         title: "Unknown".to_string(),
@@ -194,24 +195,62 @@ async fn get_title(hexhash: String) -> Result<String> {
                 };
                 return Ok(ipfs_data.title);
             }
-            Err(e) => match e.status() {
-                Some(status) => {
-                    if status == StatusCode::TOO_MANY_REQUESTS {
-                        retries += 1;
-                        if retries > 30 {
-                            bail!("could not get proposal title");
-                        }
-                    } else {
-                        bail!("can't get title")
-                    }
-                }
-                None => {
-                    retries += 1;
-                    if retries > 30 {
-                        bail!("could not get proposal title");
-                    }
-                }
-            },
+            _ if retries < 5 => {
+                retries += 1;
+                let backoff_duration = Duration::from_millis(2u64.pow(retries as u32) * 100);
+                println!("{:?}", backoff_duration);
+                tokio::time::sleep(backoff_duration).await;
+            }
+            _ => return Ok("Unknown".to_string()),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::handlers::proposals::dydx::get_title;
+
+    #[tokio::test]
+    async fn get_title_once() {
+        let result =
+            get_title("0a387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into())
+                .await
+                .unwrap();
+        assert_eq!(result, "Add MaticX to Aave v3 Polygon Pool");
+    }
+
+    #[tokio::test]
+    async fn get_title_10_times() {
+        let mut cnt = 0;
+        loop {
+            let result = get_title(
+                "0a387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into(),
+            )
+            .await
+            .unwrap();
+            assert_eq!(result, "Add MaticX to Aave v3 Polygon Pool");
+            cnt = cnt + 1;
+            if cnt == 10 {
+                break;
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn get_invalid_title() {
+        let result =
+            get_title("0b387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into())
+                .await
+                .unwrap();
+        assert_eq!(result, "Unknown");
+    }
+
+    #[tokio::test]
+    async fn get_unavailable_title() {
+        let result =
+            get_title("e7e93497d3847536f07fe8dba53485cf68a275c7b07ca38b53d2cc2d43fab3b0".into())
+                .await
+                .unwrap();
+        assert_eq!(result, "Unknown");
     }
 }
