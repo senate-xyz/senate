@@ -1,3 +1,4 @@
+use anyhow::{bail, Result};
 use ethers::providers::Middleware;
 use ethers::types::U64;
 use prisma_client_rust::chrono::{DateTime, FixedOffset, Utc};
@@ -73,156 +74,66 @@ pub async fn update_chain_proposals<'a>(
         to_block = current_block - 10;
     }
 
+    let result = get_results(ctx, from_block, to_block, dao_handler).await;
+
+    match result {
+        Ok(_) => Json(ProposalsResponse {
+            daoHandlerId: data.daoHandlerId,
+            response: "ok",
+        }),
+        Err(_) => Json(ProposalsResponse {
+            daoHandlerId: data.daoHandlerId,
+            response: "nok",
+        }),
+    }
+}
+
+async fn get_results(
+    ctx: &Ctx,
+    from_block: i64,
+    to_block: i64,
+    dao_handler: daohandler::Data,
+) -> Result<()> {
     match dao_handler.r#type {
         DaoHandlerType::AaveChain => {
-            match aave_proposals(ctx, &dao_handler, &from_block, &to_block).await {
-                Ok(p) => {
-                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "ok",
-                    })
-                }
-                Err(e) => {
-                    println!("{:#?}", e);
-
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "nok",
-                    })
-                }
-            }
+            let p = aave_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
+            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            Ok(())
         }
         DaoHandlerType::CompoundChain => {
-            match compound_proposals(ctx, &dao_handler, &from_block, &to_block).await {
-                Ok(p) => {
-                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "ok",
-                    })
-                }
-                Err(e) => {
-                    println!("{:#?}", e);
-
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "nok",
-                    })
-                }
-            }
+            let p = compound_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
+            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            Ok(())
         }
         DaoHandlerType::UniswapChain => {
-            match uniswap_proposals(ctx, &dao_handler, &from_block, &to_block).await {
-                Ok(p) => {
-                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "ok",
-                    })
-                }
-                Err(e) => {
-                    println!("{:#?}", e);
-
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "nok",
-                    })
-                }
-            }
+            let p = uniswap_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
+            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            Ok(())
         }
         DaoHandlerType::EnsChain => {
-            match ens_proposals(ctx, &dao_handler, &from_block, &to_block).await {
-                Ok(p) => {
-                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "ok",
-                    })
-                }
-                Err(e) => {
-                    println!("{:#?}", e);
-
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "nok",
-                    })
-                }
-            }
+            let p = ens_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
+            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            Ok(())
         }
         DaoHandlerType::GitcoinChain => {
-            match gitcoin_proposals(ctx, &dao_handler, &from_block, &to_block).await {
-                Ok(p) => {
-                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "ok",
-                    })
-                }
-                Err(e) => {
-                    println!("{:#?}", e);
-
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "nok",
-                    })
-                }
-            }
+            let p = gitcoin_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
+            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            Ok(())
         }
         DaoHandlerType::HopChain => {
-            match hop_proposals(ctx, &dao_handler, &from_block, &to_block).await {
-                Ok(p) => {
-                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "ok",
-                    })
-                }
-                Err(e) => {
-                    println!("{:#?}", e);
-
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "nok",
-                    })
-                }
-            }
+            let p = hop_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
+            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            Ok(())
         }
         DaoHandlerType::DydxChain => {
-            match dydx_proposals(ctx, &dao_handler, &from_block, &to_block).await {
-                Ok(p) => {
-                    insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "ok",
-                    })
-                }
-                Err(e) => {
-                    println!("{:#?}", e);
-
-                    Json(ProposalsResponse {
-                        daoHandlerId: data.daoHandlerId,
-                        response: "nok",
-                    })
-                }
-            }
+            let p = dydx_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
+            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            Ok(())
         }
-        DaoHandlerType::MakerExecutive => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "nok",
-        }),
-        DaoHandlerType::MakerPoll => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "nok",
-        }),
-        DaoHandlerType::MakerPollArbitrum => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "nok",
-        }),
-        DaoHandlerType::Snapshot => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "nok",
-        }),
+        DaoHandlerType::MakerExecutive => bail!("not implemeneted"),
+        DaoHandlerType::MakerPoll => bail!("not implemeneted"),
+        DaoHandlerType::MakerPollArbitrum => bail!("not implemeneted"),
+        DaoHandlerType::Snapshot => bail!("not implemeneted"),
     }
 }
 
