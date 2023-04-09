@@ -24,6 +24,7 @@ pub async fn produce_chain_votes_queue(
     let handler_types = vec![
         prisma::DaoHandlerType::AaveChain,
         prisma::DaoHandlerType::CompoundChain,
+        prisma::DaoHandlerType::MakerPollArbitrum,
         // prisma::DaoHandlerType::MakerExecutive,
         prisma::DaoHandlerType::MakerPoll,
         prisma::DaoHandlerType::UniswapChain,

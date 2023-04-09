@@ -1,8 +1,8 @@
 use anyhow::{bail, Context, Result};
-use std::{cmp, env, ops::Div, sync::Arc};
+use std::{cmp, ops::Div};
 
 use ethers::{
-    providers::{Http, Middleware, Provider},
+    providers::{Middleware},
     types::U64,
 };
 use prisma_client_rust::Direction;
@@ -207,7 +207,7 @@ async fn get_results(
         }
         DaoHandlerType::MakerPollArbitrum => {
             let r = makerpollarbitrum_votes(ctx, dao_handler, from_block, voters.clone()).await?;
-            let ok_v = insert_votes(&r, &to_block, ctx, dao_handler).await?;
+            let ok_v = insert_votes(&r, to_block, ctx, dao_handler).await?;
             Ok(ok_v)
         }
         DaoHandlerType::Snapshot => bail!("not implemented"),
@@ -314,12 +314,10 @@ async fn insert_votes(
 
     if dao_handler.r#type == MakerPollArbitrum {
         new_index = to_block;
+    } else if daochainindex > to_block {
+        new_index = to_block;
     } else {
-        if daochainindex > to_block {
-            new_index = to_block;
-        } else {
-            new_index = daochainindex;
-        };
+        new_index = daochainindex;
     }
 
     ctx.db
