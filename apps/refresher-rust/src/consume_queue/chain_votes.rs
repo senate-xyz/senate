@@ -1,4 +1,5 @@
 use anyhow::Result;
+use log::warn;
 use std::{cmp, env, sync::Arc, time::Duration};
 
 use prisma_client_rust::chrono::Utc;
@@ -146,7 +147,7 @@ pub(crate) async fn consume_chain_votes(
                 };
             }
             Err(e) => {
-                println!("{:?}", e);
+                warn!("refresher chain votes - {:#?}", e);
 
                 let _ = client_ref
                     .daohandler()

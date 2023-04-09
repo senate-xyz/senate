@@ -1,4 +1,5 @@
 use anyhow::Result;
+use log::warn;
 use std::{env, sync::Arc, time::Duration};
 
 use prisma_client_rust::chrono::{DateTime, Utc};
@@ -71,7 +72,7 @@ pub(crate) async fn consume_snapshot_proposals(
                         let _ = client_ref._batch(dbupdate).await.unwrap();
                     }
                     Err(e) => {
-                        println!("{:?}", e);
+                        warn!("refresher snapshot proposals - {:#?}", e);
 
                         let _ = client_ref
                             .daohandler()
@@ -92,7 +93,7 @@ pub(crate) async fn consume_snapshot_proposals(
                 }
             }
             Err(e) => {
-                println!("{:?}", e);
+                warn!("refresher snapshot proposals - {:#?}", e);
 
                 let _ = client_ref
                     .daohandler()

@@ -1,4 +1,5 @@
 use anyhow::Result;
+use log::warn;
 use std::{env, sync::Arc, time::Duration};
 
 use prisma_client_rust::chrono::{DateTime, Utc};
@@ -122,7 +123,7 @@ pub(crate) async fn consume_snapshot_votes(
                     .unwrap();
             }
             Err(e) => {
-                println!("{:?}", e);
+                warn!("refresher snapshot votes - {:#?}", e);
 
                 let voter_ids = client_ref
                     .voter()

@@ -142,17 +142,19 @@ pub async fn update_snapshot_votes<'a>(
     )
     .await
     {
-        Ok(_) => data
-            .voters
-            .clone()
-            .into_iter()
-            .map(|v| VotesResponse {
-                voter_address: v,
-                success: true,
-            })
-            .collect(),
+        Ok(_) => {
+            info!("snapshot votes update - {:#?}", data.daoHandlerId);
+            data.voters
+                .clone()
+                .into_iter()
+                .map(|v| VotesResponse {
+                    voter_address: v,
+                    success: true,
+                })
+                .collect()
+        }
         Err(e) => {
-            println!("{:?}", e);
+            warn!("snapshot votes update - {:#?}", e);
 
             data.voters
                 .clone()

@@ -78,12 +78,15 @@ pub async fn update_chain_proposals<'a>(
     let result = get_results(ctx, from_block, to_block, dao_handler).await;
 
     match result {
-        Ok(_) => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "ok",
-        }),
+        Ok(_) => {
+            info!("chain proposals update - {:#?}", data.daoHandlerId);
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "ok",
+            })
+        }
         Err(e) => {
-            print!("{:?}", e);
+            warn!("chain proposals update - {:#?}", e);
             Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,
                 response: "nok",

@@ -1,4 +1,5 @@
 use anyhow::Result;
+use log::warn;
 use std::{cmp, env, sync::Arc, time::Duration};
 
 use prisma_client_rust::chrono::Utc;
@@ -89,7 +90,7 @@ pub(crate) async fn consume_chain_proposals(
                         let _ = client_ref._batch(dbupdate).await;
                     }
                     Err(e) => {
-                        println!("{:?}", e);
+                        warn!("refresher chain proposals - {:#?}", e);
 
                         let _ = client_ref
                             .daohandler()
@@ -111,7 +112,7 @@ pub(crate) async fn consume_chain_proposals(
                 }
             }
             Err(e) => {
-                println!("{:?}", e);
+                warn!("refresher chain proposals - {:#?}", e);
 
                 let _ = client_ref
                     .daohandler()

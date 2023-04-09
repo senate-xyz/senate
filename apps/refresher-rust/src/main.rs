@@ -1,4 +1,5 @@
 use anyhow::Result;
+use log::{info, warn};
 use tokio::try_join;
 mod prisma;
 use std::sync::Arc;
@@ -72,7 +73,7 @@ async fn main() {
                 let queue = match producer_task(&inner_client_clone, &config_clone).await {
                     Ok(r) => r,
                     Err(e) => {
-                        println!("{:?}", e);
+                        warn!("refresher main - {:#?}", e);
 
                         vec![]
                     }
@@ -89,7 +90,7 @@ async fn main() {
         loop {
             let item = rx.recv().await.unwrap();
 
-            println!("Queue size: {:?}", item.len());
+            info!("Queue size: {:?}", item.len());
 
             for entry in item {
                 let client_clone = consumer_client_clone.clone();
@@ -98,7 +99,7 @@ async fn main() {
                     match comsumer_task(entry, &client_clone).await {
                         Ok(_) => {}
                         Err(e) => {
-                            println!("{:?}", e);
+                            warn!("refresher main - {:#?}", e);
                         }
                     }
                 });

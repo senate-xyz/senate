@@ -110,12 +110,15 @@ pub async fn update_snapshot_proposals<'a>(
     );
 
     match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
-        Ok(_) => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "ok",
-        }),
+        Ok(_) => {
+            info!("snapshot proposals update - {:#?}", data.daoHandlerId);
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "ok",
+            })
+        }
         Err(e) => {
-            println!("{:?}", e);
+            warn!("snapshot proposals update - {:#?}", e);
 
             Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,

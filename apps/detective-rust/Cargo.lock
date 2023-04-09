@@ -1009,6 +1009,7 @@ dependencies = [
  "ethers",
  "futures",
  "lazy_static",
+ "log",
  "num-bigint",
  "prisma-client-rust",
  "regex",

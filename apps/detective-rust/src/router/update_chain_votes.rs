@@ -145,9 +145,12 @@ pub async fn update_chain_votes<'a>(
     let result = get_results(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await;
 
     match result {
-        Ok(r) => Json(success_response(r)),
+        Ok(r) => {
+            info!("chain votes update - {:#?}", data.daoHandlerId);
+            Json(success_response(r))
+        }
         Err(e) => {
-            println!("{:?}", e);
+            warn!("chain votes update - {:#?}", e);
             Json(failed_response(voters))
         }
     }
