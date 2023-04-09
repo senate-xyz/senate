@@ -1,7 +1,10 @@
 use anyhow::{bail, Context, Result};
-use std::{cmp, ops::Div};
+use std::{cmp, env, ops::Div, sync::Arc};
 
-use ethers::{providers::Middleware, types::U64};
+use ethers::{
+    providers::{Http, Middleware, Provider},
+    types::U64,
+};
 use prisma_client_rust::Direction;
 use rocket::serde::json::Json;
 use serde::Deserialize;
@@ -11,7 +14,7 @@ use crate::{
     handlers::votes::{
         aave::aave_votes, compound::compound_votes, dydx::dydx_votes, ens::ens_votes,
         gitcoin::gitcoin_votes, hop::hop_votes, maker_poll::makerpoll_votes,
-        uniswap::uniswap_votes,
+        maker_poll_arbitrum::makerpollarbitrum_votes, uniswap::uniswap_votes,
     },
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType},
     Ctx, VotesRequest, VotesResponse,
@@ -202,7 +205,11 @@ async fn get_results(
             let ok_v = insert_votes(&r, to_block, ctx, dao_handler).await?;
             Ok(ok_v)
         }
-        DaoHandlerType::MakerPollArbitrum => bail!("not implemented"),
+        DaoHandlerType::MakerPollArbitrum => {
+            let r = makerpollarbitrum_votes(ctx, dao_handler, from_block, voters.clone()).await?;
+            let ok_v = insert_votes(&r, &to_block, ctx, dao_handler).await?;
+            Ok(ok_v)
+        }
         DaoHandlerType::Snapshot => bail!("not implemented"),
     }
 }
@@ -303,11 +310,17 @@ async fn insert_votes(
     let daochainindex = &dao_handler.chainindex.unwrap();
     let new_index;
 
-    if daochainindex > to_block {
+    use crate::prisma::DaoHandlerType::MakerPollArbitrum;
+
+    if dao_handler.r#type == MakerPollArbitrum {
         new_index = to_block;
     } else {
-        new_index = daochainindex;
-    };
+        if daochainindex > to_block {
+            new_index = to_block;
+        } else {
+            new_index = daochainindex;
+        };
+    }
 
     ctx.db
         .voterhandler()
