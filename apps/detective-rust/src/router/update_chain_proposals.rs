@@ -10,6 +10,7 @@ use crate::handlers::proposals::dydx::dydx_proposals;
 use crate::handlers::proposals::ens::ens_proposals;
 use crate::handlers::proposals::gitcoin::gitcoin_proposals;
 use crate::handlers::proposals::hop::hop_proposals;
+use crate::handlers::proposals::maker_poll::maker_poll_proposals;
 use crate::handlers::proposals::uniswap::uniswap_proposals;
 use crate::prisma::{dao, proposal, DaoHandlerType};
 use crate::{prisma::daohandler, Ctx, ProposalsRequest, ProposalsResponse};
@@ -81,10 +82,13 @@ pub async fn update_chain_proposals<'a>(
             daoHandlerId: data.daoHandlerId,
             response: "ok",
         }),
-        Err(_) => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "nok",
-        }),
+        Err(e) => {
+            print!("{:?}", e);
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            })
+        }
     }
 }
 
@@ -131,7 +135,11 @@ async fn get_results(
             Ok(())
         }
         DaoHandlerType::MakerExecutive => bail!("not implemeneted"),
-        DaoHandlerType::MakerPoll => bail!("not implemeneted"),
+        DaoHandlerType::MakerPoll => {
+            let p = maker_poll_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
+            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            Ok(())
+        }
         DaoHandlerType::MakerPollArbitrum => bail!("not implemeneted"),
         DaoHandlerType::Snapshot => bail!("not implemeneted"),
     }
