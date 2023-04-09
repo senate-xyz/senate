@@ -115,7 +115,7 @@ pub async fn update_snapshot_proposals<'a>(
             response: "ok",
         }),
         Err(e) => {
-            println!("{:#?}", e);
+            println!("{:?}", e);
 
             Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,

@@ -89,7 +89,7 @@ pub(crate) async fn consume_chain_proposals(
                         let _ = client_ref._batch(dbupdate).await;
                     }
                     Err(e) => {
-                        println!("{:#?}", e);
+                        println!("{:?}", e);
 
                         let _ = client_ref
                             .daohandler()
@@ -111,7 +111,7 @@ pub(crate) async fn consume_chain_proposals(
                 }
             }
             Err(e) => {
-                println!("{:#?}", e);
+                println!("{:?}", e);
 
                 let _ = client_ref
                     .daohandler()

@@ -134,12 +134,12 @@ async fn get_results(
             insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
-        DaoHandlerType::MakerExecutive => bail!("not implemeneted"),
         DaoHandlerType::MakerPoll => {
             let p = maker_poll_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
             insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
+        DaoHandlerType::MakerExecutive => bail!("not implemeneted"),
         DaoHandlerType::MakerPollArbitrum => bail!("not implemeneted"),
         DaoHandlerType::Snapshot => bail!("not implemeneted"),
     }

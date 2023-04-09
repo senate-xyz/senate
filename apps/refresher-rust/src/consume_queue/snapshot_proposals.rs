@@ -71,7 +71,7 @@ pub(crate) async fn consume_snapshot_proposals(
                         let _ = client_ref._batch(dbupdate).await.unwrap();
                     }
                     Err(e) => {
-                        println!("{:#?}", e);
+                        println!("{:?}", e);
 
                         let _ = client_ref
                             .daohandler()
@@ -92,7 +92,7 @@ pub(crate) async fn consume_snapshot_proposals(
                 }
             }
             Err(e) => {
-                println!("{:#?}", e);
+                println!("{:?}", e);
 
                 let _ = client_ref
                     .daohandler()

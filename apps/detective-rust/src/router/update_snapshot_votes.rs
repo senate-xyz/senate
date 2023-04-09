@@ -152,7 +152,7 @@ pub async fn update_snapshot_votes<'a>(
             })
             .collect(),
         Err(e) => {
-            println!("{:#?}", e);
+            println!("{:?}", e);
 
             data.voters
                 .clone()

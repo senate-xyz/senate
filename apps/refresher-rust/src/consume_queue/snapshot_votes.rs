@@ -122,7 +122,7 @@ pub(crate) async fn consume_snapshot_votes(
                     .unwrap();
             }
             Err(e) => {
-                println!("{:#?}", e);
+                println!("{:?}", e);
 
                 let voter_ids = client_ref
                     .voter()

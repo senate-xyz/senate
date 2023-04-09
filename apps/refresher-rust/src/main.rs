@@ -72,7 +72,7 @@ async fn main() {
                 let queue = match producer_task(&inner_client_clone, &config_clone).await {
                     Ok(r) => r,
                     Err(e) => {
-                        println!("{:#?}", e);
+                        println!("{:?}", e);
 
                         vec![]
                     }
@@ -98,7 +98,7 @@ async fn main() {
                     match comsumer_task(entry, &client_clone).await {
                         Ok(_) => {}
                         Err(e) => {
-                            println!("{:#?}", e);
+                            println!("{:?}", e);
                         }
                     }
                 });

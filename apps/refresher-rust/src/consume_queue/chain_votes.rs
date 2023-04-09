@@ -146,7 +146,7 @@ pub(crate) async fn consume_chain_votes(
                 };
             }
             Err(e) => {
-                println!("{:#?}", e);
+                println!("{:?}", e);
 
                 let _ = client_ref
                     .daohandler()

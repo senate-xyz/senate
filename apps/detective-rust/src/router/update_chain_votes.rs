@@ -1,10 +1,7 @@
 use anyhow::{bail, Context, Result};
 use std::{cmp, ops::Div};
 
-use ethers::{
-    providers::{Middleware},
-    types::U64,
-};
+use ethers::{providers::Middleware, types::U64};
 use prisma_client_rust::Direction;
 use rocket::serde::json::Json;
 use serde::Deserialize;
@@ -150,7 +147,7 @@ pub async fn update_chain_votes<'a>(
     match result {
         Ok(r) => Json(success_response(r)),
         Err(e) => {
-            println!("{:#?}", e);
+            println!("{:?}", e);
             Json(failed_response(voters))
         }
     }
