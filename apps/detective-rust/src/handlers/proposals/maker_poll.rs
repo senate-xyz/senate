@@ -110,7 +110,7 @@ async fn data_for_proposal(
     for res in results_data {
         choices.push(res.optionName.to_string());
         scores.push(res.mkrSupport.as_str().unwrap().parse::<f64>().unwrap());
-        scores_total = scores_total + res.mkrSupport.as_str().unwrap().parse::<f64>().unwrap();
+        scores_total += res.mkrSupport.as_str().unwrap().parse::<f64>().unwrap();
     }
 
     //do some sanity here because mkr is weird

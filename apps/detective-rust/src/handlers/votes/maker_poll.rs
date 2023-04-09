@@ -147,6 +147,7 @@ async fn get_votes_for_voter(
 //I have no idea how this works but this is the reverse of what mkr does here
 //https://github.com/makerdao/governance-portal-v2/blob/efeaa159a86748646af136f34c807b2dc9a2c401/modules/polling/api/victory_conditions/__tests__/instantRunoff.spec.ts#L13
 async fn get_options(raw_option: String) -> Result<Vec<u8>> {
+    #[warn(dead_code)]
     pub enum Endian {
         Big,
         Little,
