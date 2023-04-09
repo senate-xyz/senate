@@ -14,5 +14,6 @@ pub mod ensgov;
 pub mod gitcoingov;
 pub mod hopgov;
 pub mod makerpollcreate;
+pub mod makerpollvote;
 pub mod shared_types;
 pub mod uniswapgov;

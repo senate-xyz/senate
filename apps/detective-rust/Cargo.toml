@@ -19,6 +19,7 @@ dotenv = "0.15.0"
 ethers = { version="2.0.2", features = ["rustls", "openssl", "abigen"] }
 futures = "0.3.28"
 lazy_static = "1.4.0"
+num-bigint = "0.4.3"
 prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.7", default-features = false, features = ["postgresql"] }
 regex = "1.7.3"
 reqwest = {version = "0.11.16", features = ["json"]}

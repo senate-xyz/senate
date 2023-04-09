@@ -98,9 +98,16 @@ async fn data_for_proposal(
     let mut scores_total: f64 = 0.0;
     let quorum: u128 = 0;
 
-    let results_data = get_results_data(log.poll_id.to_string()).await?;
+    let mut results_data = get_results_data(log.poll_id.to_string()).await?.results;
 
-    for res in results_data.results {
+    results_data.sort_by(|a, b| {
+        a.optionId
+            .as_u64()
+            .unwrap()
+            .cmp(&b.optionId.as_u64().unwrap())
+    });
+
+    for res in results_data {
         choices.push(res.optionName.to_string());
         scores.push(res.mkrSupport.as_str().unwrap().parse::<f64>().unwrap());
         scores_total = scores_total + res.mkrSupport.as_str().unwrap().parse::<f64>().unwrap();
@@ -144,6 +151,7 @@ async fn data_for_proposal(
 struct ResultData {
     mkrSupport: Value,
     optionName: Value,
+    optionId: Value,
 }
 #[derive(Deserialize, Serialize, PartialEq, Debug)]
 struct ResultsData {
@@ -236,14 +244,17 @@ mod tests {
             results: vec![
                 ResultData {
                     optionName: Value::from("Yes"),
+                    optionId: Value::from(1),
                     mkrSupport: Value::from("5742.391818873815517002"),
                 },
                 ResultData {
                     optionName: Value::from("No"),
+                    optionId: Value::from(2),
                     mkrSupport: Value::from("403.994725781516278273"),
                 },
                 ResultData {
                     optionName: Value::from("Abstain"),
+                    optionId: Value::from(0),
                     mkrSupport: Value::from("0"),
                 },
             ],
@@ -259,14 +270,18 @@ mod tests {
             results: vec![
                 ResultData {
                     optionName: Value::from("Yes"),
+                    optionId: Value::from(1),
+
                     mkrSupport: Value::from("24231.400515208833076916"),
                 },
                 ResultData {
                     optionName: Value::from("No"),
+                    optionId: Value::from(2),
                     mkrSupport: Value::from("10058.930894763635322606"),
                 },
                 ResultData {
                     optionName: Value::from("Abstain"),
+                    optionId: Value::from(0),
                     mkrSupport: Value::from("0"),
                 },
             ],
