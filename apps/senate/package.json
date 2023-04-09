@@ -40,7 +40,7 @@
         "fast-average-color-node": "^2.6.0",
         "framer-motion": "^10.11.2",
         "next": "13.3.0",
-        "next-auth": "^4.21.1",
+        "next-auth": "^4.22.0",
         "react": "18.2.0",
         "react-cookie": "^4.1.1",
         "react-dom": "18.2.0",
