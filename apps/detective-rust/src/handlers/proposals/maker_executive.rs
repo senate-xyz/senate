@@ -87,7 +87,7 @@ async fn proposal(
     let created_timestamp = Utc
         .from_local_datetime(
             &NaiveDateTime::parse_from_str(
-                &proposal_data.clone().date.split(" GMT").next().unwrap(),
+                proposal_data.clone().date.split(" GMT").next().unwrap(),
                 "%a %b %d %Y %H:%M:%S",
             )
             .unwrap(),
@@ -97,7 +97,7 @@ async fn proposal(
     let voting_starts_timestamp = created_timestamp;
 
     let voting_ends_timestamp =
-        DateTime::parse_from_rfc3339(&proposal_data.clone().spellData.expiration.as_str())
+        DateTime::parse_from_rfc3339(proposal_data.clone().spellData.expiration.as_str())
             .unwrap()
             .with_timezone(&Utc);
 
@@ -111,9 +111,9 @@ async fn proposal(
         name: title,
         dao_id: dao_handler.clone().daoid,
         dao_handler_id: dao_handler.clone().id,
-        time_start: voting_starts_timestamp.into(),
-        time_end: voting_ends_timestamp.into(),
-        time_created: created_timestamp.into(),
+        time_start: voting_starts_timestamp,
+        time_end: voting_ends_timestamp,
+        time_created: created_timestamp,
         block_created: block_created.height.as_i64().unwrap(),
         choices: vec!["Yes"].into(),
         scores: scores.parse::<f64>().unwrap().into(),
@@ -209,7 +209,7 @@ async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
                         format!("Unable to deserialise response. Body was: \"{}\"", contents)
                     }) {
                         Ok(d) => d,
-                        Err(e) => ProposalData {
+                        Err(_e) => ProposalData {
                             title: "Unknown".into(),
                             date: "Sat Jan 01 2000 00:00:00".into(),
                             spellData: SpellData {
@@ -270,10 +270,10 @@ async fn get_single_spell_addresses(
 
             match address {
                 Ok(addr) => {
-                    spell_addresses.insert(to_checksum(&Address::from(addr), None));
+                    spell_addresses.insert(to_checksum(&addr, None));
                     count += U256::from(1);
                 }
-                Err(e) => {
+                Err(_e) => {
                     break;
                 }
             }
