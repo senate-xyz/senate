@@ -72,7 +72,7 @@ export const makerExecutiveProposals = async (
         })
     )
 
-    return proposals.filter(proposal => proposal.name !== 'Unknown')
+    return proposals.filter((proposal) => proposal.name !== 'Unknown')
 }
 
 const getProposalData = async (spellAddress: string) => {
@@ -135,7 +135,7 @@ const getProposalData = async (spellAddress: string) => {
             message: `Error fetching Maker executive proposal data for ${spellAddress}`,
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
-            errorStack: (e as Error).stack,
+            errorStack: (e as Error).stack
         })
     }
 

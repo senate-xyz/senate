@@ -26,6 +26,7 @@ pub mod handlers {
         pub mod ens;
         pub mod gitcoin;
         pub mod hop;
+        pub mod maker_executive;
         pub mod maker_poll;
         pub mod uniswap;
     }

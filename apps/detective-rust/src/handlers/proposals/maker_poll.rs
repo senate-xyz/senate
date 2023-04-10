@@ -115,16 +115,12 @@ async fn data_for_proposal(
 
     //do some sanity here because mkr is weird
     if voting_starts_timestamp - Utc::now() > Duration::days(365) {
-        voting_starts_timestamp = DateTime::from_utc(
-            NaiveDateTime::from_timestamp_millis(0).expect("bad timestamp"),
-            Utc,
-        )
+        voting_starts_timestamp =
+            DateTime::from_utc(NaiveDateTime::from_timestamp_millis(0).unwrap(), Utc)
     }
     if voting_ends_timestamp - Utc::now() > Duration::days(365) {
-        voting_ends_timestamp = DateTime::from_utc(
-            NaiveDateTime::from_timestamp_millis(0).expect("bad timestamp"),
-            Utc,
-        )
+        voting_ends_timestamp =
+            DateTime::from_utc(NaiveDateTime::from_timestamp_millis(0).unwrap(), Utc)
     }
 
     let proposal = ChainProposal {

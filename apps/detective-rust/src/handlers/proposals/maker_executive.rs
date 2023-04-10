@@ -1,0 +1,327 @@
+use std::collections::HashSet;
+
+use crate::contracts::makerexecutive::LogNoteFilter;
+use crate::{contracts::makerexecutive, Ctx};
+use crate::{prisma::daohandler, router::update_chain_proposals::ChainProposal};
+use anyhow::{Context, Result};
+use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
+use ethers::abi::Address;
+use ethers::prelude::LogMeta;
+use ethers::types::{H256, U256};
+use ethers::utils::to_checksum;
+use futures::stream::FuturesUnordered;
+use futures::StreamExt;
+use reqwest::header::{ACCEPT, USER_AGENT};
+use reqwest::Client;
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize)]
+struct Decoder {
+    address: String,
+    proposalUrl: String,
+}
+
+const _VOTE_MULTIPLE_ACTIONS_TOPIC: &str =
+    "0xed08132900000000000000000000000000000000000000000000000000000000";
+const VOTE_SINGLE_ACTION_TOPIC: &str =
+    "0xa69beaba00000000000000000000000000000000000000000000000000000000";
+
+pub async fn maker_executive_proposals(
+    ctx: &Ctx,
+    dao_handler: &daohandler::Data,
+    from_block: &i64,
+    to_block: &i64,
+) -> Result<Vec<ChainProposal>> {
+    let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder)?;
+
+    let address = decoder.address.parse::<Address>().expect("bad address");
+
+    let gov_contract =
+        makerexecutive::makerexecutive::makerexecutive::new(address, ctx.client.clone());
+
+    let single_spell_events = gov_contract
+        .log_note_filter()
+        .topic0(vec![VOTE_SINGLE_ACTION_TOPIC.parse::<H256>()?])
+        .from_block(*from_block)
+        .to_block(*to_block);
+
+    let single_spell_logs = single_spell_events.query_with_meta().await?;
+
+    // let multi_spell_events = gov_contract
+    //     .log_note_filter()
+    //     .topic0(vec![VOTE_MULTIPLE_ACTIONS_TOPIC.parse::<H256>()?])
+    //     .from_block(*from_block)
+    //     .to_block(*to_block);
+
+    // let multi_spell_logs = multi_spell_events.query_with_meta().await?;
+
+    let spell_addresses = get_single_spell_addresses(single_spell_logs, gov_contract).await?;
+
+    let mut futures = FuturesUnordered::new();
+
+    for p in spell_addresses.iter() {
+        futures.push(async { proposal(p, &decoder, dao_handler).await });
+    }
+
+    let mut result = Vec::new();
+    while let Some(proposal) = futures.next().await {
+        result.push(proposal?);
+    }
+
+    Ok(result)
+}
+
+async fn proposal(
+    spell_address: &String,
+    decoder: &Decoder,
+    dao_handler: &daohandler::Data,
+) -> Result<ChainProposal> {
+    let proposal_url = format!("{}{}", decoder.proposalUrl, spell_address);
+
+    let proposal_data = get_proposal_data(spell_address.clone()).await?;
+
+    let title = proposal_data.title.clone();
+
+    let created_timestamp = Utc
+        .from_local_datetime(
+            &NaiveDateTime::parse_from_str(
+                &proposal_data.clone().date.split(" GMT").next().unwrap(),
+                "%a %b %d %Y %H:%M:%S",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+
+    let voting_starts_timestamp = created_timestamp;
+
+    let voting_ends_timestamp =
+        DateTime::parse_from_rfc3339(&proposal_data.clone().spellData.expiration.as_str())
+            .unwrap()
+            .with_timezone(&Utc);
+
+    let scores = &proposal_data.spellData.mkrSupport.clone();
+    let scores_total = &proposal_data.spellData.mkrSupport.clone();
+
+    let block_created = get_proposal_block(created_timestamp).await?;
+
+    let proposal = ChainProposal {
+        external_id: spell_address.to_string(),
+        name: title,
+        dao_id: dao_handler.clone().daoid,
+        dao_handler_id: dao_handler.clone().id,
+        time_start: voting_starts_timestamp.into(),
+        time_end: voting_ends_timestamp.into(),
+        time_created: created_timestamp.into(),
+        block_created: block_created.height.as_i64().unwrap(),
+        choices: vec!["Yes"].into(),
+        scores: scores.parse::<f64>().unwrap().into(),
+        scores_total: scores_total.parse::<f64>().unwrap().into(),
+        quorum: 0.into(),
+        url: proposal_url,
+    };
+
+    Ok(proposal)
+}
+
+#[derive(Deserialize, Serialize, PartialEq, Debug)]
+struct TimeData {
+    height: Value,
+}
+
+async fn get_proposal_block(time: DateTime<Utc>) -> Result<TimeData> {
+    let client = Client::new();
+    let mut retries = 0;
+
+    loop {
+        let response = client
+            .get(format!(
+                "https://coins.llama.fi/block/ethereum/{}",
+                time.timestamp()
+            ))
+            .header(ACCEPT, "application/json")
+            .header(USER_AGENT, "insomnia/2023.1.0")
+            .timeout(std::time::Duration::from_secs(5))
+            .send()
+            .await;
+
+        match response {
+            Ok(res) => {
+                let contents = res.text().await?;
+                let data = match serde_json::from_str::<TimeData>(&contents).with_context(|| {
+                    format!("Unable to deserialise response. Body was: \"{}\"", contents)
+                }) {
+                    Ok(d) => d,
+                    Err(_) => TimeData { height: 0.into() },
+                };
+
+                return Ok(data);
+            }
+
+            _ if retries < 5 => {
+                retries += 1;
+                let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
+                tokio::time::sleep(backoff_duration).await;
+            }
+            _ => {
+                return Ok(TimeData { height: 0.into() });
+            }
+        }
+    }
+}
+
+#[allow(non_snake_case)]
+#[derive(Deserialize, Serialize, PartialEq, Debug, Clone)]
+struct SpellData {
+    expiration: String,
+    mkrSupport: String,
+}
+#[allow(non_snake_case)]
+#[derive(Deserialize, Serialize, PartialEq, Debug, Clone)]
+struct ProposalData {
+    title: String,
+    spellData: SpellData,
+    date: String,
+}
+
+async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
+    let client = Client::new();
+    let mut retries = 0;
+
+    loop {
+        let response = client
+            .get(format!(
+                "https://vote.makerdao.com/api/executive/{}",
+                spell_address
+            ))
+            .header(ACCEPT, "application/json")
+            .header(USER_AGENT, "insomnia/2023.1.0")
+            .timeout(std::time::Duration::from_secs(10))
+            .send()
+            .await;
+
+        match response {
+            Ok(res) => {
+                let contents = res.text().await?;
+                let data =
+                    match serde_json::from_str::<ProposalData>(&contents).with_context(|| {
+                        format!("Unable to deserialise response. Body was: \"{}\"", contents)
+                    }) {
+                        Ok(d) => d,
+                        Err(e) => ProposalData {
+                            title: "Unknown".into(),
+                            date: "Sat Jan 01 2000 00:00:00".into(),
+                            spellData: SpellData {
+                                expiration: "2000-01-01T00:00:00-00:00".into(),
+                                mkrSupport: "0".into(),
+                            },
+                        },
+                    };
+
+                return Ok(data);
+            }
+
+            _ if retries < 5 => {
+                retries += 1;
+                let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
+                tokio::time::sleep(backoff_duration).await;
+            }
+            _ => {
+                return Ok(ProposalData {
+                    title: "Unknown".into(),
+                    date: "Sat Jan 01 2000 00:00:00".into(),
+                    spellData: SpellData {
+                        expiration: "2000-01-01T00:00:00-00:00".into(),
+                        mkrSupport: "0".into(),
+                    },
+                });
+            }
+        }
+    }
+}
+
+fn extract_desired_bytes(bytes: &[u8]) -> [u8; 32] {
+    let start_index = 4; // Starting from the 5th byte (0-indexed)
+    let mut result: [u8; 32] = [0; 32];
+
+    for (i, byte) in bytes[start_index..(start_index + 32)].iter().enumerate() {
+        result[i] = *byte;
+    }
+
+    result
+}
+
+async fn get_single_spell_addresses(
+    logs: Vec<(LogNoteFilter, LogMeta)>,
+    gov_contract: makerexecutive::makerexecutive::makerexecutive<
+        ethers::providers::Provider<ethers::providers::Http>,
+    >,
+) -> Result<Vec<String>> {
+    let mut spell_addresses = HashSet::new();
+
+    for log in logs {
+        let slate: [u8; 32] = extract_desired_bytes(&log.0.fax);
+
+        let mut count: U256 = U256::from(0);
+
+        loop {
+            let address = gov_contract.slates(slate, count).await;
+
+            match address {
+                Ok(addr) => {
+                    spell_addresses.insert(to_checksum(&Address::from(addr), None));
+                    count += U256::from(1);
+                }
+                Err(e) => {
+                    break;
+                }
+            }
+        }
+    }
+
+    let result = spell_addresses
+        .into_iter()
+        .filter(|addr| addr != "0x0000000000000000000000000000000000000000")
+        .collect::<Vec<String>>();
+
+    Ok(result)
+}
+
+// async fn get_multi_spell_addresses(
+//     logs: Vec<(LogNoteFilter, LogMeta)>,
+//     gov_contract: makerexecutive::makerexecutive::makerexecutive<
+//         ethers::providers::Provider<ethers::providers::Http>,
+//     >,
+// ) {
+//     let mut spell_addresses = HashSet::new();
+
+//     for log in logs {
+//         //get the second "vote" function
+//         println!("{:?}", log.0.fax);
+//         let r = gov_contract.abi().functions_by_name("vote").unwrap()[1]
+//             .decode_input(&log.0.fax)
+//             .unwrap();
+
+//         let mut count = 0;
+
+//         let data: [u8; 32] = Detokenize::from_tokens(r).unwrap();
+//         println!("{:?}", data);
+//         loop {
+//             let address = gov_contract.slates(data, count.into()).await;
+
+//             match address {
+//                 Ok(addr) => {
+//                     spell_addresses.insert(addr);
+//                     count += 1;
+//                     println!("{:?}", count);
+//                 }
+//                 Err(_) => {
+//                     println!("break");
+//                     break;
+//                 }
+//             }
+//         }
+//     }
+//     println!("{:#?}", spell_addresses);
+// }

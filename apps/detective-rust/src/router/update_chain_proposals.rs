@@ -10,6 +10,7 @@ use crate::handlers::proposals::dydx::dydx_proposals;
 use crate::handlers::proposals::ens::ens_proposals;
 use crate::handlers::proposals::gitcoin::gitcoin_proposals;
 use crate::handlers::proposals::hop::hop_proposals;
+use crate::handlers::proposals::maker_executive::maker_executive_proposals;
 use crate::handlers::proposals::maker_poll::maker_poll_proposals;
 use crate::handlers::proposals::uniswap::uniswap_proposals;
 use crate::prisma::{dao, proposal, DaoHandlerType};
@@ -142,7 +143,11 @@ async fn get_results(
             insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
-        DaoHandlerType::MakerExecutive => bail!("not implemeneted"),
+        DaoHandlerType::MakerExecutive => {
+            let p = maker_executive_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
+            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            Ok(())
+        }
         DaoHandlerType::MakerPollArbitrum => bail!("not implemeneted"),
         DaoHandlerType::Snapshot => bail!("not implemeneted"),
     }
