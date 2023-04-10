@@ -655,6 +655,25 @@ const seedData = async () => {
         }
     })
 
+    await prisma.dao.upsert({
+        where: { name: 'dOrg' },
+        update: {},
+        create: {
+            name: 'dOrg',
+            picture: '/assets/Project_Icons/dOrg',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'dorg.eth'
+                        }
+                    }
+                ]
+            }
+        }
+    })
+
     console.log('Inserting seed user')
     const seedUser = await prisma.user.upsert({
         where: {
