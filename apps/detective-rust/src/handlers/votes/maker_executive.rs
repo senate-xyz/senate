@@ -67,10 +67,12 @@ pub async fn makerexecutive_votes(
 
     let multi_spell_logs = multi_spell_events.query_with_meta().await?;
 
-    let single_spells = get_single_spell_addresses(single_spell_logs, gov_contract.clone()).await?;
-    let multi_spells = get_multi_spell_addresses(multi_spell_logs, gov_contract.clone()).await?;
+    let single_spells =
+        get_single_spell_addresses(voters.clone(), single_spell_logs, gov_contract.clone()).await?;
+    let multi_spells =
+        get_multi_spell_addresses(voters.clone(), multi_spell_logs, gov_contract.clone()).await?;
 
-    let spell_addresses: Vec<String> = [single_spells, multi_spells]
+    let spell_addresses: Vec<SpellCast> = [single_spells, multi_spells]
         .concat()
         .into_iter()
         .unique()
@@ -80,8 +82,16 @@ pub async fn makerexecutive_votes(
 
     for voter_address in voters.iter() {
         futures.push(async {
+            let spells_for_voter = &spell_addresses
+                .iter()
+                .filter(|sc| sc.voter.clone() == voter_address.to_string())
+                .collect_vec()
+                .first()
+                .unwrap()
+                .spells;
+
             get_votes_for_voter(
-                spell_addresses.clone(),
+                spells_for_voter.to_vec(),
                 dao_handler.clone(),
                 voter_address.clone(),
                 ctx,
@@ -175,63 +185,93 @@ fn extract_desired_bytes(bytes: &[u8]) -> Vec<[u8; 32]> {
     result_vec
 }
 
+#[derive(Clone, PartialEq, Eq, Hash)]
+struct SpellCast {
+    voter: String,
+    spells: Vec<String>,
+}
+
 async fn get_single_spell_addresses(
+    voters: Vec<String>,
     logs: Vec<(LogNoteFilter, LogMeta)>,
     gov_contract: makerexecutive::makerexecutive::makerexecutive<
         ethers::providers::Provider<ethers::providers::Http>,
     >,
-) -> Result<Vec<String>> {
-    let mut spell_addresses = HashSet::new();
+) -> Result<Vec<SpellCast>> {
+    let mut spells: Vec<SpellCast> = vec![];
 
-    for log in logs {
-        let slate: [u8; 32] = *extract_desired_bytes(&log.0.fax).first().unwrap();
+    for voter in voters {
+        let mut voter_spells = HashSet::new();
 
-        let mut count: U256 = U256::from(0);
+        for log in logs.clone() {
+            let slate: [u8; 32] = *extract_desired_bytes(&log.0.fax).first().unwrap();
 
-        loop {
-            let address = gov_contract.slates(slate, count).await;
-            match address {
-                Ok(addr) => {
-                    spell_addresses.insert(to_checksum(&addr, None));
-                    count += U256::from(1);
-                }
-                Err(_) => {
-                    break;
+            let mut count: U256 = U256::from(0);
+
+            loop {
+                let address = gov_contract.slates(slate, count).await;
+                match address {
+                    Ok(addr) => {
+                        if !voter_spells.contains(&to_checksum(&addr, None))
+                            && to_checksum(&log.0.guy, None) == voter
+                        {
+                            voter_spells.insert(to_checksum(&addr, None));
+                        }
+                        count += U256::from(1);
+                    }
+                    Err(_) => {
+                        break;
+                    }
                 }
             }
         }
+        let spells_for_voter = voter_spells
+            .into_iter()
+            .filter(|addr| !addr.contains("0x00000000000"))
+            .collect::<Vec<String>>();
+
+        spells.push(SpellCast {
+            voter: voter,
+            spells: spells_for_voter,
+        })
     }
 
-    let result = spell_addresses
-        .into_iter()
-        .filter(|addr| addr != "0x0000000000000000000000000000000000000000")
-        .collect::<Vec<String>>();
-
-    Ok(result)
+    Ok(spells)
 }
 
 async fn get_multi_spell_addresses(
+    voters: Vec<String>,
     logs: Vec<(LogNoteFilter, LogMeta)>,
     _gov_contract: makerexecutive::makerexecutive::makerexecutive<
         ethers::providers::Provider<ethers::providers::Http>,
     >,
-) -> Result<Vec<String>> {
-    let mut spell_addresses = HashSet::new();
+) -> Result<Vec<SpellCast>> {
+    let mut spells: Vec<SpellCast> = vec![];
 
-    for log in logs {
-        let slates = extract_desired_bytes(&log.0.fax);
+    for voter in voters {
+        let mut voter_spells = HashSet::new();
+        for log in logs.clone() {
+            let slates = extract_desired_bytes(&log.0.fax);
 
-        for slate in slates {
-            let spell_address = Address::from(H256::from(slate));
-
-            spell_addresses.insert(to_checksum(&spell_address, None));
+            for slate in slates {
+                let spell_address = Address::from(H256::from(slate));
+                if !voter_spells.contains(&to_checksum(&spell_address, None))
+                    && to_checksum(&log.0.guy, None) == voter
+                {
+                    voter_spells.insert(to_checksum(&spell_address, None));
+                }
+            }
         }
+        let spells_for_voter = voter_spells
+            .into_iter()
+            .filter(|addr| !addr.contains("0x00000000000"))
+            .collect::<Vec<String>>();
+
+        spells.push(SpellCast {
+            voter: voter,
+            spells: spells_for_voter,
+        })
     }
 
-    let result = spell_addresses
-        .into_iter()
-        .filter(|addr| !addr.contains("0x00000000000"))
-        .collect::<Vec<String>>();
-
-    Ok(result)
+    Ok(spells)
 }
