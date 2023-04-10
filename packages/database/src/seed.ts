@@ -185,7 +185,7 @@ const seedData = async () => {
         where: { name: 'SafeDAO' },
         update: {},
         create: {
-            name: 'Safedao',
+            name: 'SafeDAO',
             picture: '/assets/Project_Icons/safedao',
             handlers: {
                 create: [
