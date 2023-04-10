@@ -10,8 +10,9 @@ use serde_json::Value;
 use crate::{
     handlers::votes::{
         aave::aave_votes, compound::compound_votes, dydx::dydx_votes, ens::ens_votes,
-        gitcoin::gitcoin_votes, hop::hop_votes, maker_poll::makerpoll_votes,
-        maker_poll_arbitrum::makerpollarbitrum_votes, uniswap::uniswap_votes,
+        gitcoin::gitcoin_votes, hop::hop_votes, maker_executive::makerexecutive_votes,
+        maker_poll::makerpoll_votes, maker_poll_arbitrum::makerpollarbitrum_votes,
+        uniswap::uniswap_votes,
     },
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType},
     Ctx, VotesRequest, VotesResponse,
@@ -199,7 +200,12 @@ async fn get_results(
             let ok_v = insert_votes(&r, to_block, ctx, dao_handler).await?;
             Ok(ok_v)
         }
-        DaoHandlerType::MakerExecutive => bail!("not implemented"),
+        DaoHandlerType::MakerExecutive => {
+            let r = makerexecutive_votes(ctx, dao_handler, from_block, to_block, voters.clone())
+                .await?;
+            let ok_v = insert_votes(&r, to_block, ctx, dao_handler).await?;
+            Ok(ok_v)
+        }
         DaoHandlerType::MakerPoll => {
             let r = makerpoll_votes(ctx, dao_handler, from_block, to_block, voters.clone()).await?;
             let ok_v = insert_votes(&r, to_block, ctx, dao_handler).await?;
