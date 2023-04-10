@@ -45,6 +45,6 @@
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {
-    "rimraf": "^4.4.1"
+    "rimraf": "^5.0.0"
   }
 }

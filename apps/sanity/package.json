@@ -29,7 +29,7 @@
         "@senate/axiom": "*",
         "@senate/config": "*",
         "@senate/database": "*",
-        "ethers": "^6.2.3",
+        "ethers": "^6.3.0",
         "node-cron": "^3.0.2",
         "postmark": "^3.0.15",
         "superagent": "^8.0.9"

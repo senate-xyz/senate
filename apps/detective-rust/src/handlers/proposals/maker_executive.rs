@@ -283,7 +283,7 @@ async fn get_single_spell_addresses(
     let mut spell_addresses = HashSet::new();
 
     for log in logs {
-        let slate: [u8; 32] = *extract_desired_bytes(&log.0.fax).iter().next().unwrap();
+        let slate: [u8; 32] = *extract_desired_bytes(&log.0.fax).first().unwrap();
 
         let mut count: U256 = U256::from(0);
 
