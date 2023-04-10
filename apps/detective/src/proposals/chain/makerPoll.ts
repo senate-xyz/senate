@@ -43,10 +43,11 @@ export const makerPolls = async (
     const proposals = await Promise.all(
         args.map(async (arg) => {
             const proposalOnChainId = Number(arg.eventData.pollId).toString()
-
             const proposalUrl =
                 (daoHandler.decoder as Decoder).proposalUrl + proposalOnChainId
-            const proposalCreatedTimestamp = Number(arg.eventData.blockCreated)
+            const proposalCreatedTimestamp = (
+                await provider.getBlock(Number(arg.eventData.blockCreated))
+            ).timestamp
             const votingStartsTimestamp = Number(arg.eventData.startDate)
             const votingEndsTimestamp = Number(arg.eventData.endDate)
       

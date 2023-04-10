@@ -19,14 +19,14 @@ type GraphQLProposal = {
     link: string
 }
 
-export const snapshotProposalsSanity = schedule('15 * * * *', async () => {
+export const snapshotProposalsSanity = schedule('26 * * * *', async () => {
     log_sanity.log({
         level: 'info',
         message: '[PROPOSALS] Starting sanity check for snapshot proposals',
         date: new Date(Date.now())
     })
 
-    const SEARCH_FROM: number = Date.now() - 12 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
+    const SEARCH_FROM: number = Date.now() - 512 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
     const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
 
     try {
@@ -63,11 +63,15 @@ const checkAndSanitizeProposalsRoutine = async (
     fromTimestamp: number,
     toTimestamp: number
 ) => {
+    console.log("Handler: ", (daoHandler.decoder as Decoder).space)
+
     const proposalsFromDatabase = await fetchProposalsFromDatabase(
         daoHandler.id,
         new Date(fromTimestamp),
         new Date(toTimestamp)
     )
+
+    console.log("Proposals fetched from db: ", proposalsFromDatabase.length)
 
     const proposalsFromSnapshotAPI: GraphQLProposal[] =
         await fetchProposalsFromSnapshotAPI(
@@ -76,6 +80,9 @@ const checkAndSanitizeProposalsRoutine = async (
             Math.floor(toTimestamp / 1000)
         )
 
+    console.log("Fetched proposals from snapshot:", proposalsFromSnapshotAPI.length)
+
+    // ========== CHECK FOR PROPOSALS WHICH SHOULD BE DELETED FROM DATABASE ==============
     const proposalsNotOnSnapshot: Proposal[] = proposalsFromDatabase.filter(
         (proposal: Proposal) => {
             return !proposalsFromSnapshotAPI
@@ -84,24 +91,24 @@ const checkAndSanitizeProposalsRoutine = async (
         }
     )
 
-    const proposalsNotInDatabase: GraphQLProposal[] =
-        proposalsFromSnapshotAPI.filter((proposal: GraphQLProposal) => {
-            return !proposalsFromDatabase
-                .map((proposal: Proposal) => proposal.externalid)
-                .includes(proposal.id)
-        })
-
-    console.log(proposalsNotOnSnapshot, proposalsNotInDatabase)
-
     if (proposalsNotOnSnapshot.length > 0) {
         // we have proposals which have been removed from snapshot. need to purge them from the database.
         log_sanity.log({
             level: 'warn',
             message: `Found ${proposalsNotOnSnapshot.length} proposals to remove`,
-            proposals: proposalsNotOnSnapshot
+            proposals: proposalsNotOnSnapshot.map(proposal => proposal.url)
         })
 
-        await prisma.proposal.deleteMany({
+        const deletedVotes = prisma.vote.deleteMany({
+            where: {
+                daohandlerid: daoHandler.id,
+                proposalid: {
+                    in: proposalsNotOnSnapshot.map(proposal => proposal.id)
+                }
+            }
+        })
+
+        const deletedProposals = prisma.proposal.deleteMany({
             where: {
                 daohandlerid: daoHandler.id,
                 id: {
@@ -111,14 +118,30 @@ const checkAndSanitizeProposalsRoutine = async (
                 }
             }
         })
+
+        const deletedRows = await prisma.$transaction([deletedVotes, deletedProposals])
+
+        log_sanity.log({
+            level: 'info',
+            message: `Deleted ${deletedRows.length} rows`,
+            deletedRows: deletedRows
+        })
     }
+
+    // ================ CHECK FOR MISSING PROPOSALS ==================
+    const proposalsNotInDatabase: GraphQLProposal[] =
+        proposalsFromSnapshotAPI.filter((proposal: GraphQLProposal) => {
+            return !proposalsFromDatabase
+                .map((proposal: Proposal) => proposal.externalid)
+                .includes(proposal.id)
+        })
 
     if (proposalsNotInDatabase.length > 0) {
         // we are missing proposals from the database. need to set the snapshotIndex backwards to fetch them
         log_sanity.log({
             level: 'warn',
-            message: `Missing proposals: ${proposalsFromDatabase.length} proposals `,
-            proposals: proposalsNotOnSnapshot
+            message: `Missing proposals: ${proposalsNotInDatabase.length} proposals `,
+            proposals: proposalsNotInDatabase.map(proposal => proposal.link)
         })
     }
 }
@@ -180,7 +203,7 @@ const fetchProposalsFromDatabase = async (
 ): Promise<Proposal[]> => {
     return await prisma.proposal.findMany({
         where: {
-            externalid: daoHandlerId,
+            daohandlerid: daoHandlerId,
             timecreated: {
                 gte: searchFrom,
                 lte: searchTo

@@ -82,18 +82,9 @@ export const getClosestBlock = async (timestamp: number, provider: ethers.JsonRp
     let minClosestBlock = 0
     let maxClosestBlock = await provider.getBlockNumber()
 
-    // console.log("Binary search output")
-    // console.log("Searching for closest block to", new Date(timestamp))
     while (minClosestBlock < maxClosestBlock) {
         const middleBlock = Math.floor((minClosestBlock + maxClosestBlock) / 2)
         const middleBlockTimestamp = (await provider.getBlock(middleBlock)).timestamp
-
-        // console.log("Height: ", height)
-        // console.log("Min block", minClosestBlock)
-        // console.log("Max block", maxClosestBlock)
-        // console.log("Mid block", middleBlock)
-        // console.log("Mid block timestamp", new Date(middleBlockTimestamp * 1000))
-        // console.log("\n")
 
         if (timestamp < middleBlockTimestamp * 1000) {
             maxClosestBlock = middleBlock - 1
@@ -102,8 +93,5 @@ export const getClosestBlock = async (timestamp: number, provider: ethers.JsonRp
         }
     }
 
-    console.log("Input timestamp", new Date(timestamp))
-    console.log("Closest block timestamp", new Date((await provider.getBlock(minClosestBlock)).timestamp * 1000) )
-    console.log("Closest block:", minClosestBlock)
     return minClosestBlock
 }
