@@ -273,7 +273,7 @@ async fn get_single_spell_addresses(
                     spell_addresses.insert(to_checksum(&addr, None));
                     count += U256::from(1);
                 }
-                Err(_e) => {
+                Err(_) => {
                     break;
                 }
             }
