@@ -18,6 +18,7 @@ chrono = "0.4.24"
 dotenv = "0.15.0"
 ethers = { version="2.0.2", features = ["rustls", "openssl", "abigen"] }
 futures = "0.3.28"
+itertools = "0.10.5"
 lazy_static = "1.4.0"
 log = "0.4.17"
 num-bigint = "0.4.3"

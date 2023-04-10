@@ -11,6 +11,7 @@ use ethers::types::{H256, U256};
 use ethers::utils::to_checksum;
 use futures::stream::FuturesUnordered;
 use futures::StreamExt;
+use itertools::Itertools;
 use reqwest::header::{ACCEPT, USER_AGENT};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
@@ -23,7 +24,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
-const _VOTE_MULTIPLE_ACTIONS_TOPIC: &str =
+const VOTE_MULTIPLE_ACTIONS_TOPIC: &str =
     "0xed08132900000000000000000000000000000000000000000000000000000000";
 const VOTE_SINGLE_ACTION_TOPIC: &str =
     "0xa69beaba00000000000000000000000000000000000000000000000000000000";
@@ -49,15 +50,22 @@ pub async fn maker_executive_proposals(
 
     let single_spell_logs = single_spell_events.query_with_meta().await?;
 
-    // let multi_spell_events = gov_contract
-    //     .log_note_filter()
-    //     .topic0(vec![VOTE_MULTIPLE_ACTIONS_TOPIC.parse::<H256>()?])
-    //     .from_block(*from_block)
-    //     .to_block(*to_block);
+    let multi_spell_events = gov_contract
+        .log_note_filter()
+        .topic0(vec![VOTE_MULTIPLE_ACTIONS_TOPIC.parse::<H256>()?])
+        .from_block(*from_block)
+        .to_block(*to_block);
 
-    // let multi_spell_logs = multi_spell_events.query_with_meta().await?;
+    let multi_spell_logs = multi_spell_events.query_with_meta().await?;
 
-    let spell_addresses = get_single_spell_addresses(single_spell_logs, gov_contract).await?;
+    let single_spells = get_single_spell_addresses(single_spell_logs, gov_contract.clone()).await?;
+    let multi_spells = get_multi_spell_addresses(multi_spell_logs, gov_contract.clone()).await?;
+
+    let spell_addresses: Vec<String> = [single_spells, multi_spells]
+        .concat()
+        .into_iter()
+        .unique()
+        .collect();
 
     let mut futures = FuturesUnordered::new();
 
@@ -241,15 +249,29 @@ async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
     }
 }
 
-fn extract_desired_bytes(bytes: &[u8]) -> [u8; 32] {
-    let start_index = 4; // Starting from the 5th byte (0-indexed)
-    let mut result: [u8; 32] = [0; 32];
+//this takes out the first 4 bytes because that's the method being called
+//after that, it builds a vec of 32 byte chunks for as long as the input is
+fn extract_desired_bytes(bytes: &[u8]) -> Vec<[u8; 32]> {
+    let mut iterration = 0;
 
-    for (i, byte) in bytes[start_index..(start_index + 32)].iter().enumerate() {
-        result[i] = *byte;
+    let mut result_vec = vec![];
+
+    loop {
+        let start_index = 4 + iterration * 32;
+
+        if bytes.len() < start_index + 32 {
+            break;
+        }
+        let mut result: [u8; 32] = [0; 32];
+
+        for (i, byte) in bytes[start_index..(start_index + 32)].iter().enumerate() {
+            result[i] = *byte;
+        }
+        result_vec.push(result);
+        iterration += 1;
     }
 
-    result
+    result_vec
 }
 
 async fn get_single_spell_addresses(
@@ -261,13 +283,12 @@ async fn get_single_spell_addresses(
     let mut spell_addresses = HashSet::new();
 
     for log in logs {
-        let slate: [u8; 32] = extract_desired_bytes(&log.0.fax);
+        let slate: [u8; 32] = *extract_desired_bytes(&log.0.fax).iter().next().unwrap();
 
         let mut count: U256 = U256::from(0);
 
         loop {
             let address = gov_contract.slates(slate, count).await;
-
             match address {
                 Ok(addr) => {
                     spell_addresses.insert(to_checksum(&addr, None));
@@ -288,40 +309,28 @@ async fn get_single_spell_addresses(
     Ok(result)
 }
 
-// async fn get_multi_spell_addresses(
-//     logs: Vec<(LogNoteFilter, LogMeta)>,
-//     gov_contract: makerexecutive::makerexecutive::makerexecutive<
-//         ethers::providers::Provider<ethers::providers::Http>,
-//     >,
-// ) {
-//     let mut spell_addresses = HashSet::new();
+async fn get_multi_spell_addresses(
+    logs: Vec<(LogNoteFilter, LogMeta)>,
+    _gov_contract: makerexecutive::makerexecutive::makerexecutive<
+        ethers::providers::Provider<ethers::providers::Http>,
+    >,
+) -> Result<Vec<String>> {
+    let mut spell_addresses = HashSet::new();
 
-//     for log in logs {
-//         //get the second "vote" function
-//         println!("{:?}", log.0.fax);
-//         let r = gov_contract.abi().functions_by_name("vote").unwrap()[1]
-//             .decode_input(&log.0.fax)
-//             .unwrap();
+    for log in logs {
+        let slates = extract_desired_bytes(&log.0.fax);
 
-//         let mut count = 0;
+        for slate in slates {
+            let spell_address = Address::from(H256::from(slate));
 
-//         let data: [u8; 32] = Detokenize::from_tokens(r).unwrap();
-//         println!("{:?}", data);
-//         loop {
-//             let address = gov_contract.slates(data, count.into()).await;
+            spell_addresses.insert(to_checksum(&spell_address, None));
+        }
+    }
 
-//             match address {
-//                 Ok(addr) => {
-//                     spell_addresses.insert(addr);
-//                     count += 1;
-//                     println!("{:?}", count);
-//                 }
-//                 Err(_) => {
-//                     println!("break");
-//                     break;
-//                 }
-//             }
-//         }
-//     }
-//     println!("{:#?}", spell_addresses);
-// }
+    let result = spell_addresses
+        .into_iter()
+        .filter(|addr| !addr.contains("0x00000000000"))
+        .collect::<Vec<String>>();
+
+    Ok(result)
+}
