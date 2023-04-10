@@ -208,7 +208,10 @@ async fn get_title(url: String) -> Result<String> {
 
         match response {
             Ok(res) if res.status() == StatusCode::OK => {
-                let text = res.text().await.unwrap();
+                let text = match res.text().await {
+                    Ok(r) => r,
+                    Err(_) => "Unknown".to_string(),
+                };
                 let pattern = r"(?m)^title:\s*(.+)$";
                 let re = Regex::new(pattern).unwrap();
                 let result = re
