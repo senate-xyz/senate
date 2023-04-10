@@ -636,6 +636,25 @@ const seedData = async () => {
         }
     })
 
+    await prisma.dao.upsert({
+        where: { name: 'Arbitrum DAO' },
+        update: {},
+        create: {
+            name: 'Arbitrum DAO',
+            picture: '/assets/Project_Icons/arbitrum',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'arbitrumfoundation.eth'
+                        }
+                    }
+                ]
+            }
+        }
+    })
+
     console.log('Inserting seed user')
     const seedUser = await prisma.user.upsert({
         where: {

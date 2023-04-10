@@ -126,8 +126,10 @@ const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
                                                 width: `${(
                                                     (props.proposal
                                                         .highestScore /
-                                                        props.proposal
-                                                            .scoresTotal) *
+                                                        Number(
+                                                            props.proposal
+                                                                .scoresTotal
+                                                        )) *
                                                     100
                                                 ).toFixed(0)}%`
                                             }}
@@ -137,8 +139,10 @@ const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
                                                 {(
                                                     (props.proposal
                                                         .highestScore /
-                                                        props.proposal
-                                                            .scoresTotal) *
+                                                        Number(
+                                                            props.proposal
+                                                                .scoresTotal
+                                                        )) *
                                                     100
                                                 ).toFixed(2)}
                                                 %

@@ -60,13 +60,14 @@ model dao {
 model daohandler {
   id String @id @default(cuid())
 
-  type          DAOHandlerType
-  decoder       Json
-  chainindex    BigInt?        @default(1920000)
-  snapshotindex DateTime?      @default("2009-01-09T04:54:25.00Z")
-  lastrefresh   DateTime       @default("2009-01-09T04:54:25.00Z")
-  refreshstatus RefreshStatus  @default(NEW)
-  refreshspeed  BigInt         @default(1000000)
+  type               DAOHandlerType
+  decoder            Json
+  chainindex         BigInt?        @default(0)
+  snapshotindex      DateTime?      @default("2000-01-01T00:00:00.00Z")
+  lastrefresh        DateTime       @default("2000-01-01T00:00:00.00Z")
+  refreshstatus      RefreshStatus  @default(NEW)
+  refreshspeed       BigInt         @default(1000000)
+  votersrefreshspeed BigInt         @default(50000000)
 
   daoid         String
   dao           dao            @relation(fields: [daoid], references: [id], onDelete: Cascade)
@@ -88,10 +89,10 @@ model proposal {
 
   choices     Json
   scores      Json
-  scorestotal Float
-  quorum      Float
+  scorestotal Json
+  quorum      Json
 
-  blockcreated BigInt?  @default(420)
+  blockcreated BigInt?  @default(0)
   timecreated  DateTime
   timestart    DateTime
   timeend      DateTime
@@ -135,7 +136,7 @@ model vote {
   id String @id @default(cuid())
 
   choice      Json
-  votingpower Float
+  votingpower Json
   reason      String @db.VarChar(2048)
 
   voteraddress String
@@ -147,7 +148,7 @@ model vote {
   daohandlerid String
   daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade)
 
-  blockcreated BigInt?   @default(420)
+  blockcreated BigInt?   @default(0)
   timecreated  DateTime?
 
   createdat DateTime @default(now())
@@ -161,9 +162,9 @@ model vote {
 model voterhandler {
   id String @id @default(cuid())
 
-  chainindex    BigInt?       @default(1920000)
-  snapshotindex DateTime?     @default("2009-01-09T04:54:25.00Z")
-  lastrefresh   DateTime      @default("2009-01-09T04:54:25.00Z")
+  chainindex    BigInt?       @default(0)
+  snapshotindex DateTime?     @default("2000-01-01T00:00:00.00Z")
+  lastrefresh   DateTime      @default("2000-01-01T00:00:00.00Z")
   refreshstatus RefreshStatus @default(NEW)
 
   daohandlerid String

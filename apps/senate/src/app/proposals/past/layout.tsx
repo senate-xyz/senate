@@ -7,13 +7,13 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
         id: 0,
         name: 'Active Proposals',
         color: 'text-[#808080] text-[36px] font-light cursor-pointer',
-        link: '/proposals/active'
+        link: '/proposals/active?from=any&end=365&voted=any&proxy=any'
     },
     {
         id: 1,
         name: 'Past Proposals',
         color: 'text-white text-[36px] font-bold cursor-pointer',
-        link: '/proposals/past'
+        link: '/proposals/past?from=any&end=90&voted=any&proxy=any'
     }
 ]
 

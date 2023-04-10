@@ -2,12 +2,12 @@ import { log_pd } from '@senate/axiom'
 import { DAOHandler } from '@senate/database'
 import { Decoder } from '@senate/database'
 import axios from 'axios'
-import {AxiosError} from 'axios'
+import { AxiosError } from 'axios'
 import { ethers } from 'ethers'
 import getAbi from '../../utils'
 
 interface PollResults {
-    choices: string[],
+    choices: string[]
     scores: number[]
 }
 
@@ -50,15 +50,16 @@ export const makerPolls = async (
             ).timestamp
             const votingStartsTimestamp = Number(arg.eventData.startDate)
             const votingEndsTimestamp = Number(arg.eventData.endDate)
-      
+
             const title = await getProposalTitle(
                 arg.eventData.url,
                 proposalOnChainId
             )
-            const resultsData : PollResults = await fetchResultsData(proposalOnChainId)
+            const resultsData: PollResults = await fetchResultsData(
+                proposalOnChainId
+            )
 
-            if (!title || !resultsData)
-                return null
+            if (!title || !resultsData) return null
 
             return {
                 externalId: proposalOnChainId,
@@ -71,7 +72,10 @@ export const makerPolls = async (
                 blockCreated: arg.txBlock,
                 choices: resultsData.choices,
                 scores: resultsData.scores,
-                scoresTotal: resultsData.scores.reduce((acc, score) => acc + score, 0),
+                scoresTotal: resultsData.scores.reduce(
+                    (acc, score) => acc + score,
+                    0
+                ),
                 quorum: 0,
                 url: proposalUrl
             }
@@ -81,8 +85,8 @@ export const makerPolls = async (
     return proposals.filter((proposal) => proposal)
 }
 
-const fetchResultsData = async (pollChainId: string) : Promise<PollResults> => {
-    let results : PollResults = {
+const fetchResultsData = async (pollChainId: string): Promise<PollResults> => {
+    let results: PollResults = {
         choices: [],
         scores: []
     }
@@ -91,12 +95,16 @@ const fetchResultsData = async (pollChainId: string) : Promise<PollResults> => {
         let retriesLeft = 5
         while (retriesLeft) {
             try {
-                const response = await (await axios.get(`https://vote.makerdao.com/api/polling/tally/${pollChainId}`)).data
+                const response = await (
+                    await axios.get(
+                        `https://vote.makerdao.com/api/polling/tally/${pollChainId}`
+                    )
+                ).data
 
                 const choices = []
                 const scores = []
 
-                for (let result of response.results) {
+                for (const result of response.results) {
                     choices[result.optionId] = result.optionName
                     scores[result.optionId] = parseFloat(result.mkrSupport)
                 }
@@ -112,7 +120,7 @@ const fetchResultsData = async (pollChainId: string) : Promise<PollResults> => {
                     results = null
                     throw err
                 }
-    
+
                 retriesLeft--
                 if (!retriesLeft) throw err
 
@@ -130,9 +138,8 @@ const fetchResultsData = async (pollChainId: string) : Promise<PollResults> => {
             message: `Error fetching results for Maker poll ${pollChainId}`,
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
-            errorStack: (e as Error).stack,
+            errorStack: (e as Error).stack
         })
-
     }
 
     return results
@@ -189,7 +196,7 @@ const getProposalTitle = async (
             message: `Error fetching title for Maker poll ${onChainId}`,
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
-            errorStack: (e as Error).stack,
+            errorStack: (e as Error).stack
         })
     }
 
