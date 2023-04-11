@@ -77,37 +77,70 @@ async fn main() {
     let _ = load_config_from_db(&client).await;
     let _ = create_voter_handlers(&client).await;
 
-    let (tx, rx) = flume::unbounded();
+    let (tx_snapshot_proposals, rx_snapshot_proposals) = flume::unbounded();
+    let (tx_snapshot_votes, rx_snapshot_votes) = flume::unbounded();
+    let (tx_chain_proposals, rx_chain_proposals) = flume::unbounded();
+    let (tx_chain_votes, rx_chain_votes) = flume::unbounded();
 
     let producer_client_clone = client.clone();
 
     let producer_task = tokio::spawn(async move {
         loop {
-            let queue = match producer_task(&producer_client_clone, &config).await {
-                Ok(r) => r,
-                Err(e) => {
-                    warn!("refresher main - {:#?}", e);
-                    vec![]
-                }
-            };
+            let _ = load_config_from_db(&producer_client_clone).await;
+            let _ = create_voter_handlers(&producer_client_clone).await;
 
-            for item in queue {
-                tx.send(item).unwrap();
+            match produce_snapshot_proposals_queue(&producer_client_clone, &config).await {
+                Ok(queue) => {
+                    for item in queue {
+                        tx_snapshot_proposals.send(item).unwrap();
+                    }
+                }
+                Err(_) => {}
+            }
+
+            match produce_snapshot_votes_queue(&producer_client_clone, &config).await {
+                Ok(queue) => {
+                    for item in queue {
+                        tx_snapshot_votes.send(item).unwrap();
+                    }
+                }
+                Err(_) => {}
+            }
+
+            match produce_chain_proposals_queue(&producer_client_clone, &config).await {
+                Ok(queue) => {
+                    for item in queue {
+                        tx_chain_proposals.send(item).unwrap();
+                    }
+                }
+                Err(_) => {}
+            }
+
+            match produce_chain_votes_queue(&producer_client_clone, &config).await {
+                Ok(queue) => {
+                    for item in queue {
+                        tx_chain_votes.send(item).unwrap();
+                    }
+                }
+                Err(_) => {}
             }
 
             sleep(Duration::from_secs(1)).await;
         }
     });
 
-    let consumer_client_clone = client.clone();
-    let consumer_task = tokio::spawn(async move {
+    let consumer_snapshot_proposal_client = client.clone();
+    let consumer_snapshot_proposals_task = tokio::spawn(async move {
         loop {
-            info!("queue size: {:?}", rx.len());
-            if let Ok(item) = rx.recv_async().await {
-                let client_clone = consumer_client_clone.clone();
+            info!(
+                "consumer_snapshot_proposals_task queue size: {:?}",
+                rx_snapshot_proposals.len()
+            );
+            if let Ok(item) = rx_snapshot_proposals.recv_async().await {
+                let client_clone = consumer_snapshot_proposal_client.clone();
 
                 tokio::spawn(async move {
-                    match comsumer_task(item, &client_clone).await {
+                    match consume_snapshot_proposals(item, &client_clone).await {
                         Ok(_) => {}
                         Err(e) => {
                             warn!("refresher main - {:#?}", e);
@@ -120,48 +153,84 @@ async fn main() {
         }
     });
 
-    try_join!(consumer_task, producer_task).unwrap();
-}
+    let consumer_snapshot_votes_client = client.clone();
+    let consumer_snapshot_votes_task = tokio::spawn(async move {
+        loop {
+            info!(
+                "consumer_snapshot_votes_task queue size: {:?}",
+                rx_snapshot_votes.len()
+            );
+            if let Ok(item) = rx_snapshot_votes.recv_async().await {
+                let client_clone = consumer_snapshot_votes_client.clone();
 
-async fn comsumer_task(entry: RefreshEntry, client: &Arc<PrismaClient>) -> Result<()> {
-    match entry.refresh_type {
-        RefreshType::Daosnapshotproposals => {
-            consume_snapshot_proposals(entry, client).await?;
+                tokio::spawn(async move {
+                    match consume_snapshot_votes(item, &client_clone).await {
+                        Ok(_) => {}
+                        Err(e) => {
+                            warn!("refresher main - {:#?}", e);
+                        }
+                    }
+                });
+            }
+
+            sleep(Duration::from_millis(config.refresh_interval.into())).await;
         }
-        RefreshType::Daosnapshotvotes => {
-            consume_snapshot_votes(entry, client).await?;
+    });
+
+    let consumer_chain_proposal_client = client.clone();
+    let consumer_chain_proposals_task = tokio::spawn(async move {
+        loop {
+            info!(
+                "consumer_chain_proposals_task queue size: {:?}",
+                rx_chain_proposals.len()
+            );
+            if let Ok(item) = rx_chain_proposals.recv_async().await {
+                let client_clone = consumer_chain_proposal_client.clone();
+
+                tokio::spawn(async move {
+                    match consume_chain_proposals(item, &client_clone).await {
+                        Ok(_) => {}
+                        Err(e) => {
+                            warn!("refresher main - {:#?}", e);
+                        }
+                    }
+                });
+            }
+
+            sleep(Duration::from_millis(config.refresh_interval.into())).await;
         }
-        RefreshType::Daochainproposals => {
-            consume_chain_proposals(entry, client).await?;
+    });
+
+    let consumer_chain_votes_client = client.clone();
+    let consumer_chain_votes_task = tokio::spawn(async move {
+        loop {
+            info!(
+                "consumer_chain_votes_task queue size: {:?}",
+                rx_chain_votes.len()
+            );
+            if let Ok(item) = rx_chain_votes.recv_async().await {
+                let client_clone = consumer_chain_votes_client.clone();
+
+                tokio::spawn(async move {
+                    match consume_chain_votes(item, &client_clone).await {
+                        Ok(_) => {}
+                        Err(e) => {
+                            warn!("refresher main - {:#?}", e);
+                        }
+                    }
+                });
+            }
+
+            sleep(Duration::from_millis(config.refresh_interval.into())).await;
         }
-        RefreshType::Daochainvotes => {
-            consume_chain_votes(entry, client).await?;
-        }
-    }
-    Ok(())
-}
+    });
 
-async fn producer_task(client: &PrismaClient, config: &Config) -> Result<Vec<RefreshEntry>> {
-    load_config_from_db(client).await?;
-    create_voter_handlers(client).await?;
-
-    let snapshot_proposal_queue = produce_snapshot_proposals_queue(client, config).await?;
-    let snapshot_votes_queue = produce_snapshot_votes_queue(client, config).await?;
-
-    let chain_proposal_queue = produce_chain_proposals_queue(client, config).await?;
-    let chain_votes_queue = produce_chain_votes_queue(client, config).await?;
-
-    let mut complete_queue = Vec::new();
-    complete_queue.reserve(
-        snapshot_proposal_queue.len()
-            + snapshot_votes_queue.len()
-            + chain_proposal_queue.len()
-            + chain_votes_queue.len(),
-    );
-    complete_queue.extend(snapshot_proposal_queue);
-    complete_queue.extend(snapshot_votes_queue);
-    complete_queue.extend(chain_proposal_queue);
-    complete_queue.extend(chain_votes_queue);
-
-    Ok(complete_queue)
+    try_join!(
+        producer_task,
+        consumer_snapshot_proposals_task,
+        consumer_snapshot_votes_task,
+        consumer_chain_proposals_task,
+        consumer_chain_votes_task
+    )
+    .unwrap();
 }
