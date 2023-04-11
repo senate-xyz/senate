@@ -9,10 +9,6 @@
       "path": "../apps/detective-rust"
     },
     {
-      "name": "🚀 @senate/detective",
-      "path": "../apps/detective"
-    },
-    {
       "name": "🦀 @senate/refresher-rust",
       "path": "../apps/refresher-rust"
     },

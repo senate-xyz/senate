@@ -208,19 +208,19 @@ async fn get_single_spell_addresses(
 
             let mut count: U256 = U256::from(0);
 
-            loop {
-                let address = gov_contract.slates(slate, count).await;
-                match address {
-                    Ok(addr) => {
-                        if !voter_spells.contains(&to_checksum(&addr, None))
-                            && to_checksum(&log.0.guy, None) == voter
-                        {
-                            voter_spells.insert(to_checksum(&addr, None));
+            if to_checksum(&log.0.guy, None) == voter {
+                loop {
+                    let address = gov_contract.slates(slate, count).await;
+                    match address {
+                        Ok(addr) => {
+                            if !voter_spells.contains(&to_checksum(&addr, None)) {
+                                voter_spells.insert(to_checksum(&addr, None));
+                            }
+                            count += U256::from(1);
                         }
-                        count += U256::from(1);
-                    }
-                    Err(_) => {
-                        break;
+                        Err(_) => {
+                            break;
+                        }
                     }
                 }
             }
