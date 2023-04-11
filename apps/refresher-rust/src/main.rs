@@ -1,4 +1,4 @@
-use anyhow::Result;
+
 use log::{info, warn};
 use tokio::try_join;
 mod prisma;
@@ -33,7 +33,7 @@ use crate::consume_queue::chain_votes::consume_chain_votes;
 use crate::consume_queue::snapshot_proposals::consume_snapshot_proposals;
 use crate::consume_queue::snapshot_votes::consume_snapshot_votes;
 
-use config::{load_config_from_db, Config, CONFIG};
+use config::{load_config_from_db, CONFIG};
 pub mod config;
 pub mod handlers;
 use env_logger::{Builder, Env};
