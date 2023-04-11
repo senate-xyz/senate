@@ -74,6 +74,10 @@ async fn main() {
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
     let config_clone = (*CONFIG.read().unwrap()).clone();
 
+    //initial load
+    let _ = load_config_from_db(&client).await;
+    let _ = create_voter_handlers(&client).await;
+
     let (tx, mut rx) = mpsc::channel(1000);
 
     let producer_client_clone = client.clone();
