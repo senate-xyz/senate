@@ -46,6 +46,7 @@ enum RefreshType {
     Daosnapshotvotes,
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct RefreshEntry {
     handler_id: String,
