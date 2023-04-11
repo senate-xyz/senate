@@ -84,7 +84,7 @@ pub async fn makerexecutive_votes(
         futures.push(async {
             let spells_for_voter = &spell_addresses
                 .iter()
-                .filter(|sc| sc.voter.clone() == voter_address.to_string())
+                .filter(|sc| sc.voter.clone() == *voter_address)
                 .collect_vec()
                 .first()
                 .unwrap()
@@ -231,7 +231,7 @@ async fn get_single_spell_addresses(
             .collect::<Vec<String>>();
 
         spells.push(SpellCast {
-            voter: voter,
+            voter,
             spells: spells_for_voter,
         })
     }
@@ -268,7 +268,7 @@ async fn get_multi_spell_addresses(
             .collect::<Vec<String>>();
 
         spells.push(SpellCast {
-            voter: voter,
+            voter,
             spells: spells_for_voter,
         })
     }

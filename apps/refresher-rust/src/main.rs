@@ -1,5 +1,5 @@
 use anyhow::Result;
-use log::{debug, error, info, trace, warn};
+use log::{info, warn};
 use tokio::try_join;
 mod prisma;
 use std::sync::Arc;
