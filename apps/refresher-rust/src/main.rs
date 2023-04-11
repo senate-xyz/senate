@@ -7,7 +7,6 @@ use std::time::Duration;
 
 use handlers::create_voter_handlers;
 use prisma::PrismaClient;
-use tokio::sync::mpsc;
 use tokio::time::sleep;
 
 mod produce_queue {
@@ -72,33 +71,29 @@ async fn main() {
     info!("refresher start");
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
-    let config_clone = (*CONFIG.read().unwrap()).clone();
+    let config = (*CONFIG.read().unwrap()).clone();
 
     //initial load
     let _ = load_config_from_db(&client).await;
     let _ = create_voter_handlers(&client).await;
 
-    let (tx, mut rx) = mpsc::channel(1000);
+    let (tx, rx) = flume::unbounded();
 
     let producer_client_clone = client.clone();
 
     let producer_task = tokio::spawn(async move {
         loop {
-            let inner_client_clone = producer_client_clone.clone();
-            let tx_clone = tx.clone();
-            let config_clone = (*CONFIG.read().unwrap()).clone();
+            let queue = match producer_task(&producer_client_clone, &config).await {
+                Ok(r) => r,
+                Err(e) => {
+                    warn!("refresher main - {:#?}", e);
+                    vec![]
+                }
+            };
 
-            tokio::spawn(async move {
-                let queue = match producer_task(&inner_client_clone, &config_clone).await {
-                    Ok(r) => r,
-                    Err(e) => {
-                        warn!("refresher main - {:#?}", e);
-
-                        vec![]
-                    }
-                };
-                tx_clone.send(queue).await
-            });
+            for item in queue {
+                tx.send(item).unwrap();
+            }
 
             sleep(Duration::from_secs(1)).await;
         }
@@ -107,23 +102,24 @@ async fn main() {
     let consumer_client_clone = client.clone();
     let consumer_task = tokio::spawn(async move {
         loop {
-            let item = rx.recv().await.unwrap();
+            info!("queue size: {:?}", rx.len());
+            match rx.recv_async().await {
+                Ok(item) => {
+                    let client_clone = consumer_client_clone.clone();
 
-            info!("Queue size: {:?}", item.len());
-
-            for entry in item {
-                let client_clone = consumer_client_clone.clone();
-
-                tokio::spawn(async move {
-                    match comsumer_task(entry, &client_clone).await {
-                        Ok(_) => {}
-                        Err(e) => {
-                            warn!("refresher main - {:#?}", e);
+                    tokio::spawn(async move {
+                        match comsumer_task(item, &client_clone).await {
+                            Ok(_) => {}
+                            Err(e) => {
+                                warn!("refresher main - {:#?}", e);
+                            }
                         }
-                    }
-                });
-                sleep(Duration::from_millis(config_clone.refresh_interval.into())).await;
+                    });
+                }
+                Err(_) => {}
             }
+
+            sleep(Duration::from_millis(config.refresh_interval.into())).await;
         }
     });
 

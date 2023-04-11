@@ -3,7 +3,7 @@ use anyhow::Result;
 use prisma::PrismaClient;
 use std::sync::{Arc, RwLock};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Config {
     pub refresh_interval: u32,
 
