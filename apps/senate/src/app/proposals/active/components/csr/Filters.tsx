@@ -103,20 +103,23 @@ export const Filters = (props: {
                                 </option>
                             </>
                         )}
-                        {props.subscriptions.map((sub) => {
-                            return (
-                                <option
-                                    key={sub.name
-                                        .toLowerCase()
-                                        .replace(' ', '')}
-                                    value={sub.name
-                                        .toLowerCase()
-                                        .replace(' ', '')}
-                                >
-                                    {sub.name}
-                                </option>
-                            )
-                        })}
+
+                        {props.subscriptions
+                            .sort((a, b) => a.name.localeCompare(b.name))
+                            .map((sub) => {
+                                return (
+                                    <option
+                                        key={sub.name
+                                            .toLowerCase()
+                                            .replace(' ', '')}
+                                        value={sub.name
+                                            .toLowerCase()
+                                            .replace(' ', '')}
+                                    >
+                                        {sub.name}
+                                    </option>
+                                )
+                            })}
                     </select>
                 </div>
 
