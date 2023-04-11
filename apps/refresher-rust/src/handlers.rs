@@ -1,4 +1,4 @@
-use crate::prisma::{voterhandler, PrismaClient, RefreshStatus};
+use crate::prisma::{voter, voterhandler, PrismaClient, RefreshStatus};
 use anyhow::Result;
 
 pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
@@ -10,7 +10,12 @@ pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
 
     if voters_count * daohandlers_count > voterhandler_count {
         let daohandlers = client.daohandler().find_many(vec![]).exec().await.unwrap();
-        let voters = client.voter().find_many(vec![]).exec().await.unwrap();
+        let voters = client
+            .voter()
+            .find_many(vec![voter::voterhandlers::none(vec![])])
+            .exec()
+            .await
+            .unwrap();
 
         for voter in voters {
             let _ = client
