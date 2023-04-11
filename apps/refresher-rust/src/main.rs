@@ -148,7 +148,7 @@ async fn producer_task(client: &PrismaClient, config: &Config) -> Result<Vec<Ref
     load_config_from_db(client).await?;
     create_voter_handlers(client).await?;
 
-    println!("{:#?}", config);
+    info!("{:#?}", config);
 
     let snapshot_proposal_queue = produce_snapshot_proposals_queue(client, config).await?;
     let snapshot_votes_queue = produce_snapshot_votes_queue(client, config).await?;
