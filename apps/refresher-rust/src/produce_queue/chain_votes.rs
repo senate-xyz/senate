@@ -17,9 +17,9 @@ pub async fn produce_chain_votes_queue(
     client: &PrismaClient,
     config: &Config,
 ) -> Result<Vec<RefreshEntry>> {
-    let normal_refresh = Utc::now() - Duration::milliseconds(config.normal_chain_votes.into());
-    let force_refresh = Utc::now() - Duration::milliseconds(config.force_chain_votes.into());
-    let new_refresh = Utc::now() - Duration::milliseconds(config.new_chain_votes.into());
+    let normal_refresh = Utc::now() - Duration::seconds(config.normal_chain_votes.into());
+    let force_refresh = Utc::now() - Duration::seconds(config.force_chain_votes.into());
+    let new_refresh = Utc::now() - Duration::seconds(config.new_chain_votes.into());
 
     let handler_types = vec![
         prisma::DaoHandlerType::AaveChain,

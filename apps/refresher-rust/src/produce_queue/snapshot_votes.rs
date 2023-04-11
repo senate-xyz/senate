@@ -17,9 +17,9 @@ pub async fn produce_snapshot_votes_queue(
     client: &PrismaClient,
     config: &Config,
 ) -> Result<Vec<RefreshEntry>> {
-    let normal_refresh = Utc::now() - Duration::milliseconds(config.normal_snapshot_votes.into());
-    let force_refresh = Utc::now() - Duration::milliseconds(config.force_snapshot_votes.into());
-    let new_refresh = Utc::now() - Duration::milliseconds(config.new_snapshot_votes.into());
+    let normal_refresh = Utc::now() - Duration::seconds(config.normal_snapshot_votes.into());
+    let force_refresh = Utc::now() - Duration::seconds(config.force_snapshot_votes.into());
+    let new_refresh = Utc::now() - Duration::seconds(config.new_snapshot_votes.into());
 
     let dao_handlers = client
         .daohandler()

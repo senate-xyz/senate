@@ -12,9 +12,9 @@ pub async fn produce_chain_proposals_queue(
     client: &PrismaClient,
     config: &Config,
 ) -> Result<Vec<RefreshEntry>> {
-    let normal_refresh = Utc::now() - Duration::milliseconds(config.normal_chain_proposals.into());
-    let force_refresh = Utc::now() - Duration::milliseconds(config.force_chain_proposals.into());
-    let new_refresh = Utc::now() - Duration::milliseconds(config.new_chain_proposals.into());
+    let normal_refresh = Utc::now() - Duration::seconds(config.normal_chain_proposals.into());
+    let force_refresh = Utc::now() - Duration::seconds(config.force_chain_proposals.into());
+    let new_refresh = Utc::now() - Duration::seconds(config.new_chain_proposals.into());
 
     let handler_types = vec![
         prisma::DaoHandlerType::AaveChain,
