@@ -71,7 +71,7 @@ async fn main() {
     info!("refresher start");
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
-    let config = (*CONFIG.read().unwrap()).clone();
+    let config = *CONFIG.read().unwrap();
 
     //initial load
     let _ = load_config_from_db(&client).await;
@@ -103,20 +103,17 @@ async fn main() {
     let consumer_task = tokio::spawn(async move {
         loop {
             info!("queue size: {:?}", rx.len());
-            match rx.recv_async().await {
-                Ok(item) => {
-                    let client_clone = consumer_client_clone.clone();
+            if let Ok(item) = rx.recv_async().await {
+                let client_clone = consumer_client_clone.clone();
 
-                    tokio::spawn(async move {
-                        match comsumer_task(item, &client_clone).await {
-                            Ok(_) => {}
-                            Err(e) => {
-                                warn!("refresher main - {:#?}", e);
-                            }
+                tokio::spawn(async move {
+                    match comsumer_task(item, &client_clone).await {
+                        Ok(_) => {}
+                        Err(e) => {
+                            warn!("refresher main - {:#?}", e);
                         }
-                    });
-                }
-                Err(_) => {}
+                    }
+                });
             }
 
             sleep(Duration::from_millis(config.refresh_interval.into())).await;
