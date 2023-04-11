@@ -16,6 +16,7 @@ codegen-units = 1
 anyhow = { version = "1.0.70", features = ["backtrace"] }
 chrono = "0.4.24"
 dotenv = "0.15.0"
+env_logger = "0.10.0"
 ethers = { version="2.0.2", features = ["rustls", "openssl", "abigen"] }
 futures = "0.3.28"
 itertools = "0.10.5"

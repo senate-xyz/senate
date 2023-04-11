@@ -1,5 +1,5 @@
 use anyhow::Result;
-use log::{info, warn};
+use log::{debug, error, info, trace, warn};
 use tokio::try_join;
 mod prisma;
 use std::sync::Arc;
@@ -35,9 +35,9 @@ use crate::consume_queue::snapshot_proposals::consume_snapshot_proposals;
 use crate::consume_queue::snapshot_votes::consume_snapshot_votes;
 
 use config::{load_config_from_db, Config, CONFIG};
-
 pub mod config;
 pub mod handlers;
+use env_logger::{Builder, Env};
 
 #[derive(Debug)]
 enum RefreshType {
@@ -54,8 +54,23 @@ pub struct RefreshEntry {
     voters: Vec<String>,
 }
 
+fn init_logger() {
+    let env = Env::default()
+        .filter_or("LOG_LEVEL", "info")
+        .write_style_or("LOG_STYLE", "always");
+
+    Builder::from_env(env)
+        .format_level(false)
+        .format_timestamp_nanos()
+        .init();
+}
+
 #[tokio::main]
 async fn main() {
+    init_logger();
+
+    info!("refresher start");
+
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
     let config_clone = (*CONFIG.read().unwrap()).clone();
 

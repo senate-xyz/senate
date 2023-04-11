@@ -91,9 +91,22 @@ fn index() -> &'static str {
     "Hello, world!"
 }
 
+fn init_logger() {
+    use env_logger::{Builder, Env};
+    let env = Env::default()
+        .filter_or("LOG_LEVEL", "info")
+        .write_style_or("LOG_STYLE", "always");
+
+    Builder::from_env(env)
+        .format_level(false)
+        .format_timestamp_nanos()
+        .init();
+}
+
 #[launch]
 async fn rocket() -> _ {
     dotenv().ok();
+    init_logger();
     let rpc_url = match env::var_os("ALCHEMY_NODE_URL") {
         Some(v) => v.into_string().unwrap(),
         None => panic!("$ALCHEMY_NODE_URL is not set"),
