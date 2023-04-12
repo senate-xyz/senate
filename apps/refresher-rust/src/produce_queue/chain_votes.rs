@@ -61,7 +61,10 @@ pub async fn produce_chain_votes_queue(
 
     let filtered_dao_handlers: Vec<_> = dao_handlers
         .into_iter()
-        .filter(|dao_handler| !dao_handler.proposals.is_empty())
+        .filter(|dao_handler| {
+            !dao_handler.proposals.is_empty()
+                || dao_handler.r#type == prisma::DaoHandlerType::MakerPollArbitrum
+        })
         .collect();
 
     let mut voter_handler_to_refresh = Vec::new();
