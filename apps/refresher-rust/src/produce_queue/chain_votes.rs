@@ -12,6 +12,7 @@ use prisma::{daohandler, PrismaClient};
 use prisma_client_rust::{
     chrono::{Duration, Utc},
     operator::{and, or},
+    Direction,
 };
 
 pub async fn produce_chain_votes_queue(
@@ -87,6 +88,7 @@ pub async fn produce_chain_votes_queue(
                 ]),
             ])
             .take(1000)
+            .order_by(voterhandler::refreshstatus::order(Direction::Asc))
             .include(voterhandler::include!({
                 voter : select { address }
             }))
