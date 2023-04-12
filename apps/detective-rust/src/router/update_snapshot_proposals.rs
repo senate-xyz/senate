@@ -225,16 +225,25 @@ async fn update_proposals(
         new_index = old_index;
     }
 
+    let uptodate = if old_index - new_index < 60 * 60 {
+        true
+    } else {
+        false
+    };
+
     let _ = ctx
         .db
         .daohandler()
         .update(
             daohandler::id::equals(dao_handler.id),
-            vec![daohandler::snapshotindex::set(Some(DateTime::from_utc(
-                NaiveDateTime::from_timestamp_millis(new_index * 1000)
-                    .expect("can not create snapshotindex"),
-                FixedOffset::east_opt(0).unwrap(),
-            )))],
+            vec![
+                daohandler::snapshotindex::set(Some(DateTime::from_utc(
+                    NaiveDateTime::from_timestamp_millis(new_index * 1000)
+                        .expect("can not create snapshotindex"),
+                    FixedOffset::east_opt(0).unwrap(),
+                ))),
+                daohandler::uptodate::set(uptodate),
+            ],
         )
         .exec()
         .await

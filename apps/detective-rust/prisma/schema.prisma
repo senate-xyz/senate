@@ -60,14 +60,18 @@ model dao {
 model daohandler {
   id String @id @default(cuid())
 
-  type               DAOHandlerType
-  decoder            Json
-  chainindex         BigInt?        @default(0)
-  snapshotindex      DateTime?      @default("2000-01-01T00:00:00.00Z")
-  lastrefresh        DateTime       @default("2000-01-01T00:00:00.00Z")
-  refreshstatus      RefreshStatus  @default(NEW)
-  refreshspeed       BigInt         @default(1000000)
-  votersrefreshspeed BigInt         @default(50000000)
+  type    DAOHandlerType
+  decoder Json
+
+  chainindex    BigInt?   @default(0)
+  snapshotindex DateTime? @default("2000-01-01T00:00:00.00Z")
+
+  lastrefresh   DateTime      @default("2000-01-01T00:00:00.00Z")
+  refreshstatus RefreshStatus @default(NEW)
+  uptodate      Boolean       @default(false)
+
+  refreshspeed       BigInt @default(1000000)
+  votersrefreshspeed BigInt @default(50000000)
 
   daoid         String
   dao           dao            @relation(fields: [daoid], references: [id], onDelete: Cascade)
@@ -166,6 +170,7 @@ model voterhandler {
   snapshotindex DateTime?     @default("2000-01-01T00:00:00.00Z")
   lastrefresh   DateTime      @default("2000-01-01T00:00:00.00Z")
   refreshstatus RefreshStatus @default(NEW)
+  uptodate      Boolean       @default(false)
 
   daohandlerid String
   daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade)

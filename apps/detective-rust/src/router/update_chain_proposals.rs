@@ -210,12 +210,21 @@ async fn insert_proposals(
         to_block
     };
 
+    let uptodate = if dao_handler.chainindex.unwrap() - new_index < 1000 {
+        true
+    } else {
+        false
+    };
+
     let _ = ctx
         .db
         .daohandler()
         .update(
             daohandler::id::equals(dao_handler.id.to_string()),
-            vec![daohandler::chainindex::set(new_index.into())],
+            vec![
+                daohandler::chainindex::set(new_index.into()),
+                daohandler::uptodate::set(uptodate),
+            ],
         )
         .exec()
         .await

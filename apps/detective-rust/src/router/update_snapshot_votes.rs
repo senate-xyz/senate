@@ -253,6 +253,15 @@ async fn update_refresh_statuses(
         new_index = Utc::now().timestamp();
     }
 
+    let mut uptodate = false;
+
+    if (search_to_timestamp - dao_handler.snapshotindex.unwrap().timestamp() < 60 * 60
+        && dao_handler.uptodate)
+        || votes.len() < 100
+    {
+        uptodate = true;
+    }
+
     ctx.db
         .voterhandler()
         .update_many(
@@ -266,11 +275,14 @@ async fn update_refresh_statuses(
                 ),
                 voterhandler::daohandlerid::equals(dao_handler.id.clone()),
             ],
-            vec![voterhandler::snapshotindex::set(Some(DateTime::from_utc(
-                NaiveDateTime::from_timestamp_millis(new_index * 1000)
-                    .expect("bad new_index timestamp"),
-                FixedOffset::east_opt(0).unwrap(),
-            )))],
+            vec![
+                voterhandler::snapshotindex::set(Some(DateTime::from_utc(
+                    NaiveDateTime::from_timestamp_millis(new_index * 1000)
+                        .expect("bad new_index timestamp"),
+                    FixedOffset::east_opt(0).unwrap(),
+                ))),
+                voterhandler::uptodate::set(uptodate),
+            ],
         )
         .exec()
         .await?;

@@ -322,6 +322,14 @@ async fn insert_votes(
         new_index = daochainindex;
     }
 
+    let mut uptodate = false;
+
+    if (daochainindex - new_index < 1000 && dao_handler.uptodate)
+        || dao_handler.r#type == MakerPollArbitrum
+    {
+        uptodate = true;
+    }
+
     ctx.db
         .voterhandler()
         .update_many(
@@ -334,7 +342,10 @@ async fn insert_votes(
                 )]),
                 voterhandler::daohandlerid::equals(dao_handler.id.clone()),
             ],
-            vec![voterhandler::chainindex::set((*new_index).into())],
+            vec![
+                voterhandler::chainindex::set((*new_index).into()),
+                voterhandler::uptodate::set(uptodate),
+            ],
         )
         .exec()
         .await
