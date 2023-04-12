@@ -1,5 +1,6 @@
-use anyhow::Result;
 use std::collections::HashMap;
+
+use anyhow::Result;
 
 use crate::{
     config::Config,
@@ -53,91 +54,92 @@ pub async fn produce_chain_votes_queue(
                 ]),
             ])]),
         ])
-        .include(daohandler::include!({
-            dao
-            proposals
-            voterhandlers:
-                include { voter }
-        }))
+        .include(daohandler::include!({ proposals }))
         .exec()
         .await?;
 
-    let mut voter_handler_to_refresh = Vec::new();
-
     let filtered_dao_handlers: Vec<_> = dao_handlers
         .into_iter()
-        .filter(|dao_handler| {
-            !dao_handler.proposals.is_empty()
-                || dao_handler.r#type == prisma::DaoHandlerType::MakerPollArbitrum
-        })
+        .filter(|dao_handler| !dao_handler.proposals.is_empty())
         .collect();
 
-    let refresh_queue: Vec<RefreshEntry> = filtered_dao_handlers
-        .iter()
-        .cloned()
-        .flat_map(|dao_handler| {
-            let voter_handlers: Vec<_> = dao_handler
-                .voterhandlers
-                .iter()
-                .cloned()
-                .filter(|voter_handler| {
-                    (voter_handler.refreshstatus == prisma::RefreshStatus::Done
-                        && voter_handler.lastrefresh.lt(&normal_refresh))
-                        || (voter_handler.refreshstatus == prisma::RefreshStatus::Pending
-                            && voter_handler.lastrefresh.lt(&force_refresh))
-                        || (voter_handler.refreshstatus == prisma::RefreshStatus::New
-                            && voter_handler.lastrefresh.lt(&new_refresh))
-                })
-                .collect();
+    let mut voter_handler_to_refresh = Vec::new();
+    let mut refresh_queue = Vec::new();
 
-            let vote_indexes: Vec<i64> = voter_handlers
-                .iter()
-                .cloned()
-                .map(|voter_handler| voter_handler.chainindex.unwrap())
-                .collect();
+    for dao_handler in filtered_dao_handlers {
+        let voter_handlers = client
+            .voterhandler()
+            .find_many(vec![
+                voterhandler::daohandlerid::equals(dao_handler.id.to_string()),
+                or(vec![
+                    and(vec![
+                        voterhandler::refreshstatus::equals(prisma::RefreshStatus::Done),
+                        voterhandler::lastrefresh::lt(normal_refresh.into()),
+                    ]),
+                    and(vec![
+                        voterhandler::refreshstatus::equals(prisma::RefreshStatus::Pending),
+                        voterhandler::lastrefresh::lt(force_refresh.into()),
+                    ]),
+                    and(vec![
+                        voterhandler::refreshstatus::equals(prisma::RefreshStatus::New),
+                        voterhandler::lastrefresh::lt(new_refresh.into()),
+                    ]),
+                ]),
+            ])
+            .take(1000)
+            .include(voterhandler::include!({
+                voter : select { address }
+            }))
+            .exec()
+            .await
+            .unwrap();
 
-            let domain_limit = if dao_handler.r#type == prisma::DaoHandlerType::MakerPollArbitrum {
-                100_000_000
-            } else {
-                20_000_000
-            };
+        let vote_indexes: Vec<i64> = voter_handlers
+            .iter()
+            .cloned()
+            .map(|voter_handler| voter_handler.chainindex.unwrap())
+            .collect();
 
-            let vote_indexes_buckets = bin(vote_indexes, 0, domain_limit, 10);
+        let domain_limit = if dao_handler.r#type == prisma::DaoHandlerType::MakerPollArbitrum {
+            100_000_000
+        } else {
+            20_000_000
+        };
 
-            let refresh_items: Vec<RefreshEntry> = vote_indexes_buckets
-                .iter()
-                .filter_map(|bucket| {
-                    let bucket_vh: Vec<_> = voter_handlers
-                        .iter()
-                        .cloned()
-                        .filter(|voter_handler| {
-                            let index = voter_handler.chainindex.unwrap();
-                            bucket.min <= index && index < bucket.max
-                        })
-                        .take(config.batch_chain_votes.try_into().unwrap())
-                        .collect();
+        let vote_indexes_buckets = bin(vote_indexes, 0, domain_limit, 10);
 
-                    voter_handler_to_refresh.extend(bucket_vh.clone());
+        let items: Vec<RefreshEntry> = vote_indexes_buckets
+            .iter()
+            .filter_map(|bucket| {
+                let bucket_vh: Vec<_> = voter_handlers
+                    .iter()
+                    .cloned()
+                    .filter(|voter_handler| {
+                        let index = voter_handler.chainindex.unwrap();
+                        bucket.min <= index && index < bucket.max
+                    })
+                    .take(config.batch_chain_votes.try_into().unwrap())
+                    .collect();
 
-                    if bucket_vh.is_empty() {
-                        None
-                    } else {
-                        Some(RefreshEntry {
-                            handler_id: dao_handler.id.clone(),
-                            refresh_type: RefreshType::Daochainvotes,
-                            voters: bucket_vh
-                                .iter()
-                                .map(|vhandler| vhandler.voter.address.clone())
-                                .collect(),
-                        })
-                    }
-                })
-                .collect();
+                voter_handler_to_refresh.extend(bucket_vh.clone());
 
-            refresh_items
-        })
-        .take(25)
-        .collect();
+                if bucket_vh.is_empty() {
+                    None
+                } else {
+                    Some(RefreshEntry {
+                        handler_id: dao_handler.id.clone(),
+                        refresh_type: RefreshType::Daochainvotes,
+                        voters: bucket_vh
+                            .iter()
+                            .map(|vhandler| vhandler.voter.address.clone())
+                            .collect(),
+                    })
+                }
+            })
+            .collect();
+
+        refresh_queue.extend(items)
+    }
 
     client
         .voterhandler()

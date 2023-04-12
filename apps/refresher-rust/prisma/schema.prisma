@@ -176,6 +176,7 @@ model voterhandler {
   updatedat DateTime @updatedAt
 
   @@unique([voterid, daohandlerid])
+  @@index([lastrefresh, refreshstatus, daohandlerid])
   @@index([daohandlerid])
 }
 
