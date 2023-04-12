@@ -1,6 +1,6 @@
 use anyhow::Result;
 use log::warn;
-use std::{env, sync::Arc, time::Duration};
+use std::{env, sync::Arc};
 
 use prisma_client_rust::chrono::{DateTime, Utc};
 use reqwest::Client;
