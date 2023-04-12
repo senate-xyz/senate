@@ -30,10 +30,7 @@ pub(crate) async fn consume_snapshot_proposals(
 
     let post_url = format!("{}/proposals/snapshot_proposals", detective_url);
 
-    let http_client = Client::builder()
-        .timeout(Duration::from_secs(60))
-        .build()
-        .unwrap();
+    let http_client = Client::builder().build().unwrap();
 
     let client_ref = client.clone();
     let dao_handler_id_ref = entry.handler_id.clone();

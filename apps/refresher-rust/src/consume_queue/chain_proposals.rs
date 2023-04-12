@@ -30,10 +30,7 @@ pub(crate) async fn consume_chain_proposals(
 
     let post_url = format!("{}/proposals/chain_proposals", detective_url);
 
-    let http_client = Client::builder()
-        .timeout(Duration::from_secs(60))
-        .build()
-        .unwrap();
+    let http_client = Client::builder().build().unwrap();
 
     let dao_handler = client
         .daohandler()

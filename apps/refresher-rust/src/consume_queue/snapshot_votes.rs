@@ -31,10 +31,7 @@ pub(crate) async fn consume_snapshot_votes(
 
     let post_url = format!("{}/votes/snapshot_votes", detective_url);
 
-    let http_client = Client::builder()
-        .timeout(Duration::from_secs(60))
-        .build()
-        .unwrap();
+    let http_client = Client::builder().build().unwrap();
 
     let dao_handler = client
         .daohandler()
