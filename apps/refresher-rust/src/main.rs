@@ -1,4 +1,3 @@
-
 use log::{info, warn};
 use tokio::try_join;
 mod prisma;
@@ -85,7 +84,7 @@ async fn main() {
 
     let producer_client_clone = client.clone();
 
-    let producer_task = tokio::spawn(async move {
+    let producer_task = tokio::task::spawn_blocking(move || async move {
         loop {
             let _ = load_config_from_db(&producer_client_clone).await;
             let _ = create_voter_handlers(&producer_client_clone).await;
@@ -93,7 +92,7 @@ async fn main() {
             match produce_snapshot_proposals_queue(&producer_client_clone, &config).await {
                 Ok(queue) => {
                     for item in queue {
-                        tx_snapshot_proposals.send(item).unwrap();
+                        tx_snapshot_proposals.try_send(item).unwrap();
                     }
                 }
                 Err(_) => {}
@@ -102,7 +101,7 @@ async fn main() {
             match produce_snapshot_votes_queue(&producer_client_clone, &config).await {
                 Ok(queue) => {
                     for item in queue {
-                        tx_snapshot_votes.send(item).unwrap();
+                        tx_snapshot_votes.try_send(item).unwrap();
                     }
                 }
                 Err(_) => {}
@@ -111,7 +110,7 @@ async fn main() {
             match produce_chain_proposals_queue(&producer_client_clone, &config).await {
                 Ok(queue) => {
                     for item in queue {
-                        tx_chain_proposals.send(item).unwrap();
+                        tx_chain_proposals.try_send(item).unwrap();
                     }
                 }
                 Err(_) => {}
@@ -120,7 +119,7 @@ async fn main() {
             match produce_chain_votes_queue(&producer_client_clone, &config).await {
                 Ok(queue) => {
                     for item in queue {
-                        tx_chain_votes.send(item).unwrap();
+                        tx_chain_votes.try_send(item).unwrap();
                     }
                 }
                 Err(_) => {}
@@ -128,7 +127,9 @@ async fn main() {
 
             sleep(Duration::from_secs(1)).await;
         }
-    });
+    })
+    .await
+    .unwrap();
 
     let consumer_snapshot_proposal_client = client.clone();
     let consumer_snapshot_proposals_task = tokio::spawn(async move {
@@ -150,7 +151,7 @@ async fn main() {
                 });
             }
 
-            sleep(Duration::from_millis(config.refresh_interval.into())).await;
+            sleep(Duration::from_millis(300)).await;
         }
     });
 
@@ -174,7 +175,7 @@ async fn main() {
                 });
             }
 
-            sleep(Duration::from_millis(config.refresh_interval.into())).await;
+            sleep(Duration::from_millis(300)).await;
         }
     });
 
@@ -198,7 +199,7 @@ async fn main() {
                 });
             }
 
-            sleep(Duration::from_millis(config.refresh_interval.into())).await;
+            sleep(Duration::from_millis(300)).await;
         }
     });
 
@@ -222,12 +223,13 @@ async fn main() {
                 });
             }
 
-            sleep(Duration::from_millis(config.refresh_interval.into())).await;
+            sleep(Duration::from_millis(300)).await;
         }
     });
 
+    producer_task.await;
+
     try_join!(
-        producer_task,
         consumer_snapshot_proposals_task,
         consumer_snapshot_votes_task,
         consumer_chain_proposals_task,
