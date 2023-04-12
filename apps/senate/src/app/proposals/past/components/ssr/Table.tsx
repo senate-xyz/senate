@@ -149,7 +149,7 @@ const getProposals = async (
 
     const result =
         userProposals.map(async (proposal) => {
-            let highestScore = 0
+            let highestScore = 0.0
             let highestScoreIndex = 0
             let highestScoreChoice = ''
 
@@ -163,16 +163,14 @@ const getProposals = async (
             ) {
                 const scores = proposal.scores as JsonArray
 
-                for (const score of scores) {
-                    if (Number(score) > highestScore) {
-                        highestScore = Number(score)
-                        highestScoreIndex++
+                for (let i = 0; i < scores.length; i++) {
+                    if (parseFloat(scores[i]!.toString()) > highestScore) {
+                        highestScore = parseFloat(scores[i]!.toString())
+                        highestScoreIndex = i
                     }
                 }
 
-                highestScoreChoice = String(
-                    proposal.choices[highestScoreIndex - 1]
-                )
+                highestScoreChoice = String(proposal.choices[highestScoreIndex])
             }
 
             let loading = await isLoading(proposal.daohandlerid)
