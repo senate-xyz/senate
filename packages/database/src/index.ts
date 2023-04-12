@@ -13,11 +13,9 @@ export {
     type vote as Vote,
     type subscription as Subscription,
     type dao as DAO,
-    type notification as Notification,
     type user as User,
     RefreshStatus,
     DAOHandlerType,
-    RoundupNotificationType,
     type daohandler as DAOHandler
 } from '@prisma/client'
 

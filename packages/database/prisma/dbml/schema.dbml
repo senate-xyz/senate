@@ -6,7 +6,6 @@ Table user {
   id String [pk]
   name String [unique, not null]
   email String [not null, default: '']
-  notifications notification [not null]
   subscriptions subscription [not null]
   voters voter [not null]
   newuser Boolean [not null, default: true]
@@ -78,7 +77,6 @@ Table proposal {
   timestart DateTime [not null]
   timeend DateTime [not null]
   url String [not null]
-  notifications notification [not null]
   daohandlerid String [not null]
   daohandler daohandler [not null]
   daoid String [not null]
@@ -89,22 +87,6 @@ Table proposal {
 
   indexes {
     (externalid, daoid) [unique]
-  }
-}
-
-Table notification {
-  id String [pk]
-  type RoundupNotificationType [not null]
-  userid String [not null]
-  user user [not null]
-  proposalid String [not null]
-  proposal proposal [not null]
-  daoid String [not null]
-  createdat DateTime [default: `now()`, not null]
-  updatedat DateTime [not null]
-
-  indexes {
-    (proposalid, userid, type) [unique]
   }
 }
 
@@ -165,20 +147,9 @@ Table subscription {
   }
 }
 
-Table contract {
-  address String [unique, not null]
-  abi String [not null]
-}
-
 Table config {
   key String [pk]
   value Int [not null]
-}
-
-Enum RoundupNotificationType {
-  NEW
-  ENDING_SOON
-  PAST
 }
 
 Enum DAOHandlerType {
@@ -206,10 +177,6 @@ Ref: daohandler.daoid > dao.id [delete: Cascade]
 Ref: proposal.daohandlerid > daohandler.id [delete: Cascade]
 
 Ref: proposal.daoid > dao.id [delete: Cascade]
-
-Ref: notification.userid > user.id [delete: Cascade]
-
-Ref: notification.proposalid > proposal.id [delete: Cascade]
 
 Ref: vote.voteraddress > voter.address [delete: Cascade]
 

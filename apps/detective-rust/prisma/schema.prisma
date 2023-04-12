@@ -14,7 +14,6 @@ model user {
   name  String @unique
   email String @default("")
 
-  notifications notification[]
   subscriptions subscription[]
   voters        voter[]
 
@@ -27,6 +26,8 @@ model user {
 
   createdat DateTime @default(now())
   updatedat DateTime @updatedAt
+
+  @@index(fields: [email], type: Hash)
 }
 
 model voter {
@@ -40,6 +41,8 @@ model voter {
 
   createdat DateTime @default(now())
   updatedat DateTime @updatedAt
+
+  @@index(fields: [address], type: Hash)
 }
 
 model dao {
@@ -55,6 +58,8 @@ model dao {
 
   createdat DateTime @default(now())
   updatedat DateTime @updatedAt
+
+  @@index(fields: [name], type: Hash)
 }
 
 model daohandler {
@@ -83,6 +88,8 @@ model daohandler {
   updatedat DateTime @updatedAt
 
   @@unique([daoid, type])
+  @@index([lastrefresh, refreshstatus])
+  @@index(fields: [refreshstatus], type: Hash)
 }
 
 model proposal {
@@ -102,12 +109,11 @@ model proposal {
   timeend      DateTime
   url          String   @db.VarChar(1024)
 
-  notifications notification[]
-  daohandlerid  String
-  daohandler    daohandler     @relation(fields: [daohandlerid], references: [id], onDelete: Cascade)
-  daoid         String
-  dao           dao            @relation(fields: [daoid], references: [id], onDelete: Cascade)
-  votes         vote[]
+  daohandlerid String
+  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade)
+  daoid        String
+  dao          dao        @relation(fields: [daoid], references: [id], onDelete: Cascade)
+  votes        vote[]
 
   createdat DateTime @default(now())
   updatedat DateTime @updatedAt
@@ -115,25 +121,6 @@ model proposal {
   @@unique([externalid, daoid])
   @@index([daoid])
   @@index([daohandlerid])
-}
-
-model notification {
-  id String @id @default(cuid())
-
-  type RoundupNotificationType
-
-  userid     String
-  user       user     @relation(fields: [userid], references: [id], onDelete: Cascade)
-  proposalid String
-  proposal   proposal @relation(fields: [proposalid], references: [id], onDelete: Cascade)
-  daoid      String
-
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
-
-  @@unique([proposalid, userid, type])
-  @@index([userid])
-  @@index([proposalid])
 }
 
 model vote {
@@ -161,6 +148,7 @@ model vote {
   @@unique([voteraddress, daoid, proposalid])
   @@index([proposalid])
   @@index([daoid])
+  @@index(fields: [voteraddress], type: Hash)
 }
 
 model voterhandler {
@@ -182,7 +170,8 @@ model voterhandler {
 
   @@unique([voterid, daohandlerid])
   @@index([lastrefresh, refreshstatus, daohandlerid])
-  @@index([daohandlerid])
+  @@index(fields: [refreshstatus], type: Hash)
+  @@index(fields: [daohandlerid], type: Hash)
 }
 
 model subscription {
@@ -200,24 +189,14 @@ model subscription {
 
   @@unique([userid, daoid])
   @@index([daoid])
-}
-
-model contract {
-  address String
-  abi     String
-
-  @@unique([address])
+  @@index([notificationsenabled])
 }
 
 model config {
   key   String @id
   value Int
-}
 
-enum RoundupNotificationType {
-  NEW
-  ENDING_SOON
-  PAST
+  @@index([key])
 }
 
 enum DAOHandlerType {
