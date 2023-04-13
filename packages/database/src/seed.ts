@@ -705,7 +705,7 @@ const seedData = async () => {
 
 const seedVoters = async () => {
     const voters = [
-        '0xB7BD14E2497cdC57675E896af84ecB652D294AD1'
+        '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
         // '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
         // '0xaa3E78E700F93C7b81553a7D7c10899ba5349bC5',
         // '0xb55a948763e0d386b6dEfcD8070a522216AE42b1',

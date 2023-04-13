@@ -48,7 +48,13 @@ export function authOptions(
                             create: {
                                 name: siwe.address,
                                 acceptedterms: true,
-                                acceptedtermstimestamp: new Date()
+                                acceptedtermstimestamp: new Date(),
+                                voters: {
+                                    connectOrCreate: {
+                                        where: { address: siwe.address },
+                                        create: { address: siwe.address }
+                                    }
+                                }
                             },
                             update: {
                                 lastactive: new Date(),
