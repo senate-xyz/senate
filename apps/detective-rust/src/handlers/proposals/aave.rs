@@ -6,7 +6,7 @@ use crate::{
     },
     Ctx,
 };
-use crate::{prisma::daohandler, router::update_chain_proposals::ChainProposal};
+use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
 use anyhow::Result;
 use ethers::{prelude::LogMeta, types::Address, utils::hex};
 use ethers::{providers::Middleware, types::U256};

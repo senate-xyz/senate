@@ -1,6 +1,6 @@
 use crate::contracts::uniswapgov::ProposalCreatedFilter;
 use crate::{contracts::uniswapgov, Ctx};
-use crate::{prisma::daohandler, router::update_chain_proposals::ChainProposal};
+use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
 use anyhow::Result;
 use ethers::providers::Middleware;
 use ethers::{prelude::LogMeta, types::Address};
@@ -109,7 +109,8 @@ async fn data_for_proposal(
         "{:.120}",
         log.description
             .to_string()
-            .split('\n').next()
+            .split('\n')
+            .next()
             .unwrap_or("Unknown")
             .to_string()
     );

@@ -1,6 +1,6 @@
 use crate::contracts::makerpollcreate::PollCreatedFilter;
 use crate::{contracts::makerpollcreate, Ctx};
-use crate::{prisma::daohandler, router::update_chain_proposals::ChainProposal};
+use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
 use anyhow::{Context, Result};
 use chrono::Duration;
 use ethers::providers::Middleware;

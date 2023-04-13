@@ -23,7 +23,7 @@
         "prettier:fix": "prettier src --write"
     },
     "dependencies": {
-        "@headlessui/react": "^1.7.13",
+        "@headlessui/react": "^1.7.14",
         "@rainbow-me/rainbowkit": "^0.12.7",
         "@rainbow-me/rainbowkit-siwe-next-auth": "^0.1.8",
         "@senate/config": "*",
@@ -38,7 +38,7 @@
         "dayjs": "^1.11.7",
         "ethers": "^5.7.2",
         "fast-average-color-node": "^2.6.0",
-        "framer-motion": "^10.11.5",
+        "framer-motion": "^10.11.6",
         "next": "13.3.0",
         "next-auth": "^4.22.0",
         "react": "18.2.0",
@@ -55,7 +55,7 @@
     "devDependencies": {
         "@synthetixio/synpress": "^3.5.1",
         "@types/node": "18.15.11",
-        "@types/react": "18.0.34",
+        "@types/react": "18.0.35",
         "@types/react-dom": "18.0.11",
         "@typescript-eslint/eslint-plugin": "^5.58.0",
         "@typescript-eslint/parser": "^5.58.0",

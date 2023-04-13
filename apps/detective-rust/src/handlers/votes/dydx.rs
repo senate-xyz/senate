@@ -4,7 +4,7 @@ use crate::{
         dydxgov::{self},
     },
     prisma::{daohandler, proposal},
-    router::update_chain_votes::{Vote, VoteResult},
+    router::chain_votes::{Vote, VoteResult},
     Ctx,
 };
 use anyhow::{bail, Result};

@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::contracts::makerexecutive::LogNoteFilter;
 use crate::{contracts::makerexecutive, Ctx};
-use crate::{prisma::daohandler, router::update_chain_proposals::ChainProposal};
+use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
 use anyhow::{Context, Result};
 use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use ethers::abi::Address;

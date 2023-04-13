@@ -8,19 +8,8 @@ use handlers::create_voter_handlers;
 use prisma::PrismaClient;
 use tokio::time::sleep;
 
-mod produce_queue {
-    pub mod chain_proposals;
-    pub mod chain_votes;
-    pub mod snapshot_proposals;
-    pub mod snapshot_votes;
-}
-
-mod consume_queue {
-    pub mod chain_proposals;
-    pub mod chain_votes;
-    pub mod snapshot_proposals;
-    pub mod snapshot_votes;
-}
+mod consume_queue;
+mod produce_queue;
 
 use crate::produce_queue::chain_proposals::produce_chain_proposals_queue;
 use crate::produce_queue::chain_votes::produce_chain_votes_queue;

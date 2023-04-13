@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use crate::{
     contracts::makerexecutive::{self, LogNoteFilter},
     prisma::{daohandler, proposal},
-    router::update_chain_votes::{Vote, VoteResult},
+    router::chain_votes::{Vote, VoteResult},
     Ctx,
 };
 use anyhow::{bail, Result};

@@ -1,50 +1,20 @@
+pub mod contracts;
+pub mod handlers;
+pub mod prisma;
+mod router;
+use crate::router::chain_proposals::update_chain_proposals;
+use crate::router::chain_votes::update_chain_votes;
+use crate::router::snapshot_proposals::update_snapshot_proposals;
+use crate::router::snapshot_votes::update_snapshot_votes;
 use std::env;
 use std::sync::Arc;
 
 use dotenv::dotenv;
 use ethers::providers::{Http, Provider};
 
-use crate::router::update_chain_proposals::update_chain_proposals;
-use crate::router::update_snapshot_proposals::update_snapshot_proposals;
 use prisma::PrismaClient;
-use router::update_chain_votes::update_chain_votes;
-use router::update_snapshot_votes::update_snapshot_votes;
+
 use serde::{Deserialize, Serialize};
-mod router {
-    pub mod update_chain_proposals;
-    pub mod update_chain_votes;
-    pub mod update_snapshot_proposals;
-    pub mod update_snapshot_votes;
-}
-pub mod prisma;
-
-pub mod handlers {
-    pub mod proposals {
-        pub mod aave;
-        pub mod compound;
-        pub mod dydx;
-        pub mod ens;
-        pub mod gitcoin;
-        pub mod hop;
-        pub mod maker_executive;
-        pub mod maker_poll;
-        pub mod uniswap;
-    }
-    pub mod votes {
-        pub mod aave;
-        pub mod compound;
-        pub mod dydx;
-        pub mod ens;
-        pub mod gitcoin;
-        pub mod hop;
-        pub mod maker_executive;
-        pub mod maker_poll;
-        pub mod maker_poll_arbitrum;
-        pub mod uniswap;
-    }
-}
-
-pub mod contracts;
 
 #[macro_use]
 extern crate rocket;

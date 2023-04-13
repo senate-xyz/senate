@@ -1,14 +1,11 @@
 use crate::{
     contracts::gitcoingov::{self, VoteCastFilter},
     prisma::{daohandler, proposal},
-    router::update_chain_votes::{Vote, VoteResult},
+    router::chain_votes::{Vote, VoteResult},
     Ctx,
 };
 use anyhow::{bail, Result};
-use ethers::{
-    prelude::LogMeta,
-    types::{Address},
-};
+use ethers::{prelude::LogMeta, types::Address};
 
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
@@ -115,11 +112,7 @@ async fn get_votes_for_voter(
             dao_id: dao_handler.clone().daoid.to_string(),
             proposal_id: proposal.id,
             dao_handler_id: dao_handler.clone().id.to_string(),
-            choice: if log.support {
-                1.into()
-            } else {
-                2.into()
-            },
+            choice: if log.support { 1.into() } else { 2.into() },
             reason: "".to_string(),
             voting_power: log.votes.as_u128().into(),
             proposal_active: proposal.timeend > Utc::now(),
