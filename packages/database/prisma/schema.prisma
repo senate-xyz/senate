@@ -119,8 +119,8 @@ model proposal {
   updatedat DateTime @updatedAt
 
   @@unique([externalid, daoid])
-  @@index(fields: [daoid], type: Hash)
-  @@index(fields: [daohandlerid], type: Hash)
+  @@index([daoid])
+  @@index([daohandlerid])
 }
 
 model vote {
@@ -146,8 +146,8 @@ model vote {
   updatedat DateTime @updatedAt
 
   @@unique([voteraddress, daoid, proposalid])
-  @@index(fields: [proposalid], type: Hash)
-  @@index(fields: [daoid], type: Hash)
+  @@index([proposalid])
+  @@index([daoid])
   @@index(fields: [voteraddress], type: Hash)
 }
 
@@ -188,15 +188,15 @@ model subscription {
   updatedat DateTime @updatedAt
 
   @@unique([userid, daoid])
-  @@index(fields: [daoid], type: Hash)
-  @@index(fields: [notificationsenabled], type: Hash)
+  @@index([daoid])
+  @@index([notificationsenabled])
 }
 
 model config {
   key   String @id
   value Int
 
-  @@index(fields: [key], type: Hash)
+  @@index([key])
 }
 
 enum DAOHandlerType {
