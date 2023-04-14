@@ -11,14 +11,14 @@ import { log_sanity } from '@senate/axiom'
 import {getAbi, getClosestBlock} from '.././utils'
 import {ethers} from 'ethers'
 
-export const makerPollsSanity = schedule('49 * * * *', async () => {
+export const makerPollsSanity = schedule('45 * * * *', async () => {
     log_sanity.log({
         level: 'info',
         message: '[PROPOSALS] Starting sanity check for Maker polls',
         date: new Date(Date.now())
     })
 
-    const SEARCH_FROM: number = Date.now() - 1250 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
+    const SEARCH_FROM: number = Date.now() - 240 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
     const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
 
     try {
@@ -112,7 +112,7 @@ export const makerPollsSanity = schedule('49 * * * *', async () => {
 
             log_sanity.log({
                 level: 'info',
-                message: `Deleted ${deletedRows.length} rows`,
+                message: `Proposal deleted successfully`,
                 deletedRows: deletedRows
             })
         }

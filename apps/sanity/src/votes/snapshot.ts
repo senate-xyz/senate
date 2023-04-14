@@ -7,8 +7,8 @@ import {
 } from '@senate/database'
 
 import { schedule } from 'node-cron'
-import superagent from 'superagent'
 import { log_sanity } from '@senate/axiom'
+import { callApiWithDelayedRetries } from '../utils'
 
 type GraphQLVote = {
     id: string
@@ -26,14 +26,14 @@ type GraphQLVote = {
 }
 
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
-export const snapshotVotesSanity = schedule('30 * * * *', async () => {
+export const snapshotVotesSanity = schedule('0 * * * *', async () => {
     log_sanity.log({
         level: 'info',
         message: '[VOTES] Starting sanity check for snapshot votes',
         date: new Date(Date.now())
     })
 
-    const SEARCH_FROM: number = Date.now() - 12 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
+    const SEARCH_FROM: number = Date.now() - 24 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
     const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
 
     try {
@@ -87,6 +87,7 @@ const checkAndSanitizeVotesRoutine = async (
             voterAddresses,
             daoHandler.id
         )
+
         const votesFromSnapshotAPI = await fetchVotesFromSnapshotAPI(
             Math.floor(fromTimestamp / 1000),
             Math.floor(toTimestamp / 1000),
@@ -171,101 +172,59 @@ const fetchVotesFromSnapshotAPI = async (
     space: string
 ) => {
     let result: GraphQLVote[] = []
-    for (let i = 0; i < voterAddresses.length; i += 100) {
-        const addresses = voterAddresses.slice(
-            i,
-            Math.min(i + 100, voterAddresses.length)
-        )
 
-        const graphqlQuery = `{
-            votes(
-                first:1000,
-                orderBy: "created",
-                orderDirection: asc,
-                where: {
-                    voter_in: [${addresses.map((voter) => `"${voter}"`)}],
-                    space: "${space}",
-                    created_gte: ${searchFrom},
-                    created_lte: ${searchTo}
-                }
+    try {
+        for (let i = 0; i < voterAddresses.length; i += 100) {
+            const addresses = voterAddresses.slice(
+                i,
+                Math.min(i + 100, voterAddresses.length)
             )
-            {
-                id
-                voter
-                choice
-                reason
-                vp
-                created
-                proposal {
-                    id
-                    title
-                    body
-                    created
-                    start
-                    end
-                    link
-                }
-            }
-        }`
-
-        const data = await callApiWithDelayedRetries(graphqlQuery, 5)
-        result = result.concat(data.votes as GraphQLVote[])
-    }
-
-    return result
-}
-
-const callApiWithDelayedRetries = async (
-    graphqlQuery: string,
-    retries: number
-) => {
-    let result
-    let retriesLeft = retries
-    while (retriesLeft) {
-        try {
-            result = await superagent
-                .get('https://hub.snapshot.org/graphql')
-                .query({
-                    query: graphqlQuery
-                })
-                .timeout({
-                    response: 10000,
-                    deadline: 30000
-                })
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .then((response: { body: { data: any } }) => {
-                    return response.body.data
-                })
-
-            break
-        } catch (e) {
-            retriesLeft--
-
-            if (!retriesLeft) {
-                throw e
-            }
-
-            await new Promise((resolve) =>
-                setTimeout(
-                    resolve,
-                    calculateExponentialBackoffTimeInMs(retries, retriesLeft)
+    
+            const graphqlQuery = `{
+                votes(
+                    first:1000,
+                    orderBy: "created",
+                    orderDirection: asc,
+                    where: {
+                        voter_in: [${addresses.map((voter) => `"${voter}"`)}],
+                        space: "${space}",
+                        created_gte: ${searchFrom},
+                        created_lte: ${searchTo}
+                    }
                 )
-            )
-
-            log_sanity.log({
-                level: 'warn',
-                message: 'Failed to fetch data from snapshot. Retrying...',
-                retriesLeft: retriesLeft
-            })
+                {
+                    id
+                    voter
+                    choice
+                    reason
+                    vp
+                    created
+                    proposal {
+                        id
+                        title
+                        body
+                        created
+                        start
+                        end
+                        link
+                    }
+                }
+            }`
+    
+            const data = await callApiWithDelayedRetries(graphqlQuery, 5)
+            result = result.concat(data.votes as GraphQLVote[])
         }
+    } catch (e) {
+        log_sanity.log({
+            level: 'error',
+            message: 'Failed to fetch voting data from snapshot.',
+            errorName: (e as Error).name,
+            errorMessage: (e as Error).message,
+            errorStack: (e as Error).stack,
+        })
+
+        throw e
     }
 
-    return result
-}
-
-const calculateExponentialBackoffTimeInMs = (
-    totalRetries: number,
-    retriesLeft: number
-) => {
-    return 1000 * Math.pow(2, totalRetries - retriesLeft)
+    return result 
 }

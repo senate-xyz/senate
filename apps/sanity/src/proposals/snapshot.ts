@@ -7,8 +7,8 @@ import {
 } from '@senate/database'
 
 import { schedule } from 'node-cron'
-import superagent from 'superagent'
 import { log_sanity } from '@senate/axiom'
+import { callApiWithDelayedRetries } from '../utils'
 
 type GraphQLProposal = {
     id: string
@@ -19,14 +19,14 @@ type GraphQLProposal = {
     link: string
 }
 
-export const snapshotProposalsSanity = schedule('26 * * * *', async () => {
+export const snapshotProposalsSanity = schedule('29 * * * *', async () => {
     log_sanity.log({
         level: 'info',
         message: '[PROPOSALS] Starting sanity check for snapshot proposals',
         date: new Date(Date.now())
     })
 
-    const SEARCH_FROM: number = Date.now() - 512 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
+    const SEARCH_FROM: number = Date.now() - 240 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
     const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
 
     try {
@@ -43,6 +43,11 @@ export const snapshotProposalsSanity = schedule('26 * * * *', async () => {
                 SEARCH_TO
             )
         }
+
+        log_sanity.log({
+            level: 'info',
+            message: '[PROPOSALS] FINISHED sanity check for snapshot proposals'
+        })
         
     } catch (error) {
         log_sanity.log({
@@ -52,10 +57,6 @@ export const snapshotProposalsSanity = schedule('26 * * * *', async () => {
         })
     }
 
-    log_sanity.log({
-        level: 'info',
-        message: '[PROPOSALS] FINISHED sanity check for snapshot proposals'
-    })
 })
 
 const checkAndSanitizeProposalsRoutine = async (
@@ -63,16 +64,15 @@ const checkAndSanitizeProposalsRoutine = async (
     fromTimestamp: number,
     toTimestamp: number
 ) => {
-    console.log("Handler: ", (daoHandler.decoder as Decoder).space)
 
+    console.log("Fetching from db")
     const proposalsFromDatabase = await fetchProposalsFromDatabase(
         daoHandler.id,
         new Date(fromTimestamp),
         new Date(toTimestamp)
     )
 
-    console.log("Proposals fetched from db: ", proposalsFromDatabase.length)
-
+    console.log("Fetching from snapshot")
     const proposalsFromSnapshotAPI: GraphQLProposal[] =
         await fetchProposalsFromSnapshotAPI(
             (daoHandler.decoder as Decoder).space,
@@ -80,8 +80,7 @@ const checkAndSanitizeProposalsRoutine = async (
             Math.floor(toTimestamp / 1000)
         )
 
-    console.log("Fetched proposals from snapshot:", proposalsFromSnapshotAPI.length)
-
+    console.log("Computing stuff")
     // ========== CHECK FOR PROPOSALS WHICH SHOULD BE DELETED FROM DATABASE ==============
     const proposalsNotOnSnapshot: Proposal[] = proposalsFromDatabase.filter(
         (proposal: Proposal) => {
@@ -90,7 +89,7 @@ const checkAndSanitizeProposalsRoutine = async (
                 .includes(proposal.externalid)
         }
     )
-
+    
     if (proposalsNotOnSnapshot.length > 0) {
         // we have proposals which have been removed from snapshot. need to purge them from the database.
         log_sanity.log({
@@ -123,7 +122,7 @@ const checkAndSanitizeProposalsRoutine = async (
 
         log_sanity.log({
             level: 'info',
-            message: `Deleted ${deletedRows.length} rows`,
+            message: `Proposal deleted successfully`,
             deletedRows: deletedRows
         })
     }
@@ -144,6 +143,12 @@ const checkAndSanitizeProposalsRoutine = async (
             proposals: proposalsNotInDatabase.map(proposal => proposal.link)
         })
     }
+
+    console.log("\nHandler", (daoHandler.decoder as Decoder).space)
+    console.log("Proposals from snapshot", proposalsFromSnapshotAPI.length)
+    console.log("Proposals from db", proposalsFromDatabase.length)
+    console.log("Proposals not on snapshot", proposalsNotOnSnapshot.length, proposalsNotOnSnapshot)
+    console.log("Proposals not in database", proposalsNotInDatabase.length, proposalsNotInDatabase)
 }
 
 const fetchProposalsFromSnapshotAPI = async (
@@ -173,27 +178,21 @@ const fetchProposalsFromSnapshotAPI = async (
         }
     }`
 
-    return (await superagent
-        .get('https://hub.snapshot.org/graphql')
-        .query({
-            query: graphqlQuery
+    try {
+        const responseBody = await callApiWithDelayedRetries(graphqlQuery, 5)
+        return responseBody.proposals as GraphQLProposal[]
+    } catch (e) {
+        log_sanity.log({
+            level: 'error',
+            message: 'Failed to fetch voting data from snapshot.',
+            errorName: (e as Error).name,
+            errorMessage: (e as Error).message,
+            errorStack: (e as Error).stack,
         })
-        .timeout({
-            response: 10000,
-            deadline: 30000
-        })
-        .retry(3, (err, res) => {
-            if (err) return true
-            if (res.status == 200) return false
-            return true
-        })
-        .then(
-            (response: {
-                body: { data: { proposals: GraphQLProposal[] } }
-            }) => {
-                return response.body.data.proposals
-            }
-        )) as GraphQLProposal[]
+
+        throw e
+    }
+    
 }
 
 const fetchProposalsFromDatabase = async (

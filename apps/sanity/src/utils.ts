@@ -1,4 +1,4 @@
-import { prisma } from '@senate/database'
+import { prisma, type JsonValue } from '@senate/database'
 import superagent from 'superagent'
 import ethers from 'ethers'
 import {config} from 'dotenv'
@@ -94,4 +94,53 @@ export const getClosestBlock = async (timestamp: number, provider: ethers.JsonRp
     }
 
     return minClosestBlock
+}
+
+export const callApiWithDelayedRetries = async (
+    graphqlQuery: string,
+    retries: number
+) : Promise<any> => {
+    let result
+    let retriesLeft = retries
+    while (retriesLeft) {
+        try {
+            result = await superagent
+                .get('https://hub.snapshot.org/graphql')
+                .query({
+                    query: graphqlQuery
+                })
+                .timeout({
+                    response: 10000,
+                    deadline: 30000
+                })
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .then((response: { body: { data: any } }) => {
+                    return response.body.data
+                })
+
+            break
+        } catch (e) {
+            retriesLeft--
+
+            if (!retriesLeft) {
+                throw e
+            }
+
+            await new Promise((resolve) =>
+                setTimeout(
+                    resolve,
+                    calculateExponentialBackoffTimeInMs(retries, retriesLeft)
+                )
+            )
+        }
+    }
+
+    return result
+}
+
+const calculateExponentialBackoffTimeInMs = (
+    totalRetries: number,
+    retriesLeft: number
+) => {
+    return 1000 * Math.pow(2, totalRetries - retriesLeft)
 }
