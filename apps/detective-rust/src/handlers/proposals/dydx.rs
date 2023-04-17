@@ -196,7 +196,10 @@ async fn get_title(hexhash: String) -> Result<String> {
 
     loop {
         let response = client
-            .get(format!("https://ipfs.io/ipfs/f01701220{}", hexhash))
+            .get(format!(
+                "https://cloudflare-ipfs.com/ipfs/f01701220{}",
+                hexhash
+            ))
             .timeout(Duration::from_secs(5))
             .send()
             .await;
