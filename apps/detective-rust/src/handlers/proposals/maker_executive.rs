@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
 use crate::contracts::makerexecutive::LogNoteFilter;
+use crate::prisma::ProposalState;
 use crate::{contracts::makerexecutive, Ctx};
 use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
 use anyhow::{Context, Result};
@@ -114,6 +115,16 @@ async fn proposal(
 
     let block_created = get_proposal_block(created_timestamp).await?;
 
+    let state = if proposal_data.spellData.hasBeenCast {
+        ProposalState::Executed
+    } else if proposal_data.active {
+        ProposalState::Active
+    } else if proposal_data.spellData.hasBeenScheduled {
+        ProposalState::Queued
+    } else {
+        ProposalState::Unknown
+    };
+
     let proposal = ChainProposal {
         external_id: spell_address.to_string(),
         name: title,
@@ -128,6 +139,7 @@ async fn proposal(
         scores_total: scores_total.parse::<f64>().unwrap().into(),
         quorum: 0.into(),
         url: proposal_url,
+        state: state,
     };
 
     Ok(proposal)
@@ -183,13 +195,18 @@ async fn get_proposal_block(time: DateTime<Utc>) -> Result<TimeData> {
 #[derive(Deserialize, Serialize, PartialEq, Debug, Clone)]
 struct SpellData {
     expiration: String,
+    datePassed: String,
+    dateExecuted: String,
     mkrSupport: String,
+    hasBeenCast: bool,
+    hasBeenScheduled: bool,
 }
 #[allow(non_snake_case)]
 #[derive(Deserialize, Serialize, PartialEq, Debug, Clone)]
 struct ProposalData {
     title: String,
     spellData: SpellData,
+    active: bool,
     date: String,
 }
 
@@ -220,9 +237,14 @@ async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
                         Err(_e) => ProposalData {
                             title: "Unknown".into(),
                             date: "Sat Jan 01 2000 00:00:00".into(),
+                            active: false,
                             spellData: SpellData {
                                 expiration: "2000-01-01T00:00:00-00:00".into(),
+                                datePassed: "2000-01-01T00:00:00-00:00".into(),
+                                dateExecuted: "2000-01-01T00:00:00-00:00".into(),
                                 mkrSupport: "0".into(),
+                                hasBeenCast: false,
+                                hasBeenScheduled: false,
                             },
                         },
                     };
@@ -239,9 +261,14 @@ async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
                 return Ok(ProposalData {
                     title: "Unknown".into(),
                     date: "Sat Jan 01 2000 00:00:00".into(),
+                    active: false,
                     spellData: SpellData {
                         expiration: "2000-01-01T00:00:00-00:00".into(),
+                        datePassed: "2000-01-01T00:00:00-00:00".into(),
+                        dateExecuted: "2000-01-01T00:00:00-00:00".into(),
                         mkrSupport: "0".into(),
+                        hasBeenCast: false,
+                        hasBeenScheduled: false,
                     },
                 });
             }

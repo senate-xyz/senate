@@ -103,6 +103,8 @@ model proposal {
   scorestotal Json
   quorum      Json
 
+  state ProposalState?
+
   blockcreated BigInt?  @default(0)
   timecreated  DateTime
   timestart    DateTime
@@ -217,4 +219,16 @@ enum RefreshStatus {
   NEW
   PENDING
   DONE
+}
+
+enum ProposalState {
+  PENDING
+  ACTIVE
+  CANCELED
+  DEFEATED
+  SUCCEEDED
+  QUEUED
+  EXPIRED
+  EXECUTED
+  UNKNOWN
 }
