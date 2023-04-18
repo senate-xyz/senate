@@ -58,8 +58,9 @@ export type DAOType = Prisma.daoGetPayload<{
     }
 }>
 
-export type UserWithVotingAddresses = Prisma.userGetPayload<{
+export type UserWithSubscriptionsAndVotingAddresses = Prisma.userGetPayload<{
     include: {
+        subscriptions: true
         voters: true
     }
 }>
