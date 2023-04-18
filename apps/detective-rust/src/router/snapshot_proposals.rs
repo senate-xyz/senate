@@ -226,7 +226,7 @@ async fn update_proposals(
         new_index = open_proposals
             .iter()
             .map(|proposal| proposal.created)
-            .max()
+            .min()
             .unwrap_or(old_index);
     } else if !closed_proposals.is_empty() {
         new_index = closed_proposals
