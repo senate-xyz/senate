@@ -1,4 +1,5 @@
 use crate::contracts::makerpollcreate::PollCreatedFilter;
+use crate::prisma::ProposalState;
 use crate::{contracts::makerpollcreate, Ctx};
 use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
 use anyhow::{Context, Result};
@@ -137,6 +138,11 @@ async fn data_for_proposal(
         scores_total: scores_total.into(),
         quorum: quorum.into(),
         url: proposal_url,
+        state: if voting_ends_timestamp.timestamp() < Utc::now().timestamp() {
+            ProposalState::Executed
+        } else {
+            ProposalState::Active
+        },
     };
 
     Ok(proposal)

@@ -103,6 +103,8 @@ model proposal {
   scorestotal Json
   quorum      Json
 
+  state ProposalState?
+
   blockcreated BigInt?  @default(0)
   timecreated  DateTime
   timestart    DateTime
@@ -119,8 +121,8 @@ model proposal {
   updatedat DateTime @updatedAt
 
   @@unique([externalid, daoid])
-  @@index([daoid])
-  @@index([daohandlerid])
+  @@index(fields: [daoid], type: Hash)
+  @@index(fields: [daohandlerid], type: Hash)
 }
 
 model vote {
@@ -146,8 +148,8 @@ model vote {
   updatedat DateTime @updatedAt
 
   @@unique([voteraddress, daoid, proposalid])
-  @@index([proposalid])
-  @@index([daoid])
+  @@index(fields: [proposalid], type: Hash)
+  @@index(fields: [daoid], type: Hash)
   @@index(fields: [voteraddress], type: Hash)
 }
 
@@ -188,15 +190,15 @@ model subscription {
   updatedat DateTime @updatedAt
 
   @@unique([userid, daoid])
-  @@index([daoid])
-  @@index([notificationsenabled])
+  @@index(fields: [daoid], type: Hash)
+  @@index(fields: [notificationsenabled], type: Hash)
 }
 
 model config {
   key   String @id
   value Int
 
-  @@index([key])
+  @@index(fields: [key], type: Hash)
 }
 
 enum DAOHandlerType {
@@ -217,4 +219,16 @@ enum RefreshStatus {
   NEW
   PENDING
   DONE
+}
+
+enum ProposalState {
+  PENDING
+  ACTIVE
+  CANCELED
+  DEFEATED
+  SUCCEEDED
+  QUEUED
+  EXPIRED
+  EXECUTED
+  UNKNOWN
 }

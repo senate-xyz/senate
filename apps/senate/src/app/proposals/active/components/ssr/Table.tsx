@@ -150,6 +150,7 @@ const getProposals = async (
                 onchain: proposal.daohandler.type == 'SNAPSHOT' ? false : true,
                 daoPicture: proposal.dao.picture,
                 proposalTitle: proposal.name,
+                state: proposal.state,
                 proposalLink: proposal.url,
                 timeEnd: proposal.timeend,
                 voted: user
@@ -274,6 +275,7 @@ const MobileActiveProposal = async (props: {
         onchain: boolean
         daoPicture: string
         proposalTitle: string
+        state: string
         proposalLink: string
         timeEnd: Date
         voted: string
@@ -319,6 +321,7 @@ const MobileActiveProposal = async (props: {
                                 alt={props.proposal.daoName}
                             />
                         </div>
+                        <div>{props.proposal.state}</div>
 
                         <div>
                             {props.proposal.onchain ? (
@@ -447,6 +450,7 @@ const ActiveProposal = async (props: {
         onchain: boolean
         daoPicture: string
         proposalTitle: string
+        state: string
         proposalLink: string
         timeEnd: Date
         voted: string
@@ -494,6 +498,7 @@ const ActiveProposal = async (props: {
                         <div className='text-[24px] font-light leading-[30px]'>
                             {props.proposal.daoName}
                         </div>
+                        <div>{props.proposal.state}</div>
                         <div>
                             {props.proposal.onchain ? (
                                 <Image

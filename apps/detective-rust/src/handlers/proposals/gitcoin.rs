@@ -1,4 +1,5 @@
 use crate::contracts::gitcoingov::ProposalCreatedFilter;
+use crate::prisma::ProposalState;
 use crate::{contracts::gitcoingov, Ctx};
 use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
 use anyhow::Result;
@@ -133,6 +134,20 @@ async fn data_for_proposal(
 
     let quorum = gov_contract.quorum_votes().call().await?;
 
+    let proposal_state = gov_contract.state(log.id).call().await?;
+
+    let state = match proposal_state {
+        0 => ProposalState::Pending,
+        1 => ProposalState::Active,
+        2 => ProposalState::Canceled,
+        3 => ProposalState::Defeated,
+        4 => ProposalState::Succeeded,
+        5 => ProposalState::Queued,
+        6 => ProposalState::Expired,
+        7 => ProposalState::Executed,
+        _ => ProposalState::Unknown,
+    };
+
     let proposal = ChainProposal {
         external_id: proposal_external_id,
         name: title,
@@ -147,6 +162,7 @@ async fn data_for_proposal(
         scores_total: scores_total.into(),
         quorum: quorum.as_u128().into(),
         url: proposal_url,
+        state: state,
     };
 
     Ok(proposal)
