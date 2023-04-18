@@ -301,14 +301,6 @@ const fetchEndingProposals = async (
             }
         })
 
-        // log_bul.log({
-        //     level: 'info',
-        //     message: 'Fetched ending proposals',
-        //     data: {
-        //         count: proposals.length
-        //     }
-        // })
-
         return proposals
     } catch (e) {
         log_bul.log({
@@ -357,14 +349,6 @@ const fetchPastProposals = async (
                 timeend: 'desc'
             }
         })
-
-        // log_bul.log({
-        //     level: 'info',
-        //     message: 'Fetched past proposals',
-        //     data: {
-        //         count: proposals.length
-        //     }
-        // })
 
         return proposals
     } catch (e) {
@@ -450,27 +434,42 @@ const formatEmailTemplateRow = async (
         let highestScorePercentage = 0
         let highestScoreChoice = ''
 
-        const scores = proposal.scores as JsonArray
+        if (
+            proposal.scores &&
+            typeof proposal.scores === 'object' &&
+            Array.isArray(proposal?.scores) &&
+            proposal.choices &&
+            typeof proposal.choices === 'object' &&
+            Array.isArray(proposal?.choices)
+        ) {
+            const scores = proposal.scores as JsonArray
 
-        for (const score of scores) {
-            if (Number(score) > highestScore) {
-                highestScore = Number(score)
-                highestScoreIndex++
+            for (let i = 0; i < scores.length; i++) {
+                if (parseFloat(scores[i]!.toString()) > highestScore) {
+                    highestScore = parseFloat(scores[i]!.toString())
+                    highestScoreIndex = i
+                }
             }
+
+            highestScoreChoice = String(proposal.choices[highestScoreIndex])
         }
 
-        highestScoreChoice = String(
-            (proposal.choices as JsonArray)[highestScoreIndex - 1]
-        )
 
         highestScorePercentage =
             (highestScore / Number(proposal.scorestotal)) * 100
 
+            proposal.name.length > 100
+            ? `${proposal.name.substring(0, 100)}...`
+            : proposal.name,
+
         result = {
-            highestScoreChoice: highestScoreChoice.substring(0, 15),
+            highestScoreChoice: highestScoreChoice.length > 16
+                ? `${highestScoreChoice.substring(0, 16)}...`
+                : highestScoreChoice,
             highestScorePercentage: highestScorePercentage.toFixed(2),
             barWidthPercentage: Math.floor(highestScorePercentage)
         }
+
     }
 
     return {
