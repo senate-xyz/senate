@@ -187,7 +187,7 @@ async fn get_results_data(poll_id: String) -> Result<ResultsData> {
                 return Ok(data);
             }
 
-            _ if retries < 5 => {
+            _ if retries < 10 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
@@ -224,7 +224,7 @@ async fn get_title(url: String) -> Result<String> {
                     .unwrap_or("Unknown".to_string());
                 return Ok(result);
             }
-            _ if retries < 5 => {
+            _ if retries < 10 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;

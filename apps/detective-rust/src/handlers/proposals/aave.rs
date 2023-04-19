@@ -5,6 +5,7 @@ use crate::{
         aavestrategy,
     },
     prisma::ProposalState,
+    utils::etherscan::estimate_timestamp,
     Ctx,
 };
 use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
@@ -87,27 +88,34 @@ async fn data_for_proposal(
         .get_block(voting_end_block_number.to_u64().unwrap())
         .await?;
 
-    let voting_starts_timestamp = match voting_starts_block {
-        Some(block) => block.time().expect("bad block timestamp"),
-        None => DateTime::from_utc(
-            NaiveDateTime::from_timestamp_millis(
-                created_block_timestamp.timestamp() * 1000
-                    + (voting_start_block_number - created_block_number) * 12 * 1000,
-            )
-            .expect("bad timestamp"),
-            Utc,
-        ),
+    let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number).await {
+        Ok(r) => r,
+        Err(_) => match voting_starts_block {
+            Some(block) => block.time().expect("bad block timestamp"),
+            None => DateTime::from_utc(
+                NaiveDateTime::from_timestamp_millis(
+                    created_block_timestamp.timestamp() * 1000
+                        + (voting_start_block_number - created_block_number) * 12 * 1000,
+                )
+                .expect("bad timestamp"),
+                Utc,
+            ),
+        },
     };
-    let voting_ends_timestamp = match voting_ends_block {
-        Some(block) => block.time().expect("bad block timestamp"),
-        None => DateTime::from_utc(
-            NaiveDateTime::from_timestamp_millis(
-                created_block_timestamp.timestamp() * 1000
-                    + (voting_end_block_number - created_block_number) * 12 * 1000,
-            )
-            .expect("bad timestamp"),
-            Utc,
-        ),
+
+    let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number).await {
+        Ok(r) => r,
+        Err(_) => match voting_ends_block {
+            Some(block) => block.time().expect("bad block timestamp"),
+            None => DateTime::from_utc(
+                NaiveDateTime::from_timestamp_millis(
+                    created_block_timestamp.timestamp() * 1000
+                        + (voting_end_block_number - created_block_number) * 12 * 1000,
+                )
+                .expect("bad timestamp"),
+                Utc,
+            ),
+        },
     };
 
     let proposal_url = format!("{}{}", decoder.proposalUrl, log.id);
@@ -213,7 +221,7 @@ async fn get_title(hexhash: String) -> Result<String> {
                 };
                 return Ok(ipfs_data.title);
             }
-            _ if retries < 5 => {
+            _ if retries < 10 => {
                 retries += 1;
                 let backoff_duration = Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;

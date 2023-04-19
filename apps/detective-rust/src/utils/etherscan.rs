@@ -1,5 +1,6 @@
 use anyhow::{Context, Result};
 use chrono::{DateTime, NaiveDateTime, Utc};
+use ethers::providers::{Http, Middleware, Provider};
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use reqwest::Client;
 use serde::Deserialize;
@@ -27,6 +28,32 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
         Some(v) => v.into_string().unwrap(),
         None => panic!("$ETHERSCAN_API_KEY is not set"),
     };
+
+    let rpc_url = match env::var_os("ALCHEMY_NODE_URL") {
+        Some(v) => v.into_string().unwrap(),
+        None => panic!("$ALCHEMY_NODE_URL is not set"),
+    };
+
+    let provider = Provider::<Http>::try_from(rpc_url).unwrap();
+
+    let current_block = provider.get_block_number().await.unwrap();
+
+    if block_number < current_block.as_u64().to_i64().unwrap() {
+        let block = provider
+            .get_block(block_number.to_u64().unwrap())
+            .await
+            .unwrap();
+
+        let result: DateTime<Utc> = DateTime::from_utc(
+            NaiveDateTime::from_timestamp_millis(
+                block.unwrap().timestamp.as_u64().to_i64().unwrap() * 1000,
+            )
+            .expect("bad timestamp"),
+            Utc,
+        );
+
+        return Ok(result);
+    }
 
     let client = Client::new();
     let mut retries = 0;
@@ -77,7 +104,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
                 return Ok(data);
             }
 
-            _ if retries < 5 => {
+            _ if retries < 10 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;

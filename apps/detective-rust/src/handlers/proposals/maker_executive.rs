@@ -179,7 +179,7 @@ async fn get_proposal_block(time: DateTime<Utc>) -> Result<TimeData> {
                 return Ok(data);
             }
 
-            _ if retries < 5 => {
+            _ if retries < 10 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
@@ -252,7 +252,7 @@ async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
                 return Ok(data);
             }
 
-            _ if retries < 5 => {
+            _ if retries < 10 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
