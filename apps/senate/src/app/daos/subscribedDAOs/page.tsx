@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import 'server-only'
 
 const getSubscribedDAOs = async () => {
     const session = await getServerSession(authOptions())

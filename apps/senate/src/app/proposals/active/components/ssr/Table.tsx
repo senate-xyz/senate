@@ -1,9 +1,10 @@
 import Image from 'next/image'
 import dayjs, { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { type Vote, prisma, DAOHandlerType } from '@senate/database'
+import { type Vote, prisma } from '@senate/database'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
+import 'server-only'
 
 extend(relativeTime)
 
