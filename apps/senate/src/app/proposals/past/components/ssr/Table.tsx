@@ -1,7 +1,12 @@
 import Image from 'next/image'
 import { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { type Vote, prisma, type JsonArray } from '@senate/database'
+import {
+    type Vote,
+    prisma,
+    type JsonArray,
+    DAOHandlerType
+} from '@senate/database'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
 import 'server-only'
@@ -172,6 +177,7 @@ const getProposals = async (
             return {
                 daoName: proposal.dao.name,
                 daoHandlerId: proposal.daohandlerid,
+                daoHandlerType: proposal.daohandler.type,
                 onchain: proposal.daohandler.type == 'SNAPSHOT' ? false : true,
                 daoPicture: proposal.dao.picture,
                 proposalTitle: proposal.name,
@@ -301,6 +307,7 @@ const MobilePastProposal = async (props: {
     proposal: {
         daoName: string
         daoHandlerId: string
+        daoHandlerType: string
         onchain: boolean
         daoPicture: string
         proposalTitle: string
@@ -397,47 +404,57 @@ const MobilePastProposal = async (props: {
 
                 <div className='flex w-full flex-row items-end justify-between'>
                     <div className='flex w-3/4 flex-col justify-between'>
-                        <div>
-                            {props.proposal.highestScoreChoice !=
-                            'undefined' ? (
-                                <div>
-                                    <div className='flex flex-row'>
-                                        <div className='text-[21px] leading-[26px] text-white'>
-                                            {props.proposal.highestScoreChoice}
+                        {props.proposal.daoHandlerType ==
+                        DAOHandlerType.MAKER_EXECUTIVE ? (
+                            <div className='text-[17px] leading-[26px] text-white'>
+                                {props.proposal.highestScore} MKR
+                            </div>
+                        ) : (
+                            <div>
+                                {props.proposal.highestScoreChoice !=
+                                'undefined' ? (
+                                    <div>
+                                        <div className='flex flex-row'>
+                                            <div className='text-[21px] leading-[26px] text-white'>
+                                                {props.proposal.highestScoreChoice.slice(
+                                                    0,
+                                                    30
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className='bg-[#262626]'>
-                                        <div
-                                            style={{
-                                                width: `${(
-                                                    (props.proposal
-                                                        .highestScore /
-                                                        props.proposal
-                                                            .scoresTotal) *
-                                                    100
-                                                ).toFixed(0)}%`
-                                            }}
-                                            className={`h-full bg-[#EDEDED]`}
-                                        >
-                                            <div className='px-2 text-black'>
-                                                {(
-                                                    (props.proposal
-                                                        .highestScore /
-                                                        props.proposal
-                                                            .scoresTotal) *
-                                                    100
-                                                ).toFixed(2)}
-                                                %
+                                        <div className='bg-[#262626]'>
+                                            <div
+                                                style={{
+                                                    width: `${(
+                                                        (props.proposal
+                                                            .highestScore /
+                                                            props.proposal
+                                                                .scoresTotal) *
+                                                        100
+                                                    ).toFixed(0)}%`
+                                                }}
+                                                className={`h-full bg-[#EDEDED]`}
+                                            >
+                                                <div className='px-2 text-black'>
+                                                    {(
+                                                        (props.proposal
+                                                            .highestScore /
+                                                            props.proposal
+                                                                .scoresTotal) *
+                                                        100
+                                                    ).toFixed(2)}
+                                                    %
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            ) : (
-                                <div className='text-[17px] leading-[26px] text-white'>
-                                    Unable to fetch results data
-                                </div>
-                            )}
-                        </div>
+                                ) : (
+                                    <div className='text-[17px] leading-[26px] text-white'>
+                                        Unable to fetch results data
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <div className='text-[12px] font-normal leading-[19px]'>
                             {`on ${new Date(
                                 props.proposal.timeEnd
@@ -513,6 +530,7 @@ const PastProposal = async (props: {
     proposal: {
         daoName: string
         daoHandlerId: string
+        daoHandlerType: string
         onchain: boolean
         daoPicture: string
         proposalTitle: string
@@ -610,7 +628,28 @@ const PastProposal = async (props: {
             </td>
             <td className='hidden lg:table-cell'>
                 <div className='flex h-[96px] flex-col justify-between py-2'>
-                    {props.proposal.highestScoreChoice != 'undefined' ? (
+                    {props.proposal.daoHandlerType ==
+                    DAOHandlerType.MAKER_EXECUTIVE ? (
+                        <div className='text-[21px] leading-[26px] text-white'>
+                            <div className='mb-1 flex flex-row gap-2'>
+                                <div className='h-[24px] w-[24px] bg-[#D9D9D9]'>
+                                    <Image
+                                        loading='eager'
+                                        priority={true}
+                                        width={24}
+                                        height={24}
+                                        src={'/assets/Icon/Check.svg'}
+                                        alt='off-chain'
+                                    />
+                                </div>{' '}
+                                {(
+                                    props.proposal.scoresTotal /
+                                    1000000000000000000
+                                ).toFixed(2)}{' '}
+                                MKR Supporting
+                            </div>
+                        </div>
+                    ) : props.proposal.highestScoreChoice != 'undefined' ? (
                         <div>
                             <div className='mb-1 flex flex-row gap-2'>
                                 {props.proposal.passedQuorum ? (
@@ -628,7 +667,10 @@ const PastProposal = async (props: {
                                     <div className='h-[24px] w-[24px] bg-[#D9D9D9]'></div>
                                 )}
                                 <div className='text-[21px] leading-[26px] text-white'>
-                                    {props.proposal.highestScoreChoice}
+                                    {props.proposal.highestScoreChoice.slice(
+                                        0,
+                                        30
+                                    )}
                                 </div>
                             </div>
                             <div className='w-[340px] bg-[#262626]'>
