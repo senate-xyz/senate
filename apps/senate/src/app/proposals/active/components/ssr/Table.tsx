@@ -34,7 +34,7 @@ const getProposals = async (
             voteStatusQuery = {
                 votes: {
                     none: {
-                        voterAddress: {
+                        voteraddress: {
                             in:
                                 proxy == 'any'
                                     ? user?.voters.map((voter) => voter.address)
@@ -49,7 +49,7 @@ const getProposals = async (
             voteStatusQuery = {
                 votes: {
                     some: {
-                        voterAddress: {
+                        voteraddress: {
                             in:
                                 proxy == 'any'
                                     ? user?.voters.map((voter) => voter.address)
@@ -136,7 +136,7 @@ const getProposals = async (
                         in:
                             proxy == 'any'
                                 ? user?.voters.map((voter) => voter.address)
-                                : proxy
+                                : [proxy]
                     }
                 }
             }
