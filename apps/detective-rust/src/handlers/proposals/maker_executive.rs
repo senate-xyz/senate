@@ -139,7 +139,7 @@ async fn proposal(
         scores_total: scores_total.parse::<f64>().unwrap().into(),
         quorum: 0.into(),
         url: proposal_url,
-        state: state,
+        state,
     };
 
     Ok(proposal)

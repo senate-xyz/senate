@@ -219,11 +219,7 @@ async fn insert_proposals(
         to_block
     };
 
-    let uptodate = if dao_handler.chainindex.unwrap() - new_index < 1000 {
-        true
-    } else {
-        false
-    };
+    let uptodate = dao_handler.chainindex.unwrap() - new_index < 1000;
 
     let _ = ctx
         .db

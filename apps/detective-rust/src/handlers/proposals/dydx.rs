@@ -72,11 +72,11 @@ async fn data_for_proposal(
     let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
 
     let created_block_number = meta.block_number.as_u64().to_i64().unwrap();
-    let created_block = ctx.client.get_block(meta.clone().block_number).await?;
+    let created_block = ctx.client.get_block(meta.block_number).await?;
     let created_block_timestamp = created_block.expect("bad block").time()?;
 
-    let voting_start_block_number = log.clone().start_block.as_u64().to_i64().unwrap();
-    let voting_end_block_number = log.clone().end_block.as_u64().to_i64().unwrap();
+    let voting_start_block_number = log.start_block.as_u64().to_i64().unwrap();
+    let voting_end_block_number = log.end_block.as_u64().to_i64().unwrap();
 
     let voting_starts_block = ctx
         .client
@@ -178,7 +178,7 @@ async fn data_for_proposal(
         scores_total: scores_total.into(),
         quorum: quorum.as_u128().into(),
         url: proposal_url,
-        state: state,
+        state,
     };
 
     Ok(proposal)

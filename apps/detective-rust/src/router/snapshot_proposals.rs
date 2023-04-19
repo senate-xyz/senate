@@ -238,11 +238,7 @@ async fn update_proposals(
         new_index = old_index;
     }
 
-    let uptodate = if old_index - new_index < 60 * 60 {
-        true
-    } else {
-        false
-    };
+    let uptodate = old_index - new_index < 60 * 60;
 
     let _ = ctx
         .db

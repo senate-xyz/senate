@@ -1,15 +1,14 @@
 use crate::contracts::uniswapgov::ProposalCreatedFilter;
 use crate::prisma::ProposalState;
+use crate::utils::etherscan::estimate_timestamp;
 use crate::{contracts::uniswapgov, Ctx};
 use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
 use anyhow::Result;
+use chrono::{DateTime, NaiveDateTime, Utc};
 use ethers::providers::Middleware;
 use ethers::{prelude::LogMeta, types::Address};
 use futures::stream::{FuturesUnordered, StreamExt};
-use prisma_client_rust::{
-    bigdecimal::ToPrimitive,
-    chrono::{DateTime, NaiveDateTime, Utc},
-};
+use prisma_client_rust::bigdecimal::ToPrimitive;
 use serde::Deserialize;
 use std::str;
 
@@ -67,11 +66,11 @@ async fn data_for_proposal(
     let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
 
     let created_block_number = meta.block_number.as_u64().to_i64().unwrap();
-    let created_block = ctx.client.get_block(meta.clone().block_number).await?;
+    let created_block = ctx.client.get_block(meta.block_number).await?;
     let created_block_timestamp = created_block.expect("bad block").time()?;
 
-    let voting_start_block_number = log.clone().start_block.as_u64().to_i64().unwrap();
-    let voting_end_block_number = log.clone().end_block.as_u64().to_i64().unwrap();
+    let voting_start_block_number = log.start_block.as_u64().to_i64().unwrap();
+    let voting_end_block_number = log.end_block.as_u64().to_i64().unwrap();
 
     let voting_starts_block = ctx
         .client
@@ -82,27 +81,34 @@ async fn data_for_proposal(
         .get_block(voting_end_block_number.to_u64().unwrap())
         .await?;
 
-    let voting_starts_timestamp = match voting_starts_block {
-        Some(block) => block.time().expect("bad block timestamp"),
-        None => DateTime::from_utc(
-            NaiveDateTime::from_timestamp_millis(
-                created_block_timestamp.timestamp() * 1000
-                    + (voting_start_block_number - created_block_number) * 12 * 1000,
-            )
-            .expect("bad timestamp"),
-            Utc,
-        ),
+    let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number).await {
+        Ok(r) => r,
+        Err(_) => match voting_starts_block {
+            Some(block) => block.time().expect("bad block timestamp"),
+            None => DateTime::from_utc(
+                NaiveDateTime::from_timestamp_millis(
+                    created_block_timestamp.timestamp() * 1000
+                        + (voting_start_block_number - created_block_number) * 12 * 1000,
+                )
+                .expect("bad timestamp"),
+                Utc,
+            ),
+        },
     };
-    let voting_ends_timestamp = match voting_ends_block {
-        Some(block) => block.time().expect("bad block timestamp"),
-        None => DateTime::from_utc(
-            NaiveDateTime::from_timestamp_millis(
-                created_block_timestamp.timestamp() * 1000
-                    + (voting_end_block_number - created_block_number) * 12 * 1000,
-            )
-            .expect("bad timestamp"),
-            Utc,
-        ),
+
+    let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number).await {
+        Ok(r) => r,
+        Err(_) => match voting_ends_block {
+            Some(block) => block.time().expect("bad block timestamp"),
+            None => DateTime::from_utc(
+                NaiveDateTime::from_timestamp_millis(
+                    created_block_timestamp.timestamp() * 1000
+                        + (voting_end_block_number - created_block_number) * 12 * 1000,
+                )
+                .expect("bad timestamp"),
+                Utc,
+            ),
+        },
     };
 
     let mut title = format!(
@@ -170,7 +176,7 @@ async fn data_for_proposal(
         scores_total: scores_total.into(),
         quorum: quorum.as_u128().into(),
         url: proposal_url,
-        state: state,
+        state,
     };
 
     Ok(proposal)
