@@ -9,7 +9,9 @@ import { trpc } from '../../../server/trpcClient'
 export default function Home() {
     if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
     const [cookie] = useCookies(['hasSeenLanding'])
-    if (!cookie.hasSeenLanding) redirect('/landing')
+    useEffect(() => {
+        if (!cookie.hasSeenLanding) redirect('/landing')
+    }, [cookie])
 
     const account = useAccount()
     const router = useRouter()

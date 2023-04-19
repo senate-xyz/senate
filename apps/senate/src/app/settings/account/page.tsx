@@ -7,11 +7,14 @@ import { useCookies } from 'react-cookie'
 import { useAccount } from 'wagmi'
 import NotConnected from './components/csr/NotConnected'
 import UserAddress from './components/csr/UserAddress'
+import { useEffect } from 'react'
 
 export default function Home() {
     if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
     const [cookie] = useCookies(['hasSeenLanding'])
-    if (!cookie.hasSeenLanding) redirect('/landing')
+    useEffect(() => {
+        if (!cookie.hasSeenLanding) redirect('/landing')
+    }, [cookie])
 
     const account = useAccount()
     const session = useSession()
