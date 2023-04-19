@@ -70,11 +70,9 @@ async fn data_for_proposal(
 ) -> Result<ChainProposal> {
     let (log, meta): (PollCreatedFilter, LogMeta) = p.clone();
 
-    let block_created = meta.block_number;
-
-    let created_b = ctx.client.get_block(meta.clone().block_number).await?;
-
-    let created_timestamp = created_b.expect("bad block").time()?;
+    let created_block_number = meta.block_number.as_u64().to_i64().unwrap();
+    let created_block = ctx.client.get_block(meta.clone().block_number).await?;
+    let created_block_timestamp = created_block.expect("bad block").time()?;
 
     let mut voting_starts_timestamp = DateTime::from_utc(
         NaiveDateTime::from_timestamp_millis(log.start_date.as_u64().to_i64().unwrap() * 1000)
@@ -131,8 +129,8 @@ async fn data_for_proposal(
         dao_handler_id: dao_handler.clone().id,
         time_start: voting_starts_timestamp,
         time_end: voting_ends_timestamp,
-        time_created: created_timestamp,
-        block_created: block_created.as_u64().to_i64().expect("bad conversion"),
+        time_created: created_block_timestamp,
+        block_created: created_block_number,
         choices: choices.into(),
         scores: scores.into(),
         scores_total: scores_total.into(),
