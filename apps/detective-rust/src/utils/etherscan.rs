@@ -55,7 +55,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
                     }) {
                         Ok(d) => DateTime::from_utc(
                             NaiveDateTime::from_timestamp_millis(
-                                Utc::now().timestamp()
+                                Utc::now().timestamp() * 1000
                                     + d.result
                                         .EstimateTimeInSec
                                         .parse::<f64>()
