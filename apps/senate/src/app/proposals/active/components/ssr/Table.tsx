@@ -329,7 +329,6 @@ const MobileActiveProposal = async (props: {
                                 alt={props.proposal.daoName}
                             />
                         </div>
-                        <div>{props.proposal.state}</div>
 
                         <div>
                             {props.proposal.onchain ? (
@@ -506,7 +505,7 @@ const ActiveProposal = async (props: {
                         <div className='text-[24px] font-light leading-[30px]'>
                             {props.proposal.daoName}
                         </div>
-                        <div>{props.proposal.state}</div>
+
                         <div>
                             {props.proposal.onchain ? (
                                 <Image
