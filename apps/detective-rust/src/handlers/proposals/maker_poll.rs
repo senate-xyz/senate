@@ -170,7 +170,7 @@ async fn get_results_data(poll_id: String) -> Result<ResultsData> {
             ))
             .header(ACCEPT, "application/json")
             .header(USER_AGENT, "insomnia/2023.1.0")
-            .timeout(std::time::Duration::from_secs(5))
+            .timeout(std::time::Duration::from_secs(10))
             .send()
             .await;
 
@@ -187,7 +187,7 @@ async fn get_results_data(poll_id: String) -> Result<ResultsData> {
                 return Ok(data);
             }
 
-            _ if retries < 10 => {
+            _ if retries < 15 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
@@ -206,7 +206,7 @@ async fn get_title(url: String) -> Result<String> {
     loop {
         let response = client
             .get(url.clone())
-            .timeout(std::time::Duration::from_secs(5))
+            .timeout(std::time::Duration::from_secs(10))
             .send()
             .await;
 
@@ -224,7 +224,7 @@ async fn get_title(url: String) -> Result<String> {
                     .unwrap_or("Unknown".to_string());
                 return Ok(result);
             }
-            _ if retries < 10 => {
+            _ if retries < 15 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;

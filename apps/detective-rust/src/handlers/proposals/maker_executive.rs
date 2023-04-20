@@ -169,7 +169,7 @@ async fn get_proposal_block(time: DateTime<Utc>) -> Result<TimeData> {
             ))
             .header(ACCEPT, "application/json")
             .header(USER_AGENT, "insomnia/2023.1.0")
-            .timeout(std::time::Duration::from_secs(5))
+            .timeout(std::time::Duration::from_secs(10))
             .send()
             .await;
 
@@ -186,7 +186,7 @@ async fn get_proposal_block(time: DateTime<Utc>) -> Result<TimeData> {
                 return Ok(data);
             }
 
-            _ if retries < 10 => {
+            _ if retries < 15 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
@@ -259,7 +259,7 @@ async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
                 return Ok(data);
             }
 
-            _ if retries < 10 => {
+            _ if retries < 15 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
