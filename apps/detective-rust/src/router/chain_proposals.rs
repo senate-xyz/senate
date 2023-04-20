@@ -183,13 +183,24 @@ async fn insert_proposals(
                     proposal::state::set(Some(p.state)),
                 ],
             ),
-            vec![
-                proposal::choices::set(p.choices.clone()),
-                proposal::scores::set(p.scores.clone()),
-                proposal::scorestotal::set(p.clone().scores_total),
-                proposal::quorum::set(p.quorum),
-                proposal::state::set(Some(p.state)),
-            ],
+            {
+                let mut update_v = Vec::new();
+
+                if p.name.clone() != "Unknown" {
+                    update_v.push(proposal::name::set(p.name.clone()));
+                }
+
+                update_v.push(proposal::choices::set(p.choices.clone()));
+                update_v.push(proposal::scores::set(p.scores.clone()));
+                update_v.push(proposal::scorestotal::set(p.clone().scores_total));
+                update_v.push(proposal::quorum::set(p.quorum));
+                update_v.push(proposal::state::set(Some(p.state)));
+                update_v.push(proposal::timeend::set(
+                    p.time_end.with_timezone(&FixedOffset::east_opt(0).unwrap()),
+                ));
+
+                update_v
+            },
         )
     });
 

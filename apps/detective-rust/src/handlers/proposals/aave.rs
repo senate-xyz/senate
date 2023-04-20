@@ -221,7 +221,7 @@ async fn get_title(hexhash: String) -> Result<String> {
                 };
                 return Ok(ipfs_data.title);
             }
-            _ if retries < 10 => {
+            _ if retries < 15 => {
                 retries += 1;
                 let backoff_duration = Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;

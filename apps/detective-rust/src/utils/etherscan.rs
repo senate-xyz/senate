@@ -69,7 +69,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
                 "https://api.etherscan.io/api?module=block&action=getblockcountdown&blockno={}&apikey={}",
                 block_number, etherscan_api_key
             ))
-            .timeout(std::time::Duration::from_secs(5))
+            .timeout(std::time::Duration::from_secs(10))
             .send()
             .await;
 
@@ -104,7 +104,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
                 return Ok(data);
             }
 
-            _ if retries < 10 => {
+            _ if retries < 15 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
@@ -143,7 +143,7 @@ pub async fn estimate_block(timestamp: i64) -> Result<i64> {
                 "https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp={}&closest=before&apikey={}",
                 timestamp, etherscan_api_key
             ))
-            .timeout(std::time::Duration::from_secs(5))
+            .timeout(std::time::Duration::from_secs(10))
             .send()
             .await;
 
