@@ -184,6 +184,7 @@ async fn insert_proposals(
                 ],
             ),
             vec![
+                proposal::name::set(p.name.clone()),
                 proposal::choices::set(p.choices.clone()),
                 proposal::scores::set(p.scores.clone()),
                 proposal::scorestotal::set(p.clone().scores_total),
