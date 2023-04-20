@@ -1,6 +1,6 @@
 {
     "extends": "@senate/config/ts/node.json",
-    "include": ["src/**/*", "src/**/*.json"],
+    "include": ["src", "src/**/*", "src/**/*.ts", "src/**/*.json"],
     "exclude": ["node_modules", "dist"],
     "compilerOptions": {
         "composite": true,

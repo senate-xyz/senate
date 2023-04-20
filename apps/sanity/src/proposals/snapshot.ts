@@ -19,7 +19,7 @@ type GraphQLProposal = {
     link: string
 }
 
-export const snapshotProposalsSanity = schedule('29 * * * *', async () => {
+export const snapshotProposalsSanity = schedule('15 * * * *', async () => {
     log_sanity.log({
         level: 'info',
         message: '[PROPOSALS] Starting sanity check for snapshot proposals',
@@ -48,7 +48,6 @@ export const snapshotProposalsSanity = schedule('29 * * * *', async () => {
             level: 'info',
             message: '[PROPOSALS] FINISHED sanity check for snapshot proposals'
         })
-        
     } catch (error) {
         log_sanity.log({
             level: 'error',
@@ -56,7 +55,6 @@ export const snapshotProposalsSanity = schedule('29 * * * *', async () => {
             error: error
         })
     }
-
 })
 
 const checkAndSanitizeProposalsRoutine = async (
@@ -64,15 +62,12 @@ const checkAndSanitizeProposalsRoutine = async (
     fromTimestamp: number,
     toTimestamp: number
 ) => {
-
-    console.log("Fetching from db")
     const proposalsFromDatabase = await fetchProposalsFromDatabase(
         daoHandler.id,
         new Date(fromTimestamp),
         new Date(toTimestamp)
     )
 
-    console.log("Fetching from snapshot")
     const proposalsFromSnapshotAPI: GraphQLProposal[] =
         await fetchProposalsFromSnapshotAPI(
             (daoHandler.decoder as Decoder).space,
@@ -80,7 +75,6 @@ const checkAndSanitizeProposalsRoutine = async (
             Math.floor(toTimestamp / 1000)
         )
 
-    console.log("Computing stuff")
     // ========== CHECK FOR PROPOSALS WHICH SHOULD BE DELETED FROM DATABASE ==============
     const proposalsNotOnSnapshot: Proposal[] = proposalsFromDatabase.filter(
         (proposal: Proposal) => {
@@ -89,20 +83,19 @@ const checkAndSanitizeProposalsRoutine = async (
                 .includes(proposal.externalid)
         }
     )
-    
+
     if (proposalsNotOnSnapshot.length > 0) {
-        // we have proposals which have been removed from snapshot. need to purge them from the database.
         log_sanity.log({
             level: 'warn',
             message: `Found ${proposalsNotOnSnapshot.length} proposals to remove`,
-            proposals: proposalsNotOnSnapshot.map(proposal => proposal.url)
+            proposals: proposalsNotOnSnapshot.map((proposal) => proposal.url)
         })
 
         const deletedVotes = prisma.vote.deleteMany({
             where: {
                 daohandlerid: daoHandler.id,
                 proposalid: {
-                    in: proposalsNotOnSnapshot.map(proposal => proposal.id)
+                    in: proposalsNotOnSnapshot.map((proposal) => proposal.id)
                 }
             }
         })
@@ -111,14 +104,15 @@ const checkAndSanitizeProposalsRoutine = async (
             where: {
                 daohandlerid: daoHandler.id,
                 id: {
-                    in: proposalsNotOnSnapshot.map(
-                        (proposal) => proposal.id
-                    )
+                    in: proposalsNotOnSnapshot.map((proposal) => proposal.id)
                 }
             }
         })
 
-        const deletedRows = await prisma.$transaction([deletedVotes, deletedProposals])
+        const deletedRows = await prisma.$transaction([
+            deletedVotes,
+            deletedProposals
+        ])
 
         log_sanity.log({
             level: 'info',
@@ -136,19 +130,27 @@ const checkAndSanitizeProposalsRoutine = async (
         })
 
     if (proposalsNotInDatabase.length > 0) {
-        // we are missing proposals from the database. need to set the snapshotIndex backwards to fetch them
         log_sanity.log({
             level: 'warn',
             message: `Missing proposals: ${proposalsNotInDatabase.length} proposals `,
-            proposals: proposalsNotInDatabase.map(proposal => proposal.link)
+            proposals: proposalsNotInDatabase.map((proposal) => proposal.link)
         })
     }
 
-    console.log("\nHandler", (daoHandler.decoder as Decoder).space)
-    console.log("Proposals from snapshot", proposalsFromSnapshotAPI.length)
-    console.log("Proposals from db", proposalsFromDatabase.length)
-    console.log("Proposals not on snapshot", proposalsNotOnSnapshot.length, proposalsNotOnSnapshot)
-    console.log("Proposals not in database", proposalsNotInDatabase.length, proposalsNotInDatabase)
+    // ================ Debugging console logs =================
+    console.log('\nHandler', (daoHandler.decoder as Decoder).space)
+    console.log('Proposals from snapshot', proposalsFromSnapshotAPI.length)
+    console.log('Proposals from db', proposalsFromDatabase.length)
+    console.log(
+        'Proposals not on snapshot',
+        proposalsNotOnSnapshot.length,
+        proposalsNotOnSnapshot
+    )
+    console.log(
+        'Proposals not in database',
+        proposalsNotInDatabase.length,
+        proposalsNotInDatabase
+    )
 }
 
 const fetchProposalsFromSnapshotAPI = async (
@@ -187,12 +189,11 @@ const fetchProposalsFromSnapshotAPI = async (
             message: 'Failed to fetch voting data from snapshot.',
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
-            errorStack: (e as Error).stack,
+            errorStack: (e as Error).stack
         })
 
         throw e
     }
-    
 }
 
 const fetchProposalsFromDatabase = async (
