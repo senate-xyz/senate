@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime, Utc};
+use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime};
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use rocket::serde::json::Json;
@@ -7,7 +7,7 @@ use serde::Deserialize;
 
 use crate::{
     prisma::daohandler,
-    prisma::{dao, proposal},
+    prisma::{dao, proposal, ProposalState},
     Ctx, ProposalsRequest, ProposalsResponse,
 };
 
@@ -42,6 +42,7 @@ struct GraphQLProposal {
     end: i64,
     quorum: f64,
     link: String,
+    state: String,
     space: GraphQLSpace,
 }
 
@@ -98,6 +99,7 @@ pub async fn update_snapshot_proposals<'a>(
                 end
                 quorum
                 link
+                state
                 space
                 {{
                     id
@@ -181,13 +183,24 @@ async fn update_proposals(
                 proposal.link.clone(),
                 daohandler::id::equals(dao_handler.id.to_string()),
                 dao::id::equals(dao_handler.daoid.to_string()),
-                vec![],
+                vec![proposal::state::set(match proposal.state.as_str() {
+                    "active" => Some(ProposalState::Active),
+                    "pending" => Some(ProposalState::Pending),
+                    "closed" => Some(ProposalState::Executed),
+                    _ => Some(ProposalState::Unknown),
+                })],
             ),
             vec![
                 proposal::choices::set(proposal.choices.clone().into()),
                 proposal::scores::set(proposal.scores.clone().into()),
                 proposal::scorestotal::set(proposal.scores_total.into()),
                 proposal::quorum::set(proposal.quorum.into()),
+                proposal::state::set(match proposal.state.as_str() {
+                    "active" => Some(ProposalState::Active),
+                    "pending" => Some(ProposalState::Pending),
+                    "closed" => Some(ProposalState::Executed),
+                    _ => Some(ProposalState::Unknown),
+                }),
             ],
         )
     });
@@ -199,12 +212,12 @@ async fn update_proposals(
 
     let closed_proposals: Vec<&GraphQLProposal> = proposals
         .iter()
-        .filter(|proposal| proposal.end * 1000 < Utc::now().timestamp())
+        .filter(|proposal| proposal.state == "closed")
         .collect();
 
     let open_proposals: Vec<&GraphQLProposal> = proposals
         .iter()
-        .filter(|proposal| proposal.end * 1000 > Utc::now().timestamp())
+        .filter(|proposal| proposal.state != "closed")
         .collect();
 
     let new_index;
@@ -213,10 +226,10 @@ async fn update_proposals(
         new_index = open_proposals
             .iter()
             .map(|proposal| proposal.created)
-            .max()
+            .min()
             .unwrap_or(old_index);
     } else if !closed_proposals.is_empty() {
-        new_index = open_proposals
+        new_index = closed_proposals
             .iter()
             .map(|proposal| proposal.created)
             .max()
@@ -225,11 +238,7 @@ async fn update_proposals(
         new_index = old_index;
     }
 
-    let uptodate = if old_index - new_index < 60 * 60 {
-        true
-    } else {
-        false
-    };
+    let uptodate = old_index - new_index < 60 * 60;
 
     let _ = ctx
         .db

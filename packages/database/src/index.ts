@@ -1,8 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client'
 import { log_prisma } from '@senate/axiom'
-import type { InterfaceAbi } from 'ethers'
 import { type IBackOffOptions, backOff } from 'exponential-backoff'
-
 export type { JsonArray, JsonValue } from 'type-fest'
 
 export {
@@ -16,23 +14,18 @@ export {
     type user as User,
     RefreshStatus,
     DAOHandlerType,
+    ProposalState,
     type daohandler as DAOHandler
 } from '@prisma/client'
 
 export type Decoder = {
-    abi?: InterfaceAbi
     address?: string
     proposalUrl?: string
     space?: string
 
-    proxyAbi?: InterfaceAbi
-    proxyAddress?: string
-
     //makerpools
     address_vote?: string
     address_create?: string
-    abi_vote?: string
-    abi_create?: string
 }
 
 export type RefreshArgs = {
@@ -58,8 +51,9 @@ export type DAOType = Prisma.daoGetPayload<{
     }
 }>
 
-export type UserWithVotingAddresses = Prisma.userGetPayload<{
+export type UserWithSubscriptionsAndVotingAddresses = Prisma.userGetPayload<{
     include: {
+        subscriptions: true
         voters: true
     }
 }>

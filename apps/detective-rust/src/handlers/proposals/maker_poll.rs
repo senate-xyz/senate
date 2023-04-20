@@ -1,4 +1,5 @@
 use crate::contracts::makerpollcreate::PollCreatedFilter;
+use crate::prisma::ProposalState;
 use crate::{contracts::makerpollcreate, Ctx};
 use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
 use anyhow::{Context, Result};
@@ -69,11 +70,9 @@ async fn data_for_proposal(
 ) -> Result<ChainProposal> {
     let (log, meta): (PollCreatedFilter, LogMeta) = p.clone();
 
-    let block_created = meta.block_number;
-
-    let created_b = ctx.client.get_block(meta.clone().block_number).await?;
-
-    let created_timestamp = created_b.expect("bad block").time()?;
+    let created_block_number = meta.block_number.as_u64().to_i64().unwrap();
+    let created_block = ctx.client.get_block(meta.clone().block_number).await?;
+    let created_block_timestamp = created_block.expect("bad block").time()?;
 
     let mut voting_starts_timestamp = DateTime::from_utc(
         NaiveDateTime::from_timestamp_millis(log.start_date.as_u64().to_i64().unwrap() * 1000)
@@ -130,13 +129,18 @@ async fn data_for_proposal(
         dao_handler_id: dao_handler.clone().id,
         time_start: voting_starts_timestamp,
         time_end: voting_ends_timestamp,
-        time_created: created_timestamp,
-        block_created: block_created.as_u64().to_i64().expect("bad conversion"),
+        time_created: created_block_timestamp,
+        block_created: created_block_number,
         choices: choices.into(),
         scores: scores.into(),
         scores_total: scores_total.into(),
         quorum: quorum.into(),
         url: proposal_url,
+        state: if voting_ends_timestamp.timestamp() < Utc::now().timestamp() {
+            ProposalState::Executed
+        } else {
+            ProposalState::Active
+        },
     };
 
     Ok(proposal)
@@ -166,7 +170,7 @@ async fn get_results_data(poll_id: String) -> Result<ResultsData> {
             ))
             .header(ACCEPT, "application/json")
             .header(USER_AGENT, "insomnia/2023.1.0")
-            .timeout(std::time::Duration::from_secs(5))
+            .timeout(std::time::Duration::from_secs(10))
             .send()
             .await;
 
@@ -183,7 +187,7 @@ async fn get_results_data(poll_id: String) -> Result<ResultsData> {
                 return Ok(data);
             }
 
-            _ if retries < 5 => {
+            _ if retries < 15 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
@@ -202,7 +206,7 @@ async fn get_title(url: String) -> Result<String> {
     loop {
         let response = client
             .get(url.clone())
-            .timeout(std::time::Duration::from_secs(5))
+            .timeout(std::time::Duration::from_secs(10))
             .send()
             .await;
 
@@ -220,7 +224,7 @@ async fn get_title(url: String) -> Result<String> {
                     .unwrap_or("Unknown".to_string());
                 return Ok(result);
             }
-            _ if retries < 5 => {
+            _ if retries < 15 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;

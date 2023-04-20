@@ -48,14 +48,14 @@ export const Filters = (props: {
     const searchParams = useSearchParams()
     const router = useRouter()
     const [from, setFrom] = useState('any')
-    const [end, setEnd] = useState(1)
+    const [end, setEnd] = useState(30)
     const [voted, setVoted] = useState('any')
     const [proxy, setProxy] = useState('any')
 
     useEffect(() => {
         if (searchParams) {
             setFrom(String(searchParams.get('from') ?? 'any'))
-            setEnd(Number(searchParams.get('end') ?? 90))
+            setEnd(Number(searchParams.get('end') ?? 30))
             setVoted(String(searchParams.get('voted') ?? 'any'))
             setProxy(String(searchParams.get('proxy') ?? 'any'))
         }

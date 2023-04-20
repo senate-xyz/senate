@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
 use crate::contracts::makerexecutive::LogNoteFilter;
+use crate::prisma::ProposalState;
 use crate::{contracts::makerexecutive, Ctx};
 use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
 use anyhow::{Context, Result};
@@ -104,7 +105,7 @@ async fn proposal(
 
     let voting_starts_timestamp = created_timestamp;
 
-    let voting_ends_timestamp =
+    let mut voting_ends_timestamp =
         DateTime::parse_from_rfc3339(proposal_data.clone().spellData.expiration.as_str())
             .unwrap()
             .with_timezone(&Utc);
@@ -113,6 +114,23 @@ async fn proposal(
     let scores_total = &proposal_data.spellData.mkrSupport.clone();
 
     let block_created = get_proposal_block(created_timestamp).await?;
+
+    let state = if proposal_data.spellData.hasBeenCast {
+        ProposalState::Executed
+    } else if proposal_data.active {
+        ProposalState::Active
+    } else if proposal_data.spellData.hasBeenScheduled {
+        ProposalState::Queued
+    } else {
+        ProposalState::Unknown
+    };
+
+    if state == ProposalState::Executed {
+        voting_ends_timestamp =
+            DateTime::parse_from_rfc3339(proposal_data.clone().spellData.dateExecuted.as_str())
+                .unwrap()
+                .with_timezone(&Utc);
+    }
 
     let proposal = ChainProposal {
         external_id: spell_address.to_string(),
@@ -128,6 +146,7 @@ async fn proposal(
         scores_total: scores_total.parse::<f64>().unwrap().into(),
         quorum: 0.into(),
         url: proposal_url,
+        state,
     };
 
     Ok(proposal)
@@ -150,7 +169,7 @@ async fn get_proposal_block(time: DateTime<Utc>) -> Result<TimeData> {
             ))
             .header(ACCEPT, "application/json")
             .header(USER_AGENT, "insomnia/2023.1.0")
-            .timeout(std::time::Duration::from_secs(5))
+            .timeout(std::time::Duration::from_secs(10))
             .send()
             .await;
 
@@ -167,7 +186,7 @@ async fn get_proposal_block(time: DateTime<Utc>) -> Result<TimeData> {
                 return Ok(data);
             }
 
-            _ if retries < 5 => {
+            _ if retries < 15 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
@@ -183,13 +202,18 @@ async fn get_proposal_block(time: DateTime<Utc>) -> Result<TimeData> {
 #[derive(Deserialize, Serialize, PartialEq, Debug, Clone)]
 struct SpellData {
     expiration: String,
+    datePassed: String,
+    dateExecuted: String,
     mkrSupport: String,
+    hasBeenCast: bool,
+    hasBeenScheduled: bool,
 }
 #[allow(non_snake_case)]
 #[derive(Deserialize, Serialize, PartialEq, Debug, Clone)]
 struct ProposalData {
     title: String,
     spellData: SpellData,
+    active: bool,
     date: String,
 }
 
@@ -220,9 +244,14 @@ async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
                         Err(_e) => ProposalData {
                             title: "Unknown".into(),
                             date: "Sat Jan 01 2000 00:00:00".into(),
+                            active: false,
                             spellData: SpellData {
                                 expiration: "2000-01-01T00:00:00-00:00".into(),
+                                datePassed: "2000-01-01T00:00:00-00:00".into(),
+                                dateExecuted: "2000-01-01T00:00:00-00:00".into(),
                                 mkrSupport: "0".into(),
+                                hasBeenCast: false,
+                                hasBeenScheduled: false,
                             },
                         },
                     };
@@ -230,7 +259,7 @@ async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
                 return Ok(data);
             }
 
-            _ if retries < 5 => {
+            _ if retries < 15 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
@@ -239,9 +268,14 @@ async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
                 return Ok(ProposalData {
                     title: "Unknown".into(),
                     date: "Sat Jan 01 2000 00:00:00".into(),
+                    active: false,
                     spellData: SpellData {
                         expiration: "2000-01-01T00:00:00-00:00".into(),
+                        datePassed: "2000-01-01T00:00:00-00:00".into(),
+                        dateExecuted: "2000-01-01T00:00:00-00:00".into(),
                         mkrSupport: "0".into(),
+                        hasBeenCast: false,
+                        hasBeenScheduled: false,
                     },
                 });
             }

@@ -2,6 +2,9 @@ pub mod contracts;
 pub mod handlers;
 pub mod prisma;
 mod router;
+pub mod utils {
+    pub mod etherscan;
+}
 use crate::router::chain_proposals::update_chain_proposals;
 use crate::router::chain_votes::update_chain_votes;
 use crate::router::snapshot_proposals::update_snapshot_proposals;

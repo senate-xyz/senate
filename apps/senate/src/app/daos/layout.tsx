@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../pages/api/auth/[...nextauth]'
 import { Header } from '../components/csr/Header'
 import SetupDailyBulletin from '../components/csr/SetupDailyBulletin'
+import 'server-only'
 
 const hasUserBulletin = async () => {
     const session = await getServerSession(authOptions())

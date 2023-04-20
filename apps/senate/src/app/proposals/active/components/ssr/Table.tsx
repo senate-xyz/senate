@@ -1,9 +1,10 @@
 import Image from 'next/image'
 import dayjs, { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { type Vote, prisma, DAOHandlerType } from '@senate/database'
+import { type Vote, prisma, ProposalState } from '@senate/database'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
+import 'server-only'
 
 extend(relativeTime)
 
@@ -33,11 +34,11 @@ const getProposals = async (
             voteStatusQuery = {
                 votes: {
                     none: {
-                        voterAddress: {
+                        voteraddress: {
                             in:
                                 proxy == 'any'
                                     ? user?.voters.map((voter) => voter.address)
-                                    : proxy
+                                    : [proxy]
                         }
                     }
                 }
@@ -48,11 +49,11 @@ const getProposals = async (
             voteStatusQuery = {
                 votes: {
                     some: {
-                        voterAddress: {
+                        voteraddress: {
                             in:
                                 proxy == 'any'
                                     ? user?.voters.map((voter) => voter.address)
-                                    : proxy
+                                    : [proxy]
                         }
                     }
                 }
@@ -112,12 +113,19 @@ const getProposals = async (
                           }
                 },
                 {
-                    timeend: Boolean(active)
+                    state: Boolean(active)
                         ? {
-                              gte: new Date()
+                              in: [ProposalState.ACTIVE, ProposalState.PENDING]
                           }
                         : {
-                              lt: new Date()
+                              in: [
+                                  ProposalState.QUEUED,
+                                  ProposalState.DEFEATED,
+                                  ProposalState.EXECUTED,
+                                  ProposalState.EXPIRED,
+                                  ProposalState.SUCCEEDED,
+                                  ProposalState.UNKNOWN
+                              ]
                           }
                 },
                 voteStatusQuery
@@ -135,7 +143,7 @@ const getProposals = async (
                         in:
                             proxy == 'any'
                                 ? user?.voters.map((voter) => voter.address)
-                                : proxy
+                                : [proxy]
                     }
                 }
             }
@@ -150,6 +158,7 @@ const getProposals = async (
                 onchain: proposal.daohandler.type == 'SNAPSHOT' ? false : true,
                 daoPicture: proposal.dao.picture,
                 proposalTitle: proposal.name,
+                state: proposal.state,
                 proposalLink: proposal.url,
                 timeEnd: proposal.timeend,
                 voted: user
@@ -274,6 +283,7 @@ const MobileActiveProposal = async (props: {
         onchain: boolean
         daoPicture: string
         proposalTitle: string
+        state: string
         proposalLink: string
         timeEnd: Date
         voted: string
@@ -447,6 +457,7 @@ const ActiveProposal = async (props: {
         onchain: boolean
         daoPicture: string
         proposalTitle: string
+        state: string
         proposalLink: string
         timeEnd: Date
         voted: string
@@ -494,6 +505,7 @@ const ActiveProposal = async (props: {
                         <div className='text-[24px] font-light leading-[30px]'>
                             {props.proposal.daoName}
                         </div>
+
                         <div>
                             {props.proposal.onchain ? (
                                 <Image

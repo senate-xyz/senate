@@ -1,11 +1,11 @@
+/* eslint-disable prettier/prettier */
 import {
     type Proposal,
     DAOHandlerType,
-    type UserWithVotingAddresses,
+    type Subscription,
+    type UserWithSubscriptionsAndVotingAddresses,
     type Voter,
     type DAO,
-    type Notification,
-    RoundupNotificationType,
     type JsonArray,
     prisma,
     type DAOHandler
@@ -32,6 +32,11 @@ const emailProposalEndDateStringFormat: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
+}
+
+interface ProposalWithDaoAndHandler extends Proposal {
+    dao: DAO
+    daohandler: DAOHandler
 }
 
 interface EmailTemplateRow {
@@ -62,6 +67,15 @@ interface BulletinData {
     pastProposals: EmailTemplateRow[]
 }
 
+enum BulletinSection {
+    ENDING_SOON = 0,
+    NEW = 1,
+    PAST = 2
+}
+
+let userEmailData: Map<string, BulletinData>
+let proposalCountdownUrl: Map<string, string>
+
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
 schedule(
     String(process.env.BULLETIN_CRON_INTERVAL) ?? '* * 31 2 *',
@@ -79,22 +93,69 @@ schedule(
         let errorsDetected = false
 
         try {
-            await clearNotificationsTable()
+            userEmailData = new Map<string, BulletinData>()
+            proposalCountdownUrl = new Map<string, string>()
 
-            const newProposals: Proposal[] = await fetchNewProposals()
-            await insertNotifications(newProposals, RoundupNotificationType.NEW)
+            const dateOptions: Intl.DateTimeFormatOptions = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }
 
-            const endingProposals: Proposal[] = await fetchEndingProposals()
-            await insertNotifications(
-                endingProposals,
-                RoundupNotificationType.ENDING_SOON
-            )
+            const users: UserWithSubscriptionsAndVotingAddresses[] =
+                await fetchUsersToBeNotified()
 
-            const pastProposals: Proposal[] = await fetchPastProposals()
-            await insertNotifications(
-                pastProposals,
-                RoundupNotificationType.PAST
-            )
+            console.log("Users to be notified", users)
+
+            for (const user of users) {
+                const subscribedDaoIds = user.subscriptions.map(
+                    (subscription: Subscription) => subscription.daoid
+                )
+
+                const endingProposals: ProposalWithDaoAndHandler[] = await fetchEndingProposals(
+                    user.id,
+                    subscribedDaoIds
+                )
+                const newProposals: ProposalWithDaoAndHandler[] = await fetchNewProposals(
+                    user.id,
+                    subscribedDaoIds
+                )
+                const pastProposals: ProposalWithDaoAndHandler[] = await fetchPastProposals(
+                    user.id,
+                    subscribedDaoIds
+                )
+                console.log("User: ", user.email)
+                console.log("Ending soon", endingProposals.length) 
+                console.log("New", newProposals.length)
+                console.log("Past", pastProposals.length)
+
+                const bulletinData : BulletinData = {
+                    todaysDate: new Date(Date.now()).toLocaleDateString(
+                        undefined,
+                        dateOptions
+                    ),
+                    endingProposals: await formatEmailTableData(
+                        user,
+                        endingProposals,
+                        BulletinSection.ENDING_SOON
+                    ),
+                    newProposals: await formatEmailTableData(
+                        user,
+                        newProposals,
+                        BulletinSection.NEW
+                    ),
+                    pastProposals: await formatEmailTableData(
+                        user,
+                        pastProposals,
+                        BulletinSection.PAST
+                    ),
+                }
+                
+                userEmailData.set(user.email, bulletinData)
+            }
+
+            console.log(userEmailData)
         } catch (e) {
             log_bul.log({
                 level: 'error',
@@ -110,7 +171,15 @@ schedule(
             if (errorsDetected) {
                 await sendSorryPlsEmail()
             } else {
-                await formatDataAndSendBulletin()
+                for (const [recipient, emailData] of userEmailData) {
+                    const to: string =
+                        process.env.EXEC_ENV === 'PROD' 
+                    ? String(recipient)
+                    : String(process.env.TEST_EMAIL)
+
+                    console.log("Sending email to ", recipient)
+                    await sendBulletin(to, emailData)
+                }
             }
 
             log_bul.log({
@@ -122,32 +191,9 @@ schedule(
     }
 )
 
-const clearNotificationsTable = async () => {
-    try {
-        await prisma.notification.deleteMany()
-
-        log_bul.log({
-            level: 'info',
-            message: 'Cleared notifications table'
-        })
-    } catch (e) {
-        log_bul.log({
-            level: 'error',
-            message: 'Could not clear notifications table',
-            data: {
-                errorName: (e as Error).name,
-                errorMessage: (e as Error).message,
-                errorStack: (e as Error).stack
-            }
-        })
-        throw new Error('Could not clear notifications table')
-    }
-}
-
-const fetchUsersToBeNotifiedForProposal = async (
-    proposal: Proposal,
-    type: RoundupNotificationType
-) => {
+const fetchUsersToBeNotified = async (): Promise<
+    UserWithSubscriptionsAndVotingAddresses[]
+> => {
     try {
         const users = await prisma.user.findMany({
             where: {
@@ -157,13 +203,13 @@ const fetchUsersToBeNotifiedForProposal = async (
                 dailybulletin: true,
                 subscriptions: {
                     some: {
-                        daoid: proposal.daoid,
                         notificationsenabled: true
                     }
                 }
             },
-            select: {
-                id: true
+            include: {
+                subscriptions: true,
+                voters: true
             }
         })
 
@@ -175,91 +221,33 @@ const fetchUsersToBeNotifiedForProposal = async (
             data: {
                 errorName: (e as Error).name,
                 errorMessage: (e as Error).message,
-                errorStack: (e as Error).stack,
-                proposal: proposal,
-                type: type
+                errorStack: (e as Error).stack
             }
         })
         throw new Error('Could not fetch users to be notified')
     }
 }
 
-const insertNotifications = async (
-    proposals: Proposal[],
-    type: RoundupNotificationType
-) => {
-    try {
-        for (const proposal of proposals) {
-            //Get users which should be notified
-            const users = await fetchUsersToBeNotifiedForProposal(
-                proposal,
-                type
-            )
-
-            //Insert notifications
-            await prisma.$transaction(
-                users.map((user) => {
-                    return prisma.notification.upsert({
-                        where: {
-                            proposalid_userid_type: {
-                                proposalid: proposal.id,
-                                userid: user.id,
-                                type: type
-                            }
-                        },
-                        update: {},
-                        create: {
-                            userid: user.id,
-                            proposalid: proposal.id,
-                            daoid: proposal.daoid,
-                            type: type
-                        }
-                    })
-                })
-            )
-        }
-
-        log_bul.log({
-            level: 'info',
-            message: 'Inserted notifications',
-            data: {
-                type: type,
-                count: proposals.length
-            }
-        })
-    } catch (e) {
-        log_bul.log({
-            level: 'error',
-            message: 'Could not intsert notifications',
-            data: {
-                errorName: (e as Error).name,
-                errorMessage: (e as Error).message,
-                errorStack: (e as Error).stack
-            }
-        })
-
-        throw new Error('Could not insert notifications')
-    }
-}
-
-const fetchNewProposals = async () => {
+const fetchNewProposals = async (
+    userId: string,
+    daoIds: string[]
+): Promise<ProposalWithDaoAndHandler[]> => {
     try {
         const proposals = await prisma.proposal.findMany({
             where: {
                 timecreated: {
                     gte: new Date(Date.now() - oneDay)
+                },
+                daoid: {
+                    in: daoIds
                 }
+            },
+            include: {
+                dao: true,
+                daohandler: true
             },
             orderBy: {
                 timeend: 'asc'
-            }
-        })
-
-        log_bul.log({
-            level: 'info',
-            message: 'Fetched new proposals',
-            data: {
-                count: proposals.length
             }
         })
 
@@ -267,7 +255,7 @@ const fetchNewProposals = async () => {
     } catch (e) {
         log_bul.log({
             level: 'error',
-            message: 'Could not fetch new proposals',
+            message: 'Could not fetch new proposals for user' + userId,
             data: {
                 errorName: (e as Error).name,
                 errorMessage: (e as Error).message,
@@ -275,11 +263,14 @@ const fetchNewProposals = async () => {
             }
         })
 
-        throw new Error('Could not fetch new proposals')
+        throw new Error('Could not fetch new proposals' + userId)
     }
 }
 
-const fetchEndingProposals = async () => {
+const fetchEndingProposals = async (
+    userId: string,
+    daoIds: string[]
+): Promise<ProposalWithDaoAndHandler[]> => {
     try {
         const proposals = await prisma.proposal.findMany({
             where: {
@@ -293,19 +284,20 @@ const fetchEndingProposals = async () => {
                         timeend: {
                             gt: new Date(Date.now())
                         }
+                    },
+                    {
+                        daoid: {
+                            in: daoIds
+                        }
                     }
                 ]
             },
+            include: {
+                dao: true,
+                daohandler: true
+            },
             orderBy: {
                 timeend: 'asc'
-            }
-        })
-
-        log_bul.log({
-            level: 'info',
-            message: 'Fetched ending proposals',
-            data: {
-                count: proposals.length
             }
         })
 
@@ -313,18 +305,21 @@ const fetchEndingProposals = async () => {
     } catch (e) {
         log_bul.log({
             level: 'error',
-            message: 'Could not fetch ending proposals',
+            message: 'Could not fetch ending proposals for user' + userId,
             data: {
                 errorName: (e as Error).name,
                 errorMessage: (e as Error).message,
                 errorStack: (e as Error).stack
             }
         })
-        throw new Error('Could not fetch ending proposals')
+        throw new Error('Could not fetch ending proposals for user' + userId)
     }
 }
 
-const fetchPastProposals = async () => {
+const fetchPastProposals = async (
+    userId: string,
+    daoIds: string[]
+): Promise<ProposalWithDaoAndHandler[]> => {
     try {
         const proposals = await prisma.proposal.findMany({
             where: {
@@ -338,19 +333,20 @@ const fetchPastProposals = async () => {
                         timeend: {
                             gte: new Date(Date.now() - oneDay)
                         }
+                    },
+                    {
+                        daoid: {
+                            in: daoIds
+                        }
                     }
                 ]
             },
+            include: {
+                dao: true,
+                daohandler: true
+            },
             orderBy: {
                 timeend: 'desc'
-            }
-        })
-
-        log_bul.log({
-            level: 'info',
-            message: 'Fetched past proposals',
-            data: {
-                count: proposals.length
             }
         })
 
@@ -358,38 +354,29 @@ const fetchPastProposals = async () => {
     } catch (e) {
         log_bul.log({
             level: 'error',
-            message: 'Could not fetch past proposals',
+            message: 'Could not fetch past proposals for user' + userId,
             data: {
                 errorName: (e as Error).name,
                 errorMessage: (e as Error).message,
                 errorStack: (e as Error).stack
             }
         })
-        throw new Error('Could not fetch past proposals')
+        throw new Error('Could not fetch past proposals for user' + userId)
     }
 }
 
 const formatEmailTableData = async (
-    user: UserWithVotingAddresses,
-    notificationType: RoundupNotificationType
+    user: UserWithSubscriptionsAndVotingAddresses,
+    proposals: ProposalWithDaoAndHandler[],
+    bulletinSection: BulletinSection
 ): Promise<EmailTemplateRow[]> => {
     try {
-        const notifications = await prisma.notification.findMany({
-            where: { userid: user.id, type: notificationType },
-            include: {
-                proposal: {
-                    include: {
-                        dao: true,
-                        daohandler: true
-                    }
-                }
-            }
-        })
-
         const tableRows: EmailTemplateRow[] = []
 
-        for (const notification of notifications) {
-            tableRows.push(await formatEmailTemplateRow(notification, user))
+        for (const proposal of proposals) {
+            tableRows.push(
+                await formatEmailTemplateRow(user, proposal, bulletinSection)
+            )
         }
 
         return tableRows
@@ -397,43 +384,41 @@ const formatEmailTableData = async (
         log_bul.log({
             level: 'error',
             message: 'Could not format email table data',
-            data: { error, user, notificationType }
+            data: { error, user }
         })
         throw new Error('Could not format email table data')
     }
 }
 
 const formatEmailTemplateRow = async (
-    notification: Notification & {
-        proposal: Proposal & { dao: DAO; daohandler: DAOHandler }
-    },
-    user: UserWithVotingAddresses
+    user: UserWithSubscriptionsAndVotingAddresses,
+    proposal: ProposalWithDaoAndHandler,
+    bulletinSection: BulletinSection
 ): Promise<EmailTemplateRow> => {
-    const voted = await userVoted(
-        user.voters,
-        notification.proposalid,
-        notification.daoid
-    )
+    let countdownUrl
+    if (proposalCountdownUrl.has(proposal.id)) {
+        countdownUrl = proposalCountdownUrl.get(proposal.id)
+    } else {
+        // await delay(1000)
+        countdownUrl = await generateCountdownGifUrl(proposal.timeend)
+        proposalCountdownUrl.set(proposal.id, countdownUrl)
+    }
 
-    await delay(1000)
-    const countdownUrl = await generateCountdownGifUrl(
-        notification.proposal.timeend
-    )
-
+    const voted = await userVoted(user.voters, proposal.id, proposal.daoid)
     const votingStatus = voted
         ? 'Voted'
-        : notification.type === RoundupNotificationType.PAST
+        : bulletinSection === BulletinSection.PAST
         ? "Didn't vote"
         : 'Not voted yet'
 
     const votingStatusIconUrl = voted
         ? `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/Voted.png`
-        : notification.type === RoundupNotificationType.PAST
+        : bulletinSection === BulletinSection.PAST
         ? `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/DidntVote.png`
         : `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/NotVotedYet.png`
 
     const chainLogoUrl =
-        notification.proposal.daohandler.type === DAOHandlerType.SNAPSHOT
+        proposal.daohandler.type === DAOHandlerType.SNAPSHOT
             ? encodeURI(
                   `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Chain/Snapshot/snapshot.png`
               )
@@ -443,69 +428,84 @@ const formatEmailTemplateRow = async (
 
     let result = null
 
-    if (notification.type === RoundupNotificationType.PAST) {
+    if (bulletinSection === BulletinSection.PAST) {
         let highestScore = 0
         let highestScoreIndex = 0
         let highestScorePercentage = 0
         let highestScoreChoice = ''
 
-        const scores = notification.proposal.scores as JsonArray
+        if (
+            proposal.scores &&
+            typeof proposal.scores === 'object' &&
+            Array.isArray(proposal?.scores) &&
+            proposal.choices &&
+            typeof proposal.choices === 'object' &&
+            Array.isArray(proposal?.choices)
+        ) {
+            const scores = proposal.scores as JsonArray
 
-        for (const score of scores) {
-            if (Number(score) > highestScore) {
-                highestScore = Number(score)
-                highestScoreIndex++
+            for (let i = 0; i < scores.length; i++) {
+                if (parseFloat(scores[i]!.toString()) > highestScore) {
+                    highestScore = parseFloat(scores[i]!.toString())
+                    highestScoreIndex = i
+                }
             }
+
+            highestScoreChoice = String(proposal.choices[highestScoreIndex])
         }
 
-        highestScoreChoice = String(
-            (notification.proposal.choices as JsonArray)[highestScoreIndex - 1]
-        )
 
         highestScorePercentage =
-            (highestScore / Number(notification.proposal.scorestotal)) * 100
+            (highestScore / Number(proposal.scorestotal)) * 100
+
+            proposal.name.length > 100
+            ? `${proposal.name.substring(0, 100)}...`
+            : proposal.name,
 
         result = {
-            highestScoreChoice: highestScoreChoice.substring(0, 15),
+            highestScoreChoice: highestScoreChoice.length > 16
+                ? `${highestScoreChoice.substring(0, 16)}...`
+                : highestScoreChoice,
             highestScorePercentage: highestScorePercentage.toFixed(2),
             barWidthPercentage: Math.floor(highestScorePercentage)
         }
+
     }
 
     return {
         votingStatus,
         votingStatusIconUrl: encodeURI(votingStatusIconUrl),
         proposalName:
-            notification.proposal.name.length > 100
-                ? `${notification.proposal.name.substring(0, 100)}...`
-                : notification.proposal.name,
-        proposalUrl: encodeURI(notification.proposal.url),
+            proposal.name.length > 100
+                ? `${proposal.name.substring(0, 100)}...`
+                : proposal.name,
+        proposalUrl: encodeURI(proposal.url),
         daoLogoUrl: encodeURI(
-            `${process.env.NEXT_PUBLIC_WEB_URL}${notification.proposal.dao.picture}_small.png`
+            `${process.env.NEXT_PUBLIC_WEB_URL}${proposal.dao.picture}_small.png`
         ),
         chainLogoUrl: chainLogoUrl,
-        daoName: notification.proposal.dao.name,
+        daoName: proposal.dao.name,
         endHoursUTC: formatTwoDigit(
-            notification.proposal.timeend.getUTCHours()
+           proposal.timeend.getUTCHours()
         ),
         endMinutesUTC: formatTwoDigit(
-            notification.proposal.timeend.getUTCMinutes()
+            proposal.timeend.getUTCMinutes()
         ),
-        endDateString: notification.proposal.timeend.toLocaleDateString(
+        endDateString: proposal.timeend.toLocaleDateString(
             undefined,
             emailProposalEndDateStringFormat
         ),
         countdownUrl: encodeURI(countdownUrl),
         result: result,
-        resultDisplay: isMakerProposal(notification.proposal) ? 'hide' : 'show',
-        resultUnavailableDisplay: isMakerProposal(notification.proposal)
+        resultDisplay: isMakerProposal(proposal) ? 'hide' : 'show',
+        resultUnavailableDisplay: isMakerProposal(proposal)
             ? 'show'
             : 'hide'
     }
 }
 
 const isMakerProposal = (
-    proposal: Proposal & { dao: DAO; daohandler: DAOHandler }
+    proposal: ProposalWithDaoAndHandler
 ) => {
     return (
         proposal.daohandler.type === DAOHandlerType.MAKER_EXECUTIVE ||
@@ -618,106 +618,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
     }
 }
 
-const fetchUsersToBeNotified = async (): Promise<UserWithVotingAddresses[]> => {
-    try {
-        const users = await prisma.user.findMany({
-            where: {
-                email: {
-                    not: ''
-                },
-                dailybulletin: true,
-                subscriptions: {
-                    some: {
-                        notificationsenabled: true
-                    }
-                }
-            },
-            include: {
-                voters: true
-            }
-        })
-
-        log_bul.log({
-            level: 'info',
-            message: 'Fetched users with daily bulletin enabled',
-            data: {}
-        })
-
-        return users
-    } catch (e) {
-        log_bul.log({
-            level: 'error',
-            message: 'Could not fetch users with daily bulletin enabled',
-            data: {
-                errorName: (e as Error).name,
-                errorMessage: (e as Error).message,
-                errorStack: (e as Error).stack
-            }
-        })
-        throw Error('Could not fetch users with daily bulletin enabled')
-    }
-}
-
-const formatDataAndSendBulletin = async () => {
-    const dateOptions: Intl.DateTimeFormatOptions = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    }
-
-    try {
-        const users = await fetchUsersToBeNotified()
-
-        for (const user of users) {
-            if (!user.email) continue
-
-            const endingSoonProposalsData = await formatEmailTableData(
-                user,
-                RoundupNotificationType.ENDING_SOON
-            )
-
-            const newProposalsData = await formatEmailTableData(
-                user,
-                RoundupNotificationType.NEW
-            )
-
-            const pastProposalsData = await formatEmailTableData(
-                user,
-                RoundupNotificationType.PAST
-            )
-
-            const to: string =
-                process.env.EXEC_ENV === 'PROD'
-                    ? String(user.email)
-                    : String(process.env.TEST_EMAIL)
-
-            const todaysDate = new Date(Date.now()).toLocaleDateString(
-                undefined,
-                dateOptions
-            )
-
-            await sendEmail(to, {
-                todaysDate: todaysDate,
-                newProposals: newProposalsData,
-                endingProposals: endingSoonProposalsData,
-                pastProposals: pastProposalsData
-            })
-        }
-    } catch (e) {
-        log_bul.log({
-            level: 'error',
-            message: 'Something went wrong with sending emails',
-            data: {
-                errorName: (e as Error).name,
-                errorMessage: (e as Error).message,
-                errorStack: (e as Error).stack
-            }
-        })
-    }
-}
-
-const sendEmail = async (to: string, data: BulletinData) => {
+const sendBulletin = async (to: string, data: BulletinData) => {
     try {
         await client.sendEmailWithTemplate({
             TemplateAlias: 'daily-bulletin-1',

@@ -13,7 +13,7 @@ use crate::handlers::proposals::hop::hop_proposals;
 use crate::handlers::proposals::maker_executive::maker_executive_proposals;
 use crate::handlers::proposals::maker_poll::maker_poll_proposals;
 use crate::handlers::proposals::uniswap::uniswap_proposals;
-use crate::prisma::{dao, proposal, DaoHandlerType};
+use crate::prisma::{dao, proposal, DaoHandlerType, ProposalState};
 use crate::{prisma::daohandler, Ctx, ProposalsRequest, ProposalsResponse};
 
 use crate::handlers::proposals::aave::aave_proposals;
@@ -34,6 +34,7 @@ pub struct ChainProposal {
     pub(crate) scores_total: Value,
     pub(crate) quorum: Value,
     pub(crate) url: String,
+    pub(crate) state: ProposalState,
 }
 
 #[post("/chain_proposals", data = "<data>")]
@@ -177,14 +178,29 @@ async fn insert_proposals(
                 p.clone().url,
                 daohandler::id::equals(dao_handler.id.to_string()),
                 dao::id::equals(dao_handler.daoid.to_string()),
-                vec![proposal::blockcreated::set(p.block_created.into())],
+                vec![
+                    proposal::blockcreated::set(p.block_created.into()),
+                    proposal::state::set(Some(p.state)),
+                ],
             ),
-            vec![
-                proposal::choices::set(p.choices.clone()),
-                proposal::scores::set(p.scores.clone()),
-                proposal::scorestotal::set(p.clone().scores_total),
-                proposal::quorum::set(p.quorum),
-            ],
+            {
+                let mut update_v = Vec::new();
+
+                if p.name.clone() != "Unknown" {
+                    update_v.push(proposal::name::set(p.name.clone()));
+                }
+
+                update_v.push(proposal::choices::set(p.choices.clone()));
+                update_v.push(proposal::scores::set(p.scores.clone()));
+                update_v.push(proposal::scorestotal::set(p.clone().scores_total));
+                update_v.push(proposal::quorum::set(p.quorum));
+                update_v.push(proposal::state::set(Some(p.state)));
+                update_v.push(proposal::timeend::set(
+                    p.time_end.with_timezone(&FixedOffset::east_opt(0).unwrap()),
+                ));
+
+                update_v
+            },
         )
     });
 
@@ -196,7 +212,11 @@ async fn insert_proposals(
 
     let open_proposals: Vec<ChainProposal> = proposals
         .iter()
-        .filter(|p| p.time_end > Utc::now())
+        .filter(|p| {
+            p.state == ProposalState::Pending
+                || p.state == ProposalState::Active
+                || p.state == ProposalState::Queued
+        })
         .cloned()
         .collect();
 
@@ -210,11 +230,7 @@ async fn insert_proposals(
         to_block
     };
 
-    let uptodate = if dao_handler.chainindex.unwrap() - new_index < 1000 {
-        true
-    } else {
-        false
-    };
+    let uptodate = dao_handler.chainindex.unwrap() - new_index < 1000;
 
     let _ = ctx
         .db

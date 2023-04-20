@@ -8,17 +8,17 @@ import {
 
 import { schedule } from 'node-cron'
 import { log_sanity } from '@senate/axiom'
-import {getAbi, getClosestBlock} from '.././utils'
-import {ethers} from 'ethers'
+import { getAbi, getClosestBlock } from '.././utils'
+import { ethers } from 'ethers'
 
-export const makerPollsSanity = schedule('49 * * * *', async () => {
+export const makerPollsSanity = schedule('30 * * * *', async () => {
     log_sanity.log({
         level: 'info',
         message: '[PROPOSALS] Starting sanity check for Maker polls',
         date: new Date(Date.now())
     })
 
-    const SEARCH_FROM: number = Date.now() - 1250 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
+    const SEARCH_FROM: number = Date.now() - 240 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
     const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
 
     try {
@@ -40,7 +40,7 @@ export const makerPollsSanity = schedule('49 * * * *', async () => {
 
         const fromBlock = await getClosestBlock(SEARCH_FROM, provider)
         const toBlock = await getClosestBlock(SEARCH_TO, provider)
- 
+
         const pollCreatedEvents = await fetchPollEvents(
             'PollCreated',
             fromBlock,
@@ -57,26 +57,19 @@ export const makerPollsSanity = schedule('49 * * * *', async () => {
             provider
         )
 
-        const validPollIds : string[] = pollCreatedEvents
-            .filter(event => !pollWithdrawnEvents.includes(event.pollId)) 
-            .map(event => event.pollId.toString())
+        const validPollIds: string[] = pollCreatedEvents
+            .filter((event) => !pollWithdrawnEvents.includes(event.pollId))
+            .map((event) => event.pollId.toString())
 
-        const pollsNotInDatabase: string[] =
-        validPollIds.filter((pollId: string) => {
-            return !proposalsFromDatabase
-                .map((proposal: Proposal) => proposal.externalid)
-                .includes(pollId)
-        })
-
-        const withdrawnPollsStillInDatabase : Proposal[] = await prisma.proposal.findMany({
-            where: {
-                daohandlerid: daoHandler.id,
-                externalid: {
-                    in: pollWithdrawnEvents.map(event => event.pollId.toString())
-                }
+        // ========================= CHECK FOR POLLS MISSING FROM DATABASE =========================
+        const pollsNotInDatabase: string[] = validPollIds.filter(
+            (pollId: string) => {
+                return !proposalsFromDatabase
+                    .map((proposal: Proposal) => proposal.externalid)
+                    .includes(pollId)
             }
-        })
-        
+        )
+
         if (pollsNotInDatabase.length > 0) {
             log_sanity.log({
                 level: 'warn',
@@ -84,6 +77,19 @@ export const makerPollsSanity = schedule('49 * * * *', async () => {
                 proposals: pollsNotInDatabase
             })
         }
+
+        // ====================== CHECK FOR POLLS TO BE DELETED FROM DATABASE =======================
+        const withdrawnPollsStillInDatabase: Proposal[] =
+            await prisma.proposal.findMany({
+                where: {
+                    daohandlerid: daoHandler.id,
+                    externalid: {
+                        in: pollWithdrawnEvents.map((event) =>
+                            event.pollId.toString()
+                        )
+                    }
+                }
+            })
 
         if (withdrawnPollsStillInDatabase.length > 0) {
             log_sanity.log({
@@ -95,7 +101,9 @@ export const makerPollsSanity = schedule('49 * * * *', async () => {
             const deletedVotes = prisma.vote.deleteMany({
                 where: {
                     proposalid: {
-                        in: withdrawnPollsStillInDatabase.map(proposal => proposal.id)
+                        in: withdrawnPollsStillInDatabase.map(
+                            (proposal) => proposal.id
+                        )
                     }
                 }
             })
@@ -103,16 +111,21 @@ export const makerPollsSanity = schedule('49 * * * *', async () => {
             const deletedProposals = prisma.proposal.deleteMany({
                 where: {
                     id: {
-                        in: withdrawnPollsStillInDatabase.map(proposal => proposal.id)
+                        in: withdrawnPollsStillInDatabase.map(
+                            (proposal) => proposal.id
+                        )
                     }
                 }
             })
 
-            const deletedRows = await prisma.$transaction([deletedVotes, deletedProposals])
+            const deletedRows = await prisma.$transaction([
+                deletedVotes,
+                deletedProposals
+            ])
 
             log_sanity.log({
                 level: 'info',
-                message: `Deleted ${deletedRows.length} rows`,
+                message: `Proposal deleted successfully`,
                 deletedRows: deletedRows
             })
         }
@@ -121,15 +134,13 @@ export const makerPollsSanity = schedule('49 * * * *', async () => {
             level: 'info',
             message: '[PROPOSALS] FINISHED sanity check for Maker polls'
         })
-
-
     } catch (e) {
         log_sanity.log({
             level: 'error',
             message: `[PROPOSALS] Failed sanity check for Maker polls`,
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
-            errorStack: (e as Error).stack,
+            errorStack: (e as Error).stack
         })
     }
 })
@@ -140,7 +151,7 @@ const fetchPollEvents = async (
     toBlock: number,
     daoHandler: DAOHandler,
     provider: ethers.JsonRpcProvider
-) : Promise<ethers.Result[]> => {
+): Promise<ethers.Result[]> => {
     const abi = await getAbi(
         (daoHandler.decoder as Decoder).address_create,
         'ethereum'
@@ -154,12 +165,13 @@ const fetchPollEvents = async (
         topics: [govIface.getEvent(`${eventName}`).topicHash]
     })
 
-    const eventsData = logs.map((log) => (
-        govIface.parseLog({
-            topics: log.topics as string[],
-            data: log.data
-        }).args
-    ))
+    const eventsData = logs.map(
+        (log) =>
+            govIface.parseLog({
+                topics: log.topics as string[],
+                data: log.data
+            }).args
+    )
 
     return eventsData
 }

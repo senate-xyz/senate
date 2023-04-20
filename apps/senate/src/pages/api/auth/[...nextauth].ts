@@ -30,9 +30,7 @@ export function authOptions(
                         JSON.parse(credentials?.message || '{}')
                     )
 
-                    const nextAuthUrl = new URL(
-                        process.env.NEXT_PUBLIC_WEB_URL ?? ''
-                    )
+                    const nextAuthUrl = new URL(process.env.NEXTAUTH_URL ?? '')
 
                     const result = await siwe.verify({
                         signature: credentials?.signature || '',
