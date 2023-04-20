@@ -66,7 +66,7 @@ const getAllDAOs = async () => {
 export default async function UnsubscribedDAOs() {
     if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
     const cookieStore = cookies()
-    if (!cookieStore.get('hasSeenLanding')) redirect('/landing')
+    if (!cookieStore.has('hasSeenLanding')) redirect('/landing')
 
     const allDAOs = await getAllDAOs()
     const subscribedDAOs = await getSubscribedDAOs()
