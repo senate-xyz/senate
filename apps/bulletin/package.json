@@ -29,12 +29,12 @@
         "@senate/axiom": "*",
         "@senate/config": "*",
         "@senate/database": "*",
-        "axios": "^1.3.5",
+        "axios": "^1.3.6",
         "node-cron": "^3.0.2",
         "postmark": "^3.0.15"
     },
     "devDependencies": {
-        "@types/node": "^18.15.11",
+        "@types/node": "^18.15.12",
         "@types/node-cron": "^3.0.7",
         "dotenv": "^16.0.3",
         "ts-node": "^10.9.1",
