@@ -189,6 +189,9 @@ async fn insert_proposals(
                 proposal::scorestotal::set(p.clone().scores_total),
                 proposal::quorum::set(p.quorum),
                 proposal::state::set(Some(p.state)),
+                proposal::timeend::set(
+                    p.time_end.with_timezone(&FixedOffset::east_opt(0).unwrap()),
+                ),
             ],
         )
     });

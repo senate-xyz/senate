@@ -105,7 +105,7 @@ async fn proposal(
 
     let voting_starts_timestamp = created_timestamp;
 
-    let voting_ends_timestamp =
+    let mut voting_ends_timestamp =
         DateTime::parse_from_rfc3339(proposal_data.clone().spellData.expiration.as_str())
             .unwrap()
             .with_timezone(&Utc);
@@ -124,6 +124,13 @@ async fn proposal(
     } else {
         ProposalState::Unknown
     };
+
+    if state == ProposalState::Executed {
+        voting_ends_timestamp =
+            DateTime::parse_from_rfc3339(proposal_data.clone().spellData.dateExecuted.as_str())
+                .unwrap()
+                .with_timezone(&Utc);
+    }
 
     let proposal = ChainProposal {
         external_id: spell_address.to_string(),
