@@ -38,7 +38,7 @@ const getProposals = async (
                             in:
                                 proxy == 'any'
                                     ? user?.voters.map((voter) => voter.address)
-                                    : proxy
+                                    : [proxy]
                         }
                     }
                 }
@@ -53,7 +53,7 @@ const getProposals = async (
                             in:
                                 proxy == 'any'
                                     ? user?.voters.map((voter) => voter.address)
-                                    : proxy
+                                    : [proxy]
                         }
                     }
                 }
