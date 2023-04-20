@@ -16,6 +16,7 @@ export {
     type user as User,
     RefreshStatus,
     DAOHandlerType,
+    ProposalState,
     type daohandler as DAOHandler
 } from '@prisma/client'
 

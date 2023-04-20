@@ -5,7 +5,8 @@ import {
     type Vote,
     prisma,
     type JsonArray,
-    DAOHandlerType
+    DAOHandlerType,
+    ProposalState
 } from '@senate/database'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
@@ -118,12 +119,19 @@ const getProposals = async (
                           }
                 },
                 {
-                    timeend: Boolean(active)
+                    state: Boolean(active)
                         ? {
-                              gte: new Date()
+                              in: [ProposalState.ACTIVE, ProposalState.PENDING]
                           }
                         : {
-                              lt: new Date()
+                              in: [
+                                  ProposalState.QUEUED,
+                                  ProposalState.DEFEATED,
+                                  ProposalState.EXECUTED,
+                                  ProposalState.EXPIRED,
+                                  ProposalState.SUCCEEDED,
+                                  ProposalState.UNKNOWN
+                              ]
                           }
                 },
                 voteStatusQuery

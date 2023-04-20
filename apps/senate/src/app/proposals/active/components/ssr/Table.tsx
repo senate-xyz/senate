@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import dayjs, { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { type Vote, prisma } from '@senate/database'
+import { type Vote, prisma, ProposalState } from '@senate/database'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
 import 'server-only'
@@ -113,12 +113,19 @@ const getProposals = async (
                           }
                 },
                 {
-                    timeend: Boolean(active)
+                    state: Boolean(active)
                         ? {
-                              gte: new Date()
+                              in: [ProposalState.ACTIVE, ProposalState.PENDING]
                           }
                         : {
-                              lt: new Date()
+                              in: [
+                                  ProposalState.QUEUED,
+                                  ProposalState.DEFEATED,
+                                  ProposalState.EXECUTED,
+                                  ProposalState.EXPIRED,
+                                  ProposalState.SUCCEEDED,
+                                  ProposalState.UNKNOWN
+                              ]
                           }
                 },
                 voteStatusQuery
