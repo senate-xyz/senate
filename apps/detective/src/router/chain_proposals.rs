@@ -186,7 +186,7 @@ async fn insert_proposals(
             {
                 let mut update_v = Vec::new();
 
-                if p.name.clone() != "Unknown" {
+                if p.name != "Unknown" {
                     update_v.push(proposal::name::set(p.name.clone()));
                 }
 
