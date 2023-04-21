@@ -170,6 +170,7 @@ async fn insert_proposals(
                 p.scores.clone(),
                 p.scores_total.clone(),
                 p.quorum.clone(),
+                p.state.clone(),
                 p.time_created
                     .with_timezone(&FixedOffset::east_opt(0).unwrap()),
                 p.time_start
@@ -178,10 +179,7 @@ async fn insert_proposals(
                 p.clone().url,
                 daohandler::id::equals(dao_handler.id.to_string()),
                 dao::id::equals(dao_handler.daoid.to_string()),
-                vec![
-                    proposal::blockcreated::set(p.block_created.into()),
-                    proposal::state::set(Some(p.state)),
-                ],
+                vec![proposal::blockcreated::set(p.block_created.into())],
             ),
             {
                 let mut update_v = Vec::new();
@@ -194,7 +192,7 @@ async fn insert_proposals(
                 update_v.push(proposal::scores::set(p.scores.clone()));
                 update_v.push(proposal::scorestotal::set(p.clone().scores_total));
                 update_v.push(proposal::quorum::set(p.quorum));
-                update_v.push(proposal::state::set(Some(p.state)));
+                update_v.push(proposal::state::set(p.state));
                 update_v.push(proposal::timeend::set(
                     p.time_end.with_timezone(&FixedOffset::east_opt(0).unwrap()),
                 ));

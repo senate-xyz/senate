@@ -103,7 +103,7 @@ model proposal {
   scorestotal Json
   quorum      Json
 
-  state ProposalState?
+  state ProposalState
 
   blockcreated BigInt?  @default(0)
   timecreated  DateTime
