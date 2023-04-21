@@ -1,0 +1,22 @@
+[workspace]
+members = [
+    "prisma-cli", "."
+]
+
+[package]
+name = "discord-butler"
+version = "0.1.0"
+edition = "2021"
+
+[profile.release]
+lto = true
+codegen-units = 1
+
+[dependencies]
+anyhow = { version = "1.0.70", features = ["backtrace"] }
+env_logger = "0.10.0"
+log = "0.4.17"
+prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.7", default-features = false, features = ["postgresql"] }
+serde = "1.0.160"
+serde_json = "1.0.96"
+tokio = { version = "1.27.0", features = ["full"] }
