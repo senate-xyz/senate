@@ -27,14 +27,16 @@ type GraphQLVote = {
 
 // Cron job which runs whenever dictated by env var OR on Feb 31st if env var is missing
 export const snapshotVotesSanity = schedule('0 * * * *', async () => {
+    const SEARCH_FROM: number = Date.now() - 24 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
+    const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
+
     log_sanity.log({
         level: 'info',
         message: '[VOTES] Starting sanity check for snapshot votes',
-        date: new Date(Date.now())
+        date: new Date(Date.now()),
+        searchFrom: new Date(SEARCH_FROM),
+        searchTo: new Date(SEARCH_TO)
     })
-
-    const SEARCH_FROM: number = Date.now() - 24 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
-    const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
 
     try {
         const daoHandlers: DAOHandler[] = await prisma.daohandler.findMany({
@@ -131,9 +133,6 @@ const checkAndSanitizeVotesRoutine = async (
             searchFrom: new Date(fromTimestamp),
             searchTo: new Date(toTimestamp)
         })
-
-        //TODO: implement sanitization
-        // Set voterHandler snapshotIndex back so that the vote is re-fetched
     }
 }
 
@@ -179,7 +178,7 @@ const fetchVotesFromSnapshotAPI = async (
                 i,
                 Math.min(i + 100, voterAddresses.length)
             )
-    
+
             const graphqlQuery = `{
                 votes(
                     first:1000,
@@ -210,7 +209,7 @@ const fetchVotesFromSnapshotAPI = async (
                     }
                 }
             }`
-    
+
             const data = await callApiWithDelayedRetries(graphqlQuery, 5)
             result = result.concat(data.votes as GraphQLVote[])
         }

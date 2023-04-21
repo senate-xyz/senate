@@ -12,14 +12,16 @@ import { getAbi, getClosestBlock } from '.././utils'
 import { ethers } from 'ethers'
 
 export const makerPollsSanity = schedule('30 * * * *', async () => {
+    const SEARCH_FROM: number = Date.now() - 240 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
+    const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
+
     log_sanity.log({
         level: 'info',
         message: '[PROPOSALS] Starting sanity check for Maker polls',
-        date: new Date(Date.now())
+        date: new Date(Date.now()),
+        searchFrom: new Date(SEARCH_FROM),
+        searchTo: new Date(SEARCH_TO)
     })
-
-    const SEARCH_FROM: number = Date.now() - 240 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
-    const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
 
     try {
         const daoHandler: DAOHandler = await prisma.daohandler.findFirst({
@@ -49,6 +51,10 @@ export const makerPollsSanity = schedule('30 * * * *', async () => {
             provider
         )
 
+        const createdPollIds = pollCreatedEvents.map((event) =>
+            event.pollId.toString()
+        )
+
         const pollWithdrawnEvents = await fetchPollEvents(
             'PollWithdrawn',
             fromBlock,
@@ -57,9 +63,13 @@ export const makerPollsSanity = schedule('30 * * * *', async () => {
             provider
         )
 
-        const validPollIds: string[] = pollCreatedEvents
-            .filter((event) => !pollWithdrawnEvents.includes(event.pollId))
-            .map((event) => event.pollId.toString())
+        const withdrawnPollIds = pollWithdrawnEvents.map((event) =>
+            event.pollId.toString()
+        )
+
+        const validPollIds: string[] = createdPollIds.filter(
+            (pollId) => !withdrawnPollIds.includes(pollId)
+        )
 
         // ========================= CHECK FOR POLLS MISSING FROM DATABASE =========================
         const pollsNotInDatabase: string[] = validPollIds.filter(
@@ -73,8 +83,9 @@ export const makerPollsSanity = schedule('30 * * * *', async () => {
         if (pollsNotInDatabase.length > 0) {
             log_sanity.log({
                 level: 'warn',
-                message: `Missing proposals: ${pollsNotInDatabase.length} proposals`,
-                proposals: pollsNotInDatabase
+                message: `[${daoHandler.type}] Missing proposals: ${pollsNotInDatabase.length}`,
+                proposals: pollsNotInDatabase,
+                daoHandler: daoHandler.type
             })
         }
 
@@ -84,9 +95,7 @@ export const makerPollsSanity = schedule('30 * * * *', async () => {
                 where: {
                     daohandlerid: daoHandler.id,
                     externalid: {
-                        in: pollWithdrawnEvents.map((event) =>
-                            event.pollId.toString()
-                        )
+                        in: withdrawnPollIds
                     }
                 }
             })
@@ -95,7 +104,9 @@ export const makerPollsSanity = schedule('30 * * * *', async () => {
             log_sanity.log({
                 level: 'warn',
                 message: `Found ${withdrawnPollsStillInDatabase.length} proposals to remove`,
-                proposals: withdrawnPollsStillInDatabase
+                proposals: withdrawnPollsStillInDatabase.map(
+                    (p) => p.externalid
+                )
             })
 
             const deletedVotes = prisma.vote.deleteMany({
