@@ -7,7 +7,7 @@
     Debug,
     PartialEq,
     Eq,
-    Hash,
+    Hash
 )]
 pub struct Receipt {
     pub has_voted: bool,

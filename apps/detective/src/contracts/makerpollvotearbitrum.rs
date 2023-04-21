@@ -7,16 +7,18 @@ pub use makerpollvotearbitrum::*;
     clippy::upper_case_acronyms,
     clippy::type_complexity,
     dead_code,
-    non_camel_case_types
+    non_camel_case_types,
 )]
 pub mod makerpollvotearbitrum {
     #[rustfmt::skip]
     const __ABI: &str = "[\n  { \"inputs\": [], \"stateMutability\": \"nonpayable\", \"type\": \"constructor\" },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"creator\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"blockCreated\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"uint256\",\n        \"name\": \"pollId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"startDate\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"endDate\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string\",\n        \"name\": \"multiHash\",\n        \"type\": \"string\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string\",\n        \"name\": \"url\",\n        \"type\": \"string\"\n      }\n    ],\n    \"name\": \"PollCreated\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"creator\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"blockWithdrawn\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"pollId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"PollWithdrawn\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"voter\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"uint256\",\n        \"name\": \"pollId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"uint256\",\n        \"name\": \"optionId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"Voted\",\n    \"type\": \"event\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"DOMAIN_SEPARATOR\",\n    \"outputs\": [{ \"internalType\": \"bytes32\", \"name\": \"\", \"type\": \"bytes32\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"VOTE_TYPEHASH\",\n    \"outputs\": [{ \"internalType\": \"bytes32\", \"name\": \"\", \"type\": \"bytes32\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"chainId\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"startDate\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"endDate\", \"type\": \"uint256\" },\n      { \"internalType\": \"string\", \"name\": \"multiHash\", \"type\": \"string\" },\n      { \"internalType\": \"string\", \"name\": \"url\", \"type\": \"string\" }\n    ],\n    \"name\": \"createPoll\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"name\",\n    \"outputs\": [{ \"internalType\": \"string\", \"name\": \"\", \"type\": \"string\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"name\": \"nonces\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"npoll\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"version\",\n    \"outputs\": [{ \"internalType\": \"string\", \"name\": \"\", \"type\": \"string\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"address\", \"name\": \"voter\", \"type\": \"address\" },\n      { \"internalType\": \"uint256\", \"name\": \"nonce\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"expiry\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256[]\", \"name\": \"pollIds\", \"type\": \"uint256[]\" },\n      { \"internalType\": \"uint256[]\", \"name\": \"optionIds\", \"type\": \"uint256[]\" },\n      { \"internalType\": \"uint8\", \"name\": \"v\", \"type\": \"uint8\" },\n      { \"internalType\": \"bytes32\", \"name\": \"r\", \"type\": \"bytes32\" },\n      { \"internalType\": \"bytes32\", \"name\": \"s\", \"type\": \"bytes32\" }\n    ],\n    \"name\": \"vote\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256[]\", \"name\": \"pollIds\", \"type\": \"uint256[]\" },\n      { \"internalType\": \"uint256[]\", \"name\": \"optionIds\", \"type\": \"uint256[]\" }\n    ],\n    \"name\": \"vote\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"pollId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"withdrawPoll\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  }\n]";
     ///The parsed JSON ABI of the contract.
-    pub static MAKERPOLLVOTEARBITRUM_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> =
-        ::ethers::contract::Lazy::new(|| {
-            ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid")
-        });
+    pub static MAKERPOLLVOTEARBITRUM_ABI: ::ethers::contract::Lazy<
+        ::ethers::core::abi::Abi,
+    > = ::ethers::contract::Lazy::new(|| {
+        ::ethers::core::utils::__serde_json::from_str(__ABI)
+            .expect("ABI is always valid")
+    });
     pub struct makerpollvotearbitrum<M>(::ethers::contract::Contract<M>);
     impl<M> ::core::clone::Clone for makerpollvotearbitrum<M> {
         fn clone(&self) -> Self {
@@ -48,20 +50,26 @@ pub mod makerpollvotearbitrum {
             address: T,
             client: ::std::sync::Arc<M>,
         ) -> Self {
-            Self(::ethers::contract::Contract::new(
-                address.into(),
-                MAKERPOLLVOTEARBITRUM_ABI.clone(),
-                client,
-            ))
+            Self(
+                ::ethers::contract::Contract::new(
+                    address.into(),
+                    MAKERPOLLVOTEARBITRUM_ABI.clone(),
+                    client,
+                ),
+            )
         }
         ///Calls the contract's `DOMAIN_SEPARATOR` (0x3644e515) function
-        pub fn domain_separator(&self) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
+        pub fn domain_separator(
+            &self,
+        ) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
             self.0
                 .method_hash([54, 68, 229, 21], ())
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `VOTE_TYPEHASH` (0x86522973) function
-        pub fn vote_typehash(&self) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
+        pub fn vote_typehash(
+            &self,
+        ) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
             self.0
                 .method_hash([134, 82, 41, 115], ())
                 .expect("method not found (this should never happen)")
@@ -83,11 +91,16 @@ pub mod makerpollvotearbitrum {
             url: ::std::string::String,
         ) -> ::ethers::contract::builders::ContractCall<M, ()> {
             self.0
-                .method_hash([213, 74, 129, 118], (start_date, end_date, multi_hash, url))
+                .method_hash(
+                    [213, 74, 129, 118],
+                    (start_date, end_date, multi_hash, url),
+                )
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `name` (0x06fdde03) function
-        pub fn name(&self) -> ::ethers::contract::builders::ContractCall<M, ::std::string::String> {
+        pub fn name(
+            &self,
+        ) -> ::ethers::contract::builders::ContractCall<M, ::std::string::String> {
             self.0
                 .method_hash([6, 253, 222, 3], ())
                 .expect("method not found (this should never happen)")
@@ -158,15 +171,21 @@ pub mod makerpollvotearbitrum {
         ///Gets the contract's `PollCreated` event
         pub fn poll_created_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, PollCreatedFilter>
-        {
+        ) -> ::ethers::contract::builders::Event<
+            ::std::sync::Arc<M>,
+            M,
+            PollCreatedFilter,
+        > {
             self.0.event()
         }
         ///Gets the contract's `PollWithdrawn` event
         pub fn poll_withdrawn_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, PollWithdrawnFilter>
-        {
+        ) -> ::ethers::contract::builders::Event<
+            ::std::sync::Arc<M>,
+            M,
+            PollWithdrawnFilter,
+        > {
             self.0.event()
         }
         ///Gets the contract's `Voted` event
@@ -178,15 +197,16 @@ pub mod makerpollvotearbitrum {
         /// Returns an `Event` builder for all the events of this contract.
         pub fn events(
             &self,
-        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, makerpollvotearbitrumEvents>
-        {
-            self.0
-                .event_with_filter(::core::default::Default::default())
+        ) -> ::ethers::contract::builders::Event<
+            ::std::sync::Arc<M>,
+            M,
+            makerpollvotearbitrumEvents,
+        > {
+            self.0.event_with_filter(::core::default::Default::default())
         }
     }
     impl<M: ::ethers::providers::Middleware> From<::ethers::contract::Contract<M>>
-        for makerpollvotearbitrum<M>
-    {
+    for makerpollvotearbitrum<M> {
         fn from(contract: ::ethers::contract::Contract<M>) -> Self {
             Self::new(contract.address(), contract.client())
         }
@@ -199,7 +219,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethevent(
         name = "PollCreated",
@@ -224,7 +244,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethevent(name = "PollWithdrawn", abi = "PollWithdrawn(address,uint256,uint256)")]
     pub struct PollWithdrawnFilter {
@@ -241,7 +261,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethevent(name = "Voted", abi = "Voted(address,uint256,uint256)")]
     pub struct VotedFilter {
@@ -279,7 +299,9 @@ pub mod makerpollvotearbitrum {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
             match self {
                 Self::PollCreatedFilter(element) => ::core::fmt::Display::fmt(element, f),
-                Self::PollWithdrawnFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::PollWithdrawnFilter(element) => {
+                    ::core::fmt::Display::fmt(element, f)
+                }
                 Self::VotedFilter(element) => ::core::fmt::Display::fmt(element, f),
             }
         }
@@ -308,7 +330,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(name = "DOMAIN_SEPARATOR", abi = "DOMAIN_SEPARATOR()")]
     pub struct DomainSeparatorCall;
@@ -321,7 +343,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(name = "VOTE_TYPEHASH", abi = "VOTE_TYPEHASH()")]
     pub struct VoteTypehashCall;
@@ -334,7 +356,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(name = "chainId", abi = "chainId()")]
     pub struct ChainIdCall;
@@ -347,7 +369,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(name = "createPoll", abi = "createPoll(uint256,uint256,string,string)")]
     pub struct CreatePollCall {
@@ -365,7 +387,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(name = "name", abi = "name()")]
     pub struct NameCall;
@@ -378,7 +400,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(name = "nonces", abi = "nonces(address)")]
     pub struct NoncesCall(pub ::ethers::core::types::Address);
@@ -391,7 +413,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(name = "npoll", abi = "npoll()")]
     pub struct NpollCall;
@@ -404,7 +426,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(name = "version", abi = "version()")]
     pub struct VersionCall;
@@ -417,7 +439,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(
         name = "vote",
@@ -442,7 +464,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(name = "vote", abi = "vote(uint256[],uint256[])")]
     pub struct VoteCall {
@@ -458,7 +480,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(name = "withdrawPoll", abi = "withdrawPoll(uint256)")]
     pub struct WithdrawPollCall {
@@ -484,43 +506,50 @@ pub mod makerpollvotearbitrum {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded) =
-                <DomainSeparatorCall as ::ethers::core::abi::AbiDecode>::decode(data)
-            {
+            if let Ok(decoded)
+                = <DomainSeparatorCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::DomainSeparator(decoded));
             }
-            if let Ok(decoded) = <VoteTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data)
-            {
+            if let Ok(decoded)
+                = <VoteTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::VoteTypehash(decoded));
             }
-            if let Ok(decoded) = <ChainIdCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded)
+                = <ChainIdCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::ChainId(decoded));
             }
-            if let Ok(decoded) = <CreatePollCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded)
+                = <CreatePollCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::CreatePoll(decoded));
             }
-            if let Ok(decoded) = <NameCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded)
+                = <NameCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Name(decoded));
             }
-            if let Ok(decoded) = <NoncesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded)
+                = <NoncesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Nonces(decoded));
             }
-            if let Ok(decoded) = <NpollCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded)
+                = <NpollCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Npoll(decoded));
             }
-            if let Ok(decoded) = <VersionCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded)
+                = <VersionCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Version(decoded));
             }
-            if let Ok(decoded) =
-                <VoteWithVoterAndNonceCall as ::ethers::core::abi::AbiDecode>::decode(data)
-            {
+            if let Ok(decoded)
+                = <VoteWithVoterAndNonceCall as ::ethers::core::abi::AbiDecode>::decode(
+                    data,
+                ) {
                 return Ok(Self::VoteWithVoterAndNonce(decoded));
             }
-            if let Ok(decoded) = <VoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded)
+                = <VoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Vote(decoded));
             }
-            if let Ok(decoded) = <WithdrawPollCall as ::ethers::core::abi::AbiDecode>::decode(data)
-            {
+            if let Ok(decoded)
+                = <WithdrawPollCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::WithdrawPoll(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())
@@ -529,10 +558,16 @@ pub mod makerpollvotearbitrum {
     impl ::ethers::core::abi::AbiEncode for makerpollvotearbitrumCalls {
         fn encode(self) -> Vec<u8> {
             match self {
-                Self::DomainSeparator(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::VoteTypehash(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::DomainSeparator(element) => {
+                    ::ethers::core::abi::AbiEncode::encode(element)
+                }
+                Self::VoteTypehash(element) => {
+                    ::ethers::core::abi::AbiEncode::encode(element)
+                }
                 Self::ChainId(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::CreatePoll(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::CreatePoll(element) => {
+                    ::ethers::core::abi::AbiEncode::encode(element)
+                }
                 Self::Name(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Nonces(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Npoll(element) => ::ethers::core::abi::AbiEncode::encode(element),
@@ -541,7 +576,9 @@ pub mod makerpollvotearbitrum {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
                 Self::Vote(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::WithdrawPoll(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::WithdrawPoll(element) => {
+                    ::ethers::core::abi::AbiEncode::encode(element)
+                }
             }
         }
     }
@@ -556,7 +593,9 @@ pub mod makerpollvotearbitrum {
                 Self::Nonces(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Npoll(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Version(element) => ::core::fmt::Display::fmt(element, f),
-                Self::VoteWithVoterAndNonce(element) => ::core::fmt::Display::fmt(element, f),
+                Self::VoteWithVoterAndNonce(element) => {
+                    ::core::fmt::Display::fmt(element, f)
+                }
                 Self::Vote(element) => ::core::fmt::Display::fmt(element, f),
                 Self::WithdrawPoll(element) => ::core::fmt::Display::fmt(element, f),
             }
@@ -602,7 +641,8 @@ pub mod makerpollvotearbitrum {
             Self::Version(value)
         }
     }
-    impl ::core::convert::From<VoteWithVoterAndNonceCall> for makerpollvotearbitrumCalls {
+    impl ::core::convert::From<VoteWithVoterAndNonceCall>
+    for makerpollvotearbitrumCalls {
         fn from(value: VoteWithVoterAndNonceCall) -> Self {
             Self::VoteWithVoterAndNonce(value)
         }
@@ -626,7 +666,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     pub struct DomainSeparatorReturn(pub [u8; 32]);
     ///Container type for all return fields from the `VOTE_TYPEHASH` function with signature `VOTE_TYPEHASH()` and selector `0x86522973`
@@ -638,7 +678,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     pub struct VoteTypehashReturn(pub [u8; 32]);
     ///Container type for all return fields from the `chainId` function with signature `chainId()` and selector `0x9a8a0592`
@@ -650,7 +690,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     pub struct ChainIdReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `name` function with signature `name()` and selector `0x06fdde03`
@@ -662,7 +702,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     pub struct NameReturn(pub ::std::string::String);
     ///Container type for all return fields from the `nonces` function with signature `nonces(address)` and selector `0x7ecebe00`
@@ -674,7 +714,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     pub struct NoncesReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `npoll` function with signature `npoll()` and selector `0xd35f19d7`
@@ -686,7 +726,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     pub struct NpollReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `version` function with signature `version()` and selector `0x54fd4d50`
@@ -698,7 +738,7 @@ pub mod makerpollvotearbitrum {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     pub struct VersionReturn(pub ::std::string::String);
 }
