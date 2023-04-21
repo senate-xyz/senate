@@ -154,6 +154,10 @@ async fn data_for_proposal(
 
     let mut title = get_title(hex::encode(hash)).await?;
 
+    if title.starts_with("# ") {
+        title = title.split_off(2);
+    }
+
     if title.is_empty() {
         title = "Unknown".into()
     }

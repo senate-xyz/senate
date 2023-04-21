@@ -121,6 +121,10 @@ async fn data_for_proposal(
             .to_string()
     );
 
+    if title.starts_with("# ") {
+        title = title.split_off(2);
+    }
+
     if title.is_empty() {
         title = "Unknown".into()
     }

@@ -434,10 +434,15 @@ const MobilePastProposal = async (props: {
                                     <div>
                                         <div className='flex flex-row'>
                                             <div className='text-[21px] leading-[26px] text-white'>
-                                                {props.proposal.highestScoreChoice.slice(
-                                                    0,
-                                                    30
-                                                )}
+                                                {props.proposal
+                                                    .highestScoreChoice.length >
+                                                27
+                                                    ? props.proposal.highestScoreChoice.slice(
+                                                          0,
+                                                          27
+                                                      ) + '...'
+                                                    : props.proposal
+                                                          .highestScoreChoice}
                                             </div>
                                         </div>
                                         <div className='bg-[#262626]'>
@@ -689,10 +694,13 @@ const PastProposal = async (props: {
                                     <div className='h-[24px] w-[24px] bg-[#D9D9D9]'></div>
                                 )}
                                 <div className='text-[21px] leading-[26px] text-white'>
-                                    {props.proposal.highestScoreChoice.slice(
-                                        0,
-                                        30
-                                    )}
+                                    {props.proposal.highestScoreChoice.length >
+                                    27
+                                        ? props.proposal.highestScoreChoice.slice(
+                                              0,
+                                              27
+                                          ) + '...'
+                                        : props.proposal.highestScoreChoice}
                                 </div>
                             </div>
                             <div className='w-[340px] bg-[#262626]'>

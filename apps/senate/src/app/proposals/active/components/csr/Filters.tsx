@@ -23,7 +23,7 @@ const endOptions: { name: string; time: number }[] = [
         time: 3
     },
     {
-        name: '1 days',
+        name: '24 hours',
         time: 1
     }
 ]
