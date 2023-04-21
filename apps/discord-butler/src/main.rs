@@ -55,17 +55,12 @@ async fn main() {
             .timestamp(Utc::now())
     });
 
-    let hook = webhook
+    webhook
         .execute(&http, false, |w| {
-            w.embeds(vec![embed_one])
+            w.embeds(vec![embed_one, embed_two])
                 .username("Senate Butler Black")
                 .avatar_url("https://www.senatelabs.xyz/assets/Senate_Logo/64/Black.png")
         })
-        .await
-        .expect("Could not execute webhook.");
-
-    hook.unwrap()
-        .edit(&http, |m| m.content("new content"))
         .await
         .expect("Could not execute webhook.");
 }
