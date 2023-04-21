@@ -132,8 +132,11 @@ const checkAndSanitizeProposalsRoutine = async (
     if (proposalsNotInDatabase.length > 0) {
         log_sanity.log({
             level: 'warn',
-            message: `Missing proposals: ${proposalsNotInDatabase.length} proposals `,
-            proposals: proposalsNotInDatabase.map((proposal) => proposal.link)
+            message: `[${
+                (daoHandler.decoder as Decoder).space
+            }] Missing proposals: ${proposalsNotInDatabase.length}`,
+            proposals: proposalsNotInDatabase.map((proposal) => proposal.link),
+            daoHandler: (daoHandler.decoder as Decoder).space
         })
     }
 

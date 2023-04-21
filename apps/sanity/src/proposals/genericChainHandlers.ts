@@ -11,15 +11,18 @@ import { log_sanity } from '@senate/axiom'
 import { getAbi, getClosestBlock } from '../utils'
 import { ethers } from 'ethers'
 
+// Run at :45
 export const genericChainHandlersSanity = schedule('45 * * * *', async () => {
+    const SEARCH_FROM: number = Date.now() - 240 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
+    const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
+
     log_sanity.log({
         level: 'info',
         message: '[PROPOSALS] Starting sanity check for generic chain handlers',
-        date: new Date(Date.now())
+        date: new Date(Date.now()),
+        searchFrom: new Date(SEARCH_FROM),
+        searchTo: new Date(SEARCH_TO)
     })
-
-    const SEARCH_FROM: number = Date.now() - 240 * 60 * 60 * 1000 // hours * minutes * seconds * milliseconds
-    const SEARCH_TO: number = Date.now() - 15 * 60 * 1000 //  minutes * seconds * milliseconds
 
     try {
         const provider = new ethers.JsonRpcProvider(
@@ -69,11 +72,11 @@ export const genericChainHandlersSanity = schedule('45 * * * *', async () => {
             if (proposalsNotInDatabase.length > 0) {
                 log_sanity.log({
                     level: 'warn',
-                    message: `Missing proposals: ${proposalsNotInDatabase.length} proposals`,
-                    daoHandler: daoHandler.type,
+                    message: `[${daoHandler.type}] Missing proposals: ${proposalsNotInDatabase.length}`,
                     proposals: proposalsNotInDatabase.map((event) =>
                         event[0].toString()
-                    )
+                    ),
+                    daoHandler: daoHandler.type
                 })
             }
         }
