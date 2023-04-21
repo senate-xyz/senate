@@ -79,6 +79,7 @@ fn init_logger() {
 #[launch]
 async fn rocket() -> _ {
     dotenv().ok();
+
     init_logger();
     let rpc_url = match env::var_os("ALCHEMY_NODE_URL") {
         Some(v) => v.into_string().unwrap(),

@@ -367,7 +367,7 @@ const MobilePastProposal = async (props: {
                                 alt={props.proposal.daoName}
                             />
                         </div>
-                        <div>{props.proposal.state}</div>
+
                         <div>
                             {props.proposal.onchain ? (
                                 <Image
@@ -414,8 +414,18 @@ const MobilePastProposal = async (props: {
                     <div className='flex w-3/4 flex-col justify-between'>
                         {props.proposal.daoHandlerType ==
                         DAOHandlerType.MAKER_EXECUTIVE ? (
-                            <div className='text-[17px] leading-[26px] text-white'>
-                                {props.proposal.highestScore} MKR
+                            <div>
+                                <div className='text-[21px] leading-[26px] text-white'>
+                                    Passed
+                                </div>
+                                <div className='text-[18px] leading-[26px] text-white'>
+                                    with{' '}
+                                    {(
+                                        props.proposal.scoresTotal /
+                                        1000000000000000000
+                                    ).toFixed(2)}{' '}
+                                    MKR
+                                </div>
                             </div>
                         ) : (
                             <div>
@@ -594,7 +604,7 @@ const PastProposal = async (props: {
                         <div className='text-[24px] font-light leading-[30px]'>
                             {props.proposal.daoName}
                         </div>
-                        <div>{props.proposal.state}</div>
+
                         <div>
                             {props.proposal.onchain ? (
                                 <Image
@@ -649,12 +659,16 @@ const PastProposal = async (props: {
                                         src={'/assets/Icon/Check.svg'}
                                         alt='off-chain'
                                     />
-                                </div>{' '}
+                                </div>
+                                Passed
+                            </div>
+                            <div className='text-[18px] leading-[26px] text-white'>
+                                with{' '}
                                 {(
                                     props.proposal.scoresTotal /
                                     1000000000000000000
                                 ).toFixed(2)}{' '}
-                                MKR Supporting
+                                MKR
                             </div>
                         </div>
                     ) : props.proposal.highestScoreChoice != 'undefined' ? (

@@ -49,7 +49,7 @@ const getSubscribedDAOs = async () => {
 export default async function SubscribedDAOs() {
     if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
     const cookieStore = cookies()
-    if (!cookieStore.get('hasSeenLanding')) redirect('/landing')
+    if (!cookieStore.has('hasSeenLanding')) redirect('/landing')
 
     const subscriptions = (await getSubscribedDAOs()).sort((a, b) =>
         a.dao.name.localeCompare(b.dao.name)
