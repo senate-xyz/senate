@@ -5,8 +5,8 @@
       "path": ".."
     },
     {
-      "name": "🦀 @senate/detective-rust",
-      "path": "../apps/detective-rust"
+      "name": "🦀 @senate/detective",
+      "path": "../apps/detective"
     },
     {
       "name": "🦀 @senate/refresher",
