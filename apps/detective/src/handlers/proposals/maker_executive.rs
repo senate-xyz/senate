@@ -121,6 +121,12 @@ async fn proposal(
         ProposalState::Active
     } else if proposal_data.spellData.hasBeenScheduled {
         ProposalState::Queued
+    } else if DateTime::parse_from_rfc3339(proposal_data.clone().spellData.expiration.as_str())
+        .unwrap()
+        .with_timezone(&Utc)
+        < Utc::now()
+    {
+        ProposalState::Expired
     } else {
         ProposalState::Unknown
     };
