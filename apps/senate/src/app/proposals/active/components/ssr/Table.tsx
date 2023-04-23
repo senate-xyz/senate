@@ -237,7 +237,7 @@ export default async function Table(props: {
                                     <div>Proposal Title</div>
                                 </div>
                             </th>
-                            <th className='h-[56px] w-[200px] items-center font-normal'>
+                            <th className='h-[56px] w-[250px] items-center font-normal'>
                                 <div className='flex gap-1'>
                                     <div>Ends in</div>
                                     <Image
