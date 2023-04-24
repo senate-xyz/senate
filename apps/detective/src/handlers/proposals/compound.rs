@@ -1,14 +1,16 @@
-use crate::contracts::uniswapgov::ProposalCreatedFilter;
+use crate::contracts::compoundgov::ProposalCreatedFilter;
 use crate::prisma::ProposalState;
 use crate::utils::etherscan::estimate_timestamp;
-use crate::{contracts::uniswapgov, Ctx};
+use crate::{contracts::compoundgov, Ctx};
 use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
 use anyhow::Result;
-use chrono::{DateTime, NaiveDateTime, Utc};
 use ethers::providers::Middleware;
 use ethers::{prelude::LogMeta, types::Address};
 use futures::stream::{FuturesUnordered, StreamExt};
-use prisma_client_rust::bigdecimal::ToPrimitive;
+use prisma_client_rust::{
+    bigdecimal::ToPrimitive,
+    chrono::{DateTime, NaiveDateTime, Utc},
+};
 use serde::Deserialize;
 use std::str;
 
@@ -19,7 +21,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
-pub async fn uniswap_proposals(
+pub async fn compound_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
     from_block: &i64,
@@ -29,7 +31,7 @@ pub async fn uniswap_proposals(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = uniswapgov::uniswapgov::uniswapgov::new(address, ctx.client.clone());
+    let gov_contract = compoundgov::compoundgov::compoundgov::new(address, ctx.client.clone());
 
     let events = gov_contract
         .proposal_created_filter()
@@ -55,11 +57,11 @@ pub async fn uniswap_proposals(
 }
 
 async fn data_for_proposal(
-    p: (uniswapgov::uniswapgov::ProposalCreatedFilter, LogMeta),
+    p: (compoundgov::compoundgov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,
     decoder: &Decoder,
     dao_handler: &daohandler::Data,
-    gov_contract: uniswapgov::uniswapgov::uniswapgov<
+    gov_contract: compoundgov::compoundgov::compoundgov<
         ethers::providers::Provider<ethers::providers::Http>,
     >,
 ) -> Result<ChainProposal> {
@@ -121,13 +123,17 @@ async fn data_for_proposal(
             .to_string()
     );
 
+    if title.starts_with("# ") {
+        title = title.split_off(2);
+    }
+
     if title.is_empty() {
         title = "Unknown".into()
     }
 
-    let proposal_url = format!("{}{}", decoder.proposalUrl, log.id.as_u32());
+    let proposal_url = format!("{}{}", decoder.proposalUrl, log.id);
 
-    let proposal_external_id = log.id.as_u32().to_string();
+    let proposal_external_id = log.id.to_string();
 
     let onchain_proposal = gov_contract.proposals(log.id).call().await?;
 
@@ -144,11 +150,7 @@ async fn data_for_proposal(
 
     let quorum = gov_contract.quorum_votes().call().await?;
 
-    let proposal_state = gov_contract
-        .state(log.id)
-        .call()
-        .await
-        .unwrap_or(ProposalState::Unknown as u8);
+    let proposal_state = gov_contract.state(log.id).call().await?;
 
     let state = match proposal_state {
         0 => ProposalState::Pending,

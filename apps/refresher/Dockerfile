@@ -14,11 +14,11 @@ COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 # Build application
 COPY . .
-RUN cargo prisma generate && cargo build --release --bin refresher-rust
+RUN cargo prisma generate && cargo build --release --bin refresher
 
 FROM debian:bullseye-slim AS runtime
 RUN apt update
 RUN apt install openssl ca-certificates -y
 WORKDIR /app
-COPY --from=builder /app/target/release/refresher-rust /usr/local/bin
-ENTRYPOINT ["/usr/local/bin/refresher-rust"]
+COPY --from=builder /app/target/release/refresher /usr/local/bin
+ENTRYPOINT ["/usr/local/bin/refresher"]

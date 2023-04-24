@@ -1,7 +1,7 @@
-use crate::contracts::compoundgov::ProposalCreatedFilter;
+use crate::contracts::gitcoingov::ProposalCreatedFilter;
 use crate::prisma::ProposalState;
 use crate::utils::etherscan::estimate_timestamp;
-use crate::{contracts::compoundgov, Ctx};
+use crate::{contracts::gitcoingov, Ctx};
 use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
 use anyhow::Result;
 use ethers::providers::Middleware;
@@ -21,7 +21,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
-pub async fn compound_proposals(
+pub async fn gitcoin_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
     from_block: &i64,
@@ -31,7 +31,7 @@ pub async fn compound_proposals(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = compoundgov::compoundgov::compoundgov::new(address, ctx.client.clone());
+    let gov_contract = gitcoingov::gitcoingov::gitcoingov::new(address, ctx.client.clone());
 
     let events = gov_contract
         .proposal_created_filter()
@@ -57,11 +57,11 @@ pub async fn compound_proposals(
 }
 
 async fn data_for_proposal(
-    p: (compoundgov::compoundgov::ProposalCreatedFilter, LogMeta),
+    p: (gitcoingov::gitcoingov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,
     decoder: &Decoder,
     dao_handler: &daohandler::Data,
-    gov_contract: compoundgov::compoundgov::compoundgov<
+    gov_contract: gitcoingov::gitcoingov::gitcoingov<
         ethers::providers::Provider<ethers::providers::Http>,
     >,
 ) -> Result<ChainProposal> {
@@ -123,6 +123,10 @@ async fn data_for_proposal(
             .to_string()
     );
 
+    if title.starts_with("# ") {
+        title = title.split_off(2);
+    }
+
     if title.is_empty() {
         title = "Unknown".into()
     }
@@ -133,16 +137,11 @@ async fn data_for_proposal(
 
     let onchain_proposal = gov_contract.proposals(log.id).call().await?;
 
-    let choices = vec!["For", "Abstain", "Against"];
+    let choices = vec!["For", "Against"];
 
-    let scores = vec![
-        onchain_proposal.5.as_u128(),
-        onchain_proposal.6.as_u128(),
-        onchain_proposal.7.as_u128(),
-    ];
+    let scores = vec![onchain_proposal.5.as_u128(), onchain_proposal.6.as_u128()];
 
-    let scores_total =
-        onchain_proposal.5.as_u128() + onchain_proposal.6.as_u128() + onchain_proposal.7.as_u128();
+    let scores_total = onchain_proposal.5.as_u128() + onchain_proposal.6.as_u128();
 
     let quorum = gov_contract.quorum_votes().call().await?;
 

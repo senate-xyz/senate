@@ -5,12 +5,12 @@
       "path": ".."
     },
     {
-      "name": "🦀 @senate/detective-rust",
-      "path": "../apps/detective-rust"
+      "name": "🦀 @senate/detective",
+      "path": "../apps/detective"
     },
     {
-      "name": "🦀 @senate/refresher-rust",
-      "path": "../apps/refresher-rust"
+      "name": "🦀 @senate/refresher",
+      "path": "../apps/refresher"
     },
     {
       "name": "🚀 @senate/bulletin",

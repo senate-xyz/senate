@@ -4,7 +4,7 @@ members = [
 ]
 
 [package]
-name = "detective-rust"
+name = "detective"
 version = "0.1.0"
 edition = "2021"
 
