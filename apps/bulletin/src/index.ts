@@ -80,7 +80,7 @@ let proposalCountdownUrl: Map<string, string>
 schedule(
     String(process.env.BULLETIN_CRON_INTERVAL) ?? '* * 31 2 *',
     async function () {
-        if (!Boolean(process.env.BULLETIN_ENABLE)) return
+        if (String(process.env.BULLETIN_ENABLE) !== 'true') return
 
         log_bul.log({
             level: 'info',
