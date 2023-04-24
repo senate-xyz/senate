@@ -1,17 +1,19 @@
-use log::info;
-use prisma_client_rust::chrono::Utc;
-use serenity::{
-    http::Http,
-    model::{prelude::Embed, webhook::Webhook},
-    utils::Colour,
-};
+mod messages;
 mod prisma;
-use anyhow::Result;
-use std::{sync::Arc, time::Duration};
+mod utils {
+    pub mod vote;
+}
+
+use log::info;
+use serenity::{http::Http, model::webhook::Webhook};
+use std::time::Duration;
 use tokio::time::sleep;
 
 use env_logger::{Builder, Env};
-use prisma::{subscription, PrismaClient, ProposalState};
+
+use crate::messages::{
+    ended::get_past_embeds, ending_soon::get_ending_soon_embeds, new::get_new_embeds,
+};
 
 fn init_logger() {
     let env = Env::default()
@@ -31,131 +33,101 @@ async fn main() {
     info!("discord-butler start");
 
     let http = Http::new("");
-    let webhook = Webhook::from_url(&http, "")
+    let webhook = Webhook::from_url(&http, "https://discord.com/api/webhooks/1099963428241686589/j24VGyfsCaQI7k2d7Rju9ZNHzM3HIv0mGMNwf2z47GF6p3UeJfcNsEKFU75yBNOD2Nzz")
         .await
         .expect("Replace the webhook with your own");
 
-    let mut embeds = vec![];
+    ////
 
-    let mut proposals =
-        get_active_proposals("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string())
+    let ending_soon_embeds =
+        get_ending_soon_embeds("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string())
             .await
             .unwrap();
 
-    proposals.sort_by_key(|p| p.timeend);
-
-    for proposal in proposals {
-        let voted = get_vote(
-            "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string(),
-            proposal.id.to_string(),
-        )
+    webhook
+        .execute(&http, false, |w| w.content("**Proposals Ending Soon** The voting on these proposals is going to end in the next 72 hours. You might want to act on them soon.")
+        .username("Senate Butler")
+        .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif"))
         .await
-        .unwrap();
+        .expect("Could not execute webhook.");
 
-        info!("{:?}", voted);
+    sleep(Duration::from_secs(1)).await;
 
-        if voted {
-            embeds.push(Embed::fake(|e| {
-                e.title(proposal.name)
-                    .description(format!("ends <t:{}:R>", proposal.timeend.timestamp()))
-                    .url(proposal.url)
-                    .colour(Colour::from_rgb(0, 128, 0))
-                    .thumbnail("https://www.senatelabs.xyz/assets/Icon/Voted.png")
-                    .footer(|f| f.text("sent"))
-                    .timestamp(Utc::now())
-            }));
-        } else {
-            embeds.push(Embed::fake(|e| {
-                e.title(proposal.name)
-                    .description(format!("ends <t:{}:R>", proposal.timeend.timestamp()))
-                    .url(proposal.url)
-                    .colour(Colour::from_rgb(255, 0, 0))
-                    .thumbnail("https://www.senatelabs.xyz/assets/Icon/NotVotedYet.png")
-                    .footer(|f| f.text("sent"))
-                    .timestamp(Utc::now())
-            }));
-        }
-    }
-
-    info!("{:?}", embeds.len());
-
-    for chunk in embeds.chunks(5) {
-        info!("message");
-
+    for chunk in ending_soon_embeds.chunks(5) {
         webhook
             .execute(&http, false, |w| {
                 w.embeds(chunk.to_vec())
                     .username("Senate Butler")
-                    .avatar_url("https://www.senatelabs.xyz/assets/Senate_Logo/64/Black.png")
+                    .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
             })
             .await
             .expect("Could not execute webhook.");
 
         sleep(Duration::from_secs(1)).await;
     }
-}
 
-async fn get_vote(username: String, proposal_id: String) -> Result<bool> {
-    let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
+    ////
 
-    let user = client
-        .user()
-        .find_first(vec![prisma::user::name::equals(username)])
-        .include(prisma::user::include!({ voters }))
-        .exec()
+    let new_embeds = get_new_embeds("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string())
         .await
-        .unwrap()
         .unwrap();
 
-    let mut voted = false;
+    webhook
+        .execute(&http, false, |w| w.content("**New Proposals** These are the proposals that were created in the last 24 hours. You might want to check them out.")
+        .username("Senate Butler")
+       .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif"))
+        .await
+        .expect("Could not execute webhook.");
 
-    for voter in user.voters {
-        let vote = client
-            .vote()
-            .find_first(vec![
-                prisma::vote::proposalid::equals(proposal_id.to_string()),
-                prisma::vote::voteraddress::equals(voter.address),
-            ])
-            .exec()
+    sleep(Duration::from_secs(1)).await;
+
+    for chunk in new_embeds.chunks(5) {
+        webhook
+            .execute(&http, false, |w| {
+                w.embeds(chunk.to_vec())
+                    .username("Senate Butler")
+                    .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
+            })
             .await
-            .unwrap();
+            .expect("Could not execute webhook.");
 
-        match vote {
-            Some(_) => voted = true,
-            None => {}
-        }
+        sleep(Duration::from_secs(1)).await;
     }
 
-    Ok(voted)
-}
+    ////
 
-async fn get_active_proposals(username: String) -> Result<Vec<prisma::proposal::Data>> {
-    let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
-
-    let user = client
-        .user()
-        .find_first(vec![prisma::user::name::equals(username)])
-        .exec()
-        .await
-        .unwrap()
-        .unwrap();
-
-    let subscribed_daos = client
-        .subscription()
-        .find_many(vec![subscription::userid::equals(user.id)])
-        .exec()
+    let past_embeds = get_past_embeds("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string())
         .await
         .unwrap();
 
-    let proposals = client
-        .proposal()
-        .find_many(vec![
-            prisma::proposal::daoid::in_vec(subscribed_daos.into_iter().map(|d| d.daoid).collect()),
-            prisma::proposal::state::equals(ProposalState::Active),
-        ])
-        .exec()
+    webhook
+        .execute(&http, false, |w| w.content("**Past Proposals** These are the proposals that ended in the last 24 hours. You might want to check them out.")
+        .username("Senate Butler")
+        .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif"))
         .await
-        .unwrap();
+        .expect("Could not execute webhook.");
 
-    Ok(proposals)
+    sleep(Duration::from_secs(1)).await;
+
+    for chunk in past_embeds.chunks(5) {
+        webhook
+            .execute(&http, false, |w| {
+                w.embeds(chunk.to_vec())
+                    .username("Senate Butler")
+                    .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
+            })
+            .await
+            .expect("Could not execute webhook.");
+
+        sleep(Duration::from_secs(1)).await;
+    }
+
+    ////
+
+    webhook
+        .execute(&http, false, |w| w.content("These are the proposals to the DAOs you’re subscribed to on Senate.You can edit your DAO subscriptions and notification settings on https://www.senatelabs.xyz/settings/notifications")
+        .username("Senate Butler")
+        .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif"))
+        .await
+        .expect("Could not execute webhook.");
 }
