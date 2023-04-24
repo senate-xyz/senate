@@ -78,40 +78,31 @@ async fn main() {
             let _ = load_config_from_db(&producer_client_clone).await;
             let _ = create_voter_handlers(&producer_client_clone).await;
 
-            match produce_snapshot_proposals_queue(&producer_client_clone, &config).await {
-                Ok(queue) => {
-                    for item in queue {
-                        tx_snapshot_proposals.try_send(item).unwrap();
-                    }
+            if let Ok(queue) =
+                produce_snapshot_proposals_queue(&producer_client_clone, &config).await
+            {
+                for item in queue {
+                    tx_snapshot_proposals.try_send(item).unwrap();
                 }
-                Err(_) => {}
             }
 
-            match produce_snapshot_votes_queue(&producer_client_clone, &config).await {
-                Ok(queue) => {
-                    for item in queue {
-                        tx_snapshot_votes.try_send(item).unwrap();
-                    }
+            if let Ok(queue) = produce_snapshot_votes_queue(&producer_client_clone, &config).await {
+                for item in queue {
+                    tx_snapshot_votes.try_send(item).unwrap();
                 }
-                Err(_) => {}
             }
 
-            match produce_chain_proposals_queue(&producer_client_clone, &config).await {
-                Ok(queue) => {
-                    for item in queue {
-                        tx_chain_proposals.try_send(item).unwrap();
-                    }
+            if let Ok(queue) = produce_chain_proposals_queue(&producer_client_clone, &config).await
+            {
+                for item in queue {
+                    tx_chain_proposals.try_send(item).unwrap();
                 }
-                Err(_) => {}
             }
 
-            match produce_chain_votes_queue(&producer_client_clone, &config).await {
-                Ok(queue) => {
-                    for item in queue {
-                        tx_chain_votes.try_send(item).unwrap();
-                    }
+            if let Ok(queue) = produce_chain_votes_queue(&producer_client_clone, &config).await {
+                for item in queue {
+                    tx_chain_votes.try_send(item).unwrap();
                 }
-                Err(_) => {}
             }
 
             sleep(Duration::from_secs(1)).await;

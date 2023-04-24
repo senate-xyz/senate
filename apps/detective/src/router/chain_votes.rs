@@ -123,17 +123,11 @@ pub async fn update_chain_votes<'a>(
         from_block = first_proposal_block;
     }
 
-    let to_block;
-
-    if current_block - from_block > batch_size {
-        to_block = from_block + batch_size;
+    let to_block = if current_block - from_block > batch_size {
+        from_block + batch_size
     } else {
-        to_block = current_block;
-    }
-
-    // if to_block > last_proposal_block {
-    //     to_block = last_proposal_block;
-    // }
+        current_block
+    };
 
     if from_block > to_block {
         from_block = to_block;
@@ -310,17 +304,14 @@ async fn insert_votes(
     });
 
     let daochainindex = &dao_handler.chainindex.unwrap();
-    let new_index;
 
     use crate::prisma::DaoHandlerType::MakerPollArbitrum;
 
-    if dao_handler.r#type == MakerPollArbitrum {
-        new_index = to_block;
-    } else if daochainindex > to_block {
-        new_index = to_block;
+    let new_index = if dao_handler.r#type == MakerPollArbitrum || daochainindex > to_block {
+        to_block
     } else {
-        new_index = daochainindex;
-    }
+        daochainindex
+    };
 
     let mut uptodate = false;
 

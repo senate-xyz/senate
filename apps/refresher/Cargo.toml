@@ -4,7 +4,7 @@ members = [
 ]
 
 [package]
-name = "refresher-rust"
+name = "refresher"
 version = "0.1.0"
 edition = "2021"
 

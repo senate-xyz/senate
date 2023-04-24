@@ -15,14 +15,14 @@ COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 # Build application
 COPY . .
-RUN cargo prisma generate && cargo build --release --bin detective-rust
+RUN cargo prisma generate && cargo build --release --bin detective
 
 FROM debian:bullseye-slim AS runtime
 RUN apt update
 RUN apt install openssl ca-certificates -y
 WORKDIR /app
-COPY --from=builder /app/target/release/detective-rust /usr/local/bin
-ENTRYPOINT ["/usr/local/bin/detective-rust"]
+COPY --from=builder /app/target/release/detective /usr/local/bin
+ENTRYPOINT ["/usr/local/bin/detective"]
 ENV ROCKET_ADDRESS=0.0.0.0
 
 EXPOSE 8000

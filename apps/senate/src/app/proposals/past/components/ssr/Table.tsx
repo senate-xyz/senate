@@ -272,7 +272,7 @@ export default async function Table(props: {
                                     <div>Proposal Title</div>
                                 </div>
                             </th>
-                            <th className='h-[56px] w-[200px] items-center font-normal'>
+                            <th className='h-[56px] w-[250px] items-center font-normal'>
                                 <div className='flex gap-1'>
                                     <div>Ended on</div>
                                     <Image
@@ -416,7 +416,16 @@ const MobilePastProposal = async (props: {
                         DAOHandlerType.MAKER_EXECUTIVE ? (
                             <div>
                                 <div className='text-[21px] leading-[26px] text-white'>
-                                    Passed
+                                    {(props.proposal.state ==
+                                        ProposalState.EXECUTED ||
+                                        props.proposal.state ==
+                                            ProposalState.QUEUED) && (
+                                        <div>Passed</div>
+                                    )}
+                                    {props.proposal.state ==
+                                        ProposalState.EXPIRED && (
+                                        <div>Did not pass</div>
+                                    )}
                                 </div>
                                 <div className='text-[18px] leading-[26px] text-white'>
                                     with{' '}
@@ -434,10 +443,15 @@ const MobilePastProposal = async (props: {
                                     <div>
                                         <div className='flex flex-row'>
                                             <div className='text-[21px] leading-[26px] text-white'>
-                                                {props.proposal.highestScoreChoice.slice(
-                                                    0,
-                                                    30
-                                                )}
+                                                {props.proposal
+                                                    .highestScoreChoice.length >
+                                                27
+                                                    ? props.proposal.highestScoreChoice.slice(
+                                                          0,
+                                                          27
+                                                      ) + '...'
+                                                    : props.proposal
+                                                          .highestScoreChoice}
                                             </div>
                                         </div>
                                         <div className='bg-[#262626]'>
@@ -650,17 +664,32 @@ const PastProposal = async (props: {
                     DAOHandlerType.MAKER_EXECUTIVE ? (
                         <div className='text-[21px] leading-[26px] text-white'>
                             <div className='mb-1 flex flex-row gap-2'>
-                                <div className='h-[24px] w-[24px] bg-[#D9D9D9]'>
-                                    <Image
-                                        loading='eager'
-                                        priority={true}
-                                        width={24}
-                                        height={24}
-                                        src={'/assets/Icon/Check.svg'}
-                                        alt='off-chain'
-                                    />
-                                </div>
-                                Passed
+                                {(props.proposal.state ==
+                                    ProposalState.EXECUTED ||
+                                    props.proposal.state ==
+                                        ProposalState.QUEUED) && (
+                                    <div className='flex flex-row gap-2'>
+                                        <div className='h-[24px] w-[24px] bg-[#D9D9D9]'>
+                                            <Image
+                                                loading='eager'
+                                                priority={true}
+                                                width={24}
+                                                height={24}
+                                                src={'/assets/Icon/Check.svg'}
+                                                alt='off-chain'
+                                            />
+                                        </div>
+
+                                        <div>Passed</div>
+                                    </div>
+                                )}
+                                {props.proposal.state ==
+                                    ProposalState.EXPIRED && (
+                                    <div>
+                                        <div className='h-[24px] w-[24px] bg-[#D9D9D9]'></div>
+                                        <div>Did not pass</div>
+                                    </div>
+                                )}
                             </div>
                             <div className='text-[18px] leading-[26px] text-white'>
                                 with{' '}
@@ -689,10 +718,13 @@ const PastProposal = async (props: {
                                     <div className='h-[24px] w-[24px] bg-[#D9D9D9]'></div>
                                 )}
                                 <div className='text-[21px] leading-[26px] text-white'>
-                                    {props.proposal.highestScoreChoice.slice(
-                                        0,
-                                        30
-                                    )}
+                                    {props.proposal.highestScoreChoice.length >
+                                    27
+                                        ? props.proposal.highestScoreChoice.slice(
+                                              0,
+                                              27
+                                          ) + '...'
+                                        : props.proposal.highestScoreChoice}
                                 </div>
                             </div>
                             <div className='w-[340px] bg-[#262626]'>
