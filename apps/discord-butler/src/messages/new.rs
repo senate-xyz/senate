@@ -1,5 +1,5 @@
 use crate::{
-    prisma::{self, subscription, PrismaClient, ProposalState},
+    prisma::{self, subscription, DaoHandlerType, PrismaClient, ProposalState},
     utils::vote::get_vote,
 };
 use anyhow::Result;
@@ -8,7 +8,7 @@ use prisma_client_rust::chrono::{self, Utc};
 use serenity::{json::Value, model::prelude::Embed, utils::Colour};
 use std::sync::Arc;
 
-prisma::proposal::include!(proposal_with_dao { dao });
+prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn get_new_embeds(username: String) -> Result<Vec<Value>> {
     let mut proposals = get_new_proposals(username.clone()).await?;
@@ -34,27 +34,37 @@ pub async fn build_new_embeds(
             embeds.push(Embed::fake(|e| {
                 e.title(proposal.name)
                     .description(format!(
-                        "**{}** proposal ending <t:{}:R>",
+                        "**{}** {} proposal ending <t:{}:R>",
                         proposal.dao.name,
+                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                            "off-chain"
+                        } else {
+                            "on-chain"
+                        },
                         proposal.timeend.timestamp()
                     ))
                     .url(proposal.url)
                     .colour(Colour::from_rgb(0, 128, 0))
                     .thumbnail("https://www.senatelabs.xyz/assets/Discord/Voted_large.png")
-                    .image("https://placehold.co/1000x1/png")
+                    .image("https://placehold.co/2000x1/png")
             }));
         } else {
             embeds.push(Embed::fake(|e| {
                 e.title(proposal.name)
                     .description(format!(
-                        "**{}** proposal ending <t:{}:R>",
+                        "**{}** {} proposal ending <t:{}:R>",
                         proposal.dao.name,
+                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                            "off-chain"
+                        } else {
+                            "on-chain"
+                        },
                         proposal.timeend.timestamp()
                     ))
                     .url(proposal.url)
                     .colour(Colour::from_rgb(255, 0, 0))
                     .thumbnail("https://www.senatelabs.xyz/assets/Discord/NotVotedYet_large.png")
-                    .image("https://placehold.co/1000x1/png")
+                    .image("https://placehold.co/2000x1/png")
             }));
         }
     }

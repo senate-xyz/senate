@@ -33,7 +33,7 @@ async fn main() {
     info!("discord-butler start");
 
     let http = Http::new("");
-    let webhook = Webhook::from_url(&http, "https://discord.com/api/webhooks/1099963428241686589/j24VGyfsCaQI7k2d7Rju9ZNHzM3HIv0mGMNwf2z47GF6p3UeJfcNsEKFU75yBNOD2Nzz")
+    let webhook = Webhook::from_url(&http, "https://discord.com/api/webhooks/1099955005584314370/8ITvepezt-FnA-hsDtEDzHk5Jy9k3TSEVTsYNJjFe1ND0V_KjIw4mMwVzDA_cItV35nv")
         .await
         .expect("Replace the webhook with your own");
 
