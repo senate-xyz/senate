@@ -1,6 +1,5 @@
 import { prisma } from '@senate/database'
 import { getServerSession } from 'next-auth'
-import { redirect } from 'next/navigation'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import { Filters } from './components/csr/Filters'
 import Table from './components/ssr/Table'
@@ -73,8 +72,6 @@ export default async function Home({
     params: { slug: string }
     searchParams?: { from: string; end: number; voted: string; proxy: string }
 }) {
-    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
-
     const subscribedDAOs = await getSubscribedDAOs()
     const proxies = await getProxies()
 

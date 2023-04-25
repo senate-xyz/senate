@@ -1,19 +1,13 @@
 'use client'
 
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useCookies } from 'react-cookie'
+
 import { useAccount } from 'wagmi'
 import { trpc } from '../../../server/trpcClient'
 import UserEmail from './components/csr/UserEmail'
 
 export default function Home() {
-    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
-    const [cookie] = useCookies(['hasSeenLanding'])
-    useEffect(() => {
-        if (!cookie.hasSeenLanding) redirect('/landing')
-    }, [cookie])
-
     const account = useAccount()
     const router = useRouter()
     const user = trpc.accountSettings.getUser.useQuery()

@@ -2,8 +2,9 @@
 
 import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit'
 import { signOut, useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { useCookies } from 'react-cookie'
 import { useAccount } from 'wagmi'
 
 const WalletConnect = () => {
@@ -29,6 +30,12 @@ const WalletConnect = () => {
     useEffect(() => {
         router.refresh()
     }, [account.isConnected, account.isDisconnected, session.status])
+
+    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
+    const [cookie] = useCookies(['hasSeenLanding'])
+    useEffect(() => {
+        if (!cookie.hasSeenLanding) redirect('/landing')
+    }, [cookie])
 
     return <ConnectButton showBalance={false} />
 }

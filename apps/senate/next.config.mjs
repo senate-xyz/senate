@@ -16,6 +16,15 @@ const config = {
             'seeklogo.com',
             'docs.synthetix.io'
         ]
+    },
+    async redirects() {
+        return [
+            {
+                source: '/',
+                destination: '/daos',
+                permanent: true
+            }
+        ]
     }
 }
 export default config
