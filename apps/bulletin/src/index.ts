@@ -430,10 +430,10 @@ const formatEmailTemplateRow = async (
     const chainLogoUrl =
         proposal.daohandler.type === DAOHandlerType.SNAPSHOT
             ? encodeURI(
-                  `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Chain/Snapshot/snapshot.png`
+                  `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/off-chain.png`
               )
             : encodeURI(
-                  `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Chain/Ethereum/eth.png`
+                  `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/on-chain.png`
               )
 
     let result = null
@@ -707,7 +707,7 @@ function computeGenericResult(
         const highestScore = getHighestScore(proposal)
 
         return {
-            checkboxImgUrl: 'check',
+            checkboxImgUrl: `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/VoteIcon-Check.png`,
             resultText:
                 highestScore.choice.length > 16
                     ? `${highestScore.choice.substring(0, 16)}...`
@@ -719,7 +719,7 @@ function computeGenericResult(
     }
 
     return {
-        checkboxImgUrl: 'cross',
+        checkboxImgUrl: `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/VoteIcon-Cross.png`,
         resultText: 'No Quorum',
         highestScorePercentageDisplay: 'hide',
         highestScorePercentage: '',
@@ -772,18 +772,16 @@ function computeMakerExecutiveResult(
         proposal.state == ProposalState.EXECUTED
     ) {
         return {
-            checkboxImgUrl: 'check',
+            checkboxImgUrl: `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/VoteIcon-Check.png`,
             resultText: 'Passed',
             mkrSupport: String((proposal.scores as JsonArray)[0])
         }
     }
 
     return {
-        checkboxImgUrl: 'cross',
+        checkboxImgUrl: `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/VoteIcon-Cross.png`,
         resultText: 'Did not pass',
-        mkrSupport: Number.parseFloat(
-            (proposal.scores as JsonArray)[0]
-        ).toFixed(2)
+        mkrSupport: Number((proposal.scores as JsonArray)[0]).toFixed(2)
     }
 }
 
