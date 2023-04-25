@@ -482,11 +482,7 @@ const formatEmailTemplateRow = async (
 }
 
 const isMakerProposal = (proposal: ProposalWithDaoAndHandler) => {
-    return (
-        proposal.daohandler.type === DAOHandlerType.MAKER_EXECUTIVE ||
-        proposal.daohandler.type === DAOHandlerType.MAKER_POLL ||
-        proposal.daohandler.type === DAOHandlerType.MAKER_POLL_ARBITRUM
-    )
+    return proposal.daohandler.type === DAOHandlerType.MAKER_EXECUTIVE
 }
 
 const formatTwoDigit = (timeUnit: number): string => {
@@ -785,7 +781,9 @@ function computeMakerExecutiveResult(
     return {
         checkboxImgUrl: 'cross',
         resultText: 'Did not pass',
-        mkrSupport: String((proposal.scores as JsonArray)[0])
+        mkrSupport: Number.parseFloat(
+            (proposal.scores as JsonArray)[0]
+        ).toFixed(2)
     }
 }
 
