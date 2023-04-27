@@ -430,10 +430,10 @@ const formatEmailTemplateRow = async (
     const chainLogoUrl =
         proposal.daohandler.type === DAOHandlerType.SNAPSHOT
             ? encodeURI(
-                  `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/off-chain.png`
+                  `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Chain/Snapshot/snapshot.png`
               )
             : encodeURI(
-                  `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/on-chain.png`
+                  `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Chain/Ethereum/eth.png`
               )
 
     let result = null
@@ -458,8 +458,8 @@ const formatEmailTemplateRow = async (
         votingStatus,
         votingStatusIconUrl: encodeURI(votingStatusIconUrl),
         proposalName:
-            proposal.name.length > 100
-                ? `${proposal.name.substring(0, 100)}...`
+            proposal.name.length > 69
+                ? `${proposal.name.substring(0, 69)}...`
                 : proposal.name,
         proposalUrl: encodeURI(proposal.url),
         daoLogoUrl: encodeURI(
@@ -592,7 +592,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
 const sendBulletin = async (to: string, data: BulletinData) => {
     try {
         await client.sendEmailWithTemplate({
-            TemplateAlias: 'daily-bulletin-2',
+            TemplateAlias: 'daily-bulletin-3',
             TemplateModel: {
                 senateLogoUrl: encodeURI(
                     process.env.NEXT_PUBLIC_WEB_URL +
