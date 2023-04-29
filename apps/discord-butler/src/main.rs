@@ -1,5 +1,8 @@
+#![deny(unused_crate_dependencies)]
+
 mod messages;
-mod prisma;
+#[allow(warnings, unused)]
+pub mod prisma;
 mod utils {
     pub mod vote;
 }
@@ -12,7 +15,9 @@ use tokio::time::sleep;
 use env_logger::{Builder, Env};
 
 use crate::messages::{
-    ended::get_past_embeds, ending_soon::get_ending_soon_embeds, new::get_new_embeds,
+    ended::get_past_embeds,
+    ending_soon::get_ending_soon_embeds,
+    new::get_new_embeds,
 };
 
 fn init_logger() {

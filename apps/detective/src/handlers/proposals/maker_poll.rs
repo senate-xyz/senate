@@ -1,19 +1,23 @@
-use crate::contracts::makerpollcreate::PollCreatedFilter;
-use crate::prisma::ProposalState;
-use crate::{contracts::makerpollcreate, Ctx};
-use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
+use crate::{
+    contracts::{makerpollcreate, makerpollcreate::PollCreatedFilter},
+    prisma::{daohandler, ProposalState},
+    router::chain_proposals::ChainProposal,
+    Ctx,
+};
 use anyhow::{Context, Result};
 use chrono::Duration;
-use ethers::providers::Middleware;
-use ethers::{prelude::LogMeta, types::Address};
+use ethers::{prelude::LogMeta, providers::Middleware, types::Address};
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{
     bigdecimal::ToPrimitive,
     chrono::{DateTime, NaiveDateTime, Utc},
 };
 use regex::Regex;
-use reqwest::header::{ACCEPT, USER_AGENT};
-use reqwest::{Client, StatusCode};
+use reqwest::{
+    header::{ACCEPT, USER_AGENT},
+    Client,
+    StatusCode,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{str, vec};

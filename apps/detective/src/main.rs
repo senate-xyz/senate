@@ -1,16 +1,20 @@
+#![deny(unused_crate_dependencies)]
+
 pub mod contracts;
 pub mod handlers;
+#[allow(warnings, unused)]
 pub mod prisma;
 mod router;
 pub mod utils {
     pub mod etherscan;
 }
-use crate::router::chain_proposals::update_chain_proposals;
-use crate::router::chain_votes::update_chain_votes;
-use crate::router::snapshot_proposals::update_snapshot_proposals;
-use crate::router::snapshot_votes::update_snapshot_votes;
-use std::env;
-use std::sync::Arc;
+use crate::router::{
+    chain_proposals::update_chain_proposals,
+    chain_votes::update_chain_votes,
+    snapshot_proposals::update_snapshot_proposals,
+    snapshot_votes::update_snapshot_votes,
+};
+use std::{env, sync::Arc};
 
 use dotenv::dotenv;
 use ethers::providers::{Http, Provider};

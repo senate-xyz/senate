@@ -4,14 +4,18 @@ use crate::{
         aavegov::{self, ProposalCreatedFilter},
         aavestrategy,
     },
-    prisma::ProposalState,
+    prisma::{daohandler, ProposalState},
+    router::chain_proposals::ChainProposal,
     utils::etherscan::estimate_timestamp,
     Ctx,
 };
-use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
 use anyhow::Result;
-use ethers::{prelude::LogMeta, types::Address, utils::hex};
-use ethers::{providers::Middleware, types::U256};
+use ethers::{
+    prelude::LogMeta,
+    providers::Middleware,
+    types::{Address, U256},
+    utils::hex,
+};
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{
     bigdecimal::ToPrimitive,

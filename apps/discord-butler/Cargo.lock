@@ -611,7 +611,6 @@ dependencies = [
  "log",
  "prisma-client-rust",
  "serde",
- "serde_json",
  "serenity",
  "tokio",
 ]

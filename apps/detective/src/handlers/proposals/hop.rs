@@ -1,12 +1,16 @@
-use crate::contracts::hopgov::ProposalCreatedFilter;
-use crate::prisma::ProposalState;
-use crate::utils::etherscan::estimate_timestamp;
-use crate::{contracts::hopgov, Ctx};
-use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
+use crate::{
+    contracts::{hopgov, hopgov::ProposalCreatedFilter},
+    prisma::{daohandler, ProposalState},
+    router::chain_proposals::ChainProposal,
+    utils::etherscan::estimate_timestamp,
+    Ctx,
+};
 use anyhow::Result;
-use ethers::providers::Middleware;
-use ethers::types::U256;
-use ethers::{prelude::LogMeta, types::Address};
+use ethers::{
+    prelude::LogMeta,
+    providers::Middleware,
+    types::{Address, U256},
+};
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{
     bigdecimal::ToPrimitive,

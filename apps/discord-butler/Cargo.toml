@@ -1,7 +1,6 @@
 [workspace]
-members = [
-    "prisma-cli", "."
-]
+members = [".",
+    "prisma-cli"]
 
 [package]
 name = "discord-butler"
@@ -18,6 +17,5 @@ env_logger = "0.10.0"
 log = "0.4.17"
 prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.8", default-features = false, features = ["postgresql"] }
 serde = "1.0.160"
-serde_json = "1.0.96"
-serenity = {version = "0.11.5", features = ["cache"]}
+serenity = { version = "0.11.5", features = ["cache"] }
 tokio = { version = "1.28.0", features = ["full"] }

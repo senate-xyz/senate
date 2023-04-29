@@ -1,7 +1,7 @@
 use crate::{
-    contracts::{
-        dydxgov::VoteEmittedFilter,
-        dydxgov::{self},
+    contracts::dydxgov::{
+        VoteEmittedFilter,
+        {self},
     },
     prisma::{daohandler, proposal},
     router::chain_votes::{Vote, VoteResult},

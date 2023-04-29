@@ -6,9 +6,10 @@ use rocket::serde::json::Json;
 use serde::Deserialize;
 
 use crate::{
-    prisma::daohandler,
-    prisma::{dao, proposal, ProposalState},
-    Ctx, ProposalsRequest, ProposalsResponse,
+    prisma::{dao, daohandler, proposal, ProposalState},
+    Ctx,
+    ProposalsRequest,
+    ProposalsResponse,
 };
 
 #[derive(Debug, Deserialize)]

@@ -9,13 +9,21 @@ use serde_json::Value;
 
 use crate::{
     handlers::votes::{
-        aave::aave_votes, compound::compound_votes, dydx::dydx_votes, ens::ens_votes,
-        gitcoin::gitcoin_votes, hop::hop_votes, maker_executive::makerexecutive_votes,
-        maker_poll::makerpoll_votes, maker_poll_arbitrum::makerpollarbitrum_votes,
+        aave::aave_votes,
+        compound::compound_votes,
+        dydx::dydx_votes,
+        ens::ens_votes,
+        gitcoin::gitcoin_votes,
+        hop::hop_votes,
+        maker_executive::makerexecutive_votes,
+        maker_poll::makerpoll_votes,
+        maker_poll_arbitrum::makerpollarbitrum_votes,
         uniswap::uniswap_votes,
     },
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType},
-    Ctx, VotesRequest, VotesResponse,
+    Ctx,
+    VotesRequest,
+    VotesResponse,
 };
 
 #[derive(Debug, Deserialize, Clone)]

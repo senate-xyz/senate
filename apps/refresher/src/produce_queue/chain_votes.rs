@@ -5,7 +5,8 @@ use anyhow::Result;
 use crate::{
     config::Config,
     prisma::{self, voterhandler},
-    RefreshEntry, RefreshType,
+    RefreshEntry,
+    RefreshType,
 };
 
 use prisma::{daohandler, PrismaClient};

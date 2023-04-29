@@ -1,11 +1,12 @@
-use crate::contracts::compoundgov::ProposalCreatedFilter;
-use crate::prisma::ProposalState;
-use crate::utils::etherscan::estimate_timestamp;
-use crate::{contracts::compoundgov, Ctx};
-use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
+use crate::{
+    contracts::{compoundgov, compoundgov::ProposalCreatedFilter},
+    prisma::{daohandler, ProposalState},
+    router::chain_proposals::ChainProposal,
+    utils::etherscan::estimate_timestamp,
+    Ctx,
+};
 use anyhow::Result;
-use ethers::providers::Middleware;
-use ethers::{prelude::LogMeta, types::Address};
+use ethers::{prelude::LogMeta, providers::Middleware, types::Address};
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{
     bigdecimal::ToPrimitive,
