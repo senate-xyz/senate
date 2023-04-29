@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import {
     type Proposal,
     DAOHandlerType,
@@ -8,7 +7,8 @@ import {
     type DAO,
     type JsonArray,
     prisma,
-    type DAOHandler
+    type DAOHandler,
+    ProposalState
 } from '@senate/database'
 
 import axios from 'axios'
@@ -39,6 +39,25 @@ interface ProposalWithDaoAndHandler extends Proposal {
     daohandler: DAOHandler
 }
 
+interface GenericResult {
+    checkboxImgUrl: string
+    resultText: string
+    highestScorePercentageDisplay: string
+    highestScorePercentage: string
+    barWidthPercentage: number
+}
+
+interface MakerExecutiveResult {
+    checkboxImgUrl: string
+    resultText: string
+    mkrSupport: string
+}
+
+interface HighestScore {
+    choice: string
+    percentage: number
+}
+
 interface EmailTemplateRow {
     votingStatus: string
     votingStatusIconUrl: string
@@ -51,13 +70,10 @@ interface EmailTemplateRow {
     endMinutesUTC: string
     endDateString: string
     countdownUrl: string
-    result: {
-        highestScoreChoice: string
-        highestScorePercentage: string
-        barWidthPercentage: number
-    }
+    result: GenericResult
+    makerResult: MakerExecutiveResult
     resultDisplay: string
-    resultUnavailableDisplay: string
+    makerResultDisplay: string
 }
 
 interface BulletinData {
@@ -80,7 +96,7 @@ let proposalCountdownUrl: Map<string, string>
 schedule(
     String(process.env.BULLETIN_CRON_INTERVAL) ?? '* * 31 2 *',
     async function () {
-        if (!Boolean(process.env.BULLETIN_ENABLE)) return
+        if (String(process.env.BULLETIN_ENABLE) !== 'true') return
 
         log_bul.log({
             level: 'info',
@@ -106,31 +122,25 @@ schedule(
             const users: UserWithSubscriptionsAndVotingAddresses[] =
                 await fetchUsersToBeNotified()
 
-            console.log("Users to be notified", users)
+            console.log('Users to be notified', users)
 
             for (const user of users) {
                 const subscribedDaoIds = user.subscriptions.map(
                     (subscription: Subscription) => subscription.daoid
                 )
 
-                const endingProposals: ProposalWithDaoAndHandler[] = await fetchEndingProposals(
-                    user.id,
-                    subscribedDaoIds
-                )
-                const newProposals: ProposalWithDaoAndHandler[] = await fetchNewProposals(
-                    user.id,
-                    subscribedDaoIds
-                )
-                const pastProposals: ProposalWithDaoAndHandler[] = await fetchPastProposals(
-                    user.id,
-                    subscribedDaoIds
-                )
-                console.log("User: ", user.email)
-                console.log("Ending soon", endingProposals.length) 
-                console.log("New", newProposals.length)
-                console.log("Past", pastProposals.length)
+                const endingProposals: ProposalWithDaoAndHandler[] =
+                    await fetchEndingProposals(user.id, subscribedDaoIds)
+                const newProposals: ProposalWithDaoAndHandler[] =
+                    await fetchNewProposals(user.id, subscribedDaoIds)
+                const pastProposals: ProposalWithDaoAndHandler[] =
+                    await fetchPastProposals(user.id, subscribedDaoIds)
+                console.log('User: ', user.email)
+                console.log('Ending soon', endingProposals.length)
+                console.log('New', newProposals.length)
+                console.log('Past', pastProposals.length)
 
-                const bulletinData : BulletinData = {
+                const bulletinData: BulletinData = {
                     todaysDate: new Date(Date.now()).toLocaleDateString(
                         undefined,
                         dateOptions
@@ -149,9 +159,9 @@ schedule(
                         user,
                         pastProposals,
                         BulletinSection.PAST
-                    ),
+                    )
                 }
-                
+
                 userEmailData.set(user.email, bulletinData)
             }
 
@@ -173,11 +183,11 @@ schedule(
             } else {
                 for (const [recipient, emailData] of userEmailData) {
                     const to: string =
-                        process.env.EXEC_ENV === 'PROD' 
-                    ? String(recipient)
-                    : String(process.env.TEST_EMAIL)
+                        process.env.EXEC_ENV === 'PROD'
+                            ? String(recipient)
+                            : String(process.env.TEST_EMAIL)
 
-                    console.log("Sending email to ", recipient)
+                    console.log('Sending email to ', recipient)
                     await sendBulletin(to, emailData)
                 }
             }
@@ -427,57 +437,29 @@ const formatEmailTemplateRow = async (
               )
 
     let result = null
+    let makerResult = null
+    let resultDisplay, makerResultDisplay
 
     if (bulletinSection === BulletinSection.PAST) {
-        let highestScore = 0
-        let highestScoreIndex = 0
-        let highestScorePercentage = 0
-        let highestScoreChoice = ''
+        if (isMakerProposal(proposal)) {
+            makerResult = computeMakerExecutiveResult(proposal)
 
-        if (
-            proposal.scores &&
-            typeof proposal.scores === 'object' &&
-            Array.isArray(proposal?.scores) &&
-            proposal.choices &&
-            typeof proposal.choices === 'object' &&
-            Array.isArray(proposal?.choices)
-        ) {
-            const scores = proposal.scores as JsonArray
+            makerResultDisplay = 'show'
+            resultDisplay = 'hide'
+        } else {
+            result = computeGenericResult(proposal)
 
-            for (let i = 0; i < scores.length; i++) {
-                if (parseFloat(scores[i]!.toString()) > highestScore) {
-                    highestScore = parseFloat(scores[i]!.toString())
-                    highestScoreIndex = i
-                }
-            }
-
-            highestScoreChoice = String(proposal.choices[highestScoreIndex])
+            makerResultDisplay = 'hide'
+            resultDisplay = 'show'
         }
-
-
-        highestScorePercentage =
-            (highestScore / Number(proposal.scorestotal)) * 100
-
-            proposal.name.length > 100
-            ? `${proposal.name.substring(0, 100)}...`
-            : proposal.name,
-
-        result = {
-            highestScoreChoice: highestScoreChoice.length > 16
-                ? `${highestScoreChoice.substring(0, 16)}...`
-                : highestScoreChoice,
-            highestScorePercentage: highestScorePercentage.toFixed(2),
-            barWidthPercentage: Math.floor(highestScorePercentage)
-        }
-
     }
 
     return {
         votingStatus,
         votingStatusIconUrl: encodeURI(votingStatusIconUrl),
         proposalName:
-            proposal.name.length > 100
-                ? `${proposal.name.substring(0, 100)}...`
+            proposal.name.length > 69
+                ? `${proposal.name.substring(0, 69)}...`
                 : proposal.name,
         proposalUrl: encodeURI(proposal.url),
         daoLogoUrl: encodeURI(
@@ -485,33 +467,22 @@ const formatEmailTemplateRow = async (
         ),
         chainLogoUrl: chainLogoUrl,
         daoName: proposal.dao.name,
-        endHoursUTC: formatTwoDigit(
-           proposal.timeend.getUTCHours()
-        ),
-        endMinutesUTC: formatTwoDigit(
-            proposal.timeend.getUTCMinutes()
-        ),
+        endHoursUTC: formatTwoDigit(proposal.timeend.getUTCHours()),
+        endMinutesUTC: formatTwoDigit(proposal.timeend.getUTCMinutes()),
         endDateString: proposal.timeend.toLocaleDateString(
             undefined,
             emailProposalEndDateStringFormat
         ),
         countdownUrl: encodeURI(countdownUrl),
         result: result,
-        resultDisplay: isMakerProposal(proposal) ? 'hide' : 'show',
-        resultUnavailableDisplay: isMakerProposal(proposal)
-            ? 'show'
-            : 'hide'
+        makerResult: makerResult,
+        resultDisplay: resultDisplay,
+        makerResultDisplay: makerResultDisplay
     }
 }
 
-const isMakerProposal = (
-    proposal: ProposalWithDaoAndHandler
-) => {
-    return (
-        proposal.daohandler.type === DAOHandlerType.MAKER_EXECUTIVE ||
-        proposal.daohandler.type === DAOHandlerType.MAKER_POLL ||
-        proposal.daohandler.type === DAOHandlerType.MAKER_POLL_ARBITRUM
-    )
+const isMakerProposal = (proposal: ProposalWithDaoAndHandler) => {
+    return proposal.daohandler.type === DAOHandlerType.MAKER_EXECUTIVE
 }
 
 const formatTwoDigit = (timeUnit: number): string => {
@@ -621,7 +592,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
 const sendBulletin = async (to: string, data: BulletinData) => {
     try {
         await client.sendEmailWithTemplate({
-            TemplateAlias: 'daily-bulletin-1',
+            TemplateAlias: 'daily-bulletin-3',
             TemplateModel: {
                 senateLogoUrl: encodeURI(
                     process.env.NEXT_PUBLIC_WEB_URL +
@@ -728,4 +699,92 @@ const userVoted = async (
         })
         throw Error('Could not check if user voted')
     }
+}
+function computeGenericResult(
+    proposal: ProposalWithDaoAndHandler
+): GenericResult {
+    if (hasPassed(proposal)) {
+        const highestScore = getHighestScore(proposal)
+
+        return {
+            checkboxImgUrl: `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/VoteIcon-Check.png`,
+            resultText:
+                highestScore.choice.length > 16
+                    ? `${highestScore.choice.substring(0, 16)}...`
+                    : highestScore.choice,
+            highestScorePercentageDisplay: 'show',
+            highestScorePercentage: highestScore.percentage.toFixed(2),
+            barWidthPercentage: Math.floor(highestScore.percentage)
+        }
+    }
+
+    return {
+        checkboxImgUrl: `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/VoteIcon-Cross.png`,
+        resultText: 'No Quorum',
+        highestScorePercentageDisplay: 'hide',
+        highestScorePercentage: '',
+        barWidthPercentage: 0
+    }
+}
+
+function getHighestScore(proposal: ProposalWithDaoAndHandler): HighestScore {
+    // if (proposal.scores &&
+    //     typeof proposal.scores === 'object' &&
+    //     Array.isArray(proposal?.scores) &&
+    //     proposal.choices &&
+    //     typeof proposal.choices === 'object' &&
+    //     Array.isArray(proposal?.choices)) {
+
+    //     const scores = proposal.scores as JsonArray
+
+    //     for (let i = 0; i < scores.length; i++) {
+    //         if (parseFloat(scores[i]!.toString()) > highestScore) {
+    //             highestScore = parseFloat(scores[i]!.toString())
+    //             highestScoreIndex = i
+    //         }
+    //     }
+
+    //     highestScoreChoice = String(proposal.choices[highestScoreIndex])
+    //     highestScorePercentage = (highestScore / Number(proposal.scorestotal)) * 100
+    // }
+    let highestScore = 0
+    let highestScoreIndex = 0
+    const scores = proposal.scores as JsonArray
+
+    for (let i = 0; i < scores.length; i++) {
+        if (parseFloat(scores[i]!.toString()) > highestScore) {
+            highestScore = parseFloat(scores[i]!.toString())
+            highestScoreIndex = i
+        }
+    }
+
+    return {
+        choice: String((proposal.choices as JsonArray)[highestScoreIndex]),
+        percentage: (highestScore / Number(proposal.scorestotal)) * 100
+    }
+}
+
+function computeMakerExecutiveResult(
+    proposal: ProposalWithDaoAndHandler
+): MakerExecutiveResult {
+    if (
+        proposal.state == ProposalState.QUEUED ||
+        proposal.state == ProposalState.EXECUTED
+    ) {
+        return {
+            checkboxImgUrl: `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/VoteIcon-Check.png`,
+            resultText: 'Passed',
+            mkrSupport: String((proposal.scores as JsonArray)[0])
+        }
+    }
+
+    return {
+        checkboxImgUrl: `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/VoteIcon-Cross.png`,
+        resultText: 'Did not pass',
+        mkrSupport: Number((proposal.scores as JsonArray)[0]).toFixed(2)
+    }
+}
+
+function hasPassed(proposal: ProposalWithDaoAndHandler): boolean {
+    return Number(proposal.scorestotal) > Number(proposal.quorum)
 }
