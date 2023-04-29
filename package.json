@@ -39,7 +39,7 @@
     "lint:fix": "turbo run lint:fix"
   },
   "devDependencies": {
-    "prettier": "^2.8.7",
+    "prettier": "^2.8.8",
     "tsx": "^3.12.6",
     "turbo": "^1.9.3"
   },
