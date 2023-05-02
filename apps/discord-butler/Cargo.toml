@@ -12,7 +12,7 @@ lto = true
 codegen-units = 1
 
 [dependencies]
-anyhow = { version = "1.0.70", features = ["backtrace"] }
+anyhow = { version = "1.0.71", features = ["backtrace"] }
 env_logger = "0.10.0"
 log = "0.4.17"
 prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.8", default-features = false, features = ["postgresql"] }
