@@ -31,7 +31,7 @@
         "@senate/database": "*",
         "ethers": "^6.3.0",
         "node-cron": "^3.0.2",
-        "postmark": "^3.0.17",
+        "postmark": "^3.0.18",
         "superagent": "^8.0.9"
     },
     "devDependencies": {
