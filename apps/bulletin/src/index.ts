@@ -122,8 +122,6 @@ schedule(
             const users: UserWithSubscriptionsAndVotingAddresses[] =
                 await fetchUsersToBeNotified()
 
-            console.log('Users to be notified', users)
-
             for (const user of users) {
                 const subscribedDaoIds = user.subscriptions.map(
                     (subscription: Subscription) => subscription.daoid
@@ -135,10 +133,6 @@ schedule(
                     await fetchNewProposals(user.id, subscribedDaoIds)
                 const pastProposals: ProposalWithDaoAndHandler[] =
                     await fetchPastProposals(user.id, subscribedDaoIds)
-                console.log('User: ', user.email)
-                console.log('Ending soon', endingProposals.length)
-                console.log('New', newProposals.length)
-                console.log('Past', pastProposals.length)
 
                 const bulletinData: BulletinData = {
                     todaysDate: new Date(Date.now()).toLocaleDateString(
@@ -164,8 +158,6 @@ schedule(
 
                 userEmailData.set(user.email, bulletinData)
             }
-
-            console.log(userEmailData)
         } catch (e) {
             log_bul.log({
                 level: 'error',
@@ -261,7 +253,7 @@ const fetchNewProposals = async (
             }
         })
 
-        return proposals
+        return proposals.filter((p) => p.state != ProposalState.CANCELED)
     } catch (e) {
         log_bul.log({
             level: 'error',
@@ -311,7 +303,7 @@ const fetchEndingProposals = async (
             }
         })
 
-        return proposals
+        return proposals.filter((p) => p.state != ProposalState.CANCELED)
     } catch (e) {
         log_bul.log({
             level: 'error',
@@ -360,7 +352,7 @@ const fetchPastProposals = async (
             }
         })
 
-        return proposals
+        return proposals.filter((p) => p.state != ProposalState.CANCELED)
     } catch (e) {
         log_bul.log({
             level: 'error',
@@ -461,7 +453,10 @@ const formatEmailTemplateRow = async (
             proposal.name.length > 69
                 ? `${proposal.name.substring(0, 69)}...`
                 : proposal.name,
-        proposalUrl: encodeURI(proposal.url),
+        proposalUrl:
+            proposal.daohandler.type === DAOHandlerType.SNAPSHOT
+                ? encodeURI(proposal.url + '?app=senate')
+                : encodeURI(proposal.url),
         daoLogoUrl: encodeURI(
             `${process.env.NEXT_PUBLIC_WEB_URL}${proposal.dao.picture}_small.png`
         ),
@@ -728,25 +723,6 @@ function computeGenericResult(
 }
 
 function getHighestScore(proposal: ProposalWithDaoAndHandler): HighestScore {
-    // if (proposal.scores &&
-    //     typeof proposal.scores === 'object' &&
-    //     Array.isArray(proposal?.scores) &&
-    //     proposal.choices &&
-    //     typeof proposal.choices === 'object' &&
-    //     Array.isArray(proposal?.choices)) {
-
-    //     const scores = proposal.scores as JsonArray
-
-    //     for (let i = 0; i < scores.length; i++) {
-    //         if (parseFloat(scores[i]!.toString()) > highestScore) {
-    //             highestScore = parseFloat(scores[i]!.toString())
-    //             highestScoreIndex = i
-    //         }
-    //     }
-
-    //     highestScoreChoice = String(proposal.choices[highestScoreIndex])
-    //     highestScorePercentage = (highestScore / Number(proposal.scorestotal)) * 100
-    // }
     let highestScore = 0
     let highestScoreIndex = 0
     const scores = proposal.scores as JsonArray
@@ -774,14 +750,18 @@ function computeMakerExecutiveResult(
         return {
             checkboxImgUrl: `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/VoteIcon-Check.png`,
             resultText: 'Passed',
-            mkrSupport: String((proposal.scores as JsonArray)[0])
+            mkrSupport: (
+                Number(proposal.scorestotal) / 1000000000000000000
+            ).toFixed(2)
         }
     }
 
     return {
         checkboxImgUrl: `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Icon/VoteIcon-Cross.png`,
         resultText: 'Did not pass',
-        mkrSupport: Number((proposal.scores as JsonArray)[0]).toFixed(2)
+        mkrSupport: (
+            Number(proposal.scorestotal) / 1000000000000000000
+        ).toFixed(2)
     }
 }
 
