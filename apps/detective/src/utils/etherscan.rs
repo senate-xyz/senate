@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use chrono::{DateTime, NaiveDateTime, Utc};
 use ethers::providers::{Http, Middleware, Provider};
 use prisma_client_rust::bigdecimal::ToPrimitive;
@@ -94,11 +94,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
                             .expect("bad timestamp"),
                             Utc,
                         ),
-                        Err(_) => DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(Utc::now().timestamp() * 1000)
-                                .expect("bad timestamp"),
-                            Utc,
-                        ),
+                        Err(_) => bail!("Unable to deserialize etherscan response."),
                     };
 
                 return Ok(data);
