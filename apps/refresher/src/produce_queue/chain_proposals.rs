@@ -1,5 +1,4 @@
-use crate::config::Config;
-use crate::{prisma, RefreshEntry, RefreshType};
+use crate::{config::Config, prisma, RefreshEntry, RefreshType};
 use anyhow::Result;
 
 use prisma::{daohandler, PrismaClient};

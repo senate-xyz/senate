@@ -20,7 +20,7 @@
     },
     "devDependencies": {
         "@senate/config": "*",
-        "eslint": "^8.38.0",
+        "eslint": "^8.39.0",
         "tsup": "^6.7.0",
         "typescript": "^5.0.4"
     },

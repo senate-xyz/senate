@@ -1,20 +1,25 @@
 use std::collections::HashSet;
 
-use crate::contracts::makerexecutive::LogNoteFilter;
-use crate::prisma::ProposalState;
-use crate::{contracts::makerexecutive, Ctx};
-use crate::{prisma::daohandler, router::chain_proposals::ChainProposal};
+use crate::{
+    contracts::{makerexecutive, makerexecutive::LogNoteFilter},
+    prisma::{daohandler, ProposalState},
+    router::chain_proposals::ChainProposal,
+    Ctx,
+};
 use anyhow::{Context, Result};
 use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
-use ethers::abi::Address;
-use ethers::prelude::LogMeta;
-use ethers::types::{H256, U256};
-use ethers::utils::to_checksum;
-use futures::stream::FuturesUnordered;
-use futures::StreamExt;
+use ethers::{
+    abi::Address,
+    prelude::LogMeta,
+    types::{H256, U256},
+    utils::to_checksum,
+};
+use futures::{stream::FuturesUnordered, StreamExt};
 use itertools::Itertools;
-use reqwest::header::{ACCEPT, USER_AGENT};
-use reqwest::Client;
+use reqwest::{
+    header::{ACCEPT, USER_AGENT},
+    Client,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 

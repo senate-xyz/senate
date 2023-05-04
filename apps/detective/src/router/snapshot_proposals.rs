@@ -6,9 +6,10 @@ use rocket::serde::json::Json;
 use serde::Deserialize;
 
 use crate::{
-    prisma::daohandler,
-    prisma::{dao, proposal, ProposalState},
-    Ctx, ProposalsRequest, ProposalsResponse,
+    prisma::{dao, daohandler, proposal, ProposalState},
+    Ctx,
+    ProposalsRequest,
+    ProposalsResponse,
 };
 
 #[derive(Debug, Deserialize)]
@@ -165,6 +166,12 @@ async fn update_proposals(
                 proposal.scores.clone().into(),
                 proposal.scores_total.into(),
                 proposal.quorum.into(),
+                match proposal.state.as_str() {
+                    "active" => ProposalState::Active,
+                    "pending" => ProposalState::Pending,
+                    "closed" => ProposalState::Executed,
+                    _ => ProposalState::Unknown,
+                },
                 DateTime::from_utc(
                     NaiveDateTime::from_timestamp_millis(proposal.created * 1000)
                         .expect("can not create timecreated"),
@@ -183,12 +190,7 @@ async fn update_proposals(
                 proposal.link.clone(),
                 daohandler::id::equals(dao_handler.id.to_string()),
                 dao::id::equals(dao_handler.daoid.to_string()),
-                vec![proposal::state::set(match proposal.state.as_str() {
-                    "active" => Some(ProposalState::Active),
-                    "pending" => Some(ProposalState::Pending),
-                    "closed" => Some(ProposalState::Executed),
-                    _ => Some(ProposalState::Unknown),
-                })],
+                vec![],
             ),
             vec![
                 proposal::choices::set(proposal.choices.clone().into()),
@@ -196,10 +198,10 @@ async fn update_proposals(
                 proposal::scorestotal::set(proposal.scores_total.into()),
                 proposal::quorum::set(proposal.quorum.into()),
                 proposal::state::set(match proposal.state.as_str() {
-                    "active" => Some(ProposalState::Active),
-                    "pending" => Some(ProposalState::Pending),
-                    "closed" => Some(ProposalState::Executed),
-                    _ => Some(ProposalState::Unknown),
+                    "active" => ProposalState::Active,
+                    "pending" => ProposalState::Pending,
+                    "closed" => ProposalState::Executed,
+                    _ => ProposalState::Unknown,
                 }),
             ],
         )

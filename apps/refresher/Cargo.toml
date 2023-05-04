@@ -1,7 +1,6 @@
 [workspace]
-members = [
-    "prisma-cli", "."
-]
+members = [".",
+    "prisma-cli"]
 
 [package]
 name = "refresher"
@@ -13,13 +12,13 @@ lto = true
 codegen-units = 1
 
 [dependencies]
-anyhow = { version = "1.0.70", features = ["backtrace"] }
+anyhow = { version = "1.0.71", features = ["backtrace"] }
 env_logger = "0.10.0"
 flume = "0.10.14"
 lazy_static = "1.4.0"
 log = "0.4.17"
-prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.7", default-features = false, features = ["postgresql"] }
-reqwest = {version = "0.11.16", features = ["json"]}
+prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.8", default-features = false, features = ["postgresql"] }
+reqwest = { version = "0.11.17", features = ["json"] }
 serde = "1.0.160"
 serde_json = "1.0.96"
-tokio = { version = "1.27.0", features = ["full"] }
+tokio = { version = "1.28.0", features = ["full"] }

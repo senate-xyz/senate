@@ -4,7 +4,8 @@ use std::collections::HashMap;
 use crate::{
     config::Config,
     prisma::{self, voterhandler},
-    RefreshEntry, RefreshType,
+    RefreshEntry,
+    RefreshType,
 };
 
 use prisma::{daohandler, PrismaClient};

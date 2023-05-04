@@ -9,10 +9,10 @@ use serde::{Deserialize, Deserializer};
 use serde_json::Value;
 
 use crate::{
-    prisma::proposal,
-    prisma::{dao, daohandler, vote},
-    prisma::{voter, voterhandler},
-    Ctx, VotesRequest, VotesResponse,
+    prisma::{dao, daohandler, proposal, vote, voter, voterhandler},
+    Ctx,
+    VotesRequest,
+    VotesResponse,
 };
 
 #[derive(Debug, Deserialize)]

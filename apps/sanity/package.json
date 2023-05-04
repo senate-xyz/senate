@@ -31,11 +31,11 @@
         "@senate/database": "*",
         "ethers": "^6.3.0",
         "node-cron": "^3.0.2",
-        "postmark": "^3.0.15",
+        "postmark": "^3.0.18",
         "superagent": "^8.0.9"
     },
     "devDependencies": {
-        "@types/node": "^18.15.13",
+        "@types/node": "^18.16.3",
         "@types/node-cron": "^3.0.7",
         "dotenv": "^16.0.3",
         "ts-node": "^10.9.1",

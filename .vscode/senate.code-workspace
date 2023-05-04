@@ -13,6 +13,10 @@
       "path": "../apps/refresher"
     },
     {
+      "name": "🦀 @senate/discord-butler",
+      "path": "../apps/discord-butler"
+    },
+    {
       "name": "🚀 @senate/bulletin",
       "path": "../apps/bulletin"
     },
