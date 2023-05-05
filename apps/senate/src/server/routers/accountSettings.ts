@@ -84,6 +84,34 @@ export const accountSettingsRouter = router({
         return user?.email
     }),
 
+    getAcceptedTerms: privateProcedure.query(async ({ ctx }) => {
+        const username = await ctx.user.name
+
+        const user = await prisma.user.findFirst({
+            where: {
+                name: {
+                    equals: String(username)
+                }
+            }
+        })
+
+        return user?.acceptedterms
+    }),
+
+    getAcceptedTermsTimestamp: privateProcedure.query(async ({ ctx }) => {
+        const username = await ctx.user.name
+
+        const user = await prisma.user.findFirst({
+            where: {
+                name: {
+                    equals: String(username)
+                }
+            }
+        })
+
+        return user?.acceptedtermstimestamp
+    }),
+
     voters: privateProcedure.query(async ({ ctx }) => {
         const username = await ctx.user.name
 
