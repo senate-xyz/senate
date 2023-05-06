@@ -19,7 +19,7 @@ export const accountSettingsRouter = router({
                 create: {
                     name: String(username),
                     email: input.email,
-                    dailybulletin: true,
+                    emaildailybulletin: true,
                     voters: {
                         connectOrCreate: {
                             where: {
@@ -31,7 +31,7 @@ export const accountSettingsRouter = router({
                         }
                     }
                 },
-                update: { email: input.email, dailybulletin: true }
+                update: { email: input.email, emaildailybulletin: true }
             })
 
             return user
@@ -221,7 +221,7 @@ export const accountSettingsRouter = router({
     updateDailyEmails: privateProcedure
         .input(
             z.object({
-                dailyBulletin: z.boolean()
+                emaildailybulletin: z.boolean()
             })
         )
         .mutation(async ({ input, ctx }) => {
@@ -233,9 +233,9 @@ export const accountSettingsRouter = router({
                 },
                 create: {
                     name: String(username),
-                    dailybulletin: input.dailyBulletin
+                    emaildailybulletin: input.emaildailybulletin
                 },
-                update: { dailybulletin: input.dailyBulletin }
+                update: { emaildailybulletin: input.emaildailybulletin }
             })
 
             return user

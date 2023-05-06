@@ -57,7 +57,6 @@ export function authOptions(
                             update: {
                                 lastactive: new Date(),
                                 sessioncount: { increment: 1 },
-                                newuser: false,
                                 acceptedterms: true,
                                 acceptedtermstimestamp: new Date()
                             }

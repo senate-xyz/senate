@@ -15,12 +15,12 @@
         "prettier:fix": "prettier src --write"
     },
     "dependencies": {
-        "@axiomhq/axiom-node": "^0.11.0",
+        "@axiomhq/axiom-node": "^0.12.0",
         "winston": "^3.8.2"
     },
     "devDependencies": {
         "@senate/config": "*",
-        "eslint": "^8.39.0",
+        "eslint": "^8.40.0",
         "tsup": "^6.7.0",
         "typescript": "^5.0.4"
     },

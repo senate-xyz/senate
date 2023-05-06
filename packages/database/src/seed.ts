@@ -680,12 +680,10 @@ const seedData = async () => {
             name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
         },
         create: {
-            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
-            dailybulletin: true
+            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
         },
         update: {
-            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
-            newuser: false
+            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
         }
     })
 

@@ -15,14 +15,14 @@ const hasUserBulletin = async () => {
                 name: { equals: userAddress }
             },
             select: {
-                dailybulletin: true
+                emaildailybulletin: true
             }
         })
         .catch(() => {
-            return { dailybulletin: false }
+            return { emaildailybulletin: false }
         })
 
-    return user.dailybulletin
+    return user.emaildailybulletin
 }
 
 const hasSubscribedDAOs = async () => {

@@ -27,11 +27,11 @@
         "@senate/axiom": "*",
         "ethers": "^6.3.0",
         "exponential-backoff": "^3.1.1",
-        "type-fest": "^3.9.0"
+        "type-fest": "^3.10.0"
     },
     "devDependencies": {
         "@senate/config": "*",
-        "eslint": "^8.39.0",
+        "eslint": "^8.40.0",
         "prisma": "4.13.0",
         "prisma-dbml-generator": "^0.10.0",
         "tsup": "^6.7.0",
