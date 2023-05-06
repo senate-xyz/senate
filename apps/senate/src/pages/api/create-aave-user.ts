@@ -12,6 +12,7 @@ export default async function handler(
 
     if (existingUser) {
         res.status(500).json({ email: req.body.email, result: 'failed' })
+        return
     }
 
     const schema = z.coerce.string().email().min(5)
@@ -20,6 +21,7 @@ export default async function handler(
         schema.parse(req.body.email)
     } catch {
         res.status(500).json({ email: req.body.email, result: 'failed' })
+        return
     }
 
     const newUser = await prisma.user.create({
