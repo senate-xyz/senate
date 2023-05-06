@@ -41,10 +41,10 @@ export function authOptions(
                     if (result.success) {
                         await prisma.user.upsert({
                             where: {
-                                name: siwe.address
+                                address: siwe.address
                             },
                             create: {
-                                name: siwe.address,
+                                address: siwe.address,
                                 acceptedterms: true,
                                 acceptedtermstimestamp: new Date(),
                                 voters: {
@@ -121,14 +121,14 @@ export function authOptions(
             async signIn(message) {
                 const user = await prisma.user.findFirst({
                     where: {
-                        name: String(message.user.name)
+                        address: String(message.user.name)
                     }
                 })
 
                 if (user)
                     await prisma.user.update({
                         where: {
-                            name: String(message.user.name)
+                            address: String(message.user.name)
                         },
                         data: {
                             lastactive: new Date(),
@@ -145,14 +145,14 @@ export function authOptions(
             async session(message) {
                 const user = await prisma.user.findFirst({
                     where: {
-                        name: String(message.session.user?.name)
+                        address: String(message.session.user?.name)
                     }
                 })
 
                 if (user)
                     await prisma.user.update({
                         where: {
-                            name: String(message.session.user?.name)
+                            address: String(message.session.user?.name)
                         },
                         data: {
                             lastactive: new Date()

@@ -14,10 +14,10 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.upsert({
                 where: {
-                    name: String(username)
+                    address: String(username)
                 },
                 create: {
-                    name: String(username),
+                    address: String(username),
                     email: input.email,
                     emaildailybulletin: true,
                     voters: {
@@ -48,10 +48,10 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.upsert({
                 where: {
-                    name: String(username)
+                    address: String(username)
                 },
                 create: {
-                    name: String(username),
+                    address: String(username),
                     email: input.email,
                     voters: {
                         connectOrCreate: {
@@ -75,7 +75,7 @@ export const accountSettingsRouter = router({
 
         const user = await prisma.user.findFirst({
             where: {
-                name: {
+                address: {
                     equals: String(username)
                 }
             }
@@ -89,7 +89,7 @@ export const accountSettingsRouter = router({
 
         const user = await prisma.user.findFirst({
             where: {
-                name: {
+                address: {
                     equals: String(username)
                 }
             }
@@ -103,7 +103,7 @@ export const accountSettingsRouter = router({
 
         const user = await prisma.user.findFirst({
             where: {
-                name: {
+                address: {
                     equals: String(username)
                 }
             }
@@ -117,7 +117,7 @@ export const accountSettingsRouter = router({
 
         const user = await prisma.user.findFirst({
             where: {
-                name: {
+                address: {
                     equals: String(username)
                 }
             },
@@ -144,7 +144,7 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.findFirst({
                 where: {
-                    name: {
+                    address: {
                         equals: String(username)
                     }
                 }
@@ -182,7 +182,7 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.findFirst({
                 where: {
-                    name: {
+                    address: {
                         equals: String(username)
                     }
                 }
@@ -209,7 +209,7 @@ export const accountSettingsRouter = router({
 
         const user = await prisma.user.findFirst({
             where: {
-                name: {
+                address: {
                     equals: String(username)
                 }
             }
@@ -229,10 +229,10 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.upsert({
                 where: {
-                    name: String(username)
+                    address: String(username)
                 },
                 create: {
-                    name: String(username),
+                    address: String(username),
                     emaildailybulletin: input.emaildailybulletin
                 },
                 update: { emaildailybulletin: input.emaildailybulletin }
