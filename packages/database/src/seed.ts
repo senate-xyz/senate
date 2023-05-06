@@ -677,13 +677,13 @@ const seedData = async () => {
     console.log('Inserting seed user')
     const seedUser = await prisma.user.upsert({
         where: {
-            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
+            address: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
         },
         create: {
-            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
+            address: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
         },
         update: {
-            name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
+            address: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
         }
     })
 
@@ -867,7 +867,9 @@ const seedVoters = async () => {
     await prisma.$transaction(
         voters.map((voter) => {
             return prisma.user.update({
-                where: { name: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF' },
+                where: {
+                    address: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
+                },
                 data: {
                     voters: {
                         connectOrCreate: {
