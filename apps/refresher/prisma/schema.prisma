@@ -15,8 +15,9 @@ model user {
   address String @unique @default(cuid())
   email   String @unique @default(cuid())
 
-  verifiedemail Boolean @default(false)
-  challengecode String?
+  verifiedaddress Boolean @default(false)
+  verifiedemail   Boolean @default(false)
+  challengecode   String?
 
   isuniswapuser Boolean @default(false)
   isaaveuser    Boolean @default(false)
