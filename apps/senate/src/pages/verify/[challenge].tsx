@@ -137,7 +137,7 @@ const Page = () => {
 
     const unsubscribe = trpc.verify.verifyUser.useMutation()
 
-    const { data, error, isLoading, signMessage } = useSignMessage({
+    const { data, signMessage } = useSignMessage({
         onSuccess(data, variables) {
             unsubscribe.mutate(
                 {
