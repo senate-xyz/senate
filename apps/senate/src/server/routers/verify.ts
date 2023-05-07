@@ -59,7 +59,9 @@ export const verifyRouter = router({
                         address: address,
                         verifiedemail: true,
                         verifiedaddress: true,
-                        challengecode: ''
+                        challengecode: '',
+                        acceptedterms: true,
+                        acceptedtermstimestamp: new Date()
                     }
                 })
             } catch {
