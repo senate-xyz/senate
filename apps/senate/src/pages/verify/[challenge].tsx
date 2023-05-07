@@ -147,7 +147,9 @@ const Page = () => {
                     signature: data
                 },
                 {
-                    onSuccess: () => {}
+                    onSuccess: () => {
+                        router.push('/daos')
+                    }
                 }
             )
         }

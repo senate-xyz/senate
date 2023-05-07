@@ -32,11 +32,22 @@ export const verifyRouter = router({
         )
         .mutation(async ({ input }) => {
             try {
-                const address = verifyMessage(input.message, input.signature)
+                const challengeRegex = /(?<=challenge:\s)[a-zA-Z0-9]+/
+                const challengeMatch = input.message.match(challengeRegex)
 
-                if (!address) {
-                    return
-                }
+                if (!challengeMatch) return
+                if (challengeMatch[0] != input.challenge) return
+
+                const emailRegex =
+                    /(?<=email:\s)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
+
+                const emailMatch = input.message.match(emailRegex)
+
+                if (!emailMatch) return
+                if (emailMatch[0] != input.email) return
+
+                const address = verifyMessage(input.message, input.signature)
+                if (!address) return
 
                 await prisma.user.updateMany({
                     where: {
