@@ -25,7 +25,7 @@ export default function Home() {
     }, [account])
 
     useEffect(() => {
-        if (user.data) setDailyEmails(user.data.dailybulletin)
+        if (user.data) setDailyEmails(user.data.emaildailybulletin)
     }, [user.data])
 
     const updateNotifications =
@@ -54,7 +54,7 @@ export default function Home() {
                         checked={getDailyEmails}
                         onChange={(e) => {
                             updateNotifications.mutate({
-                                dailyBulletin: e.target.checked
+                                emaildailybulletin: e.target.checked
                             })
                         }}
                         className='peer sr-only'

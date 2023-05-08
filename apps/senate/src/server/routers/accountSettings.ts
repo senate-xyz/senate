@@ -14,12 +14,12 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.upsert({
                 where: {
-                    name: String(username)
+                    address: String(username)
                 },
                 create: {
-                    name: String(username),
+                    address: String(username),
                     email: input.email,
-                    dailybulletin: true,
+                    emaildailybulletin: true,
                     voters: {
                         connectOrCreate: {
                             where: {
@@ -31,7 +31,7 @@ export const accountSettingsRouter = router({
                         }
                     }
                 },
-                update: { email: input.email, dailybulletin: true }
+                update: { email: input.email, emaildailybulletin: true }
             })
 
             return user
@@ -48,10 +48,10 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.upsert({
                 where: {
-                    name: String(username)
+                    address: String(username)
                 },
                 create: {
-                    name: String(username),
+                    address: String(username),
                     email: input.email,
                     voters: {
                         connectOrCreate: {
@@ -75,7 +75,7 @@ export const accountSettingsRouter = router({
 
         const user = await prisma.user.findFirst({
             where: {
-                name: {
+                address: {
                     equals: String(username)
                 }
             }
@@ -84,12 +84,40 @@ export const accountSettingsRouter = router({
         return user?.email
     }),
 
+    getAcceptedTerms: privateProcedure.query(async ({ ctx }) => {
+        const username = await ctx.user.name
+
+        const user = await prisma.user.findFirst({
+            where: {
+                address: {
+                    equals: String(username)
+                }
+            }
+        })
+
+        return user?.acceptedterms
+    }),
+
+    getAcceptedTermsTimestamp: privateProcedure.query(async ({ ctx }) => {
+        const username = await ctx.user.name
+
+        const user = await prisma.user.findFirst({
+            where: {
+                address: {
+                    equals: String(username)
+                }
+            }
+        })
+
+        return user?.acceptedtermstimestamp
+    }),
+
     voters: privateProcedure.query(async ({ ctx }) => {
         const username = await ctx.user.name
 
         const user = await prisma.user.findFirst({
             where: {
-                name: {
+                address: {
                     equals: String(username)
                 }
             },
@@ -116,7 +144,7 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.findFirst({
                 where: {
-                    name: {
+                    address: {
                         equals: String(username)
                     }
                 }
@@ -154,7 +182,7 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.findFirst({
                 where: {
-                    name: {
+                    address: {
                         equals: String(username)
                     }
                 }
@@ -181,7 +209,7 @@ export const accountSettingsRouter = router({
 
         const user = await prisma.user.findFirst({
             where: {
-                name: {
+                address: {
                     equals: String(username)
                 }
             }
@@ -193,7 +221,7 @@ export const accountSettingsRouter = router({
     updateDailyEmails: privateProcedure
         .input(
             z.object({
-                dailyBulletin: z.boolean()
+                emaildailybulletin: z.boolean()
             })
         )
         .mutation(async ({ input, ctx }) => {
@@ -201,13 +229,13 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.upsert({
                 where: {
-                    name: String(username)
+                    address: String(username)
                 },
                 create: {
-                    name: String(username),
-                    dailybulletin: input.dailyBulletin
+                    address: String(username),
+                    emaildailybulletin: input.emaildailybulletin
                 },
-                update: { dailybulletin: input.dailyBulletin }
+                update: { emaildailybulletin: input.emaildailybulletin }
             })
 
             return user

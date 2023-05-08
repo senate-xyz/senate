@@ -1,7 +1,8 @@
 /** @type {import("next").NextConfig} */
 const config = {
     experimental: {
-        appDir: true
+        appDir: true,
+        serverActions: true
     },
     reactStrictMode: true,
     swcMinify: true,

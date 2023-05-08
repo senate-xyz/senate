@@ -3,11 +3,6 @@ import { publicProcedure, router } from '../trpc'
 import { JsonArray, Vote, prisma } from '@senate/database'
 
 export const publicRouter = router({
-    allDAOs: publicProcedure.query(async () => {
-        const allDAOs = await prisma.dao.findMany({})
-
-        return allDAOs
-    }),
     proposal: publicProcedure
         .input(
             z.object({
@@ -17,7 +12,7 @@ export const publicRouter = router({
         .query(async ({ input, ctx }) => {
             const user = await prisma.user.findFirst({
                 where: {
-                    name: ctx.user?.name ?? ''
+                    address: ctx.user?.name ?? ''
                 },
                 include: {
                     voters: true

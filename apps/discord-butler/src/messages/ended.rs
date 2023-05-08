@@ -76,7 +76,7 @@ async fn get_past_proposals(username: String) -> Result<Vec<proposal_with_dao::D
 
     let user = client
         .user()
-        .find_first(vec![prisma::user::name::equals(username)])
+        .find_first(vec![prisma::user::address::equals(username)])
         .exec()
         .await
         .unwrap()

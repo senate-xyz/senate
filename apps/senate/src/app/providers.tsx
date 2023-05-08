@@ -2,7 +2,7 @@ import {
     RainbowKitProvider,
     darkTheme,
     DisclaimerComponent,
-    getDefaultWallets
+    connectorsForWallets
 } from '@rainbow-me/rainbowkit'
 import {
     type GetSiweMessageOptions,
@@ -13,16 +13,47 @@ import { configureChains, mainnet, createClient, WagmiConfig } from 'wagmi'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { TrpcClientProvider } from '../server/trpcClient'
 import Link from 'next/link'
+import {
+    braveWallet,
+    coinbaseWallet,
+    injectedWallet,
+    ledgerWallet,
+    metaMaskWallet,
+    rabbyWallet,
+    rainbowWallet
+} from '@rainbow-me/rainbowkit/wallets'
 
 const { chains, provider } = configureChains(
     [mainnet],
     [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? '' })]
 )
 
-const { connectors } = getDefaultWallets({
-    appName: 'Senate',
-    chains
-})
+const connectors = connectorsForWallets([
+    {
+        groupName: 'Recommended',
+        wallets: [
+            injectedWallet({ chains }),
+            rainbowWallet({ chains }),
+            metaMaskWallet({ chains })
+        ]
+    },
+    {
+        groupName: 'Others',
+        wallets: [
+            coinbaseWallet({ chains, appName: 'Senate' }),
+            braveWallet({
+                chains
+            }),
+            ledgerWallet({
+                projectId: 'Senate',
+                chains
+            }),
+            rabbyWallet({
+                chains
+            })
+        ]
+    }
+])
 
 const wagmiClient = createClient({
     autoConnect: true,

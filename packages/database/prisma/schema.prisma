@@ -11,23 +11,34 @@ datasource db {
 model user {
   id String @id @default(cuid())
 
-  name  String @unique
-  email String @default("")
+  //default to some random cuid to ensure uniqueness, we'll update later
+  address String @unique @default(cuid())
+  email   String @unique @default(cuid())
+
+  verifiedaddress Boolean @default(false)
+  verifiedemail   Boolean @default(false)
+
+  challengecode String?
+
+  isuniswapuser Boolean @default(false)
+  isaaveuser    Boolean @default(false)
+
+  emaildailybulletin Boolean @default(false)
+  emptydailybulletin Boolean @default(false)
+  emailquorumwarning Boolean @default(false)
 
   subscriptions subscription[]
   voters        voter[]
 
-  newuser                Boolean   @default(true)
   acceptedterms          Boolean   @default(false)
   acceptedtermstimestamp DateTime?
-  dailybulletin          Boolean   @default(false)
   lastactive             DateTime  @default(now())
   sessioncount           Int       @default(0)
-
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
+  createdat              DateTime  @default(now())
+  updatedat              DateTime  @updatedAt
 
   @@index(fields: [email], type: Hash)
+  @@index(fields: [address], type: Hash)
 }
 
 model voter {

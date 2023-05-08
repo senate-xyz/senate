@@ -8,7 +8,7 @@ pub async fn get_vote(username: String, proposal_id: String) -> Result<bool> {
 
     let user = client
         .user()
-        .find_first(vec![prisma::user::name::equals(username)])
+        .find_first(vec![prisma::user::address::equals(username)])
         .include(prisma::user::include!({ voters }))
         .exec()
         .await
