@@ -2,7 +2,7 @@
   "name": "senate",
   "author": "Senate",
   "private": true,
-  "license": "MIT",
+  "license": "GNU GPLv3",
   "workspaces": [
     "apps/*",
     "packages/*",

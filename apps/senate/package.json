@@ -4,7 +4,7 @@
     "description": "This is the web app",
     "author": "Senate",
     "private": true,
-    "license": "MIT",
+    "license": "GNU GPLv3",
     "scripts": {
         "build": "next build",
         "build:senate": "next build",
