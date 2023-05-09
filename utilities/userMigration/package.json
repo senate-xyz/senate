@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "author": "Senate",
     "private": true,
-    "license": "MIT",
+    "license": "GNU GPLv3",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "scripts": {
