@@ -47,10 +47,6 @@
     {
       "name": "🛠️ @senate/userMigration",
       "path": "../utilities/userMigration"
-    },
-    {
-      "name": "🛠️ @senate/deepdao",
-      "path": "../utilities/deepdao"
     }
   ],
   "settings": {

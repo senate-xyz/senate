@@ -12,7 +12,7 @@ const getSubscribedDAOs = async () => {
     const user = await prisma.user
         .findFirstOrThrow({
             where: {
-                address: { equals: userAddress }
+                name: { equals: userAddress }
             },
             select: {
                 id: true

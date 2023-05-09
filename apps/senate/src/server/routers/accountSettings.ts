@@ -14,12 +14,12 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.upsert({
                 where: {
-                    address: String(username)
+                    name: String(username)
                 },
                 create: {
-                    address: String(username),
+                    name: String(username),
                     email: input.email,
-                    emaildailybulletin: true,
+                    dailybulletin: true,
                     voters: {
                         connectOrCreate: {
                             where: {
@@ -31,7 +31,7 @@ export const accountSettingsRouter = router({
                         }
                     }
                 },
-                update: { email: input.email, emaildailybulletin: true }
+                update: { email: input.email, dailybulletin: true }
             })
 
             return user
@@ -48,10 +48,10 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.upsert({
                 where: {
-                    address: String(username)
+                    name: String(username)
                 },
                 create: {
-                    address: String(username),
+                    name: String(username),
                     email: input.email,
                     voters: {
                         connectOrCreate: {
@@ -75,7 +75,7 @@ export const accountSettingsRouter = router({
 
         const user = await prisma.user.findFirst({
             where: {
-                address: {
+                name: {
                     equals: String(username)
                 }
             }
@@ -89,7 +89,7 @@ export const accountSettingsRouter = router({
 
         const user = await prisma.user.findFirst({
             where: {
-                address: {
+                name: {
                     equals: String(username)
                 }
             }
@@ -103,7 +103,7 @@ export const accountSettingsRouter = router({
 
         const user = await prisma.user.findFirst({
             where: {
-                address: {
+                name: {
                     equals: String(username)
                 }
             }
@@ -117,7 +117,7 @@ export const accountSettingsRouter = router({
 
         const user = await prisma.user.findFirst({
             where: {
-                address: {
+                name: {
                     equals: String(username)
                 }
             },
@@ -144,7 +144,7 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.findFirst({
                 where: {
-                    address: {
+                    name: {
                         equals: String(username)
                     }
                 }
@@ -182,7 +182,7 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.findFirst({
                 where: {
-                    address: {
+                    name: {
                         equals: String(username)
                     }
                 }
@@ -209,7 +209,7 @@ export const accountSettingsRouter = router({
 
         const user = await prisma.user.findFirst({
             where: {
-                address: {
+                name: {
                     equals: String(username)
                 }
             }
@@ -221,7 +221,7 @@ export const accountSettingsRouter = router({
     updateDailyEmails: privateProcedure
         .input(
             z.object({
-                emaildailybulletin: z.boolean()
+                dailyBulletin: z.boolean()
             })
         )
         .mutation(async ({ input, ctx }) => {
@@ -229,13 +229,13 @@ export const accountSettingsRouter = router({
 
             const user = await prisma.user.upsert({
                 where: {
-                    address: String(username)
+                    name: String(username)
                 },
                 create: {
-                    address: String(username),
-                    emaildailybulletin: input.emaildailybulletin
+                    name: String(username),
+                    dailybulletin: input.dailyBulletin
                 },
-                update: { emaildailybulletin: input.emaildailybulletin }
+                update: { dailybulletin: input.dailyBulletin }
             })
 
             return user

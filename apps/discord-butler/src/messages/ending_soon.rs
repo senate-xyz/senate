@@ -76,7 +76,7 @@ pub async fn get_ending_soon_proposals(username: String) -> Result<Vec<proposal_
 
     let user = client
         .user()
-        .find_first(vec![prisma::user::address::equals(username)])
+        .find_first(vec![prisma::user::name::equals(username)])
         .exec()
         .await
         .unwrap()

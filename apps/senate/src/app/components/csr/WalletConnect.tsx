@@ -1,6 +1,6 @@
 'use client'
 
-import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit'
 import { signOut, useSession } from 'next-auth/react'
 import { redirect, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
