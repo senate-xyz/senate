@@ -33,8 +33,6 @@ module.exports = {
             './../database/tsconfig.json',
             './../../apps/sanity/tsconfig.json',
             './../../apps/bulletin/tsconfig.json',
-            './../../apps/detective/tsconfig.json',
-            //'./../../apps/refresher/tsconfig.json',
             './../../apps/senate/tsconfig.json',
             './../../utilities/stressTest/tsconfig.json',
             './../../utilities/userMigration/tsconfig.json'
