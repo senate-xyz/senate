@@ -1,0 +1,16 @@
+[workspace]
+members = [".",
+    "prisma-cli"]
+
+[package]
+name = "aave-notifs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.8", default-features = false, features = ["postgresql"] }
+dotenv = "0.15.0"
+serde = "1.0.162"
+tokio = "1.28.0"
