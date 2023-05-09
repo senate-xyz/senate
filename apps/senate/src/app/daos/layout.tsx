@@ -12,17 +12,17 @@ const hasUserBulletin = async () => {
     const user = await prisma.user
         .findFirstOrThrow({
             where: {
-                name: { equals: userAddress }
+                address: { equals: userAddress }
             },
             select: {
-                dailybulletin: true
+                emaildailybulletin: true
             }
         })
         .catch(() => {
-            return { dailybulletin: false }
+            return { emaildailybulletin: false }
         })
 
-    return user.dailybulletin
+    return user.emaildailybulletin
 }
 
 const hasSubscribedDAOs = async () => {
@@ -32,7 +32,7 @@ const hasSubscribedDAOs = async () => {
     const user = await prisma.user
         .findFirstOrThrow({
             where: {
-                name: { equals: userAddress }
+                address: { equals: userAddress }
             },
             select: {
                 id: true

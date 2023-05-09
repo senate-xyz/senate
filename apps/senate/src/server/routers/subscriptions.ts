@@ -15,7 +15,7 @@ export const subscriptionsRouter = router({
 
             const user = await prisma.user.findFirstOrThrow({
                 where: {
-                    name: {
+                    address: {
                         equals: String(username)
                     }
                 }
@@ -52,7 +52,7 @@ export const subscriptionsRouter = router({
 
             const user = await prisma.user.findFirstOrThrow({
                 where: {
-                    name: {
+                    address: {
                         equals: String(username)
                     }
                 }
@@ -82,7 +82,7 @@ export const subscriptionsRouter = router({
 
             const user = await prisma.user.findFirstOrThrow({
                 where: {
-                    name: {
+                    address: {
                         equals: String(username)
                     }
                 }

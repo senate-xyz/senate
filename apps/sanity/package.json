@@ -4,7 +4,7 @@
     "description": "This service checks if our database is missing any votes",
     "author": "Senate",
     "private": true,
-    "license": "MIT",
+    "license": "GNU GPLv3",
     "main": "./dist/index",
     "typings": "./dist/index",
     "module": "./dist/index.mjs",
@@ -35,7 +35,7 @@
         "superagent": "^8.0.9"
     },
     "devDependencies": {
-        "@types/node": "^18.16.3",
+        "@types/node": "^20.1.1",
         "@types/node-cron": "^3.0.7",
         "dotenv": "^16.0.3",
         "ts-node": "^10.9.1",
