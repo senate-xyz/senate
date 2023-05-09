@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "author": "Senate",
     "private": true,
-    "license": "MIT",
+    "license": "GNU GPLv3",
     "main": "index.js",
     "type": "module",
     "publishConfig": {
