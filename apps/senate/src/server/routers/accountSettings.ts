@@ -1,6 +1,7 @@
 import { router, privateProcedure } from '../trpc'
 import { z } from 'zod'
 import { prisma } from '@senate/database'
+import { ServerClient } from 'postmark'
 
 export const accountSettingsRouter = router({
     setEmailAndEnableBulletin: privateProcedure
@@ -44,7 +45,24 @@ export const accountSettingsRouter = router({
             })
         )
         .mutation(async ({ input, ctx }) => {
+            const emailClient = new ServerClient(
+                process.env.POSTMARK_TOKEN ?? 'Missing Token'
+            )
             const username = await ctx.user.name
+
+            const existingTempUser = await prisma.user.findFirst({
+                where: {
+                    email: input.email
+                }
+            })
+
+            if (existingTempUser) {
+                await prisma.user.deleteMany({
+                    where: { email: input.email }
+                })
+            }
+
+            const challengeCode = Math.random().toString(36).substring(2)
 
             const user = await prisma.user.upsert({
                 where: {
@@ -53,6 +71,10 @@ export const accountSettingsRouter = router({
                 create: {
                     address: String(username),
                     email: input.email,
+                    verifiedemail: false,
+                    challengecode: challengeCode,
+                    isaaveuser: existingTempUser?.isaaveuser,
+                    isuniswapuser: existingTempUser?.isuniswapuser,
                     voters: {
                         connectOrCreate: {
                             where: {
@@ -64,24 +86,80 @@ export const accountSettingsRouter = router({
                         }
                     }
                 },
-                update: { email: input.email }
+                update: {
+                    email: input.email,
+                    verifiedemail: false,
+                    challengecode: challengeCode,
+                    isaaveuser: existingTempUser?.isaaveuser,
+                    isuniswapuser: existingTempUser?.isuniswapuser
+                }
+            })
+
+            emailClient.sendEmail({
+                From: 'info@senatelabs.xyz',
+                To: user.email,
+                Subject: 'Confirm your email',
+                TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/${challengeCode}`
             })
 
             return user
         }),
 
-    getEmail: privateProcedure.query(async ({ ctx }) => {
+    updateDailyEmails: privateProcedure
+        .input(
+            z.object({
+                emaildailybulletin: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.upsert({
+                where: {
+                    address: String(username)
+                },
+                create: {
+                    address: String(username),
+                    emaildailybulletin: input.emaildailybulletin
+                },
+                update: { emaildailybulletin: input.emaildailybulletin }
+            })
+
+            return user
+        }),
+
+    disableAaveUser: privateProcedure.mutation(async ({ input, ctx }) => {
         const username = await ctx.user.name
 
-        const user = await prisma.user.findFirst({
+        const user = await prisma.user.upsert({
             where: {
-                address: {
-                    equals: String(username)
-                }
-            }
+                address: String(username)
+            },
+            create: {
+                address: String(username),
+                isaaveuser: false
+            },
+            update: { isaaveuser: false }
         })
 
-        return user?.email
+        return user
+    }),
+
+    disableUniswapUser: privateProcedure.mutation(async ({ input, ctx }) => {
+        const username = await ctx.user.name
+
+        const user = await prisma.user.upsert({
+            where: {
+                address: String(username)
+            },
+            create: {
+                address: String(username),
+                isuniswapuser: false
+            },
+            update: { isuniswapuser: false }
+        })
+
+        return user
     }),
 
     getAcceptedTerms: privateProcedure.query(async ({ ctx }) => {
@@ -216,28 +294,5 @@ export const accountSettingsRouter = router({
         })
 
         return user
-    }),
-
-    updateDailyEmails: privateProcedure
-        .input(
-            z.object({
-                emaildailybulletin: z.boolean()
-            })
-        )
-        .mutation(async ({ input, ctx }) => {
-            const username = await ctx.user.name
-
-            const user = await prisma.user.upsert({
-                where: {
-                    address: String(username)
-                },
-                create: {
-                    address: String(username),
-                    emaildailybulletin: input.emaildailybulletin
-                },
-                update: { emaildailybulletin: input.emaildailybulletin }
-            })
-
-            return user
-        })
+    })
 })

@@ -13,7 +13,7 @@ model user {
 
   //default to some random cuid to ensure uniqueness, we'll update later
   address String @unique @default(cuid())
-  email   String @unique @default(cuid())
+  email   String @default(cuid())
 
   verifiedaddress Boolean @default(false)
   verifiedemail   Boolean @default(false)

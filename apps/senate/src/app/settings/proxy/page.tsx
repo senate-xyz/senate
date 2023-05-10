@@ -3,8 +3,9 @@
 import { redirect, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useCookies } from 'react-cookie'
-import { useAccount, useProvider } from 'wagmi'
+import { useAccount, usePublicClient } from 'wagmi'
 import { trpc } from '../../../server/trpcClient'
+import { normalize } from 'viem/ens'
 
 export default function Home() {
     if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
@@ -15,7 +16,7 @@ export default function Home() {
 
     const account = useAccount()
     const router = useRouter()
-    const provider = useProvider()
+    const provider = usePublicClient()
 
     const voters = trpc.accountSettings.voters.useQuery()
 
@@ -29,8 +30,13 @@ export default function Home() {
 
     const onEnter = async () => {
         let resolvedAddress = proxyAddress
-        if ((await provider.resolveName(proxyAddress))?.length) {
-            resolvedAddress = String(await provider.resolveName(proxyAddress))
+        if (
+            (await provider.getEnsAddress({ name: normalize(proxyAddress) }))
+                ?.length
+        ) {
+            resolvedAddress = String(
+                await provider.getEnsAddress({ name: normalize(proxyAddress) })
+            )
         }
 
         addVoter.mutate(
@@ -109,12 +115,14 @@ export default function Home() {
 }
 
 const Voter = ({ address }: { address: string }) => {
-    const provider = useProvider()
+    const provider = usePublicClient()
     const [voterEns, setVoterEns] = useState('')
 
     useEffect(() => {
         ;(async () => {
-            const ens = await provider.lookupAddress(address)
+            const ens = await provider.getEnsAddress({
+                name: normalize(address)
+            })
             setVoterEns(ens ?? '')
         })()
     }, [address])

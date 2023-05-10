@@ -2,20 +2,23 @@
 
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
-import { useAccount, useProvider } from 'wagmi'
+import { normalize } from 'viem/ens'
+import { useAccount, usePublicClient } from 'wagmi'
 
 const UserAddress = () => {
     const session = useSession()
     const account = useAccount()
-    const provider = useProvider()
+    const provider = usePublicClient()
 
     const [ens, setEns] = useState('')
 
     useEffect(() => {
         if (session.status === 'authenticated' && account.address) {
-            provider.lookupAddress(account.address).then((ens) => {
-                setEns(ens ?? '')
-            })
+            provider
+                .getEnsAddress({ name: normalize(account.address) })
+                .then((ens) => {
+                    setEns(ens ?? '')
+                })
         }
     }, [account.address])
 
