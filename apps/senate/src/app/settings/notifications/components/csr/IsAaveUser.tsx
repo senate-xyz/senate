@@ -19,7 +19,7 @@ const IsAaveUser = () => {
                         <input
                             type='checkbox'
                             checked={user.data?.isaaveuser}
-                            onChange={(e) => {
+                            onChange={() => {
                                 disableAaveUser.mutate()
                             }}
                             className='peer sr-only'

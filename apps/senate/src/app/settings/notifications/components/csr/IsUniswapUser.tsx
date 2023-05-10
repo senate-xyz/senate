@@ -20,7 +20,7 @@ const IsUniswapUser = () => {
                         <input
                             type='checkbox'
                             checked={user.data?.isuniswapuser}
-                            onChange={(e) => {
+                            onChange={() => {
                                 disableUniswapUser.mutate()
                             }}
                             className='peer sr-only'

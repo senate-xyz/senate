@@ -128,7 +128,7 @@ export const accountSettingsRouter = router({
             return user
         }),
 
-    disableAaveUser: privateProcedure.mutation(async ({ input, ctx }) => {
+    disableAaveUser: privateProcedure.mutation(async ({ ctx }) => {
         const username = await ctx.user.name
 
         const user = await prisma.user.upsert({
@@ -145,7 +145,7 @@ export const accountSettingsRouter = router({
         return user
     }),
 
-    disableUniswapUser: privateProcedure.mutation(async ({ input, ctx }) => {
+    disableUniswapUser: privateProcedure.mutation(async ({ ctx }) => {
         const username = await ctx.user.name
 
         const user = await prisma.user.upsert({

@@ -17,7 +17,8 @@ model user {
 
   verifiedaddress Boolean @default(false)
   verifiedemail   Boolean @default(false)
-  challengecode   String?
+
+  challengecode String?
 
   isuniswapuser Boolean @default(false)
   isaaveuser    Boolean @default(false)
