@@ -162,6 +162,50 @@ export const accountSettingsRouter = router({
         return user
     }),
 
+    updateDiscordNotifications: privateProcedure
+        .input(
+            z.object({
+                val: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+
+                data: {
+                    discordnotifications: input.val
+                }
+            })
+
+            return user
+        }),
+
+    setDiscordWebhook: privateProcedure
+        .input(
+            z.object({
+                url: z.string().url()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+
+                data: {
+                    discordwebhook: input.url
+                }
+            })
+
+            return user
+        }),
+
     getAcceptedTerms: privateProcedure.query(async ({ ctx }) => {
         const username = await ctx.user.name
 
