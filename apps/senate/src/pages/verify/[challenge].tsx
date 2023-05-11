@@ -21,7 +21,8 @@ import {
     mainnet,
     createConfig,
     WagmiConfig,
-    useSignMessage
+    useSignMessage,
+    useAccount
 } from 'wagmi'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import Link from 'next/link'
@@ -134,6 +135,7 @@ const Page = () => {
     const user = trpc.verify.userOfChallenge.useQuery({
         challenge: String(router.query.challenge)
     })
+    const { address } = useAccount()
 
     const unsubscribe = trpc.verify.verifyUser.useMutation()
 
@@ -142,6 +144,7 @@ const Page = () => {
             unsubscribe.mutate(
                 {
                     challenge: String(router.query.challenge),
+                    address: address as `0x{string}`,
                     email: String(user.data?.email),
                     message: String(variables.message),
                     signature: data

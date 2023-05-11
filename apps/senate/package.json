@@ -22,7 +22,7 @@
     },
     "dependencies": {
         "@headlessui/react": "1.7.14",
-        "@rainbow-me/rainbowkit": "1",
+        "@rainbow-me/rainbowkit": "1.0.0",
         "@rainbow-me/rainbowkit-siwe-next-auth": "0.2.0",
         "@senate/config": "*",
         "@senate/database": "*",
