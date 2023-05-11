@@ -10,7 +10,7 @@
         "access": "public"
     },
     "scripts": {
-        "clean": "rimraf .turbo node_modules dist"
+        "clean": "rimraf .turbo node_modules dist yarn-error.log"
     },
     "dependencies": {
         "eslint": "^8.40.0",

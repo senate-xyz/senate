@@ -6,7 +6,7 @@
   "workspaces": [
     "apps/*",
     "packages/*",
-    "utilities/stressTest"
+    "utilities/*"
   ],
   "prisma": {
     "schema": "packages/database/prisma/schema.prisma",
@@ -32,7 +32,7 @@
     "db:push": "turbo run db:push",
     "db:seed": "turbo run db:seed",
     "db:generate": "turbo run db:generate",
-    "clean": "turbo run clean && rimraf node_modules",
+    "clean": "turbo run clean && rimraf node_modules yarn-error.log",
     "prettier": "turbo run prettier",
     "prettier:fix": "turbo run prettier:fix",
     "lint": "turbo run lint",

@@ -16,7 +16,7 @@
         "prebuild": "npm run db:generate",
         "predev": "npm run db:generate",
         "studio": "prisma studio",
-        "clean": "rimraf .turbo node_modules dist",
+        "clean": "rimraf .turbo node_modules dist yarn-error.log",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
         "prettier": "prettier src --check",

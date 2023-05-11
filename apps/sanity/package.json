@@ -19,7 +19,7 @@
         "start:sanity": "node dist/index",
         "dev": "tsup && node dist/index",
         "dev:sanity": "tsup && node dist/index",
-        "clean": "rimraf .turbo node_modules dist",
+        "clean": "rimraf .turbo node_modules dist yarn-error.log",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
         "prettier": "prettier src --check",

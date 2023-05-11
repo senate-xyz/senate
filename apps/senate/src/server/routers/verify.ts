@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { router, publicProcedure } from '../trpc'
 import { prisma } from '@senate/database'
-import { verifyMessage } from 'ethers/lib/utils.js'
+import { verifyMessage } from 'viem'
 
 export const verifyRouter = router({
     userOfChallenge: publicProcedure
@@ -24,6 +24,7 @@ export const verifyRouter = router({
         .input(
             z.object({
                 challenge: z.string(),
+                address: z.string().startsWith('0x'),
                 email: z.string().email(),
                 message: z.string(),
                 signature: z.string()
@@ -45,8 +46,12 @@ export const verifyRouter = router({
                 if (!emailMatch) return
                 if (emailMatch[0] != input.email) return
 
-                const address = verifyMessage(input.message, input.signature)
-                if (!address) return
+                const valid = verifyMessage({
+                    address: input.address as `0x${string}`,
+                    message: input.message,
+                    signature: input.signature as `0x${string}`
+                })
+                if (!valid) return
 
                 await prisma.user.updateMany({
                     where: {
@@ -55,7 +60,7 @@ export const verifyRouter = router({
                     },
                     data: {
                         email: input.email,
-                        address: address,
+                        address: input.address,
                         verifiedemail: true,
                         verifiedaddress: true,
                         challengecode: '',

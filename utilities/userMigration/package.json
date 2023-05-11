@@ -10,7 +10,7 @@
         "build": "tsup",
         "start": "node dist/index",
         "dev": "tsup && node dist/index",
-        "clean": "rimraf .turbo node_modules dist",
+        "clean": "rimraf .turbo node_modules dist yarn-error.log",
         "generate": "prisma generate --schema prisma/new/schema.prisma && prisma generate --schema prisma/old/schema.prisma"
     },
     "dependencies": {
