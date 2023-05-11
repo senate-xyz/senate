@@ -2909,10 +2909,10 @@
   resolved "https://registry.yarnpkg.com/@wagmi/chains/-/chains-0.2.22.tgz#25e511e134a00742e4fbf5108613dadf876c5bd9"
   integrity sha512-TdiOzJT6TO1JrztRNjTA5Quz+UmQlbvWFG8N41u9tta0boHA1JCAzGGvU6KuIcOmJfRJkKOUIt67wlbopCpVHg==
 
-"@wagmi/connectors@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@wagmi/connectors/-/connectors-1.0.1.tgz#8c80c0b0b5dad06798e40d79d694202a39082a0e"
-  integrity sha512-fl01vym19DE1uoE+MlASw5zo3Orr/YXlJRjOKLaKYtV+Q7jOLY4TwHgq7sEMs+JYOvFICFBEAlWNNxidr51AqQ==
+"@wagmi/connectors@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@wagmi/connectors/-/connectors-1.0.2.tgz#114822768bd56a9a62c8d12b9ba6895bc7f7b616"
+  integrity sha512-uoUkWXv3cwwypxDblrNGWo3VGwUbxNAlIzGIDqg4oGO6Kekphj/FjRWMn2Yb9sVmFifh9h/aiJ1cr75Mv+E2fA==
   dependencies:
     "@coinbase/wallet-sdk" "^3.6.6"
     "@ledgerhq/connect-kit-loader" "^1.0.1"
@@ -2924,13 +2924,13 @@
     abitype "0.8.1"
     eventemitter3 "^4.0.7"
 
-"@wagmi/core@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-1.0.1.tgz#7d30c2315cea7b2b4dea47baaf4ca2cb8b93611f"
-  integrity sha512-Zzg4Ob92QMF9NsC+z5/8JZjMn3NCCnwVWGJlv79qRX9mp5Ku40OzJNvqDnjcSGjshe6H0L/KtFZAqTlmu8lT7w==
+"@wagmi/core@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-1.0.2.tgz#e29f9b7e63d3508cff84d1898cccc470725c7a35"
+  integrity sha512-3MCmaah7zdpt/eA6AlxNsL/2BV+6jhi4CMO20vHsSGPyxCPrvDguY9fn6tUMMmhwnFXhSAEHDhXNlZBPVl1tog==
   dependencies:
     "@wagmi/chains" "0.2.22"
-    "@wagmi/connectors" "1.0.1"
+    "@wagmi/connectors" "1.0.2"
     abitype "0.8.1"
     eventemitter3 "^4.0.7"
     zustand "^4.3.1"
@@ -8477,10 +8477,10 @@ fraction.js@^4.2.0:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.2.0.tgz#448e5109a313a3527f5a3ab2119ec4cf0e0e2950"
   integrity sha512-MhLuK+2gUcnZe8ZHlaaINnQLl0xRIGRfcGk2yl8xoQAfHrSsL3rYu6FCmBdkdbhc9EPlwyGHewaRsvwRMJtAlA==
 
-framer-motion@^10.12.9:
-  version "10.12.9"
-  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.12.9.tgz#113bfdf34d32e06fc8e8093033829bc5ee1ea03e"
-  integrity sha512-diLij2xjOn8RS1xz66wNDTa6nezR3bRRBB9J0r1a5xeJjcSdJpOkk2U7pTzhg1v54bzZ7HBLJ4gKo8aAQM0U3w==
+framer-motion@^10.12.10:
+  version "10.12.10"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.12.10.tgz#39aff293d8c520f6d9a4a34bf25121a8f1a12d6d"
+  integrity sha512-f/VkrpxfG4xSmBi105/NCfcTt219IgglQEUR0BsuFZAg+be6N3QAcujFyBEvBvbDOSP9Ccv6OMiaY0HFMnBoMA==
   dependencies:
     tslib "^2.4.0"
   optionalDependencies:
@@ -15309,10 +15309,10 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-viem@^0.3.19:
-  version "0.3.19"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-0.3.19.tgz#71b88e9de66ce070f3096709d3558de46380b692"
-  integrity sha512-7OlSgiB7e+OFz9OqTOZ/Mpx8GAAVKCxsaPDJRuR8QtixlruUHPfHBHOemkX+O/Drn6B7l04iCUZjCvSB8OtVKg==
+viem@^0.3.21:
+  version "0.3.21"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-0.3.21.tgz#0ff655e2a1cc6d4a00929b6fc0d5e0581a6b5464"
+  integrity sha512-AjP5tcJDfmsdstYqh3PjZXPOVdv7+kQ3mFwRlwD4Y3RwNbdZ6L89zXiYV1rIBfPa9VXnW/xr+NNyzAKsVuauLQ==
   dependencies:
     "@adraffy/ens-normalize" "1.9.0"
     "@noble/curves" "1.0.0"
@@ -15324,15 +15324,15 @@ viem@^0.3.19:
     isomorphic-ws "5.0.0"
     ws "8.12.0"
 
-wagmi@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-1.0.1.tgz#85ef4e268bcaa21764c890fa0dcc4f4c6bd785fd"
-  integrity sha512-+2UkZG9eA3tKqXj1wvlvI8mL0Bcff7Tf5CKfUOyQsdKcY+J5rfwYYya25G+jja57umpHFtfxRaL7xDkNjehrRg==
+wagmi@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-1.0.2.tgz#1c1ca96a03ecf7aa6f37236f6ea2ef1cc26cdef7"
+  integrity sha512-RVmVKK561iRpHAO1pomTKQAbofDZPT8ZBfXo75riJpoTW8ElggfDrcennDqejeMZeVJGZMK/Bt+W4eTxufmS6A==
   dependencies:
     "@tanstack/query-sync-storage-persister" "^4.27.1"
     "@tanstack/react-query" "^4.28.0"
     "@tanstack/react-query-persist-client" "^4.28.0"
-    "@wagmi/core" "1.0.1"
+    "@wagmi/core" "1.0.2"
     abitype "0.8.1"
     use-sync-external-store "^1.2.0"
 

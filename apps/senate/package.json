@@ -38,7 +38,7 @@
         "dayjs": "^1.11.7",
         "ethers": "^5.7.2",
         "fast-average-color-node": "^2.6.0",
-        "framer-motion": "^10.12.9",
+        "framer-motion": "^10.12.10",
         "next": "13.4.1",
         "next-auth": "^4.22.1",
         "postmark": "^3.0.18",
@@ -51,8 +51,8 @@
         "siwe": "^2",
         "superjson": "^1.12.3",
         "swr": "^2.1.5",
-        "viem": "^0.3.19",
-        "wagmi": "^1.0.1",
+        "viem": "^0.3.21",
+        "wagmi": "^1.0.2",
         "zod": "^3.21.4"
     },
     "devDependencies": {
