@@ -27,6 +27,9 @@ model user {
   emptydailybulletin Boolean @default(false)
   emailquorumwarning Boolean @default(false)
 
+  discordnotifications Boolean @default(false)
+  discordwebhook       String  @default("")
+
   subscriptions subscription[]
   voters        voter[]
 
