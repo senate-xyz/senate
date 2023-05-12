@@ -18,16 +18,7 @@ export default async function handler(
     })
 
     if (existingUser) {
-        if (existingUser.verifiedemail) {
-            await prisma.user.update({
-                where: {
-                    id: existingUser.id
-                },
-                data: {
-                    isaaveuser: true
-                }
-            })
-
+        if (existingUser.verifiedemail && existingUser.isaaveuser) {
             res.status(200).json({
                 email: existingUser.email,
                 result: 'existing'
@@ -41,7 +32,8 @@ export default async function handler(
                 },
                 data: {
                     isaaveuser: true,
-                    challengecode: challengeCode
+                    challengecode: challengeCode,
+                    verifiedemail: false
                 }
             })
 
