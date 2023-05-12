@@ -1,6 +1,6 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["metrics", "clientExtensions", "jsonProtocol"]
+  provider = "cargo prisma"
+  output   = "../src/prisma.rs"
 }
 
 datasource db {
@@ -17,8 +17,7 @@ model user {
 
   verifiedaddress Boolean @default(false)
   verifiedemail   Boolean @default(false)
-
-  challengecode String?
+  challengecode   String?
 
   isuniswapuser Boolean @default(false)
   isaaveuser    Boolean @default(false)
@@ -30,12 +29,13 @@ model user {
   subscriptions subscription[]
   voters        voter[]
 
-  acceptedterms          Boolean   @default(false)
+  acceptedterms          Boolean        @default(false)
   acceptedtermstimestamp DateTime?
-  lastactive             DateTime  @default(now())
-  sessioncount           Int       @default(0)
-  createdat              DateTime  @default(now())
-  updatedat              DateTime  @updatedAt
+  lastactive             DateTime       @default(now())
+  sessioncount           Int            @default(0)
+  createdat              DateTime       @default(now())
+  updatedat              DateTime       @updatedAt
+  notification           notification[]
 
   @@index(fields: [email], type: Hash)
   @@index(fields: [address], type: Hash)
@@ -128,8 +128,9 @@ model proposal {
   dao          dao        @relation(fields: [daoid], references: [id], onDelete: Cascade)
   votes        vote[]
 
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
+  createdat    DateTime       @default(now())
+  updatedat    DateTime       @updatedAt
+  notification notification[]
 
   @@unique([externalid, daoid])
   @@index(fields: [daoid], type: Hash)
@@ -203,6 +204,16 @@ model subscription {
   @@unique([userid, daoid])
   @@index(fields: [daoid], type: Hash)
   @@index(fields: [notificationsenabled], type: Hash)
+}
+
+model notification {
+  userid     String
+  user       user     @relation(fields: [userid], references: [id], onDelete: Cascade)
+  proposalid String
+  proposal   proposal @relation(fields: [proposalid], references: [id], onDelete: Cascade)
+  dispatched Boolean  @default(false)
+
+  @@id([userid, proposalid])
 }
 
 model config {
