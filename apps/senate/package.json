@@ -18,7 +18,8 @@
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
         "prettier": "prettier src --check",
-        "prettier:fix": "prettier src --write"
+        "prettier:fix": "prettier src --write",
+        "ncu": "ncu -u"
     },
     "dependencies": {
         "@headlessui/react": "1.7.14",
@@ -49,7 +50,7 @@
         "siwe": "2.1.4",
         "superjson": "1.12.3",
         "swr": "2.1.5",
-        "viem": "0.3.21",
+        "viem": "0.3.22",
         "wagmi": "1.0.2",
         "zod": "3.21.4"
     },

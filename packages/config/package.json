@@ -10,7 +10,8 @@
         "access": "public"
     },
     "scripts": {
-        "clean": "rimraf .turbo node_modules dist yarn-error.log"
+        "clean": "rimraf .turbo node_modules dist yarn-error.log",
+        "ncu": "ncu -u"
     },
     "dependencies": {
         "eslint": "^8.40.0",

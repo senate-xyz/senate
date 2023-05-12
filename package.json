@@ -36,7 +36,8 @@
     "prettier": "turbo run prettier",
     "prettier:fix": "turbo run prettier:fix",
     "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix"
+    "lint:fix": "turbo run lint:fix",
+    "ncu": "ncu -u && turbo run ncu"
   },
   "devDependencies": {
     "prettier": "^2.8.8",

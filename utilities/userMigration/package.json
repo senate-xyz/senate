@@ -11,7 +11,8 @@
         "start": "node dist/index",
         "dev": "tsup && node dist/index",
         "clean": "rimraf .turbo node_modules dist yarn-error.log",
-        "generate": "prisma generate --schema prisma/new/schema.prisma && prisma generate --schema prisma/old/schema.prisma"
+        "generate": "prisma generate --schema prisma/new/schema.prisma && prisma generate --schema prisma/old/schema.prisma",
+        "ncu": "ncu -u"
     },
     "dependencies": {
         "@prisma/client": "^4.14.0",

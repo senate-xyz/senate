@@ -89,6 +89,7 @@
     "prettier": { "cache": false },
     "prettier:fix": { "cache": false },
 
-    "clean": { "cache": false }
+    "clean": { "cache": false },
+    "ncu": { "cache": false }
   }
 }
