@@ -14,10 +14,10 @@
         "generate": "prisma generate --schema prisma/new/schema.prisma && prisma generate --schema prisma/old/schema.prisma"
     },
     "dependencies": {
-        "@prisma/client": "^4.13.0",
+        "@prisma/client": "^4.14.0",
         "@types/prompt-sync": "^4.2.0",
         "inquirer": "9.2.2",
-        "prisma": "^4.13.0"
+        "prisma": "^4.14.0"
     },
     "devDependencies": {
         "@types/inquirer": "^9.0.3",

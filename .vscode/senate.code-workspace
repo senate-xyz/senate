@@ -17,6 +17,10 @@
       "path": "../apps/discord-butler"
     },
     {
+      "name": "🦀 @senate/aave-notifs",
+      "path": "../apps/aave-notifs"
+    },
+    {
       "name": "🚀 @senate/bulletin",
       "path": "../apps/bulletin"
     },
