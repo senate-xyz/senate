@@ -1,6 +1,6 @@
 generator client {
-  provider = "cargo prisma"
-  output   = "../src/prisma.rs"
+  provider        = "prisma-client-js"
+  previewFeatures = ["metrics", "clientExtensions", "jsonProtocol"]
 }
 
 datasource db {
