@@ -38,7 +38,7 @@ const Discord = () => {
         <div className='flex flex-col gap-8'>
             <div className='flex flex-row items-center gap-4'>
                 <div className='font-[18px] leading-[23px] text-white'>
-                    Receive Senate Daily Bulletin Email
+                    Receive Discord Notifications
                 </div>
                 <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
                     <input
@@ -58,7 +58,7 @@ const Discord = () => {
             {getDiscordNotifications && (
                 <div className='flex flex-col gap-2'>
                     <div className='text-[18px] font-light text-white'>
-                        Your Email Address
+                        Discord webhook
                     </div>
 
                     <div
@@ -86,13 +86,6 @@ const Discord = () => {
                             Save
                         </div>
                     </div>
-
-                    {!user.data?.verifiedemail &&
-                        user.data?.challengecode?.length && (
-                            <div className='text-[18px] font-light text-red-400'>
-                                Email not verified!
-                            </div>
-                        )}
 
                     {setDiscordWebhook.error && (
                         <div className='flex flex-col text-white'>
