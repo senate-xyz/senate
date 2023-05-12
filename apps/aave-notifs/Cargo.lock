@@ -7,7 +7,6 @@ name = "aave-notifs"
 version = "0.1.0"
 dependencies = [
  "dotenv",
- "postmark",
  "prisma-client-rust",
  "reqwest",
  "serde",
@@ -1995,22 +1994,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "postmark"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3d6cd527da9b0bcef8389e98e56d8d01bb41ec5fd23acf41e9f135310099369"
-dependencies = [
- "async-trait",
- "bytes",
- "http",
- "serde",
- "serde_json",
- "thiserror",
- "typed-builder",
- "url",
-]
-
-[[package]]
 name = "ppv-lite86"
 version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3262,17 +3245,6 @@ name = "try-lock"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3528ecfd12c466c6f163363caf2d02a71161dd5e1cc6ae7b34207ea2d42d81ed"
-
-[[package]]
-name = "typed-builder"
-version = "0.9.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a46ee5bd706ff79131be9c94e7edcb82b703c487766a114434e5790361cf08c5"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
 
 [[package]]
 name = "typenum"
