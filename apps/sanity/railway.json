@@ -3,7 +3,7 @@
     "build": {
         "builder": "NIXPACKS",
         "buildCommand": "yarn build:sanity",
-        "watchPatterns": ["apps/sanity", "packages/**"]
+        "watchPatterns": ["apps/sanity", "packages/**", "yarn.lock"]
     },
     "deploy": {
         "startCommand": "yarn start:sanity",
