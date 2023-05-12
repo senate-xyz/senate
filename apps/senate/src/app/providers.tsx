@@ -5,11 +5,11 @@ import {
     connectorsForWallets
 } from '@rainbow-me/rainbowkit'
 import {
-    type GetSiweMessageOptions,
-    RainbowKitSiweNextAuthProvider
+    RainbowKitSiweNextAuthProvider,
+    GetSiweMessageOptions
 } from '@rainbow-me/rainbowkit-siwe-next-auth'
 import { SessionProvider } from 'next-auth/react'
-import { configureChains, mainnet, createClient, WagmiConfig } from 'wagmi'
+import { configureChains, createConfig, mainnet, WagmiConfig } from 'wagmi'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { TrpcClientProvider } from '../server/trpcClient'
 import Link from 'next/link'
@@ -23,7 +23,7 @@ import {
     rainbowWallet
 } from '@rainbow-me/rainbowkit/wallets'
 
-const { chains, provider } = configureChains(
+const { chains, publicClient } = configureChains(
     [mainnet],
     [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? '' })]
 )
@@ -55,10 +55,10 @@ const connectors = connectorsForWallets([
     }
 ])
 
-const wagmiClient = createClient({
+const config = createConfig({
     autoConnect: true,
     connectors,
-    provider
+    publicClient
 })
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
@@ -106,7 +106,7 @@ export default function RootProvider({
     children: React.ReactNode
 }) {
     return (
-        <WagmiConfig client={wagmiClient}>
+        <WagmiConfig config={config}>
             <SessionProvider refetchInterval={60}>
                 <RainbowKitSiweNextAuthProvider
                     getSiweMessageOptions={getSiweMessageOptions}

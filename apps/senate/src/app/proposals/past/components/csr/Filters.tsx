@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useAccount, useProvider } from 'wagmi'
+import { useAccount, usePublicClient } from 'wagmi'
 import { useSession } from 'next-auth/react'
+import { normalize } from 'viem/ens'
 
 const endOptions: { name: string; time: number }[] = [
     {
@@ -208,11 +209,13 @@ export const Filters = (props: {
 
 const Proxy = (props: { address: string }) => {
     const [name, setName] = useState(props.address)
-    const provider = useProvider()
+    const provider = usePublicClient()
 
     useEffect(() => {
         ;(async () => {
-            const ens = await provider.lookupAddress(props.address)
+            const ens = await provider.getEnsAddress({
+                name: normalize(props.address)
+            })
             setName(ens ?? props.address)
         })()
     }, [props.address])

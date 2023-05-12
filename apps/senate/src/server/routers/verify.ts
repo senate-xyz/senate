@@ -2,7 +2,6 @@ import { z } from 'zod'
 import { router, publicProcedure } from '../trpc'
 import { prisma } from '@senate/database'
 import { verifyMessage } from 'ethers/lib/utils.js'
-import { SiweMessage } from 'siwe'
 
 export const verifyRouter = router({
     userOfChallenge: publicProcedure
