@@ -62,6 +62,7 @@
         "autoprefixer": "10.4.14",
         "bip39": "3.1.0",
         "core-js": "3.30.2",
+        "encoding": "^0.1.13",
         "eslint": "8.40.0",
         "eslint-config-next": "13.4.2",
         "lokijs": "1.5.12",

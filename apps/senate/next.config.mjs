@@ -28,7 +28,6 @@ const config = {
                 }
             }
         }
-        config.module.exprContextCritical = false // Workaround to suppress next-i18next warning, see https://github.com/isaachinman/next-i18next/issues/1545
 
         return config
     }
