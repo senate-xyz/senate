@@ -132,6 +132,10 @@ const PageWrapper = () => {
 const Page = () => {
     const router = useRouter()
 
+    const validChallenge = trpc.verify.isValidChallenge.useQuery({
+        challenge: String(router.query.challenge)
+    })
+
     const user = trpc.verify.userOfChallenge.useQuery({
         challenge: String(router.query.challenge)
     })
@@ -158,24 +162,31 @@ const Page = () => {
         }
     })
 
-    return (
-        <div>
-            <p className='text-white'>code: {router.query.challenge}</p>
-            <p className='text-white'>email: {user.data?.email}</p>
-            <p>Signature: {data}</p>
-            <ConnectButton showBalance={false} />
-            <button
-                className='bg-white px-4'
-                onClick={() => {
-                    signMessage({
-                        message: `challenge: ${router.query.challenge} \nemail: ${user.data?.email}`
-                    })
-                }}
-            >
-                Sign to verify email
-            </button>
-        </div>
-    )
+    if (!validChallenge)
+        return (
+            <div>
+                <p className='text-white'>Invalid challenge</p>
+            </div>
+        )
+    else
+        return (
+            <div>
+                <p className='text-white'>code: {router.query.challenge}</p>
+                <p className='text-white'>email: {user.data?.email}</p>
+                <p>Signature: {data}</p>
+                <ConnectButton showBalance={false} />
+                <button
+                    className='bg-white px-4'
+                    onClick={() => {
+                        signMessage({
+                            message: `challenge: ${router.query.challenge} \nemail: ${user.data?.email}`
+                        })
+                    }}
+                >
+                    Sign to verify email
+                </button>
+            </div>
+        )
 }
 
 export default PageWrapper

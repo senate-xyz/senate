@@ -20,6 +20,22 @@ export const verifyRouter = router({
             return user
         }),
 
+    isValidChallenge: publicProcedure
+        .input(
+            z.object({
+                challenge: z.string()
+            })
+        )
+        .query(async ({ input }) => {
+            const user = await prisma.user.findFirst({
+                where: {
+                    challengecode: input.challenge
+                }
+            })
+
+            return user ? true : false
+        }),
+
     verifyUser: publicProcedure
         .input(
             z.object({
