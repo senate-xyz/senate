@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "author": "Senate",
     "private": true,
-    "license": "MIT",
+    "license": "GNU GPLv3",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "scripts": {
@@ -23,7 +23,7 @@
         "prettier:fix": "prettier src --write"
     },
     "dependencies": {
-        "@prisma/client": "4.13.0",
+        "@prisma/client": "4.14.0",
         "@senate/axiom": "*",
         "ethers": "^6.3.0",
         "exponential-backoff": "^3.1.1",
@@ -32,7 +32,7 @@
     "devDependencies": {
         "@senate/config": "*",
         "eslint": "^8.40.0",
-        "prisma": "4.13.0",
+        "prisma": "4.14.0",
         "prisma-dbml-generator": "^0.10.0",
         "tsup": "^6.7.0",
         "typescript": "^5.0.4"

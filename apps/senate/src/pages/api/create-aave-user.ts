@@ -3,7 +3,9 @@ import { prisma } from '@senate/database'
 import { z } from 'zod'
 import { ServerClient } from 'postmark'
 
-const client = new ServerClient(process.env.POSTMARK_TOKEN ?? 'Missing Token')
+const emailClient = new ServerClient(
+    process.env.POSTMARK_TOKEN ?? 'Missing Token'
+)
 
 export default async function handler(
     req: NextApiRequest,
@@ -16,7 +18,40 @@ export default async function handler(
     })
 
     if (existingUser) {
-        res.status(500).json({ email: email, result: 'failed' })
+        if (existingUser.verifiedemail) {
+            await prisma.user.update({
+                where: {
+                    id: existingUser.id
+                },
+                data: {
+                    isaaveuser: true
+                }
+            })
+        } else {
+            const challengeCode = Math.random().toString(36).substring(2)
+
+            await prisma.user.update({
+                where: {
+                    id: existingUser.id
+                },
+                data: {
+                    isaaveuser: true,
+                    challengecode: challengeCode
+                }
+            })
+
+            emailClient.sendEmail({
+                From: 'info@senatelabs.xyz',
+                To: existingUser.email,
+                Subject: 'Confirm your email',
+                TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/${challengeCode}`
+            })
+        }
+
+        res.status(200).json({
+            email: existingUser.email,
+            result: 'success'
+        })
         return
     }
 
@@ -30,7 +65,6 @@ export default async function handler(
     }
 
     const challengeCode = Math.random().toString(36).substring(2)
-    console.log(challengeCode)
 
     const newUser = await prisma.user.create({
         data: {
@@ -40,7 +74,7 @@ export default async function handler(
         }
     })
 
-    client.sendEmail({
+    emailClient.sendEmail({
         From: 'info@senatelabs.xyz',
         To: newUser.email,
         Subject: 'Confirm your email',

@@ -19,7 +19,7 @@ import {
 import {
     configureChains,
     mainnet,
-    createClient,
+    createConfig,
     WagmiConfig,
     useSignMessage
 } from 'wagmi'
@@ -28,7 +28,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { TrpcClientProvider, trpc } from '../../server/trpcClient'
 
-const { chains, provider } = configureChains(
+const { chains, publicClient } = configureChains(
     [mainnet],
     [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? '' })]
 )
@@ -60,10 +60,10 @@ const connectors = connectorsForWallets([
     }
 ])
 
-const wagmiClient = createClient({
+const config = createConfig({
     autoConnect: true,
     connectors,
-    provider
+    publicClient
 })
 
 const Disclaimer: DisclaimerComponent = () => (
@@ -103,7 +103,7 @@ const Disclaimer: DisclaimerComponent = () => (
 
 const PageWrapper = () => {
     return (
-        <WagmiConfig client={wagmiClient}>
+        <WagmiConfig config={config}>
             <RainbowKitProvider
                 appInfo={{
                     appName: 'Senate',
