@@ -27,6 +27,11 @@ export default async function handler(
                     isaaveuser: true
                 }
             })
+
+            res.status(200).json({
+                email: existingUser.email,
+                result: 'existing'
+            })
         } else {
             const challengeCode = Math.random().toString(36).substring(2)
 
@@ -46,12 +51,13 @@ export default async function handler(
                 Subject: 'Confirm your email',
                 TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/${challengeCode}`
             })
+
+            res.status(200).json({
+                email: existingUser.email,
+                result: 'success'
+            })
         }
 
-        res.status(200).json({
-            email: existingUser.email,
-            result: 'success'
-        })
         return
     }
 
