@@ -162,7 +162,7 @@ const Page = () => {
         }
     })
 
-    if (!validChallenge)
+    if (!validChallenge.data)
         return (
             <div>
                 <p className='text-white'>Invalid challenge</p>
