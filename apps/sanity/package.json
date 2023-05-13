@@ -24,7 +24,7 @@
         "lint:fix": "eslint src --fix",
         "prettier": "prettier src --check",
         "prettier:fix": "prettier src --write",
-        "ncu": "ncu -u"
+        "update": "ncu -u"
     },
     "dependencies": {
         "@senate/axiom": "*",
@@ -36,7 +36,7 @@
         "superagent": "^8.0.9"
     },
     "devDependencies": {
-        "@types/node": "^20.1.3",
+        "@types/node": "^20.1.4",
         "@types/node-cron": "^3.0.7",
         "dotenv": "^16.0.3",
         "ts-node": "^10.9.1",

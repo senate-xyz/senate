@@ -90,6 +90,6 @@
     "prettier:fix": { "cache": false },
 
     "clean": { "cache": false },
-    "ncu": { "cache": false }
+    "update": { "cache": false }
   }
 }

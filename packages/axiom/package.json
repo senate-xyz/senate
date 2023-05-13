@@ -13,7 +13,7 @@
         "lint:fix": "eslint src --fix",
         "prettier": "prettier src --check",
         "prettier:fix": "prettier src --write",
-        "ncu": "ncu -u"
+        "update": "ncu -u"
     },
     "dependencies": {
         "@axiomhq/axiom-node": "^0.12.0",
