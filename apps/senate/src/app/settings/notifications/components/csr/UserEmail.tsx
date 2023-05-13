@@ -8,6 +8,8 @@ import { useAccount } from 'wagmi'
 const UserEmail = () => {
     const [currentEmail, setCurrentEmail] = useState('')
     const [getDailyEmails, setDailyEmails] = useState(false)
+    const [getEmptyEmails, setEmptyEmails] = useState(false)
+    const [getEmailQuorum, setEmailQuorum] = useState(false)
 
     const account = useAccount()
     const router = useRouter()
@@ -27,11 +29,19 @@ const UserEmail = () => {
     }, [account])
 
     useEffect(() => {
-        if (user.data) setDailyEmails(user.data.emaildailybulletin)
+        if (user.data) {
+            setDailyEmails(user.data.emaildailybulletin)
+            setEmptyEmails(user.data.emptydailybulletin)
+            setEmailQuorum(user.data.emailquorumwarning)
+        }
     }, [user.data])
 
-    const updateNotifications =
+    const updateDailyEmails =
         trpc.accountSettings.updateDailyEmails.useMutation()
+    const updateEmptyEmails =
+        trpc.accountSettings.updateEmptyEmails.useMutation()
+    const updateEmailQuorum =
+        trpc.accountSettings.updateQuorumEmails.useMutation()
 
     const onEnter = () => {
         setEmail.mutate({ email: currentEmail })
@@ -48,8 +58,46 @@ const UserEmail = () => {
                         type='checkbox'
                         checked={getDailyEmails}
                         onChange={(e) => {
-                            updateNotifications.mutate({
-                                emaildailybulletin: e.target.checked
+                            updateDailyEmails.mutate({
+                                val: e.target.checked
+                            })
+                        }}
+                        className='peer sr-only'
+                    />
+                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+                </label>
+            </div>
+
+            <div className='flex flex-row items-center gap-4'>
+                <div className='font-[18px] leading-[23px] text-white'>
+                    Get empty emails
+                </div>
+                <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
+                    <input
+                        type='checkbox'
+                        checked={getEmptyEmails}
+                        onChange={(e) => {
+                            updateEmptyEmails.mutate({
+                                val: e.target.checked
+                            })
+                        }}
+                        className='peer sr-only'
+                    />
+                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+                </label>
+            </div>
+
+            <div className='flex flex-row items-center gap-4'>
+                <div className='font-[18px] leading-[23px] text-white'>
+                    Get quorum alerts
+                </div>
+                <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
+                    <input
+                        type='checkbox'
+                        checked={getEmailQuorum}
+                        onChange={(e) => {
+                            updateEmailQuorum.mutate({
+                                val: e.target.checked
                             })
                         }}
                         className='peer sr-only'
