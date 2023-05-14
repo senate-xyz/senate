@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::{
     prisma::{self, subscription, DaoHandlerType, PrismaClient, ProposalState},
     utils::vote::get_vote,
@@ -6,19 +8,18 @@ use anyhow::Result;
 use log::info;
 use prisma_client_rust::chrono::{self, Utc};
 use serenity::{json::Value, model::prelude::Embed, utils::Colour};
-use std::sync::Arc;
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-pub async fn get_past_embeds(username: String) -> Result<Vec<Value>> {
-    let mut proposals = get_past_proposals(username.clone()).await?;
+pub async fn get_past_embeds(username: &String, client: &Arc<PrismaClient>) -> Result<Vec<Value>> {
+    let mut proposals = get_past_proposals(&username, client).await?;
     proposals.sort_by_key(|p| p.timeend);
-    let embeds = build_past_embeds(username, proposals).await?;
+    let embeds = build_past_embeds(&username, proposals).await?;
     Ok(embeds)
 }
 
 pub async fn build_past_embeds(
-    username: String,
+    username: &String,
     proposals: Vec<proposal_with_dao::Data>,
 ) -> Result<Vec<Value>> {
     let mut embeds: Vec<Value> = vec![];
@@ -71,12 +72,13 @@ pub async fn build_past_embeds(
     Ok(embeds)
 }
 
-async fn get_past_proposals(username: String) -> Result<Vec<proposal_with_dao::Data>> {
-    let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
-
+async fn get_past_proposals(
+    username: &String,
+    client: &Arc<PrismaClient>,
+) -> Result<Vec<proposal_with_dao::Data>> {
     let user = client
         .user()
-        .find_first(vec![prisma::user::address::equals(username)])
+        .find_first(vec![prisma::user::address::equals(username.clone())])
         .exec()
         .await
         .unwrap()

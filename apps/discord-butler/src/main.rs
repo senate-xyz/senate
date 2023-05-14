@@ -9,15 +9,14 @@ mod utils {
 
 use log::info;
 use serenity::{http::Http, model::webhook::Webhook};
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 use tokio::time::sleep;
 
 use env_logger::{Builder, Env};
 
-use crate::messages::{
-    ended::get_past_embeds,
-    ending_soon::get_ending_soon_embeds,
-    new::get_new_embeds,
+use crate::{
+    messages::{ended::get_past_embeds, ending_soon::get_ending_soon_embeds, new::get_new_embeds},
+    prisma::PrismaClient,
 };
 
 fn init_logger() {
@@ -37,17 +36,39 @@ async fn main() {
 
     info!("discord-butler start");
 
-    let http = Http::new("");
-    let webhook = Webhook::from_url(&http, "https://discord.com/api/webhooks/1099955005584314370/8ITvepezt-FnA-hsDtEDzHk5Jy9k3TSEVTsYNJjFe1ND0V_KjIw4mMwVzDA_cItV35nv")
+    let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
+
+    notify_all_users(&client).await;
+
+    info!("discord-butler end");
+}
+
+async fn notify_all_users(client: &Arc<PrismaClient>) {
+    info!("discord-butler notify_all_users");
+
+    let users = client
+        .user()
+        .find_many(vec![
+            prisma::user::discordnotifications::equals(true),
+            prisma::user::discordwebhook::starts_with("https://".to_string()),
+        ])
+        .exec()
         .await
-        .expect("Replace the webhook with your own");
+        .unwrap();
 
-    ////
+    for user in users {
+        notify_user(user.address, user.discordwebhook, &client).await;
+    }
+}
 
-    let ending_soon_embeds =
-        get_ending_soon_embeds("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string())
-            .await
-            .unwrap();
+async fn notify_user(username: String, webhook_url: String, client: &Arc<PrismaClient>) {
+    let http = Http::new("");
+
+    let webhook = Webhook::from_url(&http, webhook_url.as_str())
+        .await
+        .expect("Missing webhook");
+
+    let ending_soon_embeds = get_ending_soon_embeds(&username, client).await.unwrap();
 
     webhook
         .execute(&http, false, |w| w.content("**Proposals Ending Soon** The voting on these proposals is going to end in the next 72 hours. You might want to act on them soon.")
@@ -73,9 +94,7 @@ async fn main() {
 
     ////
 
-    let new_embeds = get_new_embeds("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string())
-        .await
-        .unwrap();
+    let new_embeds = get_new_embeds(&username, client).await.unwrap();
 
     webhook
         .execute(&http, false, |w| w.content("**New Proposals** These are the proposals that were created in the last 24 hours. You might want to check them out.")
@@ -101,9 +120,7 @@ async fn main() {
 
     ////
 
-    let past_embeds = get_past_embeds("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string())
-        .await
-        .unwrap();
+    let past_embeds = get_past_embeds(&username, client).await.unwrap();
 
     webhook
         .execute(&http, false, |w| w.content("**Past Proposals** These are the proposals that ended in the last 24 hours. You might want to check them out.")
