@@ -51,7 +51,7 @@
         "superjson": "1.12.3",
         "swr": "2.1.5",
         "viem": "0.3.24",
-        "wagmi": "1.0.2",
+        "wagmi": "1.0.3",
         "zod": "3.21.4"
     },
     "devDependencies": {
