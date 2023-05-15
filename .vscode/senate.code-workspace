@@ -83,7 +83,9 @@
       "Prisma.prisma",
       "bradlc.vscode-tailwindcss",
       "VisualStudioExptTeam.vscodeintellicode",
-      "VisualStudioExptTeam.intellicode-api-usage-examples"
+      "VisualStudioExptTeam.intellicode-api-usage-examples",
+      "usernamehw.errorlens",
+      "rust-lang.rust-analyzer"
     ]
   }
 }
