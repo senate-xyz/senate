@@ -1422,10 +1422,10 @@
   resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.29.1.tgz#62a4bc120b85e6bb3c6c0aca96346e643e232248"
   integrity sha512-vkPewLEG8ua0efo3SsVT0BcBtkq5RZX8oPhDAyKL+k/rdOYSQTEocfGEXSaBwIwsXeOGBUpfKqI+UmHvNqdWXg==
 
-"@tanstack/query-core@4.29.5":
-  version "4.29.5"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.29.5.tgz#a0273e88bf2fc102c4c893dc7c034127b67fd5d9"
-  integrity sha512-xXIiyQ/4r9KfaJ3k6kejqcaqFXXBTzN2aOJ5H1J6aTJE9hl/nbgAdfF6oiIu0CD5xowejJEJ6bBg8TO7BN4NuQ==
+"@tanstack/query-core@4.29.7":
+  version "4.29.7"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.29.7.tgz#9fe4587e23cb9566b937c518ffa44226041d388d"
+  integrity sha512-GXG4b5hV2Loir+h2G+RXhJdoZhJLnrBWsuLB2r0qBRyhWuXq9w/dWxzvpP89H0UARlH6Mr9DiVj4SMtpkF/aUA==
 
 "@tanstack/query-persist-client-core@4.29.1":
   version "4.29.1"
@@ -1448,12 +1448,12 @@
   dependencies:
     "@tanstack/query-persist-client-core" "4.29.1"
 
-"@tanstack/react-query@4.29.5":
-  version "4.29.5"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-4.29.5.tgz#3890741291f9f925933243d78bd74dfc59d64208"
-  integrity sha512-F87cibC3s3eG0Q90g2O+hqntpCrudKFnR8P24qkH9uccEhXErnJxBC/AAI4cJRV2bfMO8IeGZQYf3WyYgmSg0w==
+"@tanstack/react-query@4.29.7":
+  version "4.29.7"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-4.29.7.tgz#772996905a81ca64172582891c5a82e88dbafccd"
+  integrity sha512-ijBWEzAIo09fB1yd22slRZzprrZ5zMdWYzBnCg5qiXuFbH78uGN1qtGz8+Ed4MuhaPaYSD+hykn+QEKtQviEtg==
   dependencies:
-    "@tanstack/query-core" "4.29.5"
+    "@tanstack/query-core" "4.29.7"
     use-sync-external-store "^1.2.0"
 
 "@tanstack/react-query@^4.28.0":
@@ -1847,10 +1847,10 @@
     abitype "0.8.1"
     eventemitter3 "^4.0.7"
 
-"@wagmi/core@1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-1.0.3.tgz#2098a797f2e4578067a3ca9abc6fd369bc24d7b0"
-  integrity sha512-klIfKvz+Qu0EPOWwbKn0joDpgqdEi64D0lHzXK+7QMEMTkS7QyWm0qU9cYvnfr5H5y4cgGF4RiCQmc++5D4fTA==
+"@wagmi/core@1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-1.0.4.tgz#5b0b746b68bdd8a49906159bac211ac4a8cce51c"
+  integrity sha512-CviDdioSWubghMnmEodB9R/ZE2OhuHVbr3Q1XTJjHIIrhhrPJSCjESr5pLx7X3lVdpf2FofapfWRCaxdYqg9sQ==
   dependencies:
     "@wagmi/chains" "0.2.22"
     "@wagmi/connectors" "1.0.2"
@@ -3714,10 +3714,10 @@ eslint-plugin-react@^7.31.7:
     semver "^6.3.0"
     string.prototype.matchall "^4.0.8"
 
-eslint-plugin-tailwindcss@^3.11.0:
-  version "3.11.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-3.11.0.tgz#5240a767142f82249701c20b9cd009f0620e0e4d"
-  integrity sha512-RaraOG4D6VXutKnoNvFQ4+frTWGJDKtezy1yCrGFS7Um1to/npDNdh2GL19IRoGB/eanbtwhxFXy+xyEw0grAg==
+eslint-plugin-tailwindcss@^3.12.0:
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-3.12.0.tgz#cb386920ae9d15d4bd1d3f250357062cec17ccb5"
+  integrity sha512-DMfg8NcSV04V1v3iBgJGEhmRuapW36XZXyRV8WHdNFGEXGUkBwM9R8MujguKXeQKBG6VhjiX4t98rhzXdIlUFw==
   dependencies:
     fast-glob "^3.2.5"
     postcss "^8.4.4"
@@ -7726,15 +7726,15 @@ viem@0.3.24:
     isomorphic-ws "5.0.0"
     ws "8.12.0"
 
-wagmi@1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-1.0.3.tgz#1c0d44f2c375c2cac055c3623e8d1445de138128"
-  integrity sha512-Fh0fBtNaMUZcyvOxGX+0I5sY+2FFA/kM29pZAxpqOnDDxKj8usM2AFJVSOLdl+I8nQPgqogHmm3UbFSSFnn0kA==
+wagmi@1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-1.0.4.tgz#4058b62ed35d4bacb3909a8501d75a4ef3af2261"
+  integrity sha512-Vk3AQbxEHNTo7hE/AWQlRIDtXJ5eUwWxhvbveYRJTIdDUxGymmQQBviYKVr4jA0uKeI6A7M1cYl4OGjs5R43wQ==
   dependencies:
     "@tanstack/query-sync-storage-persister" "^4.27.1"
     "@tanstack/react-query" "^4.28.0"
     "@tanstack/react-query-persist-client" "^4.28.0"
-    "@wagmi/core" "1.0.3"
+    "@wagmi/core" "1.0.4"
     abitype "0.8.1"
     use-sync-external-store "^1.2.0"
 

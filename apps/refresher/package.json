@@ -6,8 +6,8 @@
   "private": true,
   "license": "GNU GPLv3",
   "scripts": {
-    "build": "cargo b -r",
-    "build:bulletin": "cargo b -r",
+    "build": "cargo b",
+    "build:bulletin": "cargo b",
     "start": "cargo r",
     "start:bulletin": "cargo r",
     "clean": "cargo clean",
