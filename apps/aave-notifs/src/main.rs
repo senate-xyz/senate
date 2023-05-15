@@ -1,13 +1,14 @@
 #[allow(warnings, unused)]
 pub mod prisma;
 
-use crate::prisma::{user, proposal, notification, dao};
-use prisma_client_rust::chrono::{self, Utc};
+use crate::prisma::{dao, notification, proposal, user};
 use dotenv::dotenv;
+use prisma_client_rust::chrono::{self, Utc};
 use std::env;
 
-use reqwest::header::{HeaderMap, CONTENT_TYPE, ACCEPT};
+use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use reqwest::Error;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 /*
@@ -15,18 +16,38 @@ use serde_json::json;
         - we fetch proposals which
                 - are ending in the next 12 hours
                 - haven't reached quorum / differential yet
-        - push all proposal notifications to the notifications table. 
+        - push all proposal notifications to the notifications table.
              Note: Some of them won't be added because they already exist
                        ,whether they have been dispatched or not
         - fetch all notifications which haven't been dispatched
-        - send email. if successful -> set dispatched = true   
+        - send email. if successful -> set dispatched = true
 */
+#[derive(Serialize, Deserialize)]
+struct TemplateModel {
+    quorum: String,
+    total_score: String,
+    countdown_url: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct EmailBody {
+    to: String,
+    from: String,
+    template_alias: String,
+    template_model: TemplateModel,
+}
+
+#[derive(Clone)]
+struct NotificationId {
+    userid: String,
+    proposalid: String,
+}
 
 #[tokio::main]
 async fn main() {
     dotenv().ok();
     println!("Starting scheduler!");
- 
+
     // Fetch users to be notified
     let db = prisma::new_client()
         .await
@@ -45,13 +66,9 @@ async fn main() {
         .find_many(vec![
             proposal::timeend::gt(Utc::now().into()),
             proposal::timeend::lte((Utc::now() + chrono::Duration::hours(12)).into()),
-            proposal::dao::is(vec![
-                dao::name::equals("Aave".to_string()) 
-            ])
+            proposal::dao::is(vec![dao::name::equals("Aave".to_string())]),
         ])
-        .include(proposal::include!({
-            dao
-        }))
+        .include(proposal::include!({ dao }))
         .exec()
         .await
         .unwrap();
@@ -64,18 +81,19 @@ async fn main() {
     // Insert notifications to be dispatched
     for proposal in proposals_to_notify_about.iter() {
         for user in users_to_be_notified.iter() {
-            db.notification().upsert(
-                notification::userid_proposalid(user.id.to_string(), proposal.id.to_string()),
-                notification::create(
-                    prisma::user::UniqueWhereParam::IdEquals(user.id.clone()),
-                    prisma::proposal::UniqueWhereParam::IdEquals(proposal.id.clone()),
-                    vec![notification::dispatched::set(false)]
-                ),
-                vec![]
-            )
-            .exec()
-            .await
-            .unwrap();
+            db.notification()
+                .upsert(
+                    notification::userid_proposalid(user.id.to_string(), proposal.id.to_string()),
+                    notification::create(
+                        prisma::user::UniqueWhereParam::IdEquals(user.id.clone()),
+                        prisma::proposal::UniqueWhereParam::IdEquals(proposal.id.clone()),
+                        vec![notification::dispatched::set(false)],
+                    ),
+                    vec![],
+                )
+                .exec()
+                .await
+                .unwrap();
         }
     }
 
@@ -84,11 +102,9 @@ async fn main() {
         .notification()
         .find_many(vec![
             notification::dispatched::equals(false),
-            notification::proposal::is(vec![
-                proposal::dao::is(vec![
-                    dao::name::equals("Aave".to_string()),
-                ])
-            ])
+            notification::proposal::is(vec![proposal::dao::is(vec![dao::name::equals(
+                "Aave".to_string(),
+            )])]),
         ])
         .include(notification::include!({
             proposal: include {
@@ -100,39 +116,75 @@ async fn main() {
         .await
         .unwrap();
 
-    
-    for n in notifications.iter() {
-        // Send email to n.user.email
-        // send_email().await;
+    let mut dispatched: Vec<NotificationId> = Vec::new();
 
-        // If email was successfully sent, set dispatched=true
+    for n in notifications.clone().into_iter() {
+        // Send email to n.user.email
+        let email_body: EmailBody = EmailBody {
+            to: n.user.email.clone(),
+            from: "info@senatelabs.xyz".to_string(),
+            template_alias: "changeme".to_string(),
+            template_model: TemplateModel {
+                quorum: n.proposal.quorum.clone().to_string(),
+                total_score: n.proposal.scorestotal.clone().to_string(),
+                countdown_url: "".to_string(),
+            },
+        };
+
+        let was_successfully_sent: Result<bool, Error> =
+            send_email(serde_json::to_value(&email_body).unwrap()).await;
+
+        match was_successfully_sent {
+            Ok(true) => dispatched.push(NotificationId {
+                userid: n.user.id.clone(),
+                proposalid: n.proposal.id.clone(),
+            }),
+            Ok(false) => {}
+            Err(_) => {}
+        }
     }
-  
+
+    db.notification().update_many(
+        vec![
+            prisma::notification::userid::in_vec(
+                dispatched.iter().map(|id| id.clone().userid).collect(),
+            ),
+            prisma::notification::userid::in_vec(
+                dispatched.iter().map(|id| id.clone().proposalid).collect(),
+            ),
+        ],
+        vec![prisma::notification::dispatched::set(true)],
+    );
+
     println!("Finished");
 }
 
-async fn send_email() {
+async fn send_email(email_body: serde_json::Value) -> Result<bool, reqwest::Error> {
     let client = reqwest::Client::new();
 
     let mut headers = HeaderMap::new();
     headers.insert(ACCEPT, "application/json".parse().unwrap());
     headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
-    headers.insert("X-Postmark-Server-Token", env::var("POSTMARK_TOKEN").expect("Missing Postmark Token").parse().unwrap());
+    headers.insert(
+        "X-Postmark-Server-Token",
+        env::var("POSTMARK_TOKEN")
+            .expect("Missing Postmark Token")
+            .parse()
+            .unwrap(),
+    );
 
-    let res = client.post("https://api.postmarkapp.com/email")
+    let res = client
+        .post("https://api.postmarkapp.com/email/batchWithTemplates")
         .headers(headers)
-        .json(&json!({
-            "From": "info@senatelabs.xyz",
-            "To": "info@senatelabs.xyz",
-            "Subject": "Postmark test",
-            "TextBody": "Hello dear Postmark user.",
-            "HtmlBody": "<html><body><strong>Hello</strong> dear Postmark user.</body></html>",
-            "MessageStream": "outbound"
-        }))
+        .json(&email_body)
         .send()
-        .await;
+        .await?;
 
-    let body = res.expect("Missing response").text().await;
+    let was_successful = res.status().is_success();
+
+    let body = res.text().await?;
 
     println!("Body:\n\n{:#?}", body);
+
+    return Ok(was_successful);
 }
