@@ -13,6 +13,12 @@ export default async function handler(
 ) {
     const email = req.body.email
 
+    const aave = await prisma.dao.findFirst({
+        where: {
+            name: 'Aave'
+        }
+    })
+
     const existingUser = await prisma.user.findFirst({
         where: { email: email }
     })
@@ -50,6 +56,14 @@ export default async function handler(
             })
         }
 
+        await prisma.subscription.createMany({
+            data: {
+                userid: existingUser.id,
+                daoid: String(aave?.id)
+            },
+            skipDuplicates: true
+        })
+
         return
     }
 
@@ -70,6 +84,14 @@ export default async function handler(
             isaaveuser: true,
             challengecode: challengeCode
         }
+    })
+
+    await prisma.subscription.createMany({
+        data: {
+            userid: newUser.id,
+            daoid: String(aave?.id)
+        },
+        skipDuplicates: true
     })
 
     emailClient.sendEmail({

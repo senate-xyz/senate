@@ -53,6 +53,11 @@ export const accountSettingsRouter = router({
             const existingTempUser = await prisma.user.findFirst({
                 where: {
                     email: input.email
+                },
+                select: {
+                    isaaveuser: true,
+                    isuniswapuser: true,
+                    subscriptions: true
                 }
             })
 
@@ -94,6 +99,17 @@ export const accountSettingsRouter = router({
                     isuniswapuser: existingTempUser?.isuniswapuser
                 }
             })
+
+            if (existingTempUser)
+                for (const sub of existingTempUser.subscriptions) {
+                    await prisma.subscription.createMany({
+                        data: {
+                            userid: user.id,
+                            daoid: String(sub.daoid)
+                        },
+                        skipDuplicates: true
+                    })
+                }
 
             emailClient.sendEmail({
                 From: 'info@senatelabs.xyz',
