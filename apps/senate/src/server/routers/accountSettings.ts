@@ -234,6 +234,28 @@ export const accountSettingsRouter = router({
             return user
         }),
 
+    updateDiscordIncludeVotes: privateProcedure
+        .input(
+            z.object({
+                val: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+
+                data: {
+                    discordincludevotes: input.val
+                }
+            })
+
+            return user
+        }),
+
     setDiscordWebhook: privateProcedure
         .input(
             z.object({

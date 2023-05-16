@@ -17,8 +17,7 @@ model user {
 
   verifiedaddress Boolean @default(false)
   verifiedemail   Boolean @default(false)
-
-  challengecode String?
+  challengecode   String?
 
   isuniswapuser Boolean @default(false)
   isaaveuser    Boolean @default(false)
@@ -29,6 +28,7 @@ model user {
 
   discordnotifications Boolean @default(false)
   discordwebhook       String  @default("")
+  discordincludevotes  Boolean @default(true)
 
   subscriptions subscription[]
   voters        voter[]

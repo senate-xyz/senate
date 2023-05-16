@@ -13,7 +13,7 @@ model user {
 
   //default to some random cuid to ensure uniqueness, we'll update later
   address String @unique @default(cuid())
-  email   String @unique @default(cuid())
+  email   String @default(cuid())
 
   verifiedaddress Boolean @default(false)
   verifiedemail   Boolean @default(false)
@@ -25,6 +25,10 @@ model user {
   emaildailybulletin Boolean @default(false)
   emptydailybulletin Boolean @default(false)
   emailquorumwarning Boolean @default(false)
+
+  discordnotifications Boolean @default(false)
+  discordwebhook       String  @default("")
+  discordincludevotes  Boolean @default(true)
 
   subscriptions subscription[]
   voters        voter[]
