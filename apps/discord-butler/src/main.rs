@@ -1,7 +1,6 @@
 #![deny(unused_crate_dependencies)]
 
 mod messages;
-#[allow(warnings, unused)]
 pub mod prisma;
 mod utils {
     pub mod vote;

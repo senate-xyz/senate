@@ -2,7 +2,6 @@
 
 pub mod contracts;
 pub mod handlers;
-#[allow(warnings, unused)]
 pub mod prisma;
 mod router;
 pub mod utils {
