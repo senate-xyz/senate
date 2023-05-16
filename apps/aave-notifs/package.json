@@ -7,9 +7,9 @@
   "license": "GNU GPLv3",
   "scripts": {
     "build": "cargo b",
-    "build:bulletin": "cargo b",
+    "build:aave-notifs": "cargo b",
     "start": "cargo r",
-    "start:bulletin": "cargo r",
+    "start:aave-notifs": "cargo r",
     "clean": "cargo clean",
     "lint": "cargo fmt",
     "lint:fix": "cargo fmt",
