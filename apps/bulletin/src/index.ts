@@ -12,10 +12,10 @@ import {
 } from '@senate/database'
 
 import axios from 'axios'
+import { log_bul } from '@senate/axiom'
 import { config } from 'dotenv'
 import { schedule } from 'node-cron'
 import { ServerClient } from 'postmark'
-import { log_bul } from '@senate/axiom'
 
 config()
 

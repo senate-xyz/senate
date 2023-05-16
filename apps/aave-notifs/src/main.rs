@@ -6,7 +6,6 @@ use dotenv::dotenv;
 use std::env;
 
 use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
-use reqwest::Error;
 use serde_json::json;
 
 /*
@@ -47,7 +46,7 @@ async fn main() {
     // ================================
 
     // Send email
-    send_email();
+    send_email().await;
 
     println!("Finished");
 }
