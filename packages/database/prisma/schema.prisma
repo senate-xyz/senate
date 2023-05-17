@@ -215,9 +215,16 @@ model notification {
   user       user     @relation(fields: [userid], references: [id], onDelete: Cascade)
   proposalid String
   proposal   proposal @relation(fields: [proposalid], references: [id], onDelete: Cascade)
-  dispatched Boolean  @default(false)
+
+  type NotificationType
+
+  discordmessage String?
+
+  dispatched Boolean @default(false)
 
   @@id([userid, proposalid])
+  @@index(fields: [userid], type: Hash)
+  @@index(fields: [proposalid], type: Hash)
 }
 
 model config {
@@ -225,6 +232,16 @@ model config {
   value Int
 
   @@index(fields: [key], type: Hash)
+}
+
+enum NotificationType {
+  QUORUM_NOT_REACHED_EMAIL
+  NEW_PROPOSAL_DISCORD
+  REMAINING_12_DISCORD
+  REMAINING_6_DISCORD
+  REMAINING_3_DISCORD
+  REMAINING_1_DISCORD
+  ENDED_PROPOSAL_DISCORD
 }
 
 enum DAOHandlerType {
@@ -256,5 +273,6 @@ enum ProposalState {
   QUEUED
   EXPIRED
   EXECUTED
+  DELETED
   UNKNOWN
 }

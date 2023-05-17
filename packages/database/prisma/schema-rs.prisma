@@ -1,6 +1,26 @@
-generator client {
+generator detective {
   provider = "cargo prisma"
-  output   = "../src/prisma.rs"
+  output   = "../../../apps/detective/src/prisma.rs"
+}
+
+generator refresher {
+  provider = "cargo prisma"
+  output   = "../../../apps/refresher/src/prisma.rs"
+}
+
+generator discordbutler {
+  provider = "cargo prisma"
+  output   = "../../../apps/discord-butler/src/prisma.rs"
+}
+
+generator telegrambutler {
+  provider = "cargo prisma"
+  output   = "../../../apps/telegram-butler/src/prisma.rs"
+}
+
+generator aavenotifs {
+  provider = "cargo prisma"
+  output   = "../../../apps/aave-notifs/src/prisma.rs"
 }
 
 datasource db {
@@ -17,8 +37,7 @@ model user {
 
   verifiedaddress Boolean @default(false)
   verifiedemail   Boolean @default(false)
-
-  challengecode String?
+  challengecode   String?
 
   isuniswapuser Boolean @default(false)
   isaaveuser    Boolean @default(false)
@@ -29,6 +48,7 @@ model user {
 
   discordnotifications Boolean @default(false)
   discordwebhook       String  @default("")
+  discordincludevotes  Boolean @default(true)
 
   subscriptions subscription[]
   voters        voter[]
@@ -215,9 +235,16 @@ model notification {
   user       user     @relation(fields: [userid], references: [id], onDelete: Cascade)
   proposalid String
   proposal   proposal @relation(fields: [proposalid], references: [id], onDelete: Cascade)
-  dispatched Boolean  @default(false)
+
+  type NotificationType
+
+  discordmessage String?
+
+  dispatched Boolean @default(false)
 
   @@id([userid, proposalid])
+  @@index(fields: [userid], type: Hash)
+  @@index(fields: [proposalid], type: Hash)
 }
 
 model config {
@@ -225,6 +252,16 @@ model config {
   value Int
 
   @@index(fields: [key], type: Hash)
+}
+
+enum NotificationType {
+  QUORUM_NOT_REACHED_EMAIL
+  NEW_PROPOSAL_DISCORD
+  REMAINING_12_DISCORD
+  REMAINING_6_DISCORD
+  REMAINING_3_DISCORD
+  REMAINING_1_DISCORD
+  ENDED_PROPOSAL_DISCORD
 }
 
 enum DAOHandlerType {
@@ -256,5 +293,6 @@ enum ProposalState {
   QUEUED
   EXPIRED
   EXECUTED
+  DELETED
   UNKNOWN
 }

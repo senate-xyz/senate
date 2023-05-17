@@ -19,10 +19,10 @@
         "update": "ncu -u"
     },
     "dependencies": {
-        "@prisma/client": "^4.14.0",
+        "@prisma/client": "^4.14.1",
         "@types/prompt-sync": "^4.2.0",
         "inquirer": "9.2.3",
-        "prisma": "^4.14.0"
+        "prisma": "^4.14.1"
     },
     "devDependencies": {
         "@types/inquirer": "^9.0.3",
