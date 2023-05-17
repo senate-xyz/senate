@@ -3,6 +3,7 @@
 mod dispatch;
 mod generate;
 pub mod prisma;
+use tokio::try_join;
 mod utils {
     pub mod vote;
 }
@@ -35,14 +36,25 @@ async fn main() {
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
 
-    let new_proposals_task = tokio::task::spawn_blocking(move || async move {
+    let client_for_new_proposals: Arc<PrismaClient> = Arc::clone(&client);
+    let new_proposals_task = tokio::task::spawn(async move {
         loop {
-            generate_new_proposal_notifications(&client).await;
-            dispatch_new_proposal_notifications(&client).await;
+            generate_new_proposal_notifications(&client_for_new_proposals).await;
+            dispatch_new_proposal_notifications(&client_for_new_proposals).await;
 
             sleep(Duration::from_secs(60)).await;
         }
     });
 
-    new_proposals_task.await.unwrap().await;
+    let _client_for_ending_soon = Arc::clone(&client);
+    let ending_soon_task = tokio::task::spawn(async move {
+        loop {
+            // generate_ending_new_notifications(&client_for_ending_soon).await;
+            // dispatch_ending_new_notifications(&client_for_ending_soon).await;
+
+            sleep(Duration::from_secs(60)).await;
+        }
+    });
+
+    try_join!(new_proposals_task, ending_soon_task,).unwrap();
 }
