@@ -21,6 +21,7 @@ COPY /apps/detective apps/detective/
 COPY /packages/database packages/database/
 WORKDIR /app/apps/detective
 RUN rm -f ./src/prisma.rs
+RUN rustup default nightly
 RUN rustup component add rustfmt
 RUN cargo generate
 RUN cargo fmt
