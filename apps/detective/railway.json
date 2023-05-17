@@ -3,7 +3,7 @@
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "Dockerfile.detective",
-    "watchPatterns": ["apps/detective"]
+    "watchPatterns": ["apps/detective", "packages/database"]
   },
   "deploy": {
     "numReplicas": 1,

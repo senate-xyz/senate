@@ -97,7 +97,11 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                 client
                     .notification()
                     .update(
-                        notification::userid_proposalid(user.id, proposal.id),
+                        notification::userid_proposalid_type(
+                            user.id,
+                            proposal.id,
+                            NotificationType::NewProposalDiscord,
+                        ),
                         vec![
                             notification::dispatched::set(true),
                             notification::discordmessage::set(msg.link().into()),
@@ -110,6 +114,6 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
             None => {}
         }
 
-        sleep(Duration::from_secs(1)).await;
+        sleep(Duration::from_millis(100)).await;
     }
 }

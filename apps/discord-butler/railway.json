@@ -3,7 +3,7 @@
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "Dockerfile.discord-butler",
-    "watchPatterns": ["apps/discord-butler"]
+    "watchPatterns": ["apps/discord-butler", "packages/database"]
   },
   "deploy": {
     "numReplicas": 1,

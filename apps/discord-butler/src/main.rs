@@ -3,12 +3,14 @@
 mod dispatch;
 mod generate;
 pub mod prisma;
+use dispatch::ending_soon::dispatch_ending_soon_notifications;
+use generate::ending_soon::{generate_ending_soon_notifications, EndingType};
 use tokio::try_join;
 mod utils {
     pub mod vote;
 }
 
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
 use tokio::time::sleep;
 
 use env_logger::{Builder, Env};
@@ -42,17 +44,40 @@ async fn main() {
             generate_new_proposal_notifications(&client_for_new_proposals).await;
             dispatch_new_proposal_notifications(&client_for_new_proposals).await;
 
-            sleep(Duration::from_secs(60)).await;
+            sleep(std::time::Duration::from_secs(60)).await;
         }
     });
 
-    let _client_for_ending_soon = Arc::clone(&client);
+    let client_for_ending_soon = Arc::clone(&client);
     let ending_soon_task = tokio::task::spawn(async move {
         loop {
-            // generate_ending_new_notifications(&client_for_ending_soon).await;
-            // dispatch_ending_new_notifications(&client_for_ending_soon).await;
+            generate_ending_soon_notifications(
+                &client_for_ending_soon,
+                EndingType::Remaining1Discord,
+            )
+            .await;
 
-            sleep(Duration::from_secs(60)).await;
+            generate_ending_soon_notifications(
+                &client_for_ending_soon,
+                EndingType::Remaining3Discord,
+            )
+            .await;
+
+            generate_ending_soon_notifications(
+                &client_for_ending_soon,
+                EndingType::Remaining6Discord,
+            )
+            .await;
+
+            generate_ending_soon_notifications(
+                &client_for_ending_soon,
+                EndingType::Remaining12Discord,
+            )
+            .await;
+
+            dispatch_ending_soon_notifications(&client_for_ending_soon).await;
+
+            sleep(std::time::Duration::from_secs(60)).await;
         }
     });
 

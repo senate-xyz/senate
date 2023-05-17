@@ -3,7 +3,7 @@
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "apps/telegram-butler/Dockerfile",
-    "watchPatterns": ["apps/telegram-butler"]
+    "watchPatterns": ["apps/telegram-butler", "packages/database"]
   },
   "deploy": {
     "numReplicas": 1,

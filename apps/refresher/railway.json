@@ -3,7 +3,7 @@
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "Dockerfile.refresher",
-    "watchPatterns": ["apps/refresher"]
+    "watchPatterns": ["apps/refresher", "packages/database"]
   },
   "deploy": {
     "numReplicas": 1,

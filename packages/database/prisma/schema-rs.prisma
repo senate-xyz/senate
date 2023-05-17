@@ -242,8 +242,9 @@ model notification {
 
   dispatched Boolean @default(false)
 
-  @@id([userid, proposalid])
+  @@id([userid, proposalid, type])
   @@index(fields: [userid], type: Hash)
+  @@index(fields: [type], type: Hash)
   @@index(fields: [proposalid], type: Hash)
 }
 
