@@ -4,8 +4,8 @@ FROM lukemathwalker/cargo-chef:latest AS chef
 
 FROM chef AS planner
 WORKDIR /app
-COPY ./apps/discord-butler apps/discord-butler/
-COPY ./packages/database packages/database/
+COPY /apps/discord-butler apps/discord-butler/
+COPY /packages/database packages/database/
 WORKDIR /app/apps/discord-butler
 RUN cargo chef prepare --recipe-path recipe.json
 
@@ -15,8 +15,8 @@ COPY --from=planner /app/apps/discord-butler/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 # Build application
 WORKDIR /app
-COPY ./apps/discord-butler apps/discord-butler/
-COPY ./packages/database packages/database/
+COPY /apps/discord-butler apps/discord-butler/
+COPY /packages/database packages/database/
 WORKDIR /app/apps/discord-butler
 RUN rm -f ./src/prisma.rs
 RUN cargo generate
