@@ -22,6 +22,7 @@ COPY /packages/database packages/database/
 WORKDIR /app/apps/refresher
 RUN rm -f ./src/prisma.rs
 RUN cargo generate
+RUN cargo fmt
 RUN cargo build --release --bin refresher
 
 FROM debian:bullseye-slim AS runtime
