@@ -1,0 +1,30 @@
+ARG DATABASE_URL
+
+FROM lukemathwalker/cargo-chef:latest AS chef
+
+FROM chef AS planner
+WORKDIR /app
+COPY ./apps/discord-butler apps/discord-butler/
+COPY ./packages/database packages/database/
+WORKDIR /app/apps/discord-butler
+RUN cargo chef prepare --recipe-path recipe.json
+
+FROM chef AS builder 
+COPY --from=planner /app/apps/discord-butler/recipe.json recipe.json
+# Build dependencies - this is the caching Docker layer!
+RUN cargo chef cook --release --recipe-path recipe.json
+# Build application
+WORKDIR /app
+COPY ./apps/discord-butler apps/discord-butler/
+COPY ./packages/database packages/database/
+WORKDIR /app/apps/discord-butler
+RUN rm ./src/prisma.rs
+RUN cargo generate
+RUN cargo build --release --bin discord-butler
+
+FROM debian:bullseye-slim AS runtime
+RUN apt update
+RUN apt install openssl ca-certificates -y
+WORKDIR /app
+COPY --from=builder /app/apps/discord-butler/target/release/discord-butler /usr/local/bin
+ENTRYPOINT ["/usr/local/bin/discord-butler"]
