@@ -20,7 +20,7 @@ WORKDIR /app
 COPY ./apps/refresher apps/refresher/
 COPY ./packages/database packages/database/
 WORKDIR /app/apps/refresher
-RUN rm ./src/prisma.rs
+RUN rm -f ./src/prisma.rs
 RUN cargo generate
 RUN cargo build --release --bin refresher
 

@@ -18,7 +18,7 @@ WORKDIR /app
 COPY ./apps/discord-butler apps/discord-butler/
 COPY ./packages/database packages/database/
 WORKDIR /app/apps/discord-butler
-RUN rm ./src/prisma.rs
+RUN rm -f ./src/prisma.rs
 RUN cargo generate
 RUN cargo build --release --bin discord-butler
 
