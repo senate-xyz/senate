@@ -21,6 +21,21 @@
       "cache": false
     },
 
+    "build:detective": {
+      "dependsOn": ["^db:generate"],
+      "cache": false
+    },
+
+    "build:refresher": {
+      "dependsOn": ["^db:generate"],
+      "cache": false
+    },
+
+    "build:discord-butler": {
+      "dependsOn": ["^db:generate"],
+      "cache": false
+    },
+
     "build:db": {
       "cache": false,
       "dependsOn": ["^db:generate", "^build:axiom"]
