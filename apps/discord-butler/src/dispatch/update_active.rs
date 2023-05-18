@@ -40,6 +40,7 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
             .notification()
             .find_many(vec![
                 notification::proposalid::equals(active_proposal.id),
+                notification::r#type::equals(NotificationType::NewProposalDiscord),
                 notification::dispatched::equals(true),
             ])
             .exec()
