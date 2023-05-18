@@ -27,7 +27,7 @@ const getProposals = async (
 
     const user = await prisma.user.findFirst({
         where: {
-            name: { equals: userAddress }
+            address: { equals: userAddress }
         },
         include: {
             voters: true
@@ -214,7 +214,7 @@ const isUpToDate = async (daohandlerid: string) => {
 
     const user = await prisma.user.findFirst({
         where: {
-            name: { equals: userAddress }
+            address: { equals: userAddress }
         },
         include: {
             voters: true

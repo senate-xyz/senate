@@ -17,7 +17,7 @@ export const publicRouter = router({
         .query(async ({ input, ctx }) => {
             const user = await prisma.user.findFirst({
                 where: {
-                    name: ctx.user?.name ?? ''
+                    address: ctx.user?.name ?? ''
                 },
                 include: {
                     voters: true

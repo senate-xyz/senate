@@ -1,8 +1,7 @@
 'use client'
 
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useCookies } from 'react-cookie'
 import { useAccount, usePublicClient } from 'wagmi'
 import { trpc } from '../../../server/trpcClient'
 import { normalize } from 'viem/ens'

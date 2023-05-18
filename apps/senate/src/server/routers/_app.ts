@@ -6,11 +6,13 @@ import { accountSettingsRouter } from './accountSettings'
 import { healthRouter } from './health'
 import { publicRouter } from './public'
 import { subscriptionsRouter } from './subscriptions'
+import { verifyRouter } from './verify'
 
 export const appRouter = router({
     public: publicRouter,
     accountSettings: accountSettingsRouter,
     subscriptions: subscriptionsRouter,
+    verify: verifyRouter,
     health: healthRouter,
     whoami: publicProcedure.query(({ ctx }) => {
         const user = ctx.user ?? null
