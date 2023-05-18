@@ -35,7 +35,7 @@
         "postmark": "^3.0.18"
     },
     "devDependencies": {
-        "@types/node": "^20.1.7",
+        "@types/node": "^20.2.0",
         "@types/node-cron": "^3.0.7",
         "dotenv": "^16.0.3",
         "ts-node": "^10.9.1",
