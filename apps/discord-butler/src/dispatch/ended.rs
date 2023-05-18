@@ -1,5 +1,6 @@
 use std::{sync::Arc, time::Duration};
 
+use prisma_client_rust::bigdecimal::ToPrimitive;
 use serenity::{
     http::Http,
     model::{
@@ -74,22 +75,53 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         .await
                         .expect("Missing webhook");
 
+                    let result_index = match proposal
+                        .scores
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .enumerate()
+                        .max_by_key(|&(_index, item)| {
+                            item.as_f64().unwrap().to_u64().unwrap_or(std::u64::MIN)
+                        }) {
+                        Some((index, _)) => index,
+                        None => 0,
+                    };
+
+                    let message_content =
+                        if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
+                            format!(
+                                "☑️ **{}** {}%",
+                                &proposal.choices.as_array().unwrap()[result_index]
+                                    .as_str()
+                                    .unwrap(),
+                                proposal.scores.as_array().unwrap()[result_index]
+                                    .as_f64()
+                                    .unwrap()
+                                    / proposal.scorestotal.as_f64().unwrap()
+                                    * 100.0
+                            )
+                        } else {
+                            format!("🇽 No Quorum",)
+                        };
+
                     webhook
                         .edit_message(&http, MessageId::from(initial_message_id), |w| {
                             w.embeds(vec![Embed::fake(|e| {
                                 e.title(proposal.name)
                                     .description(format!(
-                                        "**{}** {} proposal ended with results {}",
+                                        "**{}** {} proposal ended on {}",
                                         proposal.dao.name,
                                         if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                             "off-chain"
                                         } else {
                                             "on-chain"
                                         },
-                                        proposal.scores
+                                        format!("{}", proposal.timeend.format("%B %e").to_string())
                                     ))
+                                    .field("", message_content, false)
                                     .url(proposal.url)
-                                    .color(Colour::DARK_GREEN)
+                                    .color(Colour(0x23272A))
                                     .thumbnail(format!(
                                         "https://www.senatelabs.xyz/{}_medium.png",
                                         proposal.dao.picture

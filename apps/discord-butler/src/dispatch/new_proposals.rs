@@ -69,7 +69,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                             proposal.timeend.timestamp()
                         ))
                         .url(proposal.url)
-                        .color(Colour::RED)
+                        .color(Colour(0xFFFFFF))
                         .thumbnail(format!(
                             "https://www.senatelabs.xyz/{}_medium.png",
                             proposal.dao.picture
