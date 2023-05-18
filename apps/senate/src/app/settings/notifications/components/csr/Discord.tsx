@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 
 const Discord = () => {
-    const [currentWebhook, setCurrentWebhook] = useState('')
     const [getDiscordNotifications, setDiscordNotifications] = useState(false)
+    const [getDiscordIncludeVotes, setDiscordIncludeVotes] = useState(false)
+    const [currentWebhook, setCurrentWebhook] = useState('')
 
     const account = useAccount()
     const router = useRouter()
@@ -24,11 +25,17 @@ const Discord = () => {
     }, [account])
 
     useEffect(() => {
-        if (user.data) setDiscordNotifications(user.data.discordnotifications)
+        if (user.data) {
+            setDiscordNotifications(user.data.discordnotifications)
+            setDiscordIncludeVotes(user.data.discordincludevotes)
+        }
     }, [user.data])
 
     const updateDiscordNotifications =
         trpc.accountSettings.updateDiscordNotifications.useMutation()
+
+    const updateDiscordIncludeVotes =
+        trpc.accountSettings.updateDiscordIncludeVotes.useMutation()
 
     const onEnter = () => {
         setDiscordWebhook.mutate({ url: currentWebhook })
@@ -87,16 +94,37 @@ const Discord = () => {
                         </div>
                     </div>
 
-                    {setDiscordWebhook.error && (
-                        <div className='flex flex-col text-white'>
-                            {JSON.parse(setDiscordWebhook.error.message).map(
-                                (err: Error) => (
-                                    <div>{err.message}</div>
-                                )
-                            )}
+                    <div className='flex flex-row items-center gap-4'>
+                        <div className='font-[18px] leading-[23px] text-white'>
+                            Include votes in message
                         </div>
-                    )}
+                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
+                            <input
+                                type='checkbox'
+                                checked={getDiscordIncludeVotes}
+                                onChange={(e) => {
+                                    updateDiscordIncludeVotes.mutate({
+                                        val: e.target.checked
+                                    })
+                                }}
+                                className='peer sr-only'
+                            />
+                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+                        </label>
+                    </div>
                 </div>
+            )}
+            {setDiscordWebhook.error && (
+                <input
+                    className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
+                    value={currentWebhook}
+                    onChange={(e) => {
+                        setCurrentWebhook(String(e.target.value))
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') onEnter()
+                    }}
+                />
             )}
         </div>
     )

@@ -53,6 +53,11 @@ export const accountSettingsRouter = router({
             const existingTempUser = await prisma.user.findFirst({
                 where: {
                     email: input.email
+                },
+                select: {
+                    isaaveuser: true,
+                    isuniswapuser: true,
+                    subscriptions: true
                 }
             })
 
@@ -94,6 +99,17 @@ export const accountSettingsRouter = router({
                     isuniswapuser: existingTempUser?.isuniswapuser
                 }
             })
+
+            if (existingTempUser)
+                for (const sub of existingTempUser.subscriptions) {
+                    await prisma.subscription.createMany({
+                        data: {
+                            userid: user.id,
+                            daoid: String(sub.daoid)
+                        },
+                        skipDuplicates: true
+                    })
+                }
 
             emailClient.sendEmail({
                 From: 'info@senatelabs.xyz',
@@ -212,6 +228,28 @@ export const accountSettingsRouter = router({
 
                 data: {
                     discordnotifications: input.val
+                }
+            })
+
+            return user
+        }),
+
+    updateDiscordIncludeVotes: privateProcedure
+        .input(
+            z.object({
+                val: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+
+                data: {
+                    discordincludevotes: input.val
                 }
             })
 

@@ -3,7 +3,7 @@
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "apps/aave-notifs/Dockerfile",
-    "watchPatterns": ["apps/aave-notifs"]
+    "watchPatterns": ["apps/aave-notifs", "packages/database"]
   },
   "deploy": {
     "numReplicas": 1,

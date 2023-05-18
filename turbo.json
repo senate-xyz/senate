@@ -27,7 +27,7 @@
     },
     "db:push": { "cache": false },
     "db:seed": { "cache": false },
-    "db:generate": {},
+    "db:generate": { "cache": false },
 
     "build:axiom": { "cache": false },
 
