@@ -3,8 +3,14 @@
 mod dispatch;
 mod generate;
 pub mod prisma;
-use dispatch::ending_soon::dispatch_ending_soon_notifications;
-use generate::ending_soon::{generate_ending_soon_notifications, EndingType};
+use dispatch::{
+    ended::dispatch_ended_proposal_notifications,
+    ending_soon::dispatch_ending_soon_notifications,
+};
+use generate::{
+    ended::generate_ended_proposal_notifications,
+    ending_soon::{generate_ending_soon_notifications, EndingType},
+};
 use tokio::try_join;
 mod utils {
     pub mod vote;
@@ -81,5 +87,15 @@ async fn main() {
         }
     });
 
-    try_join!(new_proposals_task, ending_soon_task,).unwrap();
+    let client_for_ended_proposals: Arc<PrismaClient> = Arc::clone(&client);
+    let ended_proposals_task = tokio::task::spawn(async move {
+        loop {
+            generate_ended_proposal_notifications(&client_for_ended_proposals).await;
+            dispatch_ended_proposal_notifications(&client_for_ended_proposals).await;
+
+            sleep(std::time::Duration::from_secs(60)).await;
+        }
+    });
+
+    try_join!(new_proposals_task, ending_soon_task, ended_proposals_task).unwrap();
 }

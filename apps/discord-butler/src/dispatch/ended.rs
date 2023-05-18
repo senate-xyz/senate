@@ -1,23 +1,33 @@
 use std::{sync::Arc, time::Duration};
 
-use serenity::{http::Http, model::webhook::Webhook};
+use serenity::{
+    http::Http,
+    model::{
+        prelude::{Embed, MessageId},
+        webhook::Webhook,
+    },
+    utils::Colour,
+};
 use tokio::time::sleep;
 
-use crate::prisma::{self, notification, user, NotificationType, PrismaClient};
+use crate::prisma::{
+    self,
+    notification,
+    proposal,
+    user,
+    DaoHandlerType,
+    NotificationType,
+    PrismaClient,
+};
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
+pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
     let notifications = client
         .notification()
         .find_many(vec![
             notification::dispatched::equals(false),
-            notification::r#type::in_vec(vec![
-                NotificationType::Remaining1Discord,
-                NotificationType::Remaining3Discord,
-                NotificationType::Remaining6Discord,
-                NotificationType::Remaining12Discord,
-            ]),
+            notification::r#type::equals(NotificationType::EndedProposalDiscord),
         ])
         .exec()
         .await
@@ -45,26 +55,55 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                 .unwrap()
                 .unwrap();
 
+            let proposal = client
+                .proposal()
+                .find_first(vec![proposal::id::equals(notification.clone().proposalid)])
+                .include(proposal_with_dao::include())
+                .exec()
+                .await
+                .unwrap()
+                .unwrap();
+
+            let initial_message_id: u64 =
+                new_notification.discordmessageid.unwrap().parse().unwrap();
+
             let http = Http::new("");
 
             let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
                 .await
                 .expect("Missing webhook");
 
+            webhook
+                .edit_message(&http, MessageId::from(initial_message_id), |w| {
+                    w.embeds(vec![Embed::fake(|e| {
+                        e.title(proposal.name)
+                            .description(format!(
+                                "**{}** {} proposal ended with results {}",
+                                proposal.dao.name,
+                                if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                    "off-chain"
+                                } else {
+                                    "on-chain"
+                                },
+                                proposal.scores
+                            ))
+                            .url(proposal.url)
+                            .color(Colour::DARK_GREEN)
+                            .thumbnail(format!(
+                                "https://www.senatelabs.xyz/{}_medium.png",
+                                proposal.dao.picture
+                            ))
+                            .image("https://placehold.co/2000x1/png")
+                    })])
+                })
+                .await
+                .unwrap();
+
             let message = webhook
                 .execute(&http, true, |w| {
                     w.content(format!(
-                        "{} ends in {}",
+                        "{} ended!",
                         new_notification.discordmessagelink.unwrap(),
-                        match notification.r#type {
-                            NotificationType::Remaining12Discord => "12 hours!",
-                            NotificationType::Remaining6Discord => "6 hours!",
-                            NotificationType::Remaining3Discord => "3 hours!",
-                            NotificationType::Remaining1Discord => "1 hour!",
-                            NotificationType::EndedProposalDiscord => todo!(),
-                            NotificationType::QuorumNotReachedEmail => todo!(),
-                            NotificationType::NewProposalDiscord => todo!(),
-                        }
                     ))
                     .username("Senate Butler")
                     .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")

@@ -3,6 +3,7 @@ use std::{sync::Arc, time::Duration};
 use serenity::{
     http::Http,
     model::{prelude::Embed, webhook::Webhook},
+    utils::Colour,
 };
 use tokio::time::sleep;
 
@@ -68,6 +69,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                             proposal.timeend.timestamp()
                         ))
                         .url(proposal.url)
+                        .color(Colour::RED)
                         .thumbnail(format!(
                             "https://www.senatelabs.xyz/{}_medium.png",
                             proposal.dao.picture
@@ -76,18 +78,6 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                 })])
                 .username("Senate Butler")
                 .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
-                .components(|c| {
-                    c.create_action_row(|row| {
-                        // An action row can only contain one select menu!
-                        row.create_select_menu(|menu| {
-                            menu.custom_id("vote_select");
-                            menu.options(|f| {
-                                f.create_option(|o| o.label("👍").value("Yay"));
-                                f.create_option(|o| o.label("👎").value("Nay"))
-                            })
-                        })
-                    })
-                })
             })
             .await
             .expect("Could not execute webhook.");
@@ -104,7 +94,8 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                         ),
                         vec![
                             notification::dispatched::set(true),
-                            notification::discordmessage::set(msg.link().into()),
+                            notification::discordmessagelink::set(msg.link().into()),
+                            notification::discordmessageid::set(msg.id.to_string().into()),
                         ],
                     )
                     .exec()

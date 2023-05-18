@@ -238,7 +238,8 @@ model notification {
 
   type NotificationType
 
-  discordmessage String?
+  discordmessagelink String?
+  discordmessageid   String?
 
   dispatched Boolean @default(false)
 
