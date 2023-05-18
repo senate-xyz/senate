@@ -29,6 +29,10 @@
       "path": "../apps/senate"
     },
     {
+      "name": "🌐 @senate/shortie",
+      "path": "../apps/shortie"
+    },
+    {
       "name": "⚙️ @senate/config",
       "path": "../packages/config"
     },
