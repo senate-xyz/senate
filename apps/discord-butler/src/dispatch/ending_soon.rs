@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::{env, sync::Arc, time::Duration};
 
 use serenity::{http::Http, model::webhook::Webhook};
 use tokio::time::sleep;
@@ -66,6 +66,25 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                 .unwrap()
                 .unwrap();
 
+            let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+                Some(v) => v.into_string().unwrap(),
+                None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+            };
+
+            let short_url = format!(
+                "{}{}",
+                shortner_url,
+                proposal
+                    .id
+                    .chars()
+                    .rev()
+                    .take(7)
+                    .collect::<Vec<char>>()
+                    .into_iter()
+                    .rev()
+                    .collect::<String>()
+            );
+
             let message_content = match notification.r#type {
                 NotificationType::QuorumNotReachedEmail => todo!(),
                 NotificationType::NewProposalDiscord => todo!(),
@@ -79,7 +98,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                             "on-chain"
                         },
                         new_notification.discordmessagelink.unwrap(),
-                        proposal.url
+                        short_url
                     )
                 }
                 NotificationType::SecondReminderDiscord => {
@@ -92,7 +111,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                             "on-chain"
                         },
                         new_notification.discordmessagelink.unwrap(),
-                        proposal.url
+                        short_url
                     )
                 }
                 NotificationType::ThirdReminderDiscord => todo!(),
