@@ -27,6 +27,7 @@ model user {
   emailquorumwarning Boolean @default(false)
 
   discordnotifications Boolean @default(false)
+  discordreminders     Boolean @default(true)
   discordwebhook       String  @default("")
   discordincludevotes  Boolean @default(true)
 
