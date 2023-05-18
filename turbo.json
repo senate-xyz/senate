@@ -11,6 +11,11 @@
       "cache": false
     },
 
+    "build:shortie": {
+      "dependsOn": ["^build:db", "^build:axiom"],
+      "cache": false
+    },
+
     "build:bulletin": {
       "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
@@ -66,6 +71,7 @@
     },
     "start": {},
     "start:senate": {},
+    "start:shortie": {},
     "start:bulletin": {},
     "start:sanity": {},
 

@@ -8,8 +8,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:shortie": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "start:shortie": "next start",
+    "lint": "next lint",
+    "clean": "rimraf .next .turbo node_modules dist",
+    "lint:fix": "eslint src --fix",
+    "prettier": "prettier src --check",
+    "prettier:fix": "prettier src --write"
   },
   "dependencies": {
     "@senate/config": "*",
