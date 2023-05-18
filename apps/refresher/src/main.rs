@@ -1,4 +1,6 @@
 #![deny(unused_crate_dependencies)]
+#![allow(unused_imports)]
+#![allow(unused_parens)]
 
 use log::{info, warn};
 use tokio::try_join;
