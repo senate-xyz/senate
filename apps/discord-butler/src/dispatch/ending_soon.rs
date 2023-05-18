@@ -3,7 +3,15 @@ use std::{sync::Arc, time::Duration};
 use serenity::{http::Http, model::webhook::Webhook};
 use tokio::time::sleep;
 
-use crate::prisma::{self, notification, user, NotificationType, PrismaClient};
+use crate::prisma::{
+    self,
+    notification,
+    proposal,
+    user,
+    DaoHandlerType,
+    NotificationType,
+    PrismaClient,
+};
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
@@ -13,10 +21,8 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
         .find_many(vec![
             notification::dispatched::equals(false),
             notification::r#type::in_vec(vec![
-                NotificationType::Remaining1Discord,
-                NotificationType::Remaining3Discord,
-                NotificationType::Remaining6Discord,
-                NotificationType::Remaining12Discord,
+                NotificationType::FirstReminderDiscord,
+                NotificationType::SecondReminderDiscord,
             ]),
         ])
         .exec()
@@ -51,23 +57,53 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                 .await
                 .expect("Missing webhook");
 
+            let proposal = client
+                .proposal()
+                .find_first(vec![proposal::id::equals(notification.clone().proposalid)])
+                .include(proposal_with_dao::include())
+                .exec()
+                .await
+                .unwrap()
+                .unwrap();
+
+            let message_content = match notification.r#type {
+                NotificationType::QuorumNotReachedEmail => todo!(),
+                NotificationType::NewProposalDiscord => todo!(),
+                NotificationType::FirstReminderDiscord => {
+                    format!(
+                        "⌛ **{}** {} proposal {} **ends in 2️⃣4️⃣ hours.** \nVote here 👉 <{}>",
+                        proposal.dao.name,
+                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                            "off-chain"
+                        } else {
+                            "on-chain"
+                        },
+                        new_notification.discordmessagelink.unwrap(),
+                        proposal.url
+                    )
+                }
+                NotificationType::SecondReminderDiscord => {
+                    format!(
+                        "🚨 **{}** {} proposal {} **ends in :six: hours.** 🕒 \nVote here 👉 <{}>",
+                        proposal.dao.name,
+                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                            "off-chain"
+                        } else {
+                            "on-chain"
+                        },
+                        new_notification.discordmessagelink.unwrap(),
+                        proposal.url
+                    )
+                }
+                NotificationType::ThirdReminderDiscord => todo!(),
+                NotificationType::EndedProposalDiscord => todo!(),
+            };
+
             let message = webhook
                 .execute(&http, true, |w| {
-                    w.content(format!(
-                        "{} ends in {}",
-                        new_notification.discordmessagelink.unwrap(),
-                        match notification.r#type {
-                            NotificationType::Remaining12Discord => "12 hours!",
-                            NotificationType::Remaining6Discord => "6 hours!",
-                            NotificationType::Remaining3Discord => "3 hours!",
-                            NotificationType::Remaining1Discord => "1 hour!",
-                            NotificationType::EndedProposalDiscord => todo!(),
-                            NotificationType::QuorumNotReachedEmail => todo!(),
-                            NotificationType::NewProposalDiscord => todo!(),
-                        }
-                    ))
-                    .username("Senate Butler")
-                    .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
+                    w.content(message_content)
+                        .username("Senate Butler")
+                        .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
                 })
                 .await
                 .expect("Could not execute webhook.");

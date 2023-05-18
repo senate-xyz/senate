@@ -9,8 +9,9 @@ use dispatch::{
 };
 use generate::{
     ended::generate_ended_proposal_notifications,
-    ending_soon::{generate_ending_soon_notifications, EndingType},
+    ending_soon::generate_ending_soon_notifications,
 };
+use prisma::NotificationType;
 use tokio::try_join;
 mod utils {
     pub mod vote;
@@ -59,25 +60,13 @@ async fn main() {
         loop {
             generate_ending_soon_notifications(
                 &client_for_ending_soon,
-                EndingType::Remaining1Discord,
+                NotificationType::FirstReminderDiscord,
             )
             .await;
 
             generate_ending_soon_notifications(
                 &client_for_ending_soon,
-                EndingType::Remaining3Discord,
-            )
-            .await;
-
-            generate_ending_soon_notifications(
-                &client_for_ending_soon,
-                EndingType::Remaining6Discord,
-            )
-            .await;
-
-            generate_ending_soon_notifications(
-                &client_for_ending_soon,
-                EndingType::Remaining12Discord,
+                NotificationType::SecondReminderDiscord,
             )
             .await;
 

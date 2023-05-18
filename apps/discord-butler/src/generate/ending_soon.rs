@@ -12,23 +12,17 @@ use prisma_client_rust::chrono::{Duration, Utc};
 
 use std::sync::Arc;
 
-#[derive(Debug)]
-pub enum EndingType {
-    Remaining1Discord,
-    Remaining3Discord,
-    Remaining6Discord,
-    Remaining12Discord,
-}
-
 pub async fn generate_ending_soon_notifications(
     client: &Arc<PrismaClient>,
-    ending_type: EndingType,
+    ending_type: NotificationType,
 ) {
     let timeleft = match ending_type {
-        EndingType::Remaining1Discord => Duration::from(Duration::hours(1)),
-        EndingType::Remaining3Discord => Duration::from(Duration::hours(3)),
-        EndingType::Remaining6Discord => Duration::from(Duration::hours(6)),
-        EndingType::Remaining12Discord => Duration::from(Duration::hours(12)),
+        NotificationType::FirstReminderDiscord => Duration::from(Duration::hours(24)),
+        NotificationType::SecondReminderDiscord => Duration::from(Duration::hours(6)),
+        NotificationType::QuorumNotReachedEmail => todo!(),
+        NotificationType::NewProposalDiscord => todo!(),
+        NotificationType::ThirdReminderDiscord => todo!(),
+        NotificationType::EndedProposalDiscord => todo!(),
     };
 
     let users = client
@@ -55,20 +49,7 @@ pub async fn generate_ending_soon_notifications(
                         notification::create_unchecked(
                             user.clone().id,
                             np.clone().id,
-                            match ending_type {
-                                EndingType::Remaining1Discord => {
-                                    NotificationType::Remaining1Discord
-                                }
-                                EndingType::Remaining3Discord => {
-                                    NotificationType::Remaining3Discord
-                                }
-                                EndingType::Remaining6Discord => {
-                                    NotificationType::Remaining6Discord
-                                }
-                                EndingType::Remaining12Discord => {
-                                    NotificationType::Remaining12Discord
-                                }
-                            },
+                            ending_type,
                             vec![notification::dispatched::set(false)],
                         )
                     })
@@ -109,9 +90,6 @@ pub async fn get_ending_proposals_for_user(
             proposal::daoid::in_vec(subscribed_daos.into_iter().map(|d| d.daoid).collect()),
             proposal::state::equals(ProposalState::Active),
             proposal::timeend::lt((Utc::now() + timeleft).into()),
-            proposal::timeend::gt(
-                (Utc::now() + timeleft - Duration::from(Duration::minutes(50))).into(),
-            ),
         ])
         .include(proposal_with_dao::include())
         .exec()

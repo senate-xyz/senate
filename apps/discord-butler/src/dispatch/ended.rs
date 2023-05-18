@@ -102,7 +102,13 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
             let message = webhook
                 .execute(&http, true, |w| {
                     w.content(format!(
-                        "{} ended!",
+                        "🗳️ **{}** {} proposal {} **just ended.** ☑️",
+                        proposal.dao.name,
+                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                            "off-chain"
+                        } else {
+                            "on-chain"
+                        },
                         new_notification.discordmessagelink.unwrap(),
                     ))
                     .username("Senate Butler")
