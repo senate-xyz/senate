@@ -7,14 +7,9 @@ use serenity::{
 };
 use tokio::time::sleep;
 
-use crate::prisma::{
-    self,
-    notification,
-    proposal,
-    user,
-    DaoHandlerType,
-    NotificationType,
-    PrismaClient,
+use crate::{
+    prisma::{self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient},
+    utils::vote::get_vote,
 };
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
@@ -54,6 +49,10 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
             .await
             .expect("Missing webhook");
 
+        let voted = get_vote(user.clone().id, proposal.clone().id, client)
+            .await
+            .unwrap();
+
         let message = webhook
             .execute(&http, true, |w| {
                 w.embeds(vec![Embed::fake(|e| {
@@ -74,7 +73,11 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                             "https://www.senatelabs.xyz/{}_medium.png",
                             proposal.dao.picture
                         ))
-                        .image("https://placehold.co/2000x1/png")
+                        .image(if voted {
+                            "https://senatelabs.xyz/assets/Discord/active-vote2x.png"
+                        } else {
+                            "https://senatelabs.xyz/assets/Discord/active-no-vote2x.png"
+                        })
                 })])
                 .username("Senate Butler")
                 .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")

@@ -11,14 +11,9 @@ use serenity::{
 };
 use tokio::time::sleep;
 
-use crate::prisma::{
-    self,
-    notification,
-    proposal,
-    user,
-    DaoHandlerType,
-    NotificationType,
-    PrismaClient,
+use crate::{
+    prisma::{self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient},
+    utils::vote::get_vote,
 };
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
@@ -105,6 +100,11 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             format!("🇽 No Quorum",)
                         };
 
+                    let voted =
+                        get_vote(new_notification.userid, new_notification.proposalid, client)
+                            .await
+                            .unwrap();
+
                     webhook
                         .edit_message(&http, MessageId::from(initial_message_id), |w| {
                             w.embeds(vec![Embed::fake(|e| {
@@ -126,7 +126,11 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                         "https://www.senatelabs.xyz/{}_medium.png",
                                         proposal.dao.picture
                                     ))
-                                    .image("https://placehold.co/2000x1/png")
+                                    .image(if voted {
+                                        "https://senatelabs.xyz/assets/Discord/past-vote2x.png"
+                                    } else {
+                                        "https://senatelabs.xyz/assets/Discord/past-no-vote2x.png"
+                                    })
                             })])
                         })
                         .await
