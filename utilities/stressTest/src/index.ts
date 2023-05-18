@@ -128,7 +128,7 @@ async function linkVotersToUser(user: User, voters: Array<string>) {
     await prisma.$transaction(
         voters.map((voter) => {
             return prisma.user.update({
-                where: { address: user.address },
+                where: { name: user.name },
                 data: {
                     voters: {
                         connectOrCreate: {
@@ -217,10 +217,10 @@ async function bootstrapStressTestUserWithSubscriptions(): Promise<User> {
 async function createStressTestUser(): Promise<User> {
     return await prisma.user.upsert({
         where: {
-            address: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965'
+            name: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965'
         },
         create: {
-            address: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965'
+            name: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965'
         },
         update: {}
     })

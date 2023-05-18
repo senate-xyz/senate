@@ -202,7 +202,7 @@ const fetchUsersToBeNotified = async (): Promise<
                 email: {
                     not: ''
                 },
-                emaildailybulletin: true,
+                dailybulletin: true,
                 subscriptions: {
                     some: {
                         notificationsenabled: true

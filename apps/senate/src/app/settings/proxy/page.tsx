@@ -8,12 +8,6 @@ import { trpc } from '../../../server/trpcClient'
 import { normalize } from 'viem/ens'
 
 export default function Home() {
-    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
-    const [cookie] = useCookies(['hasSeenLanding'])
-    useEffect(() => {
-        if (!cookie.hasSeenLanding) redirect('/landing')
-    }, [cookie])
-
     const account = useAccount()
     const router = useRouter()
     const provider = usePublicClient()

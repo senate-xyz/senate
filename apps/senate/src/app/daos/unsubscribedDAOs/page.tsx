@@ -3,8 +3,6 @@ import { getAverageColor } from 'fast-average-color-node'
 import { prisma } from '@senate/database'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
 import 'server-only'
 
 const getSubscribedDAOs = async () => {
@@ -14,7 +12,7 @@ const getSubscribedDAOs = async () => {
     const user = await prisma.user
         .findFirstOrThrow({
             where: {
-                address: { equals: userAddress }
+                name: { equals: userAddress }
             },
             select: {
                 id: true
@@ -64,10 +62,6 @@ const getAllDAOs = async () => {
 }
 
 export default async function UnsubscribedDAOs() {
-    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
-    const cookieStore = cookies()
-    if (!cookieStore.has('hasSeenLanding')) redirect('/landing')
-
     const allDAOs = await getAllDAOs()
     const subscribedDAOs = await getSubscribedDAOs()
 

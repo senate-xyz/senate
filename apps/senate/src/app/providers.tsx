@@ -20,7 +20,9 @@ import {
     ledgerWallet,
     metaMaskWallet,
     rabbyWallet,
-    rainbowWallet
+    rainbowWallet,
+    safeWallet,
+    walletConnectWallet
 } from '@rainbow-me/rainbowkit/wallets'
 
 const { chains, publicClient } = configureChains(

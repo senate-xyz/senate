@@ -41,11 +41,10 @@ export function authOptions(
                     if (result.success) {
                         await prisma.user.upsert({
                             where: {
-                                address: siwe.address
+                                name: siwe.address
                             },
                             create: {
-                                address: siwe.address,
-                                verifiedaddress: true,
+                                name: siwe.address,
                                 acceptedterms: true,
                                 acceptedtermstimestamp: new Date(),
                                 voters: {
@@ -56,9 +55,9 @@ export function authOptions(
                                 }
                             },
                             update: {
-                                verifiedaddress: true,
                                 lastactive: new Date(),
                                 sessioncount: { increment: 1 },
+                                newuser: false,
                                 acceptedterms: true,
                                 acceptedtermstimestamp: new Date()
                             }
@@ -123,17 +122,16 @@ export function authOptions(
             async signIn(message) {
                 const user = await prisma.user.findFirst({
                     where: {
-                        address: String(message.user.name)
+                        name: String(message.user.name)
                     }
                 })
 
                 if (user)
                     await prisma.user.update({
                         where: {
-                            address: String(message.user.name)
+                            name: String(message.user.name)
                         },
                         data: {
-                            verifiedaddress: true,
                             lastactive: new Date(),
                             sessioncount: { increment: 1 }
                         }
@@ -148,17 +146,16 @@ export function authOptions(
             async session(message) {
                 const user = await prisma.user.findFirst({
                     where: {
-                        address: String(message.session.user?.name)
+                        name: String(message.session.user?.name)
                     }
                 })
 
                 if (user)
                     await prisma.user.update({
                         where: {
-                            address: String(message.session.user?.name)
+                            name: String(message.session.user?.name)
                         },
                         data: {
-                            verifiedaddress: true,
                             lastactive: new Date()
                         }
                     })

@@ -15,6 +15,7 @@
   "scripts": {
     "build": "turbo run build",
     "build:senate": "turbo run build:senate",
+    "build:shortie": "turbo run build:shortie",
     "build:bulletin": "turbo run build:bulletin",
     "build:sanity": "turbo run build:sanity",
     "build:detective": "turbo run build:detective",
@@ -24,6 +25,7 @@
     "build:axiom": "turbo run build:axiom",
     "start": "turbo run start",
     "start:senate": "turbo run start:senate",
+    "start:shortie": "turbo run start:shortie",
     "start:bulletin": "turbo run start:bulletin",
     "start:sanity": "turbo run start:sanity",
     "dev": "turbo run dev --parallel",

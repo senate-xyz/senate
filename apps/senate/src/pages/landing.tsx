@@ -19,7 +19,7 @@ const Home = () => {
     const [cookie, setCookie] = useCookies(['hasSeenLanding'])
 
     useEffect(() => {
-        if (cookie.hasSeenLanding) router.push('/daos')
+        if (cookie.hasSeenLanding) router.push('/')
     }, [cookie])
 
     return (

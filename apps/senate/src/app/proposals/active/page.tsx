@@ -1,6 +1,5 @@
 import { prisma } from '@senate/database'
 import { getServerSession } from 'next-auth'
-import { redirect } from 'next/navigation'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import { Filters } from './components/csr/Filters'
 import Table from './components/ssr/Table'
@@ -13,7 +12,7 @@ const getSubscribedDAOs = async () => {
     try {
         const user = await prisma.user.findFirstOrThrow({
             where: {
-                address: { equals: userAddress }
+                name: { equals: userAddress }
             },
             select: {
                 id: true
@@ -50,7 +49,7 @@ const getProxies = async () => {
     try {
         const user = await prisma.user.findFirstOrThrow({
             where: {
-                address: { equals: userAddress }
+                name: { equals: userAddress }
             },
             include: {
                 voters: true
@@ -71,8 +70,6 @@ export default async function Home({
     params: { slug: string }
     searchParams?: { from: string; end: number; voted: string; proxy: string }
 }) {
-    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
-
     const subscribedDAOs = await getSubscribedDAOs()
     const proxies = await getProxies()
 
