@@ -89,7 +89,12 @@ pub async fn get_ending_proposals_for_user(
         .find_many(vec![
             proposal::daoid::in_vec(subscribed_daos.into_iter().map(|d| d.daoid).collect()),
             proposal::state::equals(ProposalState::Active),
-            proposal::timeend::lt((Utc::now() + timeleft).into()),
+            proposal::timeend::lt(
+                (Utc::now() + timeleft + Duration::from(Duration::minutes(10))).into(),
+            ),
+            proposal::timeend::gt(
+                (Utc::now() + timeleft - Duration::from(Duration::minutes(10))).into(),
+            ),
         ])
         .include(proposal_with_dao::include())
         .exec()
