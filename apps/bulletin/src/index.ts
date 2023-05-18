@@ -587,7 +587,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
 const sendBulletin = async (to: string, data: BulletinData) => {
     try {
         await client.sendEmailWithTemplate({
-            TemplateAlias: 'daily-bulletin-3',
+            TemplateAlias: 'daily-bulletin-4',
             TemplateModel: {
                 senateLogoUrl: encodeURI(
                     process.env.NEXT_PUBLIC_WEB_URL +
