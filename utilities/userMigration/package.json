@@ -7,7 +7,7 @@
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "scripts": {
-        "build": "tsup",
+        "build": "yarn generate && tsup",
         "start": "node dist/index",
         "dev": "tsup && node dist/index",
         "clean": "rimraf .turbo node_modules dist yarn-error.log",
