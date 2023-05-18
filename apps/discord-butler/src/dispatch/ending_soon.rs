@@ -71,7 +71,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                 NotificationType::NewProposalDiscord => todo!(),
                 NotificationType::FirstReminderDiscord => {
                     format!(
-                        "⌛ **{}** {} proposal {} **ends in 2️⃣4️⃣ hours.** \nVote here 👉 <{}>",
+                        "⌛ **{}** {} proposal {} **ends in 2️⃣4️⃣ hours.** 🕒 \nVote here 👉 <{}>",
                         proposal.dao.name,
                         if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                             "off-chain"
