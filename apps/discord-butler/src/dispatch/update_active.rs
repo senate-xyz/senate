@@ -1,5 +1,6 @@
 use std::{sync::Arc, time::Duration};
 
+use prisma_client_rust::bigdecimal::ToPrimitive;
 use serenity::{
     http::Http,
     model::{
@@ -27,6 +28,7 @@ use crate::{
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
+    println!("update_active_proposal_notifications");
     let active_proposals = client
         .proposal()
         .find_many(vec![prisma::proposal::state::equals(ProposalState::Active)])
@@ -80,6 +82,36 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                 .unwrap()
                 .unwrap();
 
+            // let result_index = match proposal
+            //     .scores
+            //     .as_array()
+            //     .unwrap()
+            //     .iter()
+            //     .enumerate()
+            //     .max_by_key(|&(_index, item)| {
+            //         item.as_f64().unwrap().to_u64().unwrap_or(std::u64::MIN)
+            //     }) {
+            //     Some((index, _)) => index,
+            //     None => 0,
+            // };
+
+            // let message_content = if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
+            //     format!(
+            //         "☑️ **{}** {}%",
+            //         &proposal.choices.as_array().unwrap()[result_index]
+            //             .as_str()
+            //             .unwrap(),
+            //         (proposal.scores.as_array().unwrap()[result_index]
+            //             .as_f64()
+            //             .unwrap()
+            //             / proposal.scorestotal.as_f64().unwrap()
+            //             * 100.0)
+            //             .round()
+            //     )
+            // } else {
+            //     format!("🇽 No Quorum",)
+            // };
+
             let http = Http::new("");
 
             let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
@@ -91,7 +123,7 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                     w.embeds(vec![Embed::fake(|e| {
                         e.title(proposal.name)
                             .description(format!(
-                                "**{}** {} proposal ending <t:{}:R>",
+                                "**{}** {} proposal ending **<t:{}:R>**",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                     "off-chain"
@@ -102,6 +134,7 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                             ))
                             .url(proposal.url)
                             .color(Colour(0xFFFFFF))
+                            //.field("", message_content, true)
                             .thumbnail(format!(
                                 "https://www.senatelabs.xyz/{}_medium.png",
                                 proposal.dao.picture

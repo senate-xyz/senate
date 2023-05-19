@@ -19,7 +19,8 @@ use crate::{
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
-    let notifications = client
+    println!("dispatch_ended_proposal_notifications");
+    let ended_notifications = client
         .notification()
         .find_many(vec![
             notification::dispatched::equals(false),
@@ -29,12 +30,12 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
         .await
         .unwrap();
 
-    for notification in notifications {
+    for ended_notification in ended_notifications {
         let new_notification = client
             .notification()
             .find_unique(notification::userid_proposalid_type(
-                notification.clone().userid,
-                notification.clone().proposalid,
+                ended_notification.clone().userid,
+                ended_notification.clone().proposalid,
                 NotificationType::NewProposalDiscord,
             ))
             .exec()
@@ -46,7 +47,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                 if new_notification.dispatched {
                     let user = client
                         .user()
-                        .find_first(vec![user::id::equals(notification.clone().userid)])
+                        .find_first(vec![user::id::equals(ended_notification.clone().userid)])
                         .exec()
                         .await
                         .unwrap()
@@ -54,7 +55,9 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
                     let proposal = client
                         .proposal()
-                        .find_first(vec![proposal::id::equals(notification.clone().proposalid)])
+                        .find_first(vec![proposal::id::equals(
+                            ended_notification.clone().proposalid,
+                        )])
                         .include(proposal_with_dao::include())
                         .exec()
                         .await
@@ -90,11 +93,12 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 &proposal.choices.as_array().unwrap()[result_index]
                                     .as_str()
                                     .unwrap(),
-                                proposal.scores.as_array().unwrap()[result_index]
+                                (proposal.scores.as_array().unwrap()[result_index]
                                     .as_f64()
                                     .unwrap()
                                     / proposal.scorestotal.as_f64().unwrap()
-                                    * 100.0
+                                    * 100.0)
+                                    .round()
                             )
                         } else {
                             format!("🇽 No Quorum",)
@@ -162,9 +166,9 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 .notification()
                                 .update(
                                     notification::userid_proposalid_type(
-                                        notification.clone().userid,
-                                        notification.clone().proposalid,
-                                        notification.clone().r#type,
+                                        ended_notification.clone().userid,
+                                        ended_notification.clone().proposalid,
+                                        NotificationType::EndedProposalDiscord,
                                     ),
                                     vec![
                                         notification::dispatched::set(true),
@@ -180,6 +184,17 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         }
                         None => {}
                     }
+                } else {
+                    client
+                        .notification()
+                        .delete(notification::userid_proposalid_type(
+                            ended_notification.userid,
+                            ended_notification.proposalid,
+                            NotificationType::EndedProposalDiscord,
+                        ))
+                        .exec()
+                        .await
+                        .unwrap();
                 }
             }
             None => {}

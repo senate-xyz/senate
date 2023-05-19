@@ -15,6 +15,7 @@ use crate::{
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
+    println!("dispatch_new_proposal_notifications");
     let notifications = client
         .notification()
         .find_many(vec![
@@ -58,7 +59,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                 w.embeds(vec![Embed::fake(|e| {
                     e.title(proposal.name)
                         .description(format!(
-                            "**{}** {} proposal ending <t:{}:R>",
+                            "**{}** {} proposal ending **<t:{}:R>**",
                             proposal.dao.name,
                             if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                 "off-chain"
