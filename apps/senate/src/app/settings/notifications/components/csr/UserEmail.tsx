@@ -48,8 +48,8 @@ const UserEmail = () => {
     }
 
     return (
-        <div className='flex flex-col gap-8'>
-            <div className='flex flex-row items-center gap-4'>
+        <div className='flex flex-col'>
+            <div className='flex w-[400px] flex-row items-center justify-between gap-4'>
                 <div className='font-[18px] leading-[23px] text-white'>
                     Receive Senate Daily Bulletin Email
                 </div>
@@ -68,45 +68,7 @@ const UserEmail = () => {
                 </label>
             </div>
             {getDailyEmails && (
-                <div className='flex flex-col gap-8'>
-                    <div className='flex flex-row items-center gap-4'>
-                        <div className='font-[18px] leading-[23px] text-white'>
-                            Get empty emails
-                        </div>
-                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
-                            <input
-                                type='checkbox'
-                                checked={getEmptyEmails}
-                                onChange={(e) => {
-                                    updateEmptyEmails.mutate({
-                                        val: e.target.checked
-                                    })
-                                }}
-                                className='peer sr-only'
-                            />
-                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
-                        </label>
-                    </div>
-
-                    <div className='flex flex-row items-center gap-4'>
-                        <div className='font-[18px] leading-[23px] text-white'>
-                            Get quorum alerts
-                        </div>
-                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
-                            <input
-                                type='checkbox'
-                                checked={getEmailQuorum}
-                                onChange={(e) => {
-                                    updateEmailQuorum.mutate({
-                                        val: e.target.checked
-                                    })
-                                }}
-                                className='peer sr-only'
-                            />
-                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
-                        </label>
-                    </div>
-
+                <div className='flex flex-col gap-4 border-b border-l border-neutral-600 p-4'>
                     <div className='flex flex-col gap-2'>
                         <div className='text-[18px] font-light text-white'>
                             Your Email Address
@@ -154,6 +116,44 @@ const UserEmail = () => {
                                 )}
                             </div>
                         )}
+                    </div>
+
+                    <div className='flex w-[382px] flex-row items-center justify-between gap-4'>
+                        <div className='font-[18px] leading-[23px] text-white'>
+                            Get empty emails
+                        </div>
+                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
+                            <input
+                                type='checkbox'
+                                checked={getEmptyEmails}
+                                onChange={(e) => {
+                                    updateEmptyEmails.mutate({
+                                        val: e.target.checked
+                                    })
+                                }}
+                                className='peer sr-only'
+                            />
+                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+                        </label>
+                    </div>
+
+                    <div className='flex w-[382px] flex-row items-center justify-between gap-4'>
+                        <div className='font-[18px] leading-[23px] text-white'>
+                            Get quorum alerts
+                        </div>
+                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
+                            <input
+                                type='checkbox'
+                                checked={getEmailQuorum}
+                                onChange={(e) => {
+                                    updateEmailQuorum.mutate({
+                                        val: e.target.checked
+                                    })
+                                }}
+                                className='peer sr-only'
+                            />
+                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+                        </label>
                     </div>
                 </div>
             )}

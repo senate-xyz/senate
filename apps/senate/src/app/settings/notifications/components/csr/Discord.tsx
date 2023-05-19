@@ -42,8 +42,8 @@ const Discord = () => {
     }
 
     return (
-        <div className='flex flex-col gap-8 '>
-            <div className='flex flex-row items-center gap-4'>
+        <div className='flex flex-col'>
+            <div className='flex w-[400px] flex-row items-center justify-between gap-4'>
                 <div className='font-[18px] leading-[23px] text-white'>
                     Receive Discord Notifications
                 </div>
@@ -63,38 +63,39 @@ const Discord = () => {
             </div>
 
             {getDiscordNotifications && (
-                <div className='flex flex-col gap-2'>
-                    <div className='text-[18px] font-light text-white'>
-                        Discord webhook
-                    </div>
-
-                    <div
-                        className={`flex h-[46px] w-full flex-row items-center`}
-                    >
-                        <input
-                            className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
-                            value={currentWebhook}
-                            onChange={(e) => {
-                                setCurrentWebhook(String(e.target.value))
-                            }}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') onEnter()
-                            }}
-                        />
-
+                <div className='flex flex-col gap-4 border-b border-l border-neutral-600 p-4'>
+                    <div className='flex flex-col gap-2'>
+                        <div className='text-[18px] font-light text-white'>
+                            Discord webhook
+                        </div>
                         <div
-                            className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
-                                user.data?.discordwebhook == currentWebhook
-                                    ? ' bg-[#ABABAB]'
-                                    : 'bg-white'
-                            } text-center`}
-                            onClick={() => onEnter()}
+                            className={`flex h-[46px] w-full flex-row items-center`}
                         >
-                            Save
+                            <input
+                                className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
+                                value={currentWebhook}
+                                onChange={(e) => {
+                                    setCurrentWebhook(String(e.target.value))
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') onEnter()
+                                }}
+                            />
+
+                            <div
+                                className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
+                                    user.data?.discordwebhook == currentWebhook
+                                        ? ' bg-[#ABABAB]'
+                                        : 'bg-white'
+                                } text-center`}
+                                onClick={() => onEnter()}
+                            >
+                                Save
+                            </div>
                         </div>
                     </div>
 
-                    <div className='flex flex-row items-center gap-4'>
+                    <div className='flex w-[382px] flex-row items-center justify-between gap-4'>
                         <div className='font-[18px] leading-[23px] text-white'>
                             Ending soon reminders
                         </div>
