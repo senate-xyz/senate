@@ -50,7 +50,7 @@ pub async fn generate_ending_soon_notifications(
         let mut ending_not_voted_proposals = vec![];
 
         for proposal in &ending_proposals {
-            if get_vote(user.clone().id, proposal.clone().id, client)
+            if !get_vote(user.clone().id, proposal.clone().id, client)
                 .await
                 .unwrap()
             {
@@ -106,11 +106,9 @@ pub async fn get_ending_proposals_for_user(
         .find_many(vec![
             proposal::daoid::in_vec(subscribed_daos.into_iter().map(|d| d.daoid).collect()),
             proposal::state::equals(ProposalState::Active),
-            proposal::timeend::lt(
-                (Utc::now() + timeleft + Duration::from(Duration::minutes(10))).into(),
-            ),
+            proposal::timeend::lt((Utc::now() + timeleft).into()),
             proposal::timeend::gt(
-                (Utc::now() + timeleft - Duration::from(Duration::minutes(10))).into(),
+                (Utc::now() + timeleft - Duration::from(Duration::minutes(60))).into(),
             ),
         ])
         .include(proposal_with_dao::include())
