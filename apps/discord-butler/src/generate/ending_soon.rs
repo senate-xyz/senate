@@ -1,11 +1,14 @@
-use crate::prisma::{
-    notification,
-    proposal,
-    subscription,
-    user,
-    NotificationType,
-    PrismaClient,
-    ProposalState,
+use crate::{
+    prisma::{
+        notification,
+        proposal,
+        subscription,
+        user,
+        NotificationType,
+        PrismaClient,
+        ProposalState,
+    },
+    utils::vote::get_vote,
 };
 use anyhow::Result;
 use prisma_client_rust::chrono::{Duration, Utc};
@@ -36,19 +39,33 @@ pub async fn generate_ending_soon_notifications(
         .unwrap();
 
     for user in users {
+        if user.discordreminders == false {
+            return;
+        }
+
         let ending_proposals = get_ending_proposals_for_user(&user.address, timeleft, client)
             .await
             .unwrap();
 
+        let mut ending_not_voted_proposals = vec![];
+
+        for proposal in &ending_proposals {
+            if get_vote(user.clone().id, proposal.clone().id, client)
+                .await
+                .unwrap()
+            {
+                ending_not_voted_proposals.push(proposal);
+            }
+        }
         client
             .notification()
             .create_many(
-                ending_proposals
+                ending_not_voted_proposals
                     .iter()
-                    .map(|np| {
+                    .map(|p| {
                         notification::create_unchecked(
                             user.clone().id,
-                            np.clone().id,
+                            p.id.clone(),
                             ending_type,
                             vec![notification::dispatched::set(false)],
                         )
