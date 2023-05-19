@@ -6,7 +6,7 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
         id: 0,
         name: 'Active Proposals',
-        color: 'text-[#808080] text-[36px] font-light cursor-pointer',
+        color: 'text-[#808080] text-[36px] font-light cursor-pointer hover:text-[#8c8c8c]',
         link: '/proposals/active?from=any&end=365&voted=any&proxy=any'
     },
     {

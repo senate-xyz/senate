@@ -163,7 +163,7 @@ export const UnsubscribedDAO = (props: {
                 </div>
 
                 <button
-                    className='h-14 w-full bg-white text-xl font-bold text-black'
+                    className='h-14 w-full bg-white text-xl font-bold text-black hover:bg-neutral-100 active:bg-neutral-300'
                     onClick={() => {
                         account.isConnected && session.status == 'authenticated'
                             ? subscribe.mutate(

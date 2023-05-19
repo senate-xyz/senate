@@ -47,13 +47,17 @@ const UserEmail = () => {
         setEmail.mutate({ email: currentEmail })
     }
 
+    if (!user.data) return <></>
+
+    console.log(user.data.email + currentEmail)
+
     return (
         <div className='flex flex-col'>
             <div className='flex max-w-[400px] flex-row items-center justify-between gap-4'>
                 <div className='font-[18px] leading-[23px] text-white'>
                     Receive Senate Daily Bulletin Email
                 </div>
-                <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
+                <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
                     <input
                         type='checkbox'
                         checked={getDailyEmails}
@@ -64,7 +68,7 @@ const UserEmail = () => {
                         }}
                         className='peer sr-only'
                     />
-                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:hover:bg-green-300" />
                 </label>
             </div>
             {getDailyEmails && (
@@ -90,9 +94,13 @@ const UserEmail = () => {
 
                             <div
                                 className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
-                                    user.data?.email == currentEmail
-                                        ? ' bg-[#ABABAB]'
-                                        : 'bg-white'
+                                    user.data.email.includes('@')
+                                        ? user.data.email == currentEmail
+                                            ? 'bg-[#ABABAB] hover:bg-[#999999]'
+                                            : 'bg-white hover:bg-[#e5e5e5]'
+                                        : currentEmail.length
+                                        ? 'bg-white hover:bg-[#e5e5e5]'
+                                        : 'bg-[#ABABAB] hover:bg-[#999999]'
                                 } text-center`}
                                 onClick={() => onEnter()}
                             >
@@ -100,12 +108,11 @@ const UserEmail = () => {
                             </div>
                         </div>
 
-                        {!user.data?.verifiedemail &&
-                            user.data?.challengecode?.length && (
-                                <div className='text-[18px] font-light text-red-400'>
-                                    Email not verified!
-                                </div>
-                            )}
+                        {!user.data.verifiedemail && (
+                            <div className='text-[18px] font-light text-red-400'>
+                                Email not verified!
+                            </div>
+                        )}
 
                         {setEmail.error && (
                             <div className='flex flex-col text-white'>
@@ -122,7 +129,7 @@ const UserEmail = () => {
                         <div className='font-[18px] leading-[23px] text-white'>
                             Get empty emails
                         </div>
-                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
+                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
                             <input
                                 type='checkbox'
                                 checked={getEmptyEmails}
@@ -133,7 +140,7 @@ const UserEmail = () => {
                                 }}
                                 className='peer sr-only'
                             />
-                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:hover:bg-green-300" />
                         </label>
                     </div>
 
@@ -141,7 +148,7 @@ const UserEmail = () => {
                         <div className='font-[18px] leading-[23px] text-white'>
                             Get quorum alerts
                         </div>
-                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
+                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
                             <input
                                 type='checkbox'
                                 checked={getEmailQuorum}
@@ -152,7 +159,7 @@ const UserEmail = () => {
                                 }}
                                 className='peer sr-only'
                             />
-                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:hover:bg-green-300" />
                         </label>
                     </div>
                 </div>

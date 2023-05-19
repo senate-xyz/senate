@@ -75,7 +75,7 @@ export default function Home() {
                     />
 
                     <div
-                        className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
+                        className={`flex h-full w-[72px] cursor-pointer flex-col justify-center hover:bg-[#999999] ${
                             proxyAddress.length ? 'bg-white' : 'bg-[#ABABAB]'
                         } text-center`}
                         onClick={() => {

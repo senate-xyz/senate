@@ -47,7 +47,7 @@ const Discord = () => {
                 <div className='font-[18px] leading-[23px] text-white'>
                     Receive Discord Notifications
                 </div>
-                <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
+                <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
                     <input
                         type='checkbox'
                         checked={getDiscordNotifications}
@@ -58,7 +58,7 @@ const Discord = () => {
                         }}
                         className='peer sr-only'
                     />
-                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:hover:bg-green-300" />
                 </label>
             </div>
 
@@ -83,10 +83,10 @@ const Discord = () => {
                             />
 
                             <div
-                                className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
+                                className={`flex h-full w-[72px] cursor-pointer flex-col justify-center  ${
                                     user.data?.discordwebhook == currentWebhook
-                                        ? ' bg-[#ABABAB]'
-                                        : 'bg-white'
+                                        ? 'bg-[#ABABAB] hover:bg-[#999999]'
+                                        : 'bg-white hover:bg-[#e5e5e5]'
                                 } text-center`}
                                 onClick={() => onEnter()}
                             >
@@ -99,7 +99,7 @@ const Discord = () => {
                         <div className='font-[18px] leading-[23px] text-white'>
                             Ending soon reminders
                         </div>
-                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
+                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
                             <input
                                 type='checkbox'
                                 checked={getDiscordReminders}
@@ -110,7 +110,7 @@ const Discord = () => {
                                 }}
                                 className='peer sr-only'
                             />
-                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:hover:bg-green-300" />
                         </label>
                     </div>
                 </div>
