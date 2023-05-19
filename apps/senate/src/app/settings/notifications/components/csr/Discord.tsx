@@ -7,7 +7,7 @@ import { useAccount } from 'wagmi'
 
 const Discord = () => {
     const [getDiscordNotifications, setDiscordNotifications] = useState(false)
-    const [getDiscordIncludeVotes, setDiscordIncludeVotes] = useState(false)
+    const [getDiscordReminders, setDiscordReminders] = useState(false)
     const [currentWebhook, setCurrentWebhook] = useState('')
 
     const account = useAccount()
@@ -27,22 +27,22 @@ const Discord = () => {
     useEffect(() => {
         if (user.data) {
             setDiscordNotifications(user.data.discordnotifications)
-            setDiscordIncludeVotes(user.data.discordincludevotes)
+            setDiscordReminders(user.data.discordreminders)
         }
     }, [user.data])
 
     const updateDiscordNotifications =
         trpc.accountSettings.updateDiscordNotifications.useMutation()
 
-    const updateDiscordIncludeVotes =
-        trpc.accountSettings.updateDiscordIncludeVotes.useMutation()
+    const updateDiscordReminders =
+        trpc.accountSettings.updateDiscordReminders.useMutation()
 
     const onEnter = () => {
         setDiscordWebhook.mutate({ url: currentWebhook })
     }
 
     return (
-        <div className='flex flex-col gap-8'>
+        <div className='flex flex-col gap-8 '>
             <div className='flex flex-row items-center gap-4'>
                 <div className='font-[18px] leading-[23px] text-white'>
                     Receive Discord Notifications
@@ -96,14 +96,14 @@ const Discord = () => {
 
                     <div className='flex flex-row items-center gap-4'>
                         <div className='font-[18px] leading-[23px] text-white'>
-                            Include votes in message
+                            Ending soon reminders
                         </div>
                         <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
                             <input
                                 type='checkbox'
-                                checked={getDiscordIncludeVotes}
+                                checked={getDiscordReminders}
                                 onChange={(e) => {
-                                    updateDiscordIncludeVotes.mutate({
+                                    updateDiscordReminders.mutate({
                                         val: e.target.checked
                                     })
                                 }}

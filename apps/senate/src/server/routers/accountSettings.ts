@@ -234,7 +234,7 @@ export const accountSettingsRouter = router({
             return user
         }),
 
-    updateDiscordIncludeVotes: privateProcedure
+    updateDiscordReminders: privateProcedure
         .input(
             z.object({
                 val: z.boolean()
@@ -249,7 +249,7 @@ export const accountSettingsRouter = router({
                 },
 
                 data: {
-                    discordincludevotes: input.val
+                    discordreminders: input.val
                 }
             })
 
