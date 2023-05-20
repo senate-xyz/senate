@@ -24,14 +24,26 @@ fn init_logger() {
         .init();
 }
 
+#[derive(BotCommands, Clone)]
+#[command(
+    rename_rule = "lowercase",
+    description = "These commands are supported:"
+)]
+enum Command {
+    #[command(description = "display this text.")]
+    Help,
+    #[command(description = "handle a username.")]
+    Username(String),
+    #[command(description = "handle a username and an age.", parse_with = "split")]
+    UsernameAndAge { username: String, age: u8 },
+}
+
 #[tokio::main]
 async fn main() {
     dotenv().ok();
     init_logger();
 
     info!("telegram-butler start");
-
-    log::info!("Starting throw dice bot...");
 
     let bot = Bot::from_env();
 
@@ -50,6 +62,4 @@ async fn main() {
     .await;
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
-
-    info!("telegram-butler end");
 }

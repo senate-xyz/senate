@@ -24,14 +24,14 @@ export default function Home() {
         let resolvedAddress = proxyAddress
         if (
             (
-                await provider.getEnsName({
-                    address: proxyAddress as `0x${string}`
+                await provider.getEnsAddress({
+                    name: proxyAddress
                 })
             )?.length
         ) {
             resolvedAddress = String(
-                await provider.getEnsName({
-                    address: proxyAddress as `0x${string}`
+                await provider.getEnsAddress({
+                    name: proxyAddress
                 })
             )
         }

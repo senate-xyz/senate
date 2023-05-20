@@ -10,6 +10,7 @@ const UserEmail = () => {
     const [getDailyEmails, setDailyEmails] = useState(false)
     const [getEmptyEmails, setEmptyEmails] = useState(false)
     const [getEmailQuorum, setEmailQuorum] = useState(false)
+    const [getEmailUpdated, setEmailUpdated] = useState(false)
 
     const account = useAccount()
     const router = useRouter()
@@ -62,9 +63,16 @@ const UserEmail = () => {
                         type='checkbox'
                         checked={getDailyEmails}
                         onChange={(e) => {
-                            updateDailyEmails.mutate({
-                                val: e.target.checked
-                            })
+                            updateDailyEmails.mutate(
+                                {
+                                    val: e.target.checked
+                                },
+                                {
+                                    onSuccess: () => {
+                                        setEmailUpdated(true)
+                                    }
+                                }
+                            )
                         }}
                         className='peer sr-only'
                     />
@@ -107,6 +115,12 @@ const UserEmail = () => {
                                 Save
                             </div>
                         </div>
+
+                        {getEmailUpdated && (
+                            <div className='text-[18px] font-light text-green-400'>
+                                Email updated!
+                            </div>
+                        )}
 
                         {!user.data.verifiedemail && (
                             <div className='text-[18px] font-light text-red-400'>

@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use chrono::Duration;
 use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime};
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
@@ -248,11 +249,13 @@ async fn update_proposals(
         .update(
             daohandler::id::equals(dao_handler.id),
             vec![
-                daohandler::snapshotindex::set(Some(DateTime::from_utc(
-                    NaiveDateTime::from_timestamp_millis(new_index * 1000)
-                        .expect("can not create snapshotindex"),
-                    FixedOffset::east_opt(0).unwrap(),
-                ))),
+                daohandler::snapshotindex::set(Some(
+                    DateTime::from_utc(
+                        NaiveDateTime::from_timestamp_millis(new_index * 1000)
+                            .expect("can not create snapshotindex"),
+                        FixedOffset::east_opt(0).unwrap(),
+                    ) - Duration::from(Duration::minutes(60)),
+                )),
                 daohandler::uptodate::set(uptodate),
             ],
         )
