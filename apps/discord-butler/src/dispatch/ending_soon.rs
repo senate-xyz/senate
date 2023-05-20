@@ -117,6 +117,11 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                 }
                 NotificationType::ThirdReminderDiscord => todo!(),
                 NotificationType::EndedProposalDiscord => todo!(),
+                NotificationType::NewProposalTelegram => todo!(),
+                NotificationType::FirstReminderTelegram => todo!(),
+                NotificationType::SecondReminderTelegram => todo!(),
+                NotificationType::ThirdReminderTelegram => todo!(),
+                NotificationType::EndedProposalTelegram => todo!(),
             };
 
             let message = webhook

@@ -141,7 +141,7 @@ const Page = () => {
     })
     const { address } = useAccount()
 
-    const unsubscribe = trpc.verify.verifyUser.useMutation()
+    const unsubscribe = trpc.verify.verifyEmail.useMutation()
 
     const { data, signMessage } = useSignMessage({
         onSuccess(data, variables) {

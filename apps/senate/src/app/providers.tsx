@@ -11,6 +11,7 @@ import {
 import { SessionProvider } from 'next-auth/react'
 import { configureChains, createConfig, mainnet, WagmiConfig } from 'wagmi'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { publicProvider } from 'wagmi/providers/public'
 import { TrpcClientProvider } from '../server/trpcClient'
 import Link from 'next/link'
 import {
@@ -25,7 +26,10 @@ import {
 
 const { chains, publicClient } = configureChains(
     [mainnet],
-    [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? '' })]
+    [
+        alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? '' }),
+        publicProvider()
+    ]
 )
 
 const connectors = connectorsForWallets([

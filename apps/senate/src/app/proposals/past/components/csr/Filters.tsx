@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAccount, usePublicClient } from 'wagmi'
 import { useSession } from 'next-auth/react'
-import { normalize } from 'viem/ens'
 
 const endOptions: { name: string; time: number }[] = [
     {
@@ -213,8 +212,8 @@ const Proxy = (props: { address: string }) => {
 
     useEffect(() => {
         ;(async () => {
-            const ens = await provider.getEnsAddress({
-                name: normalize(props.address)
+            const ens = await provider.getEnsName({
+                address: props.address as `0x${string}`
             })
             setName(ens ?? props.address)
         })()

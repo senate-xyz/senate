@@ -36,7 +36,7 @@ export const verifyRouter = router({
             return user ? true : false
         }),
 
-    verifyUser: publicProcedure
+    verifyEmail: publicProcedure
         .input(
             z.object({
                 challenge: z.string(),

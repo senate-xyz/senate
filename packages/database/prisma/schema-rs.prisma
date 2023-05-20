@@ -48,8 +48,13 @@ model user {
 
   discordnotifications Boolean @default(false)
   discordreminders     Boolean @default(true)
-  discordwebhook       String  @default("")
   discordincludevotes  Boolean @default(true)
+  discordwebhook       String  @default("")
+
+  telegramnotifications Boolean @default(false)
+  telegramreminders     Boolean @default(true)
+  telegramincludevotes  Boolean @default(true)
+  telegramchatid        String  @default("")
 
   subscriptions subscription[]
   voters        voter[]
@@ -242,6 +247,9 @@ model notification {
   discordmessagelink String?
   discordmessageid   String?
 
+  telegramchatid    String?
+  telegrammessageid String?
+
   dispatched Boolean @default(false)
 
   @@id([userid, proposalid, type])
@@ -259,11 +267,18 @@ model config {
 
 enum NotificationType {
   QUORUM_NOT_REACHED_EMAIL
+
   NEW_PROPOSAL_DISCORD
   FIRST_REMINDER_DISCORD
   SECOND_REMINDER_DISCORD
   THIRD_REMINDER_DISCORD
   ENDED_PROPOSAL_DISCORD
+
+  NEW_PROPOSAL_TELEGRAM
+  FIRST_REMINDER_TELEGRAM
+  SECOND_REMINDER_TELEGRAM
+  THIRD_REMINDER_TELEGRAM
+  ENDED_PROPOSAL_TELEGRAM
 }
 
 enum DAOHandlerType {
