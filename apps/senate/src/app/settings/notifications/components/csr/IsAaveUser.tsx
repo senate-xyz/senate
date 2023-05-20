@@ -1,5 +1,6 @@
 'use client'
 
+import { MagicUserState } from '@senate/database'
 import { trpc } from '../../../../../server/trpcClient'
 
 const IsAaveUser = () => {
@@ -18,7 +19,9 @@ const IsAaveUser = () => {
                     <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
                         <input
                             type='checkbox'
-                            checked={user.data?.isaaveuser}
+                            checked={
+                                user.data?.isaaveuser == MagicUserState.ENABLED
+                            }
                             onChange={() => {
                                 disableAaveUser.mutate()
                             }}

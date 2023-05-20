@@ -3,7 +3,7 @@
 
 pub mod prisma;
 
-use crate::prisma::user;
+use crate::prisma::{user, MagicUserState};
 use dotenv::dotenv;
 use std::env;
 
@@ -34,7 +34,7 @@ async fn main() {
 
     let users_to_be_notified = db
         .user()
-        .find_many(vec![user::isaaveuser::equals(true)])
+        .find_many(vec![user::isaaveuser::equals(MagicUserState::Enabled)])
         .exec()
         .await
         .unwrap();

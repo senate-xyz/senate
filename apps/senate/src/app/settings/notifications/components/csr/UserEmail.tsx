@@ -20,7 +20,7 @@ const UserEmail = () => {
     useEffect(() => {
         setCurrentEmail(
             user.data?.verifiedemail || user.data?.challengecode?.length
-                ? user.data.email
+                ? String(user.data.email)
                 : ''
         )
     }, [user.data])
@@ -102,7 +102,7 @@ const UserEmail = () => {
 
                             <div
                                 className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
-                                    user.data.email.includes('@')
+                                    user.data.email?.includes('@')
                                         ? user.data.email == currentEmail
                                             ? 'bg-[#ABABAB] hover:bg-[#999999]'
                                             : 'bg-white hover:bg-[#e5e5e5]'

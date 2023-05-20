@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { prisma } from '@senate/database'
+import { MagicUserState, prisma } from '@senate/database'
 import { z } from 'zod'
 import { ServerClient } from 'postmark'
 
@@ -37,7 +37,7 @@ export default async function handler(
                     id: existingUser.id
                 },
                 data: {
-                    isaaveuser: true,
+                    isaaveuser: MagicUserState.ENABLED,
                     challengecode: challengeCode,
                     verifiedemail: false
                 }
@@ -45,7 +45,7 @@ export default async function handler(
 
             emailClient.sendEmail({
                 From: 'info@senatelabs.xyz',
-                To: existingUser.email,
+                To: String(existingUser.email),
                 Subject: 'Confirm your email',
                 TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/${challengeCode}`
             })
@@ -81,7 +81,7 @@ export default async function handler(
     const newUser = await prisma.user.create({
         data: {
             email: email,
-            isaaveuser: true,
+            isaaveuser: MagicUserState.ENABLED,
             challengecode: challengeCode
         }
     })
@@ -96,7 +96,7 @@ export default async function handler(
 
     emailClient.sendEmail({
         From: 'info@senatelabs.xyz',
-        To: newUser.email,
+        To: String(newUser.email),
         Subject: 'Confirm your email',
         TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/${challengeCode}`
     })
