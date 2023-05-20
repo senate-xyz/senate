@@ -48,7 +48,7 @@ export default async function handler(
                 From: 'info@senatelabs.xyz',
                 To: String(existingUser.email),
                 Subject: 'Confirm your email',
-                TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/${challengeCode}`
+                TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-uniswap-user/${challengeCode}`
             })
 
             res.status(200).json({
@@ -99,7 +99,7 @@ export default async function handler(
         From: 'info@senatelabs.xyz',
         To: String(newUser.email),
         Subject: 'Confirm your email',
-        TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/${challengeCode}`
+        TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-uniswap-user/${challengeCode}`
     })
 
     res.status(200).json({ email: newUser.email, result: 'success' })

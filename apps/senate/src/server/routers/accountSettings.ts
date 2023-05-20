@@ -116,7 +116,7 @@ export const accountSettingsRouter = router({
                 From: 'info@senatelabs.xyz',
                 To: String(user.email),
                 Subject: 'Confirm your email',
-                TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify-email/${challengeCode}`
+                TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
             })
 
             return user
