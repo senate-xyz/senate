@@ -149,5 +149,7 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                 .await
                 .unwrap();
         }
+
+        sleep(Duration::from_millis(100)).await;
     }
 }

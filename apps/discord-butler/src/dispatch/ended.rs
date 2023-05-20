@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::{cmp::Ordering, result, sync::Arc, time::Duration};
 
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use serenity::{
@@ -73,36 +73,29 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         .await
                         .expect("Missing webhook");
 
-                    let result_index = match proposal
+                    let (result_index, max_score) = proposal
                         .scores
                         .as_array()
                         .unwrap()
                         .iter()
+                        .map(|score| score.as_f64().unwrap())
                         .enumerate()
-                        .max_by_key(|&(_index, item)| {
-                            item.as_f64().unwrap().to_u64().unwrap_or(std::u64::MIN)
-                        }) {
-                        Some((index, _)) => index,
-                        None => 0,
-                    };
+                        .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
+                        .unwrap();
 
-                    let message_content =
-                        if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
-                            format!(
-                                "☑️ **{}** {}%",
-                                &proposal.choices.as_array().unwrap()[result_index - 1]
-                                    .as_str()
-                                    .unwrap(),
-                                (proposal.scores.as_array().unwrap()[result_index - 1]
-                                    .as_f64()
-                                    .unwrap()
-                                    / proposal.scorestotal.as_f64().unwrap()
-                                    * 100.0)
-                                    .round()
-                            )
-                        } else {
-                            format!("🇽 No Quorum",)
-                        };
+                    let message_content = if proposal.scorestotal.as_f64()
+                        > proposal.quorum.as_f64()
+                    {
+                        format!(
+                            "☑️ **{}** {}%",
+                            &proposal.choices.as_array().unwrap()[result_index]
+                                .as_str()
+                                .unwrap(),
+                            (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
+                        )
+                    } else {
+                        format!("🇽 No Quorum",)
+                    };
 
                     let voted =
                         get_vote(new_notification.userid, new_notification.proposalid, client)
