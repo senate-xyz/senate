@@ -90,10 +90,10 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
                             format!(
                                 "☑️ **{}** {}%",
-                                &proposal.choices.as_array().unwrap()[result_index]
+                                &proposal.choices.as_array().unwrap()[result_index - 1]
                                     .as_str()
                                     .unwrap(),
-                                (proposal.scores.as_array().unwrap()[result_index]
+                                (proposal.scores.as_array().unwrap()[result_index - 1]
                                     .as_f64()
                                     .unwrap()
                                     / proposal.scorestotal.as_f64().unwrap()
