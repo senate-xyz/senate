@@ -3,6 +3,11 @@ import { publicProcedure, router } from '../trpc'
 import { JsonArray, Vote, prisma } from '@senate/database'
 
 export const publicRouter = router({
+    allDAOs: publicProcedure.query(async () => {
+        const allDAOs = await prisma.dao.findMany({})
+
+        return allDAOs
+    }),
     proposal: publicProcedure
         .input(
             z.object({

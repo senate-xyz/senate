@@ -13,19 +13,21 @@ export default async function handler(
 ) {
     const email = req.body.email
 
+    const aave = await prisma.dao.findFirst({
+        where: {
+            name: 'Aave'
+        }
+    })
+
     const existingUser = await prisma.user.findFirst({
         where: { email: email }
     })
 
     if (existingUser) {
-        if (existingUser.verifiedemail) {
-            await prisma.user.update({
-                where: {
-                    id: existingUser.id
-                },
-                data: {
-                    isaaveuser: true
-                }
+        if (existingUser.verifiedemail && existingUser.isaaveuser) {
+            res.status(200).json({
+                email: existingUser.email,
+                result: 'existing'
             })
         } else {
             const challengeCode = Math.random().toString(36).substring(2)
@@ -36,7 +38,8 @@ export default async function handler(
                 },
                 data: {
                     isaaveuser: true,
-                    challengecode: challengeCode
+                    challengecode: challengeCode,
+                    verifiedemail: false
                 }
             })
 
@@ -46,12 +49,21 @@ export default async function handler(
                 Subject: 'Confirm your email',
                 TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/${challengeCode}`
             })
+
+            res.status(200).json({
+                email: existingUser.email,
+                result: 'success'
+            })
         }
 
-        res.status(200).json({
-            email: existingUser.email,
-            result: 'success'
+        await prisma.subscription.createMany({
+            data: {
+                userid: existingUser.id,
+                daoid: String(aave?.id)
+            },
+            skipDuplicates: true
         })
+
         return
     }
 
@@ -72,6 +84,14 @@ export default async function handler(
             isaaveuser: true,
             challengecode: challengeCode
         }
+    })
+
+    await prisma.subscription.createMany({
+        data: {
+            userid: newUser.id,
+            daoid: String(aave?.id)
+        },
+        skipDuplicates: true
     })
 
     emailClient.sendEmail({

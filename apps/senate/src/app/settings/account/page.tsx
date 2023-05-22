@@ -2,20 +2,11 @@
 
 import { useAccountModal } from '@rainbow-me/rainbowkit'
 import { useSession } from 'next-auth/react'
-import { redirect } from 'next/navigation'
-import { useCookies } from 'react-cookie'
 import { useAccount } from 'wagmi'
 import NotConnected from './components/csr/NotConnected'
 import UserAddress from './components/csr/UserAddress'
-import { useEffect } from 'react'
 
 export default function Home() {
-    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
-    const [cookie] = useCookies(['hasSeenLanding'])
-    useEffect(() => {
-        if (!cookie.hasSeenLanding) redirect('/landing')
-    }, [cookie])
-
     const account = useAccount()
     const session = useSession()
     const { openAccountModal } = useAccountModal()

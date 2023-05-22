@@ -1,6 +1,6 @@
 generator client {
-  provider = "cargo prisma"
-  output   = "../src/prisma.rs"
+  provider        = "prisma-client-js"
+  previewFeatures = ["metrics", "clientExtensions", "jsonProtocol"]
 }
 
 datasource db {
@@ -25,6 +25,11 @@ model user {
   emaildailybulletin Boolean @default(false)
   emptydailybulletin Boolean @default(false)
   emailquorumwarning Boolean @default(false)
+
+  discordnotifications Boolean @default(false)
+  discordreminders     Boolean @default(true)
+  discordwebhook       String  @default("")
+  discordincludevotes  Boolean @default(true)
 
   subscriptions subscription[]
   voters        voter[]
@@ -211,9 +216,18 @@ model notification {
   user       user     @relation(fields: [userid], references: [id], onDelete: Cascade)
   proposalid String
   proposal   proposal @relation(fields: [proposalid], references: [id], onDelete: Cascade)
-  dispatched Boolean  @default(false)
 
-  @@id([userid, proposalid])
+  type NotificationType
+
+  discordmessagelink String?
+  discordmessageid   String?
+
+  dispatched Boolean @default(false)
+
+  @@id([userid, proposalid, type])
+  @@index(fields: [userid], type: Hash)
+  @@index(fields: [type], type: Hash)
+  @@index(fields: [proposalid], type: Hash)
 }
 
 model config {
@@ -221,6 +235,15 @@ model config {
   value Int
 
   @@index(fields: [key], type: Hash)
+}
+
+enum NotificationType {
+  QUORUM_NOT_REACHED_EMAIL
+  NEW_PROPOSAL_DISCORD
+  FIRST_REMINDER_DISCORD
+  SECOND_REMINDER_DISCORD
+  THIRD_REMINDER_DISCORD
+  ENDED_PROPOSAL_DISCORD
 }
 
 enum DAOHandlerType {
@@ -252,5 +275,6 @@ enum ProposalState {
   QUEUED
   EXPIRED
   EXECUTED
+  DELETED
   UNKNOWN
 }

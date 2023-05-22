@@ -53,6 +53,11 @@ export const accountSettingsRouter = router({
             const existingTempUser = await prisma.user.findFirst({
                 where: {
                     email: input.email
+                },
+                select: {
+                    isaaveuser: true,
+                    isuniswapuser: true,
+                    subscriptions: true
                 }
             })
 
@@ -95,6 +100,17 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            if (existingTempUser)
+                for (const sub of existingTempUser.subscriptions) {
+                    await prisma.subscription.createMany({
+                        data: {
+                            userid: user.id,
+                            daoid: String(sub.daoid)
+                        },
+                        skipDuplicates: true
+                    })
+                }
+
             emailClient.sendEmail({
                 From: 'info@senatelabs.xyz',
                 To: user.email,
@@ -108,21 +124,55 @@ export const accountSettingsRouter = router({
     updateDailyEmails: privateProcedure
         .input(
             z.object({
-                emaildailybulletin: z.boolean()
+                val: z.boolean()
             })
         )
         .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
-            const user = await prisma.user.upsert({
+            const user = await prisma.user.update({
                 where: {
                     address: String(username)
                 },
-                create: {
-                    address: String(username),
-                    emaildailybulletin: input.emaildailybulletin
+                data: { emaildailybulletin: input.val }
+            })
+
+            return user
+        }),
+
+    updateEmptyEmails: privateProcedure
+        .input(
+            z.object({
+                val: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
                 },
-                update: { emaildailybulletin: input.emaildailybulletin }
+                data: { emptydailybulletin: input.val }
+            })
+
+            return user
+        }),
+
+    updateQuorumEmails: privateProcedure
+        .input(
+            z.object({
+                val: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+                data: { emailquorumwarning: input.val }
             })
 
             return user
@@ -161,6 +211,72 @@ export const accountSettingsRouter = router({
 
         return user
     }),
+
+    updateDiscordNotifications: privateProcedure
+        .input(
+            z.object({
+                val: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+
+                data: {
+                    discordnotifications: input.val
+                }
+            })
+
+            return user
+        }),
+
+    updateDiscordReminders: privateProcedure
+        .input(
+            z.object({
+                val: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+
+                data: {
+                    discordreminders: input.val
+                }
+            })
+
+            return user
+        }),
+
+    setDiscordWebhook: privateProcedure
+        .input(
+            z.object({
+                url: z.string().url()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+
+                data: {
+                    discordwebhook: input.url
+                }
+            })
+
+            return user
+        }),
 
     getAcceptedTerms: privateProcedure.query(async ({ ctx }) => {
         const username = await ctx.user.name

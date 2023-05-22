@@ -4,7 +4,7 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
         id: 0,
         name: 'Account',
-        color: 'text-[#808080] text-[36px] font-light cursor-pointer',
+        color: 'text-[#808080] text-[36px] font-light cursor-pointer hover:text-[#8c8c8c]',
         link: '/settings/account'
     },
     {
@@ -16,7 +16,7 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
     {
         id: 2,
         name: 'Notifications',
-        color: 'text-[#808080] text-[36px] font-light cursor-pointer',
+        color: 'text-[#808080] text-[36px] font-light cursor-pointer hover:text-[#8c8c8c]',
         link: '/settings/notifications'
     }
 ]

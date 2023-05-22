@@ -7,21 +7,26 @@
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "scripts": {
-        "build": "tsup",
+        "build": "yarn generate && tsup",
         "start": "node dist/index",
         "dev": "tsup && node dist/index",
-        "clean": "rimraf .turbo node_modules dist",
-        "generate": "prisma generate --schema prisma/new/schema.prisma && prisma generate --schema prisma/old/schema.prisma"
+        "clean": "rimraf .turbo node_modules dist yarn-error.log",
+        "generate": "prisma generate --schema prisma/new/schema.prisma && prisma generate --schema prisma/old/schema.prisma",
+        "lint": "eslint src",
+        "lint:fix": "eslint src --fix",
+        "prettier": "prettier src --check",
+        "prettier:fix": "prettier src --write",
+        "update": "ncu -u"
     },
     "dependencies": {
-        "@prisma/client": "^4.13.0",
+        "@prisma/client": "^4.14.1",
         "@types/prompt-sync": "^4.2.0",
-        "inquirer": "9.2.2",
-        "prisma": "^4.13.0"
+        "inquirer": "9.2.4",
+        "prisma": "^4.14.1"
     },
     "devDependencies": {
         "@types/inquirer": "^9.0.3",
-        "rimraf": "^5.0.0",
+        "rimraf": "^5.0.1",
         "tsup": "^6.7.0",
         "typescript": "^5.0.4"
     }

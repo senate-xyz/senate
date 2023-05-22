@@ -1,8 +1,7 @@
 /** @type {import("next").NextConfig} */
 const config = {
     experimental: {
-        appDir: true,
-        serverActions: true
+        appDir: true
     },
     reactStrictMode: true,
     swcMinify: true,
@@ -17,6 +16,20 @@ const config = {
             'seeklogo.com',
             'docs.synthetix.io'
         ]
+    },
+    webpack: (config, { isServer }) => {
+        if (!isServer) {
+            config.resolve = {
+                ...config.resolve,
+                fallback: {
+                    net: false,
+                    tls: false,
+                    fs: false
+                }
+            }
+        }
+
+        return config
     }
 }
 export default config

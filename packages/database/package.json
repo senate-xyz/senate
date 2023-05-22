@@ -16,14 +16,15 @@
         "prebuild": "npm run db:generate",
         "predev": "npm run db:generate",
         "studio": "prisma studio",
-        "clean": "rimraf .turbo node_modules dist",
+        "clean": "rimraf .turbo node_modules dist yarn-error.log",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
         "prettier": "prettier src --check",
-        "prettier:fix": "prettier src --write"
+        "prettier:fix": "prettier src --write",
+        "update": "ncu -u"
     },
     "dependencies": {
-        "@prisma/client": "4.14.0",
+        "@prisma/client": "4.14.1",
         "@senate/axiom": "*",
         "ethers": "^6.3.0",
         "exponential-backoff": "^3.1.1",
@@ -32,7 +33,7 @@
     "devDependencies": {
         "@senate/config": "*",
         "eslint": "^8.40.0",
-        "prisma": "4.14.0",
+        "prisma": "4.14.1",
         "prisma-dbml-generator": "^0.10.0",
         "tsup": "^6.7.0",
         "typescript": "^5.0.4"

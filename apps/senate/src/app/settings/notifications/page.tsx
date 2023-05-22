@@ -7,6 +7,7 @@ import { useAccount } from 'wagmi'
 import UserEmail from './components/csr/UserEmail'
 import IsUniswapUser from './components/csr/IsUniswapUser'
 import IsAaveUser from './components/csr/IsAaveUser'
+import Discord from './components/csr/Discord'
 
 export default function Home() {
     if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
@@ -31,6 +32,7 @@ export default function Home() {
             </div>
 
             <UserEmail />
+            <Discord />
             <div className='flex flex-row gap-8'>
                 <IsAaveUser />
                 <IsUniswapUser />

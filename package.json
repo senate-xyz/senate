@@ -6,7 +6,7 @@
   "workspaces": [
     "apps/*",
     "packages/*",
-    "utilities/stressTest"
+    "utilities/*"
   ],
   "prisma": {
     "schema": "packages/database/prisma/schema.prisma",
@@ -15,12 +15,17 @@
   "scripts": {
     "build": "turbo run build",
     "build:senate": "turbo run build:senate",
+    "build:shortie": "turbo run build:shortie",
     "build:bulletin": "turbo run build:bulletin",
     "build:sanity": "turbo run build:sanity",
+    "build:detective": "turbo run build:detective",
+    "build:refresher": "turbo run build:refresher",
+    "build:discord-butler": "turbo run build:discord-butler",
     "build:db": "turbo run build:db",
     "build:axiom": "turbo run build:axiom",
     "start": "turbo run start",
     "start:senate": "turbo run start:senate",
+    "start:shortie": "turbo run start:shortie",
     "start:bulletin": "turbo run start:bulletin",
     "start:sanity": "turbo run start:sanity",
     "dev": "turbo run dev --parallel",
@@ -32,19 +37,20 @@
     "db:push": "turbo run db:push",
     "db:seed": "turbo run db:seed",
     "db:generate": "turbo run db:generate",
-    "clean": "turbo run clean && rimraf node_modules",
+    "clean": "turbo run clean && rimraf node_modules yarn-error.log",
     "prettier": "turbo run prettier",
     "prettier:fix": "turbo run prettier:fix",
     "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix"
+    "lint:fix": "turbo run lint:fix",
+    "update": "ncu -u && turbo run update && yarn"
   },
   "devDependencies": {
     "prettier": "^2.8.8",
     "tsx": "^3.12.7",
-    "turbo": "^1.9.3"
+    "turbo": "^1.9.8"
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {
-    "rimraf": "^5.0.0"
+    "rimraf": "^5.0.1"
   }
 }

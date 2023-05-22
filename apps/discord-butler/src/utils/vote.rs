@@ -3,12 +3,14 @@ use anyhow::Result;
 
 use std::sync::Arc;
 
-pub async fn get_vote(username: String, proposal_id: String) -> Result<bool> {
-    let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
-
+pub async fn get_vote(
+    user_id: String,
+    proposal_id: String,
+    client: &Arc<PrismaClient>,
+) -> Result<bool> {
     let user = client
         .user()
-        .find_first(vec![prisma::user::address::equals(username)])
+        .find_first(vec![prisma::user::id::equals(user_id)])
         .include(prisma::user::include!({ voters }))
         .exec()
         .await

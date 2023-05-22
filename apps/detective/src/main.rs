@@ -1,8 +1,9 @@
 #![deny(unused_crate_dependencies)]
+#![allow(unused_imports)]
+#![allow(unused_parens)]
 
 pub mod contracts;
 pub mod handlers;
-#[allow(warnings, unused)]
 pub mod prisma;
 mod router;
 pub mod utils {

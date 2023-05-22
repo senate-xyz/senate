@@ -12,10 +12,10 @@ import {
 } from '@senate/database'
 
 import axios from 'axios'
+import { log_bul } from '@senate/axiom'
 import { config } from 'dotenv'
 import { schedule } from 'node-cron'
 import { ServerClient } from 'postmark'
-import { log_bul } from '@senate/axiom'
 
 config()
 
@@ -587,7 +587,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
 const sendBulletin = async (to: string, data: BulletinData) => {
     try {
         await client.sendEmailWithTemplate({
-            TemplateAlias: 'daily-bulletin-3',
+            TemplateAlias: 'daily-bulletin-4',
             TemplateModel: {
                 senateLogoUrl: encodeURI(
                     process.env.NEXT_PUBLIC_WEB_URL +
@@ -728,8 +728,8 @@ function getHighestScore(proposal: ProposalWithDaoAndHandler): HighestScore {
     const scores = proposal.scores as JsonArray
 
     for (let i = 0; i < scores.length; i++) {
-        if (parseFloat(scores[i]!.toString()) > highestScore) {
-            highestScore = parseFloat(scores[i]!.toString())
+        if (parseFloat(scores[i]?.toString()) > highestScore) {
+            highestScore = parseFloat(scores[i]?.toString())
             highestScoreIndex = i
         }
     }

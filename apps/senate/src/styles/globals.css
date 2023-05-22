@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+.bg-aave-gradient {
+    background: linear-gradient(
+            53.9deg,
+            rgba(48, 186, 198, 0.5) -0.34%,
+            rgba(182, 80, 158, 0.5) 90.27%
+        ),
+        #273248;
+}
+
+.bg-uniswap-gradient {
+    background: linear-gradient(
+            53.9deg,
+            rgba(233, 51, 122, 0.5)-0.34%,
+            rgba(251, 198, 219, 0.5) 90.27%
+        ),
+        #482731;
+}
+
 @layer base {
     :root {
         @apply dark:bg-black bg-black;

@@ -12,8 +12,8 @@ export const appRouter = router({
     public: publicRouter,
     accountSettings: accountSettingsRouter,
     subscriptions: subscriptionsRouter,
-    health: healthRouter,
     verify: verifyRouter,
+    health: healthRouter,
     whoami: publicProcedure.query(({ ctx }) => {
         const user = ctx.user ?? null
         return user

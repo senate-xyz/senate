@@ -17,9 +17,13 @@
       "path": "../apps/discord-butler"
     },
     {
+      "name": "🦀 @senate/telegram-butler",
+      "path": "../apps/telegram-butler"
+    },
+    {
       "name": "🦀 @senate/aave-notifs",
       "path": "../apps/aave-notifs"
-    }, 
+    },
     {
       "name": "🚀 @senate/bulletin",
       "path": "../apps/bulletin"
@@ -31,6 +35,10 @@
     {
       "name": "🌐 @senate/senate",
       "path": "../apps/senate"
+    },
+    {
+      "name": "🌐 @senate/shortie",
+      "path": "../apps/shortie"
     },
     {
       "name": "⚙️ @senate/config",
@@ -51,10 +59,6 @@
     {
       "name": "🛠️ @senate/userMigration",
       "path": "../utilities/userMigration"
-    },
-    {
-      "name": "🛠️ @senate/deepdao",
-      "path": "../utilities/deepdao"
     }
   ],
   "settings": {
@@ -83,7 +87,9 @@
       "Prisma.prisma",
       "bradlc.vscode-tailwindcss",
       "VisualStudioExptTeam.vscodeintellicode",
-      "VisualStudioExptTeam.intellicode-api-usage-examples"
+      "VisualStudioExptTeam.intellicode-api-usage-examples",
+      "usernamehw.errorlens",
+      "rust-lang.rust-analyzer"
     ]
   }
 }

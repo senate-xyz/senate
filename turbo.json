@@ -11,6 +11,11 @@
       "cache": false
     },
 
+    "build:shortie": {
+      "dependsOn": ["^build:db", "^build:axiom"],
+      "cache": false
+    },
+
     "build:bulletin": {
       "dependsOn": ["^build:db", "^build:axiom"],
       "cache": false
@@ -21,13 +26,28 @@
       "cache": false
     },
 
+    "build:detective": {
+      "dependsOn": ["^db:generate"],
+      "cache": false
+    },
+
+    "build:refresher": {
+      "dependsOn": ["^db:generate"],
+      "cache": false
+    },
+
+    "build:discord-butler": {
+      "dependsOn": ["^db:generate"],
+      "cache": false
+    },
+
     "build:db": {
       "cache": false,
       "dependsOn": ["^db:generate", "^build:axiom"]
     },
     "db:push": { "cache": false },
     "db:seed": { "cache": false },
-    "db:generate": {},
+    "db:generate": { "cache": false },
 
     "build:axiom": { "cache": false },
 
@@ -66,6 +86,7 @@
     },
     "start": {},
     "start:senate": {},
+    "start:shortie": {},
     "start:bulletin": {},
     "start:sanity": {},
 
@@ -89,6 +110,7 @@
     "prettier": { "cache": false },
     "prettier:fix": { "cache": false },
 
-    "clean": { "cache": false }
+    "clean": { "cache": false },
+    "update": { "cache": false }
   }
 }

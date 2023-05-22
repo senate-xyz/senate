@@ -1,23 +1,34 @@
 #![deny(unused_crate_dependencies)]
+#![allow(unused_imports)]
+#![allow(unused_parens)]
 
-mod messages;
-#[allow(warnings, unused)]
+mod dispatch;
+mod generate;
 pub mod prisma;
+use dispatch::{
+    ended::dispatch_ended_proposal_notifications,
+    ending_soon::dispatch_ending_soon_notifications,
+    update_active::update_active_proposal_notifications,
+};
+use generate::{
+    ended::generate_ended_proposal_notifications,
+    ending_soon::generate_ending_soon_notifications,
+};
+use prisma::NotificationType;
+use tokio::try_join;
 mod utils {
     pub mod vote;
 }
 
-use log::info;
-use serenity::{http::Http, model::webhook::Webhook};
-use std::time::Duration;
+use std::sync::Arc;
 use tokio::time::sleep;
 
 use env_logger::{Builder, Env};
 
-use crate::messages::{
-    ended::get_past_embeds,
-    ending_soon::get_ending_soon_embeds,
-    new::get_new_embeds,
+use crate::{
+    dispatch::new_proposals::dispatch_new_proposal_notifications,
+    generate::new_proposals::generate_new_proposal_notifications,
+    prisma::PrismaClient,
 };
 
 fn init_logger() {
@@ -35,104 +46,63 @@ fn init_logger() {
 async fn main() {
     init_logger();
 
-    info!("discord-butler start");
+    let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
 
-    let http = Http::new("");
-    let webhook = Webhook::from_url(&http, "https://discord.com/api/webhooks/1099955005584314370/8ITvepezt-FnA-hsDtEDzHk5Jy9k3TSEVTsYNJjFe1ND0V_KjIw4mMwVzDA_cItV35nv")
-        .await
-        .expect("Replace the webhook with your own");
+    let client_for_new_proposals: Arc<PrismaClient> = Arc::clone(&client);
+    let new_proposals_task = tokio::task::spawn(async move {
+        loop {
+            generate_new_proposal_notifications(&client_for_new_proposals).await;
+            dispatch_new_proposal_notifications(&client_for_new_proposals).await;
 
-    ////
+            sleep(std::time::Duration::from_secs(60)).await;
+        }
+    });
 
-    let ending_soon_embeds =
-        get_ending_soon_embeds("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string())
-            .await
-            .unwrap();
+    let client_for_ending_soon = Arc::clone(&client);
+    let ending_soon_task = tokio::task::spawn(async move {
+        loop {
+            generate_ending_soon_notifications(
+                &client_for_ending_soon,
+                NotificationType::FirstReminderDiscord,
+            )
+            .await;
 
-    webhook
-        .execute(&http, false, |w| w.content("**Proposals Ending Soon** The voting on these proposals is going to end in the next 72 hours. You might want to act on them soon.")
-        .username("Senate Butler")
-        .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif"))
-        .await
-        .expect("Could not execute webhook.");
+            generate_ending_soon_notifications(
+                &client_for_ending_soon,
+                NotificationType::SecondReminderDiscord,
+            )
+            .await;
 
-    sleep(Duration::from_secs(1)).await;
+            dispatch_ending_soon_notifications(&client_for_ending_soon).await;
 
-    for chunk in ending_soon_embeds.chunks(5) {
-        webhook
-            .execute(&http, false, |w| {
-                w.embeds(chunk.to_vec())
-                    .username("Senate Butler")
-                    .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
-            })
-            .await
-            .expect("Could not execute webhook.");
+            sleep(std::time::Duration::from_secs(60)).await;
+        }
+    });
 
-        sleep(Duration::from_secs(1)).await;
-    }
+    let client_for_ended_proposals: Arc<PrismaClient> = Arc::clone(&client);
+    let ended_proposals_task = tokio::task::spawn(async move {
+        loop {
+            generate_ended_proposal_notifications(&client_for_ended_proposals).await;
+            dispatch_ended_proposal_notifications(&client_for_ended_proposals).await;
 
-    ////
+            sleep(std::time::Duration::from_secs(60)).await;
+        }
+    });
 
-    let new_embeds = get_new_embeds("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string())
-        .await
-        .unwrap();
+    let client_for_active_proposals: Arc<PrismaClient> = Arc::clone(&client);
+    let active_proposals_task = tokio::task::spawn(async move {
+        loop {
+            update_active_proposal_notifications(&client_for_active_proposals).await;
 
-    webhook
-        .execute(&http, false, |w| w.content("**New Proposals** These are the proposals that were created in the last 24 hours. You might want to check them out.")
-        .username("Senate Butler")
-       .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif"))
-        .await
-        .expect("Could not execute webhook.");
+            sleep(std::time::Duration::from_secs(60)).await;
+        }
+    });
 
-    sleep(Duration::from_secs(1)).await;
-
-    for chunk in new_embeds.chunks(5) {
-        webhook
-            .execute(&http, false, |w| {
-                w.embeds(chunk.to_vec())
-                    .username("Senate Butler")
-                    .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
-            })
-            .await
-            .expect("Could not execute webhook.");
-
-        sleep(Duration::from_secs(1)).await;
-    }
-
-    ////
-
-    let past_embeds = get_past_embeds("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string())
-        .await
-        .unwrap();
-
-    webhook
-        .execute(&http, false, |w| w.content("**Past Proposals** These are the proposals that ended in the last 24 hours. You might want to check them out.")
-        .username("Senate Butler")
-        .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif"))
-        .await
-        .expect("Could not execute webhook.");
-
-    sleep(Duration::from_secs(1)).await;
-
-    for chunk in past_embeds.chunks(5) {
-        webhook
-            .execute(&http, false, |w| {
-                w.embeds(chunk.to_vec())
-                    .username("Senate Butler")
-                    .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
-            })
-            .await
-            .expect("Could not execute webhook.");
-
-        sleep(Duration::from_secs(1)).await;
-    }
-
-    ////
-
-    webhook
-        .execute(&http, false, |w| w.content("These are the proposals to the DAOs you’re subscribed to on Senate.You can edit your DAO subscriptions and notification settings on https://www.senatelabs.xyz/settings/notifications")
-        .username("Senate Butler")
-        .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif"))
-        .await
-        .expect("Could not execute webhook.");
+    try_join!(
+        new_proposals_task,
+        ending_soon_task,
+        ended_proposals_task,
+        active_proposals_task
+    )
+    .unwrap();
 }

@@ -21,7 +21,8 @@ import {
     mainnet,
     createConfig,
     WagmiConfig,
-    useSignMessage
+    useSignMessage,
+    useAccount
 } from 'wagmi'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import Link from 'next/link'
@@ -131,9 +132,14 @@ const PageWrapper = () => {
 const Page = () => {
     const router = useRouter()
 
+    const validChallenge = trpc.verify.isValidChallenge.useQuery({
+        challenge: String(router.query.challenge)
+    })
+
     const user = trpc.verify.userOfChallenge.useQuery({
         challenge: String(router.query.challenge)
     })
+    const { address } = useAccount()
 
     const unsubscribe = trpc.verify.verifyUser.useMutation()
 
@@ -142,6 +148,7 @@ const Page = () => {
             unsubscribe.mutate(
                 {
                     challenge: String(router.query.challenge),
+                    address: address as `0x{string}`,
                     email: String(user.data?.email),
                     message: String(variables.message),
                     signature: data
@@ -155,24 +162,31 @@ const Page = () => {
         }
     })
 
-    return (
-        <div>
-            <p className='text-white'>code: {router.query.challenge}</p>
-            <p className='text-white'>email: {user.data?.email}</p>
-            <p>Signature: {data}</p>
-            <ConnectButton showBalance={false} />
-            <button
-                className='bg-white px-4'
-                onClick={() => {
-                    signMessage({
-                        message: `challenge: ${router.query.challenge} \nemail: ${user.data?.email}`
-                    })
-                }}
-            >
-                Sign to verify email
-            </button>
-        </div>
-    )
+    if (!validChallenge.data)
+        return (
+            <div>
+                <p className='text-white'>Invalid challenge</p>
+            </div>
+        )
+    else
+        return (
+            <div>
+                <p className='text-white'>code: {router.query.challenge}</p>
+                <p className='text-white'>email: {user.data?.email}</p>
+                <p>Signature: {data}</p>
+                <ConnectButton showBalance={false} />
+                <button
+                    className='bg-white px-4'
+                    onClick={() => {
+                        signMessage({
+                            message: `challenge: ${router.query.challenge} \nemail: ${user.data?.email}`
+                        })
+                    }}
+                >
+                    Sign to verify email
+                </button>
+            </div>
+        )
 }
 
 export default PageWrapper

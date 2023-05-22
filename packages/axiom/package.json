@@ -8,11 +8,12 @@
     "types": "./dist/index.d.ts",
     "scripts": {
         "build:axiom": "tsup",
-        "clean": "rimraf .turbo node_modules dist",
+        "clean": "rimraf .turbo node_modules dist yarn-error.log",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
         "prettier": "prettier src --check",
-        "prettier:fix": "prettier src --write"
+        "prettier:fix": "prettier src --write",
+        "update": "ncu -u"
     },
     "dependencies": {
         "@axiomhq/axiom-node": "^0.12.0",

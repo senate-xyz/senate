@@ -1,4 +1,6 @@
-#[allow(warnings, unused)]
+#![allow(unused_imports)]
+#![allow(unused_parens)]
+
 pub mod prisma;
 
 use crate::prisma::{dao, notification, proposal, user};

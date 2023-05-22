@@ -19,11 +19,12 @@
         "start:sanity": "node dist/index",
         "dev": "tsup && node dist/index",
         "dev:sanity": "tsup && node dist/index",
-        "clean": "rimraf .turbo node_modules dist",
+        "clean": "rimraf .turbo node_modules dist yarn-error.log",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
         "prettier": "prettier src --check",
-        "prettier:fix": "prettier src --write"
+        "prettier:fix": "prettier src --write",
+        "update": "ncu -u"
     },
     "dependencies": {
         "@senate/axiom": "*",
@@ -35,7 +36,7 @@
         "superagent": "^8.0.9"
     },
     "devDependencies": {
-        "@types/node": "^20.1.2",
+        "@types/node": "^20.2.1",
         "@types/node-cron": "^3.0.7",
         "dotenv": "^16.0.3",
         "ts-node": "^10.9.1",

@@ -219,11 +219,11 @@ const fetchVotesFromSnapshotAPI = async (
             message: 'Failed to fetch voting data from snapshot.',
             errorName: (e as Error).name,
             errorMessage: (e as Error).message,
-            errorStack: (e as Error).stack,
+            errorStack: (e as Error).stack
         })
 
         throw e
     }
 
-    return result 
+    return result
 }

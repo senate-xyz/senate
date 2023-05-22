@@ -674,13 +674,33 @@ const seedData = async () => {
         }
     })
 
+    await prisma.dao.upsert({
+        where: { name: 'Solace DAO' },
+        update: {},
+        create: {
+            name: 'Solace DAO',
+            picture: '/assets/Project_Icons/solace-dao',
+            handlers: {
+                create: [
+                    {
+                        type: DAOHandlerType.SNAPSHOT,
+                        decoder: {
+                            space: 'solace-dao.eth'
+                        }
+                    }
+                ]
+            }
+        }
+    })
+
     console.log('Inserting seed user')
     const seedUser = await prisma.user.upsert({
         where: {
             address: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
         },
         create: {
-            address: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'
+            address: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
+            emaildailybulletin: true
         },
         update: {
             address: '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF'

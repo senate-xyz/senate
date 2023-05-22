@@ -45,7 +45,6 @@ export function authOptions(
                             },
                             create: {
                                 address: siwe.address,
-                                verifiedaddress: true,
                                 acceptedterms: true,
                                 acceptedtermstimestamp: new Date(),
                                 voters: {
@@ -56,7 +55,6 @@ export function authOptions(
                                 }
                             },
                             update: {
-                                verifiedaddress: true,
                                 lastactive: new Date(),
                                 sessioncount: { increment: 1 },
                                 acceptedterms: true,
@@ -133,7 +131,6 @@ export function authOptions(
                             address: String(message.user.name)
                         },
                         data: {
-                            verifiedaddress: true,
                             lastactive: new Date(),
                             sessioncount: { increment: 1 }
                         }
@@ -158,7 +155,6 @@ export function authOptions(
                             address: String(message.session.user?.name)
                         },
                         data: {
-                            verifiedaddress: true,
                             lastactive: new Date()
                         }
                     })

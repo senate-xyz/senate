@@ -1,19 +1,12 @@
 'use client'
 
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useCookies } from 'react-cookie'
 import { useAccount, usePublicClient } from 'wagmi'
 import { trpc } from '../../../server/trpcClient'
 import { normalize } from 'viem/ens'
 
 export default function Home() {
-    if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
-    const [cookie] = useCookies(['hasSeenLanding'])
-    useEffect(() => {
-        if (!cookie.hasSeenLanding) redirect('/landing')
-    }, [cookie])
-
     const account = useAccount()
     const router = useRouter()
     const provider = usePublicClient()
@@ -82,7 +75,7 @@ export default function Home() {
                     />
 
                     <div
-                        className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
+                        className={`flex h-full w-[72px] cursor-pointer flex-col justify-center hover:bg-[#999999] ${
                             proxyAddress.length ? 'bg-white' : 'bg-[#ABABAB]'
                         } text-center`}
                         onClick={() => {

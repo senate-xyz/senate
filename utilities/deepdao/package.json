@@ -1,5 +1,5 @@
 {
-    "name": "@senate/stress-test",
+    "name": "@senate/deep-dao",
     "version": "1.0.0",
     "author": "Senate",
     "private": true,
@@ -15,7 +15,12 @@
         "build": "tsup",
         "start": "node dist/index",
         "dev": "tsup && node dist/index",
-        "clean": "rimraf .turbo node_modules dist"
+        "clean": "rimraf .turbo node_modules dist yarn-error.log",
+        "lint": "eslint src",
+        "lint:fix": "eslint src --fix",
+        "prettier": "prettier src --check",
+        "prettier:fix": "prettier src --write",
+        "update": "ncu -u"
     },
     "dependencies": {
         "@senate/config": "*",
