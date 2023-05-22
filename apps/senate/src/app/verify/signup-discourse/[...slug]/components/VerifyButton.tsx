@@ -20,7 +20,6 @@ export const VerifyButton = (props: { challenge: string }) => {
     const verify = trpc.verify.discourseSignup.useMutation()
 
     useEffect(() => {
-        console.log(address, signMessage, isConnected, signPopup)
         if (
             address &&
             activeConnector &&

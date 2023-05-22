@@ -26,7 +26,7 @@
     "dependencies": {
         "@prisma/client": "4.14.1",
         "@senate/axiom": "*",
-        "ethers": "^6.3.0",
+        "ethers": "^6.4.0",
         "exponential-backoff": "^3.1.1",
         "type-fest": "^3.11.0"
     },

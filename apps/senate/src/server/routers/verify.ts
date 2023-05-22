@@ -67,6 +67,12 @@ export const verifyRouter = router({
             })
 
             if (addressUser) {
+                const emailUser = await prisma.user.findFirstOrThrow({
+                    where: {
+                        challengecode: input.challenge
+                    }
+                })
+
                 await prisma.user.update({
                     where: { id: addressUser.id },
                     data: {
@@ -79,8 +85,11 @@ export const verifyRouter = router({
                                 ? 'ENABLED'
                                 : addressUser.isuniswapuser,
                         challengecode: '',
+                        email: emailUser.email,
                         verifiedaddress: true,
-                        verifiedemail: true
+                        verifiedemail: true,
+                        acceptedterms: true,
+                        acceptedtermstimestamp: new Date()
                     }
                 })
 
@@ -115,7 +124,7 @@ export const verifyRouter = router({
                 }
 
                 await prisma.user.deleteMany({
-                    where: { challengecode: input.challenge }
+                    where: { id: emailUser.id }
                 })
             } else {
                 const newUser = await prisma.user.findFirstOrThrow({

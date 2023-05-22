@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from './index'
 import { DAOHandlerType } from '@prisma/client'
-import { ethers } from 'ethers'
 
 const seedData = async () => {
     console.log('Inserting daos')
@@ -882,7 +881,7 @@ const seedVoters = async () => {
         // '0xeA989AF988ecDCA55C9eEFb6eD9B2afE0852B72D'
     ]
 
-    console.log('Inserting voters')
+    // console.log('Inserting voters')
 
     await prisma.$transaction(
         voters.map((voter) => {
@@ -893,8 +892,8 @@ const seedVoters = async () => {
                 data: {
                     voters: {
                         connectOrCreate: {
-                            where: { address: ethers.getAddress(voter) },
-                            create: { address: ethers.getAddress(voter) }
+                            where: { address: voter },
+                            create: { address: voter }
                         }
                     }
                 }
