@@ -1,4 +1,4 @@
-use std::{cmp::Ordering, result, sync::Arc, time::Duration};
+use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
 
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use serenity::{
@@ -102,6 +102,25 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             .await
                             .unwrap();
 
+                    let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+                        Some(v) => v.into_string().unwrap(),
+                        None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+                    };
+
+                    let short_url = format!(
+                        "{}{}",
+                        shortner_url,
+                        proposal
+                            .id
+                            .chars()
+                            .rev()
+                            .take(7)
+                            .collect::<Vec<char>>()
+                            .into_iter()
+                            .rev()
+                            .collect::<String>()
+                    );
+
                     webhook
                         .edit_message(&http, MessageId::from(initial_message_id), |w| {
                             w.embeds(vec![Embed::fake(|e| {
@@ -117,7 +136,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                         format!("{}", proposal.timeend.format("%B %e").to_string())
                                     ))
                                     .field("", message_content, false)
-                                    .url(proposal.url)
+                                    .url(short_url)
                                     .color(Colour(0x23272A))
                                     .thumbnail(format!(
                                         "https://www.senatelabs.xyz/{}_medium.png",
