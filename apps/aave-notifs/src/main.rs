@@ -3,7 +3,7 @@
 
 pub mod prisma;
 
-use crate::prisma::{dao, notification, proposal, user};
+use crate::prisma::{dao, notification, proposal, user, NotificationType};
 use dotenv::dotenv;
 use prisma_client_rust::chrono::{self, Utc};
 use std::env;
@@ -85,10 +85,15 @@ async fn main() {
         for user in users_to_be_notified.iter() {
             db.notification()
                 .upsert(
-                    notification::userid_proposalid(user.id.to_string(), proposal.id.to_string()),
+                    notification::userid_proposalid_type(
+                        user.id.to_string(),
+                        proposal.id.to_string(),
+                        NotificationType::QuorumNotReachedEmail,
+                    ),
                     notification::create(
                         prisma::user::UniqueWhereParam::IdEquals(user.id.clone()),
                         prisma::proposal::UniqueWhereParam::IdEquals(proposal.id.clone()),
+                        NotificationType::QuorumNotReachedEmail,
                         vec![notification::dispatched::set(false)],
                     ),
                     vec![],
@@ -107,6 +112,7 @@ async fn main() {
             notification::proposal::is(vec![proposal::dao::is(vec![dao::name::equals(
                 "Aave".to_string(),
             )])]),
+            notification::r#type::equals(NotificationType::QuorumNotReachedEmail),
         ])
         .include(notification::include!({
             proposal: include {
@@ -125,7 +131,7 @@ async fn main() {
         let email_body: EmailBody = EmailBody {
             to: n.user.email.clone(),
             from: "info@senatelabs.xyz".to_string(),
-            template_alias: "changeme".to_string(),
+            template_alias: "aave-quorum".to_string(),
             template_model: TemplateModel {
                 quorum: n.proposal.quorum.clone().to_string(),
                 total_score: n.proposal.scorestotal.clone().to_string(),
@@ -151,9 +157,10 @@ async fn main() {
             prisma::notification::userid::in_vec(
                 dispatched.iter().map(|id| id.clone().userid).collect(),
             ),
-            prisma::notification::userid::in_vec(
+            prisma::notification::proposalid::in_vec(
                 dispatched.iter().map(|id| id.clone().proposalid).collect(),
             ),
+            prisma::notification::r#type::equals(NotificationType::QuorumNotReachedEmail),
         ],
         vec![prisma::notification::dispatched::set(true)],
     );
@@ -176,7 +183,7 @@ async fn send_email(email_body: serde_json::Value) -> Result<bool, reqwest::Erro
     );
 
     let res = client
-        .post("https://api.postmarkapp.com/email/batchWithTemplates")
+        .post("https://api.postmarkapp.com/email/withTemplate")
         .headers(headers)
         .json(&email_body)
         .send()
