@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::{env, sync::Arc, time::Duration};
 
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use serenity::{
@@ -112,6 +112,25 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
             //     format!("🇽 No Quorum",)
             // };
 
+            let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+                Some(v) => v.into_string().unwrap(),
+                None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+            };
+
+            let short_url = format!(
+                "{}{}",
+                shortner_url,
+                proposal
+                    .id
+                    .chars()
+                    .rev()
+                    .take(7)
+                    .collect::<Vec<char>>()
+                    .into_iter()
+                    .rev()
+                    .collect::<String>()
+            );
+
             let http = Http::new("");
 
             let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
@@ -132,7 +151,7 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                                 },
                                 proposal.timeend.timestamp()
                             ))
-                            .url(proposal.url)
+                            .url(short_url)
                             .color(Colour(0xFFFFFF))
                             //.field("", message_content, true)
                             .thumbnail(format!(
