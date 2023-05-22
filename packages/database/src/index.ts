@@ -15,6 +15,7 @@ export {
     RefreshStatus,
     DAOHandlerType,
     ProposalState,
+    MagicUserState,
     type daohandler as DAOHandler
 } from '@prisma/client'
 

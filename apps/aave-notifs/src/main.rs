@@ -3,7 +3,7 @@
 
 pub mod prisma;
 
-use crate::prisma::{dao, notification, proposal, user, NotificationType};
+use crate::prisma::{dao, notification, proposal, user, MagicUserState, NotificationType};
 use dotenv::dotenv;
 use prisma_client_rust::chrono::{self, Utc};
 use std::env;
@@ -57,7 +57,7 @@ async fn main() {
 
     let users_to_be_notified = db
         .user()
-        .find_many(vec![user::isaaveuser::equals(true)])
+        .find_many(vec![user::isaaveuser::equals(MagicUserState::Enabled)])
         .exec()
         .await
         .unwrap();

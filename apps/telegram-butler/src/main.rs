@@ -6,10 +6,12 @@ pub mod prisma;
 
 use log::info;
 use std::sync::Arc;
+use teloxide::{prelude::*, utils::command::BotCommands};
 
 use env_logger::{Builder, Env};
 
 use crate::prisma::PrismaClient;
+use dotenv::dotenv;
 
 fn init_logger() {
     let env = Env::default()
@@ -22,13 +24,42 @@ fn init_logger() {
         .init();
 }
 
+#[derive(BotCommands, Clone)]
+#[command(
+    rename_rule = "lowercase",
+    description = "These commands are supported:"
+)]
+enum Command {
+    #[command(description = "display this text.")]
+    Help,
+    #[command(description = "handle a username.")]
+    Username(String),
+    #[command(description = "handle a username and an age.", parse_with = "split")]
+    UsernameAndAge { username: String, age: u8 },
+}
+
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
     init_logger();
 
     info!("telegram-butler start");
 
-    let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
+    let bot = Bot::from_env();
 
-    info!("telegram-butler end");
+    bot.clone()
+        .send_message(ChatId(5679862895), "Your message here")
+        .await
+        .log_on_error()
+        .await;
+
+    teloxide::repl(bot.clone(), |bot: Bot, msg: Message| async move {
+        println!("{:?}", msg.chat.id);
+        bot.send_dice(msg.chat.id).await?;
+
+        Ok(())
+    })
+    .await;
+
+    let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
 }

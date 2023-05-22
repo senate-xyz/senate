@@ -7,7 +7,7 @@ const IsAaveUser = () => {
 
     const disableAaveUser = trpc.accountSettings.disableAaveUser.useMutation()
 
-    if (user.data?.isaaveuser)
+    if (user.data?.isaaveuser == 'ENABLED')
         return (
             <div className='flex flex-col gap-2'>
                 <div className='text-[18px] font-light text-white'>
@@ -18,7 +18,7 @@ const IsAaveUser = () => {
                     <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
                         <input
                             type='checkbox'
-                            checked={user.data?.isaaveuser}
+                            checked={user.data?.isaaveuser == 'ENABLED'}
                             onChange={() => {
                                 disableAaveUser.mutate()
                             }}

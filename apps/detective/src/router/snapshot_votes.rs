@@ -1,4 +1,5 @@
 use anyhow::{bail, Context, Result};
+use chrono::Duration;
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use std::iter::once;
@@ -276,11 +277,13 @@ async fn update_refresh_statuses(
                 voterhandler::daohandlerid::equals(dao_handler.id.clone()),
             ],
             vec![
-                voterhandler::snapshotindex::set(Some(DateTime::from_utc(
-                    NaiveDateTime::from_timestamp_millis(new_index * 1000)
-                        .expect("bad new_index timestamp"),
-                    FixedOffset::east_opt(0).unwrap(),
-                ))),
+                voterhandler::snapshotindex::set(Some(
+                    DateTime::from_utc(
+                        NaiveDateTime::from_timestamp_millis(new_index * 1000)
+                            .expect("bad new_index timestamp"),
+                        FixedOffset::east_opt(0).unwrap(),
+                    ) - Duration::from(Duration::minutes(60)),
+                )),
                 voterhandler::uptodate::set(uptodate),
             ],
         )

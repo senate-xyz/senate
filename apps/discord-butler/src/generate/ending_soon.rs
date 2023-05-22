@@ -26,6 +26,11 @@ pub async fn generate_ending_soon_notifications(
         NotificationType::NewProposalDiscord => todo!(),
         NotificationType::ThirdReminderDiscord => todo!(),
         NotificationType::EndedProposalDiscord => todo!(),
+        NotificationType::NewProposalTelegram => todo!(),
+        NotificationType::FirstReminderTelegram => todo!(),
+        NotificationType::SecondReminderTelegram => todo!(),
+        NotificationType::ThirdReminderTelegram => todo!(),
+        NotificationType::EndedProposalTelegram => todo!(),
     };
 
     let users = client

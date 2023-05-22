@@ -36,56 +36,151 @@ export const verifyRouter = router({
             return user ? true : false
         }),
 
-    verifyUser: publicProcedure
+    discourseSignup: publicProcedure
         .input(
             z.object({
-                challenge: z.string(),
                 address: z.string().startsWith('0x'),
-                email: z.string().email(),
                 message: z.string(),
+                challenge: z.string(),
                 signature: z.string()
             })
         )
         .mutation(async ({ input }) => {
-            try {
-                const challengeRegex = /(?<=challenge:\s)[a-zA-Z0-9]+/
-                const challengeMatch = input.message.match(challengeRegex)
+            const challengeRegex = /(?<=challenge:\s)[a-zA-Z0-9]+/
+            const challengeMatch = input.message.match(challengeRegex)
 
-                if (!challengeMatch) return
-                if (challengeMatch[0] != input.challenge) return
+            if (!challengeMatch) throw new Error('Challenge does not match')
+            if (challengeMatch[0] != input.challenge)
+                throw new Error('Challenge does not match')
 
-                const emailRegex =
-                    /(?<=email:\s)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
+            const valid = verifyMessage({
+                address: input.address as `0x${string}`,
+                message: input.message,
+                signature: input.signature as `0x${string}`
+            })
+            if (!valid) throw new Error('Signature does not match')
 
-                const emailMatch = input.message.match(emailRegex)
+            const addressUser = await prisma.user.findFirst({
+                where: {
+                    address: input.address
+                }
+            })
 
-                if (!emailMatch) return
-                if (emailMatch[0] != input.email) return
-
-                const valid = verifyMessage({
-                    address: input.address as `0x${string}`,
-                    message: input.message,
-                    signature: input.signature as `0x${string}`
-                })
-                if (!valid) return
-
-                await prisma.user.updateMany({
+            if (addressUser) {
+                const emailUser = await prisma.user.findFirstOrThrow({
                     where: {
-                        challengecode: input.challenge,
-                        verifiedemail: false
-                    },
+                        challengecode: input.challenge
+                    }
+                })
+
+                await prisma.user.update({
+                    where: { id: addressUser.id },
                     data: {
-                        email: input.email,
-                        address: input.address,
-                        verifiedemail: true,
-                        verifiedaddress: true,
+                        isaaveuser:
+                            addressUser.isaaveuser == 'VERIFICATION'
+                                ? 'ENABLED'
+                                : addressUser.isaaveuser,
+                        isuniswapuser:
+                            addressUser.isuniswapuser == 'VERIFICATION'
+                                ? 'ENABLED'
+                                : addressUser.isuniswapuser,
                         challengecode: '',
+                        email: emailUser.email,
+                        verifiedaddress: true,
+                        verifiedemail: true,
                         acceptedterms: true,
                         acceptedtermstimestamp: new Date()
                     }
                 })
-            } catch {
-                console.log('bad email verify signature')
+
+                if (addressUser.isaaveuser == 'VERIFICATION') {
+                    const aave = await prisma.dao.findFirstOrThrow({
+                        where: { name: { equals: 'aave', mode: 'insensitive' } }
+                    })
+
+                    await prisma.subscription.createMany({
+                        data: {
+                            userid: addressUser.id,
+                            daoid: aave.id
+                        },
+                        skipDuplicates: true
+                    })
+                }
+
+                if (addressUser.isuniswapuser == 'VERIFICATION') {
+                    const uniswap = await prisma.dao.findFirstOrThrow({
+                        where: {
+                            name: { equals: 'uniswap', mode: 'insensitive' }
+                        }
+                    })
+
+                    await prisma.subscription.createMany({
+                        data: {
+                            userid: addressUser.id,
+                            daoid: uniswap.id
+                        },
+                        skipDuplicates: true
+                    })
+                }
+
+                await prisma.user.deleteMany({
+                    where: { id: emailUser.id }
+                })
+            } else {
+                const newUser = await prisma.user.findFirstOrThrow({
+                    where: {
+                        challengecode: input.challenge
+                    }
+                })
+
+                await prisma.user.update({
+                    where: { id: newUser.id },
+                    data: {
+                        isaaveuser:
+                            newUser.isaaveuser == 'VERIFICATION'
+                                ? 'ENABLED'
+                                : newUser.isaaveuser,
+                        isuniswapuser:
+                            newUser.isuniswapuser == 'VERIFICATION'
+                                ? 'ENABLED'
+                                : newUser.isuniswapuser,
+                        challengecode: '',
+                        verifiedaddress: true,
+                        verifiedemail: true
+                    }
+                })
+
+                if (newUser.isaaveuser == 'VERIFICATION') {
+                    const aave = await prisma.dao.findFirstOrThrow({
+                        where: {
+                            name: { equals: 'aave', mode: 'insensitive' }
+                        }
+                    })
+
+                    await prisma.subscription.createMany({
+                        data: {
+                            userid: newUser.id,
+                            daoid: aave.id
+                        },
+                        skipDuplicates: true
+                    })
+                }
+
+                if (newUser.isuniswapuser == 'VERIFICATION') {
+                    const uniswap = await prisma.dao.findFirstOrThrow({
+                        where: {
+                            name: { equals: 'uniswap', mode: 'insensitive' }
+                        }
+                    })
+
+                    await prisma.subscription.createMany({
+                        data: {
+                            userid: newUser.id,
+                            daoid: uniswap.id
+                        },
+                        skipDuplicates: true
+                    })
+                }
             }
         })
 })

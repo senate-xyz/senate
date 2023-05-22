@@ -2,6 +2,7 @@ import { router, privateProcedure } from '../trpc'
 import { z } from 'zod'
 import { prisma } from '@senate/database'
 import { ServerClient } from 'postmark'
+import { MagicUserState } from '@senate/database'
 
 export const accountSettingsRouter = router({
     setEmailAndEnableBulletin: privateProcedure
@@ -113,9 +114,9 @@ export const accountSettingsRouter = router({
 
             emailClient.sendEmail({
                 From: 'info@senatelabs.xyz',
-                To: user.email,
+                To: String(user.email),
                 Subject: 'Confirm your email',
-                TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/${challengeCode}`
+                TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
             })
 
             return user
@@ -187,9 +188,9 @@ export const accountSettingsRouter = router({
             },
             create: {
                 address: String(username),
-                isaaveuser: false
+                isaaveuser: MagicUserState.DISABLED
             },
-            update: { isaaveuser: false }
+            update: { isaaveuser: MagicUserState.DISABLED }
         })
 
         return user
@@ -204,9 +205,9 @@ export const accountSettingsRouter = router({
             },
             create: {
                 address: String(username),
-                isuniswapuser: false
+                isuniswapuser: MagicUserState.DISABLED
             },
-            update: { isuniswapuser: false }
+            update: { isuniswapuser: MagicUserState.DISABLED }
         })
 
         return user
