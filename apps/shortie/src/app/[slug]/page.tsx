@@ -22,10 +22,5 @@ export default async function Page({ params }: { params: { slug: string } }) {
   if (url) {
     if (url.includes("snapshot")) redirect(url + "?app=senate");
     else redirect(url);
-  }
-  return (
-    <h1>
-      {params.slug} - {url}
-    </h1>
-  );
+  } else redirect("https://senatelabs.xyz");
 }
