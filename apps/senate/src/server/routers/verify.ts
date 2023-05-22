@@ -136,6 +136,7 @@ export const verifyRouter = router({
                 await prisma.user.update({
                     where: { id: newUser.id },
                     data: {
+                        address: input.address,
                         isaaveuser:
                             newUser.isaaveuser == 'VERIFICATION'
                                 ? 'ENABLED'

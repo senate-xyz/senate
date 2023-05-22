@@ -46,7 +46,7 @@ export default async function handler(
                 From: 'info@senatelabs.xyz',
                 To: String(existingUser.email),
                 Subject: 'Confirm your subscription',
-                TextBody: `Confirm your subscription to Uniswap : ${process.env.NEXT_PUBLIC_WEB_URL}/verify/subscribe-discouse/uniswap/${challengeCode}`
+                TextBody: `Confirm your subscription to Uniswap : ${process.env.NEXT_PUBLIC_WEB_URL}/verify/subscribe-discourse/uniswap/${challengeCode}`
             })
 
             res.status(200).json({
@@ -69,7 +69,7 @@ export default async function handler(
                 From: 'info@senatelabs.xyz',
                 To: String(existingUser.email),
                 Subject: 'Verify your email first!',
-                TextBody: `Ooops, you wanted to subscribe to Uniswap but your email is not yet verified. Verify your email first and then try subscribing again! \n${process.env.NEXT_PUBLIC_WEB_URL}/verify/subscribe-discouse/aave/${challengeCode}`
+                TextBody: `Ooops, you wanted to subscribe to Uniswap but your email is not yet verified. Verify your email first and then try subscribing again! \n${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
             })
 
             res.status(200).json({
@@ -104,7 +104,7 @@ export default async function handler(
             From: 'info@senatelabs.xyz',
             To: String(newUser.email),
             Subject: 'Confirm your email',
-            TextBody: `Signup to Uniswap with Senate: ${process.env.NEXT_PUBLIC_WEB_URL}/verify/signup-discouse/uniswap/${challengeCode}`
+            TextBody: `Signup to Uniswap with Senate: ${process.env.NEXT_PUBLIC_WEB_URL}/verify/signup-discourse/uniswap/${challengeCode}`
         })
 
         res.status(200).json({
