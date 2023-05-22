@@ -71,9 +71,12 @@ export default async function handler(
                 Subject: 'Verify your email first!',
                 TextBody: `Ooops, you wanted to subscribe to Aave but your email is not yet verified. Verify your email first and then try subscribing again! \n${process.env.NEXT_PUBLIC_WEB_URL}/verify/subscribe-discouse/aave/${challengeCode}`
             })
-        }
 
-        res.status(200).json({ email: email, result: 'failed' })
+            res.status(200).json({
+                email: email,
+                result: 'failed'
+            })
+        }
     } else {
         const schema = z.coerce.string().email()
 
@@ -102,6 +105,11 @@ export default async function handler(
             To: String(newUser.email),
             Subject: 'Confirm your email',
             TextBody: `Signup to Aave with Senate: ${process.env.NEXT_PUBLIC_WEB_URL}/verify/signup-discouse/aave/${challengeCode}`
+        })
+
+        res.status(200).json({
+            email: newUser.email,
+            result: 'success'
         })
     }
 }

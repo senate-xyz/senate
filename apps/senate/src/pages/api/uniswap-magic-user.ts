@@ -71,6 +71,11 @@ export default async function handler(
                 Subject: 'Verify your email first!',
                 TextBody: `Ooops, you wanted to subscribe to Uniswap but your email is not yet verified. Verify your email first and then try subscribing again! \n${process.env.NEXT_PUBLIC_WEB_URL}/verify/subscribe-discouse/aave/${challengeCode}`
             })
+
+            res.status(200).json({
+                email: email,
+                result: 'failed'
+            })
         }
     } else {
         const schema = z.coerce.string().email()
@@ -102,6 +107,9 @@ export default async function handler(
             TextBody: `Signup to Uniswap with Senate: ${process.env.NEXT_PUBLIC_WEB_URL}/verify/signup-discouse/uniswap/${challengeCode}`
         })
 
-        res.status(200).json({ email: newUser.email, result: 'success' })
+        res.status(200).json({
+            email: newUser.email,
+            result: 'success'
+        })
     }
 }
