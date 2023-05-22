@@ -13,12 +13,6 @@ export default async function handler(
 ) {
     const email = req.body.email
 
-    const aave = await prisma.dao.findFirst({
-        where: {
-            name: 'Aave'
-        }
-    })
-
     const existingUser = await prisma.user.findFirst({
         where: { email: email }
     })
@@ -29,7 +23,7 @@ export default async function handler(
                 email: existingUser.email,
                 result: 'existing'
             })
-        } else {
+        } else if (existingUser.verifiedemail && !existingUser.isaaveuser) {
             const challengeCode = Math.random().toString(36).substring(2)
 
             await prisma.user.update({
@@ -37,17 +31,16 @@ export default async function handler(
                     id: existingUser.id
                 },
                 data: {
-                    isaaveuser: MagicUserState.ENABLED,
-                    challengecode: challengeCode,
-                    verifiedemail: false
+                    isaaveuser: MagicUserState.VERIFICATION,
+                    challengecode: challengeCode
                 }
             })
 
             emailClient.sendEmail({
                 From: 'info@senatelabs.xyz',
                 To: String(existingUser.email),
-                Subject: 'Confirm your email',
-                TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-aave-user/${challengeCode}`
+                Subject: 'Confirm your subscription',
+                TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/subscribe-discouse/aave/${challengeCode}`
             })
 
             res.status(200).json({
@@ -55,51 +48,38 @@ export default async function handler(
                 result: 'success'
             })
         }
+    } else {
+        const schema = z.coerce.string().email()
 
-        await prisma.subscription.createMany({
+        try {
+            schema.parse(email)
+        } catch {
+            res.status(500).json({ email: email, result: 'failed' })
+            return
+        }
+
+        const challengeCode = Math.random().toString(36).substring(2)
+
+        const newUser = await prisma.user.create({
             data: {
-                userid: existingUser.id,
-                daoid: String(aave?.id)
-            },
-            skipDuplicates: true
+                email: email,
+                verifiedemail: false,
+                isaaveuser: MagicUserState.VERIFICATION,
+                emaildailybulletin: true,
+                emailquorumwarning: true,
+                challengecode: challengeCode
+            }
         })
 
-        return
+        emailClient.sendEmail({
+            From: 'info@senatelabs.xyz',
+            To: String(newUser.email),
+            Subject: 'Confirm your email',
+            TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/signup-discouse/aave/${challengeCode}`
+        })
+
+        res.status(200).json({ email: newUser.email, result: 'success' })
     }
 
-    const schema = z.coerce.string().email()
-
-    try {
-        schema.parse(email)
-    } catch {
-        res.status(500).json({ email: email, result: 'failed' })
-        return
-    }
-
-    const challengeCode = Math.random().toString(36).substring(2)
-
-    const newUser = await prisma.user.create({
-        data: {
-            email: email,
-            isaaveuser: MagicUserState.ENABLED,
-            challengecode: challengeCode
-        }
-    })
-
-    await prisma.subscription.createMany({
-        data: {
-            userid: newUser.id,
-            daoid: String(aave?.id)
-        },
-        skipDuplicates: true
-    })
-
-    emailClient.sendEmail({
-        From: 'info@senatelabs.xyz',
-        To: String(newUser.email),
-        Subject: 'Confirm your email',
-        TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-aave-user/${challengeCode}`
-    })
-
-    res.status(200).json({ email: newUser.email, result: 'success' })
+    res.status(200).json({ email: email, result: 'failed' })
 }

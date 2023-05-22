@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 
 export const NavBar = () => {
     const pathname = usePathname()
-    return (
+    return !pathname?.includes('verify') ? (
         <div className='flex min-h-screen min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black'>
             <Link href='/' className='my-[4rem]'>
                 <Image
@@ -146,5 +146,7 @@ export const NavBar = () => {
                 </Link>
             </div>
         </div>
+    ) : (
+        <></>
     )
 }

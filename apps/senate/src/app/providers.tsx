@@ -23,6 +23,7 @@ import {
     rabbyWallet,
     rainbowWallet
 } from '@rainbow-me/rainbowkit/wallets'
+import { usePathname } from 'next/navigation'
 
 const { chains, publicClient } = configureChains(
     [mainnet],
@@ -109,12 +110,12 @@ export default function RootProvider({
 }: {
     children: React.ReactNode
 }) {
+    const pathname = usePathname()
+
     return (
         <WagmiConfig config={config}>
             <SessionProvider refetchInterval={60}>
-                <RainbowKitSiweNextAuthProvider
-                    getSiweMessageOptions={getSiweMessageOptions}
-                >
+                {pathname?.includes('verify') ? (
                     <RainbowKitProvider
                         appInfo={{
                             appName: 'Senate',
@@ -133,7 +134,30 @@ export default function RootProvider({
                     >
                         <TrpcClientProvider>{children}</TrpcClientProvider>
                     </RainbowKitProvider>
-                </RainbowKitSiweNextAuthProvider>
+                ) : (
+                    <RainbowKitSiweNextAuthProvider
+                        getSiweMessageOptions={getSiweMessageOptions}
+                    >
+                        <RainbowKitProvider
+                            appInfo={{
+                                appName: 'Senate',
+                                disclaimer: Disclaimer,
+                                learnMoreUrl: 'https://senate.notion.site'
+                            }}
+                            chains={chains}
+                            modalSize='compact'
+                            theme={darkTheme({
+                                accentColor: '#262626',
+                                accentColorForeground: 'white',
+                                borderRadius: 'none',
+                                overlayBlur: 'small',
+                                fontStack: 'rounded'
+                            })}
+                        >
+                            <TrpcClientProvider>{children}</TrpcClientProvider>
+                        </RainbowKitProvider>
+                    </RainbowKitSiweNextAuthProvider>
+                )}
             </SessionProvider>
         </WagmiConfig>
     )

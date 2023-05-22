@@ -1,9 +1,8 @@
 import '@rainbow-me/rainbowkit/styles.css'
 
 import { prisma } from '@senate/database'
-import { RedirectType } from 'next/dist/client/components/redirect'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
+import { VerifyButton } from './components/VerifyButton'
 
 const isValidChallenge = async (challenge: string) => {
     const user = await prisma.user.findFirst({
@@ -15,24 +14,8 @@ const isValidChallenge = async (challenge: string) => {
     return user ? true : false
 }
 
-const verifyUser = async (challenge: string) => {
-    await prisma.user.updateMany({
-        where: {
-            challengecode: challenge
-        },
-        data: {
-            challengecode: '',
-            isuniswapuser: 'ENABLED'
-        }
-    })
-
-    setTimeout(() => {
-        redirect('/daos', RedirectType.replace)
-    }, 1000)
-}
-
 export default async function Page({ params }) {
-    const validChallenge = await isValidChallenge(String(params.challenge))
+    const validChallenge = await isValidChallenge(String(params.slug[1]))
 
     if (!validChallenge)
         return (
@@ -49,14 +32,12 @@ export default async function Page({ params }) {
             </div>
         )
     else {
-        await verifyUser(String(params.challenge))
-
         return (
             <div className='flex w-full flex-col items-center gap-4 pt-32'>
                 <p className='text-3xl font-bold text-white'>
-                    Thank you for verifying your email address. You are now an
-                    Uniswap magic user.
+                    Please connect your wallet and sign the message
                 </p>
+                <VerifyButton challenge={String(params.slug[1])} />
                 <Link
                     className='text-xl font-thin text-white underline'
                     href='/daos'
