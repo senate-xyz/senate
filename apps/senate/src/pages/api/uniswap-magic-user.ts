@@ -18,12 +18,18 @@ export default async function handler(
     })
 
     if (existingUser) {
-        if (existingUser.verifiedemail && existingUser.isuniswapuser) {
+        if (
+            existingUser.verifiedemail &&
+            existingUser.isuniswapuser == 'ENABLED'
+        ) {
             res.status(200).json({
                 email: existingUser.email,
                 result: 'existing'
             })
-        } else if (existingUser.verifiedemail && !existingUser.isuniswapuser) {
+        } else if (
+            existingUser.verifiedemail &&
+            existingUser.isuniswapuser != 'ENABLED'
+        ) {
             const challengeCode = Math.random().toString(36).substring(2)
 
             await prisma.user.update({
@@ -47,7 +53,7 @@ export default async function handler(
                 email: existingUser.email,
                 result: 'success'
             })
-        } else {
+        } else if (!existingUser.verifiedemail) {
             const challengeCode = Math.random().toString(36).substring(2)
 
             await prisma.user.update({
