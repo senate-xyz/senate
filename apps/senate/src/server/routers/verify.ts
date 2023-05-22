@@ -77,11 +77,11 @@ export const verifyRouter = router({
                     where: { id: addressUser.id },
                     data: {
                         isaaveuser:
-                            addressUser.isaaveuser == 'VERIFICATION'
+                            emailUser.isaaveuser == 'VERIFICATION'
                                 ? 'ENABLED'
                                 : addressUser.isaaveuser,
                         isuniswapuser:
-                            addressUser.isuniswapuser == 'VERIFICATION'
+                            emailUser.isuniswapuser == 'VERIFICATION'
                                 ? 'ENABLED'
                                 : addressUser.isuniswapuser,
                         challengecode: '',
