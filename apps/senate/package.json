@@ -37,7 +37,7 @@
         "dayjs": "1.11.7",
         "ethers": "6.4.0",
         "fast-average-color-node": "2.6.0",
-        "framer-motion": "10.12.12",
+        "framer-motion": "10.12.13",
         "next": "13.4.3",
         "next-auth": "4.22.1",
         "postmark": "3.0.18",
