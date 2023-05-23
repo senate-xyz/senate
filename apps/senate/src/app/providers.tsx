@@ -11,6 +11,7 @@ import {
 import { SessionProvider } from 'next-auth/react'
 import { configureChains, createConfig, mainnet, WagmiConfig } from 'wagmi'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { publicProvider } from 'wagmi/providers/public'
 import { TrpcClientProvider } from '../server/trpcClient'
 import Link from 'next/link'
 import {
@@ -22,10 +23,14 @@ import {
     rabbyWallet,
     rainbowWallet
 } from '@rainbow-me/rainbowkit/wallets'
+import { usePathname } from 'next/navigation'
 
 const { chains, publicClient } = configureChains(
     [mainnet],
-    [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? '' })]
+    [
+        alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? '' }),
+        publicProvider()
+    ]
 )
 
 const connectors = connectorsForWallets([
@@ -105,12 +110,12 @@ export default function RootProvider({
 }: {
     children: React.ReactNode
 }) {
+    const pathname = usePathname()
+
     return (
         <WagmiConfig config={config}>
             <SessionProvider refetchInterval={60}>
-                <RainbowKitSiweNextAuthProvider
-                    getSiweMessageOptions={getSiweMessageOptions}
-                >
+                {pathname?.includes('verify') ? (
                     <RainbowKitProvider
                         appInfo={{
                             appName: 'Senate',
@@ -129,7 +134,30 @@ export default function RootProvider({
                     >
                         <TrpcClientProvider>{children}</TrpcClientProvider>
                     </RainbowKitProvider>
-                </RainbowKitSiweNextAuthProvider>
+                ) : (
+                    <RainbowKitSiweNextAuthProvider
+                        getSiweMessageOptions={getSiweMessageOptions}
+                    >
+                        <RainbowKitProvider
+                            appInfo={{
+                                appName: 'Senate',
+                                disclaimer: Disclaimer,
+                                learnMoreUrl: 'https://senate.notion.site'
+                            }}
+                            chains={chains}
+                            modalSize='compact'
+                            theme={darkTheme({
+                                accentColor: '#262626',
+                                accentColorForeground: 'white',
+                                borderRadius: 'none',
+                                overlayBlur: 'small',
+                                fontStack: 'rounded'
+                            })}
+                        >
+                            <TrpcClientProvider>{children}</TrpcClientProvider>
+                        </RainbowKitProvider>
+                    </RainbowKitSiweNextAuthProvider>
+                )}
             </SessionProvider>
         </WagmiConfig>
     )

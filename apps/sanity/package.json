@@ -30,13 +30,13 @@
         "@senate/axiom": "*",
         "@senate/config": "*",
         "@senate/database": "*",
-        "ethers": "^6.3.0",
+        "ethers": "^6.4.0",
         "node-cron": "^3.0.2",
         "postmark": "^3.0.18",
         "superagent": "^8.0.9"
     },
     "devDependencies": {
-        "@types/node": "^20.2.1",
+        "@types/node": "^20.2.3",
         "@types/node-cron": "^3.0.7",
         "dotenv": "^16.0.3",
         "ts-node": "^10.9.1",

@@ -16,6 +16,7 @@ use crate::prisma::{
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
+    println!("dispatch_ending_soon_notifications");
     let notifications = client
         .notification()
         .find_many(vec![
@@ -116,6 +117,11 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                 }
                 NotificationType::ThirdReminderDiscord => todo!(),
                 NotificationType::EndedProposalDiscord => todo!(),
+                NotificationType::NewProposalTelegram => todo!(),
+                NotificationType::FirstReminderTelegram => todo!(),
+                NotificationType::SecondReminderTelegram => todo!(),
+                NotificationType::ThirdReminderTelegram => todo!(),
+                NotificationType::EndedProposalTelegram => todo!(),
             };
 
             let message = webhook

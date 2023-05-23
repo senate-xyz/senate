@@ -32,10 +32,11 @@ module.exports = {
             './../axiom/tsconfig.json',
             './../database/tsconfig.json',
             './../../apps/sanity/tsconfig.json',
+            './../../apps/bulletin/tsconfig.json',
             './../../apps/senate/tsconfig.json',
+            './../../apps/shortie/tsconfig.json',
             './../../utilities/stressTest/tsconfig.json',
-            './../../utilities/userMigration/tsconfig.json',
-            './../../utilities/deepdao/tsconfig.json'
+            './../../utilities/userMigration/tsconfig.json'
         ]
     }
 }

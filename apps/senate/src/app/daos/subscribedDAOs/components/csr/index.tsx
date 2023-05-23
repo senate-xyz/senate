@@ -210,8 +210,8 @@ export const SubscribedDAO = (props: {
                         <div
                             className={
                                 props.activeProposals
-                                    ? 'cursor-pointer pb-1 pt-6 text-[15px] font-thin underline decoration-from-font underline-offset-2'
-                                    : 'pb-1 pt-6 text-[15px] font-thin'
+                                    ? 'cursor-pointer pb-1 pt-6 text-[15px] font-thin text-white text-opacity-80 underline decoration-from-font underline-offset-2 hover:text-opacity-100'
+                                    : 'pb-1 pt-6 text-[15px] font-thin text-white text-opacity-80'
                             }
                         >
                             {props.activeProposals ? (

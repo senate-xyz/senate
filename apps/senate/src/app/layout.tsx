@@ -4,7 +4,6 @@ import '@rainbow-me/rainbowkit/styles.css'
 
 import '../styles/globals.css'
 import { NavBar } from './components/csr/NavBar'
-
 import RootProvider from './providers'
 
 export default function RootLayout({

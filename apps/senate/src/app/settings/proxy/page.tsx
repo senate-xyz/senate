@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useAccount, usePublicClient } from 'wagmi'
 import { trpc } from '../../../server/trpcClient'
-import { normalize } from 'viem/ens'
 
 export default function Home() {
     const account = useAccount()
@@ -24,11 +23,16 @@ export default function Home() {
     const onEnter = async () => {
         let resolvedAddress = proxyAddress
         if (
-            (await provider.getEnsAddress({ name: normalize(proxyAddress) }))
-                ?.length
+            (
+                await provider.getEnsAddress({
+                    name: proxyAddress
+                })
+            )?.length
         ) {
             resolvedAddress = String(
-                await provider.getEnsAddress({ name: normalize(proxyAddress) })
+                await provider.getEnsAddress({
+                    name: proxyAddress
+                })
             )
         }
 
@@ -75,7 +79,7 @@ export default function Home() {
                     />
 
                     <div
-                        className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
+                        className={`flex h-full w-[72px] cursor-pointer flex-col justify-center hover:bg-[#999999] ${
                             proxyAddress.length ? 'bg-white' : 'bg-[#ABABAB]'
                         } text-center`}
                         onClick={() => {
@@ -113,9 +117,10 @@ const Voter = ({ address }: { address: string }) => {
 
     useEffect(() => {
         ;(async () => {
-            const ens = await provider.getEnsAddress({
-                name: normalize(address)
+            const ens = await provider.getEnsName({
+                address: address as `0x${string}`
             })
+
             setVoterEns(ens ?? '')
         })()
     }, [address])

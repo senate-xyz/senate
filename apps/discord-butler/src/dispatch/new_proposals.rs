@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::{env, sync::Arc, time::Duration};
 
 use serenity::{
     http::Http,
@@ -7,19 +7,15 @@ use serenity::{
 };
 use tokio::time::sleep;
 
-use crate::prisma::{
-    self,
-    notification,
-    proposal,
-    user,
-    DaoHandlerType,
-    NotificationType,
-    PrismaClient,
+use crate::{
+    prisma::{self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient},
+    utils::vote::get_vote,
 };
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
+    println!("dispatch_new_proposal_notifications");
     let notifications = client
         .notification()
         .find_many(vec![
@@ -54,12 +50,35 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
             .await
             .expect("Missing webhook");
 
+        let voted = get_vote(user.clone().id, proposal.clone().id, client)
+            .await
+            .unwrap();
+
+        let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+            Some(v) => v.into_string().unwrap(),
+            None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+        };
+
+        let short_url = format!(
+            "{}{}",
+            shortner_url,
+            proposal
+                .id
+                .chars()
+                .rev()
+                .take(7)
+                .collect::<Vec<char>>()
+                .into_iter()
+                .rev()
+                .collect::<String>()
+        );
+
         let message = webhook
             .execute(&http, true, |w| {
                 w.embeds(vec![Embed::fake(|e| {
                     e.title(proposal.name)
                         .description(format!(
-                            "**{}** {} proposal ending <t:{}:R>",
+                            "**{}** {} proposal ending **<t:{}:R>**",
                             proposal.dao.name,
                             if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                 "off-chain"
@@ -68,13 +87,17 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                             },
                             proposal.timeend.timestamp()
                         ))
-                        .url(proposal.url)
-                        .color(Colour::RED)
+                        .url(short_url)
+                        .color(Colour(0xFFFFFF))
                         .thumbnail(format!(
                             "https://www.senatelabs.xyz/{}_medium.png",
                             proposal.dao.picture
                         ))
-                        .image("https://placehold.co/2000x1/png")
+                        .image(if voted {
+                            "https://senatelabs.xyz/assets/Discord/active-vote2x.png"
+                        } else {
+                            "https://senatelabs.xyz/assets/Discord/active-no-vote2x.png"
+                        })
                 })])
                 .username("Senate Butler")
                 .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")

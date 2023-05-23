@@ -1,5 +1,6 @@
-use std::{sync::Arc, time::Duration};
+use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
 
+use prisma_client_rust::bigdecimal::ToPrimitive;
 use serenity::{
     http::Http,
     model::{
@@ -10,20 +11,16 @@ use serenity::{
 };
 use tokio::time::sleep;
 
-use crate::prisma::{
-    self,
-    notification,
-    proposal,
-    user,
-    DaoHandlerType,
-    NotificationType,
-    PrismaClient,
+use crate::{
+    prisma::{self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient},
+    utils::vote::get_vote,
 };
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
-    let notifications = client
+    println!("dispatch_ended_proposal_notifications");
+    let ended_notifications = client
         .notification()
         .find_many(vec![
             notification::dispatched::equals(false),
@@ -33,12 +30,12 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
         .await
         .unwrap();
 
-    for notification in notifications {
+    for ended_notification in ended_notifications {
         let new_notification = client
             .notification()
             .find_unique(notification::userid_proposalid_type(
-                notification.clone().userid,
-                notification.clone().proposalid,
+                ended_notification.clone().userid,
+                ended_notification.clone().proposalid,
                 NotificationType::NewProposalDiscord,
             ))
             .exec()
@@ -50,7 +47,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                 if new_notification.dispatched {
                     let user = client
                         .user()
-                        .find_first(vec![user::id::equals(notification.clone().userid)])
+                        .find_first(vec![user::id::equals(ended_notification.clone().userid)])
                         .exec()
                         .await
                         .unwrap()
@@ -58,7 +55,9 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
                     let proposal = client
                         .proposal()
-                        .find_first(vec![proposal::id::equals(notification.clone().proposalid)])
+                        .find_first(vec![proposal::id::equals(
+                            ended_notification.clone().proposalid,
+                        )])
                         .include(proposal_with_dao::include())
                         .exec()
                         .await
@@ -74,27 +73,80 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         .await
                         .expect("Missing webhook");
 
+                    let (result_index, max_score) = proposal
+                        .scores
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|score| score.as_f64().unwrap())
+                        .enumerate()
+                        .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
+                        .unwrap();
+
+                    let message_content = if proposal.scorestotal.as_f64()
+                        > proposal.quorum.as_f64()
+                    {
+                        format!(
+                            "☑️ **{}** {}%",
+                            &proposal.choices.as_array().unwrap()[result_index]
+                                .as_str()
+                                .unwrap(),
+                            (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
+                        )
+                    } else {
+                        format!("🇽 No Quorum",)
+                    };
+
+                    let voted =
+                        get_vote(new_notification.userid, new_notification.proposalid, client)
+                            .await
+                            .unwrap();
+
+                    let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+                        Some(v) => v.into_string().unwrap(),
+                        None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+                    };
+
+                    let short_url = format!(
+                        "{}{}",
+                        shortner_url,
+                        proposal
+                            .id
+                            .chars()
+                            .rev()
+                            .take(7)
+                            .collect::<Vec<char>>()
+                            .into_iter()
+                            .rev()
+                            .collect::<String>()
+                    );
+
                     webhook
                         .edit_message(&http, MessageId::from(initial_message_id), |w| {
                             w.embeds(vec![Embed::fake(|e| {
                                 e.title(proposal.name)
                                     .description(format!(
-                                        "**{}** {} proposal ended with results {}",
+                                        "**{}** {} proposal ended on {}",
                                         proposal.dao.name,
                                         if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                             "off-chain"
                                         } else {
                                             "on-chain"
                                         },
-                                        proposal.scores
+                                        format!("{}", proposal.timeend.format("%B %e").to_string())
                                     ))
-                                    .url(proposal.url)
-                                    .color(Colour::DARK_GREEN)
+                                    .field("", message_content, false)
+                                    .url(short_url)
+                                    .color(Colour(0x23272A))
                                     .thumbnail(format!(
                                         "https://www.senatelabs.xyz/{}_medium.png",
                                         proposal.dao.picture
                                     ))
-                                    .image("https://placehold.co/2000x1/png")
+                                    .image(if voted {
+                                        "https://senatelabs.xyz/assets/Discord/past-vote2x.png"
+                                    } else {
+                                        "https://senatelabs.xyz/assets/Discord/past-no-vote2x.png"
+                                    })
                             })])
                         })
                         .await
@@ -126,9 +178,9 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 .notification()
                                 .update(
                                     notification::userid_proposalid_type(
-                                        notification.clone().userid,
-                                        notification.clone().proposalid,
-                                        notification.clone().r#type,
+                                        ended_notification.clone().userid,
+                                        ended_notification.clone().proposalid,
+                                        NotificationType::EndedProposalDiscord,
                                     ),
                                     vec![
                                         notification::dispatched::set(true),
@@ -144,6 +196,17 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         }
                         None => {}
                     }
+                } else {
+                    client
+                        .notification()
+                        .delete(notification::userid_proposalid_type(
+                            ended_notification.userid,
+                            ended_notification.proposalid,
+                            NotificationType::EndedProposalDiscord,
+                        ))
+                        .exec()
+                        .await
+                        .unwrap();
                 }
             }
             None => {}

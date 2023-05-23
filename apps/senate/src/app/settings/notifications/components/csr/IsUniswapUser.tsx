@@ -8,7 +8,7 @@ const IsUniswapUser = () => {
     const disableUniswapUser =
         trpc.accountSettings.disableUniswapUser.useMutation()
 
-    if (user.data?.isuniswapuser)
+    if (user.data?.isuniswapuser == 'ENABLED')
         return (
             <div className='flex flex-col gap-2'>
                 <div className='text-[18px] font-light text-white'>
@@ -19,7 +19,7 @@ const IsUniswapUser = () => {
                     <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
                         <input
                             type='checkbox'
-                            checked={user.data?.isuniswapuser}
+                            checked={user.data?.isuniswapuser == 'ENABLED'}
                             onChange={() => {
                                 disableUniswapUser.mutate()
                             }}

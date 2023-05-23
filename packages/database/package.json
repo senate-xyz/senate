@@ -26,13 +26,13 @@
     "dependencies": {
         "@prisma/client": "4.14.1",
         "@senate/axiom": "*",
-        "ethers": "^6.3.0",
+        "ethers": "^6.4.0",
         "exponential-backoff": "^3.1.1",
-        "type-fest": "^3.10.0"
+        "type-fest": "^3.11.0"
     },
     "devDependencies": {
         "@senate/config": "*",
-        "eslint": "^8.40.0",
+        "eslint": "^8.41.0",
         "prisma": "4.14.1",
         "prisma-dbml-generator": "^0.10.0",
         "tsup": "^6.7.0",

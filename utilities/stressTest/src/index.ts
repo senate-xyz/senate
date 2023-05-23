@@ -128,7 +128,7 @@ async function linkVotersToUser(user: User, voters: Array<string>) {
     await prisma.$transaction(
         voters.map((voter) => {
             return prisma.user.update({
-                where: { name: user.name },
+                where: { address: user.address },
                 data: {
                     voters: {
                         connectOrCreate: {
@@ -176,6 +176,7 @@ async function getSnapshotVoters(space: string): Promise<Array<string>> {
             }
         })
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         results = res.data.data.votes.map((vote: any) => vote.voter)
     } catch (err) {
         console.log(err)
@@ -217,10 +218,10 @@ async function bootstrapStressTestUserWithSubscriptions(): Promise<User> {
 async function createStressTestUser(): Promise<User> {
     return await prisma.user.upsert({
         where: {
-            name: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965'
+            address: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965'
         },
         create: {
-            name: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965'
+            address: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965'
         },
         update: {}
     })

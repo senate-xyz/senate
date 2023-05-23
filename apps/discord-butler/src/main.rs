@@ -8,6 +8,7 @@ pub mod prisma;
 use dispatch::{
     ended::dispatch_ended_proposal_notifications,
     ending_soon::dispatch_ending_soon_notifications,
+    update_active::update_active_proposal_notifications,
 };
 use generate::{
     ended::generate_ended_proposal_notifications,
@@ -88,5 +89,20 @@ async fn main() {
         }
     });
 
-    try_join!(new_proposals_task, ending_soon_task, ended_proposals_task).unwrap();
+    let client_for_active_proposals: Arc<PrismaClient> = Arc::clone(&client);
+    let active_proposals_task = tokio::task::spawn(async move {
+        loop {
+            update_active_proposal_notifications(&client_for_active_proposals).await;
+
+            sleep(std::time::Duration::from_secs(60)).await;
+        }
+    });
+
+    try_join!(
+        new_proposals_task,
+        ending_soon_task,
+        ended_proposals_task,
+        active_proposals_task
+    )
+    .unwrap();
 }

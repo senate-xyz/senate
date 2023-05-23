@@ -1,11 +1,14 @@
-use crate::prisma::{
-    notification,
-    proposal,
-    subscription,
-    user,
-    NotificationType,
-    PrismaClient,
-    ProposalState,
+use crate::{
+    prisma::{
+        notification,
+        proposal,
+        subscription,
+        user,
+        NotificationType,
+        PrismaClient,
+        ProposalState,
+    },
+    utils::vote::get_vote,
 };
 use anyhow::Result;
 use prisma_client_rust::chrono::{Duration, Utc};
@@ -23,6 +26,11 @@ pub async fn generate_ending_soon_notifications(
         NotificationType::NewProposalDiscord => todo!(),
         NotificationType::ThirdReminderDiscord => todo!(),
         NotificationType::EndedProposalDiscord => todo!(),
+        NotificationType::NewProposalTelegram => todo!(),
+        NotificationType::FirstReminderTelegram => todo!(),
+        NotificationType::SecondReminderTelegram => todo!(),
+        NotificationType::ThirdReminderTelegram => todo!(),
+        NotificationType::EndedProposalTelegram => todo!(),
     };
 
     let users = client
@@ -36,19 +44,33 @@ pub async fn generate_ending_soon_notifications(
         .unwrap();
 
     for user in users {
+        if user.discordreminders == false {
+            return;
+        }
+
         let ending_proposals = get_ending_proposals_for_user(&user.address, timeleft, client)
             .await
             .unwrap();
 
+        let mut ending_not_voted_proposals = vec![];
+
+        for proposal in &ending_proposals {
+            if !get_vote(user.clone().id, proposal.clone().id, client)
+                .await
+                .unwrap()
+            {
+                ending_not_voted_proposals.push(proposal);
+            }
+        }
         client
             .notification()
             .create_many(
-                ending_proposals
+                ending_not_voted_proposals
                     .iter()
-                    .map(|np| {
+                    .map(|p| {
                         notification::create_unchecked(
                             user.clone().id,
-                            np.clone().id,
+                            p.id.clone(),
                             ending_type,
                             vec![notification::dispatched::set(false)],
                         )
@@ -90,6 +112,9 @@ pub async fn get_ending_proposals_for_user(
             proposal::daoid::in_vec(subscribed_daos.into_iter().map(|d| d.daoid).collect()),
             proposal::state::equals(ProposalState::Active),
             proposal::timeend::lt((Utc::now() + timeleft).into()),
+            proposal::timeend::gt(
+                (Utc::now() + timeleft - Duration::from(Duration::minutes(60))).into(),
+            ),
         ])
         .include(proposal_with_dao::include())
         .exec()
