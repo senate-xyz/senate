@@ -54,7 +54,7 @@ const WalletConnect = () => {
     if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
     const [cookie] = useCookies(['hasSeenLanding'])
     useEffect(() => {
-        if (!cookie.hasSeenLanding) redirect('/landing')
+        if (!cookie.hasSeenLanding && router) router.push('/landing')
     }, [cookie])
 
     return <ConnectButton showBalance={false} />
