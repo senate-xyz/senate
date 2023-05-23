@@ -20,7 +20,7 @@ generator telegrambutler {
 
 generator aavenotifs {
   provider = "cargo prisma"
-  output   = "../../../apps/aave-notifs/src/prisma.rs"
+  output   = "../../../apps/aave-quorum-email/src/prisma.rs"
 }
 
 datasource db {
