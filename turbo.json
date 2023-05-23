@@ -41,6 +41,11 @@
       "cache": false
     },
 
+    "build:aave-quorum-email": {
+      "dependsOn": ["^db:generate"],
+      "cache": false
+    },
+
     "build:db": {
       "cache": false,
       "dependsOn": ["^db:generate", "^build:axiom"]
@@ -89,6 +94,7 @@
     "start:shortie": {},
     "start:bulletin": {},
     "start:sanity": {},
+    "start:aave-quorum-email": {},
 
     "dev": { "dependsOn": ["^db:generate", "^build:db", "^build:axiom"] },
     "dev:senate": {
