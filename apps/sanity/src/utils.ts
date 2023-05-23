@@ -57,6 +57,7 @@ export const getClosestBlock = async (
 export const callApiWithDelayedRetries = async (
     graphqlQuery: string,
     retries: number
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
     let result
     let retriesLeft = retries
