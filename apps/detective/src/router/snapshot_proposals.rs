@@ -39,6 +39,7 @@ struct GraphQLProposal {
     choices: Vec<String>,
     scores: Vec<f64>,
     scores_total: f64,
+    scores_state: String,
     created: i64,
     start: i64,
     end: i64,
@@ -96,6 +97,7 @@ pub async fn update_snapshot_proposals<'a>(
                 choices
                 scores
                 scores_total
+                scores_state
                 created
                 start
                 end
@@ -215,12 +217,12 @@ async fn update_proposals(
 
     let closed_proposals: Vec<&GraphQLProposal> = proposals
         .iter()
-        .filter(|proposal| proposal.state == "closed")
+        .filter(|proposal| proposal.state == "closed" && proposal.scores_state == "final")
         .collect();
 
     let open_proposals: Vec<&GraphQLProposal> = proposals
         .iter()
-        .filter(|proposal| proposal.state != "closed")
+        .filter(|proposal| proposal.state != "closed" || proposal.scores_state != "final")
         .collect();
 
     let new_index;
