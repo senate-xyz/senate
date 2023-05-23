@@ -18,9 +18,9 @@ generator telegrambutler {
   output   = "../../../apps/telegram-butler/src/prisma.rs"
 }
 
-generator aavenotifs {
+generator quorumemail {
   provider = "cargo prisma"
-  output   = "../../../apps/aave-quorum-email/src/prisma.rs"
+  output   = "../../../apps/quorum-email/src/prisma.rs"
 }
 
 datasource db {

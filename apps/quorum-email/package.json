@@ -1,5 +1,5 @@
 {
-  "name": "@senate/aave-quorum-email",
+  "name": "@senate/quorum-email",
   "version": "1.0.0",
   "description": "This service takes care of sending notifications",
   "author": "Senate",
@@ -7,9 +7,9 @@
   "license": "GNU GPLv3",
   "scripts": {
     "build": "cargo b",
-    "build:aave-quorum-email": "cargo b",
+    "build:quorum-email": "cargo b",
     "start": "cargo r",
-    "start:aave-quorum-email": "cargo r",
+    "start:quorum-email": "cargo r",
     "clean": "cargo clean",
     "lint": "cargo fmt",
     "lint:fix": "cargo fmt",

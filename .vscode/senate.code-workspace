@@ -21,8 +21,8 @@
       "path": "../apps/telegram-butler"
     },
     {
-      "name": "🦀 @senate/aave-quorum-email",
-      "path": "../apps/aave-quorum-email"
+      "name": "🦀 @senate/quorum-email",
+      "path": "../apps/quorum-email"
     },
     {
       "name": "🚀 @senate/bulletin",

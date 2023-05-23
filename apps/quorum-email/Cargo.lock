@@ -3,20 +3,6 @@
 version = 3
 
 [[package]]
-name = "aave-quorum-email"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dotenv",
- "num-format",
- "prisma-client-rust",
- "reqwest",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
 name = "addr2line"
 version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2277,6 +2263,20 @@ name = "quick-error"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a993555f31e5a609f617c12db6250dedcac1b0a85076912c436e6fc9b2c8e6a3"
+
+[[package]]
+name = "quorum-email"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "dotenv",
+ "num-format",
+ "prisma-client-rust",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+]
 
 [[package]]
 name = "quote"
