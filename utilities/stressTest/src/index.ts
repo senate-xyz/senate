@@ -176,6 +176,7 @@ async function getSnapshotVoters(space: string): Promise<Array<string>> {
             }
         })
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         results = res.data.data.votes.map((vote: any) => vote.voter)
     } catch (err) {
         console.log(err)

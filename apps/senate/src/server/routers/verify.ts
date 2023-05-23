@@ -77,11 +77,11 @@ export const verifyRouter = router({
                     where: { id: addressUser.id },
                     data: {
                         isaaveuser:
-                            addressUser.isaaveuser == 'VERIFICATION'
+                            emailUser.isaaveuser == 'VERIFICATION'
                                 ? 'ENABLED'
                                 : addressUser.isaaveuser,
                         isuniswapuser:
-                            addressUser.isuniswapuser == 'VERIFICATION'
+                            emailUser.isuniswapuser == 'VERIFICATION'
                                 ? 'ENABLED'
                                 : addressUser.isuniswapuser,
                         challengecode: '',
@@ -136,6 +136,7 @@ export const verifyRouter = router({
                 await prisma.user.update({
                     where: { id: newUser.id },
                     data: {
+                        address: input.address,
                         isaaveuser:
                             newUser.isaaveuser == 'VERIFICATION'
                                 ? 'ENABLED'
