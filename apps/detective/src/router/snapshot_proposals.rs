@@ -203,7 +203,13 @@ async fn update_proposals(
                 proposal::state::set(match proposal.state.as_str() {
                     "active" => ProposalState::Active,
                     "pending" => ProposalState::Pending,
-                    "closed" => ProposalState::Executed,
+                    "closed" => {
+                        if proposal.scores_state == "final" {
+                            ProposalState::Executed
+                        } else {
+                            ProposalState::Queued
+                        }
+                    }
                     _ => ProposalState::Unknown,
                 }),
             ],
