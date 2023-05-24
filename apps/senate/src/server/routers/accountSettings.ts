@@ -112,7 +112,7 @@ export const accountSettingsRouter = router({
                     })
                 }
 
-            emailClient.sendEmail({
+            await emailClient.sendEmail({
                 From: 'info@senatelabs.xyz',
                 To: String(user.email),
                 Subject: 'Confirm your email',
@@ -137,7 +137,7 @@ export const accountSettingsRouter = router({
             data: { challengecode: challengeCode, verifiedemail: false }
         })
 
-        emailClient.sendEmail({
+        await emailClient.sendEmail({
             From: 'info@senatelabs.xyz',
             To: String(user.email),
             Subject: 'Confirm your email',
