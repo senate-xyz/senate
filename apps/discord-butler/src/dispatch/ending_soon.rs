@@ -127,7 +127,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
             let message = webhook
                 .execute(&http, true, |w| {
                     w.content(message_content)
-                        .username("Senate Butler")
+                        .username("Senate Secretary")
                         .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
                 })
                 .await

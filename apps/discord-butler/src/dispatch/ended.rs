@@ -164,7 +164,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 },
                                 new_notification.discordmessagelink.unwrap(),
                             ))
-                            .username("Senate Butler")
+                            .username("Senate Secretary")
                             .avatar_url(
                                 "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
                             )

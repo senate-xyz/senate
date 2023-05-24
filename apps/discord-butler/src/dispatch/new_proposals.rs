@@ -99,7 +99,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                             "https://senatelabs.xyz/assets/Discord/active-no-vote2x.png"
                         })
                 })])
-                .username("Senate Butler")
+                .username("Senate Secretary")
                 .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
             })
             .await
