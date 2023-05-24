@@ -279,6 +279,72 @@ export const accountSettingsRouter = router({
             return user
         }),
 
+    updateTelegramNotifications: privateProcedure
+        .input(
+            z.object({
+                val: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+
+                data: {
+                    telegramnotifications: input.val
+                }
+            })
+
+            return user
+        }),
+
+    updateTelegramReminders: privateProcedure
+        .input(
+            z.object({
+                val: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+
+                data: {
+                    telegramreminders: input.val
+                }
+            })
+
+            return user
+        }),
+
+    setTelegramChatId: privateProcedure
+        .input(
+            z.object({
+                chatid: z.string()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+
+                data: {
+                    telegramchatid: input.chatid
+                }
+            })
+
+            return user
+        }),
+
     getAcceptedTerms: privateProcedure.query(async ({ ctx }) => {
         const username = await ctx.user.name
 

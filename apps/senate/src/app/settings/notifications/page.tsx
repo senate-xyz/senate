@@ -8,6 +8,7 @@ import UserEmail from './components/csr/UserEmail'
 import IsUniswapUser from './components/csr/IsUniswapUser'
 import IsAaveUser from './components/csr/IsAaveUser'
 import Discord from './components/csr/Discord'
+import Telegram from './components/csr/Telegram'
 
 export default function Home() {
     if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
@@ -33,6 +34,7 @@ export default function Home() {
 
             <UserEmail />
             <Discord />
+            <Telegram />
             <div className='flex flex-row gap-8'>
                 <IsAaveUser />
                 <IsUniswapUser />
