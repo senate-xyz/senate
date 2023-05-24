@@ -55,10 +55,11 @@ async fn main() {
     info!("telegram-butler start");
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
-    let bot = Arc::new(Bot::from_env().parse_mode(ParseMode::Html));
+    let bot = Bot::from_env().parse_mode(ParseMode::Html);
+    let botwrapper = Arc::new(bot.clone());
 
     let client_for_new_proposals: Arc<PrismaClient> = Arc::clone(&client);
-    let bot_for_new_proposals: Arc<DefaultParseMode<Bot>> = Arc::clone(&bot);
+    let bot_for_new_proposals: Arc<DefaultParseMode<Bot>> = Arc::clone(&botwrapper);
     let new_proposals_task = tokio::task::spawn(async move {
         loop {
             generate_new_proposal_notifications(&client_for_new_proposals).await;
@@ -70,7 +71,7 @@ async fn main() {
     });
 
     let client_for_ending_soon = Arc::clone(&client);
-    let bot_for_ending_soon: Arc<DefaultParseMode<Bot>> = Arc::clone(&bot);
+    let bot_for_ending_soon: Arc<DefaultParseMode<Bot>> = Arc::clone(&botwrapper);
     let ending_soon_task = tokio::task::spawn(async move {
         loop {
             generate_ending_soon_notifications(
@@ -92,7 +93,7 @@ async fn main() {
     });
 
     let client_for_ended_proposals: Arc<PrismaClient> = Arc::clone(&client);
-    let bot_for_ended_proposals: Arc<DefaultParseMode<Bot>> = Arc::clone(&bot);
+    let bot_for_ended_proposals: Arc<DefaultParseMode<Bot>> = Arc::clone(&botwrapper);
     let ended_proposals_task = tokio::task::spawn(async move {
         loop {
             generate_ended_proposal_notifications(&client_for_ended_proposals).await;
@@ -107,7 +108,7 @@ async fn main() {
     });
 
     let client_for_active_proposals: Arc<PrismaClient> = Arc::clone(&client);
-    let bot_for_active_proposals: Arc<DefaultParseMode<Bot>> = Arc::clone(&bot);
+    let bot_for_active_proposals: Arc<DefaultParseMode<Bot>> = Arc::clone(&botwrapper);
     let active_proposals_task = tokio::task::spawn(async move {
         loop {
             update_active_proposal_notifications(
@@ -120,6 +121,10 @@ async fn main() {
         }
     });
 
+    let replybot = Bot::from_env();
+
+    Command::repl(replybot, answer).await;
+
     try_join!(
         new_proposals_task,
         ending_soon_task,
@@ -127,18 +132,25 @@ async fn main() {
         active_proposals_task
     )
     .unwrap();
+}
 
-    bot.clone()
-        .send_message(ChatId(5679862895), "Your message here")
-        .await
-        .log_on_error()
-        .await;
+#[derive(BotCommands, Clone)]
+#[command(
+    rename_rule = "lowercase",
+    description = "These commands are supported:"
+)]
+enum Command {
+    #[command(description = "Start")]
+    Start,
+}
 
-    teloxide::repl(bot.clone(), |bot: Bot, msg: Message| async move {
-        println!("{:?}", msg.chat.id);
-        bot.send_dice(msg.chat.id).await?;
+async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
+    match cmd {
+        Command::Start => {
+            bot.send_message(msg.chat.id, format!("ChatId: {}", msg.chat.id))
+                .await?
+        }
+    };
 
-        Ok(())
-    })
-    .await;
+    Ok(())
 }
