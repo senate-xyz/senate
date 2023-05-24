@@ -218,6 +218,7 @@ async fn insert_proposals(
         .filter(|p| {
             p.state == ProposalState::Pending
                 || p.state == ProposalState::Active
+                || p.state == ProposalState::Succeeded
                 || p.state == ProposalState::Queued
         })
         .cloned()
