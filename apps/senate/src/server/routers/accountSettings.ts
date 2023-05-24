@@ -122,6 +122,31 @@ export const accountSettingsRouter = router({
             return user
         }),
 
+    resendVerification: privateProcedure.mutation(async ({ ctx }) => {
+        const emailClient = new ServerClient(
+            process.env.POSTMARK_TOKEN ?? 'Missing Token'
+        )
+
+        const username = await ctx.user.name
+        const challengeCode = Math.random().toString(36).substring(2)
+
+        const user = await prisma.user.update({
+            where: {
+                address: String(username)
+            },
+            data: { challengecode: challengeCode, verifiedemail: false }
+        })
+
+        emailClient.sendEmail({
+            From: 'info@senatelabs.xyz',
+            To: String(user.email),
+            Subject: 'Confirm your email',
+            TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
+        })
+
+        return user
+    }),
+
     updateDailyEmails: privateProcedure
         .input(
             z.object({

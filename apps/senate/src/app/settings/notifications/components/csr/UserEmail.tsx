@@ -44,6 +44,8 @@ const UserEmail = () => {
         trpc.accountSettings.updateEmptyEmails.useMutation()
     const updateEmailQuorum =
         trpc.accountSettings.updateQuorumEmails.useMutation()
+    const resendVerification =
+        trpc.accountSettings.resendVerification.useMutation()
 
     const onEnter = () => {
         setEmail.mutate(
@@ -148,8 +150,18 @@ const UserEmail = () => {
                         )}
 
                         {!user.data.verifiedemail && user.data.email && (
-                            <div className='text-[18px] font-light text-red-400'>
-                                Email not verified!
+                            <div className='flex flex-row gap-2'>
+                                <div className='text-[18px] font-light text-red-400'>
+                                    Email not verified!
+                                </div>
+                                <div
+                                    className='cursor-pointer text-[18px] font-light text-white underline'
+                                    onClick={() => {
+                                        resendVerification.mutate()
+                                    }}
+                                >
+                                    Resend verification email
+                                </div>
                             </div>
                         )}
 
