@@ -2,7 +2,7 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "DOCKERFILE",
-    "dockerfilePath": "apps/telegram-butler/Dockerfile",
+    "dockerfilePath": "Dockerfile.telegram-butler",
     "watchPatterns": ["apps/telegram-butler", "packages/database"]
   },
   "deploy": {
