@@ -10,13 +10,14 @@ use crate::prisma::{
     ProposalState,
 };
 use anyhow::Result;
+use teloxide::Bot;
 
 pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
     let users = client
         .user()
         .find_many(vec![
-            user::discordnotifications::equals(true),
-            user::discordwebhook::starts_with("https://".to_string()),
+            user::telegramnotifications::equals(true),
+            user::telegramchatid::gt("".to_string()),
         ])
         .exec()
         .await
@@ -36,7 +37,7 @@ pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
                         notification::create_unchecked(
                             user.clone().id,
                             np.clone().id,
-                            NotificationType::NewProposalDiscord,
+                            NotificationType::NewProposalTelegram,
                             vec![notification::dispatched::set(false)],
                         )
                     })

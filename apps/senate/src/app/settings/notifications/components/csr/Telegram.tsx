@@ -13,7 +13,7 @@ const Telegram = () => {
     const account = useAccount()
     const router = useRouter()
     const user = trpc.accountSettings.getUser.useQuery()
-    const setTelegramWebhook =
+    const setTelegramChatId =
         trpc.accountSettings.setTelegramChatId.useMutation()
 
     useEffect(() => {
@@ -38,7 +38,7 @@ const Telegram = () => {
         trpc.accountSettings.updateTelegramReminders.useMutation()
 
     const onEnter = () => {
-        setTelegramWebhook.mutate({ chatid: currentChatId })
+        setTelegramChatId.mutate({ chatid: currentChatId })
     }
 
     return (
@@ -66,7 +66,7 @@ const Telegram = () => {
                 <div className='flex flex-col gap-4 border-b border-l border-neutral-600 py-4 pl-4'>
                     <div className='flex flex-col gap-2'>
                         <div className='text-[18px] font-light text-white'>
-                            Telegram webhook
+                            Telegram ChatId
                         </div>
                         <div
                             className={`flex h-[46px] max-w-[382px] flex-row items-center`}
@@ -115,7 +115,7 @@ const Telegram = () => {
                     </div>
                 </div>
             )}
-            {setTelegramWebhook.error && (
+            {setTelegramChatId.error && (
                 <input
                     className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
                     value={currentChatId}

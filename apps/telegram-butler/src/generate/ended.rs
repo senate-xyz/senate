@@ -1,8 +1,6 @@
-use std::sync::Arc;
-
 use crate::prisma::{
-    self,
     notification,
+    proposal,
     subscription,
     user,
     NotificationType,
@@ -10,33 +8,36 @@ use crate::prisma::{
     ProposalState,
 };
 use anyhow::Result;
+use prisma_client_rust::chrono::{Duration, Utc};
 
-pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
+use std::sync::Arc;
+
+pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
     let users = client
         .user()
         .find_many(vec![
-            user::discordnotifications::equals(true),
-            user::discordwebhook::starts_with("https://".to_string()),
+            user::telegramnotifications::equals(true),
+            user::telegramchatid::gt("".to_string()),
         ])
         .exec()
         .await
         .unwrap();
 
     for user in users {
-        let new_proposals = get_new_proposals_for_user(&user.address, client)
+        let ending_proposals = get_ended_proposals_for_user(&user.address, client)
             .await
             .unwrap();
 
         client
             .notification()
             .create_many(
-                new_proposals
+                ending_proposals
                     .iter()
                     .map(|np| {
                         notification::create_unchecked(
                             user.clone().id,
                             np.clone().id,
-                            NotificationType::NewProposalDiscord,
+                            NotificationType::EndedProposalTelegram,
                             vec![notification::dispatched::set(false)],
                         )
                     })
@@ -49,15 +50,15 @@ pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
     }
 }
 
-prisma::proposal::include!(proposal_with_dao { dao daohandler });
+proposal::include!(proposal_with_dao { dao daohandler });
 
-pub async fn get_new_proposals_for_user(
+pub async fn get_ended_proposals_for_user(
     username: &String,
     client: &Arc<PrismaClient>,
 ) -> Result<Vec<proposal_with_dao::Data>> {
     let user = client
         .user()
-        .find_first(vec![prisma::user::address::equals(username.clone())])
+        .find_first(vec![user::address::equals(username.clone())])
         .exec()
         .await
         .unwrap()
@@ -73,8 +74,10 @@ pub async fn get_new_proposals_for_user(
     let proposals = client
         .proposal()
         .find_many(vec![
-            prisma::proposal::daoid::in_vec(subscribed_daos.into_iter().map(|d| d.daoid).collect()),
-            prisma::proposal::state::equals(ProposalState::Active),
+            proposal::daoid::in_vec(subscribed_daos.into_iter().map(|d| d.daoid).collect()),
+            proposal::state::not(ProposalState::Active),
+            proposal::timeend::lt((Utc::now()).into()),
+            proposal::timeend::gt((Utc::now() - Duration::from(Duration::minutes(60))).into()),
         ])
         .include(proposal_with_dao::include())
         .exec()
