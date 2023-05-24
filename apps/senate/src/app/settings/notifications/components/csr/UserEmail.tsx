@@ -8,6 +8,7 @@ import Image from 'next/image'
 
 const UserEmail = () => {
     const [edit, setEdit] = useState(false)
+    const [resend, setResend] = useState(true)
     const [currentEmail, setCurrentEmail] = useState('')
     const [getDailyEmails, setDailyEmails] = useState(false)
     const [getEmptyEmails, setEmptyEmails] = useState(false)
@@ -154,14 +155,20 @@ const UserEmail = () => {
                                 <div className='text-[18px] font-light text-red-400'>
                                     Email not verified yet.
                                 </div>
-                                <div
-                                    className='cursor-pointer text-[18px] font-light text-white underline'
-                                    onClick={() => {
-                                        resendVerification.mutate()
-                                    }}
-                                >
-                                    Resend verification email
-                                </div>
+                                {resend && (
+                                    <div
+                                        className='cursor-pointer text-[18px] font-light text-white underline'
+                                        onClick={() => {
+                                            resendVerification.mutate(void 0, {
+                                                onSuccess: () => {
+                                                    setResend(false)
+                                                }
+                                            })
+                                        }}
+                                    >
+                                        Resend verification email
+                                    </div>
+                                )}
                             </div>
                         )}
 
