@@ -25,10 +25,15 @@ export default function Home() {
     }, [account])
 
     return (
-        <div className='flex min-h-screen flex-col gap-12'>
+        <div className='flex min-h-screen flex-col gap-10'>
             <div className='flex flex-col gap-4'>
                 <div className='text-[24px] font-light leading-[30px] text-white'>
                     Your Notifications
+                </div>
+
+                <div className='max-w-[580px] text-[18px] text-white'>
+                    Here's the place to pick and choose which Senate
+                    notifications you want, and how you want them to reach you.
                 </div>
             </div>
 

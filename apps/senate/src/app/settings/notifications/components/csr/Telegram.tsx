@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { trpc } from '../../../../../server/trpcClient'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
+import Image from 'next/image'
 
 const Telegram = () => {
     const [getTelegramNotifications, setTelegramNotifications] = useState(false)
@@ -42,10 +43,18 @@ const Telegram = () => {
     }
 
     return (
-        <div className='flex flex-col'>
-            <div className='flex max-w-[400px] flex-row items-center justify-between gap-4'>
-                <div className='font-[18px] leading-[23px] text-white'>
-                    Receive Telegram Notifications
+        <div className='flex max-w-[800px] flex-col gap-4 bg-black p-4'>
+            <div className='flex flex-row justify-between'>
+                <div className='flex flex-row gap-4'>
+                    <Image
+                        src='/assets/Senate_Logo/settings_discord_icon.svg'
+                        alt={''}
+                        width={24}
+                        height={24}
+                    ></Image>
+                    <div className='font-[18px] leading-[23px] text-white'>
+                        Telegram Notifications
+                    </div>
                 </div>
                 <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
                     <input
@@ -62,8 +71,14 @@ const Telegram = () => {
                 </label>
             </div>
 
+            <div className='max-w-[610px] text-[15px] text-white'>
+                Receive instant notifications in your Telegram group chat about
+                proposals from all DAOs you follow on Senate. This will help
+                ensure that you and your team always remember to vote.
+            </div>
+
             {getTelegramNotifications && (
-                <div className='flex flex-col gap-4 border-b border-l border-neutral-600 py-4 pl-4'>
+                <div className='flex flex-col gap-4'>
                     <div className='flex flex-col gap-2'>
                         <div className='text-[18px] font-light text-white'>
                             Telegram ChatId

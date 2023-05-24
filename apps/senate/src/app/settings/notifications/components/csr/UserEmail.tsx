@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { trpc } from '../../../../../server/trpcClient'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
+import Image from 'next/image'
 
 const UserEmail = () => {
     const [edit, setEdit] = useState(false)
@@ -11,7 +12,6 @@ const UserEmail = () => {
     const [getDailyEmails, setDailyEmails] = useState(false)
     const [getEmptyEmails, setEmptyEmails] = useState(false)
     const [getEmailQuorum, setEmailQuorum] = useState(false)
-    const [getEmailUpdated, setEmailUpdated] = useState(false)
 
     const account = useAccount()
     const router = useRouter()
@@ -59,37 +59,44 @@ const UserEmail = () => {
     if (!user.data) return <></>
 
     return (
-        <div className='flex flex-col'>
-            <div className='flex max-w-[400px] flex-row items-center justify-between gap-4'>
-                <div className='font-[18px] leading-[23px] text-white'>
-                    Receive Senate Daily Bulletin Email
+        <div className='flex max-w-[800px] flex-col gap-4 bg-black p-4'>
+            <div className='flex flex-row justify-between'>
+                <div className='flex flex-row gap-4'>
+                    <Image
+                        src='/assets/Senate_Logo/settings_email_icon.svg'
+                        alt={''}
+                        width={24}
+                        height={24}
+                    ></Image>
+                    <div className='font-[18px] leading-[23px] text-white'>
+                        Daily Bulletin Notifications
+                    </div>
                 </div>
                 <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
                     <input
                         type='checkbox'
                         checked={getDailyEmails}
                         onChange={(e) => {
-                            updateDailyEmails.mutate(
-                                {
-                                    val: e.target.checked
-                                },
-                                {
-                                    onSuccess: () => {
-                                        setEmailUpdated(true)
-                                    }
-                                }
-                            )
+                            updateDailyEmails.mutate({
+                                val: e.target.checked
+                            })
                         }}
                         className='peer sr-only'
                     />
                     <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
                 </label>
             </div>
+
+            <div className='max-w-[610px] text-[15px] text-white'>
+                Receive a daily email at 8:00am UTC, providing updates on past,
+                new, and soon-ending proposals from all the DAOs you follow on
+                Senate. This ensures you won't forget to vote.
+            </div>
             {getDailyEmails && (
-                <div className='flex flex-col gap-4 border-b border-l border-neutral-600 py-4 pl-4'>
+                <div className='flex flex-col gap-4'>
                     <div className='flex flex-col gap-2'>
                         <div className='text-[18px] font-light text-white'>
-                            Your Email Address
+                            Email Address
                         </div>
 
                         {edit || !user.data.email ? (
@@ -124,25 +131,19 @@ const UserEmail = () => {
                             </div>
                         ) : (
                             <div
-                                className={`flex h-[46px] max-w-[382px] flex-row items-center justify-between`}
+                                className={`flex h-[46px] max-w-[382px] flex-col`}
                             >
-                                <div className='text-[18px] font-light text-white'>
+                                <div className='text-[18px] font-light text-[#D9D9D9]'>
                                     {currentEmail}
                                 </div>
                                 <div
-                                    className='cursor-pointer text-[18px] font-light text-white underline'
+                                    className='cursor-pointer text-[15px] font-light text-[#ABABAB] underline'
                                     onClick={() => {
                                         setEdit(true)
                                     }}
                                 >
                                     Change Email
                                 </div>
-                            </div>
-                        )}
-
-                        {getEmailUpdated && (
-                            <div className='text-[18px] font-light text-green-400'>
-                                Email updated!
                             </div>
                         )}
 
