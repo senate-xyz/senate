@@ -41,6 +41,11 @@
       "cache": false
     },
 
+    "build:telegram-butler": {
+      "dependsOn": ["^db:generate"],
+      "cache": false
+    },
+
     "build:quorum-email": {
       "dependsOn": ["^db:generate"],
       "cache": false

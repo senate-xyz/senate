@@ -21,6 +21,7 @@
     "build:detective": "turbo run build:detective",
     "build:refresher": "turbo run build:refresher",
     "build:discord-butler": "turbo run build:discord-butler",
+    "build:telegram-butler": "turbo run build:telegram-butler",
     "build:quorum-email": "turbo run build:quorum-email",
     "build:db": "turbo run build:db",
     "build:axiom": "turbo run build:axiom",
