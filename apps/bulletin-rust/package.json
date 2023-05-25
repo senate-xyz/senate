@@ -1,0 +1,21 @@
+{
+  "name": "@senate/bulletin-rust",
+  "version": "1.0.0",
+  "description": "This service takes care of sending notifications",
+  "author": "Senate",
+  "private": true,
+  "license": "GNU GPLv3",
+  "scripts": {
+    "build": "cargo b",
+    "build:bulletin-rust": "cargo b",
+    "start": "cargo r",
+    "start:bulletin-rust": "cargo r",
+    "clean": "cargo clean",
+    "lint": "cargo fmt",
+    "lint:fix": "cargo fmt",
+    "prettier": "cargo fmt",
+    "prettier:fix": "cargo fmt",
+    "db:generate": "cargo generate",
+    "update": "cargo upgrade && cargo update"
+  }
+}

@@ -25,6 +25,10 @@
       "path": "../apps/aave-quorum-email"
     },
     {
+      "name": "🦀 @senate/bulletin-rust",
+      "path": "../apps/bulletin-rust"
+    },
+    {
       "name": "🚀 @senate/bulletin",
       "path": "../apps/bulletin"
     },
