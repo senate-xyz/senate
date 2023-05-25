@@ -9,6 +9,7 @@ use dispatch::{
     ended::dispatch_ended_proposal_notifications,
     ending_soon::dispatch_ending_soon_notifications,
     update_active::update_active_proposal_notifications,
+    update_ended::update_ended_proposal_notifications,
 };
 use generate::{
     ended::generate_ended_proposal_notifications,
@@ -93,6 +94,7 @@ async fn main() {
     let active_proposals_task = tokio::task::spawn(async move {
         loop {
             update_active_proposal_notifications(&client_for_active_proposals).await;
+            update_ended_proposal_notifications(&client_for_active_proposals).await;
 
             sleep(std::time::Duration::from_secs(60)).await;
         }

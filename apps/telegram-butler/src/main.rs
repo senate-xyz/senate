@@ -25,6 +25,7 @@ use crate::{
         ending_soon::dispatch_ending_soon_notifications,
         new_proposals::dispatch_new_proposal_notifications,
         update_active::update_active_proposal_notifications,
+        update_ended::update_ended_proposal_notifications,
     },
     generate::{
         ended::generate_ended_proposal_notifications,
@@ -112,6 +113,12 @@ async fn main() {
     let active_proposals_task = tokio::task::spawn(async move {
         loop {
             update_active_proposal_notifications(
+                &client_for_active_proposals,
+                &bot_for_active_proposals,
+            )
+            .await;
+
+            update_ended_proposal_notifications(
                 &client_for_active_proposals,
                 &bot_for_active_proposals,
             )
