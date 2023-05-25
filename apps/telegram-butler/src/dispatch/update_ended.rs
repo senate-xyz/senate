@@ -155,8 +155,8 @@ pub async fn update_ended_proposal_notifications(
                     update_message_content,
                 )
                 .await;
-        }
 
-        sleep(Duration::from_millis(250)).await;
+            sleep(Duration::from_secs(1)).await;
+        }
     }
 }

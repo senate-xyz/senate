@@ -125,8 +125,8 @@ pub async fn update_active_proposal_notifications(
                         ),
                 )
                 .await;
-        }
 
-        sleep(Duration::from_millis(250)).await;
+            sleep(Duration::from_secs(1)).await;
+        }
     }
 }
