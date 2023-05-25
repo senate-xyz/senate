@@ -1,5 +1,6 @@
 use std::{env, sync::Arc, time::Duration};
 
+use prisma_client_rust::chrono::Utc;
 use teloxide::{
     adaptors::{DefaultParseMode, Throttle},
     payloads::SendMessageSetters,
@@ -77,17 +78,20 @@ pub async fn dispatch_new_proposal_notifications(
             .send_message(
                 ChatId(user.telegramchatid.parse().unwrap()),
                 format!(
-                    "<b>{}</b> {} proposal ending <i>{}</i> \nVote status: {} \nVote here: {}",
-                    proposal.dao.name,
-                    if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                        "off-chain"
-                    } else {
-                        "on-chain"
-                    },
-                    proposal.timeend.timestamp(),
-                    voted,
-                    short_url
-                ),
+                            "⌛ <b>{}</b> {} proposal ending <b>{}</b> - <a href=\"{}\"><i>{}</i></a> \n<b>{}</b> Vote here 👉 {} \n<code>Updated at:{}</code>",
+                            proposal.dao.name,
+                            if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                "off-chain"
+                            } else {
+                                "on-chain"
+                            },
+                            proposal.timeend.format("%Y-%m-%d %H:%M"),
+                            proposal.url,
+                            proposal.name,
+                            if voted { "Voted" } else { "Not voted yet" },
+                            short_url,
+                            Utc::now().format("%Y-%m-%d %H:%M")
+                        ),
             )
             .disable_web_page_preview(true)
             .await;

@@ -1,6 +1,6 @@
 use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
 
-use prisma_client_rust::bigdecimal::ToPrimitive;
+use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
 use teloxide::{
     adaptors::{DefaultParseMode, Throttle},
     payloads::SendMessageSetters,
@@ -107,16 +107,34 @@ pub async fn dispatch_ended_proposal_notifications(
                         > proposal.quorum.as_f64()
                     {
                         format!(
-                            "☑️ <b>{}</b> {}% \nVoted:{} \nLink:{}",
-                            &proposal.choices.as_array().unwrap()[result_index]
-                                .as_str()
-                                .unwrap(),
-                            (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round(),
-                            voted,
-                            short_url
+                            "🗳️ <b>{}</b> {} proposal ended at <b>{}</b> - <a href=\"{}\"><i>{}</i></a> \n<b>{}</b> \n<code>Updated at:{}</code>",
+                            proposal.dao.name,
+                            if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                "off-chain"
+                            } else {
+                                "on-chain"
+                            },
+                            proposal.timeend.format("%Y-%m-%d %H:%M"),
+                            proposal.url,
+                            proposal.name,
+                            if voted { "Voted" } else { "Not voted yet" },
+                            Utc::now().format("%Y-%m-%d %H:%M")
                         )
                     } else {
-                        format!("🇽 No Quorum",)
+                        format!(
+                            "⛔️ <b>{}</b> {} proposal ended with no quorum <b>{}</b> - <a href=\"{}\"><i>{}</i></a> \n<b>{}</b> \n<code>Updated at:{}</code>",
+                            proposal.dao.name,
+                            if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                "off-chain"
+                            } else {
+                                "on-chain"
+                            },
+                            proposal.timeend.format("%Y-%m-%d %H:%M"),
+                            proposal.url,
+                            proposal.name,
+                            if voted { "Voted" } else { "Not voted yet" },
+                            Utc::now().format("%Y-%m-%d %H:%M")
+                        )
                     };
 
                     let _ = bot

@@ -109,19 +109,21 @@ pub async fn update_active_proposal_notifications(
                 .edit_message_text(
                     ChatId(user.telegramchatid.parse().unwrap()),
                     initial_message_id,
-                    format!(
-                        "<b>{}</b> {} proposal ending <i>{}</i> \nVote status: {} \nVote here: {} \nUpdated:{}",
-                        proposal.dao.name,
-                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                            "off-chain"
-                        } else {
-                            "on-chain"
-                        },
-                        proposal.timeend.timestamp(),
-                        voted,
-                        short_url,
-                        Utc::now()
-                    ),
+                 format!(
+                            "⌛ <b>{}</b> {} proposal ending <b>{}</b> - <a href=\"{}\"><i>{}</i></a> \n<b>{}</b> Vote here 👉 {} \n<code>Updated at:{}</code>",
+                            proposal.dao.name,
+                            if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                "off-chain"
+                            } else {
+                                "on-chain"
+                            },
+                            proposal.timeend.format("%Y-%m-%d %H:%M"),
+                            proposal.url,
+                            proposal.name,
+                            if voted { "Voted" } else { "Not voted yet" },
+                            short_url,
+                            Utc::now().format("%Y-%m-%d %H:%M")
+                        ),
                 )
                 .await;
         }

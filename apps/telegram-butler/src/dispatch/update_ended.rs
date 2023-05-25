@@ -118,17 +118,34 @@ pub async fn update_ended_proposal_notifications(
             let update_message_content = if proposal.scorestotal.as_f64() > proposal.quorum.as_f64()
             {
                 format!(
-                    "☑️ <b>{}</b> {}% \nVoted:{} \nLink:{} \nUpdated:{}",
-                    &proposal.choices.as_array().unwrap()[result_index]
-                        .as_str()
-                        .unwrap(),
-                    (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round(),
-                    voted,
-                    short_url,
-                    Utc::now()
+                    "🗳️ <b>{}</b> {} proposal ended at <b>{}</b> - <a href=\"{}\"><i>{}</i></a> \n<b>{}</b> \n<code>Updated at:{}</code>",
+                    proposal.dao.name,
+                    if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                        "off-chain"
+                    } else {
+                        "on-chain"
+                    },
+                    proposal.timeend.format("%Y-%m-%d %H:%M"),
+                    proposal.url,
+                    proposal.name,
+                    if voted { "Voted" } else { "Not voted yet" },
+                    Utc::now().format("%Y-%m-%d %H:%M")
                 )
             } else {
-                format!("🇽 No Quorum \nVoted:{} \nLink:{}", voted, short_url)
+                format!(
+                    "⛔️ <b>{}</b> {} proposal ended with no quorum <b>{}</b> - <a href=\"{}\"><i>{}</i></a> \n<b>{}</b> \n<code>Updated at:{}</code>",
+                    proposal.dao.name,
+                    if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                        "off-chain"
+                    } else {
+                        "on-chain"
+                    },
+                    proposal.timeend.format("%Y-%m-%d %H:%M %Z"),
+                    proposal.url,
+                    proposal.name,
+                    if voted { "Voted" } else { "Not voted yet" },
+                    Utc::now().format("%Y-%m-%d %H:%M %Z")
+                )
             };
 
             let _ = bot
