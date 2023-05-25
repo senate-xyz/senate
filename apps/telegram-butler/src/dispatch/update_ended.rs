@@ -118,13 +118,14 @@ pub async fn update_ended_proposal_notifications(
             let update_message_content = if proposal.scorestotal.as_f64() > proposal.quorum.as_f64()
             {
                 format!(
-                    "☑️ <b>{}</b> {}% \nVoted:{} \nLink:{}",
+                    "☑️ <b>{}</b> {}% \nVoted:{} \nLink:{} \nUpdated:{}",
                     &proposal.choices.as_array().unwrap()[result_index]
                         .as_str()
                         .unwrap(),
                     (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round(),
                     voted,
-                    short_url
+                    short_url,
+                    Utc::now()
                 )
             } else {
                 format!("🇽 No Quorum \nVoted:{} \nLink:{}", voted, short_url)
@@ -139,6 +140,6 @@ pub async fn update_ended_proposal_notifications(
                 .await;
         }
 
-        sleep(Duration::from_millis(100)).await;
+        sleep(Duration::from_millis(250)).await;
     }
 }

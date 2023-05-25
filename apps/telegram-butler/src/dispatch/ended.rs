@@ -130,14 +130,13 @@ pub async fn dispatch_ended_proposal_notifications(
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
-                                "🗳️ <b>{}</b> {} proposal {} <b>just ended.</b> ☑️ \nVoted: {} \nView it here: {}",
+                                "🗳️ <b>{}</b> {} proposal <b>just ended.</b> ☑️ \nVoted: {} \nView it here: {}",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                     "off-chain"
                                 } else {
                                     "on-chain"
                                 },
-                                new_notification.discordmessagelink.unwrap(),
                                 voted,
                                 short_url
                             ),

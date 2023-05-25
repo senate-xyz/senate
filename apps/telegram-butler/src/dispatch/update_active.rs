@@ -110,7 +110,7 @@ pub async fn update_active_proposal_notifications(
                     ChatId(user.telegramchatid.parse().unwrap()),
                     initial_message_id,
                     format!(
-                        "<b>{}</b> {} proposal ending <i>{}</i> \nVote status: {} \nVote here: {}",
+                        "<b>{}</b> {} proposal ending <i>{}</i> \nVote status: {} \nVote here: {} \nUpdated:{}",
                         proposal.dao.name,
                         if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                             "off-chain"
@@ -119,12 +119,13 @@ pub async fn update_active_proposal_notifications(
                         },
                         proposal.timeend.timestamp(),
                         voted,
-                        short_url
+                        short_url,
+                        Utc::now()
                     ),
                 )
                 .await;
         }
 
-        sleep(Duration::from_millis(100)).await;
+        sleep(Duration::from_millis(250)).await;
     }
 }
