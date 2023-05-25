@@ -317,5 +317,6 @@ enum ProposalState {
   EXPIRED
   EXECUTED
   DELETED
+  HIDDEN
   UNKNOWN
 }

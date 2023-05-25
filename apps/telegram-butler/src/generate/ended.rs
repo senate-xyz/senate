@@ -75,7 +75,13 @@ pub async fn get_ended_proposals_for_user(
         .proposal()
         .find_many(vec![
             proposal::daoid::in_vec(subscribed_daos.into_iter().map(|d| d.daoid).collect()),
-            proposal::state::not(ProposalState::Active),
+            proposal::state::in_vec(vec![
+                ProposalState::Defeated,
+                ProposalState::Succeeded,
+                ProposalState::Queued,
+                ProposalState::Expired,
+                ProposalState::Executed,
+            ]),
             proposal::timeend::lt((Utc::now()).into()),
             proposal::timeend::gt((Utc::now() - Duration::from(Duration::minutes(60))).into()),
         ])

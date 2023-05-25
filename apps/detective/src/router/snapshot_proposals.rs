@@ -207,7 +207,7 @@ async fn update_proposals(
                         if proposal.scores_state == "final" {
                             ProposalState::Executed
                         } else {
-                            ProposalState::Queued
+                            ProposalState::Hidden
                         }
                     }
                     _ => ProposalState::Unknown,
