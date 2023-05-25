@@ -39,7 +39,7 @@ const Telegram = () => {
         trpc.accountSettings.updateTelegramReminders.useMutation()
 
     const onEnter = () => {
-        setTelegramChatId.mutate({ chatid: currentChatId })
+        setTelegramChatId.mutate({ chatid: parseInt(currentChatId) })
     }
 
     return (
