@@ -71,9 +71,10 @@ interface EmailTemplateRow {
     endDateString: string
     countdownUrl: string
     result: GenericResult
-    makerResult: MakerExecutiveResult
     resultDisplay: string
+    makerResult: MakerExecutiveResult
     makerResultDisplay: string
+    hiddenResultDisplay: string
 }
 
 interface BulletinData {
@@ -180,6 +181,7 @@ schedule(
                             : String(process.env.TEST_EMAIL)
 
                     console.log('Sending email to ', recipient)
+
                     await sendBulletin(to, emailData)
                 }
             }
@@ -428,21 +430,32 @@ const formatEmailTemplateRow = async (
                   `${process.env.NEXT_PUBLIC_WEB_URL}/assets/Chain/Ethereum/eth.png`
               )
 
-    let result = null
-    let makerResult = null
-    let resultDisplay, makerResultDisplay
+    let result: GenericResult = null
+    let makerResult: MakerExecutiveResult = null
+    let resultDisplay, makerResultDisplay, hiddenResultDisplay
 
+    // TODO: Replace hiddenResult workardound with proper implementation based on proposal state (:Hidden)
+    // TODO: Add implementation for 'unabled to fetch results' case
     if (bulletinSection === BulletinSection.PAST) {
-        if (isMakerProposal(proposal)) {
-            makerResult = computeMakerExecutiveResult(proposal)
-
-            makerResultDisplay = 'show'
+        const highestScore = getHighestScore(proposal)
+        if (highestScore.percentage === 0 && Number(proposal.scorestotal) > 0) {
+            hiddenResultDisplay = 'show'
+            makerResultDisplay = 'hide'
             resultDisplay = 'hide'
         } else {
-            result = computeGenericResult(proposal)
+            if (isMakerProposal(proposal)) {
+                makerResult = computeMakerExecutiveResult(proposal)
 
-            makerResultDisplay = 'hide'
-            resultDisplay = 'show'
+                hiddenResultDisplay = 'hide'
+                makerResultDisplay = 'show'
+                resultDisplay = 'hide'
+            } else {
+                result = computeGenericResult(proposal)
+
+                hiddenResultDisplay = 'hide'
+                makerResultDisplay = 'hide'
+                resultDisplay = 'show'
+            }
         }
     }
 
@@ -458,7 +471,7 @@ const formatEmailTemplateRow = async (
                 ? encodeURI(proposal.url + '?app=senate')
                 : encodeURI(proposal.url),
         daoLogoUrl: encodeURI(
-            `${process.env.NEXT_PUBLIC_WEB_URL}${proposal.dao.picture}_small.png`
+            `${process.env.NEXT_PUBLIC_WEB_URL}${proposal.dao.picture}_medium.png`
         ),
         chainLogoUrl: chainLogoUrl,
         daoName: proposal.dao.name,
@@ -472,7 +485,8 @@ const formatEmailTemplateRow = async (
         result: result,
         makerResult: makerResult,
         resultDisplay: resultDisplay,
-        makerResultDisplay: makerResultDisplay
+        makerResultDisplay: makerResultDisplay,
+        hiddenResultDisplay: hiddenResultDisplay
     }
 }
 
@@ -587,7 +601,7 @@ const generateCountdownGifUrl = async (endTime: Date): Promise<string> => {
 const sendBulletin = async (to: string, data: BulletinData) => {
     try {
         await client.sendEmailWithTemplate({
-            TemplateAlias: 'daily-bulletin-3',
+            TemplateAlias: 'daily-bulletin-4',
             TemplateModel: {
                 senateLogoUrl: encodeURI(
                     process.env.NEXT_PUBLIC_WEB_URL +
