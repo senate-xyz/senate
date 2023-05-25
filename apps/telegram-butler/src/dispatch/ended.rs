@@ -3,6 +3,7 @@ use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use teloxide::{
     adaptors::{DefaultParseMode, Throttle},
+    payloads::SendMessageSetters,
     requests::Requester,
     types::{ChatId, MessageId},
     Bot,
@@ -140,7 +141,7 @@ pub async fn dispatch_ended_proposal_notifications(
                                 voted,
                                 short_url
                             ),
-                        )
+                        ).disable_web_page_preview(true)
                         .await;
 
                     match message {

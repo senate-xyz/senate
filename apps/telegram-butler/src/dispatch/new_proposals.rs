@@ -2,6 +2,7 @@ use std::{env, sync::Arc, time::Duration};
 
 use teloxide::{
     adaptors::{DefaultParseMode, Throttle},
+    payloads::SendMessageSetters,
     prelude::OnError,
     requests::Requester,
     types::ChatId,
@@ -88,6 +89,7 @@ pub async fn dispatch_new_proposal_notifications(
                     short_url
                 ),
             )
+            .disable_web_page_preview(true)
             .await;
 
         match message {

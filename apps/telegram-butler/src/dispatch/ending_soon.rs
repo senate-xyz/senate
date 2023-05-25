@@ -2,6 +2,7 @@ use std::{env, sync::Arc, time::Duration};
 
 use teloxide::{
     adaptors::{DefaultParseMode, Throttle},
+    payloads::SendMessageSetters,
     requests::Requester,
     types::ChatId,
     Bot,
@@ -131,6 +132,7 @@ pub async fn dispatch_ending_soon_notifications(
                     ChatId(user.telegramchatid.parse().unwrap()),
                     message_content,
                 )
+                .disable_web_page_preview(true)
                 .await;
 
             match message {
