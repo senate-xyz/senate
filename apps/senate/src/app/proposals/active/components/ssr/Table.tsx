@@ -124,6 +124,7 @@ const getProposals = async (
                                   ProposalState.EXECUTED,
                                   ProposalState.EXPIRED,
                                   ProposalState.SUCCEEDED,
+                                  ProposalState.HIDDEN,
                                   ProposalState.UNKNOWN
                               ]
                           }
