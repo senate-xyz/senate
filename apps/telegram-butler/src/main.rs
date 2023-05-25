@@ -130,7 +130,7 @@ async fn main() {
             )
             .await;
 
-            sleep(std::time::Duration::from_secs(60)).await;
+            sleep(std::time::Duration::from_secs(5 * 60)).await;
         }
     });
 
