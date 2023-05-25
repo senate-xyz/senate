@@ -18,5 +18,5 @@ env_logger = "0.10.0"
 log = "0.4.17"
 prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.8", default-features = false, features = ["postgresql"] }
 serde = "1.0.163"
-teloxide = { version = "0.12.2", features = ["macros"] }
+teloxide = { version = "0.12.2", features = ["macros", "throttle"] }
 tokio = { version = "1.28.1", features = ["full"] }

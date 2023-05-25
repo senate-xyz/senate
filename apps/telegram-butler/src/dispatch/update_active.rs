@@ -3,7 +3,7 @@ use std::{env, sync::Arc, time::Duration};
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
 
 use teloxide::{
-    adaptors::DefaultParseMode,
+    adaptors::{DefaultParseMode, Throttle},
     requests::Requester,
     types::{ChatId, MessageId},
     Bot,
@@ -28,7 +28,7 @@ prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn update_active_proposal_notifications(
     client: &Arc<PrismaClient>,
-    bot: &Arc<DefaultParseMode<Bot>>,
+    bot: &Arc<Throttle<DefaultParseMode<teloxide::Bot>>>,
 ) {
     println!("update_active_proposal_notifications");
     let active_proposals = client

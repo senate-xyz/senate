@@ -1,6 +1,11 @@
 use std::{env, sync::Arc, time::Duration};
 
-use teloxide::{adaptors::DefaultParseMode, requests::Requester, types::ChatId, Bot};
+use teloxide::{
+    adaptors::{DefaultParseMode, Throttle},
+    requests::Requester,
+    types::ChatId,
+    Bot,
+};
 use tokio::time::sleep;
 
 use crate::prisma::{
@@ -17,7 +22,7 @@ prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn dispatch_ending_soon_notifications(
     client: &Arc<PrismaClient>,
-    bot: &Arc<DefaultParseMode<Bot>>,
+    bot: &Arc<Throttle<DefaultParseMode<teloxide::Bot>>>,
 ) {
     println!("dispatch_ending_soon_notifications");
     let notifications = client

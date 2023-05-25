@@ -8,7 +8,7 @@ pub mod prisma;
 use log::info;
 use std::sync::Arc;
 use teloxide::{
-    adaptors::DefaultParseMode,
+    adaptors::{throttle::Limits, DefaultParseMode, Throttle},
     prelude::*,
     types::ParseMode,
     utils::command::BotCommands,
@@ -56,11 +56,14 @@ async fn main() {
     info!("telegram-butler start");
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
-    let bot = Bot::from_env().parse_mode(ParseMode::Html);
+    let bot = Bot::from_env()
+        .parse_mode(ParseMode::Html)
+        .throttle(Limits::default());
     let botwrapper = Arc::new(bot.clone());
 
     let client_for_new_proposals: Arc<PrismaClient> = Arc::clone(&client);
-    let bot_for_new_proposals: Arc<DefaultParseMode<Bot>> = Arc::clone(&botwrapper);
+    let bot_for_new_proposals: Arc<Throttle<DefaultParseMode<teloxide::Bot>>> =
+        Arc::clone(&botwrapper);
     let new_proposals_task = tokio::task::spawn(async move {
         loop {
             generate_new_proposal_notifications(&client_for_new_proposals).await;
@@ -72,7 +75,8 @@ async fn main() {
     });
 
     let client_for_ending_soon = Arc::clone(&client);
-    let bot_for_ending_soon: Arc<DefaultParseMode<Bot>> = Arc::clone(&botwrapper);
+    let bot_for_ending_soon: Arc<Throttle<DefaultParseMode<teloxide::Bot>>> =
+        Arc::clone(&botwrapper);
     let ending_soon_task = tokio::task::spawn(async move {
         loop {
             generate_ending_soon_notifications(
@@ -94,7 +98,8 @@ async fn main() {
     });
 
     let client_for_ended_proposals: Arc<PrismaClient> = Arc::clone(&client);
-    let bot_for_ended_proposals: Arc<DefaultParseMode<Bot>> = Arc::clone(&botwrapper);
+    let bot_for_ended_proposals: Arc<Throttle<DefaultParseMode<teloxide::Bot>>> =
+        Arc::clone(&botwrapper);
     let ended_proposals_task = tokio::task::spawn(async move {
         loop {
             generate_ended_proposal_notifications(&client_for_ended_proposals).await;
@@ -109,7 +114,8 @@ async fn main() {
     });
 
     let client_for_active_proposals: Arc<PrismaClient> = Arc::clone(&client);
-    let bot_for_active_proposals: Arc<DefaultParseMode<Bot>> = Arc::clone(&botwrapper);
+    let bot_for_active_proposals: Arc<Throttle<DefaultParseMode<teloxide::Bot>>> =
+        Arc::clone(&botwrapper);
     let active_proposals_task = tokio::task::spawn(async move {
         loop {
             update_active_proposal_notifications(

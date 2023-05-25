@@ -1,7 +1,7 @@
 use std::{env, sync::Arc, time::Duration};
 
 use teloxide::{
-    adaptors::DefaultParseMode,
+    adaptors::{DefaultParseMode, Throttle},
     prelude::OnError,
     requests::Requester,
     types::ChatId,
@@ -18,7 +18,7 @@ prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn dispatch_new_proposal_notifications(
     client: &Arc<PrismaClient>,
-    bot: &Arc<DefaultParseMode<Bot>>,
+    bot: &Arc<Throttle<DefaultParseMode<teloxide::Bot>>>,
 ) {
     println!("dispatch_new_proposal_notifications");
     let notifications = client
