@@ -4,13 +4,17 @@ import { useState, useEffect } from 'react'
 import { trpc } from '../../../../../server/trpcClient'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
+import Image from 'next/image'
 
 const UserEmail = () => {
+    const featureFlags = trpc.public.featureFlags.useQuery()
+
+    const [edit, setEdit] = useState(false)
+    const [resend, setResend] = useState(true)
     const [currentEmail, setCurrentEmail] = useState('')
     const [getDailyEmails, setDailyEmails] = useState(false)
     const [getEmptyEmails, setEmptyEmails] = useState(false)
     const [getEmailQuorum, setEmailQuorum] = useState(false)
-    const [getEmailUpdated, setEmailUpdated] = useState(false)
 
     const account = useAccount()
     const router = useRouter()
@@ -43,88 +47,130 @@ const UserEmail = () => {
         trpc.accountSettings.updateEmptyEmails.useMutation()
     const updateEmailQuorum =
         trpc.accountSettings.updateQuorumEmails.useMutation()
+    const resendVerification =
+        trpc.accountSettings.resendVerification.useMutation()
 
     const onEnter = () => {
-        setEmail.mutate({ email: currentEmail })
+        setEmail.mutate(
+            { email: currentEmail },
+            {
+                onSuccess: () => {
+                    setEdit(false)
+                }
+            }
+        )
     }
 
     if (!user.data) return <></>
 
-    console.log(user.data.email + currentEmail)
-
     return (
-        <div className='flex flex-col'>
-            <div className='flex max-w-[400px] flex-row items-center justify-between gap-4'>
-                <div className='font-[18px] leading-[23px] text-white'>
-                    Receive Senate Daily Bulletin Email
+        <div className='flex max-w-[800px] flex-col gap-4 bg-black p-4'>
+            <div className='flex flex-row justify-between'>
+                <div className='flex flex-row gap-4'>
+                    <Image
+                        src='/assets/Senate_Logo/settings_email_icon.svg'
+                        alt={''}
+                        width={24}
+                        height={24}
+                    ></Image>
+                    <div className='font-[18px] leading-[23px] text-white'>
+                        Daily Bulletin Notifications
+                    </div>
                 </div>
                 <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
                     <input
                         type='checkbox'
                         checked={getDailyEmails}
                         onChange={(e) => {
-                            updateDailyEmails.mutate(
-                                {
-                                    val: e.target.checked
-                                },
-                                {
-                                    onSuccess: () => {
-                                        setEmailUpdated(true)
-                                    }
-                                }
-                            )
+                            updateDailyEmails.mutate({
+                                val: e.target.checked
+                            })
                         }}
                         className='peer sr-only'
                     />
-                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:hover:bg-green-300" />
+                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
                 </label>
             </div>
+
+            <div className='max-w-[610px] text-[15px] text-white'>
+                Receive a daily email at 8:00am UTC, providing updates on past,
+                new, and soon-ending proposals from all the DAOs you follow on
+                Senate. This ensures you won't forget to vote.
+            </div>
             {getDailyEmails && (
-                <div className='flex flex-col gap-4 border-b border-l border-neutral-600 py-4 pl-4'>
+                <div className='flex flex-col gap-4'>
                     <div className='flex flex-col gap-2'>
                         <div className='text-[18px] font-light text-white'>
-                            Your Email Address
+                            Email Address
                         </div>
 
-                        <div
-                            className={`flex h-[46px] max-w-[382px] flex-row items-center`}
-                        >
-                            <input
-                                className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
-                                value={currentEmail}
-                                onChange={(e) => {
-                                    setCurrentEmail(String(e.target.value))
-                                }}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') onEnter()
-                                }}
-                            />
-
+                        {edit || !user.data.email ? (
                             <div
-                                className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
-                                    user.data.email?.includes('@')
-                                        ? user.data.email == currentEmail
-                                            ? 'bg-[#ABABAB] hover:bg-[#999999]'
-                                            : 'bg-white hover:bg-[#e5e5e5]'
-                                        : currentEmail.length
-                                        ? 'bg-white hover:bg-[#e5e5e5]'
-                                        : 'bg-[#ABABAB] hover:bg-[#999999]'
-                                } text-center`}
-                                onClick={() => onEnter()}
+                                className={`flex h-[46px] max-w-[382px] flex-row items-center`}
                             >
-                                Save
-                            </div>
-                        </div>
+                                <input
+                                    className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
+                                    value={currentEmail}
+                                    onChange={(e) => {
+                                        setCurrentEmail(String(e.target.value))
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') onEnter()
+                                    }}
+                                />
 
-                        {getEmailUpdated && (
-                            <div className='text-[18px] font-light text-green-400'>
-                                Email updated!
+                                <div
+                                    className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
+                                        user.data.email?.includes('@')
+                                            ? user.data.email == currentEmail
+                                                ? 'bg-[#ABABAB] hover:bg-[#999999]'
+                                                : 'bg-white hover:bg-[#e5e5e5]'
+                                            : currentEmail.length
+                                            ? 'bg-white hover:bg-[#e5e5e5]'
+                                            : 'bg-[#ABABAB] hover:bg-[#999999]'
+                                    } text-center`}
+                                    onClick={() => onEnter()}
+                                >
+                                    Save
+                                </div>
+                            </div>
+                        ) : (
+                            <div
+                                className={`flex h-[46px] max-w-[382px] flex-col`}
+                            >
+                                <div className='text-[18px] font-light text-[#D9D9D9]'>
+                                    {currentEmail}
+                                </div>
+                                <div
+                                    className='cursor-pointer text-[15px] font-light text-[#ABABAB] underline'
+                                    onClick={() => {
+                                        setEdit(true)
+                                    }}
+                                >
+                                    Change Email
+                                </div>
                             </div>
                         )}
 
-                        {!user.data.verifiedemail && (
-                            <div className='text-[18px] font-light text-red-400'>
-                                Email not verified!
+                        {!user.data.verifiedemail && user.data.email && (
+                            <div className='flex flex-row gap-2'>
+                                <div className='text-[18px] font-light text-red-400'>
+                                    Email not verified yet.
+                                </div>
+                                {resend && (
+                                    <div
+                                        className='cursor-pointer text-[18px] font-light text-white underline active:text-[#D9D9D9]'
+                                        onClick={() => {
+                                            resendVerification.mutate(void 0, {
+                                                onSuccess: () => {
+                                                    setResend(false)
+                                                }
+                                            })
+                                        }}
+                                    >
+                                        Resend verification email
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -138,44 +184,47 @@ const UserEmail = () => {
                             </div>
                         )}
                     </div>
+                    {featureFlags.data?.includes('email_extended_settings') && (
+                        <div className='flex flex-col gap-4'>
+                            <div className='flex max-w-[382px] flex-row items-center justify-between gap-4'>
+                                <div className='font-[18px] leading-[23px] text-white'>
+                                    Get empty emails
+                                </div>
+                                <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
+                                    <input
+                                        type='checkbox'
+                                        checked={getEmptyEmails}
+                                        onChange={(e) => {
+                                            updateEmptyEmails.mutate({
+                                                val: e.target.checked
+                                            })
+                                        }}
+                                        className='peer sr-only'
+                                    />
+                                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
+                                </label>
+                            </div>
 
-                    <div className='flex max-w-[382px] flex-row items-center justify-between gap-4'>
-                        <div className='font-[18px] leading-[23px] text-white'>
-                            Get empty emails
+                            <div className='flex max-w-[382px] flex-row items-center justify-between gap-4'>
+                                <div className='font-[18px] leading-[23px] text-white'>
+                                    Get quorum alerts
+                                </div>
+                                <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
+                                    <input
+                                        type='checkbox'
+                                        checked={getEmailQuorum}
+                                        onChange={(e) => {
+                                            updateEmailQuorum.mutate({
+                                                val: e.target.checked
+                                            })
+                                        }}
+                                        className='peer sr-only'
+                                    />
+                                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
+                                </label>
+                            </div>
                         </div>
-                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
-                            <input
-                                type='checkbox'
-                                checked={getEmptyEmails}
-                                onChange={(e) => {
-                                    updateEmptyEmails.mutate({
-                                        val: e.target.checked
-                                    })
-                                }}
-                                className='peer sr-only'
-                            />
-                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:hover:bg-green-300" />
-                        </label>
-                    </div>
-
-                    <div className='flex max-w-[382px] flex-row items-center justify-between gap-4'>
-                        <div className='font-[18px] leading-[23px] text-white'>
-                            Get quorum alerts
-                        </div>
-                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
-                            <input
-                                type='checkbox'
-                                checked={getEmailQuorum}
-                                onChange={(e) => {
-                                    updateEmailQuorum.mutate({
-                                        val: e.target.checked
-                                    })
-                                }}
-                                className='peer sr-only'
-                            />
-                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:hover:bg-green-300" />
-                        </label>
-                    </div>
+                    )}
                 </div>
             )}
         </div>

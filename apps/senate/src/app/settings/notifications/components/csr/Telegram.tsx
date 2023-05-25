@@ -6,19 +6,19 @@ import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import Image from 'next/image'
 
-const Discord = () => {
-    const [getDiscordNotifications, setDiscordNotifications] = useState(false)
-    const [getDiscordReminders, setDiscordReminders] = useState(false)
-    const [currentWebhook, setCurrentWebhook] = useState('')
+const Telegram = () => {
+    const [getTelegramNotifications, setTelegramNotifications] = useState(false)
+    const [getTelegramReminders, setTelegramReminders] = useState(false)
+    const [currentChatId, setCurrentChatId] = useState('')
 
     const account = useAccount()
     const router = useRouter()
     const user = trpc.accountSettings.getUser.useQuery()
-    const setDiscordWebhook =
-        trpc.accountSettings.setDiscordWebhook.useMutation()
+    const setTelegramChatId =
+        trpc.accountSettings.setTelegramChatId.useMutation()
 
     useEffect(() => {
-        setCurrentWebhook(String(user.data?.discordwebhook))
+        setCurrentChatId(String(user.data?.telegramchatid))
     }, [user.data])
 
     useEffect(() => {
@@ -27,22 +27,20 @@ const Discord = () => {
 
     useEffect(() => {
         if (user.data) {
-            setDiscordNotifications(user.data.discordnotifications)
-            setDiscordReminders(user.data.discordreminders)
+            setTelegramNotifications(user.data.telegramnotifications)
+            setTelegramReminders(user.data.telegramreminders)
         }
     }, [user.data])
 
-    const updateDiscordNotifications =
-        trpc.accountSettings.updateDiscordNotifications.useMutation()
+    const updateTelegramNotifications =
+        trpc.accountSettings.updateTelegramNotifications.useMutation()
 
-    const updateDiscordReminders =
-        trpc.accountSettings.updateDiscordReminders.useMutation()
+    const updateTelegramReminders =
+        trpc.accountSettings.updateTelegramReminders.useMutation()
 
     const onEnter = () => {
-        setDiscordWebhook.mutate({ url: currentWebhook })
+        setTelegramChatId.mutate({ chatid: currentChatId })
     }
-
-    if (!user.data) return <></>
 
     return (
         <div className='flex max-w-[800px] flex-col gap-4 bg-black p-4'>
@@ -55,15 +53,15 @@ const Discord = () => {
                         height={24}
                     ></Image>
                     <div className='font-[18px] leading-[23px] text-white'>
-                        Discord Notifications
+                        Telegram Notifications
                     </div>
                 </div>
                 <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
                     <input
                         type='checkbox'
-                        checked={getDiscordNotifications}
+                        checked={getTelegramNotifications}
                         onChange={(e) => {
-                            updateDiscordNotifications.mutate({
+                            updateTelegramNotifications.mutate({
                                 val: e.target.checked
                             })
                         }}
@@ -74,25 +72,25 @@ const Discord = () => {
             </div>
 
             <div className='max-w-[610px] text-[15px] text-white'>
-                Receive instant notifications in your Discord server about
+                Receive instant notifications in your Telegram group chat about
                 proposals from all DAOs you follow on Senate. This will help
                 ensure that you and your team always remember to vote.
             </div>
 
-            {getDiscordNotifications && (
+            {getTelegramNotifications && (
                 <div className='flex flex-col gap-4'>
                     <div className='flex flex-col gap-2'>
                         <div className='text-[18px] font-light text-white'>
-                            Discord webhook
+                            Telegram ChatId
                         </div>
                         <div
                             className={`flex h-[46px] max-w-[382px] flex-row items-center`}
                         >
                             <input
                                 className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
-                                value={currentWebhook}
+                                value={currentChatId}
                                 onChange={(e) => {
-                                    setCurrentWebhook(String(e.target.value))
+                                    setCurrentChatId(String(e.target.value))
                                 }}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') onEnter()
@@ -101,7 +99,7 @@ const Discord = () => {
 
                             <div
                                 className={`flex h-full w-[72px] cursor-pointer flex-col justify-center  ${
-                                    user.data?.discordwebhook == currentWebhook
+                                    user.data?.telegramchatid == currentChatId
                                         ? 'bg-[#ABABAB] hover:bg-[#999999]'
                                         : 'bg-white hover:bg-[#e5e5e5]'
                                 } text-center`}
@@ -119,9 +117,9 @@ const Discord = () => {
                         <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
                             <input
                                 type='checkbox'
-                                checked={getDiscordReminders}
+                                checked={getTelegramReminders}
                                 onChange={(e) => {
-                                    updateDiscordReminders.mutate({
+                                    updateTelegramReminders.mutate({
                                         val: e.target.checked
                                     })
                                 }}
@@ -132,12 +130,12 @@ const Discord = () => {
                     </div>
                 </div>
             )}
-            {setDiscordWebhook.error && (
+            {setTelegramChatId.error && (
                 <input
                     className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
-                    value={currentWebhook}
+                    value={currentChatId}
                     onChange={(e) => {
-                        setCurrentWebhook(String(e.target.value))
+                        setCurrentChatId(String(e.target.value))
                     }}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') onEnter()
@@ -148,4 +146,4 @@ const Discord = () => {
     )
 }
 
-export default Discord
+export default Telegram

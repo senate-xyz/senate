@@ -1,13 +1,11 @@
 use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
 
 use prisma_client_rust::bigdecimal::ToPrimitive;
-use serenity::{
-    http::Http,
-    model::{
-        prelude::{Embed, MessageId},
-        webhook::Webhook,
-    },
-    utils::Colour,
+use teloxide::{
+    adaptors::DefaultParseMode,
+    requests::Requester,
+    types::{ChatId, MessageId},
+    Bot,
 };
 use tokio::time::sleep;
 
@@ -18,13 +16,16 @@ use crate::{
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
+pub async fn dispatch_ended_proposal_notifications(
+    client: &Arc<PrismaClient>,
+    bot: &Arc<DefaultParseMode<Bot>>,
+) {
     println!("dispatch_ended_proposal_notifications");
     let ended_notifications = client
         .notification()
         .find_many(vec![
             notification::dispatched::equals(false),
-            notification::r#type::equals(NotificationType::EndedProposalDiscord),
+            notification::r#type::equals(NotificationType::EndedProposalTelegram),
         ])
         .exec()
         .await
@@ -36,7 +37,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
             .find_unique(notification::userid_proposalid_type(
                 ended_notification.clone().userid,
                 ended_notification.clone().proposalid,
-                NotificationType::NewProposalDiscord,
+                NotificationType::NewProposalTelegram,
             ))
             .exec()
             .await
@@ -64,14 +65,8 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         .unwrap()
                         .unwrap();
 
-                    let initial_message_id: u64 =
-                        new_notification.discordmessageid.unwrap().parse().unwrap();
-
-                    let http = Http::new("");
-
-                    let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
-                        .await
-                        .expect("Missing webhook");
+                    let initial_message_id =
+                        MessageId(new_notification.telegramchatid.unwrap().parse().unwrap());
 
                     let (result_index, max_score) = proposal
                         .scores
@@ -83,11 +78,11 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
                         .unwrap();
 
-                    let message_content = if proposal.scorestotal.as_f64()
+                    let update_message_content = if proposal.scorestotal.as_f64()
                         > proposal.quorum.as_f64()
                     {
                         format!(
-                            "☑️ **{}** {}%",
+                            "☑️ <b>{}</b> {}%",
                             &proposal.choices.as_array().unwrap()[result_index]
                                 .as_str()
                                 .unwrap(),
@@ -120,42 +115,19 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             .rev()
                             .collect::<String>()
                     );
+                    bot.edit_message_text(
+                        ChatId(user.telegramchatid.parse().unwrap()),
+                        initial_message_id,
+                        update_message_content,
+                    )
+                    .await
+                    .unwrap();
 
-                    webhook
-                        .edit_message(&http, MessageId::from(initial_message_id), |w| {
-                            w.embeds(vec![Embed::fake(|e| {
-                                e.title(proposal.name)
-                                    .description(format!(
-                                        "**{}** {} proposal ended on {}",
-                                        proposal.dao.name,
-                                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                            "off-chain"
-                                        } else {
-                                            "on-chain"
-                                        },
-                                        format!("{}", proposal.timeend.format("%B %e").to_string())
-                                    ))
-                                    .field("", message_content, false)
-                                    .url(short_url)
-                                    .color(Colour(0x23272A))
-                                    .thumbnail(format!(
-                                        "https://www.senatelabs.xyz/{}_medium.png",
-                                        proposal.dao.picture
-                                    ))
-                                    .image(if voted {
-                                        "https://senatelabs.xyz/assets/Discord/past-vote2x.png"
-                                    } else {
-                                        "https://senatelabs.xyz/assets/Discord/past-no-vote2x.png"
-                                    })
-                            })])
-                        })
-                        .await
-                        .unwrap();
-
-                    let message = webhook
-                        .execute(&http, true, |w| {
-                            w.content(format!(
-                                "🗳️ **{}** {} proposal {} **just ended.** ☑️",
+                    let message = bot
+                        .send_message(
+                            ChatId(user.telegramchatid.parse().unwrap()),
+                            format!(
+                                "🗳️ <b>{}</b> {} proposal {} <b>just ended.</b> ☑️ \nVoted: {} \nView it here: {}",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                     "off-chain"
@@ -163,29 +135,28 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                     "on-chain"
                                 },
                                 new_notification.discordmessagelink.unwrap(),
-                            ))
-                            .username("Senate Secretary")
-                            .avatar_url(
-                                "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
-                            )
-                        })
-                        .await
-                        .expect("Could not execute webhook.");
+                                voted,
+                                short_url
+                            ),
+                        )
+                        .await;
 
                     match message {
-                        Some(msg) => {
+                        Ok(msg) => {
                             client
                                 .notification()
                                 .update(
                                     notification::userid_proposalid_type(
                                         ended_notification.clone().userid,
                                         ended_notification.clone().proposalid,
-                                        NotificationType::EndedProposalDiscord,
+                                        NotificationType::EndedProposalTelegram,
                                     ),
                                     vec![
                                         notification::dispatched::set(true),
-                                        notification::discordmessagelink::set(msg.link().into()),
-                                        notification::discordmessageid::set(
+                                        notification::telegramchatid::set(
+                                            msg.chat.id.to_string().into(),
+                                        ),
+                                        notification::telegrammessageid::set(
                                             msg.id.to_string().into(),
                                         ),
                                     ],
@@ -194,7 +165,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 .await
                                 .unwrap();
                         }
-                        None => {}
+                        Err(_) => {}
                     }
                 } else {
                     client
@@ -202,7 +173,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         .delete(notification::userid_proposalid_type(
                             ended_notification.userid,
                             ended_notification.proposalid,
-                            NotificationType::EndedProposalDiscord,
+                            NotificationType::EndedProposalTelegram,
                         ))
                         .exec()
                         .await

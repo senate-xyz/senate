@@ -3,6 +3,13 @@ import { publicProcedure, router } from '../trpc'
 import { JsonArray, Vote, prisma } from '@senate/database'
 
 export const publicRouter = router({
+    featureFlags: publicProcedure.query(async () => {
+        const flags = process.env.NEXT_PUBLIC_FEATURE_FLAGS
+
+        const split = flags?.split(' ') ?? []
+
+        return split
+    }),
     allDAOs: publicProcedure.query(async () => {
         const allDAOs = await prisma.dao.findMany({})
 

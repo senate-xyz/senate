@@ -47,6 +47,8 @@ export default function Home() {
         )
     }
 
+    if (!voters.data) return <></>
+
     return (
         <div className='flex min-h-screen flex-col gap-12'>
             <div className='flex flex-col gap-4'>
@@ -60,12 +62,13 @@ export default function Home() {
                     well.
                 </div>
 
-                <div className='mt-12 flex flex-col gap-6'>
-                    {voters.data &&
-                        voters.data.map((voter) => {
+                {voters.data.length > 0 ? (
+                    <div className='mt-12 flex flex-col gap-6'>
+                        {voters.data.map((voter) => {
                             return <Voter address={voter.address} />
                         })}
-                </div>
+                    </div>
+                ) : null}
 
                 <div className='mt-12 flex h-[46px] flex-row items-center'>
                     <input

@@ -16,8 +16,8 @@ pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
     let users = client
         .user()
         .find_many(vec![
-            user::discordnotifications::equals(true),
-            user::discordwebhook::starts_with("https://".to_string()),
+            user::telegramnotifications::equals(true),
+            user::telegramchatid::gt("".to_string()),
         ])
         .exec()
         .await
@@ -37,7 +37,7 @@ pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         notification::create_unchecked(
                             user.clone().id,
                             np.clone().id,
-                            NotificationType::EndedProposalDiscord,
+                            NotificationType::EndedProposalTelegram,
                             vec![notification::dispatched::set(false)],
                         )
                     })

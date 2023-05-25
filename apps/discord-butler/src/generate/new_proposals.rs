@@ -4,6 +4,7 @@ use crate::prisma::{
     self,
     notification,
     subscription,
+    user,
     NotificationType,
     PrismaClient,
     ProposalState,
@@ -14,8 +15,8 @@ pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
     let users = client
         .user()
         .find_many(vec![
-            prisma::user::discordnotifications::equals(true),
-            prisma::user::discordwebhook::starts_with("https://".to_string()),
+            user::discordnotifications::equals(true),
+            user::discordwebhook::starts_with("https://".to_string()),
         ])
         .exec()
         .await

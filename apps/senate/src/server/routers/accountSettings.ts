@@ -112,7 +112,7 @@ export const accountSettingsRouter = router({
                     })
                 }
 
-            emailClient.sendEmail({
+            await emailClient.sendEmail({
                 From: 'info@senatelabs.xyz',
                 To: String(user.email),
                 Subject: 'Confirm your email',
@@ -121,6 +121,31 @@ export const accountSettingsRouter = router({
 
             return user
         }),
+
+    resendVerification: privateProcedure.mutation(async ({ ctx }) => {
+        const emailClient = new ServerClient(
+            process.env.POSTMARK_TOKEN ?? 'Missing Token'
+        )
+
+        const username = await ctx.user.name
+        const challengeCode = Math.random().toString(36).substring(2)
+
+        const user = await prisma.user.update({
+            where: {
+                address: String(username)
+            },
+            data: { challengecode: challengeCode, verifiedemail: false }
+        })
+
+        await emailClient.sendEmail({
+            From: 'info@senatelabs.xyz',
+            To: String(user.email),
+            Subject: 'Confirm your email',
+            TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
+        })
+
+        return user
+    }),
 
     updateDailyEmails: privateProcedure
         .input(
@@ -273,6 +298,72 @@ export const accountSettingsRouter = router({
 
                 data: {
                     discordwebhook: input.url
+                }
+            })
+
+            return user
+        }),
+
+    updateTelegramNotifications: privateProcedure
+        .input(
+            z.object({
+                val: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+
+                data: {
+                    telegramnotifications: input.val
+                }
+            })
+
+            return user
+        }),
+
+    updateTelegramReminders: privateProcedure
+        .input(
+            z.object({
+                val: z.boolean()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+
+                data: {
+                    telegramreminders: input.val
+                }
+            })
+
+            return user
+        }),
+
+    setTelegramChatId: privateProcedure
+        .input(
+            z.object({
+                chatid: z.string()
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const username = await ctx.user.name
+
+            const user = await prisma.user.update({
+                where: {
+                    address: String(username)
+                },
+
+                data: {
+                    telegramchatid: input.chatid
                 }
             })
 

@@ -1,6 +1,6 @@
 use std::{env, sync::Arc, time::Duration};
 
-use serenity::{http::Http, model::webhook::Webhook};
+use teloxide::{adaptors::DefaultParseMode, requests::Requester, types::ChatId, Bot};
 use tokio::time::sleep;
 
 use crate::prisma::{
@@ -15,15 +15,18 @@ use crate::prisma::{
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
+pub async fn dispatch_ending_soon_notifications(
+    client: &Arc<PrismaClient>,
+    bot: &Arc<DefaultParseMode<Bot>>,
+) {
     println!("dispatch_ending_soon_notifications");
     let notifications = client
         .notification()
         .find_many(vec![
             notification::dispatched::equals(false),
             notification::r#type::in_vec(vec![
-                NotificationType::FirstReminderDiscord,
-                NotificationType::SecondReminderDiscord,
+                NotificationType::FirstReminderTelegram,
+                NotificationType::SecondReminderTelegram,
             ]),
         ])
         .exec()
@@ -36,7 +39,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
             .find_unique(notification::userid_proposalid_type(
                 notification.clone().userid,
                 notification.clone().proposalid,
-                NotificationType::NewProposalDiscord,
+                NotificationType::NewProposalTelegram,
             ))
             .exec()
             .await
@@ -51,12 +54,6 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                 .await
                 .unwrap()
                 .unwrap();
-
-            let http = Http::new("");
-
-            let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
-                .await
-                .expect("Missing webhook");
 
             let proposal = client
                 .proposal()
@@ -89,52 +86,50 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
             let message_content = match notification.r#type {
                 NotificationType::QuorumNotReachedEmail => todo!(),
                 NotificationType::NewProposalDiscord => todo!(),
-                NotificationType::FirstReminderDiscord => {
-                    format!(
-                        "⌛ **{}** {} proposal {} **ends in 2️⃣4️⃣ hours.** 🕒 \nVote here 👉 <{}>",
-                        proposal.dao.name,
-                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                            "off-chain"
-                        } else {
-                            "on-chain"
-                        },
-                        new_notification.discordmessagelink.unwrap(),
-                        short_url
-                    )
-                }
-                NotificationType::SecondReminderDiscord => {
-                    format!(
-                        "🚨 **{}** {} proposal {} **ends in :six: hours.** 🕒 \nVote here 👉 <{}>",
-                        proposal.dao.name,
-                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                            "off-chain"
-                        } else {
-                            "on-chain"
-                        },
-                        new_notification.discordmessagelink.unwrap(),
-                        short_url
-                    )
-                }
+                NotificationType::FirstReminderDiscord => todo!(),
+                NotificationType::SecondReminderDiscord => todo!(),
                 NotificationType::ThirdReminderDiscord => todo!(),
                 NotificationType::EndedProposalDiscord => todo!(),
                 NotificationType::NewProposalTelegram => todo!(),
-                NotificationType::FirstReminderTelegram => todo!(),
-                NotificationType::SecondReminderTelegram => todo!(),
+                NotificationType::FirstReminderTelegram => {
+                    format!(
+                        "⌛ <b>{}</b> {} proposal {} <b>ends in 2️⃣4️⃣ hours.</b> 🕒 \nVote here 👉 <{}>",
+                        proposal.dao.name,
+                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                            "off-chain"
+                        } else {
+                            "on-chain"
+                        },
+                        new_notification.telegrammessageid.unwrap(),
+                        short_url
+                    )
+                }
+                NotificationType::SecondReminderTelegram => {
+                    format!(
+                        "🚨 <b>{}</b> {} proposal {} <b>ends in :six: hours.</b> 🕒 \nVote here 👉 <{}>",
+                        proposal.dao.name,
+                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                            "off-chain"
+                        } else {
+                            "on-chain"
+                        },
+                        new_notification.telegrammessageid.unwrap(),
+                        short_url
+                    )
+                }
                 NotificationType::ThirdReminderTelegram => todo!(),
                 NotificationType::EndedProposalTelegram => todo!(),
             };
 
-            let message = webhook
-                .execute(&http, true, |w| {
-                    w.content(message_content)
-                        .username("Senate Secretary")
-                        .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
-                })
-                .await
-                .expect("Could not execute webhook.");
+            let message = bot
+                .send_message(
+                    ChatId(user.telegramchatid.parse().unwrap()),
+                    message_content,
+                )
+                .await;
 
             match message {
-                Some(msg) => {
+                Ok(msg) => {
                     client
                         .notification()
                         .update(
@@ -145,15 +140,15 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                             ),
                             vec![
                                 notification::dispatched::set(true),
-                                notification::discordmessagelink::set(msg.link().into()),
-                                notification::discordmessageid::set(msg.id.to_string().into()),
+                                notification::telegramchatid::set(msg.chat.id.to_string().into()),
+                                notification::telegrammessageid::set(msg.id.to_string().into()),
                             ],
                         )
                         .exec()
                         .await
                         .unwrap();
                 }
-                None => {}
+                Err(_) => {}
             }
         }
 
