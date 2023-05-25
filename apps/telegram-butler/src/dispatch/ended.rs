@@ -118,21 +118,13 @@ pub async fn dispatch_ended_proposal_notifications(
                         format!("🇽 No Quorum",)
                     };
 
-                    match bot
+                    let _ = bot
                         .edit_message_text(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             initial_message_id,
                             update_message_content,
                         )
-                        .await
-                    {
-                        Ok(r) => println!("updated message {}", r.id),
-                        Err(e) => {
-                            if !e.to_string().contains("message is not modified") {
-                                println!("update err: {}", e.to_string())
-                            }
-                        }
-                    }
+                        .await;
 
                     let message = bot
                         .send_message(

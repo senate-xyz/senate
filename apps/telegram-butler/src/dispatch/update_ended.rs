@@ -130,21 +130,13 @@ pub async fn update_ended_proposal_notifications(
                 format!("🇽 No Quorum \nVoted:{} \nLink:{}", voted, short_url)
             };
 
-            match bot
+            let _ = bot
                 .edit_message_text(
                     ChatId(user.telegramchatid.parse().unwrap()),
                     initial_message_id,
                     update_message_content,
                 )
-                .await
-            {
-                Ok(r) => println!("updated message {}", r.id),
-                Err(e) => {
-                    if !e.to_string().contains("message is not modified") {
-                        println!("update err: {}", e.to_string())
-                    }
-                }
-            }
+                .await;
         }
 
         sleep(Duration::from_millis(100)).await;

@@ -105,7 +105,7 @@ pub async fn update_active_proposal_notifications(
                     .collect::<String>()
             );
 
-            match bot
+            let _ = bot
                 .edit_message_text(
                     ChatId(user.telegramchatid.parse().unwrap()),
                     initial_message_id,
@@ -122,15 +122,7 @@ pub async fn update_active_proposal_notifications(
                         short_url
                     ),
                 )
-                .await
-            {
-                Ok(r) => println!("updated message {}", r.id),
-                Err(e) => {
-                    if !e.to_string().contains("message is not modified") {
-                        println!("update err: {}", e.to_string())
-                    }
-                }
-            }
+                .await;
         }
 
         sleep(Duration::from_millis(100)).await;
