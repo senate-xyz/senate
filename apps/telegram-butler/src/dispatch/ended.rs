@@ -78,25 +78,6 @@ pub async fn dispatch_ended_proposal_notifications(
                         .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
                         .unwrap();
 
-                    let update_message_content = if proposal.scorestotal.as_f64()
-                        > proposal.quorum.as_f64()
-                    {
-                        format!(
-                            "☑️ <b>{}</b> {}%",
-                            &proposal.choices.as_array().unwrap()[result_index]
-                                .as_str()
-                                .unwrap(),
-                            (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
-                        )
-                    } else {
-                        format!("🇽 No Quorum",)
-                    };
-
-                    let voted =
-                        get_vote(new_notification.userid, new_notification.proposalid, client)
-                            .await
-                            .unwrap();
-
                     let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
                         Some(v) => v.into_string().unwrap(),
                         None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
@@ -115,6 +96,28 @@ pub async fn dispatch_ended_proposal_notifications(
                             .rev()
                             .collect::<String>()
                     );
+
+                    let voted =
+                        get_vote(new_notification.userid, new_notification.proposalid, client)
+                            .await
+                            .unwrap();
+
+                    let update_message_content = if proposal.scorestotal.as_f64()
+                        > proposal.quorum.as_f64()
+                    {
+                        format!(
+                            "☑️ <b>{}</b> {}% \nVoted:{} \nLink:{}",
+                            &proposal.choices.as_array().unwrap()[result_index]
+                                .as_str()
+                                .unwrap(),
+                            (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round(),
+                            voted,
+                            short_url
+                        )
+                    } else {
+                        format!("🇽 No Quorum",)
+                    };
+
                     bot.edit_message_text(
                         ChatId(user.telegramchatid.parse().unwrap()),
                         initial_message_id,
