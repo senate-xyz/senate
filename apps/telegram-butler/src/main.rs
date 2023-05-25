@@ -57,12 +57,12 @@ async fn main() {
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
     let bot = Bot::from_env()
-        .parse_mode(ParseMode::Html)
-        .throttle(Limits::default());
+        .throttle(Limits::default())
+        .parse_mode(ParseMode::Html);
     let botwrapper = Arc::new(bot.clone());
 
     let client_for_new_proposals: Arc<PrismaClient> = Arc::clone(&client);
-    let bot_for_new_proposals: Arc<Throttle<DefaultParseMode<teloxide::Bot>>> =
+    let bot_for_new_proposals: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
         Arc::clone(&botwrapper);
     let new_proposals_task = tokio::task::spawn(async move {
         loop {
@@ -75,7 +75,7 @@ async fn main() {
     });
 
     let client_for_ending_soon = Arc::clone(&client);
-    let bot_for_ending_soon: Arc<Throttle<DefaultParseMode<teloxide::Bot>>> =
+    let bot_for_ending_soon: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
         Arc::clone(&botwrapper);
     let ending_soon_task = tokio::task::spawn(async move {
         loop {
@@ -98,7 +98,7 @@ async fn main() {
     });
 
     let client_for_ended_proposals: Arc<PrismaClient> = Arc::clone(&client);
-    let bot_for_ended_proposals: Arc<Throttle<DefaultParseMode<teloxide::Bot>>> =
+    let bot_for_ended_proposals: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
         Arc::clone(&botwrapper);
     let ended_proposals_task = tokio::task::spawn(async move {
         loop {
@@ -114,7 +114,7 @@ async fn main() {
     });
 
     let client_for_active_proposals: Arc<PrismaClient> = Arc::clone(&client);
-    let bot_for_active_proposals: Arc<Throttle<DefaultParseMode<teloxide::Bot>>> =
+    let bot_for_active_proposals: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
         Arc::clone(&botwrapper);
     let active_proposals_task = tokio::task::spawn(async move {
         loop {

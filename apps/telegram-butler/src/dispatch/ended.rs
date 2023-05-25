@@ -18,7 +18,7 @@ prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn dispatch_ended_proposal_notifications(
     client: &Arc<PrismaClient>,
-    bot: &Arc<Throttle<DefaultParseMode<teloxide::Bot>>>,
+    bot: &Arc<DefaultParseMode<Throttle<teloxide::Bot>>>,
 ) {
     println!("dispatch_ended_proposal_notifications");
     let ended_notifications = client

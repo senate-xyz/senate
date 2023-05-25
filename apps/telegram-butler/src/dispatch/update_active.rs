@@ -28,7 +28,7 @@ prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn update_active_proposal_notifications(
     client: &Arc<PrismaClient>,
-    bot: &Arc<Throttle<DefaultParseMode<teloxide::Bot>>>,
+    bot: &Arc<DefaultParseMode<Throttle<teloxide::Bot>>>,
 ) {
     println!("update_active_proposal_notifications");
     let active_proposals = client
