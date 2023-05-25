@@ -2,7 +2,7 @@ use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
 
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use teloxide::{
-    adaptors::DefaultParseMode,
+    adaptors::{DefaultParseMode, Throttle},
     requests::Requester,
     types::{ChatId, MessageId},
     Bot,
@@ -18,7 +18,7 @@ prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn dispatch_ended_proposal_notifications(
     client: &Arc<PrismaClient>,
-    bot: &Arc<DefaultParseMode<Bot>>,
+    bot: &Arc<Throttle<DefaultParseMode<teloxide::Bot>>>,
 ) {
     println!("dispatch_ended_proposal_notifications");
     let ended_notifications = client
