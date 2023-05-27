@@ -113,7 +113,7 @@ pub async fn dispatch_ended_proposal_notifications(
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
-                                "🗳️ <b>{}</b> {} proposal <b>just ended.</b> ☑️ \n<b>{}</b> \n<a href=\"{}\"><i>{}</i></a> - <i>{}</i>",
+                                "🗳️ <b>{}</b> {} proposal <b>just ended.</b> ✅ \n<b>{}</b> \n<i>{}</i> - <a href=\"{}\"><i>{}</i></a> ",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                     "off-chain"
@@ -121,9 +121,9 @@ pub async fn dispatch_ended_proposal_notifications(
                                     "on-chain"
                                 },
                                 if voted {"Voted"} else {"Did not vote"},
+                                result
                                 short_url,
                                 proposal.name,
-                                result
                             ),
                         ).disable_web_page_preview(true)
                         .await
@@ -132,14 +132,14 @@ pub async fn dispatch_ended_proposal_notifications(
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
-                                "⛔️ <b>{}</b> {} proposal <b>just ended.</b> ☑️ \n<b>{}</b> \n<a href=\"{}\"><i>{}</i></a> - <i>🇽 No Quorum</i>",
+                                "🗳️ <b>{}</b> {} proposal <b>just ended.</b> ☑️ \n<b>{}</b> \n<i>🚫 No Quorum</i> - <a href=\"{}\"><i>{}</i></a>",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                     "off-chain"
                                 } else {
                                     "on-chain"
                                 },
-                                if voted {"Voted"} else {"Did not vote"},
+                                if voted {"🟢 Voted"} else {"🔴 Did not vote"},
                                 short_url,
                                 proposal.name,
                             ),

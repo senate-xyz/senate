@@ -78,18 +78,17 @@ pub async fn dispatch_new_proposal_notifications(
             .send_message(
                 ChatId(user.telegramchatid.parse().unwrap()),
                 format!(
-                            "⌛ <b>{}</b> {} proposal ending <b>{}</b> - <a href=\"{}\"><i>{}</i></a> \n<b>{}</b> \n",
-                            proposal.dao.name,
-                            if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                "off-chain"
-                            } else {
-                                "on-chain"
-                            },
-                            proposal.timeend.format("%Y-%m-%d %H:%M"),
-                            short_url,
-                            proposal.name,
-                            if voted { "Voted" } else { "Not voted yet" },
-                        ),
+                    "📢 <b>{}</b> {} proposal ending <b>{}</b> - <a href=\"{}\"><i>{}</i></a> \n",
+                    proposal.dao.name,
+                    if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                        "off-chain"
+                    } else {
+                        "on-chain"
+                    },
+                    proposal.timeend.format("%Y-%m-%d %H:%M"),
+                    short_url,
+                    proposal.name,
+                ),
             )
             .disable_web_page_preview(true)
             .await;
