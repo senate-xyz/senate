@@ -113,15 +113,15 @@ pub async fn dispatch_ended_proposal_notifications(
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
-                                "🗳️ <b>{}</b> {} proposal <b>just ended.</b> ✅ \n<b>{}</b> \n<i>{}</i> - <a href=\"{}\"><i>{}</i></a> ",
+                                "🗳️ <b>{}</b> {} proposal <b>just ended.</b> \n<b>{}</b> \n<i>✅ {}</i> - <a href=\"{}\"><i>{}</i></a>",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                     "off-chain"
                                 } else {
                                     "on-chain"
                                 },
-                                if voted {"Voted"} else {"Did not vote"},
-                                result
+                                if voted {"🟢 Voted"} else {"🔴 Did not vote"},
+                                result,
                                 short_url,
                                 proposal.name,
                             ),
@@ -132,7 +132,7 @@ pub async fn dispatch_ended_proposal_notifications(
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
-                                "🗳️ <b>{}</b> {} proposal <b>just ended.</b> ☑️ \n<b>{}</b> \n<i>🚫 No Quorum</i> - <a href=\"{}\"><i>{}</i></a>",
+                                "🗳️ <b>{}</b> {} proposal <b>just ended.</b> \n<b>{}</b> \n<i>🚫 No Quorum</i> - <a href=\"{}\"><i>{}</i></a>",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                     "off-chain"

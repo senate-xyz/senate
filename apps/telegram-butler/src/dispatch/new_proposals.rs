@@ -51,10 +51,6 @@ pub async fn dispatch_new_proposal_notifications(
             .unwrap()
             .unwrap();
 
-        let voted = get_vote(user.clone().id, proposal.clone().id, client)
-            .await
-            .unwrap();
-
         let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
             Some(v) => v.into_string().unwrap(),
             None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
