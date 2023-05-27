@@ -77,7 +77,8 @@
     "[rust]": {
       "editor.defaultFormatter": "rust-lang.rust-analyzer",
       "editor.formatOnSave": true
-    }
+    },
+    "rust-analyzer.check.command": "clippy"
   },
   "extensions": {
     "recommendations": [
@@ -89,7 +90,9 @@
       "VisualStudioExptTeam.vscodeintellicode",
       "VisualStudioExptTeam.intellicode-api-usage-examples",
       "usernamehw.errorlens",
-      "rust-lang.rust-analyzer"
+      "rust-lang.rust-analyzer",
+      "tamasfe.even-better-toml",
+      "serayuzgur.crates"
     ]
   }
 }
