@@ -78,7 +78,7 @@
       "editor.defaultFormatter": "rust-lang.rust-analyzer",
       "editor.formatOnSave": true
     },
-    "rust-analyzer.check.command": "clippy"
+    "rust-analyzer.check.command": "check"
   },
   "extensions": {
     "recommendations": [
