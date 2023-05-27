@@ -31,7 +31,6 @@ module.exports = {
         project: [
             './../axiom/tsconfig.json',
             './../database/tsconfig.json',
-            './../../apps/sanity/tsconfig.json',
             './../../apps/bulletin/tsconfig.json',
             './../../apps/senate/tsconfig.json',
             './../../apps/shortie/tsconfig.json',

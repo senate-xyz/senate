@@ -31,7 +31,7 @@ pub async fn uniswap_votes(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = uniswapgov::uniswapgov::uniswapgov::new(address, ctx.client.clone());
+    let gov_contract = uniswapgov::uniswapgov::uniswapgov::new(address, ctx.rpc.clone());
 
     let voters_addresses: Vec<H256> = voters
         .clone()

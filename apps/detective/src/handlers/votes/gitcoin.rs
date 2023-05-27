@@ -28,7 +28,7 @@ pub async fn gitcoin_votes(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = gitcoingov::gitcoingov::gitcoingov::new(address, ctx.client.clone());
+    let gov_contract = gitcoingov::gitcoingov::gitcoingov::new(address, ctx.rpc.clone());
 
     let events = gov_contract
         .event::<gitcoingov::VoteCastFilter>()

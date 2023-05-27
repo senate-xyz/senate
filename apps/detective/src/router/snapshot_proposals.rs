@@ -23,19 +23,11 @@ struct GraphQLResponseInner {
     proposals: Vec<GraphQLProposal>,
 }
 
-#[allow(dead_code)]
-#[derive(Debug, Clone, Deserialize)]
-struct GraphQLSpace {
-    id: String,
-    name: String,
-}
-
-#[allow(dead_code)]
 #[derive(Debug, Clone, Deserialize)]
 struct GraphQLProposal {
     id: String,
     title: String,
-    body: String,
+
     choices: Vec<String>,
     scores: Vec<f64>,
     scores_total: f64,
@@ -46,7 +38,6 @@ struct GraphQLProposal {
     quorum: f64,
     link: String,
     state: String,
-    space: GraphQLSpace,
 }
 
 #[derive(Debug, Deserialize)]
@@ -93,7 +84,6 @@ pub async fn update_snapshot_proposals<'a>(
             {{
                 id
                 title
-                body
                 choices
                 scores
                 scores_total
@@ -104,11 +94,6 @@ pub async fn update_snapshot_proposals<'a>(
                 quorum
                 link
                 state
-                space
-                {{
-                    id
-                    name
-                }}
             }}
         }}
     "#,

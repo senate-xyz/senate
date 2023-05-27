@@ -117,7 +117,7 @@ pub async fn update_chain_votes<'a>(
         .unwrap_or(0);
 
     let current_block = ctx
-        .client
+        .rpc
         .get_block_number()
         .await
         .unwrap_or(U64::from(0))

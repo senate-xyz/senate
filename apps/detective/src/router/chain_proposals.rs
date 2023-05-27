@@ -62,7 +62,7 @@ pub async fn update_chain_proposals<'a>(
     let mut from_block = min_block.unwrap_or(0);
 
     let current_block = ctx
-        .client
+        .rpc
         .get_block_number()
         .await
         .unwrap_or(U64::from(from_block))

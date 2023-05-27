@@ -47,7 +47,7 @@ pub async fn makerexecutive_votes(
     let address = decoder.address.parse::<Address>().expect("bad address");
 
     let gov_contract =
-        makerexecutive::makerexecutive::makerexecutive::new(address, ctx.client.clone());
+        makerexecutive::makerexecutive::makerexecutive::new(address, ctx.rpc.clone());
 
     let single_spell_events = gov_contract
         .log_note_filter()

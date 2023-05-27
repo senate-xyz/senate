@@ -42,7 +42,7 @@ pub async fn aave_proposals(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = aavegov::aavegov::aavegov::new(address, ctx.client.clone());
+    let gov_contract = aavegov::aavegov::aavegov::new(address, ctx.rpc.clone());
 
     let events = gov_contract
         .proposal_created_filter()
@@ -77,7 +77,7 @@ async fn data_for_proposal(
     let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
 
     let created_block_number = meta.block_number.as_u64().to_i64().unwrap();
-    let created_block = ctx.client.get_block(meta.block_number).await?;
+    let created_block = ctx.rpc.get_block(meta.block_number).await?;
     let created_block_timestamp = created_block.expect("bad block").time()?;
 
     let voting_start_block_number = log.start_block.as_u64().to_i64().unwrap();
@@ -112,10 +112,10 @@ async fn data_for_proposal(
     let proposal_external_id = log.id.to_string();
 
     let executor_contract =
-        aaveexecutor::aaveexecutor::aaveexecutor::new(log.executor, ctx.client.clone());
+        aaveexecutor::aaveexecutor::aaveexecutor::new(log.executor, ctx.rpc.clone());
 
     let strategy_contract =
-        aavestrategy::aavestrategy::aavestrategy::new(log.strategy, ctx.client.clone());
+        aavestrategy::aavestrategy::aavestrategy::new(log.strategy, ctx.rpc.clone());
 
     let total_voting_power = strategy_contract
         .get_total_voting_supply_at(U256::from(meta.block_number.as_u64()))

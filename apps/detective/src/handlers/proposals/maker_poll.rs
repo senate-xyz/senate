@@ -43,7 +43,7 @@ pub async fn maker_poll_proposals(
         .expect("bad address");
 
     let gov_contract =
-        makerpollcreate::makerpollcreate::makerpollcreate::new(address, ctx.client.clone());
+        makerpollcreate::makerpollcreate::makerpollcreate::new(address, ctx.rpc.clone());
 
     let events = gov_contract
         .poll_created_filter()
@@ -75,7 +75,7 @@ async fn data_for_proposal(
     let (log, meta): (PollCreatedFilter, LogMeta) = p.clone();
 
     let created_block_number = meta.block_number.as_u64().to_i64().unwrap();
-    let created_block = ctx.client.get_block(meta.clone().block_number).await?;
+    let created_block = ctx.rpc.get_block(meta.clone().block_number).await?;
     let created_block_timestamp = created_block.expect("bad block").time()?;
 
     let mut voting_starts_timestamp = DateTime::from_utc(
