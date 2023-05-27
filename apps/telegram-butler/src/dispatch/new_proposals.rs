@@ -74,7 +74,7 @@ pub async fn dispatch_new_proposal_notifications(
             .send_message(
                 ChatId(user.telegramchatid.parse().unwrap()),
                 format!(
-                    "📢 <b>{}</b> {} proposal ending <b>{}</b> - <a href=\"{}\"><i>{}</i></a> \n",
+                    "📢 New <b>{}</b> {} proposal ending <b>{}</b>\n<a href=\"{}\"><i>{}</i></a>\n",
                     proposal.dao.name,
                     if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                         "off-chain"
