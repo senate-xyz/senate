@@ -28,8 +28,8 @@ pub async fn generate_ending_soon_notifications(
         NotificationType::ThirdReminderDiscord => todo!(),
         NotificationType::EndedProposalDiscord => todo!(),
         NotificationType::NewProposalTelegram => todo!(),
-        NotificationType::FirstReminderTelegram => Duration::from(Duration::hours(24)),
-        NotificationType::SecondReminderTelegram => Duration::from(Duration::hours(6)),
+        NotificationType::FirstReminderTelegram => Duration::hours(24),
+        NotificationType::SecondReminderTelegram => Duration::hours(6),
         NotificationType::ThirdReminderTelegram => todo!(),
         NotificationType::EndedProposalTelegram => todo!(),
     };
@@ -45,7 +45,7 @@ pub async fn generate_ending_soon_notifications(
         .unwrap();
 
     for user in users {
-        if user.telegramreminders == false {
+        if !user.telegramreminders {
             return;
         }
 
@@ -114,7 +114,7 @@ pub async fn get_ending_proposals_for_user(
             proposal::state::equals(ProposalState::Active),
             proposal::timeend::lt((Utc::now() + timeleft).into()),
             proposal::timeend::gt(
-                (Utc::now() + timeleft - Duration::from(Duration::minutes(60))).into(),
+                (Utc::now() + timeleft - Duration::minutes(60)).into(),
             ),
         ])
         .include(proposal_with_dao::include())
