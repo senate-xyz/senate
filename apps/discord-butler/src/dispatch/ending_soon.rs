@@ -40,57 +40,58 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
             ))
             .exec()
             .await
-            .unwrap()
             .unwrap();
 
-        if new_notification.dispatched {
-            let user = client
-                .user()
-                .find_first(vec![user::id::equals(notification.clone().userid)])
-                .exec()
-                .await
-                .unwrap()
-                .unwrap();
+        match new_notification {
+            Some(new_notification) => {
+                if new_notification.dispatched {
+                    let user = client
+                        .user()
+                        .find_first(vec![user::id::equals(notification.clone().userid)])
+                        .exec()
+                        .await
+                        .unwrap()
+                        .unwrap();
 
-            let http = Http::new("");
+                    let http = Http::new("");
 
-            let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
-                .await
-                .expect("Missing webhook");
+                    let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
+                        .await
+                        .expect("Missing webhook");
 
-            let proposal = client
-                .proposal()
-                .find_first(vec![proposal::id::equals(notification.clone().proposalid)])
-                .include(proposal_with_dao::include())
-                .exec()
-                .await
-                .unwrap()
-                .unwrap();
+                    let proposal = client
+                        .proposal()
+                        .find_first(vec![proposal::id::equals(notification.clone().proposalid)])
+                        .include(proposal_with_dao::include())
+                        .exec()
+                        .await
+                        .unwrap()
+                        .unwrap();
 
-            let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
-                Some(v) => v.into_string().unwrap(),
-                None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
-            };
+                    let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+                        Some(v) => v.into_string().unwrap(),
+                        None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+                    };
 
-            let short_url = format!(
-                "{}{}",
-                shortner_url,
-                proposal
-                    .id
-                    .chars()
-                    .rev()
-                    .take(7)
-                    .collect::<Vec<char>>()
-                    .into_iter()
-                    .rev()
-                    .collect::<String>()
-            );
+                    let short_url = format!(
+                        "{}{}",
+                        shortner_url,
+                        proposal
+                            .id
+                            .chars()
+                            .rev()
+                            .take(7)
+                            .collect::<Vec<char>>()
+                            .into_iter()
+                            .rev()
+                            .collect::<String>()
+                    );
 
-            let message_content = match notification.r#type {
-                NotificationType::QuorumNotReachedEmail => todo!(),
-                NotificationType::NewProposalDiscord => todo!(),
-                NotificationType::FirstReminderDiscord => {
-                    format!(
+                    let message_content = match notification.r#type {
+                        NotificationType::QuorumNotReachedEmail => todo!(),
+                        NotificationType::NewProposalDiscord => todo!(),
+                        NotificationType::FirstReminderDiscord => {
+                            format!(
                         "⌛ **{}** {} proposal {} **ends in 2️⃣4️⃣ hours.** 🕒 \nVote here 👉 <{}>",
                         proposal.dao.name,
                         if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
@@ -101,9 +102,9 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                         new_notification.discordmessagelink.unwrap(),
                         short_url
                     )
-                }
-                NotificationType::SecondReminderDiscord => {
-                    format!(
+                        }
+                        NotificationType::SecondReminderDiscord => {
+                            format!(
                         "🚨 **{}** {} proposal {} **ends in :six: hours.** 🕒 \nVote here 👉 <{}>",
                         proposal.dao.name,
                         if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
@@ -114,46 +115,55 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                         new_notification.discordmessagelink.unwrap(),
                         short_url
                     )
-                }
-                NotificationType::ThirdReminderDiscord => todo!(),
-                NotificationType::EndedProposalDiscord => todo!(),
-                NotificationType::NewProposalTelegram => todo!(),
-                NotificationType::FirstReminderTelegram => todo!(),
-                NotificationType::SecondReminderTelegram => todo!(),
-                NotificationType::ThirdReminderTelegram => todo!(),
-                NotificationType::EndedProposalTelegram => todo!(),
-            };
+                        }
+                        NotificationType::ThirdReminderDiscord => todo!(),
+                        NotificationType::EndedProposalDiscord => todo!(),
+                        NotificationType::NewProposalTelegram => todo!(),
+                        NotificationType::FirstReminderTelegram => todo!(),
+                        NotificationType::SecondReminderTelegram => todo!(),
+                        NotificationType::ThirdReminderTelegram => todo!(),
+                        NotificationType::EndedProposalTelegram => todo!(),
+                    };
 
-            let message = webhook
-                .execute(&http, true, |w| {
-                    w.content(message_content)
-                        .username("Senate Secretary")
-                        .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
-                })
-                .await
-                .expect("Could not execute webhook.");
-
-            match message {
-                Some(msg) => {
-                    client
-                        .notification()
-                        .update(
-                            notification::userid_proposalid_type(
-                                notification.clone().userid,
-                                notification.clone().proposalid,
-                                notification.clone().r#type,
-                            ),
-                            vec![
-                                notification::dispatched::set(true),
-                                notification::discordmessagelink::set(msg.link().into()),
-                                notification::discordmessageid::set(msg.id.to_string().into()),
-                            ],
-                        )
-                        .exec()
+                    let message = webhook
+                        .execute(&http, true, |w| {
+                            w.content(message_content)
+                                .username("Senate Secretary")
+                                .avatar_url(
+                                    "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
+                                )
+                        })
                         .await
-                        .unwrap();
+                        .expect("Could not execute webhook.");
+
+                    match message {
+                        Some(msg) => {
+                            client
+                                .notification()
+                                .update(
+                                    notification::userid_proposalid_type(
+                                        notification.clone().userid,
+                                        notification.clone().proposalid,
+                                        notification.clone().r#type,
+                                    ),
+                                    vec![
+                                        notification::dispatched::set(true),
+                                        notification::discordmessagelink::set(msg.link().into()),
+                                        notification::discordmessageid::set(
+                                            msg.id.to_string().into(),
+                                        ),
+                                    ],
+                                )
+                                .exec()
+                                .await
+                                .unwrap();
+                        }
+                        None => {}
+                    }
                 }
-                None => {}
+            }
+            None => {
+                todo!()
             }
         }
 
