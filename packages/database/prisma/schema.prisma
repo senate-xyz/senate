@@ -38,14 +38,15 @@ model user {
 
   subscriptions subscription[]
   voters        voter[]
+  notification  notification[]
 
-  acceptedterms          Boolean        @default(false)
+  acceptedterms          Boolean   @default(false)
   acceptedtermstimestamp DateTime?
-  lastactive             DateTime       @default(now())
-  sessioncount           Int            @default(0)
-  createdat              DateTime       @default(now())
-  updatedat              DateTime       @updatedAt
-  notification           notification[]
+  firstactive            DateTime  @default(now())
+  lastactive             DateTime  @default(now())
+  sessioncount           Int       @default(0)
+  createdat              DateTime  @default(now())
+  updatedat              DateTime  @updatedAt
 
   @@index(fields: [email], type: Hash)
   @@index(fields: [address], type: Hash)
