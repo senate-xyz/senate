@@ -86,29 +86,27 @@ pub async fn dispatch_ending_soon_notifications(
             NotificationType::NewProposalTelegram => todo!(),
             NotificationType::FirstReminderTelegram => {
                 format!(
-                    "⌛ <b>{}</b> {} proposal {} <b>ends in 2️⃣4️⃣ hours.</b> 🕒 \nVote here 👉 <{}>",
+                    "⌛ <b>{}</b> {} proposal <b>ends in 2️⃣4️⃣ hours.</b> 🕒 \nVote here 👉 <{}>",
                     proposal.dao.name,
                     if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                         "off-chain"
                     } else {
                         "on-chain"
                     },
-                    new_notification.telegrammessageid.unwrap(),
                     short_url
                 )
             }
             NotificationType::SecondReminderTelegram => {
                 format!(
-                        "🚨 <b>{}</b> {} proposal {} <b>ends in :six: hours.</b> 🕒 \nVote here 👉 <{}>",
-                        proposal.dao.name,
-                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                            "off-chain"
-                        } else {
-                            "on-chain"
-                        },
-                        new_notification.telegrammessageid.unwrap(),
-                        short_url
-                    )
+                    "🚨 <b>{}</b> {} proposal <b>ends in :six: hours.</b> 🕒 \nVote here 👉 <{}>",
+                    proposal.dao.name,
+                    if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                        "off-chain"
+                    } else {
+                        "on-chain"
+                    },
+                    short_url
+                )
             }
             NotificationType::ThirdReminderTelegram => todo!(),
             NotificationType::EndedProposalTelegram => todo!(),
