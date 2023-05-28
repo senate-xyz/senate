@@ -109,7 +109,9 @@ pub async fn dispatch_new_proposal_notifications(
                     .await
                     .unwrap();
             }
-            Err(_) => {}
+            Err(e) => {
+                println!("new error: {}", e)
+            }
         }
 
         sleep(Duration::from_millis(100)).await;

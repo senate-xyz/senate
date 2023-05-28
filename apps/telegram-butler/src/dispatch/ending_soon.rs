@@ -140,7 +140,9 @@ pub async fn dispatch_ending_soon_notifications(
                     .await
                     .unwrap();
             }
-            Err(_) => {}
+            Err(e) => {
+                println!("ending soon error: {}", e)
+            }
         }
 
         sleep(Duration::from_millis(100)).await;

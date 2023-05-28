@@ -171,7 +171,9 @@ pub async fn dispatch_ended_proposal_notifications(
                                 .await
                                 .unwrap();
                         }
-                        Err(_) => {}
+                        Err(e) => {
+                            println!("ended error: {}", e)
+                        }
                     }
                 } else {
                     client
