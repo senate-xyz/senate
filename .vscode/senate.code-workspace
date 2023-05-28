@@ -59,6 +59,10 @@
     {
       "name": "🛠️ @senate/userMigration",
       "path": "../utilities/userMigration"
+    },
+    {
+      "name": "🛠️ @senate/postmark_data",
+      "path": "../utilities/postmark_data"
     }
   ],
   "settings": {
