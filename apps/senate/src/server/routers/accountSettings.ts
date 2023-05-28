@@ -22,6 +22,7 @@ export const accountSettingsRouter = router({
                     address: String(username),
                     email: input.email,
                     emaildailybulletin: true,
+                    emailquorumwarning: true,
                     voters: {
                         connectOrCreate: {
                             where: {
@@ -33,7 +34,11 @@ export const accountSettingsRouter = router({
                         }
                     }
                 },
-                update: { email: input.email, emaildailybulletin: true }
+                update: {
+                    email: input.email,
+                    emaildailybulletin: true,
+                    emailquorumwarning: true
+                }
             })
 
             return user
