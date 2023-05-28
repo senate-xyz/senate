@@ -48,6 +48,9 @@ fn init_logger() {
 
 #[tokio::main]
 async fn main() {
+    //sleep to make sure old deployment api connection is closed
+    sleep(std::time::Duration::from_secs(60)).await;
+
     dotenv().ok();
     init_logger();
 
