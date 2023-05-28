@@ -123,7 +123,12 @@ pub async fn dispatch_ended_proposal_notifications(
                                 if voted {"🟢 Voted"} else {"🔴 Did not vote"},
                                 result,
                                 short_url,
-                                proposal.name,
+                                proposal.name
+                                .replace("&", "&amp;")
+                                .replace("<", "&lt;")
+                                .replace(">", "&gt;")
+                                .replace("\"", "&quot;")
+                                .replace("'", "&#39;"),
                             ),
                         ).disable_web_page_preview(true)
                         .await
@@ -141,7 +146,12 @@ pub async fn dispatch_ended_proposal_notifications(
                                 },
                                 if voted {"🟢 Voted"} else {"🔴 Did not vote"},
                                 short_url,
-                                proposal.name,
+                                proposal.name
+                                .replace("&", "&amp;")
+                                .replace("<", "&lt;")
+                                .replace(">", "&gt;")
+                                .replace("\"", "&quot;")
+                                .replace("'", "&#39;"),
                             ),
                         ).disable_web_page_preview(true)
                         .await

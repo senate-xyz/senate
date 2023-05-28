@@ -83,7 +83,13 @@ pub async fn dispatch_new_proposal_notifications(
                     },
                     proposal.timeend.format("%Y-%m-%d %H:%M"),
                     short_url,
-                    proposal.name,
+                    proposal
+                        .name
+                        .replace("&", "&amp;")
+                        .replace("<", "&lt;")
+                        .replace(">", "&gt;")
+                        .replace("\"", "&quot;")
+                        .replace("'", "&#39;"),
                 ),
             )
             .disable_web_page_preview(true)
