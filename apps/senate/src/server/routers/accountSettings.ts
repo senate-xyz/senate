@@ -165,7 +165,10 @@ export const accountSettingsRouter = router({
                 where: {
                     address: String(username)
                 },
-                data: { emaildailybulletin: input.val }
+                data: {
+                    emaildailybulletin: input.val,
+                    emailquorumwarning: input.val
+                }
             })
 
             return user
