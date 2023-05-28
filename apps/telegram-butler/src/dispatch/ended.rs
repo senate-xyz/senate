@@ -102,7 +102,7 @@ pub async fn dispatch_ended_proposal_notifications(
 
                     let message = if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
                         let result = format!(
-                            "☑️ {} {}%",
+                            "{} {}%",
                             proposal.choices.as_array().unwrap()[result_index]
                                 .as_str()
                                 .unwrap(),
