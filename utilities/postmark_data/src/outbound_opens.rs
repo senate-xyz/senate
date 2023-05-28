@@ -5,12 +5,13 @@ use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde_derive::Deserialize;
 use serde_json::Value;
 
+#[allow(non_snake_case)]
 #[derive(Debug, Clone, Deserialize)]
 struct OutboundOpens {
-    TotalCount: i64,
     Opens: Vec<OpenMessage>,
 }
 
+#[allow(non_snake_case)]
 #[derive(Debug, Clone, Deserialize)]
 struct OpenMessage {
     MessageID: Value,

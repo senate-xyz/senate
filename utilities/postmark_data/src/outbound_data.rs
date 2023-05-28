@@ -5,12 +5,13 @@ use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde_derive::Deserialize;
 use serde_json::Value;
 
+#[allow(non_snake_case)]
 #[derive(Debug, Clone, Deserialize)]
 struct OutboundData {
-    TotalCount: i64,
     Messages: Vec<OutboundMessage>,
 }
 
+#[allow(non_snake_case)]
 #[derive(Debug, Clone, Deserialize)]
 struct OutboundMessage {
     MessageID: Value,
@@ -20,10 +21,10 @@ struct OutboundMessage {
     Status: Value,
 }
 
+#[allow(non_snake_case)]
 #[derive(Debug, Clone, Deserialize)]
 struct OutboundMessageTo {
     Email: Value,
-    Name: Value,
 }
 
 pub async fn outbound_data() {

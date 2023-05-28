@@ -5,12 +5,13 @@ use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde_derive::Deserialize;
 use serde_json::Value;
 
+#[allow(non_snake_case)]
 #[derive(Debug, Clone, Deserialize)]
 struct OutboundClicks {
-    TotalCount: i64,
     Clicks: Vec<Click>,
 }
 
+#[allow(non_snake_case)]
 #[derive(Debug, Clone, Deserialize)]
 struct Click {
     MessageID: Value,
