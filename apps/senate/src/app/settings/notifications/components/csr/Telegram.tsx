@@ -5,6 +5,7 @@ import { trpc } from '../../../../../server/trpcClient'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const Telegram = () => {
     const [getTelegramNotifications, setTelegramNotifications] = useState(false)
@@ -79,6 +80,14 @@ const Telegram = () => {
 
             {getTelegramNotifications && (
                 <div className='flex flex-col gap-4'>
+                    <Link
+                        className='text-[18px] font-light text-white underline'
+                        href={'https://t.me/senatesecretarybot'}
+                        target='_blank'
+                    >
+                        Open a telegram chat
+                    </Link>
+
                     <div className='flex flex-col gap-2'>
                         <div className='text-[18px] font-light text-white'>
                             Telegram ChatId
