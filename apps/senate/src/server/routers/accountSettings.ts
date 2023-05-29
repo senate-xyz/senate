@@ -362,7 +362,7 @@ export const accountSettingsRouter = router({
     setTelegramChatId: privateProcedure
         .input(
             z.object({
-                chatid: z.number().int()
+                chatid: z.number().int().lt(-1000000).gt(1000000)
             })
         )
         .mutation(async ({ input, ctx }) => {

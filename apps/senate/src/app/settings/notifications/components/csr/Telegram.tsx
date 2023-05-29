@@ -131,16 +131,13 @@ const Telegram = () => {
                 </div>
             )}
             {setTelegramChatId.error && (
-                <input
-                    className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
-                    value={currentChatId}
-                    onChange={(e) => {
-                        setCurrentChatId(String(e.target.value))
-                    }}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') onEnter()
-                    }}
-                />
+                <div className='flex flex-col text-white'>
+                    {JSON.parse(setTelegramChatId.error.message).map(
+                        (err: Error) => (
+                            <div>{err.message}</div>
+                        )
+                    )}
+                </div>
             )}
         </div>
     )
