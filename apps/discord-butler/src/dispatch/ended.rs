@@ -61,11 +61,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         .include(proposal_with_dao::include())
                         .exec()
                         .await
-                        .unwrap()
                         .unwrap();
-
-                    let initial_message_id: u64 =
-                        new_notification.discordmessageid.unwrap().parse().unwrap();
 
                     let http = Http::new("");
 
@@ -73,58 +69,69 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         .await
                         .expect("Missing webhook");
 
-                    let (result_index, max_score) = proposal
-                        .scores
-                        .as_array()
-                        .unwrap()
-                        .iter()
-                        .map(|score| score.as_f64().unwrap())
-                        .enumerate()
-                        .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
-                        .unwrap_or((100, 0.0));
+                    let initial_message_id: u64 =
+                        new_notification.discordmessageid.unwrap().parse().unwrap();
 
-                    let message_content = if result_index == 100 {
-                        format!("❓ Could not fetch results")
-                    } else if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
-                        format!(
-                            "✅ **{}** {}%",
-                            &proposal.choices.as_array().unwrap()[result_index]
-                                .as_str()
-                                .unwrap(),
-                            (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
-                        )
-                    } else {
-                        format!("❌ No Quorum")
-                    };
+                    match proposal {
+                        Some(proposal) => {
+                            let (result_index, max_score) = proposal
+                                .scores
+                                .as_array()
+                                .unwrap()
+                                .iter()
+                                .map(|score| score.as_f64().unwrap())
+                                .enumerate()
+                                .max_by(|(_, a), (_, b)| {
+                                    a.partial_cmp(b).unwrap_or(Ordering::Equal)
+                                })
+                                .unwrap_or((100, 0.0));
 
-                    let voted =
-                        get_vote(new_notification.userid, new_notification.proposalid, client)
+                            let message_content = if result_index == 100 {
+                                format!("❓ Could not fetch results")
+                            } else if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
+                                format!(
+                                    "✅ **{}** {}%",
+                                    &proposal.choices.as_array().unwrap()[result_index]
+                                        .as_str()
+                                        .unwrap(),
+                                    (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0)
+                                        .round()
+                                )
+                            } else {
+                                format!("❌ No Quorum")
+                            };
+
+                            let voted = get_vote(
+                                new_notification.userid,
+                                new_notification.proposalid,
+                                client,
+                            )
                             .await
                             .unwrap();
 
-                    let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
-                        Some(v) => v.into_string().unwrap(),
-                        None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
-                    };
+                            let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+                                Some(v) => v.into_string().unwrap(),
+                                None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+                            };
 
-                    let short_url = format!(
-                        "{}{}",
-                        shortner_url,
-                        proposal
-                            .id
-                            .chars()
-                            .rev()
-                            .take(7)
-                            .collect::<Vec<char>>()
-                            .into_iter()
-                            .rev()
-                            .collect::<String>()
-                    );
+                            let short_url = format!(
+                                "{}{}",
+                                shortner_url,
+                                proposal
+                                    .id
+                                    .chars()
+                                    .rev()
+                                    .take(7)
+                                    .collect::<Vec<char>>()
+                                    .into_iter()
+                                    .rev()
+                                    .collect::<String>()
+                            );
 
-                    webhook
-                        .edit_message(&http, MessageId::from(initial_message_id), |w| {
-                            w.embeds(vec![Embed::fake(|e| {
-                                e.title(proposal.name)
+                            webhook
+                                .edit_message(&http, MessageId::from(initial_message_id), |w| {
+                                    w.embeds(vec![Embed::fake(|e| {
+                                        e.title(proposal.name)
                                     .description(format!(
                                         "**{}** {} proposal ended on {}",
                                         proposal.dao.name,
@@ -147,14 +154,14 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                     } else {
                                         "https://senatelabs.xyz/assets/Discord/past-no-vote2x.png"
                                     })
-                            })])
-                        })
-                        .await
-                        .unwrap();
+                                    })])
+                                })
+                                .await
+                                .expect("Could not execute webhook.");
 
-                    let message = webhook
-                        .execute(&http, true, |w| {
-                            w.content(format!(
+                            let message = webhook
+                                .execute(&http, true, |w| {
+                                    w.content(format!(
                                 "🗳️ **{}** {} proposal {} **just ended.** ☑️",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
@@ -168,12 +175,43 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             .avatar_url(
                                 "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
                             )
-                        })
-                        .await
-                        .expect("Could not execute webhook.");
+                                })
+                                .await
+                                .expect("Could not execute webhook.");
 
-                    match message {
-                        Some(msg) => {
+                            match message {
+                                Some(msg) => {
+                                    client
+                                        .notification()
+                                        .update(
+                                            notification::userid_proposalid_type(
+                                                ended_notification.clone().userid,
+                                                ended_notification.clone().proposalid,
+                                                NotificationType::EndedProposalDiscord,
+                                            ),
+                                            vec![
+                                                notification::dispatched::set(true),
+                                                notification::discordmessagelink::set(
+                                                    msg.link().into(),
+                                                ),
+                                                notification::discordmessageid::set(
+                                                    msg.id.to_string().into(),
+                                                ),
+                                            ],
+                                        )
+                                        .exec()
+                                        .await
+                                        .unwrap();
+                                }
+                                None => {}
+                            }
+                        }
+                        None => {
+                            webhook
+                                .delete_message(&http, MessageId::from(initial_message_id))
+                                .await
+                                .expect("Could not execute webhook.");
+
                             client
                                 .notification()
                                 .update(
@@ -184,9 +222,11 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                     ),
                                     vec![
                                         notification::dispatched::set(true),
-                                        notification::discordmessagelink::set(msg.link().into()),
+                                        notification::discordmessagelink::set(
+                                            "deleted".to_string().into(),
+                                        ),
                                         notification::discordmessageid::set(
-                                            msg.id.to_string().into(),
+                                            "deleted".to_string().into(),
                                         ),
                                     ],
                                 )
@@ -194,7 +234,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 .await
                                 .unwrap();
                         }
-                        None => {}
                     }
                 } else {
                     client
