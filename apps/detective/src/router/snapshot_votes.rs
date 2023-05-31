@@ -88,7 +88,7 @@ pub async fn update_snapshot_votes<'a>(
         .await
         .expect("bad prisma result");
 
-    let oldest_vote = voter_handlers
+    let newest_vote = voter_handlers
         .iter()
         .map(|voterhandler| {
             voterhandler
@@ -100,8 +100,8 @@ pub async fn update_snapshot_votes<'a>(
         .unwrap_or(0);
 
     let search_from_timestamp =
-        if oldest_vote < dao_handler.snapshotindex.unwrap_or_default().timestamp() {
-            oldest_vote
+        if newest_vote < dao_handler.snapshotindex.unwrap_or_default().timestamp() {
+            newest_vote
         } else {
             dao_handler.snapshotindex.unwrap_or_default().timestamp()
         };

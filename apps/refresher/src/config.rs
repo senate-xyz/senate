@@ -31,10 +31,10 @@ lazy_static::lazy_static! {
         RwLock::new(Config {
             refresh_interval: 300,
 
-            normal_chain_proposals: 2 * 60 ,
+            normal_chain_proposals: 4 * 60 ,
             normal_chain_votes: 2 * 60 ,
-            normal_snapshot_proposals:2 * 60 ,
-            normal_snapshot_votes:2*  60 ,
+            normal_snapshot_proposals: 4 * 60 ,
+            normal_snapshot_votes: 2 * 60 ,
 
             new_chain_proposals: 5  ,
             new_chain_votes: 5 ,
@@ -42,9 +42,9 @@ lazy_static::lazy_static! {
             new_snapshot_votes: 5  ,
 
             force_chain_proposals: 60 * 60 ,
-            force_chain_votes: 60 * 60 ,
+            force_chain_votes: 30 * 60 ,
             force_snapshot_proposals: 60 * 60 ,
-            force_snapshot_votes: 60 * 60 ,
+            force_snapshot_votes: 30 * 60 ,
 
             batch_chain_votes: 100,
             batch_snapshot_votes: 100,
@@ -74,17 +74,17 @@ pub(crate) async fn load_config_from_db(client: &PrismaClient) -> Result<()> {
     let refresh_interval = load_config_value(client, "refresh_interval", 300).await?;
 
     let normal_chain_proposals =
-        load_config_value(client, "normal_chain_proposals", 2 * 60).await?;
+        load_config_value(client, "normal_chain_proposals", 4 * 60).await?;
     let normal_chain_votes = load_config_value(client, "normal_chain_votes", 2 * 60).await?;
     let normal_snapshot_proposals =
-        load_config_value(client, "normal_snapshot_proposals", 2 * 60).await?;
+        load_config_value(client, "normal_snapshot_proposals", 4 * 60).await?;
     let normal_snapshot_votes = load_config_value(client, "normal_snapshot_votes", 2 * 60).await?;
 
     let force_chain_proposals = load_config_value(client, "force_chain_proposals", 60 * 60).await?;
-    let force_chain_votes = load_config_value(client, "force_chain_votes", 60 * 60).await?;
+    let force_chain_votes = load_config_value(client, "force_chain_votes", 30 * 60).await?;
     let force_snapshot_proposals =
         load_config_value(client, "force_snapshot_proposals", 60 * 60).await?;
-    let force_snapshot_votes = load_config_value(client, "force_snapshot_votes", 60 * 60).await?;
+    let force_snapshot_votes = load_config_value(client, "force_snapshot_votes", 30 * 60).await?;
 
     let new_chain_proposals = load_config_value(client, "new_chain_proposals", 5).await?;
     let new_chain_votes = load_config_value(client, "new_chain_votes", 5).await?;
