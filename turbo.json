@@ -36,12 +36,12 @@
       "cache": false
     },
 
-    "build:discord-butler": {
+    "build:discord-secretary": {
       "dependsOn": ["^db:generate"],
       "cache": false
     },
 
-    "build:telegram-butler": {
+    "build:telegram-secretary": {
       "dependsOn": ["^db:generate"],
       "cache": false
     },
