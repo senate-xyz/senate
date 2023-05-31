@@ -1,0 +1,21 @@
+{
+  "name": "@senate/email-secretary",
+  "version": "1.0.0",
+  "description": "This service takes care of sending emails",
+  "author": "Senate",
+  "private": true,
+  "license": "GNU GPLv3",
+  "scripts": {
+    "build": "cargo b",
+    "build:telegram-secretary": "cargo b",
+    "start": "cargo r",
+    "start:telegram-secretary": "cargo r",
+    "clean": "cargo clean",
+    "lint": "cargo fmt",
+    "lint:fix": "cargo fmt",
+    "prettier": "cargo fmt",
+    "prettier:fix": "cargo fmt",
+    "db:generate": "cargo generate",
+    "update": "cargo upgrade && cargo update"
+  }
+}

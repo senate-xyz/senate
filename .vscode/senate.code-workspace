@@ -21,6 +21,10 @@
       "path": "../apps/telegram-secretary"
     },
     {
+      "name": "🦀 @senate/email-secretary",
+      "path": "../apps/email-secretary"
+    },
+    {
       "name": "🦀 @senate/quorum-email",
       "path": "../apps/quorum-email"
     },
