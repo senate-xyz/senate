@@ -3,7 +3,7 @@ members = [".",
     "prisma-cli"]
 
 [package]
-name = "aave-quorum-email"
+name = "bulletin-rust"
 version = "0.1.0"
 edition = "2021"
 

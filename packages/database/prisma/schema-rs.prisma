@@ -23,6 +23,11 @@ generator aavenotifs {
   output   = "../../../apps/aave-quorum-email/src/prisma.rs"
 }
 
+generator bulletin {
+  provider = "cargo prisma"
+  output   = "../../../apps/bulletin-rust/src/prisma.rs"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
