@@ -83,7 +83,7 @@ pub async fn update_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                 .map(|score| score.as_f64().unwrap())
                 .enumerate()
                 .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
-                .unwrap_or_default();
+                .unwrap_or((100, 0.0));
 
             let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
                 Some(v) => v.into_string().unwrap(),
@@ -112,16 +112,18 @@ pub async fn update_ended_proposal_notifications(client: &Arc<PrismaClient>) {
             .await
             .unwrap();
 
-            let message_content = if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
+            let message_content = if result_index == 100 {
+                format!("❓ Could not fetch results")
+            } else if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
                 format!(
-                    "☑️ **{}** {}%",
+                    "✅ **{}** {}%",
                     &proposal.choices.as_array().unwrap()[result_index]
                         .as_str()
                         .unwrap(),
                     (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
                 )
             } else {
-                format!("🇽 No Quorum",)
+                format!("❌ No Quorum")
             };
 
             let http = Http::new("");

@@ -81,20 +81,20 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         .map(|score| score.as_f64().unwrap())
                         .enumerate()
                         .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
-                        .unwrap();
+                        .unwrap_or((100, 0.0));
 
-                    let message_content = if proposal.scorestotal.as_f64()
-                        > proposal.quorum.as_f64()
-                    {
+                    let message_content = if result_index == 100 {
+                        format!("❓ Could not fetch results")
+                    } else if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
                         format!(
-                            "☑️ **{}** {}%",
+                            "✅ **{}** {}%",
                             &proposal.choices.as_array().unwrap()[result_index]
                                 .as_str()
                                 .unwrap(),
                             (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
                         )
                     } else {
-                        format!("🇽 No Quorum",)
+                        format!("❌ No Quorum")
                     };
 
                     let voted =
