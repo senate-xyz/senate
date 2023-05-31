@@ -54,7 +54,7 @@ async fn main() {
     dotenv().ok();
     init_logger();
 
-    info!("telegram-butler start");
+    info!("telegram-secretaryary start");
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
     let bot = Bot::from_env()

@@ -2,8 +2,8 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "DOCKERFILE",
-    "dockerfilePath": "Dockerfile.telegram-butler",
-    "watchPatterns": ["apps/telegram-butler", "packages/database"]
+    "dockerfilePath": "Dockerfile.discord-secretary",
+    "watchPatterns": ["apps/discord-secretary", "packages/database"]
   },
   "deploy": {
     "numReplicas": 1,

@@ -8,14 +8,14 @@ generator refresher {
   output   = "../../../apps/refresher/src/prisma.rs"
 }
 
-generator discordbutler {
+generator discordsecretary {
   provider = "cargo prisma"
-  output   = "../../../apps/discord-butler/src/prisma.rs"
+  output   = "../../../apps/discord-secretary/src/prisma.rs"
 }
 
-generator telegrambutler {
+generator telegramsecretary {
   provider = "cargo prisma"
-  output   = "../../../apps/telegram-butler/src/prisma.rs"
+  output   = "../../../apps/telegram-secretary/src/prisma.rs"
 }
 
 generator quorumemail {

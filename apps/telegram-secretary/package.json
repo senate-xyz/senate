@@ -1,5 +1,5 @@
 {
-  "name": "@senate/telegram-butler",
+  "name": "@senate/telegram-secretary",
   "version": "1.0.0",
   "description": "This service takes care of sending notifications",
   "author": "Senate",
@@ -7,9 +7,9 @@
   "license": "GNU GPLv3",
   "scripts": {
     "build": "cargo b",
-    "build:telegram-butler": "cargo b",
+    "build:telegram-secretary": "cargo b",
     "start": "cargo r",
-    "start:telegram-butler": "cargo r",
+    "start:telegram-secretary": "cargo r",
     "clean": "cargo clean",
     "lint": "cargo fmt",
     "lint:fix": "cargo fmt",

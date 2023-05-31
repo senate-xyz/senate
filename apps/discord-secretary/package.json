@@ -1,5 +1,5 @@
 {
-  "name": "@senate/discord-butler",
+  "name": "@senate/discord-secretary",
   "version": "1.0.0",
   "description": "This service takes care of sending notifications",
   "author": "Senate",
@@ -7,9 +7,9 @@
   "license": "GNU GPLv3",
   "scripts": {
     "build": "cargo b",
-    "build:discord-butler": "cargo b",
+    "build:discord-secretary": "cargo b",
     "start": "cargo r",
-    "start:discord-butler": "cargo r",
+    "start:discord-secretary": "cargo r",
     "clean": "cargo clean",
     "lint": "cargo fmt",
     "lint:fix": "cargo fmt",
