@@ -26,7 +26,7 @@ use crate::{
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-pub async fn update_ended_proposal_notifications(
+pub async fn _update_ended_proposal_notifications(
     client: &Arc<PrismaClient>,
     bot: &Arc<DefaultParseMode<Throttle<teloxide::Bot>>>,
 ) {
