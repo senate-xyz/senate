@@ -83,7 +83,7 @@ pub async fn update_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                 .map(|score| score.as_f64().unwrap())
                 .enumerate()
                 .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
-                .unwrap();
+                .unwrap_or_default();
 
             let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
                 Some(v) => v.into_string().unwrap(),
