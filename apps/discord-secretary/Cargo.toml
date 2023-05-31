@@ -3,7 +3,7 @@ members = [".",
     "prisma-cli"]
 
 [package]
-name = "discord-butler"
+name = "discord-secretary"
 version = "0.1.0"
 edition = "2021"
 
