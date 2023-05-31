@@ -83,7 +83,7 @@ pub async fn get_ended_proposals_for_user(
                 ProposalState::Executed,
             ]),
             proposal::timeend::lt((Utc::now()).into()),
-            proposal::timeend::gt((Utc::now() - Duration::from(Duration::minutes(60))).into()),
+            proposal::timeend::gt((Utc::now() - Duration::minutes(60)).into()),
         ])
         .include(proposal_with_dao::include())
         .exec()

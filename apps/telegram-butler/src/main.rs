@@ -24,8 +24,6 @@ use crate::{
         ended::dispatch_ended_proposal_notifications,
         ending_soon::dispatch_ending_soon_notifications,
         new_proposals::dispatch_new_proposal_notifications,
-        update_active::update_active_proposal_notifications,
-        update_ended::update_ended_proposal_notifications,
     },
     generate::{
         ended::generate_ended_proposal_notifications,
@@ -50,6 +48,9 @@ fn init_logger() {
 
 #[tokio::main]
 async fn main() {
+    //sleep to make sure old deployment api connection is closed
+    sleep(std::time::Duration::from_secs(60)).await;
+
     dotenv().ok();
     init_logger();
 
@@ -113,26 +114,26 @@ async fn main() {
         }
     });
 
-    let client_for_active_proposals: Arc<PrismaClient> = Arc::clone(&client);
-    let bot_for_active_proposals: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
-        Arc::clone(&botwrapper);
-    let active_proposals_task = tokio::task::spawn(async move {
-        loop {
-            update_active_proposal_notifications(
-                &client_for_active_proposals,
-                &bot_for_active_proposals,
-            )
-            .await;
+    // let client_for_active_proposals: Arc<PrismaClient> = Arc::clone(&client);
+    // let bot_for_active_proposals: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
+    //     Arc::clone(&botwrapper);
+    // let active_proposals_task = tokio::task::spawn(async move {
+    //     loop {
+    //         update_active_proposal_notifications(
+    //             &client_for_active_proposals,
+    //             &bot_for_active_proposals,
+    //         )
+    //         .await;
 
-            update_ended_proposal_notifications(
-                &client_for_active_proposals,
-                &bot_for_active_proposals,
-            )
-            .await;
+    //         update_ended_proposal_notifications(
+    //             &client_for_active_proposals,
+    //             &bot_for_active_proposals,
+    //         )
+    //         .await;
 
-            sleep(std::time::Duration::from_secs(10 * 60)).await;
-        }
-    });
+    //         sleep(std::time::Duration::from_secs(10 * 60)).await;
+    //     }
+    // });
 
     let replybot = Bot::from_env();
 
@@ -142,7 +143,7 @@ async fn main() {
         new_proposals_task,
         ending_soon_task,
         ended_proposals_task,
-        active_proposals_task
+        //active_proposals_task
     )
     .unwrap();
 }

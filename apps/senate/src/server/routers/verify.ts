@@ -84,6 +84,8 @@ export const verifyRouter = router({
                             emailUser.isuniswapuser == 'VERIFICATION'
                                 ? 'ENABLED'
                                 : addressUser.isuniswapuser,
+                        emaildailybulletin: true,
+                        emailquorumwarning: true,
                         challengecode: '',
                         email: emailUser.email,
                         verifiedaddress: true,
@@ -145,6 +147,8 @@ export const verifyRouter = router({
                             newUser.isuniswapuser == 'VERIFICATION'
                                 ? 'ENABLED'
                                 : newUser.isuniswapuser,
+                        emaildailybulletin: true,
+                        emailquorumwarning: true,
                         challengecode: '',
                         verifiedaddress: true,
                         verifiedemail: true

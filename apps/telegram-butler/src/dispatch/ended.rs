@@ -66,9 +66,6 @@ pub async fn dispatch_ended_proposal_notifications(
                         .unwrap()
                         .unwrap();
 
-                    let initial_message_id =
-                        MessageId(new_notification.telegramchatid.unwrap().parse().unwrap());
-
                     let (result_index, max_score) = proposal
                         .scores
                         .as_array()
@@ -103,72 +100,62 @@ pub async fn dispatch_ended_proposal_notifications(
                             .await
                             .unwrap();
 
-                    let update_message_content = if proposal.scorestotal.as_f64()
-                        > proposal.quorum.as_f64()
-                    {
-                        format!(
-                            "🗳️ <b>{}</b> {} proposal ended at <b>{}</b> - <a href=\"{}\"><i>{}</i></a> \n<b>{}</b> \n<i>{}</i> \n<code>Updated at:{}</code>",
-                            proposal.dao.name,
-                            if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                "off-chain"
-                            } else {
-                                "on-chain"
-                            },
-                            proposal.timeend.format("%Y-%m-%d %H:%M"),
-                            proposal.url,
-                            proposal.name,
-                            if voted { "Voted" } else { "Not voted yet" },
-                            format!(
-                                "☑️ {} {}%",
-                                &proposal.choices.as_array().unwrap()[result_index]
-                                    .as_str()
-                                    .unwrap(),
-                                (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
-                            ),
-                            Utc::now().format("%Y-%m-%d %H:%M")
-                        )
-                    } else {
-                        format!(
-                            "⛔️ <b>{}</b> {} proposal ended with no quorum <b>{}</b> - <a href=\"{}\"><i>{}</i></a> \n<b>{}</b> \n<i>🇽 No Quorum</i> \n<code>Updated at:{}</code>",
-                            proposal.dao.name,
-                            if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                "off-chain"
-                            } else {
-                                "on-chain"
-                            },
-                            proposal.timeend.format("%Y-%m-%d %H:%M"),
-                            proposal.url,
-                            proposal.name,
-                            if voted { "Voted" } else { "Not voted yet" },
-                            Utc::now().format("%Y-%m-%d %H:%M")
-                        )
-                    };
+                    let message = if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
+                        let result = format!(
+                            "{} {}%",
+                            proposal.choices.as_array().unwrap()[result_index]
+                                .as_str()
+                                .unwrap(),
+                            (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
+                        );
 
-                    let _ = bot
-                        .edit_message_text(
-                            ChatId(user.telegramchatid.parse().unwrap()),
-                            initial_message_id,
-                            update_message_content,
-                        )
-                        .await;
-
-                    let message = bot
+                        bot
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
-                                "🗳️ <b>{}</b> {} proposal <b>just ended.</b> ☑️ \n<b>{}</b> \nView it here: <a href=\"{}\"><i>{}</i></a>",
+                                "🗳️ <b>{}</b> {} proposal <b>just ended.</b> \n<b>{}</b> \n<i>✅ {}</i> - <a href=\"{}\"><i>{}</i></a>",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                     "off-chain"
                                 } else {
                                     "on-chain"
                                 },
-                                if voted {"Voted"} else {"Did not vote"},
+                                if voted {"🟢 Voted"} else {"🔴 Did not vote"},
+                                result,
                                 short_url,
                                 proposal.name
+                                .replace("&", "&amp;")
+                                .replace("<", "&lt;")
+                                .replace(">", "&gt;")
+                                .replace("\"", "&quot;")
+                                .replace("'", "&#39;"),
                             ),
                         ).disable_web_page_preview(true)
-                        .await;
+                        .await
+                    } else {
+                        bot
+                        .send_message(
+                            ChatId(user.telegramchatid.parse().unwrap()),
+                            format!(
+                                "🗳️ <b>{}</b> {} proposal <b>just ended.</b> \n<b>{}</b> \n<i>🚫 No Quorum</i> - <a href=\"{}\"><i>{}</i></a>",
+                                proposal.dao.name,
+                                if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                    "off-chain"
+                                } else {
+                                    "on-chain"
+                                },
+                                if voted {"🟢 Voted"} else {"🔴 Did not vote"},
+                                short_url,
+                                proposal.name
+                                .replace("&", "&amp;")
+                                .replace("<", "&lt;")
+                                .replace(">", "&gt;")
+                                .replace("\"", "&quot;")
+                                .replace("'", "&#39;"),
+                            ),
+                        ).disable_web_page_preview(true)
+                        .await
+                    };
 
                     match message {
                         Ok(msg) => {
@@ -194,7 +181,9 @@ pub async fn dispatch_ended_proposal_notifications(
                                 .await
                                 .unwrap();
                         }
-                        Err(_) => {}
+                        Err(e) => {
+                            println!("ended error: {}", e)
+                        }
                     }
                 } else {
                     client

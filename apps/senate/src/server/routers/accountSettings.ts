@@ -22,6 +22,7 @@ export const accountSettingsRouter = router({
                     address: String(username),
                     email: input.email,
                     emaildailybulletin: true,
+                    emailquorumwarning: true,
                     voters: {
                         connectOrCreate: {
                             where: {
@@ -33,7 +34,11 @@ export const accountSettingsRouter = router({
                         }
                     }
                 },
-                update: { email: input.email, emaildailybulletin: true }
+                update: {
+                    email: input.email,
+                    emaildailybulletin: true,
+                    emailquorumwarning: true
+                }
             })
 
             return user
@@ -160,7 +165,10 @@ export const accountSettingsRouter = router({
                 where: {
                     address: String(username)
                 },
-                data: { emaildailybulletin: input.val }
+                data: {
+                    emaildailybulletin: input.val,
+                    emailquorumwarning: input.val
+                }
             })
 
             return user
@@ -354,7 +362,7 @@ export const accountSettingsRouter = router({
     setTelegramChatId: privateProcedure
         .input(
             z.object({
-                chatid: z.number().int()
+                chatid: z.number().int().lt(-1000000).gt(1000000)
             })
         )
         .mutation(async ({ input, ctx }) => {

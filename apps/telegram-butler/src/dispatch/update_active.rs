@@ -105,11 +105,7 @@ pub async fn update_active_proposal_notifications(
                     .collect::<String>()
             );
 
-            let _ = bot
-                .edit_message_text(
-                    ChatId(user.telegramchatid.parse().unwrap()),
-                    initial_message_id,
-                 format!(
+            let updated_message_content = format!(
                             "⌛ <b>{}</b> {} proposal ending <b>{}</b> - <a href=\"{}\"><i>{}</i></a> \n<b>{}</b> \n<code>Updated at:{}</code>",
                             proposal.dao.name,
                             if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
@@ -122,7 +118,13 @@ pub async fn update_active_proposal_notifications(
                             proposal.name,
                             if voted { "Voted" } else { "Not voted yet" },
                             Utc::now().format("%Y-%m-%d %H:%M")
-                        ),
+                        );
+
+            let _ = bot
+                .edit_message_text(
+                    ChatId(user.telegramchatid.parse().unwrap()),
+                    initial_message_id,
+                    updated_message_content,
                 )
                 .await;
 

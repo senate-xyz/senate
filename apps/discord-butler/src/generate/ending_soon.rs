@@ -20,8 +20,8 @@ pub async fn generate_ending_soon_notifications(
     ending_type: NotificationType,
 ) {
     let timeleft = match ending_type {
-        NotificationType::FirstReminderDiscord => Duration::from(Duration::hours(24)),
-        NotificationType::SecondReminderDiscord => Duration::from(Duration::hours(6)),
+        NotificationType::FirstReminderDiscord => Duration::hours(24),
+        NotificationType::SecondReminderDiscord => Duration::hours(6),
         NotificationType::QuorumNotReachedEmail => todo!(),
         NotificationType::NewProposalDiscord => todo!(),
         NotificationType::ThirdReminderDiscord => todo!(),
@@ -38,16 +38,13 @@ pub async fn generate_ending_soon_notifications(
         .find_many(vec![
             user::discordnotifications::equals(true),
             user::discordwebhook::starts_with("https://".to_string()),
+            user::discordreminders::equals(true),
         ])
         .exec()
         .await
         .unwrap();
 
     for user in users {
-        if user.discordreminders == false {
-            return;
-        }
-
         let ending_proposals = get_ending_proposals_for_user(&user.address, timeleft, client)
             .await
             .unwrap();
@@ -112,9 +109,7 @@ pub async fn get_ending_proposals_for_user(
             proposal::daoid::in_vec(subscribed_daos.into_iter().map(|d| d.daoid).collect()),
             proposal::state::equals(ProposalState::Active),
             proposal::timeend::lt((Utc::now() + timeleft).into()),
-            proposal::timeend::gt(
-                (Utc::now() + timeleft - Duration::from(Duration::minutes(60))).into(),
-            ),
+            proposal::timeend::gt((Utc::now() + timeleft - Duration::minutes(60)).into()),
         ])
         .include(proposal_with_dao::include())
         .exec()

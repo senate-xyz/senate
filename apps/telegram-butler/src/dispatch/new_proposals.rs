@@ -51,10 +51,6 @@ pub async fn dispatch_new_proposal_notifications(
             .unwrap()
             .unwrap();
 
-        let voted = get_vote(user.clone().id, proposal.clone().id, client)
-            .await
-            .unwrap();
-
         let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
             Some(v) => v.into_string().unwrap(),
             None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
@@ -78,19 +74,23 @@ pub async fn dispatch_new_proposal_notifications(
             .send_message(
                 ChatId(user.telegramchatid.parse().unwrap()),
                 format!(
-                            "⌛ <b>{}</b> {} proposal ending <b>{}</b> - <a href=\"{}\"><i>{}</i></a> \n<b>{}</b> \n<code>Updated at:{}</code>",
-                            proposal.dao.name,
-                            if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                "off-chain"
-                            } else {
-                                "on-chain"
-                            },
-                            proposal.timeend.format("%Y-%m-%d %H:%M"),
-                            short_url,
-                            proposal.name,
-                            if voted { "Voted" } else { "Not voted yet" },
-                            Utc::now().format("%Y-%m-%d %H:%M")
-                        ),
+                    "📢 New <b>{}</b> {} proposal ending <b>{}</b>\n<a href=\"{}\"><i>{}</i></a>\n",
+                    proposal.dao.name,
+                    if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                        "off-chain"
+                    } else {
+                        "on-chain"
+                    },
+                    proposal.timeend.format("%Y-%m-%d %H:%M"),
+                    short_url,
+                    proposal
+                        .name
+                        .replace("&", "&amp;")
+                        .replace("<", "&lt;")
+                        .replace(">", "&gt;")
+                        .replace("\"", "&quot;")
+                        .replace("'", "&#39;"),
+                ),
             )
             .disable_web_page_preview(true)
             .await;
@@ -115,7 +115,9 @@ pub async fn dispatch_new_proposal_notifications(
                     .await
                     .unwrap();
             }
-            Err(_) => {}
+            Err(e) => {
+                println!("new error: {}", e)
+            }
         }
 
         sleep(Duration::from_millis(100)).await;

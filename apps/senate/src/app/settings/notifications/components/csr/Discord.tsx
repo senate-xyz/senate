@@ -133,16 +133,13 @@ const Discord = () => {
                 </div>
             )}
             {setDiscordWebhook.error && (
-                <input
-                    className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
-                    value={currentWebhook}
-                    onChange={(e) => {
-                        setCurrentWebhook(String(e.target.value))
-                    }}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') onEnter()
-                    }}
-                />
+                <div className='flex flex-col text-white'>
+                    {JSON.parse(setDiscordWebhook.error.message).map(
+                        (err: Error) => (
+                            <div>{err.message}</div>
+                        )
+                    )}
+                </div>
             )}
         </div>
     )

@@ -72,57 +72,7 @@ pub async fn update_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                 .include(proposal_with_dao::include())
                 .exec()
                 .await
-                .unwrap()
                 .unwrap();
-
-            let (result_index, max_score) = proposal
-                .scores
-                .as_array()
-                .unwrap()
-                .iter()
-                .map(|score| score.as_f64().unwrap())
-                .enumerate()
-                .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
-                .unwrap();
-
-            let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
-                Some(v) => v.into_string().unwrap(),
-                None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
-            };
-
-            let short_url = format!(
-                "{}{}",
-                shortner_url,
-                proposal
-                    .id
-                    .chars()
-                    .rev()
-                    .take(7)
-                    .collect::<Vec<char>>()
-                    .into_iter()
-                    .rev()
-                    .collect::<String>()
-            );
-
-            let voted = get_vote(
-                notification.clone().userid,
-                notification.clone().proposalid,
-                client,
-            )
-            .await
-            .unwrap();
-
-            let message_content = if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
-                format!(
-                    "☑️ **{}** {}%",
-                    &proposal.choices.as_array().unwrap()[result_index]
-                        .as_str()
-                        .unwrap(),
-                    (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
-                )
-            } else {
-                format!("🇽 No Quorum",)
-            };
 
             let http = Http::new("");
 
@@ -130,36 +80,97 @@ pub async fn update_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                 .await
                 .expect("Missing webhook");
 
-            webhook
-                .edit_message(&http, MessageId::from(initial_message_id), |w| {
-                    w.embeds(vec![Embed::fake(|e| {
-                        e.title(proposal.name)
-                            .description(format!(
-                                "**{}** {} proposal ended on {}",
-                                proposal.dao.name,
-                                if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                    "off-chain"
-                                } else {
-                                    "on-chain"
-                                },
-                                format!("{}", proposal.timeend.format("%B %e").to_string())
-                            ))
-                            .field("", message_content, false)
-                            .url(short_url)
-                            .color(Colour(0x23272A))
-                            .thumbnail(format!(
-                                "https://www.senatelabs.xyz/{}_medium.png",
-                                proposal.dao.picture
-                            ))
-                            .image(if voted {
-                                "https://senatelabs.xyz/assets/Discord/past-vote2x.png"
-                            } else {
-                                "https://senatelabs.xyz/assets/Discord/past-no-vote2x.png"
-                            })
-                    })])
-                })
-                .await
-                .unwrap();
+            match proposal {
+                Some(proposal) => {
+                    let (result_index, max_score) = proposal
+                        .scores
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|score| score.as_f64().unwrap())
+                        .enumerate()
+                        .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
+                        .unwrap_or((100, 0.0));
+
+                    let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+                        Some(v) => v.into_string().unwrap(),
+                        None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+                    };
+
+                    let short_url = format!(
+                        "{}{}",
+                        shortner_url,
+                        proposal
+                            .id
+                            .chars()
+                            .rev()
+                            .take(7)
+                            .collect::<Vec<char>>()
+                            .into_iter()
+                            .rev()
+                            .collect::<String>()
+                    );
+
+                    let voted = get_vote(
+                        notification.clone().userid,
+                        notification.clone().proposalid,
+                        client,
+                    )
+                    .await
+                    .unwrap();
+
+                    let message_content = if result_index == 100 {
+                        format!("❓ Could not fetch results")
+                    } else if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
+                        format!(
+                            "✅ **{}** {}%",
+                            &proposal.choices.as_array().unwrap()[result_index]
+                                .as_str()
+                                .unwrap(),
+                            (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
+                        )
+                    } else {
+                        format!("❌ No Quorum")
+                    };
+
+                    webhook
+                        .edit_message(&http, MessageId::from(initial_message_id), |w| {
+                            w.embeds(vec![Embed::fake(|e| {
+                                e.title(proposal.name)
+                                    .description(format!(
+                                        "**{}** {} proposal ended on {}",
+                                        proposal.dao.name,
+                                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                            "off-chain"
+                                        } else {
+                                            "on-chain"
+                                        },
+                                        format!("{}", proposal.timeend.format("%B %e").to_string())
+                                    ))
+                                    .field("", message_content, false)
+                                    .url(short_url)
+                                    .color(Colour(0x23272A))
+                                    .thumbnail(format!(
+                                        "https://www.senatelabs.xyz/{}_medium.png",
+                                        proposal.dao.picture
+                                    ))
+                                    .image(if voted {
+                                        "https://senatelabs.xyz/assets/Discord/past-vote2x.png"
+                                    } else {
+                                        "https://senatelabs.xyz/assets/Discord/past-no-vote2x.png"
+                                    })
+                            })])
+                        })
+                        .await
+                        .expect("Could not execute webhook.");
+                }
+                None => {
+                    webhook
+                        .delete_message(&http, MessageId::from(initial_message_id))
+                        .await
+                        .expect("Could not execute webhook.");
+                }
+            }
         }
 
         sleep(Duration::from_millis(100)).await;
