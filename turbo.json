@@ -46,6 +46,11 @@
       "cache": false
     },
 
+    "build:bulletin-rust": {
+      "dependsOn": ["^db:generate"],
+      "cache": false
+    },
+
     "build:db": {
       "cache": false,
       "dependsOn": ["^db:generate", "^build:axiom"]

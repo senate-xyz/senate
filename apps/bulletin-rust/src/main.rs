@@ -11,11 +11,13 @@ use crate::proposal_with_dao::Data as proposal_w_dao;
 use crate::user_with_proxies_and_subscriptions::Data as user_w_proxies_and_subs;
 use chrono::prelude::*;
 use dotenv::dotenv;
+use prisma::PrismaClient;
 use prisma_client_rust::chrono::{Duration, Utc};
 use prisma_client_rust::{Direction, QueryError};
 use std::ptr::null;
 use std::{cmp::Ordering, collections::HashMap, env};
 
+use cron_job::CronJob;
 use num_format::{Locale, ToFormattedString};
 use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use reqwest::Error;
@@ -100,14 +102,28 @@ enum BulletinSection {
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-    println!("Starting scheduler!");
+    println!("Starting bulletin...");
 
     if (env::var("BULLETIN_ENABLE").unwrap() != "true".to_string()) {
         println!("Bulletin is disabled");
         return;
     }
 
-    // Fetch users to be notified
+    tokio::task::spawn_blocking(cron).await.unwrap();
+}
+
+fn cron() {
+    let mut cron = CronJob::new();
+
+    cron.new_job("0 05 08 * * *", || {
+        let _ = tokio::spawn(bulletin_task());
+    });
+
+    cron.start();
+}
+
+async fn bulletin_task() {
+    println!("Bulletin cron started at {}", Utc::now());
     let db = prisma::new_client()
         .await
         .expect("Failed to create Prisma client");
@@ -202,8 +218,6 @@ async fn main() {
             .await
             .unwrap();
     }
-
-    println!("Scheduler finished");
 }
 
 prisma::user::include!(user_with_proxies_and_subscriptions { subscriptions voters});
@@ -451,44 +465,6 @@ async fn format_email_template_row(
         hidden_result_display: hidden_result_display,
     });
 }
-
-// fn format_maker_executive_result(
-//     proposal: &proposal_w_dao,
-//     highest_score: HighestScore,
-// ) -> MakerExecutiveResult {
-//     let result =
-//         if proposal.state == ProposalState::Queued || proposal.state == ProposalState::Executed {
-//             MakerExecutiveResult {
-//                 checkbox_img_url: encode(
-//                     format!(
-//                         "{:?}{:?}",
-//                         env::var("NEXT_PUBLIC_WEB_URL"),
-//                         "/assets/Icon/VoteIcon-Check.png"
-//                     )
-//                     .as_str(),
-//                 )
-//                 .to_string(),
-//                 result_text: "Passed".to_string(),
-//                 mkr_support: (proposal.scorestotal.as_f64().unwrap() / 1e18).to_string(),
-//             }
-//         } else {
-//             MakerExecutiveResult {
-//                 checkbox_img_url: encode(
-//                     format!(
-//                         "{:?}{:?}",
-//                         env::var("NEXT_PUBLIC_WEB_URL"),
-//                         "/assets/Icon/VoteIcon-Cross.png"
-//                     )
-//                     .as_str(),
-//                 )
-//                 .to_string(),
-//                 result_text: "Did not pass".to_string(),
-//                 mkr_support: (proposal.scorestotal.as_f64().unwrap() / 1e18).to_string(),
-//             }
-//         };
-
-//     return result;
-// }
 
 fn format_result(proposal: &proposal_w_dao, highest_score: HighestScore) -> BulletinResult {
     let result: BulletinResult = if is_maker_executive_proposal(&proposal) {

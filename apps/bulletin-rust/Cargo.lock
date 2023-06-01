@@ -240,6 +240,7 @@ name = "bulletin-rust"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "cron-job",
  "dotenv",
  "num-format",
  "prisma-client-rust",
@@ -378,6 +379,27 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b540bd8bc810d3885c6ea91e2018302f68baba2129ab3e88f32389ee9370880d"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "cron"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1ff76b51e4c068c52bfd2866e1567bee7c567ae8f24ada09fd4307019e25eab7"
+dependencies = [
+ "chrono",
+ "nom",
+ "once_cell",
+]
+
+[[package]]
+name = "cron-job"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4a260f4efc5e4ff1ade49e696f5b84099107b68cb07ca10f3c0979857052917d"
+dependencies = [
+ "chrono",
+ "cron",
 ]
 
 [[package]]
