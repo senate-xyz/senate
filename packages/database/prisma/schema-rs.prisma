@@ -8,19 +8,19 @@ generator refresher {
   output   = "../../../apps/refresher/src/prisma.rs"
 }
 
-generator discordbutler {
+generator discordsecretary {
   provider = "cargo prisma"
-  output   = "../../../apps/discord-butler/src/prisma.rs"
+  output   = "../../../apps/discord-secretary/src/prisma.rs"
 }
 
-generator telegrambutler {
+generator telegramsecretary {
   provider = "cargo prisma"
-  output   = "../../../apps/telegram-butler/src/prisma.rs"
+  output   = "../../../apps/telegram-secretary/src/prisma.rs"
 }
 
-generator aavenotifs {
+generator quorumemail {
   provider = "cargo prisma"
-  output   = "../../../apps/aave-quorum-email/src/prisma.rs"
+  output   = "../../../apps/quorum-email/src/prisma.rs"
 }
 
 generator bulletin {
@@ -63,14 +63,15 @@ model user {
 
   subscriptions subscription[]
   voters        voter[]
+  notification  notification[]
 
-  acceptedterms          Boolean        @default(false)
+  acceptedterms          Boolean   @default(false)
   acceptedtermstimestamp DateTime?
-  lastactive             DateTime       @default(now())
-  sessioncount           Int            @default(0)
-  createdat              DateTime       @default(now())
-  updatedat              DateTime       @updatedAt
-  notification           notification[]
+  firstactive            DateTime  @default(now())
+  lastactive             DateTime  @default(now())
+  sessioncount           Int       @default(0)
+  createdat              DateTime  @default(now())
+  updatedat              DateTime  @updatedAt
 
   @@index(fields: [email], type: Hash)
   @@index(fields: [address], type: Hash)
@@ -322,5 +323,6 @@ enum ProposalState {
   EXPIRED
   EXECUTED
   DELETED
+  HIDDEN
   UNKNOWN
 }

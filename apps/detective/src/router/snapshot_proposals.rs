@@ -172,7 +172,13 @@ async fn update_proposals(
                 match proposal.state.as_str() {
                     "active" => ProposalState::Active,
                     "pending" => ProposalState::Pending,
-                    "closed" => ProposalState::Executed,
+                    "closed" => {
+                        if proposal.scores_state == "final" {
+                            ProposalState::Executed
+                        } else {
+                            ProposalState::Hidden
+                        }
+                    }
                     _ => ProposalState::Unknown,
                 },
                 DateTime::from_utc(
@@ -207,7 +213,7 @@ async fn update_proposals(
                         if proposal.scores_state == "final" {
                             ProposalState::Executed
                         } else {
-                            ProposalState::Queued
+                            ProposalState::Hidden
                         }
                     }
                     _ => ProposalState::Unknown,
@@ -221,14 +227,14 @@ async fn update_proposals(
         .await
         .context("failed to upsert proposals")?;
 
-    let closed_proposals: Vec<&GraphQLProposal> = proposals
-        .iter()
-        .filter(|proposal| proposal.state == "closed" && proposal.scores_state == "final")
-        .collect();
-
     let open_proposals: Vec<&GraphQLProposal> = proposals
         .iter()
         .filter(|proposal| proposal.state != "closed" || proposal.scores_state != "final")
+        .collect();
+
+    let closed_proposals: Vec<&GraphQLProposal> = proposals
+        .iter()
+        .filter(|proposal| proposal.state == "closed" && proposal.scores_state == "final")
         .collect();
 
     let new_index;
@@ -259,7 +265,10 @@ async fn update_proposals(
             vec![
                 daohandler::snapshotindex::set(Some(
                     DateTime::from_utc(
-                        NaiveDateTime::from_timestamp_millis(new_index * 1000)
+                        //TODO
+                        //temporary workaround, force new_index to always hold back 24h
+                        //to make sure we refresh stuff
+                        NaiveDateTime::from_timestamp_millis((new_index - 60 * 60 * 24) * 1000)
                             .expect("can not create snapshotindex"),
                         FixedOffset::east_opt(0).unwrap(),
                     ) - Duration::from(Duration::minutes(60)),

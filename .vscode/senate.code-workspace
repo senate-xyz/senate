@@ -13,16 +13,16 @@
       "path": "../apps/refresher"
     },
     {
-      "name": "🦀 @senate/discord-butler",
-      "path": "../apps/discord-butler"
+      "name": "🦀 @senate/discord-secretary",
+      "path": "../apps/discord-secretary"
     },
     {
-      "name": "🦀 @senate/telegram-butler",
-      "path": "../apps/telegram-butler"
+      "name": "🦀 @senate/telegram-secretary",
+      "path": "../apps/telegram-secretary"
     },
     {
-      "name": "🦀 @senate/aave-quorum-email",
-      "path": "../apps/aave-quorum-email"
+      "name": "🦀 @senate/quorum-email",
+      "path": "../apps/quorum-email"
     },
     {
       "name": "🦀 @senate/bulletin-rust",
@@ -63,6 +63,10 @@
     {
       "name": "🛠️ @senate/userMigration",
       "path": "../utilities/userMigration"
+    },
+    {
+      "name": "🛠️ @senate/postmark_data",
+      "path": "../utilities/postmark_data"
     }
   ],
   "settings": {
@@ -81,7 +85,8 @@
     "[rust]": {
       "editor.defaultFormatter": "rust-lang.rust-analyzer",
       "editor.formatOnSave": true
-    }
+    },
+    "rust-analyzer.check.command": "check"
   },
   "extensions": {
     "recommendations": [
@@ -93,7 +98,9 @@
       "VisualStudioExptTeam.vscodeintellicode",
       "VisualStudioExptTeam.intellicode-api-usage-examples",
       "usernamehw.errorlens",
-      "rust-lang.rust-analyzer"
+      "rust-lang.rust-analyzer",
+      "tamasfe.even-better-toml",
+      "serayuzgur.crates"
     ]
   }
 }

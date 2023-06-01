@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { trpc } from '../../../../../server/trpcClient'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
+import Image from 'next/image'
 
 const Discord = () => {
     const [getDiscordNotifications, setDiscordNotifications] = useState(false)
@@ -41,11 +42,21 @@ const Discord = () => {
         setDiscordWebhook.mutate({ url: currentWebhook })
     }
 
+    if (!user.data) return <></>
+
     return (
-        <div className='flex flex-col'>
-            <div className='flex max-w-[400px] flex-row items-center justify-between gap-4'>
-                <div className='font-[18px] leading-[23px] text-white'>
-                    Receive Discord Notifications
+        <div className='flex max-w-[800px] flex-col gap-4 bg-black p-4'>
+            <div className='flex flex-row justify-between'>
+                <div className='flex flex-row gap-4'>
+                    <Image
+                        src='/assets/Senate_Logo/settings_discord_icon.svg'
+                        alt={''}
+                        width={24}
+                        height={24}
+                    ></Image>
+                    <div className='font-[18px] leading-[23px] text-white'>
+                        Discord Notifications
+                    </div>
                 </div>
                 <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
                     <input
@@ -58,12 +69,18 @@ const Discord = () => {
                         }}
                         className='peer sr-only'
                     />
-                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:hover:bg-green-300" />
+                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
                 </label>
             </div>
 
+            <div className='max-w-[610px] text-[15px] text-white'>
+                Receive instant notifications in your Discord server about
+                proposals from all DAOs you follow on Senate. This will help
+                ensure that you and your team always remember to vote.
+            </div>
+
             {getDiscordNotifications && (
-                <div className='flex flex-col gap-4 border-b border-l border-neutral-600 py-4 pl-4'>
+                <div className='flex flex-col gap-4'>
                     <div className='flex flex-col gap-2'>
                         <div className='text-[18px] font-light text-white'>
                             Discord webhook
@@ -110,22 +127,19 @@ const Discord = () => {
                                 }}
                                 className='peer sr-only'
                             />
-                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:hover:bg-green-300" />
+                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
                         </label>
                     </div>
                 </div>
             )}
             {setDiscordWebhook.error && (
-                <input
-                    className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
-                    value={currentWebhook}
-                    onChange={(e) => {
-                        setCurrentWebhook(String(e.target.value))
-                    }}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') onEnter()
-                    }}
-                />
+                <div className='flex flex-col text-white'>
+                    {JSON.parse(setDiscordWebhook.error.message).map(
+                        (err: Error) => (
+                            <div>{err.message}</div>
+                        )
+                    )}
+                </div>
             )}
         </div>
     )
