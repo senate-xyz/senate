@@ -21,8 +21,8 @@ use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use reqwest::Error;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use substring::Substring;
 use tokio::time::sleep;
-use urlencoding::encode;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct BulletinResult {
@@ -258,7 +258,7 @@ async fn fetch_new_proposals(
     let proposals = db
         .proposal()
         .find_many(vec![
-            proposal::timeend::gte((Utc::now() - Duration::from(Duration::days(1))).into()),
+            proposal::timecreated::gte((Utc::now() - Duration::from(Duration::days(1))).into()),
             proposal::daoid::in_vec(
                 user.subscriptions
                     .clone()
@@ -305,9 +305,9 @@ async fn fetch_past_proposals(
 
 fn select_email_template(user: &user_w_proxies_and_subs) -> String {
     let template_alias = if user.isaaveuser == MagicUserState::Enabled {
-        "aave-bulletin"
+        "aave-daily-bulletin"
     } else if user.isuniswapuser == MagicUserState::Enabled {
-        "uni-bulletin"
+        "uniswap-daily-bulletin"
     } else {
         "senate-daily-bulletin"
     };
@@ -395,11 +395,6 @@ async fn format_email_template_row(
         )
     };
 
-    println!("Links");
-    println!("{}", chain_logo_url);
-    println!("{}", dao_logo_url);
-    println!("{}", voting_status_icon_url);
-
     let highest_score: HighestScore = get_highest_score(&proposal);
     let result = format_result(&proposal, highest_score.clone());
 
@@ -425,14 +420,26 @@ async fn format_email_template_row(
 
     let end_date_string = format!(
         "{}",
-        proposal.timeend.format("%B %e, %y at %H:%M").to_string()
+        proposal.timeend.format("%B %e, %Y at %H:%M").to_string()
     );
+
+    let proposal_name = if proposal.name.len() > 69 {
+        format!("{}...", proposal.name.substring(0, 69))
+    } else {
+        proposal.name.clone()
+    };
+
+    let proposal_url = if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+        format!("{}?app=senate", proposal.url.clone())
+    } else {
+        proposal.url.clone()
+    };
 
     return Ok(EmailTemplateRow {
         voting_status: voting_status,
         voting_status_icon_url: voting_status_icon_url,
-        proposal_name: proposal.name.clone(),
-        proposal_url: proposal.url.clone(),
+        proposal_name: proposal_name,
+        proposal_url: proposal_url,
         dao_logo_url: dao_logo_url,
         chain_logo_url: chain_logo_url,
         dao_name: proposal.dao.name.clone(),
@@ -522,7 +529,7 @@ fn format_result(proposal: &proposal_w_dao, highest_score: HighestScore) -> Bull
                 ),
                 highest_score_choice: highest_score.choice,
                 highest_score_support: highest_score.support,
-                highest_score_percentage_display: "hide".to_string(),
+                highest_score_percentage_display: "show".to_string(),
                 highest_score_percentage: highest_score.percentage,
                 bar_width_percentage: highest_score.percentage as i64,
             }
@@ -533,7 +540,7 @@ fn format_result(proposal: &proposal_w_dao, highest_score: HighestScore) -> Bull
                     env::var("NEXT_PUBLIC_WEB_URL").unwrap(),
                     "/assets/Icon/VoteIcon-Cross.png"
                 ),
-                highest_score_choice: highest_score.choice,
+                highest_score_choice: "No Quorum".to_string(),
                 highest_score_support: highest_score.support,
                 highest_score_percentage_display: "hide".to_string(),
                 highest_score_percentage: highest_score.percentage,
