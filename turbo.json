@@ -36,6 +36,11 @@
       "cache": false
     },
 
+    "build:email-secretary": {
+      "dependsOn": ["^db:generate"],
+      "cache": false
+    },
+
     "build:discord-secretary": {
       "dependsOn": ["^db:generate"],
       "cache": false

@@ -1,7 +1,7 @@
 {
   "name": "@senate/telegram-secretary",
   "version": "1.0.0",
-  "description": "This service takes care of sending notifications",
+  "description": "This service takes care of sending Telegram notifications",
   "author": "Senate",
   "private": true,
   "license": "GNU GPLv3",

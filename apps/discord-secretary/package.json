@@ -1,7 +1,7 @@
 {
   "name": "@senate/discord-secretary",
   "version": "1.0.0",
-  "description": "This service takes care of sending notifications",
+  "description": "This service takes care of sending Discord notifications",
   "author": "Senate",
   "private": true,
   "license": "GNU GPLv3",

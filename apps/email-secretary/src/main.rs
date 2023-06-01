@@ -3,8 +3,15 @@
 #![allow(unused_parens)]
 
 pub mod prisma;
+pub mod bulletin {
+    pub mod bulletin_emails;
+}
+pub mod quorum {
+    pub mod quroum_emails;
+}
+
 use log::info;
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 use tokio::time::sleep;
 
 use env_logger::{Builder, Env};
@@ -12,7 +19,11 @@ use env_logger::{Builder, Env};
 use dotenv::dotenv;
 use tokio::try_join;
 
-use crate::prisma::PrismaClient;
+use crate::{
+    bulletin::bulletin_emails::send_bulletin_emails,
+    prisma::PrismaClient,
+    quorum::quroum_emails::send_quorum_emails,
+};
 
 fn init_logger() {
     let env = Env::default()
@@ -33,4 +44,24 @@ async fn main() {
     info!("email-secretaryary start");
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
+
+    let client_for_bulletin: Arc<PrismaClient> = Arc::clone(&client);
+    let bulletin_task = tokio::task::spawn(async move {
+        loop {
+            send_bulletin_emails(&client_for_bulletin).await;
+
+            sleep(Duration::from_secs(60)).await;
+        }
+    });
+
+    let client_for_quorum = Arc::clone(&client);
+    let quroum_task = tokio::task::spawn(async move {
+        loop {
+            send_quorum_emails(&client_for_quorum).await;
+
+            sleep(Duration::from_secs(60)).await;
+        }
+    });
+
+    try_join!(bulletin_task, quroum_task).unwrap();
 }

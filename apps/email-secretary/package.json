@@ -7,9 +7,9 @@
   "license": "GNU GPLv3",
   "scripts": {
     "build": "cargo b",
-    "build:telegram-secretary": "cargo b",
+    "build:email-secretary": "cargo b",
     "start": "cargo r",
-    "start:telegram-secretary": "cargo r",
+    "start:email-secretary": "cargo r",
     "clean": "cargo clean",
     "lint": "cargo fmt",
     "lint:fix": "cargo fmt",

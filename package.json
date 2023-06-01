@@ -20,6 +20,7 @@
     "build:sanity": "turbo run build:sanity",
     "build:detective": "turbo run build:detective",
     "build:refresher": "turbo run build:refresher",
+    "build:email-secretary": "turbo run build:email-secretary",
     "build:discord-secretary": "turbo run build:discord-secretary",
     "build:telegram-secretary": "turbo run build:telegram-secretary",
     "build:quorum-email": "turbo run build:quorum-email",

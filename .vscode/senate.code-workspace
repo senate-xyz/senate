@@ -13,16 +13,16 @@
       "path": "../apps/refresher"
     },
     {
+      "name": "🦀 @senate/email-secretary",
+      "path": "../apps/email-secretary"
+    },
+    {
       "name": "🦀 @senate/discord-secretary",
       "path": "../apps/discord-secretary"
     },
     {
       "name": "🦀 @senate/telegram-secretary",
       "path": "../apps/telegram-secretary"
-    },
-    {
-      "name": "🦀 @senate/email-secretary",
-      "path": "../apps/email-secretary"
     },
     {
       "name": "🦀 @senate/quorum-email",
