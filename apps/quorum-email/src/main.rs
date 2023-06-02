@@ -77,7 +77,12 @@ async fn main() {
 async fn aave_quorum_email(db: &prisma::PrismaClient) {
     let users_to_be_notified = db
         .user()
-        .find_many(vec![user::isaaveuser::equals(MagicUserState::Enabled)])
+        .find_many(vec![
+            user::verifiedemail::equals(true),
+            user::emaildailybulletin::equals(true),
+            user::emailquorumwarning::equals(true),
+            // TODO: select users who are subscribed to the dao at current index
+        ])
         .exec()
         .await
         .unwrap();
@@ -87,6 +92,7 @@ async fn aave_quorum_email(db: &prisma::PrismaClient) {
         .find_many(vec![
             proposal::timeend::gt(Utc::now().into()),
             proposal::timeend::lte((Utc::now() + chrono::Duration::hours(12)).into()),
+            //TODO: name of the dao at the current index
             proposal::dao::is(vec![dao::name::equals("Aave".to_string())]),
         ])
         .include(proposal::include!({ dao }))
