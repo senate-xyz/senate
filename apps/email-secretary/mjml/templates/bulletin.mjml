@@ -1,0 +1,378 @@
+<mjml>
+  <mj-head>
+    <mj-style> .invisible { display: none; } </mj-style>
+    <mj-attributes>
+      <mj-all font-family="Arial" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body width="720px" background-color="white">
+    <mj-section padding="10px 0" background-color="white">
+      <mj-column width="100%">
+        <mj-text
+          align="left"
+          font-size="24px"
+          color="#000"
+          font-family="sans-serif"
+          font-weight="bold"
+        >
+          Proposals Ending Soon
+        </mj-text>
+
+        <mj-text
+          align="left"
+          font-size="16px"
+          color="#555555"
+          font-family="sans-serif"
+        >
+          The voting on these proposals is going to end in the next 72 hours.
+          You might want to act on them soon.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-raw>{{#endingSoonProposals}}</mj-raw>
+    <mj-section background-color="white" padding="4px 0">
+      <mj-column width="100%">
+        <mj-table width="100%" cellpadding="4px">
+          <tr style="border-bottom: 1px solid #ecedee">
+            <th width="80px" style="text-align: center">DAO</th>
+            <th width="40%" style="text-align: start">Proposal</th>
+            <th style="text-align: center">
+              Ending in
+              <img
+                width="24px"
+                src="https://www.senatelabs.xyz/assets/Icon/SortDiscendingWhite.svg"
+                alt="Ending Icon"
+              />
+            </th>
+            <th style="text-align: center">Vote Status</th>
+          </tr>
+
+          <tr>
+            <td width="48px">
+              <img
+                width="48px"
+                src="https://www.senatelabs.xyz/assets/Project_Icons/aave_medium.png"
+                alt="DAO Icon"
+              />
+              <img
+                width="48px"
+                src="https://www.senatelabs.xyz/assets/Icon/OffChainProposal.svg"
+                alt="Snapshot"
+              />
+            </td>
+
+            <td style="text-align: start; vertical-align: top">
+              Proposal title
+            </td>
+            <td style="text-align: center">
+              <img
+                min-width="100%"
+                src="http://i.countdownmail.com/2lfmxb.gif"
+                alt="Countdown"
+              />
+            </td>
+
+            <td style="text-align: center">
+              <img
+                src="https://www.senatelabs.xyz//assets/Icon/NotVotedYet.png"
+                alt="Vote Status"
+              />
+            </td>
+          </tr>
+
+          <mj-raw>{{#each . }}</mj-raw>
+          <tr>
+            <td width="48px">
+              <img width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+              <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
+            </td>
+
+            <td style="text-align: start; vertical-align: top">
+              <mj-raw>{{proposalName}}</mj-raw>
+            </td>
+            <td style="text-align: center">
+              <img min-width="100%" src="{{countdownUrl}}" alt="Countdown" />
+            </td>
+
+            <td style="text-align: center">
+              <img src="{{votingStatusIconUrl}}" alt="Vote Status" />
+              <mj-text>
+                <mj-raw>{{votingStatus}}</mj-raw>
+              </mj-text>
+            </td>
+          </tr>
+          <mj-raw>{{/each}}</mj-raw>
+        </mj-table>
+      </mj-column>
+    </mj-section>
+    <mj-raw> {{/endingSoonProposals}}</mj-raw>
+
+    <mj-raw> {{^ endingSoonProposals}}</mj-raw>
+    <mj-section full-width="full-width">
+      <mj-column
+        background-color="black"
+        width="680px"
+        padding="30px 30px 30px 30px"
+      >
+        <mj-text
+          align="center"
+          font-size="15px"
+          font-family="sans-serif"
+          color="white"
+        >
+          No ending soon proposals today
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-raw> {{/endingSoonProposals}}</mj-raw>
+
+    <mj-section padding="20px 0" background-color="white">
+      <mj-column width="100%">
+        <mj-text
+          align="left"
+          font-size="24px"
+          color="#000"
+          font-family="sans-serif"
+          font-weight="bold"
+        >
+          New Proposals
+        </mj-text>
+
+        <mj-text
+          align="left"
+          font-size="16px"
+          color="#555555"
+          font-family="sans-serif"
+        >
+          These are the proposals that were created in the last 24 hours. You
+          might want to check them out.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-raw>{{#newProposals}}</mj-raw>
+    <mj-section background-color="white" padding="4px 0">
+      <mj-column width="100%">
+        <mj-table width="100%" cellpadding="4px">
+          <tr style="border-bottom: 1px solid #ecedee">
+            <th width="80px" style="text-align: center">DAO</th>
+            <th width="40%" style="text-align: start">Proposal</th>
+            <th style="text-align: center">
+              Ending in
+              <img
+                width="24px"
+                src="https://www.senatelabs.xyz/assets/Icon/SortDiscendingWhite.svg"
+                alt="Ending Icon"
+              />
+            </th>
+            <th style="text-align: center">Vote Status</th>
+          </tr>
+
+          <tr>
+            <td width="48px">
+              <img
+                width="48px"
+                src="https://www.senatelabs.xyz/assets/Project_Icons/aave_medium.png"
+                alt="DAO Icon"
+              />
+              <img
+                width="48px"
+                src="https://www.senatelabs.xyz/assets/Icon/OffChainProposal.svg"
+                alt="Snapshot"
+              />
+            </td>
+
+            <td style="text-align: start; vertical-align: top">
+              Proposal title
+            </td>
+            <td style="text-align: center">
+              <img
+                min-width="100%"
+                src="http://i.countdownmail.com/2lfmxb.gif"
+                alt="Countdown"
+              />
+            </td>
+
+            <td style="text-align: center">
+              <img
+                src="https://www.senatelabs.xyz//assets/Icon/NotVotedYet.png"
+                alt="Vote Status"
+              />
+            </td>
+          </tr>
+
+          <mj-raw>{{#each . }}</mj-raw>
+          <tr>
+            <td width="48px">
+              <img width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+              <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
+            </td>
+
+            <td style="text-align: start; vertical-align: top">
+              <mj-raw>{{proposalName}}</mj-raw>
+            </td>
+            <td style="text-align: center">
+              <img min-width="100%" src="{{countdownUrl}}" alt="Countdown" />
+            </td>
+
+            <td style="text-align: center">
+              <img src="{{votingStatusIconUrl}}" alt="Vote Status" />
+              <mj-text>
+                <mj-raw>{{votingStatus}}</mj-raw>
+              </mj-text>
+            </td>
+          </tr>
+          <mj-raw>{{/each}}</mj-raw>
+        </mj-table>
+      </mj-column>
+    </mj-section>
+    <mj-raw> {{/newProposals}}</mj-raw>
+
+    <mj-raw> {{^ newProposals}}</mj-raw>
+    <mj-section full-width="full-width">
+      <mj-column
+        background-color="black"
+        width="680px"
+        padding="30px 30px 30px 30px"
+      >
+        <mj-text
+          align="center"
+          font-size="15px"
+          font-family="sans-serif"
+          color="white"
+        >
+          No new proposals today
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-raw> {{/newProposals}}</mj-raw>
+
+    <mj-section padding="20px 0" background-color="white">
+      <mj-column width="100%">
+        <mj-text
+          align="left"
+          font-size="24px"
+          color="#000"
+          font-family="sans-serif"
+          font-weight="bold"
+        >
+          Past Proposals
+        </mj-text>
+
+        <mj-text
+          align="left"
+          font-size="16px"
+          color="#555555"
+          font-family="sans-serif"
+        >
+          These are the proposals that ended in the last 24 hours. You might
+          want to check them out.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="white" padding="4px 0">
+      <mj-column width="100%">
+        <mj-table width="100%" cellpadding="4px">
+          <tr style="border-bottom: 1px solid #ecedee">
+            <th width="48px" style="text-align: center">DAO</th>
+            <th width="40%" style="text-align: start">Proposal</th>
+            <th style="text-align: center">
+              Ending in
+              <img
+                width="24px"
+                src="https://www.senatelabs.xyz/assets/Icon/SortDiscendingWhite.svg"
+                alt="Ending Icon"
+              />
+            </th>
+            <th style="text-align: center">Vote Status</th>
+          </tr>
+
+          <tr>
+            <td width="48px">
+              <img
+                width="48px"
+                src="https://www.senatelabs.xyz/assets/Project_Icons/aave_medium.png"
+                alt="DAO Icon"
+              />
+              <img
+                width="48px"
+                src="https://www.senatelabs.xyz/assets/Icon/OffChainProposal.svg"
+                alt="Snapshot"
+              />
+            </td>
+
+            <td style="text-align: start; vertical-align: top">
+              Proposal title
+            </td>
+            <td style="text-align: center">
+              <img
+                min-width="100%"
+                src="http://i.countdownmail.com/2lfmxb.gif"
+                alt="Countdown"
+              />
+            </td>
+
+            <td style="text-align: center">
+              <img
+                src="https://www.senatelabs.xyz//assets/Icon/NotVotedYet.png"
+                alt="Vote Status"
+              />
+            </td>
+          </tr>
+
+          <tr>
+            <td width="48px">
+              <img
+                width="48px"
+                src="https://www.senatelabs.xyz/assets/Project_Icons/uniswap_medium.png"
+                alt="DAO Icon"
+              />
+              <img
+                width="48px"
+                src="https://www.senatelabs.xyz/assets/Icon/OnChainProposal.svg"
+                alt="Onchain"
+              />
+            </td>
+
+            <td style="text-align: start; vertical-align: top">
+              Proposal title
+            </td>
+            <td style="text-align: center">
+              <img
+                min-width="100%"
+                src="http://i.countdownmail.com/2lfmxb.gif"
+                alt="Countdown"
+              />
+            </td>
+
+            <td style="text-align: center">
+              <img
+                src="https://www.senatelabs.xyz//assets/Icon/NotVotedYet.png"
+                alt="Vote Status"
+              />
+            </td>
+          </tr>
+        </mj-table>
+      </mj-column>
+    </mj-section>
+
+    <mj-section full-width="full-width">
+      <mj-column
+        background-color="black"
+        width="680px"
+        padding="30px 30px 30px 30px"
+      >
+        <mj-text
+          align="center"
+          font-size="15px"
+          font-family="sans-serif"
+          color="white"
+        >
+          No proposals ended in the last 24 hours
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
