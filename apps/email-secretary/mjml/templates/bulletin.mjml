@@ -3,8 +3,16 @@
     <mj-attributes>
       <mj-all font-family="Arial" />
     </mj-attributes>
+    <mj-style>
+      @media only screen and (min-width: 480px) { .results-width {
+      min-width:180px; max-width:180px;} }
+    </mj-style>
+    <mj-style>
+      @media only screen and (max-width: 479px) { .results-width {
+      min-width:100px; max-width:100px; } }
+    </mj-style>
   </mj-head>
-  <mj-body width="720px" background-color="white">
+  <mj-body background-color="white">
     <mj-section padding="10px 0" background-color="white">
       <mj-column width="100%">
         <mj-text
@@ -314,7 +322,6 @@
             <td style="text-align: center">
               <div
                 style="
-                  width: 180px;
                   display: flex;
                   flex-direction: column;
                   align-items: start;
@@ -325,7 +332,7 @@
                   <table width="100%">
                     <tr>
                       <td
-                        style="display: flex; align-items: center; width: 180px"
+                        style="display: flex; align-items: center; result-width"
                       >
                         <img
                           style="
@@ -353,6 +360,7 @@
                     <tr>
                       <td>
                         <div
+                          class="results-width"
                           style="
                             background-color: gray;
                             width: 100%;
@@ -391,9 +399,7 @@
                 <mj-raw>
                   <table width="100%">
                     <tr>
-                      <td
-                        style="display: flex; align-items: center; width: 180px"
-                      >
+                      <td style="display: flex; align-items: center">
                         <img
                           style="
                             width: 22px;
@@ -420,6 +426,7 @@
                     <tr>
                       <td>
                         <div
+                          class="results-width"
                           style="
                             background-color: gray;
                             width: 100%;
@@ -458,9 +465,7 @@
                 <mj-raw>
                   <table width="100%">
                     <tr>
-                      <td
-                        style="display: flex; align-items: center; width: 180px"
-                      >
+                      <td style="display: flex; align-items: center">
                         <img
                           style="
                             width: 22px;
@@ -489,9 +494,7 @@
                 <mj-raw>
                   <table width="100%">
                     <tr>
-                      <td
-                        style="display: flex; align-items: center; width: 180px"
-                      >
+                      <td style="display: flex; align-items: center">
                         <img
                           style="
                             width: 22px;
