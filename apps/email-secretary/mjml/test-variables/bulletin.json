@@ -1,0 +1,149 @@
+{
+  "todaysDate": "Friday, June 2, 2023",
+  "endingSoonProposals": [
+    {
+      "daoLogoUrl": "https://www.senatelabs.xyz/assets/Project_Icons/aave_medium.png",
+      "chainLogoUrl": "https://www.senatelabs.xyz/assets/Icon/on-chain.png",
+      "proposalName": "lalalalalalalalalal",
+      "countdownUrl": "http://i.countdownmail.com/2lfmxh.gif",
+      "countdownString": "on Jun 5, 2023 at 02:00 UTC",
+      "voteStatusIconUrl": "https://www.senatelabs.xyz/assets/Emails/voted-onlight2x.png",
+      "voteStatus": "Voted"
+    },
+    {
+      "daoLogoUrl": "https://www.senatelabs.xyz/assets/Project_Icons/aave_medium.png",
+      "chainLogoUrl": "https://www.senatelabs.xyz/assets/Icon/off-chain.png",
+      "proposalName": "lalalalalalalalalal lalalala long lalalala long long long",
+      "countdownUrl": "http://i.countdownmail.com/2lfmxh.gif",
+      "countdownString": "on Jun 5, 2023 at 02:00 UTC",
+      "voteStatusIconUrl": "https://www.senatelabs.xyz/assets/Emails/not-voted-yet-onlight2x.png",
+      "voteStatus": "Voted"
+    },
+    {
+      "daoLogoUrl": "https://www.senatelabs.xyz/assets/Project_Icons/makerdao_medium.png",
+      "chainLogoUrl": "https://www.senatelabs.xyz/assets/Icon/on-chain.png",
+      "proposalName": "lalalalalalalalalal",
+      "countdownUrl": "http://i.countdownmail.com/2lfmxh.gif",
+      "countdownString": "on Jun 5, 2023 at 02:00 UTC",
+      "voteStatusIconUrl": "https://www.senatelabs.xyz/assets/Emails/voted-onlight2x.png",
+      "voteStatus": "Voted"
+    }
+  ],
+  "newProposals": [
+    {
+      "daoLogoUrl": "https://www.senatelabs.xyz/assets/Project_Icons/aave_medium.png",
+      "chainLogoUrl": "https://www.senatelabs.xyz/assets/Icon/on-chain.png",
+      "proposalName": "lalalalalalalalalal",
+      "countdownUrl": "http://i.countdownmail.com/2lfmxh.gif",
+      "countdownString": "on Jun 5, 2023 at 02:00 UTC",
+      "voteStatusIconUrl": "https://www.senatelabs.xyz/assets/Emails/voted-onlight2x.png",
+      "voteStatus": "Voted"
+    },
+    {
+      "daoLogoUrl": "https://www.senatelabs.xyz/assets/Project_Icons/uniswap_medium.png",
+      "chainLogoUrl": "https://www.senatelabs.xyz/assets/Icon/off-chain.png",
+      "proposalName": "lalalalalalalalalal lalalala long lalalala long long long",
+      "countdownUrl": "http://i.countdownmail.com/2lfmxh.gif",
+      "countdownString": "on Jun 5, 2023 at 02:00 UTC",
+      "voteStatusIconUrl": "https://www.senatelabs.xyz/assets/Emails/not-voted-yet-onlight2x.png",
+      "voteStatus": "Voted"
+    },
+    {
+      "daoLogoUrl": "https://www.senatelabs.xyz/assets/Project_Icons/aave_medium.png",
+      "chainLogoUrl": "https://www.senatelabs.xyz/assets/Icon/on-chain.png",
+      "proposalName": "lalalalalalalalalal",
+      "countdownUrl": "http://i.countdownmail.com/2lfmxh.gif",
+      "countdownString": "on Jun 5, 2023 at 02:00 UTC",
+      "voteStatusIconUrl": "https://www.senatelabs.xyz/assets/Emails/voted-onlight2x.png",
+      "voteStatus": "Voted"
+    }
+  ],
+  "endedProposals": [
+    {
+      "daoLogoUrl": "https://www.senatelabs.xyz/assets/Project_Icons/aave_medium.png",
+      "chainLogoUrl": "https://www.senatelabs.xyz/assets/Icon/on-chain.png",
+      "proposalName": "lalalalalalalalalal",
+      "hiddenResult": "true",
+      "result": {},
+      "noqorum": {},
+      "makerResult": {},
+      "voteStatusIconUrl": "https://www.senatelabs.xyz/assets/Emails/voted-onlight2x.png",
+      "voteStatus": "Voted"
+    },
+    {
+      "daoLogoUrl": "https://www.senatelabs.xyz/assets/Project_Icons/aave_medium.png",
+      "chainLogoUrl": "https://www.senatelabs.xyz/assets/Icon/on-chain.png",
+      "proposalName": "lalalalalalalalalal",
+      "hiddenResult": "true",
+      "result": {},
+      "noqorum": {},
+      "makerResult": {},
+      "voteStatusIconUrl": "https://www.senatelabs.xyz/assets/Emails/did-not-vote-onlight2x.png",
+      "voteStatus": "Voted"
+    },
+    {
+      "daoLogoUrl": "https://www.senatelabs.xyz/assets/Project_Icons/aave_medium.png",
+      "chainLogoUrl": "https://www.senatelabs.xyz/assets/Icon/on-chain.png",
+      "proposalName": "lalalalalalalalalal lalalala long lalalala long long long",
+      "hiddenResult": {},
+      "result": {
+        "choiceName": "yes",
+        "choicePercentage": 69
+      },
+      "noqorum": {},
+      "makerResult": {},
+      "voteStatusIconUrl": "https://www.senatelabs.xyz/assets/Emails/did-not-vote-onlight2x.png",
+      "voteStatus": "Voted"
+    },
+    {
+      "daoLogoUrl": "https://www.senatelabs.xyz/assets/Project_Icons/aave_medium.png",
+      "chainLogoUrl": "https://www.senatelabs.xyz/assets/Icon/on-chain.png",
+      "proposalName": "lalalalalalalalalal",
+      "hiddenResult": {},
+      "result": {
+        "choiceName": "yes but a very very long yes so yeah maybe even longer than this",
+        "choicePercentage": 19
+      },
+      "noqorum": {},
+      "makerResult": {},
+      "voteStatusIconUrl": "https://www.senatelabs.xyz/assets/Emails/did-not-vote-onlight2x.png",
+      "voteStatus": "Voted"
+    },
+    {
+      "daoLogoUrl": "https://www.senatelabs.xyz/assets/Project_Icons/aave_medium.png",
+      "chainLogoUrl": "https://www.senatelabs.xyz/assets/Icon/on-chain.png",
+      "proposalName": "lalalalalalalalalal",
+      "hiddenResult": {},
+      "result": {},
+      "noqorum": "true",
+      "makerResult": {},
+      "voteStatusIconUrl": "https://www.senatelabs.xyz/assets/Emails/did-not-vote-onlight2x.png",
+      "voteStatus": "Voted"
+    },
+    {
+      "daoLogoUrl": "https://www.senatelabs.xyz/assets/Project_Icons/makerdao_medium.png",
+      "chainLogoUrl": "https://www.senatelabs.xyz/assets/Icon/on-chain.png",
+      "proposalName": "lalalalalalalalalal",
+      "hiddenResult": {},
+      "result": {},
+      "noqorum": "true",
+      "makerResult": {},
+      "voteStatusIconUrl": "https://www.senatelabs.xyz/assets/Emails/voted-onlight2x.png",
+      "voteStatus": "Voted"
+    },
+    {
+      "daoLogoUrl": "https://www.senatelabs.xyz/assets/Project_Icons/makerdao_medium.png",
+      "chainLogoUrl": "https://www.senatelabs.xyz/assets/Icon/on-chain.png",
+      "proposalName": "lalalalalalalalalal",
+      "hiddenResult": {},
+      "result": {},
+      "noqorum": {},
+      "makerResult": {
+        "choiceName": "Yes",
+        "mkrAmount": 200
+      },
+      "voteStatusIconUrl": "https://www.senatelabs.xyz/assets/Emails/voted-onlight2x.png",
+      "voteStatus": "Voted"
+    }
+  ]
+}
