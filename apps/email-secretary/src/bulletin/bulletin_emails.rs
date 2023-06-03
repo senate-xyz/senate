@@ -103,7 +103,7 @@ pub async fn send_bulletin_emails(db: &Arc<prisma::PrismaClient>) {
         .unwrap();
 
     for user in users {
-        send_bulletin(user, &db).await.unwrap();
+        send_bulletin(user, db).await.unwrap();
     }
 }
 
@@ -112,7 +112,7 @@ async fn send_bulletin(
     db: &Arc<prisma::PrismaClient>,
 ) -> Result<bool> {
     let user_data = get_user_bulletin_data(user.clone(), db).await?;
-    let user_email = user.email.unwrap().clone();
+    let user_email = user.email.unwrap();
     let bulletin_template = if user.isaaveuser == MagicUserState::Enabled
         && user.isuniswapuser == MagicUserState::Enabled
     {
@@ -177,7 +177,7 @@ async fn get_ending_soon_proposals(
     let proposals = db
         .proposal()
         .find_many(vec![
-            proposal::timeend::lte((Utc::now() + Duration::from(Duration::days(3))).into()),
+            proposal::timeend::lte((Utc::now() + Duration::days(3)).into()),
             proposal::timeend::gt(Utc::now().into()),
             proposal::daoid::in_vec(
                 user.subscriptions
@@ -255,7 +255,7 @@ async fn get_new_proposals(
     let proposals = db
         .proposal()
         .find_many(vec![
-            proposal::timecreated::gte((Utc::now() - Duration::from(Duration::days(1))).into()),
+            proposal::timecreated::gte((Utc::now() - Duration::days(1)).into()),
             proposal::daoid::in_vec(
                 user.subscriptions
                     .clone()
@@ -333,7 +333,7 @@ async fn get_ended_proposals(
         .proposal()
         .find_many(vec![
             proposal::timeend::lte(Utc::now().into()),
-            proposal::timeend::gt((Utc::now() - Duration::from(Duration::days(1))).into()),
+            proposal::timeend::gt((Utc::now() - Duration::days(1)).into()),
             proposal::daoid::in_vec(
                 user.subscriptions
                     .clone()
@@ -405,11 +405,7 @@ async fn get_ended_proposals(
             } else {
                 "Did not vote".to_string()
             },
-            hiddenResult: if p.state == ProposalState::Hidden {
-                true
-            } else {
-                false
-            },
+            hiddenResult: p.state == ProposalState::Hidden,
             result: if p.scorestotal.as_f64() > p.quorum.as_f64()
                 && p.state != ProposalState::Hidden
             {
@@ -421,13 +417,7 @@ async fn get_ended_proposals(
             } else {
                 None
             },
-            noqorum: if p.scorestotal.as_f64() < p.quorum.as_f64()
-                && p.state != ProposalState::Hidden
-            {
-                true
-            } else {
-                false
-            },
+            noqorum: p.scorestotal.as_f64() < p.quorum.as_f64() && p.state != ProposalState::Hidden,
             makerResult: if p.dao.name == "MakerDAO" {
                 Some(MakerResult {
                     choiceName: "Yes".to_string(),

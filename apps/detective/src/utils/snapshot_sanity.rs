@@ -28,8 +28,8 @@ struct GraphQLProposal {
 }
 
 pub async fn snapshot_sanity_check(db: Arc<prisma::PrismaClient>) {
-    let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::from(Duration::days(30));
-    let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::from(Duration::minutes(5));
+    let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(30);
+    let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
 
     let dao_handlers = db
         .clone()

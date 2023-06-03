@@ -256,7 +256,7 @@ async fn update_proposals(
                         NaiveDateTime::from_timestamp_millis((new_index - 60 * 60 * 24) * 1000)
                             .expect("can not create snapshotindex"),
                         FixedOffset::east_opt(0).unwrap(),
-                    ) - Duration::from(Duration::minutes(60)),
+                    ) - Duration::minutes(60),
                 )),
                 daohandler::uptodate::set(uptodate),
             ],

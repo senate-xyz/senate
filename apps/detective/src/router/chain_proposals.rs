@@ -175,7 +175,7 @@ async fn insert_proposals(
                 p.scores.clone(),
                 p.scores_total.clone(),
                 p.quorum.clone(),
-                p.state.clone(),
+                p.state,
                 p.time_created
                     .with_timezone(&FixedOffset::east_opt(0).unwrap()),
                 p.time_start

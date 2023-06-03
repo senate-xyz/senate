@@ -282,7 +282,7 @@ async fn update_refresh_statuses(
                         NaiveDateTime::from_timestamp_millis(new_index * 1000)
                             .expect("bad new_index timestamp"),
                         FixedOffset::east_opt(0).unwrap(),
-                    ) - Duration::from(Duration::minutes(60)),
+                    ) - Duration::minutes(60),
                 )),
                 voterhandler::uptodate::set(uptodate),
             ],

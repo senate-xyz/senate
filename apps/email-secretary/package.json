@@ -12,7 +12,7 @@
     "start:email-secretary": "cargo r",
     "clean": "cargo clean",
     "lint": "cargo fmt",
-    "lint:fix": "cargo fmt",
+    "lint:fix": "cargo clippy --fix --allow-dirty",
     "prettier": "cargo fmt",
     "prettier:fix": "cargo fmt",
     "db:generate": "cargo generate",

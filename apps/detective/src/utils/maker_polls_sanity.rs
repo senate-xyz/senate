@@ -22,8 +22,8 @@ struct Decoder {
 }
 
 pub async fn maker_polls_sanity_check(db: Arc<prisma::PrismaClient>, rpc: Arc<Provider<Http>>) {
-    let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::from(Duration::days(30));
-    let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::from(Duration::minutes(5));
+    let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(30);
+    let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
 
     let dao_handler = db
         .clone()
