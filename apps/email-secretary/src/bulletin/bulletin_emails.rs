@@ -113,7 +113,11 @@ async fn send_bulletin(
 ) -> Result<bool> {
     let user_data = get_user_bulletin_data(user.clone(), db).await?;
     let user_email = user.email.unwrap().clone();
-    let bulletin_template = if user.isaaveuser == MagicUserState::Enabled {
+    let bulletin_template = if user.isaaveuser == MagicUserState::Enabled
+        && user.isuniswapuser == MagicUserState::Enabled
+    {
+        "senate-bulletin"
+    } else if user.isaaveuser == MagicUserState::Enabled {
         "aave-bulletin"
     } else if user.isuniswapuser == MagicUserState::Enabled {
         "uniswap-bulletin"

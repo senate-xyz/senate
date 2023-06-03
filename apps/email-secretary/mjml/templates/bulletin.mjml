@@ -11,9 +11,25 @@
       @media only screen and (max-width: 479px) { .results-width {
       min-width:120px; max-width:120px; } }
     </mj-style>
+
     <mj-style>
-    a { text-decoration: none; color: inherit;}
-   </mj-style>
+      @media only screen and (min-width: 480px) { .countdown-width {
+      min-width:180px; max-width:180px; max-height:50px;} }
+    </mj-style>
+    <mj-style>
+      @media only screen and (max-width: 479px) { .countdown-width {
+      min-width:100px; max-width:100px; max-height:50px; } }
+    </mj-style>
+
+    <mj-style>
+      @media only screen and (min-width: 480px) { .proposal-name { font-size:
+      15px; text-align: start; vertical-align: top} }
+    </mj-style>
+    <mj-style>
+      @media only screen and (max-width: 479px) { .proposal-name { font-size:
+      12px; text-align: start; vertical-align: top } }
+    </mj-style>
+    <mj-style> a { text-decoration: none; color: inherit;} </mj-style>
   </mj-head>
   <mj-body background-color="white">
     <mj-section padding="10px 0" background-color="white">
@@ -45,7 +61,7 @@
       <mj-column width="100%">
         <mj-table width="100%" cellpadding="4px">
           <tr style="border-bottom: 1px solid #ecedee">
-            <th width="80px" style="text-align: start">DAO</th>
+            <th width="50px" style="text-align: start">DAO</th>
             <th width="30%" style="text-align: start">Proposal</th>
             <th
               style="
@@ -81,7 +97,7 @@
               </div>
             </td>
 
-            <td style="font-size: 15px; text-align: start; vertical-align: top">
+            <td class="proposal-name">
               <mj-raw><a href="{{url}}">{{proposalName}}</a></mj-raw>
             </td>
             <td>
@@ -92,13 +108,24 @@
                   align-items: center;
                 "
               >
-                <img src="{{countdownUrl}}" alt="Countdown" />
+                <img
+                  class="countdown-width"
+                  src="{{countdownUrl}}"
+                  alt="Countdown"
+                />
                 <mj-raw>{{countdownString}}</mj-raw>
               </div>
             </td>
 
             <td
-              style="display: flex; flex-direction: column; align-items: center; justify-items:center; vertical-align: middle; text-align: center"
+              style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-items: center;
+                vertical-align: middle;
+                text-align: center;
+              "
             >
               <img
                 style="width: 32px"
@@ -164,7 +191,7 @@
       <mj-column width="100%">
         <mj-table width="100%" cellpadding="4px">
           <tr style="border-bottom: 1px solid #ecedee">
-            <th width="80px" style="text-align: center">DAO</th>
+            <th width="50px" style="text-align: start">DAO</th>
             <th width="30%" style="text-align: start">Proposal</th>
             <th
               style="
@@ -200,8 +227,8 @@
               </div>
             </td>
 
-            <td style="font-size: 15px; text-align: start; vertical-align: top">
-               <mj-raw><a href="{{url}}">{{proposalName}}</a></mj-raw>
+            <td class="proposal-name">
+              <mj-raw><a href="{{url}}">{{proposalName}}</a></mj-raw>
             </td>
             <td>
               <div
@@ -211,13 +238,24 @@
                   align-items: center;
                 "
               >
-                <img src="{{countdownUrl}}" alt="Countdown" />
+                <img
+                  class="countdown-width"
+                  src="{{countdownUrl}}"
+                  alt="Countdown"
+                />
                 <mj-raw>{{countdownString}}</mj-raw>
               </div>
             </td>
 
             <td
-              style="display: flex; flex-direction: column; align-items: center; justify-items:center; vertical-align: middle; text-align: center"
+              style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-items: center;
+                vertical-align: middle;
+                text-align: center;
+              "
             >
               <img
                 style="width: 32px"
@@ -283,7 +321,7 @@
       <mj-column width="100%">
         <mj-table width="100%" cellpadding="4px">
           <tr style="border-bottom: 1px solid #ecedee">
-            <th width="80px" style="text-align: center">DAO</th>
+            <th width="50px" style="text-align: start">DAO</th>
             <th width="40%" style="text-align: start">Proposal</th>
             <th
               style="
@@ -319,8 +357,8 @@
               </div>
             </td>
 
-            <td style="font-size: 15px; text-align: start; vertical-align: top">
-                 <mj-raw><a href="{{url}}">{{proposalName}}</a></mj-raw>
+            <td class="proposal-name">
+              <mj-raw><a href="{{url}}">{{proposalName}}</a></mj-raw>
             </td>
             <td style="text-align: center">
               <div
@@ -540,7 +578,14 @@
             </td>
 
             <td
-              style="display: flex; flex-direction: column; align-items: center; justify-items:center; vertical-align: middle; text-align: center"
+              style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-items: center;
+                vertical-align: middle;
+                text-align: center;
+              "
             >
               <img
                 style="width: 32px"

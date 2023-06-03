@@ -95,9 +95,48 @@
 
     @media only screen and (max-width: 479px) {
       .results-width {
+        min-width: 120px;
+        max-width: 120px;
+      }
+    }
+
+    @media only screen and (min-width: 480px) {
+      .countdown-width {
+        min-width: 180px;
+        max-width: 180px;
+        max-height: 50px;
+      }
+    }
+
+    @media only screen and (max-width: 479px) {
+      .countdown-width {
         min-width: 100px;
         max-width: 100px;
+        max-height: 50px;
       }
+    }
+
+    @media only screen and (min-width: 480px) {
+      .proposal-name {
+        font-size:
+          15px;
+        text-align: start;
+        vertical-align: top
+      }
+    }
+
+    @media only screen and (max-width: 479px) {
+      .proposal-name {
+        font-size:
+          12px;
+        text-align: start;
+        vertical-align: top
+      }
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
     }
 
   </style>
@@ -174,8 +213,8 @@
                                   <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
                                 </div>
                               </td>
-                              <td style="font-size: 15px; text-align: start; vertical-align: top">
-                                <mj-raw>{{proposalName}}</mj-raw>
+                              <td class="proposal-name">
+                                <mj-raw><a href="{{url}}">{{proposalName}}</a></mj-raw>
                               </td>
                               <td>
                                 <div style="
@@ -183,11 +222,18 @@
                   flex-direction: column;
                   align-items: center;
                 ">
-                                  <img src="{{countdownUrl}}" alt="Countdown" />
+                                  <img class="countdown-width" src="{{countdownUrl}}" alt="Countdown" />
                                   <mj-raw>{{countdownString}}</mj-raw>
                                 </div>
                               </td>
-                              <td style="display: flex; flex-direction: column; align-items: center; justify-items:center; vertical-align: middle; text-align: center">
+                              <td style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-items: center;
+                vertical-align: middle;
+                text-align: center;
+              ">
                                 <img style="width: 32px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
                                 <mj-text style="font-size: 11px; font-weight: 700">
                                   <mj-raw>{{voteStatus}}</mj-raw>
@@ -320,8 +366,8 @@
                                     <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
                                   </div>
                                 </td>
-                                <td style="font-size: 15px; text-align: start; vertical-align: top">
-                                  <mj-raw>{{proposalName}}</mj-raw>
+                                <td class="proposal-name">
+                                  <mj-raw><a href="{{url}}">{{proposalName}}</a></mj-raw>
                                 </td>
                                 <td>
                                   <div style="
@@ -329,11 +375,18 @@
                   flex-direction: column;
                   align-items: center;
                 ">
-                                    <img src="{{countdownUrl}}" alt="Countdown" />
+                                    <img class="countdown-width" src="{{countdownUrl}}" alt="Countdown" />
                                     <mj-raw>{{countdownString}}</mj-raw>
                                   </div>
                                 </td>
-                                <td style="display: flex; flex-direction: column; align-items: center; justify-items:center; vertical-align: middle; text-align: center">
+                                <td style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-items: center;
+                vertical-align: middle;
+                text-align: center;
+              ">
                                   <img style="width: 32px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
                                   <mj-text style="font-size: 11px; font-weight: 700">
                                     <mj-raw>{{voteStatus}}</mj-raw>
@@ -466,8 +519,8 @@
                                       <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
                                     </div>
                                   </td>
-                                  <td style="font-size: 15px; text-align: start; vertical-align: top">
-                                    <mj-raw>{{proposalName}}</mj-raw>
+                                  <td class="proposal-name">
+                                    <mj-raw><a href="{{url}}">{{proposalName}}</a></mj-raw>
                                   </td>
                                   <td style="text-align: center">
                                     <div style="
@@ -484,7 +537,7 @@
                             width: 22px;
                             background-color: #ededed;
                             padding: 2px;
-                          " src="https://senatelabs.xyz/assets/Emails/hidden-onlight2x.png" />
+                          " src="https://senatelabs.xyz/assets/Emails/hidden.png" />
                                               <div style="
                             font-size: 18px;
                             font-weight: 600;
@@ -532,7 +585,7 @@
                             width: 22px;
                             background-color: #ededed;
                             padding: 2px;
-                          " src="https://senatelabs.xyz/assets/Emails/check-onLight2x.png" />
+                          " src="https://senatelabs.xyz/assets/Emails/check.png" />
                                               <div style="
                             font-size: 18px;
                             font-weight: 600;
@@ -584,7 +637,7 @@
                             width: 22px;
                             background-color: #ededed;
                             padding: 2px;
-                          " src="https://senatelabs.xyz/assets/Emails/no-quorum-onlight2x.png" />
+                          " src="https://senatelabs.xyz/assets/Emails/cross.png" />
                                               <div style="
                             font-size: 18px;
                             font-weight: 600;
@@ -605,7 +658,7 @@
                             width: 22px;
                             background-color: #ededed;
                             padding: 2px;
-                          " src="https://senatelabs.xyz/assets/Emails/check-onLight2x.png" />
+                          " src="https://senatelabs.xyz/assets/Emails/check.png" />
                                               <div style="
                             font-size: 18px;
                             font-weight: 600;
@@ -632,7 +685,14 @@
                                       <mj-raw>{{countdownString}}</mj-raw>
                                     </div>
                                   </td>
-                                  <td style="display: flex; flex-direction: column; align-items: center; justify-items:center; vertical-align: middle; text-align: center">
+                                  <td style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-items: center;
+                vertical-align: middle;
+                text-align: center;
+              ">
                                     <img style="width: 32px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
                                     <mj-text style="font-size: 11px; font-weight: 700">
                                       <mj-raw>{{voteStatus}}</mj-raw>
