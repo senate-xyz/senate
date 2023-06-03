@@ -1,18 +1,23 @@
-use std::sync::Arc;
+use std::{env, sync::Arc};
 
 use chrono::{Duration, Utc};
+use log::info;
 use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 
-use crate::prisma::{
-    self,
-    dao,
-    notification,
-    proposal,
-    subscription,
-    user,
-    MagicUserState,
-    NotificationType,
+use crate::{
+    prisma::{
+        self,
+        dao,
+        notification::{self, dispatched::not},
+        proposal,
+        subscription,
+        user,
+        DaoHandlerType,
+        MagicUserState,
+        NotificationType,
+    },
+    utils::countdown::countdown_gif,
 };
 
 #[allow(non_snake_case)]
@@ -39,10 +44,133 @@ prisma::proposal::include!(proposal_with_dao { dao });
 prisma::user::include!(user_with_voters_and_subscriptions { subscriptions voters});
 
 pub async fn send_quorum_email(db: &Arc<prisma::PrismaClient>) {
-    generate_quorum(db).await;
+    info!("send_quorum_email");
+
+    generate_quorum_notifications(db).await;
+
+    dispatch_quorum_notifications(db).await;
 }
 
-pub async fn generate_quorum(db: &Arc<prisma::PrismaClient>) {
+pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
+    info!("dispatch_quorum_notifications");
+    let notifications = db
+        .notification()
+        .find_many(vec![
+            notification::r#type::equals(NotificationType::QuorumNotReachedEmail),
+            notification::dispatched::equals(false),
+        ])
+        .exec()
+        .await
+        .unwrap();
+
+    info!("{:?}", notifications.len());
+
+    for notification in notifications {
+        let proposal = db
+            .proposal()
+            .find_first(vec![proposal::id::equals(notification.clone().proposalid)])
+            .include(proposal::include!({ dao daohandler }))
+            .exec()
+            .await
+            .unwrap()
+            .unwrap();
+
+        let user = db
+            .user()
+            .find_first(vec![user::id::equals(notification.clone().userid)])
+            .exec()
+            .await
+            .unwrap()
+            .unwrap();
+
+        let quorum_template = if proposal.dao.name == "Aave" {
+            "aave-quorum"
+        } else if proposal.dao.name == "Uniswap" {
+            "uniswap-quorum"
+        } else {
+            "senate-quorum"
+        };
+
+        let countdown_url = countdown_gif(proposal.timeend.into()).await.unwrap();
+
+        let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+            Some(v) => v.into_string().unwrap(),
+            None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+        };
+        let short_url = format!(
+            "{}{}",
+            shortner_url,
+            proposal
+                .id
+                .chars()
+                .rev()
+                .take(7)
+                .collect::<Vec<char>>()
+                .into_iter()
+                .rev()
+                .collect::<String>()
+        );
+
+        let data = QuorumWarningData {
+            daoName: proposal.dao.name,
+            chain: if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                "off-chain".to_string()
+            } else {
+                "on-chain".to_string()
+            },
+            daoLogoUrl: format!(
+                "{}{}{}",
+                "https://senatelabs.xyz", proposal.dao.picture, "_medium.png"
+            ),
+            proposalName: proposal.name,
+            countdownUrl: countdown_url,
+            voteUrl: short_url,
+        };
+
+        let client = reqwest::Client::new();
+        let mut headers = HeaderMap::new();
+        headers.insert(ACCEPT, "application/json".parse().unwrap());
+        headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
+        headers.insert(
+            "X-Postmark-Server-Token",
+            env::var("POSTMARK_TOKEN")
+                .expect("Missing Postmark Token")
+                .parse()
+                .unwrap(),
+        );
+        client
+            .post("https://api.postmarkapp.com/email/withTemplate")
+            .headers(headers)
+            .json(&EmailBody {
+                To: user.email.unwrap(),
+                From: "info@senatelabs.xyz".to_string(),
+                TemplateAlias: quorum_template.to_string(),
+                TemplateModel: data.clone(),
+            })
+            .send()
+            .await
+            .unwrap();
+
+        let _ = db
+            .notification()
+            .update(
+                notification::userid_proposalid_type(
+                    notification.userid,
+                    notification.proposalid,
+                    NotificationType::QuorumNotReachedEmail,
+                ),
+                vec![notification::dispatched::set(true)],
+            )
+            .exec()
+            .await
+            .unwrap();
+
+        info!("{:?}", data);
+    }
+}
+
+pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
+    info!("generate_quorum_notifications");
     let proposals_ending_soon = db
         .proposal()
         .find_many(vec![
@@ -71,25 +199,32 @@ pub async fn generate_quorum(db: &Arc<prisma::PrismaClient>) {
                 .await
                 .unwrap();
 
-            for sub in subscriptions.iter() {
-                db.notification()
-                    .upsert(
-                        notification::userid_proposalid_type(
-                            sub.userid.to_string(),
-                            proposal.id.to_string(),
-                            NotificationType::QuorumNotReachedEmail,
-                        ),
-                        notification::create(
-                            prisma::user::UniqueWhereParam::IdEquals(sub.userid.clone()),
-                            prisma::proposal::UniqueWhereParam::IdEquals(proposal.id.clone()),
-                            NotificationType::QuorumNotReachedEmail,
-                            vec![notification::dispatched::set(false)],
-                        ),
-                        vec![],
-                    )
-                    .exec()
-                    .await
-                    .unwrap();
+            let subscriptions_with_email: Vec<_> = subscriptions
+                .iter()
+                .filter(|s| s.user.verifiedaddress && s.user.verifiedemail)
+                .collect();
+
+            for sub in subscriptions_with_email.iter() {
+                if sub.dao.quorumwarningemail {
+                    db.notification()
+                        .upsert(
+                            notification::userid_proposalid_type(
+                                sub.userid.to_string(),
+                                proposal.id.to_string(),
+                                NotificationType::QuorumNotReachedEmail,
+                            ),
+                            notification::create(
+                                prisma::user::UniqueWhereParam::IdEquals(sub.userid.clone()),
+                                prisma::proposal::UniqueWhereParam::IdEquals(proposal.id.clone()),
+                                NotificationType::QuorumNotReachedEmail,
+                                vec![notification::dispatched::set(false)],
+                            ),
+                            vec![],
+                        )
+                        .exec()
+                        .await
+                        .unwrap();
+                }
             }
         }
     }
