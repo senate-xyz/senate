@@ -115,7 +115,7 @@ async fn main() {
 fn cron() {
     let mut cron = CronJob::new();
 
-    cron.new_job("0 05 08 * * *", || {
+    cron.new_job(&env::var("BULLETIN_CRON_INTERVAL").unwrap(), || {
         let _ = tokio::spawn(bulletin_task());
     });
 
@@ -230,7 +230,7 @@ async fn fetch_users_to_be_notified(
         .find_many(vec![
             user::verifiedemail::equals(true),
             user::emaildailybulletin::equals(true),
-            user::subscriptions::some(vec![subscription::some()]),
+            user::subscriptions::some(vec![subscription::notificationsenabled::equals(true)]),
         ])
         .include(user_with_proxies_and_subscriptions::include())
         .exec()
@@ -384,7 +384,7 @@ async fn format_email_template_row(
         format!(
             "{}{}",
             env::var("NEXT_PUBLIC_WEB_URL").unwrap(),
-            "/assets/not-voted-yet.png"
+            "/assets/Emails/not-voted-yet.png"
         )
     };
 
@@ -504,7 +504,7 @@ fn format_result(proposal: &proposal_w_dao, highest_score: HighestScore) -> Bull
                     "/assets/Emails/check.png"
                 ),
                 highest_score_choice: highest_score.choice,
-                highest_score_support: highest_score.support,
+                highest_score_support: highest_score.support / 1e18,
                 highest_score_percentage_display: "show".to_string(),
                 highest_score_percentage: highest_score.percentage,
                 bar_width_percentage: highest_score.percentage as i64,
@@ -517,7 +517,7 @@ fn format_result(proposal: &proposal_w_dao, highest_score: HighestScore) -> Bull
                     "/assets/Emails/cross.png"
                 ),
                 highest_score_choice: "No Quorum".to_string(),
-                highest_score_support: highest_score.support,
+                highest_score_support: highest_score.support / 1e18,
                 highest_score_percentage_display: "hide".to_string(),
                 highest_score_percentage: highest_score.percentage,
                 bar_width_percentage: highest_score.percentage as i64,
@@ -656,6 +656,7 @@ async fn generate_countdown_gif_url(
 
 async fn send_email(email_body: serde_json::Value) -> Result<bool, reqwest::Error> {
     let client = reqwest::Client::new();
+    println!("{}", email_body);
 
     let mut headers = HeaderMap::new();
     headers.insert(ACCEPT, "application/json".parse().unwrap());
