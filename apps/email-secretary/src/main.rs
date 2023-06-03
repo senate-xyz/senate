@@ -9,7 +9,12 @@ pub mod bulletin {
 pub mod quorum {
     pub mod quroum_emails;
 }
+pub mod utils {
+    pub mod countdown;
+    pub mod vote;
+}
 
+use chrono::{Timelike, Utc};
 use log::info;
 use std::{sync::Arc, time::Duration};
 use tokio::time::sleep;
@@ -41,7 +46,7 @@ async fn main() {
     dotenv().ok();
     init_logger();
 
-    info!("email-secretaryary start");
+    info!("email-secretary start");
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
 
@@ -49,6 +54,11 @@ async fn main() {
     let bulletin_task = tokio::task::spawn(async move {
         loop {
             send_bulletin_emails(&client_for_bulletin).await;
+
+            //let now = Utc::now();
+            // if now.hour() == 8 {
+            //     send_bulletin_emails(&client_for_bulletin).await;
+            // }
 
             sleep(Duration::from_secs(60)).await;
         }

@@ -18,6 +18,11 @@ generator telegramsecretary {
   output   = "../../../apps/telegram-secretary/src/prisma.rs"
 }
 
+generator emailsecretary {
+  provider = "cargo prisma"
+  output   = "../../../apps/email-secretary/src/prisma.rs"
+}
+
 generator quorumemail {
   provider = "cargo prisma"
   output   = "../../../apps/quorum-email/src/prisma.rs"
