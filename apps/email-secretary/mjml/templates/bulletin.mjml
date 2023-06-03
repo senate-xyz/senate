@@ -95,7 +95,7 @@
             </td>
 
             <td
-              style="display: flex; flex-direction: column; align-items: center"
+              style="display: flex; flex-direction: column; align-items: center; justify-items:center; vertical-align: middle; text-align: center"
             >
               <img
                 style="width: 32px"
@@ -214,7 +214,7 @@
             </td>
 
             <td
-              style="display: flex; flex-direction: column; align-items: center"
+              style="display: flex; flex-direction: column; align-items: center; justify-items:center; vertical-align: middle; text-align: center"
             >
               <img
                 style="width: 32px"
@@ -537,7 +537,7 @@
             </td>
 
             <td
-              style="display: flex; flex-direction: column; align-items: center"
+              style="display: flex; flex-direction: column; align-items: center; justify-items:center; vertical-align: middle; text-align: center"
             >
               <img
                 style="width: 32px"
