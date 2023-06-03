@@ -4,12 +4,13 @@
 pub mod prisma;
 
 use crate::prisma::{
-    dao, notification, proposal, user, DaoHandlerType, MagicUserState, NotificationType,
+    dao, notification, proposal, subscription, user, DaoHandlerType, MagicUserState,
+    NotificationType,
 };
 use chrono::prelude::*;
 use dotenv::dotenv;
+use prisma_client_rust::chrono::{Duration, Utc};
 use std::env;
-use std::time::Duration;
 
 use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use reqwest::Error;
@@ -18,6 +19,8 @@ use serde_json::json;
 use tokio::time::sleep;
 
 use num_format::{Locale, ToFormattedString};
+
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize)]
 struct TemplateModel {
@@ -65,7 +68,7 @@ async fn main() {
 
     let quorum_email_loop = tokio::task::spawn(async move {
         loop {
-            aave_quorum_email(&db).await;
+            quorum_alert(&db).await;
 
             sleep(std::time::Duration::from_secs(60)).await;
         }
@@ -74,58 +77,65 @@ async fn main() {
     quorum_email_loop.await.unwrap();
 }
 
-async fn aave_quorum_email(db: &prisma::PrismaClient) {
-    let users_to_be_notified = db
-        .user()
-        .find_many(vec![
-            user::verifiedemail::equals(true),
-            user::emaildailybulletin::equals(true),
-            user::emailquorumwarning::equals(true),
-            // TODO: select users who are subscribed to the dao at current index
-        ])
-        .exec()
-        .await
-        .unwrap();
+async fn quorum_alert(db: &prisma::PrismaClient) {
+    let mut dao_to_template = HashMap::new();
+    dao_to_template.insert("Aave", "aave-quorum".to_string());
+    dao_to_template.insert("Uniswap", "uni-quorum".to_string());
 
-    let proposals_ending_soon = db
-        .proposal()
-        .find_many(vec![
-            proposal::timeend::gt(Utc::now().into()),
-            proposal::timeend::lte((Utc::now() + chrono::Duration::hours(12)).into()),
-            //TODO: name of the dao at the current index
-            proposal::dao::is(vec![dao::name::equals("Aave".to_string())]),
-        ])
-        .include(proposal::include!({ dao }))
-        .exec()
-        .await
-        .unwrap();
+    for dao_name in dao_to_template.keys().cloned().into_iter() {
+        let users_to_be_notified = db
+            .user()
+            .find_many(vec![
+                user::verifiedemail::equals(true),
+                user::emaildailybulletin::equals(true),
+                user::emailquorumwarning::equals(true),
+                user::subscriptions::some(vec![subscription::dao::is(vec![dao::name::equals(
+                    dao_name.to_string(),
+                )])]),
+            ])
+            .exec()
+            .await
+            .unwrap();
 
-    let proposals_to_notify_about: Vec<_> = proposals_ending_soon
-        .iter()
-        .filter(|&p| p.quorum.as_f64().unwrap() > p.scorestotal.as_f64().unwrap())
-        .collect();
+        let proposals_ending_soon = db
+            .proposal()
+            .find_many(vec![
+                proposal::timeend::gt(Utc::now().into()),
+                proposal::timeend::lte((Utc::now() + Duration::from(Duration::hours(12))).into()),
+                proposal::dao::is(vec![dao::name::equals(dao_name.to_string())]),
+            ])
+            .include(proposal::include!({ dao }))
+            .exec()
+            .await
+            .unwrap();
 
-    // Insert notifications to be dispatched
-    for proposal in proposals_to_notify_about.iter() {
-        for user in users_to_be_notified.iter() {
-            db.notification()
-                .upsert(
-                    notification::userid_proposalid_type(
-                        user.id.to_string(),
-                        proposal.id.to_string(),
-                        NotificationType::QuorumNotReachedEmail,
-                    ),
-                    notification::create(
-                        prisma::user::UniqueWhereParam::IdEquals(user.id.clone()),
-                        prisma::proposal::UniqueWhereParam::IdEquals(proposal.id.clone()),
-                        NotificationType::QuorumNotReachedEmail,
-                        vec![notification::dispatched::set(false)],
-                    ),
-                    vec![],
-                )
-                .exec()
-                .await
-                .unwrap();
+        let proposals_to_notify_about: Vec<_> = proposals_ending_soon
+            .iter()
+            .filter(|&p| p.quorum.as_f64().unwrap() > p.scorestotal.as_f64().unwrap())
+            .collect();
+
+        // Insert notifications to be dispatched
+        for proposal in proposals_to_notify_about.iter() {
+            for user in users_to_be_notified.iter() {
+                db.notification()
+                    .upsert(
+                        notification::userid_proposalid_type(
+                            user.id.to_string(),
+                            proposal.id.to_string(),
+                            NotificationType::QuorumNotReachedEmail,
+                        ),
+                        notification::create(
+                            prisma::user::UniqueWhereParam::IdEquals(user.id.clone()),
+                            prisma::proposal::UniqueWhereParam::IdEquals(proposal.id.clone()),
+                            NotificationType::QuorumNotReachedEmail,
+                            vec![notification::dispatched::set(false)],
+                        ),
+                        vec![],
+                    )
+                    .exec()
+                    .await
+                    .unwrap();
+            }
         }
     }
 
@@ -134,9 +144,6 @@ async fn aave_quorum_email(db: &prisma::PrismaClient) {
         .notification()
         .find_many(vec![
             notification::dispatched::equals(false),
-            notification::proposal::is(vec![proposal::dao::is(vec![dao::name::equals(
-                "Aave".to_string(),
-            )])]),
             notification::r#type::equals(NotificationType::QuorumNotReachedEmail),
         ])
         .include(notification::include!({
@@ -160,7 +167,10 @@ async fn aave_quorum_email(db: &prisma::PrismaClient) {
         let email_body: EmailBody = EmailBody {
             To: n.user.email.clone().expect("Empty email").to_string(),
             From: "info@senatelabs.xyz".to_string(),
-            TemplateAlias: "aave-quorum".to_string(),
+            TemplateAlias: dao_to_template
+                .get(&n.proposal.dao.name.as_str())
+                .unwrap()
+                .to_string(),
             TemplateModel: TemplateModel {
                 quorum: ((n.proposal.quorum.clone().as_f64().unwrap() / 1e18) as i64)
                     .to_formatted_string(&Locale::en),
@@ -302,7 +312,7 @@ async fn generate_countdown_gif_url(
                 if retries == 0 {
                     return Err("Max retries exceeded".into());
                 }
-                sleep(Duration::from_secs(10)).await;
+                sleep(std::time::Duration::from_secs(10)).await;
             }
         }
     }
