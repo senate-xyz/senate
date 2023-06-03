@@ -175,8 +175,10 @@ const getProposals = async (
                 const scores = proposal.scores as JsonArray
 
                 for (let i = 0; i < scores.length; i++) {
-                    if (parseFloat(scores[i]?.toString()) > highestScore) {
-                        highestScore = parseFloat(scores[i]?.toString())
+                    if (
+                        parseFloat(String(scores[i]?.toString())) > highestScore
+                    ) {
+                        highestScore = parseFloat(String(scores[i]?.toString()))
                         highestScoreIndex = i
                     }
                 }

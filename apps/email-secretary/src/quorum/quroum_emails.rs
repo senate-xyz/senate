@@ -201,7 +201,11 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
 
             let subscriptions_with_email: Vec<_> = subscriptions
                 .iter()
-                .filter(|s| s.user.verifiedaddress && s.user.verifiedemail)
+                .filter(|s| {
+                    s.user.verifiedaddress
+                        && s.user.verifiedemail
+                        && s.user.email.clone().unwrap().len() > 0
+                })
                 .collect();
 
             for sub in subscriptions_with_email.iter() {
