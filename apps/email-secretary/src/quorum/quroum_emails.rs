@@ -17,7 +17,7 @@ use crate::{
         MagicUserState,
         NotificationType,
     },
-    utils::countdown::countdown_gif,
+    utils::{countdown::countdown_gif, vote::get_vote},
 };
 
 #[allow(non_snake_case)]
@@ -205,7 +205,10 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 .collect();
 
             for sub in subscriptions_with_email.iter() {
-                if sub.dao.quorumwarningemail {
+                let voted = get_vote(sub.userid.clone(), proposal.id.clone(), &db)
+                    .await
+                    .unwrap();
+                if sub.dao.quorumwarningemail && !voted {
                     db.notification()
                         .upsert(
                             notification::userid_proposalid_type(
