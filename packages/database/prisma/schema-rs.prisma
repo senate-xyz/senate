@@ -23,6 +23,11 @@ generator emailsecretary {
   output   = "../../../apps/email-secretary/src/prisma.rs"
 }
 
+generator bulletin {
+  provider = "cargo prisma"
+  output   = "../../../apps/bulletin-rust/src/prisma.rs"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
