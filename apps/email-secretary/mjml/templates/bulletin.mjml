@@ -9,8 +9,11 @@
     </mj-style>
     <mj-style>
       @media only screen and (max-width: 479px) { .results-width {
-      min-width:100px; max-width:100px; } }
+      min-width:120px; max-width:120px; } }
     </mj-style>
+    <mj-style>
+    a { text-decoration: none; color: inherit;}
+   </mj-style>
   </mj-head>
   <mj-body background-color="white">
     <mj-section padding="10px 0" background-color="white">
@@ -79,7 +82,7 @@
             </td>
 
             <td style="font-size: 15px; text-align: start; vertical-align: top">
-              <mj-raw>{{proposalName}}</mj-raw>
+              <mj-raw><a href="{{url}}">{{proposalName}}</a></mj-raw>
             </td>
             <td>
               <div
@@ -198,7 +201,7 @@
             </td>
 
             <td style="font-size: 15px; text-align: start; vertical-align: top">
-              <mj-raw>{{proposalName}}</mj-raw>
+               <mj-raw><a href="{{url}}">{{proposalName}}</a></mj-raw>
             </td>
             <td>
               <div
@@ -317,7 +320,7 @@
             </td>
 
             <td style="font-size: 15px; text-align: start; vertical-align: top">
-              <mj-raw>{{proposalName}}</mj-raw>
+                 <mj-raw><a href="{{url}}">{{proposalName}}</a></mj-raw>
             </td>
             <td style="text-align: center">
               <div
@@ -340,7 +343,7 @@
                             background-color: #ededed;
                             padding: 2px;
                           "
-                          src="https://senatelabs.xyz/assets/Emails/hidden-onlight2x.png"
+                          src="https://senatelabs.xyz/assets/Emails/hidden.png"
                         />
                         <div
                           style="
@@ -406,7 +409,7 @@
                             background-color: #ededed;
                             padding: 2px;
                           "
-                          src="https://senatelabs.xyz/assets/Emails/check-onLight2x.png"
+                          src="https://senatelabs.xyz/assets/Emails/check.png"
                         />
                         <div
                           style="
@@ -472,7 +475,7 @@
                             background-color: #ededed;
                             padding: 2px;
                           "
-                          src="https://senatelabs.xyz/assets/Emails/no-quorum-onlight2x.png"
+                          src="https://senatelabs.xyz/assets/Emails/cross.png"
                         />
                         <div
                           style="
@@ -501,7 +504,7 @@
                             background-color: #ededed;
                             padding: 2px;
                           "
-                          src="https://senatelabs.xyz/assets/Emails/check-onLight2x.png"
+                          src="https://senatelabs.xyz/assets/Emails/check.png"
                         />
                         <div
                           style="
