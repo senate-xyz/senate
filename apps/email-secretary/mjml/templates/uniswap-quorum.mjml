@@ -21,7 +21,7 @@
     <mj-style inline="inline"
       >.card-background { background: linear-gradient(65.75deg, rgba(244, 182,
       206, 0.17) 15.4%, rgba(255, 233, 241, 0.17) 58.49%, rgba(242, 172, 199,
-      0.17) 84.35%), #FFFFFF; height:125px; max-width: 680px; display:flex;
+      0.17) 84.35%), #FFFFFF; max-width: 680px; display:flex;
       align-items:center;}
     </mj-style>
   </mj-head>
@@ -98,7 +98,7 @@
       <mj-column>
         <mj-table>
           <tr>
-            <td>
+            <td style="width: 50%">
               <p
                 class="mobile-version"
                 style="font-style: normal; font-weight: 700; font-size: 18px"
@@ -136,13 +136,24 @@
                 Please vote as soon as you can!
               </p>
             </td>
-            <td class="desktop-version">
-              <img src="{{countdownUrl}}" alt="Countdown" />
+            <td
+              class="desktop-version"
+              style="vertical-align: middle; text-align: center"
+            >
+              <img
+                style="width: 200px; height: 80px"
+                src="{{countdownUrl}}"
+                alt="Countdown"
+              />
             </td>
           </tr>
           <tr class="mobile-version">
-            <td>
-              <img src="{{countdownUrl}}" alt="Countdown" />
+            <td style="display: flex; text-align: center">
+              <img
+                style="width: 200px; height: 80px; margin: 0 auto"
+                src="{{countdownUrl}}"
+                alt="Countdown"
+              />
             </td>
           </tr>
         </mj-table>
@@ -159,8 +170,8 @@
           line-height="34px"
           background-color="#FFEFF5"
           color="#FB118E"
-          border-radius="100px"
           border="4px solid #FB118E;"
+          href="{{voteUrl}}"
         >
           Cast your vote
         </mj-button>

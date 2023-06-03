@@ -19,8 +19,8 @@
     </mj-style>
 
     <mj-style inline="inline"
-      >.card-background { border: 5px solid black; height:125px; max-width:
-      680px; display:flex; align-items:center;}
+      >.card-background { border: 5px solid black; max-width: 680px;
+      display:flex; align-items:center;}
     </mj-style>
   </mj-head>
   <mj-body background-color="white">
@@ -96,7 +96,7 @@
       <mj-column>
         <mj-table>
           <tr>
-            <td>
+            <td style="width: 50%">
               <p
                 class="mobile-version"
                 style="font-style: normal; font-weight: 700; font-size: 18px"
@@ -132,13 +132,25 @@
                 Please vote as soon as you can!
               </p>
             </td>
-            <td class="desktop-version">
-              <img src="{{countdownUrl}}" alt="Countdown" />
+
+            <td
+              class="desktop-version"
+              style="vertical-align: middle; text-align: center"
+            >
+              <img
+                style="width: 200px; height: 80px"
+                src="{{countdownUrl}}"
+                alt="Countdown"
+              />
             </td>
           </tr>
           <tr class="mobile-version">
-            <td>
-              <img src="{{countdownUrl}}" alt="Countdown" />
+            <td style="display: flex; text-align: center">
+              <img
+                style="width: 200px; height: 80px; margin: 0 auto"
+                src="{{countdownUrl}}"
+                alt="Countdown"
+              />
             </td>
           </tr>
         </mj-table>
@@ -155,6 +167,7 @@
           line-height="34px"
           background-color="black"
           color="white"
+          href="{{voteUrl}}"
         >
           Cast your vote
         </mj-button>
