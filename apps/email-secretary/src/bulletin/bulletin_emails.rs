@@ -121,40 +121,30 @@ async fn send_bulletin(
         "senate-bulletin"
     };
 
-    // let client = reqwest::Client::new();
-    // let mut headers = HeaderMap::new();
-    // headers.insert(ACCEPT, "application/json".parse().unwrap());
-    // headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
-    // headers.insert(
-    //     "X-Postmark-Server-Token",
-    //     env::var("POSTMARK_TOKEN")
-    //         .expect("Missing Postmark Token")
-    //         .parse()
-    //         .unwrap(),
-    // );
-    // let res = client
-    //     .post("https://api.postmarkapp.com/email/withTemplate")
-    //     .headers(headers)
-    //     .json(&EmailBody {
-    //         To: user_email,
-    //         From: "info@senatelabs.xyz".to_string(),
-    //         TemplateAlias: bulletin_template.to_string(),
-    //         TemplateModel: user_data,
-    //     })
-    //     .send()
-    //     .await
-    //     .unwrap();
-    //let _success = res.status().is_success();
-
-    // println!(
-    //     "{:?}",
-    //     &EmailBody {
-    //         To: user_email,
-    //         From: "info@senatelabs.xyz".to_string(),
-    //         TemplateAlias: bulletin_template.to_string(),
-    //         TemplateModel: user_data.clone(),
-    //     }
-    // );
+    let client = reqwest::Client::new();
+    let mut headers = HeaderMap::new();
+    headers.insert(ACCEPT, "application/json".parse().unwrap());
+    headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
+    headers.insert(
+        "X-Postmark-Server-Token",
+        env::var("POSTMARK_TOKEN")
+            .expect("Missing Postmark Token")
+            .parse()
+            .unwrap(),
+    );
+    let res = client
+        .post("https://api.postmarkapp.com/email/withTemplate")
+        .headers(headers)
+        .json(&EmailBody {
+            To: user_email,
+            From: "info@senatelabs.xyz".to_string(),
+            TemplateAlias: bulletin_template.to_string(),
+            TemplateModel: user_data.clone(),
+        })
+        .send()
+        .await
+        .unwrap();
+    let _success = res.status().is_success();
 
     println!("{}", serde_json::to_string(&user_data).unwrap());
 
@@ -349,8 +339,9 @@ async fn get_ended_proposals(
                     .collect(),
             ),
             proposal::state::not(ProposalState::Canceled),
+            proposal::scorestotal::gt(json!(0)),
         ])
-        .order_by(proposal::timeend::order(Direction::Asc))
+        .order_by(proposal::timeend::order(Direction::Desc))
         .include(proposal_with_dao::include())
         .exec()
         .await
