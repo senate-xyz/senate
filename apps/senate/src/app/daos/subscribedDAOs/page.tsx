@@ -94,9 +94,6 @@ export default async function SubscribedDAOs() {
                                         (handler) => handler.type
                                     )}
                                     activeProposals={sub.dao.proposals.length}
-                                    notificationsEnabled={
-                                        sub.notificationsenabled
-                                    }
                                 />
                             )
                         })}

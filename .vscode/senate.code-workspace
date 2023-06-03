@@ -25,14 +25,6 @@
       "path": "../apps/telegram-secretary"
     },
     {
-      "name": "🦀 @senate/quorum-email",
-      "path": "../apps/quorum-email"
-    },
-    {
-      "name": "🚀 @senate/bulletin",
-      "path": "../apps/bulletin"
-    },
-    {
       "name": "🌐 @senate/senate",
       "path": "../apps/senate"
     },

@@ -78,6 +78,8 @@ model dao {
   subscriptions subscription[]
   votes         vote[]
 
+  quorumwarningemail Boolean @default(false)
+
   createdat DateTime @default(now())
   updatedat DateTime @updatedAt
 
@@ -202,8 +204,6 @@ model voterhandler {
 model subscription {
   id String @id @default(cuid())
 
-  notificationsenabled Boolean @default(true)
-
   userid String
   user   user   @relation(fields: [userid], references: [id], onDelete: Cascade)
   daoid  String
@@ -214,7 +214,6 @@ model subscription {
 
   @@unique([userid, daoid])
   @@index(fields: [daoid], type: Hash)
-  @@index(fields: [notificationsenabled], type: Hash)
 }
 
 model notification {

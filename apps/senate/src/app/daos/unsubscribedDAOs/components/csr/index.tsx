@@ -53,8 +53,7 @@ export const UnsubscribedDAO = (props: {
         ) {
             subscribe.mutate(
                 {
-                    daoId: cookie.subscribe,
-                    notificationsEnabled: true
+                    daoId: cookie.subscribe
                 },
                 {
                     onSuccess: () => {
@@ -168,8 +167,7 @@ export const UnsubscribedDAO = (props: {
                         account.isConnected && session.status == 'authenticated'
                             ? subscribe.mutate(
                                   {
-                                      daoId: props.daoId,
-                                      notificationsEnabled: true
+                                      daoId: props.daoId
                                   },
                                   {
                                       onSuccess: () => {

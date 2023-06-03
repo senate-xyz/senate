@@ -136,7 +136,7 @@ async fn send_bulletin(
             .parse()
             .unwrap(),
     );
-    let res = client
+    client
         .post("https://api.postmarkapp.com/email/withTemplate")
         .headers(headers)
         .json(&EmailBody {
@@ -148,7 +148,6 @@ async fn send_bulletin(
         .send()
         .await
         .unwrap();
-    let _success = res.status().is_success();
 
     println!("{}", serde_json::to_string(&user_data).unwrap());
 
@@ -334,7 +333,7 @@ async fn get_ended_proposals(
         .proposal()
         .find_many(vec![
             proposal::timeend::lte(Utc::now().into()),
-            proposal::timeend::gt((Utc::now() - Duration::from(Duration::days(10))).into()),
+            proposal::timeend::gt((Utc::now() - Duration::from(Duration::days(1))).into()),
             proposal::daoid::in_vec(
                 user.subscriptions
                     .clone()

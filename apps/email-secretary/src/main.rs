@@ -27,7 +27,7 @@ use tokio::try_join;
 use crate::{
     bulletin::bulletin_emails::send_bulletin_emails,
     prisma::PrismaClient,
-    quorum::quroum_emails::send_quorum_emails,
+    quorum::quroum_emails::send_quorum_email,
 };
 
 fn init_logger() {
@@ -67,7 +67,7 @@ async fn main() {
     let client_for_quorum = Arc::clone(&client);
     let quroum_task = tokio::task::spawn(async move {
         loop {
-            send_quorum_emails(&client_for_quorum).await;
+            send_quorum_email(&client_for_quorum).await;
 
             sleep(Duration::from_secs(60)).await;
         }

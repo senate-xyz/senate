@@ -16,11 +16,6 @@
       "cache": false
     },
 
-    "build:bulletin": {
-      "dependsOn": ["^build:db", "^build:axiom"],
-      "cache": false
-    },
-
     "build:detective": {
       "dependsOn": ["^db:generate"],
       "cache": false
@@ -42,11 +37,6 @@
     },
 
     "build:telegram-secretary": {
-      "dependsOn": ["^db:generate"],
-      "cache": false
-    },
-
-    "build:quorum-email": {
       "dependsOn": ["^db:generate"],
       "cache": false
     },
@@ -97,8 +87,6 @@
     "start": {},
     "start:senate": {},
     "start:shortie": {},
-    "start:bulletin": {},
-    "start:quorum-email": {},
 
     "dev": { "dependsOn": ["^db:generate", "^build:db", "^build:axiom"] },
     "dev:senate": {

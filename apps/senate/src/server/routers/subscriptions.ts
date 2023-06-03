@@ -6,8 +6,7 @@ export const subscriptionsRouter = router({
     subscribe: privateProcedure
         .input(
             z.object({
-                daoId: z.string(),
-                notificationsEnabled: z.boolean()
+                daoId: z.string()
             })
         )
         .mutation(async ({ input, ctx }) => {
@@ -29,12 +28,12 @@ export const subscriptionsRouter = router({
                     }
                 },
                 update: {
-                    notificationsenabled: input.notificationsEnabled
+                    userid: user.id,
+                    daoid: input.daoId
                 },
                 create: {
                     userid: user.id,
-                    daoid: input.daoId,
-                    notificationsenabled: input.notificationsEnabled
+                    daoid: input.daoId
                 }
             })
 
@@ -64,39 +63,6 @@ export const subscriptionsRouter = router({
                         userid: user?.id,
                         daoid: input.daoId
                     }
-                }
-            })
-
-            return result
-        }),
-
-    updateSubscription: privateProcedure
-        .input(
-            z.object({
-                daoId: z.string(),
-                notificationsEnabled: z.boolean()
-            })
-        )
-        .mutation(async ({ input, ctx }) => {
-            const username = await ctx.user.name
-
-            const user = await prisma.user.findFirstOrThrow({
-                where: {
-                    address: {
-                        equals: String(username)
-                    }
-                }
-            })
-
-            const result = await prisma.subscription.update({
-                where: {
-                    userid_daoid: {
-                        userid: user.id,
-                        daoid: input.daoId
-                    }
-                },
-                data: {
-                    notificationsenabled: input.notificationsEnabled
                 }
             })
 

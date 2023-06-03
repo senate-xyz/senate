@@ -13,7 +13,6 @@ export const SubscribedDAO = (props: {
     bgColor: string | undefined
     daoHandlers: string[]
     activeProposals: number
-    notificationsEnabled: boolean
 }) => {
     const [imgSrc, setImgSrc] = useState(
         props.daoPicture
