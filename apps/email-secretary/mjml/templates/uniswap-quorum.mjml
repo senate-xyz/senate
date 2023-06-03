@@ -96,50 +96,23 @@
 
     <mj-section css-class="card-background" border-radius="16px">
       <mj-column>
-        <mj-table>
+        <mj-table padding="0" css-class="mobile-version">
           <tr>
-            <td style="width: 50%">
+            <td style="vertical-align: middle; text-align: center">
               <p
-                class="mobile-version"
-                style="font-style: normal; font-weight: 700; font-size: 18px"
-              >
-                This proposal is ending in
-              </p>
-              <p
-                class="desktop-version"
                 style="
                   font-style: normal;
                   font-weight: 700;
-                  font-size: 28px;
-                  line-height: 34px;
+                  font-size: 20px;
                   color: #424242;
                 "
               >
                 This proposal is ending in
               </p>
-              <p
-                class="mobile-version"
-                style="font-style: normal; font-weight: 400; font-size: 13px"
-              >
-                Please vote as soon as you can!
-              </p>
-              <p
-                class="desktop-version"
-                style="
-                  font-style: normal;
-                  font-weight: 400;
-                  font-size: 15px;
-                  line-height: 18px;
-                  color: #424242;
-                "
-              >
-                Please vote as soon as you can!
-              </p>
             </td>
-            <td
-              class="desktop-version"
-              style="vertical-align: middle; text-align: center"
-            >
+          </tr>
+          <tr>
+            <td style="vertical-align: middle; text-align: center">
               <img
                 style="width: 200px; height: 80px"
                 src="{{countdownUrl}}"
@@ -147,13 +120,58 @@
               />
             </td>
           </tr>
-          <tr class="mobile-version">
-            <td style="display: flex; text-align: center">
+          <tr>
+            <td style="vertical-align: middle; text-align: center">
+              <p
+                style="
+                  font-style: normal;
+                  font-weight: 400;
+                  font-size: 13px;
+                  color: #424242;
+                "
+              >
+                Please vote as soon as you can!
+              </p>
+            </td>
+          </tr>
+        </mj-table>
+
+        <mj-table padding="0" css-class="desktop-version">
+          <tr>
+            <td style="vertical-align: middle; text-align: center">
+              <p
+                style="
+                  font-style: normal;
+                  font-weight: 700;
+                  font-size: 20px;
+                  color: #424242;
+                "
+              >
+                This proposal is ending in
+              </p>
+            </td>
+
+            <td rowspan="2" style="vertical-align: middle; text-align: center">
               <img
-                style="width: 200px; height: 80px; margin: 0 auto"
+                style="width: 200px; height: 80px"
                 src="{{countdownUrl}}"
                 alt="Countdown"
               />
+            </td>
+          </tr>
+
+          <tr>
+            <td style="vertical-align: middle; text-align: center">
+              <p
+                style="
+                  font-style: normal;
+                  font-weight: 400;
+                  font-size: 13px;
+                  color: #424242;
+                "
+              >
+                Please vote as soon as you can!
+              </p>
             </td>
           </tr>
         </mj-table>
