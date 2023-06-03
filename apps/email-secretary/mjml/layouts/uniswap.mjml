@@ -11,41 +11,42 @@
     >
     <mj-style inline="inline"
       >.uniswap-background { background: linear-gradient(53.9deg, rgba(233, 51,
-      122, 0.25) -0.34%, rgba(251, 198, 219, 0.25) 90.27%), #482731;
-      height:150px; max-width: 680px; display:flex;
-      align-items:center;}</mj-style
-    >
+      122, 0.25) -0.34%, rgba(251, 198, 219, 0.25) 90.27%), #482731; max-width:
+      680px; display:flex; align-items:center;}
+    </mj-style>
     <mj-style inline="inline">.rounded-corners { border-radius: 6px;}</mj-style>
     <mj-style inline="inline">.square-corners { border-radius: 0px;}</mj-style>
   </mj-head>
   <mj-body width="680px" background-color="white">
     <mj-section css-class="desktop-version"></mj-section>
     <mj-section css-class="uniswap-background mobile-version square-corners">
-      <mj-column width="42px">
-        <mj-image
-          padding="0 0 0 0"
-          width="42px"
-          height="42px"
-          src="https://senatelabs.xyz/assets/Emails/uniswap-logo2x.png"
-        ></mj-image>
-      </mj-column>
-      <mj-column width="70%">
-        <mj-text
-          padding="5px 0px 0px 10px"
-          color="white"
-          font-size="32px"
-          font-family="sans-serif"
-          font-weight="600"
-          >Uniswap Proposals</mj-text
-        >
-        <mj-text
-          padding="5px 0px 0px 10px"
-          color="white"
-          font-size="14px"
-          font-family="sans-serif"
-          >{{todaysDate}}</mj-text
-        >
-      </mj-column>
+      <mj-group>
+        <mj-column width="20%">
+          <mj-image
+            padding="0px 0px 0px 0px"
+            width="48px"
+            height="48px"
+            src="https://senatelabs.xyz/assets/Emails/uniswap-logo.png"
+          ></mj-image>
+        </mj-column>
+        <mj-column>
+          <mj-text
+            padding="0px 0px 0px 10px"
+            color="white"
+            font-size="22px"
+            font-family="sans-serif"
+            font-weight="600"
+            >Uniswap Proposals</mj-text
+          >
+          <mj-text
+            padding="0px 0px 0px 10px"
+            color="white"
+            font-size="13px"
+            font-family="sans-serif"
+            >{{todaysDate}}</mj-text
+          >
+        </mj-column>
+      </mj-group>
     </mj-section>
 
     <mj-section css-class="uniswap-background desktop-version rounded-corners">
@@ -54,7 +55,7 @@
           padding="20px 0 0 0"
           width="80px"
           height="80px"
-          src="https://senatelabs.xyz/assets/Emails/uniswap-logo2x.png"
+          src="https://senatelabs.xyz/assets/Emails/uniswap-logo.png"
         ></mj-image>
       </mj-column>
       <mj-column width="70%">

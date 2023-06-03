@@ -3,6 +3,12 @@
     <mj-attributes>
       <mj-all font-family="Arial" />
     </mj-attributes>
+    <mj-style
+      >@media only screen and (min-width: 480px) { .desktop-version { display:
+      block !important; } .mobile-version { display: none !important; } } @media
+      only screen and (max-width: 479px) { .desktop-version { display: none
+      !important; } .mobile-version { display: block !important; } }</mj-style
+    >
     <mj-style>
       @media only screen and (min-width: 480px) { .results-width {
       min-width:180px; max-width:180px;} }
@@ -60,6 +66,18 @@
               <img width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
             </td>
             <td
+              class="mobile-version"
+              style="
+                font-weight: 700;
+                font-size: 18px;
+                padding: 0 15px;
+                text-align: start;
+              "
+            >
+              <mj-raw>{{proposalName}}</mj-raw>
+            </td>
+            <td
+              class="desktop-version"
               style="
                 font-weight: 700;
                 font-size: 28px;
@@ -80,6 +98,13 @@
           <tr>
             <td>
               <p
+                class="mobile-version"
+                style="font-style: normal; font-weight: 700; font-size: 18px"
+              >
+                This proposal is ending in
+              </p>
+              <p
+                class="desktop-version"
                 style="
                   font-style: normal;
                   font-weight: 700;
@@ -90,6 +115,13 @@
                 This proposal is ending in
               </p>
               <p
+                class="mobile-version"
+                style="font-style: normal; font-weight: 400; font-size: 13px"
+              >
+                Please vote as soon as you can!
+              </p>
+              <p
+                class="desktop-version"
                 style="
                   font-style: normal;
                   font-weight: 400;
@@ -100,14 +132,12 @@
                 Please vote as soon as you can!
               </p>
             </td>
-            <td
-              style="
-                font-weight: 700;
-                font-size: 28px;
-                padding: 0 15px;
-                text-align: start;
-              "
-            >
+            <td class="desktop-version">
+              <img src="{{countdownUrl}}" alt="Countdown" />
+            </td>
+          </tr>
+          <tr class="mobile-version">
+            <td>
               <img src="{{countdownUrl}}" alt="Countdown" />
             </td>
           </tr>
@@ -118,7 +148,7 @@
     <mj-section>
       <mj-column>
         <mj-button
-          width="352px"
+          padding="0px 0px 0px 0px"
           height="80px"
           font-weight="700"
           font-size="28px"

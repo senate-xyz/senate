@@ -12,7 +12,36 @@
   </mj-head>
   <mj-body width="720px" background-color="white">
     <mj-section css-class="desktop-version" />
-    <mj-section full-width="full-width" padding="0 0 0 0">
+    <mj-section css-class="mobile-version">
+      <mj-column background-color="black">
+        <mj-image
+          padding="15px 0px 15px 0px"
+          width="32px"
+          height="32px"
+          src="https://senatelabs.xyz/assets/Senate_Logo/64/White.png"
+        ></mj-image>
+      </mj-column>
+      <mj-column background-color="black" width="70%">
+        <mj-text
+          padding="0px 0px 0px 25px"
+          color="white"
+          font-size="22px"
+          font-family="sans-serif"
+          font-weight="600"
+          >Senate Daily Bulletin</mj-text
+        >
+        <mj-text
+          padding="0px 0px 25px 25px"
+          color="white"
+          font-size="13px"
+          color="#555555"
+          font-family="sans-serif"
+          >{{todaysDate}}</mj-text
+        >
+      </mj-column>
+    </mj-section>
+
+    <mj-section css-class="desktop-version">
       <mj-column width="64px" background-color="black">
         <mj-image
           padding="0 0 0 0"
