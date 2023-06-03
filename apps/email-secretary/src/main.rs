@@ -53,12 +53,10 @@ async fn main() {
     let client_for_bulletin: Arc<PrismaClient> = Arc::clone(&client);
     let bulletin_task = tokio::task::spawn(async move {
         loop {
-            // send_bulletin_emails(&client_for_bulletin).await;
-
-            //let now = Utc::now();
-            // if now.hour() == 8 {
-            //     send_bulletin_emails(&client_for_bulletin).await;
-            // }
+            let now = Utc::now();
+            if now.hour() == 8 {
+                send_bulletin_emails(&client_for_bulletin).await;
+            }
 
             sleep(Duration::from_secs(60)).await;
         }
