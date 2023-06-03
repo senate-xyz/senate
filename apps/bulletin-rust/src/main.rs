@@ -230,7 +230,7 @@ async fn fetch_users_to_be_notified(
         .find_many(vec![
             user::verifiedemail::equals(true),
             user::emaildailybulletin::equals(true),
-            user::subscriptions::some(vec![subscription::notificationsenabled::equals(true)]),
+            user::subscriptions::some(vec![subscription::some()]),
         ])
         .include(user_with_proxies_and_subscriptions::include())
         .exec()
@@ -372,19 +372,19 @@ async fn format_email_template_row(
         format!(
             "{}{}",
             env::var("NEXT_PUBLIC_WEB_URL").unwrap(),
-            "/assets/Icon/Voted.png"
+            "/assets/Emails/voted.png"
         )
     } else if &BulletinSection::Past == section {
         format!(
             "{}{}",
             env::var("NEXT_PUBLIC_WEB_URL").unwrap(),
-            "/assets/Icon/DidntVote.png"
+            "/assets/Emails/did-not-vote.png"
         )
     } else {
         format!(
             "{}{}",
             env::var("NEXT_PUBLIC_WEB_URL").unwrap(),
-            "/assets/Icon/NotVotedYet.png"
+            "/assets/not-voted-yet.png"
         )
     };
 
@@ -399,13 +399,13 @@ async fn format_email_template_row(
         format!(
             "{}{}",
             env::var("NEXT_PUBLIC_WEB_URL").unwrap(),
-            "/assets/Chain/Snapshot/snapshot.png"
+            "/assets/Emails/off-chain.png"
         )
     } else {
         format!(
             "{}{}",
             env::var("NEXT_PUBLIC_WEB_URL").unwrap(),
-            "/assets/Chain/Ethereum/eth.png"
+            "/assets/Emails/on-chain.png"
         )
     };
 
@@ -473,7 +473,7 @@ fn format_result(proposal: &proposal_w_dao, highest_score: HighestScore) -> Bull
                 passed_icon_url: format!(
                     "{}{}",
                     env::var("NEXT_PUBLIC_WEB_URL").unwrap(),
-                    "/assets/Icon/VoteIcon-Check.png"
+                    "/assets/Emails/check.png"
                 ),
                 highest_score_choice: "Passed".to_string(),
                 highest_score_support: highest_score.support / 1e18,
@@ -486,7 +486,7 @@ fn format_result(proposal: &proposal_w_dao, highest_score: HighestScore) -> Bull
                 passed_icon_url: format!(
                     "{}{}",
                     env::var("NEXT_PUBLIC_WEB_URL").unwrap(),
-                    "/assets/Icon/VoteIcon-Cross.png"
+                    "/assets/Emails/cross.png"
                 ),
                 highest_score_choice: "Did not pass".to_string(),
                 highest_score_support: highest_score.support / 1e18,
@@ -501,7 +501,7 @@ fn format_result(proposal: &proposal_w_dao, highest_score: HighestScore) -> Bull
                 passed_icon_url: format!(
                     "{}{}",
                     env::var("NEXT_PUBLIC_WEB_URL").unwrap(),
-                    "/assets/Icon/VoteIcon-Check.png"
+                    "/assets/Emails/check.png"
                 ),
                 highest_score_choice: highest_score.choice,
                 highest_score_support: highest_score.support,
@@ -514,7 +514,7 @@ fn format_result(proposal: &proposal_w_dao, highest_score: HighestScore) -> Bull
                 passed_icon_url: format!(
                     "{}{}",
                     env::var("NEXT_PUBLIC_WEB_URL").unwrap(),
-                    "/assets/Icon/VoteIcon-Cross.png"
+                    "/assets/Emails/cross.png"
                 ),
                 highest_score_choice: "No Quorum".to_string(),
                 highest_score_support: highest_score.support,
