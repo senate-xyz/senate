@@ -34,7 +34,7 @@ pub async fn dydx_votes(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = dydxgov::dydxgov::dydxgov::new(address, ctx.client.clone());
+    let gov_contract = dydxgov::dydxgov::dydxgov::new(address, ctx.rpc.clone());
 
     let voters_addresses: Vec<H256> = voters
         .clone()

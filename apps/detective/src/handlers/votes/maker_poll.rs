@@ -36,8 +36,7 @@ pub async fn makerpoll_votes(
         .parse::<Address>()
         .expect("bad address");
 
-    let gov_contract =
-        makerpollvote::makerpollvote::makerpollvote::new(address, ctx.client.clone());
+    let gov_contract = makerpollvote::makerpollvote::makerpollvote::new(address, ctx.rpc.clone());
 
     let voters_addresses: Vec<H256> = voters
         .clone()

@@ -21,11 +21,6 @@
       "cache": false
     },
 
-    "build:sanity": {
-      "dependsOn": ["^build:db", "^build:axiom"],
-      "cache": false
-    },
-
     "build:detective": {
       "dependsOn": ["^db:generate"],
       "cache": false
@@ -103,7 +98,6 @@
     "start:senate": {},
     "start:shortie": {},
     "start:bulletin": {},
-    "start:sanity": {},
     "start:quorum-email": {},
 
     "dev": { "dependsOn": ["^db:generate", "^build:db", "^build:axiom"] },
@@ -111,9 +105,6 @@
       "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
     },
     "dev:bulletin": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
-    },
-    "dev:sanity": {
       "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
     },
 

@@ -8,6 +8,8 @@ pub mod prisma;
 mod router;
 pub mod utils {
     pub mod etherscan;
+    pub mod maker_polls_sanity;
+    pub mod snapshot_sanity;
 }
 use crate::router::{
     chain_proposals::update_chain_proposals,
@@ -23,6 +25,7 @@ use ethers::providers::{Http, Provider};
 use prisma::PrismaClient;
 
 use serde::{Deserialize, Serialize};
+use utils::{maker_polls_sanity::maker_polls_sanity_check, snapshot_sanity::snapshot_sanity_check};
 
 #[macro_use]
 extern crate rocket;
@@ -30,7 +33,7 @@ extern crate rocket;
 #[derive(Clone)]
 pub struct Context {
     pub db: Arc<PrismaClient>,
-    pub client: Arc<Provider<Http>>,
+    pub rpc: Arc<Provider<Http>>,
 }
 pub type Ctx = rocket::State<Context>;
 
@@ -92,15 +95,29 @@ async fn rocket() -> _ {
     };
 
     let provider = Provider::<Http>::try_from(rpc_url).unwrap();
-    let client = Arc::new(provider);
+    let rpc = Arc::new(provider);
     let db = Arc::new(
         prisma::new_client()
             .await
             .expect("Failed to create Prisma client"),
     );
 
+    let context = Context {
+        db: db.clone(),
+        rpc: rpc.clone(),
+    };
+
+    tokio::spawn(async move {
+        let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(5 * 60));
+        loop {
+            interval.tick().await;
+            maker_polls_sanity_check(Arc::clone(&context.db), Arc::clone(&context.rpc)).await;
+            snapshot_sanity_check(Arc::clone(&context.db)).await;
+        }
+    });
+
     rocket::build()
-        .manage(Context { db, client })
+        .manage(Context { db, rpc })
         .mount("/", routes![index])
         .mount(
             "/proposals",
