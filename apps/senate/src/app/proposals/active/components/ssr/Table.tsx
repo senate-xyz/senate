@@ -222,7 +222,6 @@ export default async function Table(props: {
         <div className={`mt-[16px] flex flex-col`}>
             <div className='flex w-full flex-col lg:hidden'>
                 {proposals.map((proposal, index) => (
-                    /* @ts-expect-error Server Component */
                     <MobileActiveProposal key={index} proposal={proposal} />
                 ))}
             </div>
@@ -263,7 +262,6 @@ export default async function Table(props: {
 
                     <tbody>
                         {proposals.map((proposal, index) => (
-                            /* @ts-expect-error Server Component */
                             <ActiveProposal key={index} proposal={proposal} />
                         ))}
                     </tbody>

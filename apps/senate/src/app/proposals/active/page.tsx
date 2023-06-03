@@ -85,7 +85,6 @@ export default async function Home({
 
             <Filters subscriptions={subscripions} proxies={proxies} />
 
-            {/* @ts-expect-error Server Component */}
             <Table
                 from={searchParams?.from}
                 end={searchParams?.end}
