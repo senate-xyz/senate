@@ -16,6 +16,9 @@
     "prettier": "cargo fmt",
     "prettier:fix": "cargo fmt",
     "db:generate": "cargo generate",
-    "update": "cargo upgrade && cargo update"
+    "update": "cargo upgrade && cargo update",
+    "mjml": "yarn mjml-layouts && yarn mjml-templates",
+    "mjml-layouts": "mjml mjml/layouts/senate.mjml --config.minify -o mjml/layouts/senate.html && mjml mjml/layouts/aave.mjml --config.minify -o mjml/layouts/aave.html && mjml mjml/layouts/uniswap.mjml --config.minify -o mjml/layouts/uniswap.html",
+    "mjml-templates": "mjml mjml/templates/senate-quorum.mjml --config.minify -o mjml/templates/senate-quorum.html && mjml mjml/templates/aave-quorum.mjml --config.minify -o mjml/templates/aave-quorum.html && mjml mjml/templates/uniswap-quorum.mjml --config.minify -o mjml/templates/uniswap-quorum.html && mjml mjml/templates/bulletin.mjml --config.minify -o mjml/templates/bulletin.html"
   }
 }
