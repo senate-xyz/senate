@@ -82,7 +82,9 @@
           font-family="sans-serif"
         >
           If the button does not work, here's a direct link to it:
-          <mj-raw><a href="{{url}}">{{url}}</a></mj-raw>
+        </mj-text>
+        <mj-text
+          ><mj-raw><a href="{{url}}">{{url}}</a></mj-raw>
         </mj-text>
       </mj-column>
     </mj-section>
