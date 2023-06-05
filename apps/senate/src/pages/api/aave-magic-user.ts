@@ -42,11 +42,19 @@ export default async function handler(
                 }
             })
 
-            emailClient.sendEmail({
+            emailClient.sendEmailWithTemplate({
                 From: 'info@senatelabs.xyz',
                 To: String(existingUser.email),
-                Subject: 'Confirm your subscription',
-                TextBody: `Confirm your subscription to Aave : ${process.env.NEXT_PUBLIC_WEB_URL}/verify/subscribe-discourse/aave/${challengeCode}`
+                TemplateAlias: 'aave-confirm',
+                TemplateModel: {
+                    todaysDate: new Date().toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    }),
+                    url: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/subscribe-discourse/aave/${challengeCode}`
+                }
             })
 
             res.status(200).json({
@@ -65,11 +73,19 @@ export default async function handler(
                 }
             })
 
-            emailClient.sendEmail({
+            emailClient.sendEmailWithTemplate({
                 From: 'info@senatelabs.xyz',
                 To: String(existingUser.email),
-                Subject: 'Verify your email first!',
-                TextBody: `Ooops, you wanted to subscribe to Aave but your email is not yet verified. Verify your email first and then try subscribing again! \n${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
+                TemplateAlias: 'senate-confirm',
+                TemplateModel: {
+                    todaysDate: new Date().toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    }),
+                    url: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
+                }
             })
 
             res.status(200).json({
@@ -100,11 +116,19 @@ export default async function handler(
             }
         })
 
-        emailClient.sendEmail({
+        emailClient.sendEmailWithTemplate({
             From: 'info@senatelabs.xyz',
             To: String(newUser.email),
-            Subject: 'Confirm your email',
-            TextBody: `Signup to Aave with Senate: ${process.env.NEXT_PUBLIC_WEB_URL}/verify/signup-discourse/aave/${challengeCode}`
+            TemplateAlias: 'aave-validate',
+            TemplateModel: {
+                todaysDate: new Date().toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                url: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/signup-discourse/aave/${challengeCode}`
+            }
         })
 
         res.status(200).json({
