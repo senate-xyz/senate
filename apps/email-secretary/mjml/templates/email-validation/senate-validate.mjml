@@ -65,7 +65,7 @@
           line-height="34px"
           background-color="black"
           color="white"
-          href="{{voteUrl}}"
+          href="{{url}}"
         >
           Confirm email
         </mj-button>

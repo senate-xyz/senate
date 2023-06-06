@@ -150,11 +150,19 @@ export const accountSettingsRouter = router({
             data: { challengecode: challengeCode, verifiedemail: false }
         })
 
-        await emailClient.sendEmail({
+        emailClient.sendEmailWithTemplate({
             From: 'info@senatelabs.xyz',
             To: String(user.email),
-            Subject: 'Confirm your email',
-            TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
+            TemplateAlias: 'senate-confirm',
+            TemplateModel: {
+                todaysDate: new Date().toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                url: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
+            }
         })
 
         return user

@@ -60,7 +60,7 @@
           background-color="#FFEFF5"
           color="#FB118E"
           border="4px solid #FB118E;"
-          href="{{voteUrl}}"
+          href="{{url}}"
         >
           Confirm email
         </mj-button>
