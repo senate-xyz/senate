@@ -185,17 +185,6 @@ pub async fn dispatch_ended_proposal_notifications(
                             println!("ended error: {}", e)
                         }
                     }
-                } else {
-                    client
-                        .notification()
-                        .delete(notification::userid_proposalid_type(
-                            ended_notification.userid,
-                            ended_notification.proposalid,
-                            NotificationType::EndedProposalTelegram,
-                        ))
-                        .exec()
-                        .await
-                        .unwrap();
                 }
             }
             None => {}

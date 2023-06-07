@@ -235,17 +235,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 .unwrap();
                         }
                     }
-                } else {
-                    client
-                        .notification()
-                        .delete(notification::userid_proposalid_type(
-                            ended_notification.userid,
-                            ended_notification.proposalid,
-                            NotificationType::EndedProposalDiscord,
-                        ))
-                        .exec()
-                        .await
-                        .unwrap();
                 }
             }
             None => {}

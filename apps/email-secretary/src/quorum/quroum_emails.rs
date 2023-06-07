@@ -127,29 +127,31 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             voteUrl: short_url,
         };
 
-        let client = reqwest::Client::new();
-        let mut headers = HeaderMap::new();
-        headers.insert(ACCEPT, "application/json".parse().unwrap());
-        headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
-        headers.insert(
-            "X-Postmark-Server-Token",
-            env::var("POSTMARK_TOKEN")
-                .expect("Missing Postmark Token")
-                .parse()
-                .unwrap(),
-        );
-        client
-            .post("https://api.postmarkapp.com/email/withTemplate")
-            .headers(headers)
-            .json(&EmailBody {
-                To: user.email.unwrap(),
-                From: "info@senatelabs.xyz".to_string(),
-                TemplateAlias: quorum_template.to_string(),
-                TemplateModel: data.clone(),
-            })
-            .send()
-            .await
-            .unwrap();
+        if user.email.is_some() {
+            let client = reqwest::Client::new();
+            let mut headers = HeaderMap::new();
+            headers.insert(ACCEPT, "application/json".parse().unwrap());
+            headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
+            headers.insert(
+                "X-Postmark-Server-Token",
+                env::var("POSTMARK_TOKEN")
+                    .expect("Missing Postmark Token")
+                    .parse()
+                    .unwrap(),
+            );
+            client
+                .post("https://api.postmarkapp.com/email/withTemplate")
+                .headers(headers)
+                .json(&EmailBody {
+                    To: user.email.unwrap(),
+                    From: "info@senatelabs.xyz".to_string(),
+                    TemplateAlias: quorum_template.to_string(),
+                    TemplateModel: data.clone(),
+                })
+                .send()
+                .await
+                .unwrap();
+        }
 
         let _ = db
             .notification()

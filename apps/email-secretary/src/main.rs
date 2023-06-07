@@ -25,7 +25,7 @@ use dotenv::dotenv;
 use tokio::try_join;
 
 use crate::{
-    bulletin::bulletin_emails::send_bulletin_emails,
+    bulletin::bulletin_emails::{send_bulletin_emails, send_triggered_emails},
     prisma::PrismaClient,
     quorum::quroum_emails::send_quorum_email,
 };
@@ -53,6 +53,8 @@ async fn main() {
     let client_for_bulletin: Arc<PrismaClient> = Arc::clone(&client);
     let bulletin_task = tokio::task::spawn(async move {
         loop {
+            send_triggered_emails(&client_for_bulletin).await;
+
             let now = Utc::now();
             if now.hour() == 8 {
                 send_bulletin_emails(&client_for_bulletin).await;

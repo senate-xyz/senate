@@ -12,6 +12,7 @@ export {
     type subscription as Subscription,
     type dao as DAO,
     type user as User,
+    NotificationType,
     RefreshStatus,
     DAOHandlerType,
     ProposalState,

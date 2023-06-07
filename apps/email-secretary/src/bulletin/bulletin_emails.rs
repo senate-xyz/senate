@@ -8,7 +8,16 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use crate::{
-    prisma::{self, proposal, user, DaoHandlerType, MagicUserState, ProposalState},
+    prisma::{
+        self,
+        notification,
+        proposal::{self},
+        user,
+        DaoHandlerType,
+        MagicUserState,
+        NotificationType,
+        ProposalState,
+    },
     utils::{countdown::countdown_gif, vote::get_vote},
 };
 
@@ -87,6 +96,44 @@ struct NormalResult {
 struct MakerResult {
     choiceName: String,
     mkrAmount: i64,
+}
+
+pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
+    let notifications = db
+        .notification()
+        .find_many(vec![
+            notification::r#type::equals(NotificationType::TriggerBulletinEmail),
+            notification::dispatched::equals(false),
+        ])
+        .exec()
+        .await
+        .unwrap();
+
+    for notification in notifications {
+        let user = db
+            .user()
+            .find_first(vec![user::id::equals(notification.clone().userid)])
+            .include(user_with_voters_and_subscriptions::include())
+            .exec()
+            .await
+            .unwrap()
+            .unwrap();
+
+        send_bulletin(user, &db).await.unwrap();
+
+        db.notification()
+            .update(
+                notification::userid_proposalid_type(
+                    notification.userid,
+                    notification.proposalid,
+                    notification.r#type,
+                ),
+                vec![notification::dispatched::set(true)],
+            )
+            .exec()
+            .await
+            .unwrap();
+    }
 }
 
 pub async fn send_bulletin_emails(db: &Arc<prisma::PrismaClient>) {
