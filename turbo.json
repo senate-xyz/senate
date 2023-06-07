@@ -80,7 +80,6 @@
         "BULLETIN_CRON_INTERVAL",
         "POSTMARK_TOKEN",
         "VOTING_COUNTDOWN_TOKEN",
-        "TEST_EMAIL",
         "BULLETIN_BCC_EMAILS"
       ]
     },
