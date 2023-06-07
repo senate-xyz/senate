@@ -80,7 +80,7 @@ export default function Home() {
                             Testing stuff
                         </div>
                         <div
-                            className='w-max bg-red-400 p-2 text-white'
+                            className='w-max cursor-pointer bg-red-400 p-2 text-white'
                             onClick={() => {
                                 deleteUser.mutate(void 0, {
                                     onSuccess: () => {
