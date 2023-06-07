@@ -155,9 +155,5 @@ export const testingRouter = router({
                 type: NotificationType.TRIGGER_BULLETIN_EMAIL
             }
         })
-
-        await prisma.notification.deleteMany({
-            where: { userid: user?.id }
-        })
     })
 })

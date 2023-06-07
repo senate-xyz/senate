@@ -87,6 +87,7 @@ export default function Home() {
                         <div className='font-bold text-white'>
                             Testing stuff
                         </div>
+                        <div /> <div />
                         <div
                             className='w-max cursor-pointer bg-red-400 p-2 text-white'
                             onClick={() => {
@@ -99,7 +100,7 @@ export default function Home() {
                         >
                             Delete my own user!
                         </div>
-
+                        <div /> <div />
                         <div className='text-white'>
                             Can take up to one minute
                         </div>
@@ -111,7 +112,6 @@ export default function Home() {
                         >
                             Send random quorum alert{' '}
                         </div>
-
                         <div
                             className='w-max cursor-pointer bg-red-400 p-2 text-white'
                             onClick={() => {
@@ -120,7 +120,6 @@ export default function Home() {
                         >
                             Send last proposal quorum alert{' '}
                         </div>
-
                         <div
                             className='w-max cursor-pointer bg-red-400 p-2 text-white'
                             onClick={() => {
@@ -129,7 +128,6 @@ export default function Home() {
                         >
                             Send last Aave proposal quorum alert
                         </div>
-
                         <div
                             className='w-max cursor-pointer bg-red-400 p-2 text-white'
                             onClick={() => {
@@ -138,7 +136,6 @@ export default function Home() {
                         >
                             Send last Uniswap proposal quorum alert
                         </div>
-
                         <div className='text-white'>
                             Because our backend service works on repeat every
                             minute and it must not repeat sending the same
@@ -150,7 +147,6 @@ export default function Home() {
                             You can delete all your saved, dispatched
                             notification with this button.
                         </div>
-
                         <div
                             className='w-max cursor-pointer bg-red-400 p-2 text-white'
                             onClick={() => {
@@ -159,7 +155,7 @@ export default function Home() {
                         >
                             Delete dispatched notifications
                         </div>
-
+                        <div /> <div />
                         <div
                             className='w-max cursor-pointer bg-red-400 p-2 text-white'
                             onClick={() => {
