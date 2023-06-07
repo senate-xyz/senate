@@ -172,29 +172,31 @@ async fn send_bulletin(
         "senate-bulletin"
     };
 
-    let client = reqwest::Client::new();
-    let mut headers = HeaderMap::new();
-    headers.insert(ACCEPT, "application/json".parse().unwrap());
-    headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
-    headers.insert(
-        "X-Postmark-Server-Token",
-        env::var("POSTMARK_TOKEN")
-            .expect("Missing Postmark Token")
-            .parse()
-            .unwrap(),
-    );
-    client
-        .post("https://api.postmarkapp.com/email/withTemplate")
-        .headers(headers)
-        .json(&EmailBody {
-            To: user_email,
-            From: "info@senatelabs.xyz".to_string(),
-            TemplateAlias: bulletin_template.to_string(),
-            TemplateModel: user_data.clone(),
-        })
-        .send()
-        .await
-        .unwrap();
+    if user.email.is_some() {
+        let client = reqwest::Client::new();
+        let mut headers = HeaderMap::new();
+        headers.insert(ACCEPT, "application/json".parse().unwrap());
+        headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
+        headers.insert(
+            "X-Postmark-Server-Token",
+            env::var("POSTMARK_TOKEN")
+                .expect("Missing Postmark Token")
+                .parse()
+                .unwrap(),
+        );
+        client
+            .post("https://api.postmarkapp.com/email/withTemplate")
+            .headers(headers)
+            .json(&EmailBody {
+                To: user_email,
+                From: "info@senatelabs.xyz".to_string(),
+                TemplateAlias: bulletin_template.to_string(),
+                TemplateModel: user_data.clone(),
+            })
+            .send()
+            .await
+            .unwrap();
+    }
 
     println!("{}", serde_json::to_string(&user_data).unwrap());
 
