@@ -32,6 +32,7 @@ pub async fn generate_ending_soon_notifications(
         NotificationType::SecondReminderTelegram => Duration::hours(6),
         NotificationType::ThirdReminderTelegram => todo!(),
         NotificationType::EndedProposalTelegram => todo!(),
+        NotificationType::TriggerBulletinEmail => todo!(),
     };
 
     let users = client

@@ -110,6 +110,7 @@ pub async fn dispatch_ending_soon_notifications(
             }
             NotificationType::ThirdReminderTelegram => todo!(),
             NotificationType::EndedProposalTelegram => todo!(),
+            NotificationType::TriggerBulletinEmail => todo!(),
         };
 
         let message = bot

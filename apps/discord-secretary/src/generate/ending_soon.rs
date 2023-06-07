@@ -31,6 +31,7 @@ pub async fn generate_ending_soon_notifications(
         NotificationType::SecondReminderTelegram => todo!(),
         NotificationType::ThirdReminderTelegram => todo!(),
         NotificationType::EndedProposalTelegram => todo!(),
+        NotificationType::TriggerBulletinEmail => todo!(),
     };
 
     let users = client
