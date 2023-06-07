@@ -77,6 +77,7 @@
     "ct3aMetadata": {
         "initVersion": "5.13.1"
     },
-    "readme": "ERROR: No README data found!",
-    "_id": "@senate/web@0.1.0"
+    "engines": {
+        "node": ">=16.20.0"
+    }
 }
