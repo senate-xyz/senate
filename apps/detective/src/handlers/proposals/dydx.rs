@@ -193,12 +193,19 @@ struct IpfsData {
 async fn get_title(hexhash: String) -> Result<String> {
     let client = Client::new();
     let mut retries = 0;
+    let mut current_gateway = 0;
+
+    let gateways = vec![
+        "https://cloudflare-ipfs.com/ipfs/",
+        "https://gateway.pinata.cloud/ipfs/",
+        "https://4everland.io/ipfs/",
+    ];
 
     loop {
         let response = client
             .get(format!(
-                "https://cloudflare-ipfs.com/ipfs/f01701220{}",
-                hexhash
+                "{}/f01701220{}",
+                gateways[current_gateway], hexhash
             ))
             .timeout(Duration::from_secs(10))
             .send()
@@ -213,6 +220,13 @@ async fn get_title(hexhash: String) -> Result<String> {
                     },
                 };
                 return Ok(ipfs_data.title);
+            }
+            _ if retries % 5 == 0 => {
+                if current_gateway < gateways.len() - 2 {
+                    current_gateway = current_gateway + 1;
+                } else {
+                    current_gateway = 0;
+                }
             }
             _ if retries < 15 => {
                 retries += 1;
