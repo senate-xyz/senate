@@ -159,7 +159,7 @@ async fn send_bulletin(
     db: &Arc<prisma::PrismaClient>,
 ) -> Result<bool> {
     let user_data = get_user_bulletin_data(user.clone(), db).await?;
-    let user_email = user.email.unwrap();
+
     let bulletin_template = if user.isaaveuser == MagicUserState::Enabled
         && user.isuniswapuser == MagicUserState::Enabled
     {
@@ -173,6 +173,7 @@ async fn send_bulletin(
     };
 
     if user.email.is_some() {
+        let user_email = user.email.unwrap();
         let client = reqwest::Client::new();
         let mut headers = HeaderMap::new();
         headers.insert(ACCEPT, "application/json".parse().unwrap());
