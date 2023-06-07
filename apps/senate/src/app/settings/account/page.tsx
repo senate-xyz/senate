@@ -1,16 +1,21 @@
 'use client'
 
 import { useAccountModal } from '@rainbow-me/rainbowkit'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useAccount } from 'wagmi'
 import NotConnected from './components/csr/NotConnected'
 import UserAddress from './components/csr/UserAddress'
 import Link from 'next/link'
+import { trpc } from '../../../server/trpcClient'
 
 export default function Home() {
     const account = useAccount()
     const session = useSession()
     const { openAccountModal } = useAccountModal()
+
+    const featureFlags = trpc.public.featureFlags.useQuery()
+
+    const deleteUser = trpc.accountSettings.deleteUser.useMutation()
 
     return (
         <div className='flex min-h-screen flex-col gap-12'>
@@ -65,6 +70,26 @@ export default function Home() {
                                 Cookie Policy
                             </Link>
                             .
+                        </div>
+                    </div>
+                )}
+
+                {featureFlags.data?.includes('delete_user') && (
+                    <div className='flex flex-col gap-2'>
+                        <div className='font-bold text-white'>
+                            Testing stuff
+                        </div>
+                        <div
+                            className='w-max bg-red-400 p-2 text-white'
+                            onClick={() => {
+                                deleteUser.mutate(void 0, {
+                                    onSuccess: () => {
+                                        signOut()
+                                    }
+                                })
+                            }}
+                        >
+                            Delete my own user!
                         </div>
                     </div>
                 )}

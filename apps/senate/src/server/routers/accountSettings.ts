@@ -529,5 +529,20 @@ export const accountSettingsRouter = router({
         })
 
         return user
+    }),
+
+    deleteUser: privateProcedure.mutation(async ({ ctx }) => {
+        const username = await ctx.user.name
+
+        const user = await prisma.user.findFirst({
+            where: {
+                address: {
+                    equals: String(username)
+                }
+            }
+        })
+        await prisma.user.delete({
+            where: { id: user?.id }
+        })
     })
 })
