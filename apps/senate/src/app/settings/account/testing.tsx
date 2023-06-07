@@ -41,7 +41,7 @@ const Testing = () => {
                         randomQuorumAlert.mutate()
                     }}
                 >
-                    Send random quorum alert{' '}
+                    Send random quorum alert
                 </div>
                 <div
                     className='w-max cursor-pointer bg-red-400 p-2 text-white'
@@ -49,7 +49,7 @@ const Testing = () => {
                         lastQuorumAlert.mutate()
                     }}
                 >
-                    Send last proposal quorum alert{' '}
+                    Send last proposal quorum alert
                 </div>
                 <div
                     className='w-max cursor-pointer bg-red-400 p-2 text-white'

@@ -34,8 +34,11 @@ export const testingRouter = router({
         const username = await ctx.user.name
 
         const firstProposal = await prisma.proposal.findFirst({
+            where: {
+                state: 'ACTIVE'
+            },
             orderBy: {
-                timeend: 'desc'
+                timeend: 'asc'
             }
         })
 
@@ -62,10 +65,11 @@ export const testingRouter = router({
             where: {
                 dao: {
                     name: 'Aave'
-                }
+                },
+                state: 'ACTIVE'
             },
             orderBy: {
-                timeend: 'desc'
+                timeend: 'asc'
             }
         })
 
@@ -92,10 +96,11 @@ export const testingRouter = router({
             where: {
                 dao: {
                     name: 'Uniswap'
-                }
+                },
+                state: 'ACTIVE'
             },
             orderBy: {
-                timeend: 'desc'
+                timeend: 'asc'
             }
         })
 
