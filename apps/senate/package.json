@@ -78,6 +78,6 @@
         "initVersion": "5.13.1"
     },
     "engines": {
-        "node": ">=16.20.0"
+        "node": "18"
     }
 }
