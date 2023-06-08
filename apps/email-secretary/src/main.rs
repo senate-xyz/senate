@@ -56,7 +56,7 @@ async fn main() {
             send_triggered_emails(&client_for_bulletin).await;
 
             let now = Utc::now();
-            if now.hour() == 8 {
+            if now.hour() == 8 && now.minute() == 0 {
                 send_bulletin_emails(&client_for_bulletin).await;
             }
 
