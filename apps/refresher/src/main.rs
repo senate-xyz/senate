@@ -15,17 +15,14 @@ mod consume_queue;
 mod produce_queue;
 
 use crate::produce_queue::{
-    chain_proposals::produce_chain_proposals_queue,
-    chain_votes::produce_chain_votes_queue,
+    chain_proposals::produce_chain_proposals_queue, chain_votes::produce_chain_votes_queue,
     snapshot_proposals::produce_snapshot_proposals_queue,
     snapshot_votes::produce_snapshot_votes_queue,
 };
 
 use crate::consume_queue::{
-    chain_proposals::consume_chain_proposals,
-    chain_votes::consume_chain_votes,
-    snapshot_proposals::consume_snapshot_proposals,
-    snapshot_votes::consume_snapshot_votes,
+    chain_proposals::consume_chain_proposals, chain_votes::consume_chain_votes,
+    snapshot_proposals::consume_snapshot_proposals, snapshot_votes::consume_snapshot_votes,
 };
 
 use config::{load_config_from_db, CONFIG};
