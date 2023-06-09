@@ -3,7 +3,7 @@
 import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit'
 import { signOut, useSession } from 'next-auth/react'
 import { redirect, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { disconnect } from '@wagmi/core'
 import { trpc } from '../../../server/trpcClient'
@@ -57,15 +57,19 @@ const WalletConnect = () => {
     //     if (!cookie.hasSeenLanding && router) router.push('/landing')
     // }, [cookie])
 
+    const [modalOpened, setModalOpened] = useState(false)
+
     useEffect(() => {
         if (
             searchParams?.has('connect') &&
             openConnectModal &&
-            account.isDisconnected
+            account.isDisconnected &&
+            !modalOpened
         ) {
+            setModalOpened(true)
             openConnectModal()
         }
-    }, [openConnectModal, searchParams])
+    }, [openConnectModal, searchParams, account])
 
     return (
         <div>
