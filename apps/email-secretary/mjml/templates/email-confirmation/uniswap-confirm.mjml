@@ -69,12 +69,6 @@
 
     <mj-section>
       <mj-column>
-        <mj-divider
-          border-width="1px"
-          border-style="solid"
-          border-color="lightgrey"
-        />
-
         <mj-text
           align="left"
           font-size="13px"

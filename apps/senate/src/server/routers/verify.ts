@@ -73,7 +73,7 @@ export const verifyRouter = router({
                     }
                 })
 
-                if (addressUser.isaaveuser == 'VERIFICATION') {
+                if (emailUser.isaaveuser == 'VERIFICATION') {
                     const aave = await prisma.dao.findFirstOrThrow({
                         where: {
                             name: {
@@ -92,7 +92,7 @@ export const verifyRouter = router({
                     })
                 }
 
-                if (addressUser.isuniswapuser == 'VERIFICATION') {
+                if (emailUser.isuniswapuser == 'VERIFICATION') {
                     const uniswap = await prisma.dao.findFirstOrThrow({
                         where: {
                             name: {

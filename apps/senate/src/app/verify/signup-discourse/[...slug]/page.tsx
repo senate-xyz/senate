@@ -38,12 +38,6 @@ export default async function Page({ params }) {
                     Please connect your wallet and sign the message
                 </p>
                 <VerifyButton challenge={String(params.slug[1])} />
-                <Link
-                    className='text-xl font-thin text-white underline'
-                    href='/daos'
-                >
-                    Go back home
-                </Link>
             </div>
         )
     }
