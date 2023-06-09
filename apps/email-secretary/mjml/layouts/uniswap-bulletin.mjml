@@ -21,7 +21,7 @@
     <mj-section css-class="desktop-version"></mj-section>
     <mj-section css-class="uniswap-background mobile-version square-corners">
       <mj-group>
-        <mj-column width="20%">
+        <mj-column vertical-align="middle" width="20%">
           <mj-image
             padding="0px 0px 0px 0px"
             width="48px"
@@ -29,9 +29,9 @@
             src="https://senatelabs.xyz/assets/Emails/uniswap-logo.png"
           ></mj-image>
         </mj-column>
-        <mj-column>
+        <mj-column vertical-align="middle" padding="0px 10px">
           <mj-text
-            padding="0px 0px 0px 10px"
+            padding="0"
             color="white"
             font-size="22px"
             font-family="sans-serif"
@@ -39,7 +39,7 @@
             >Uniswap Proposals</mj-text
           >
           <mj-text
-            padding="0px 0px 0px 10px"
+            padding="0"
             color="white"
             font-size="13px"
             font-family="sans-serif"
