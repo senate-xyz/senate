@@ -1,0 +1,109 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial"></mj-all>
+    </mj-attributes>
+    <mj-style
+      >@media only screen and (min-width: 480px) { .desktop-version { display:
+      block !important; } .mobile-version { display: none !important; } } @media
+      only screen and (max-width: 479px) { .desktop-version { display: none
+      !important; } .mobile-version { display: block !important; } }</mj-style
+    >
+    <mj-style inline="inline"
+      >.uniswap-background { background: linear-gradient(53.9deg, rgba(233, 51,
+      122, 0.25) -0.34%, rgba(251, 198, 219, 0.25) 90.27%), #482731; max-width:
+      680px; display:flex; align-items:center;}
+    </mj-style>
+    <mj-style inline="inline">.rounded-corners { border-radius: 6px;}</mj-style>
+    <mj-style inline="inline">.square-corners { border-radius: 0px;}</mj-style>
+  </mj-head>
+  <mj-body width="680px" background-color="white">
+    <mj-section css-class="desktop-version"></mj-section>
+    <mj-section css-class="uniswap-background mobile-version square-corners">
+      <mj-group>
+        <mj-column width="20%">
+          <mj-image
+            padding="0px 0px 0px 0px"
+            width="48px"
+            height="48px"
+            src="https://senatelabs.xyz/assets/Emails/uniswap-logo.png"
+          ></mj-image>
+        </mj-column>
+        <mj-column>
+          <mj-text
+            padding="0px 0px 0px 10px"
+            color="white"
+            font-size="22px"
+            font-family="sans-serif"
+            font-weight="600"
+            >Uniswap Proposals</mj-text
+          >
+          <mj-text
+            padding="0px 0px 0px 10px"
+            color="white"
+            font-size="13px"
+            font-family="sans-serif"
+            >{{todaysDate}}</mj-text
+          >
+        </mj-column>
+      </mj-group>
+    </mj-section>
+
+    <mj-section css-class="uniswap-background desktop-version rounded-corners">
+      <mj-column width="80px">
+        <mj-image
+          padding="20px 0 0 0"
+          width="80px"
+          height="80px"
+          src="https://senatelabs.xyz/assets/Emails/uniswap-logo.png"
+        ></mj-image>
+      </mj-column>
+      <mj-column width="70%">
+        <mj-text
+          padding="30px 0px 0px 10px"
+          color="white"
+          font-size="32px"
+          font-family="sans-serif"
+          font-weight="600"
+          >Uniswap Proposals</mj-text
+        >
+        <mj-text
+          padding="5px 0px 0px 10px"
+          color="white"
+          font-size="14px"
+          font-family="sans-serif"
+          >{{todaysDate}}</mj-text
+        >
+      </mj-column>
+    </mj-section>
+
+    <mj-raw> {{{ @content }}} </mj-raw>
+
+    <mj-section>
+      <mj-column
+        background-color="black"
+        width="680px"
+        padding="30px 30px 30px 30px"
+      >
+        <mj-text
+          align="center"
+          font-size="15px"
+          font-family="sans-serif"
+          color="white"
+          >To keep up with all proposals from the DAOs you are interested in,
+          check out the Senate app, where you can follow the most important
+          DAOs, get notified when they launch new proposals and much
+          more.</mj-text
+        >
+        <mj-button
+          font-family="Helvetica"
+          background-color="white"
+          color="black"
+          border-radius="0px"
+          href="https://senatelabs.xyz"
+          >Enter the Senate</mj-button
+        >
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
