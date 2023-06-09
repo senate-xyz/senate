@@ -33,7 +33,7 @@
   </mj-head>
   <mj-body background-color="white">
     <mj-section padding="10px 0" background-color="white">
-      <mj-column width="100%">
+      <mj-column>
         <mj-text
           align="left"
           font-size="30px"
@@ -58,8 +58,8 @@
 
     <mj-raw>{{#endingSoonProposals}}</mj-raw>
     <mj-section background-color="white" padding="4px 0">
-      <mj-column width="100%">
-        <mj-table width="100%" cellpadding="4px">
+      <mj-column>
+        <mj-table cellpadding="4px">
           <tr style="border-bottom: 1px solid #ecedee">
             <th width="50px" style="text-align: start">DAO</th>
             <th width="30%" style="text-align: start">Proposal</th>
@@ -145,11 +145,7 @@
 
     <mj-raw> {{^ endingSoonProposals}}</mj-raw>
     <mj-section padding="0px 24px">
-      <mj-column
-        width="100%"
-        background-color="black"
-        padding="30px 30px 30px 30px"
-      >
+      <mj-column background-color="black" padding="30px 30px 30px 30px">
         <mj-text
           align="center"
           font-size="15px"
@@ -163,7 +159,7 @@
     <mj-raw> {{/endingSoonProposals}}</mj-raw>
 
     <mj-section padding="20px 0" background-color="white">
-      <mj-column width="100%">
+      <mj-column>
         <mj-text
           align="left"
           font-size="30px"
@@ -188,8 +184,8 @@
 
     <mj-raw>{{#newProposals}}</mj-raw>
     <mj-section background-color="white" padding="4px 0">
-      <mj-column width="100%">
-        <mj-table width="100%" cellpadding="4px">
+      <mj-column>
+        <mj-table cellpadding="4px">
           <tr style="border-bottom: 1px solid #ecedee">
             <th width="50px" style="text-align: start">DAO</th>
             <th width="30%" style="text-align: start">Proposal</th>
@@ -275,11 +271,7 @@
 
     <mj-raw> {{^ newProposals}}</mj-raw>
     <mj-section padding="0px 24px">
-      <mj-column
-        width="100%"
-        background-color="black"
-        padding="30px 30px 30px 30px"
-      >
+      <mj-column background-color="black" padding="30px 30px 30px 30px">
         <mj-text
           align="center"
           font-size="15px"
@@ -293,7 +285,7 @@
     <mj-raw> {{/newProposals}}</mj-raw>
 
     <mj-section padding="20px 0" background-color="white">
-      <mj-column width="100%">
+      <mj-column>
         <mj-text
           align="left"
           font-size="30px"
@@ -318,8 +310,8 @@
 
     <mj-raw>{{#endedProposals}}</mj-raw>
     <mj-section background-color="white" padding="4px 0">
-      <mj-column width="100%">
-        <mj-table width="100%" cellpadding="4px">
+      <mj-column>
+        <mj-table cellpadding="4px">
           <tr style="border-bottom: 1px solid #ecedee">
             <th width="50px" style="text-align: start">DAO</th>
             <th width="40%" style="text-align: start">Proposal</th>
@@ -370,7 +362,7 @@
               >
                 <mj-raw>{{#hiddenResult}}</mj-raw>
                 <mj-raw>
-                  <table width="100%">
+                  <table>
                     <tr>
                       <td
                         style="display: flex; align-items: center; result-width"
@@ -397,7 +389,7 @@
                     </tr>
                   </table>
 
-                  <table width="100%">
+                  <table>
                     <tr>
                       <td>
                         <div
@@ -438,7 +430,7 @@
 
                 <mj-raw>{{#result}}</mj-raw>
                 <mj-raw>
-                  <table width="100%">
+                  <table>
                     <tr>
                       <td style="display: flex; align-items: center">
                         <img
@@ -463,7 +455,7 @@
                     </tr>
                   </table>
 
-                  <table width="100%">
+                  <table>
                     <tr>
                       <td>
                         <div
@@ -504,7 +496,7 @@
 
                 <mj-raw>{{#noqorum}}</mj-raw>
                 <mj-raw>
-                  <table width="100%">
+                  <table>
                     <tr>
                       <td style="display: flex; align-items: center">
                         <img
@@ -533,7 +525,7 @@
 
                 <mj-raw>{{#makerResult}}</mj-raw>
                 <mj-raw>
-                  <table width="100%">
+                  <table>
                     <tr>
                       <td style="display: flex; align-items: center">
                         <img
@@ -605,11 +597,7 @@
 
     <mj-raw> {{^ endedProposals}}</mj-raw>
     <mj-section padding="0px 24px">
-      <mj-column
-        width="100%"
-        background-color="black"
-        padding="30px 30px 30px 30px"
-      >
+      <mj-column background-color="black" padding="30px 30px 30px 30px">
         <mj-text
           align="center"
           font-size="15px"
