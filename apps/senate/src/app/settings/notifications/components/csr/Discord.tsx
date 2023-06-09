@@ -7,6 +7,8 @@ import { useAccount } from 'wagmi'
 import Image from 'next/image'
 
 const Discord = () => {
+    const [edit, setEdit] = useState(false)
+
     const [getDiscordNotifications, setDiscordNotifications] = useState(false)
     const [getDiscordReminders, setDiscordReminders] = useState(false)
     const [currentWebhook, setCurrentWebhook] = useState('')
@@ -39,7 +41,14 @@ const Discord = () => {
         trpc.accountSettings.updateDiscordReminders.useMutation()
 
     const onEnter = () => {
-        setDiscordWebhook.mutate({ url: currentWebhook })
+        setDiscordWebhook.mutate(
+            { url: currentWebhook },
+            {
+                onSuccess: () => {
+                    setEdit(false)
+                }
+            }
+        )
     }
 
     if (!user.data) return <></>
@@ -85,31 +94,58 @@ const Discord = () => {
                         <div className='text-[18px] font-light text-white'>
                             Discord webhook
                         </div>
-                        <div
-                            className={`flex h-[46px] max-w-[382px] flex-row items-center`}
-                        >
-                            <input
-                                className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
-                                value={currentWebhook}
-                                onChange={(e) => {
-                                    setCurrentWebhook(String(e.target.value))
-                                }}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') onEnter()
-                                }}
-                            />
-
+                        {edit || !user.data.discordwebhook ? (
                             <div
-                                className={`flex h-full w-[72px] cursor-pointer flex-col justify-center  ${
-                                    user.data?.discordwebhook == currentWebhook
-                                        ? 'bg-[#ABABAB] hover:bg-[#999999]'
-                                        : 'bg-white hover:bg-[#e5e5e5]'
-                                } text-center`}
-                                onClick={() => onEnter()}
+                                className={`flex h-[46px] max-w-[382px] flex-row items-center`}
                             >
-                                Save
+                                <input
+                                    className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
+                                    value={currentWebhook}
+                                    onChange={(e) => {
+                                        setCurrentWebhook(
+                                            String(e.target.value)
+                                        )
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') onEnter()
+                                    }}
+                                />
+
+                                <div
+                                    className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
+                                        user.data.discordwebhook?.includes(
+                                            'https'
+                                        )
+                                            ? user.data.discordwebhook ==
+                                              currentWebhook
+                                                ? 'bg-[#ABABAB] hover:bg-[#999999]'
+                                                : 'bg-white hover:bg-[#e5e5e5]'
+                                            : currentWebhook.length
+                                            ? 'bg-white hover:bg-[#e5e5e5]'
+                                            : 'bg-[#ABABAB] hover:bg-[#999999]'
+                                    } text-center`}
+                                    onClick={() => onEnter()}
+                                >
+                                    Save
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div
+                                className={`flex h-[46px] max-w-[382px] flex-col`}
+                            >
+                                <div className='truncate text-[18px] font-light text-[#D9D9D9]'>
+                                    {currentWebhook}
+                                </div>
+                                <div
+                                    className='cursor-pointer text-[15px] font-light text-[#ABABAB] underline'
+                                    onClick={() => {
+                                        setEdit(true)
+                                    }}
+                                >
+                                    Change Webhook
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className='flex max-w-[382px] flex-row items-center justify-between gap-4'>
