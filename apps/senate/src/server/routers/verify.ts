@@ -73,6 +73,44 @@ export const verifyRouter = router({
                     }
                 })
 
+                if (addressUser.isaaveuser == 'VERIFICATION') {
+                    const aave = await prisma.dao.findFirstOrThrow({
+                        where: {
+                            name: {
+                                equals: 'aave',
+                                mode: 'insensitive'
+                            }
+                        }
+                    })
+
+                    await prisma.subscription.createMany({
+                        data: {
+                            userid: addressUser.id,
+                            daoid: aave.id
+                        },
+                        skipDuplicates: true
+                    })
+                }
+
+                if (addressUser.isuniswapuser == 'VERIFICATION') {
+                    const uniswap = await prisma.dao.findFirstOrThrow({
+                        where: {
+                            name: {
+                                equals: 'uniswap',
+                                mode: 'insensitive'
+                            }
+                        }
+                    })
+
+                    await prisma.subscription.createMany({
+                        data: {
+                            userid: addressUser.id,
+                            daoid: uniswap.id
+                        },
+                        skipDuplicates: true
+                    })
+                }
+
                 await prisma.user.update({
                     where: { id: addressUser.id },
                     data: {
@@ -94,36 +132,6 @@ export const verifyRouter = router({
                         acceptedtermstimestamp: new Date()
                     }
                 })
-
-                if (addressUser.isaaveuser == 'VERIFICATION') {
-                    const aave = await prisma.dao.findFirstOrThrow({
-                        where: { name: { equals: 'aave', mode: 'insensitive' } }
-                    })
-
-                    await prisma.subscription.createMany({
-                        data: {
-                            userid: addressUser.id,
-                            daoid: aave.id
-                        },
-                        skipDuplicates: true
-                    })
-                }
-
-                if (addressUser.isuniswapuser == 'VERIFICATION') {
-                    const uniswap = await prisma.dao.findFirstOrThrow({
-                        where: {
-                            name: { equals: 'uniswap', mode: 'insensitive' }
-                        }
-                    })
-
-                    await prisma.subscription.createMany({
-                        data: {
-                            userid: addressUser.id,
-                            daoid: uniswap.id
-                        },
-                        skipDuplicates: true
-                    })
-                }
 
                 await prisma.user.deleteMany({
                     where: { id: emailUser.id }
