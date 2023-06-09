@@ -234,11 +234,6 @@ async fn update_proposals(
         .filter(|proposal| proposal.state == "closed" && proposal.scores_state == "final")
         .collect();
 
-    let open_proposals: Vec<&GraphQLProposal> = proposals
-        .iter()
-        .filter(|proposal| proposal.state != "closed" || proposal.scores_state != "final")
-        .collect();
-
     let new_index;
 
     if !open_proposals.is_empty() {
