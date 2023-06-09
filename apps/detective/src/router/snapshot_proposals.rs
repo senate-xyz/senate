@@ -1,5 +1,7 @@
+use std::time::UNIX_EPOCH;
+
 use anyhow::{Context, Result};
-use chrono::Duration;
+use chrono::{Datelike, Duration, TimeZone, Utc};
 use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime};
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
@@ -8,9 +10,7 @@ use serde::Deserialize;
 
 use crate::{
     prisma::{dao, daohandler, proposal, ProposalState},
-    Ctx,
-    ProposalsRequest,
-    ProposalsResponse,
+    Ctx, ProposalsRequest, ProposalsResponse,
 };
 
 #[derive(Debug, Deserialize)]
@@ -220,6 +220,14 @@ async fn update_proposals(
         ._batch(upserts)
         .await
         .context("failed to upsert proposals")?;
+
+    let open_proposals: Vec<&GraphQLProposal> = proposals
+        .iter()
+        .filter(|proposal| {
+            (proposal.state != "closed" || proposal.scores_state != "final")
+                && Utc.timestamp_opt(proposal.end, 0).unwrap().year() == Utc::now().year()
+        })
+        .collect();
 
     let closed_proposals: Vec<&GraphQLProposal> = proposals
         .iter()
