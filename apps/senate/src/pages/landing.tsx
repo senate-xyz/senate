@@ -17,7 +17,6 @@ export default WrapperHome
 const Home = () => {
     const router = useRouter()
     const [cookie, setCookie] = useCookies(['hasSeenLanding'])
-
     useEffect(() => {
         if (cookie.hasSeenLanding && router) router.push('/')
     }, [cookie])

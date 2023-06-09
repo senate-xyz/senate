@@ -4,7 +4,6 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { signOut, useSession } from 'next-auth/react'
 import { redirect, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { useCookies } from 'react-cookie'
 import { useAccount } from 'wagmi'
 import { disconnect } from '@wagmi/core'
 import { trpc } from '../../../server/trpcClient'
@@ -52,10 +51,10 @@ const WalletConnect = () => {
     }, [acceptedTerms.isFetched, acceptedTermsTimestamp.isFetched])
 
     if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
-    const [cookie] = useCookies(['hasSeenLanding'])
-    useEffect(() => {
-        if (!cookie.hasSeenLanding && router) router.push('/landing')
-    }, [cookie])
+    // const [cookie] = useCookies(['hasSeenLanding'])
+    // useEffect(() => {
+    //     if (!cookie.hasSeenLanding && router) router.push('/landing')
+    // }, [cookie])
 
     return <ConnectButton showBalance={false} />
 }
