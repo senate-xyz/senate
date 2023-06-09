@@ -22,7 +22,7 @@ const Testing = () => {
                 <div className='font-bold text-white'>Testing stuff</div>
                 <div /> <div />
                 <div
-                    className='w-max cursor-pointer bg-red-400 p-2 text-white'
+                    className='w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500'
                     onClick={() => {
                         deleteUser.mutate(void 0, {
                             onSuccess: () => {
@@ -36,7 +36,7 @@ const Testing = () => {
                 <div /> <div />
                 <div className='text-white'>Can take up to one minute</div>
                 <div
-                    className='w-max cursor-pointer bg-red-400 p-2 text-white'
+                    className='w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500'
                     onClick={() => {
                         randomQuorumAlert.mutate()
                     }}
@@ -44,7 +44,7 @@ const Testing = () => {
                     Send random quorum alert
                 </div>
                 <div
-                    className='w-max cursor-pointer bg-red-400 p-2 text-white'
+                    className='w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500'
                     onClick={() => {
                         lastQuorumAlert.mutate()
                     }}
@@ -52,7 +52,7 @@ const Testing = () => {
                     Send last proposal quorum alert
                 </div>
                 <div
-                    className='w-max cursor-pointer bg-red-400 p-2 text-white'
+                    className='w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500'
                     onClick={() => {
                         lastAaveQuorumAlert.mutate()
                     }}
@@ -60,7 +60,7 @@ const Testing = () => {
                     Send last Aave proposal quorum alert
                 </div>
                 <div
-                    className='w-max cursor-pointer bg-red-400 p-2 text-white'
+                    className='w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500'
                     onClick={() => {
                         lastUniswapQuorumAlert.mutate()
                     }}
@@ -78,7 +78,7 @@ const Testing = () => {
                     this button.
                 </div>
                 <div
-                    className='w-max cursor-pointer bg-red-400 p-2 text-white'
+                    className='w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500'
                     onClick={() => {
                         deleteDispatchedNotifications.mutate()
                     }}
@@ -87,7 +87,7 @@ const Testing = () => {
                 </div>
                 <div /> <div />
                 <div
-                    className='w-max cursor-pointer bg-red-400 p-2 text-white'
+                    className='w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500'
                     onClick={() => {
                         sendBulletin.mutate()
                     }}
