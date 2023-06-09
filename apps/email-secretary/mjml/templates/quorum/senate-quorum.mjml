@@ -195,21 +195,53 @@
       </mj-column>
     </mj-section>
 
-    <mj-section>
+    <mj-section padding="0px 0px 0px 24px">
       <mj-column>
-        <mj-button
-          padding="0px 0px 0px 0px"
-          height="80px"
-          font-weight="700"
-          font-size="28px"
-          line-height="34px"
-          background-color="#262626"
-          color="white"
-          href="{{voteUrl}}"
-        >
-          Cast your vote
-        </mj-button>
+        <mj-table padding="0px">
+          <tr>
+            <td style="width: 150px; font-size: 16px; color: #424242">
+              Not Enough Quorum
+            </td>
+            <td>
+              <img
+                src="https://senatelabs.xyz/assets/Emails/no-quorum.png"
+                style="
+                  width: 24px;
+                  height: 24px;
+                  padding: 0px;
+                  vertical-align: middle;
+                "
+              />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="font-size: 16px; color: #424242">
+              <div style="display: flex; gap: 2px">
+                <p>{{currentQuorum}}</p>
+                <p>/</p>
+                <p style="color: #8a8a8a">{{requiredQuroum}}</p>
+              </div>
+            </td>
+          </tr>
+        </mj-table>
       </mj-column>
+
+      <mj-group>
+        <mj-column>
+          <mj-button
+            padding="0px 0px 0px 0px"
+            height="80px"
+            font-weight="700"
+            font-size="28px"
+            line-height="34px"
+            background-color="#262626"
+            color="white"
+            href="{{voteUrl}}"
+          >
+            Cast your vote
+          </mj-button>
+        </mj-column>
+      </mj-group>
     </mj-section>
 
     <mj-section>

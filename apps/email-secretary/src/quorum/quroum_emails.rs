@@ -2,6 +2,8 @@ use std::{env, sync::Arc};
 
 use chrono::{Duration, Utc};
 use log::info;
+use num_format::{Locale, ToFormattedString};
+use prisma_client_rust::bigdecimal::ToPrimitive;
 use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 
@@ -32,8 +34,8 @@ struct QuorumWarningData {
     proposalName: String,
     countdownUrl: String,
     voteUrl: String,
-    currentQuorum: f64,
-    requiredQuroum: f64,
+    currentQuorum: String,
+    requiredQuroum: String,
 }
 
 prisma::proposal::include!(proposal_with_dao { dao });
@@ -121,8 +123,22 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             proposalName: proposal.name,
             countdownUrl: countdown_url,
             voteUrl: short_url,
-            currentQuorum: proposal.scorestotal.as_f64().unwrap(),
-            requiredQuroum: proposal.quorum.as_f64().unwrap(),
+            currentQuorum: proposal
+                .scorestotal
+                .as_f64()
+                .unwrap()
+                .round()
+                .to_i64()
+                .unwrap()
+                .to_formatted_string(&Locale::en),
+            requiredQuroum: proposal
+                .quorum
+                .as_f64()
+                .unwrap()
+                .round()
+                .to_i64()
+                .unwrap()
+                .to_formatted_string(&Locale::en),
         };
 
         if user.email.is_some() {
