@@ -12,7 +12,7 @@
   </mj-head>
   <mj-body width="720px" background-color="white">
     <mj-section css-class="desktop-version" />
-    <mj-section css-class="mobile-version">
+    <mj-section padding="0 0 0 0" css-class="mobile-version">
       <mj-column background-color="black">
         <mj-image
           padding="15px 0px 15px 0px"

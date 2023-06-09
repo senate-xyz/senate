@@ -21,11 +21,11 @@
     <mj-style inline="inline"
       >.card-background { background: linear-gradient(55.61deg, rgba(48, 186,
       198, 0.17) -0.35%, rgba(182, 80, 158, 0.17) 92.67%), #FFFFFF; max-width:
-      680px; display:flex; align-items:center;}
+      650px; display:flex; align-items:center; border-radius:16px;}
     </mj-style>
   </mj-head>
   <mj-body background-color="white">
-    <mj-section padding="10px 0" background-color="white">
+    <mj-section padding="10px 0px" background-color="white">
       <mj-column width="100%">
         <mj-text
           align="left"
@@ -73,6 +73,7 @@
                 font-size: 18px;
                 padding: 0 15px;
                 text-align: start;
+                line-height: 130%;
               "
             >
               <mj-raw>{{proposalName}}</mj-raw>
@@ -84,6 +85,7 @@
                 font-size: 28px;
                 padding: 0 15px;
                 text-align: start;
+                line-height: 130%;
               "
             >
               <mj-raw>{{proposalName}}</mj-raw>
@@ -93,9 +95,9 @@
       </mj-column>
     </mj-section>
 
-    <mj-section css-class="card-background" border-radius="16px">
-      <mj-column>
-        <mj-table padding="0" css-class="mobile-version">
+    <mj-section padding="24px">
+      <mj-column css-class="card-background">
+        <mj-table padding="8px" css-class="mobile-version">
           <tr>
             <td style="vertical-align: middle; text-align: center">
               <p
@@ -111,9 +113,18 @@
             </td>
           </tr>
           <tr>
-            <td style="vertical-align: middle; text-align: center">
+            <td
+              style="
+                padding: 8px 8px 8px 8px;
+                vertical-align: middle;
+                text-align: center;
+                background-color: white;
+                border: 1px solid #e4e4e4;
+                border-radius: 6px;
+              "
+            >
               <img
-                style="width: 200px; height: 80px"
+                style="background-color: red"
                 src="{{countdownUrl}}"
                 alt="Countdown"
               />
@@ -135,9 +146,9 @@
           </tr>
         </mj-table>
 
-        <mj-table padding="0" css-class="desktop-version">
+        <mj-table padding="10px 10px 10px 32px" css-class="desktop-version">
           <tr>
-            <td style="vertical-align: middle; text-align: center">
+            <td style="vertical-align: bottom; text-align: left">
               <p
                 style="
                   font-style: normal;
@@ -150,9 +161,19 @@
               </p>
             </td>
 
-            <td rowspan="2" style="vertical-align: middle; text-align: center">
+            <td
+              rowspan="2"
+              style="
+                padding-top: 8px;
+                vertical-align: middle;
+                text-align: center;
+                background-color: white;
+                border: 1px solid #e4e4e4;
+                border-radius: 6px;
+              "
+            >
               <img
-                style="width: 200px; height: 80px"
+                style="background-color: red"
                 src="{{countdownUrl}}"
                 alt="Countdown"
               />
@@ -160,7 +181,7 @@
           </tr>
 
           <tr>
-            <td style="vertical-align: middle; text-align: center">
+            <td style="vertical-align: top; text-align: left">
               <p
                 style="
                   font-style: normal;

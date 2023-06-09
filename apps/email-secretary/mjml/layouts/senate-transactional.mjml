@@ -28,7 +28,7 @@
           font-size="22px"
           font-family="sans-serif"
           font-weight="600"
-          >Senate Daily Bulletin</mj-text
+          >Senate</mj-text
         >
         <mj-text
           padding="0px 0px 25px 25px"
@@ -56,7 +56,7 @@
           font-size="36px"
           font-family="sans-serif"
           font-weight="600"
-          >Senate Daily Bulletin</mj-text
+          >Senate</mj-text
         >
         <mj-text
           padding="5px 0px 0px 10px"

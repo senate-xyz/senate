@@ -36,7 +36,7 @@
             font-size="22px"
             font-family="sans-serif"
             font-weight="600"
-            >Uniswap Proposals</mj-text
+            >Uniswap</mj-text
           >
           <mj-text
             padding="0px 0px 0px 10px"
@@ -65,7 +65,7 @@
           font-size="32px"
           font-family="sans-serif"
           font-weight="600"
-          >Uniswap Proposals</mj-text
+          >Uniswap</mj-text
         >
         <mj-text
           padding="5px 0px 0px 10px"

@@ -7,15 +7,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     prisma::{
-        self,
-        dao,
+        self, dao,
         notification::{self, dispatched::not},
-        proposal,
-        subscription,
-        user,
-        DaoHandlerType,
-        MagicUserState,
-        NotificationType,
+        proposal, subscription, user, DaoHandlerType, MagicUserState, NotificationType,
     },
     utils::{countdown::countdown_gif, vote::get_vote},
 };
@@ -38,6 +32,8 @@ struct QuorumWarningData {
     proposalName: String,
     countdownUrl: String,
     voteUrl: String,
+    currentQuorum: f64,
+    requiredQuroum: f64,
 }
 
 prisma::proposal::include!(proposal_with_dao { dao });
@@ -125,6 +121,8 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             proposalName: proposal.name,
             countdownUrl: countdown_url,
             voteUrl: short_url,
+            currentQuorum: proposal.scorestotal.as_f64().unwrap(),
+            requiredQuroum: proposal.quorum.as_f64().unwrap(),
         };
 
         if user.email.is_some() {

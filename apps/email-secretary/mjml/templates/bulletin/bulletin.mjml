@@ -144,10 +144,10 @@
     <mj-raw> {{/endingSoonProposals}}</mj-raw>
 
     <mj-raw> {{^ endingSoonProposals}}</mj-raw>
-    <mj-section full-width="full-width">
+    <mj-section padding="0px 24px">
       <mj-column
+        width="100%"
         background-color="black"
-        width="680px"
         padding="30px 30px 30px 30px"
       >
         <mj-text
@@ -274,10 +274,10 @@
     <mj-raw> {{/newProposals}}</mj-raw>
 
     <mj-raw> {{^ newProposals}}</mj-raw>
-    <mj-section full-width="full-width">
+    <mj-section padding="0px 24px">
       <mj-column
+        width="100%"
         background-color="black"
-        width="680px"
         padding="30px 30px 30px 30px"
       >
         <mj-text
@@ -604,10 +604,10 @@
     <mj-raw> {{/endedProposals}}</mj-raw>
 
     <mj-raw> {{^ endedProposals}}</mj-raw>
-    <mj-section full-width="full-width">
+    <mj-section padding="0px 24px">
       <mj-column
+        width="100%"
         background-color="black"
-        width="680px"
         padding="30px 30px 30px 30px"
       >
         <mj-text
