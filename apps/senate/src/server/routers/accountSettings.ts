@@ -309,10 +309,7 @@ export const accountSettingsRouter = router({
     setDiscordWebhook: privateProcedure
         .input(
             z.object({
-                url: z
-                    .string()
-                    .url()
-                    .includes('https://discord.com/api/webhooks/')
+                url: z.string().url().includes('discord.com/api/webhooks/')
             })
         )
         .mutation(async ({ input, ctx }) => {
@@ -378,7 +375,7 @@ export const accountSettingsRouter = router({
     setTelegramChatId: privateProcedure
         .input(
             z.object({
-                chatid: z.number().int().lt(-1000000).gt(1000000)
+                chatid: z.number().int()
             })
         )
         .mutation(async ({ input, ctx }) => {
