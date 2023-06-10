@@ -16,6 +16,6 @@
     "prettier": "cargo fmt",
     "prettier:fix": "cargo fmt",
     "db:generate": "cargo generate",
-    "update": "cargo update"
+    "update": "cargo update && cargo upgrade"
   }
 }
