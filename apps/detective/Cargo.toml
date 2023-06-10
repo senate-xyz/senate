@@ -15,12 +15,13 @@ codegen-units = 1
 anyhow = { version = "1.0.71", features = ["backtrace"] }
 chrono = "0.4.26"
 dotenv = "0.15.0"
-env_logger = "0.10.0"
 ethers = { version = "2.0.7", features = ["rustls", "openssl", "abigen"] }
 futures = "0.3.28"
 itertools = "0.10.5"
 num-bigint = "0.4.3"
 prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.8", default-features = false, features = ["postgresql"] }
+pyroscope = "0.5.6"
+pyroscope_pprofrs = "0.2.5"
 regex = "1.8.4"
 reqwest = { version = "0.11.18", features = ["json"] }
 reqwest-middleware = "0.2.2"

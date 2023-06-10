@@ -12,10 +12,8 @@ pub mod utils {
     pub mod snapshot_sanity;
 }
 use crate::router::{
-    chain_proposals::update_chain_proposals,
-    chain_votes::update_chain_votes,
-    snapshot_proposals::update_snapshot_proposals,
-    snapshot_votes::update_snapshot_votes,
+    chain_proposals::update_chain_proposals, chain_votes::update_chain_votes,
+    snapshot_proposals::update_snapshot_proposals, snapshot_votes::update_snapshot_votes,
 };
 use std::{env, sync::Arc};
 
@@ -24,6 +22,8 @@ use ethers::providers::{Http, Provider};
 
 use prisma::PrismaClient;
 
+use pyroscope::PyroscopeAgent;
+use pyroscope_pprofrs::{pprof_backend, Pprof, PprofConfig};
 use serde::{Deserialize, Serialize};
 use utils::{maker_polls_sanity::maker_polls_sanity_check, snapshot_sanity::snapshot_sanity_check};
 
@@ -72,23 +72,18 @@ fn index() -> &'static str {
     "Hello, world!"
 }
 
-fn init_logger() {
-    use env_logger::{Builder, Env};
-    let env = Env::default()
-        .filter_or("LOG_LEVEL", "info")
-        .write_style_or("LOG_STYLE", "always");
-
-    Builder::from_env(env)
-        .format_level(false)
-        .format_timestamp_nanos()
-        .init();
-}
-
 #[launch]
 async fn rocket() -> _ {
     dotenv().ok();
 
-    init_logger();
+    let agent = PyroscopeAgent::builder("https://profiles-prod-004.grafana.net", "detective")
+        .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
+        .basic_auth("491298", "eyJrIjoiZWZmY2RmODM0NDFkMzZmYmM2ZDVkNjM3OTkxZTE3YTM3NWZmNjk2NCIsIm4iOiJwdWJsaXNoZXJBcGlLZXkiLCJpZCI6NTEzOTk5fQ==")
+        .build()
+        .unwrap();
+
+    let _ = agent.start().unwrap();
+
     let rpc_url = match env::var_os("ALCHEMY_NODE_URL") {
         Some(v) => v.into_string().unwrap(),
         None => panic!("$ALCHEMY_NODE_URL is not set"),
