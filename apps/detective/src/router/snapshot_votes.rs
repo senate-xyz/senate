@@ -11,9 +11,7 @@ use serde_json::Value;
 
 use crate::{
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler},
-    Ctx,
-    VotesRequest,
-    VotesResponse,
+    Ctx, VotesRequest, VotesResponse,
 };
 
 #[derive(Debug, Deserialize)]
@@ -178,13 +176,8 @@ async fn update_votes(
     voter_handlers: Vec<voterhandler::Data>,
     ctx: &Ctx,
 ) -> Result<()> {
-    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
-
-    let http_client = ClientBuilder::new(reqwest::Client::new())
-        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
-        .build();
-
-    let graphql_response = http_client
+    let graphql_response = ctx
+        .http_client
         .get("https://hub.snapshot.org/graphql")
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()

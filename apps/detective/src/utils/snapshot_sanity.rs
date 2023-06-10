@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use chrono::{Duration, Utc};
-use reqwest_middleware::ClientBuilder;
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
 
@@ -27,7 +27,10 @@ struct GraphQLProposal {
     id: String,
 }
 
-pub async fn snapshot_sanity_check(db: Arc<prisma::PrismaClient>) {
+pub async fn snapshot_sanity_check(
+    db: Arc<prisma::PrismaClient>,
+    http_client: Arc<ClientWithMiddleware>,
+) {
     let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(30);
     let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
 
@@ -40,7 +43,7 @@ pub async fn snapshot_sanity_check(db: Arc<prisma::PrismaClient>) {
         .unwrap();
 
     for dao_handler in dao_handlers {
-        sanitize(dao_handler, sanitize_from, sanitize_to, &db).await;
+        sanitize(dao_handler, sanitize_from, sanitize_to, &db, &http_client).await;
     }
 }
 
@@ -49,6 +52,7 @@ async fn sanitize(
     sanitize_from: chrono::DateTime<Utc>,
     sanitize_to: chrono::DateTime<Utc>,
     db: &Arc<prisma::PrismaClient>,
+    http_client: &Arc<ClientWithMiddleware>,
 ) {
     let database_proposals = db
         .proposal()
@@ -88,12 +92,6 @@ async fn sanitize(
         sanitize_from.timestamp(),
         sanitize_to.timestamp()
     );
-
-    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
-
-    let http_client = ClientBuilder::new(reqwest::Client::new())
-        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
-        .build();
 
     let graphql_response = http_client
         .get("https://hub.snapshot.org/graphql")

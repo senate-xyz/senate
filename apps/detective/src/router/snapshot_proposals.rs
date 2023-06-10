@@ -125,13 +125,8 @@ async fn update_proposals(
     dao_handler: daohandler::Data,
     old_index: i64,
 ) -> Result<()> {
-    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
-
-    let http_client = ClientBuilder::new(reqwest::Client::new())
-        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
-        .build();
-
-    let graphql_response = http_client
+    let graphql_response = ctx
+        .http_client
         .get("https://hub.snapshot.org/graphql")
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()

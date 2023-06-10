@@ -24,6 +24,8 @@ use prisma::PrismaClient;
 
 use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, Pprof, PprofConfig};
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::{Deserialize, Serialize};
 use utils::{maker_polls_sanity::maker_polls_sanity_check, snapshot_sanity::snapshot_sanity_check};
 
@@ -34,6 +36,7 @@ extern crate rocket;
 pub struct Context {
     pub db: Arc<PrismaClient>,
     pub rpc: Arc<Provider<Http>>,
+    pub http_client: Arc<ClientWithMiddleware>,
 }
 pub type Ctx = rocket::State<Context>;
 
@@ -97,9 +100,18 @@ async fn rocket() -> _ {
             .expect("Failed to create Prisma client"),
     );
 
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+
+    let http_client = Arc::new(
+        ClientBuilder::new(reqwest::Client::new())
+            .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+            .build(),
+    );
+
     let context = Context {
         db: db.clone(),
         rpc: rpc.clone(),
+        http_client: http_client.clone(),
     };
 
     tokio::spawn(async move {
@@ -107,12 +119,16 @@ async fn rocket() -> _ {
         loop {
             interval.tick().await;
             maker_polls_sanity_check(Arc::clone(&context.db), Arc::clone(&context.rpc)).await;
-            snapshot_sanity_check(Arc::clone(&context.db)).await;
+            snapshot_sanity_check(Arc::clone(&context.db), Arc::clone(&context.http_client)).await;
         }
     });
 
     rocket::build()
-        .manage(Context { db, rpc })
+        .manage(Context {
+            db,
+            rpc,
+            http_client,
+        })
         .mount("/", routes![index])
         .mount(
             "/proposals",
