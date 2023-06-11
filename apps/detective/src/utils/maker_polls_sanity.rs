@@ -12,6 +12,7 @@ use ethers::{
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
+use tracing::{event, instrument, Level};
 
 use super::etherscan::{estimate_block, estimate_timestamp};
 
@@ -21,6 +22,7 @@ struct Decoder {
     address_create: String,
 }
 
+#[instrument]
 pub async fn maker_polls_sanity_check(db: Arc<prisma::PrismaClient>, rpc: Arc<Provider<Http>>) {
     let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(30);
     let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
@@ -39,6 +41,7 @@ pub async fn maker_polls_sanity_check(db: Arc<prisma::PrismaClient>, rpc: Arc<Pr
     }
 }
 
+#[instrument]
 async fn sanitize(
     dao_handler: daohandler::Data,
     sanitize_from: chrono::DateTime<Utc>,
@@ -91,6 +94,18 @@ async fn sanitize(
                     .exec()
                     .await
                     .unwrap();
+
+                event!(
+                    Level::INFO,
+                    "Sanitized {:?} MakerPoll proposal",
+                    existing_proposal.name
+                );
+
+                event!(
+                    Level::DEBUG,
+                    "Sanitized MakerPoll proposal - {:?}",
+                    existing_proposal
+                );
             }
             None => {}
         }

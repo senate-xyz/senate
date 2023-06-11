@@ -4,6 +4,7 @@ use chrono::{Duration, Utc};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
+use tracing::{event, instrument, Level};
 
 use crate::prisma::{self, daohandler, proposal, vote, DaoHandlerType};
 
@@ -27,6 +28,7 @@ struct GraphQLProposal {
     id: String,
 }
 
+#[instrument]
 pub async fn snapshot_sanity_check(
     db: Arc<prisma::PrismaClient>,
     http_client: Arc<ClientWithMiddleware>,
@@ -47,6 +49,7 @@ pub async fn snapshot_sanity_check(
     }
 }
 
+#[instrument]
 async fn sanitize(
     dao_handler: daohandler::Data,
     sanitize_from: chrono::DateTime<Utc>,
@@ -129,5 +132,19 @@ async fn sanitize(
             )])
             .exec()
             .await;
+
+        event!(
+            Level::INFO,
+            "Sanitized {:?} Snapshot proposals for {:?}",
+            proposals_to_delete.len(),
+            dao_handler
+        );
+
+        event!(
+            Level::DEBUG,
+            "Sanitized Snapshot proposals for {:?} - {:?}",
+            dao_handler,
+            proposals_to_delete,
+        );
     }
 }

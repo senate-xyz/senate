@@ -24,6 +24,12 @@ use prisma::PrismaClient;
 
 use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, Pprof, PprofConfig};
+use std::process;
+use tracing::instrument;
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::util::SubscriberInitExt;
+use url::Url;
+
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::{Deserialize, Serialize};
@@ -94,13 +100,42 @@ async fn rocket() -> _ {
         telemetry_agent =
             PyroscopeAgent::builder("https://profiles-prod-004.grafana.net", "detective")
                 .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
-                .basic_auth("491298", telemetry_key)
+                .basic_auth("491298", telemetry_key.clone())
                 .tags([("env", exec_env.as_str())].to_vec())
                 .build()
                 .unwrap();
 
         let _ = telemetry_agent.start().unwrap();
+
+        let (layer, task) = tracing_loki::builder()
+            .label("service", "detective")
+            .unwrap()
+            .extra_field("pid", format!("{}", process::id()))
+            .unwrap()
+            .build_url(
+                Url::parse(
+                    format!(
+                        "https://340656:{}@logs-prod-013.grafana.net/loki/api/v1/push",
+                        telemetry_key.clone()
+                    )
+                    .as_str(),
+                )
+                .unwrap(),
+            )
+            .unwrap();
+
+        tracing_subscriber::registry().with(layer).init();
+
+        // The background task needs to be spawned so the logs actually get
+        // delivered.
+        tokio::spawn(task);
     }
+
+    tracing::info!(
+        task = "tracing_setup",
+        result = "success",
+        "tracing successfully set up",
+    );
 
     let rpc_url = match env::var_os("ALCHEMY_NODE_URL") {
         Some(v) => v.into_string().unwrap(),
