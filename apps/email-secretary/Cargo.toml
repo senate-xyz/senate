@@ -15,11 +15,12 @@ codegen-units = 1
 anyhow = "1.0.71"
 chrono = "0.4.26"
 dotenv = "0.15.0"
-env_logger = "0.10.0"
 futures = "0.3.28"
 log = "0.4.18"
 num-format = "0.4.4"
 prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.7",  features = ["postgresql"] }
+pyroscope = "0.5.6"
+pyroscope_pprofrs = "0.2.5"
 reqwest = { version = "0.11.18", features = ["json"] }
 serde = "1.0.164"
 serde_json = "1.0.96"

@@ -78,7 +78,6 @@ fn index() -> &'static str {
 #[launch]
 async fn rocket() -> _ {
     dotenv().ok();
-
     let telemetry_agent;
 
     if env::consts::OS != "macos" {
@@ -96,7 +95,7 @@ async fn rocket() -> _ {
             PyroscopeAgent::builder("https://profiles-prod-004.grafana.net", "detective")
                 .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
                 .basic_auth("491298", telemetry_key)
-                .tags([("detective", exec_env.as_str())].to_vec())
+                .tags([("env", exec_env.as_str())].to_vec())
                 .build()
                 .unwrap();
 

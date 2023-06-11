@@ -6,7 +6,7 @@ mod dispatch;
 mod generate;
 pub mod prisma;
 use log::info;
-use std::sync::Arc;
+use std::{env, sync::Arc};
 use teloxide::{
     adaptors::{throttle::Limits, DefaultParseMode, Throttle},
     prelude::*,
@@ -17,7 +17,8 @@ use tokio::time::sleep;
 mod utils {
     pub mod vote;
 }
-use env_logger::{Builder, Env};
+use pyroscope::PyroscopeAgent;
+use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 
 use crate::{
     dispatch::{
@@ -35,24 +36,37 @@ use crate::{
 use dotenv::dotenv;
 use tokio::try_join;
 
-fn init_logger() {
-    let env = Env::default()
-        .filter_or("LOG_LEVEL", "info")
-        .write_style_or("LOG_STYLE", "always");
-
-    Builder::from_env(env)
-        .format_level(false)
-        .format_timestamp_nanos()
-        .init();
-}
-
 #[tokio::main]
 async fn main() {
     //sleep to make sure old deployment api connection is closed
     sleep(std::time::Duration::from_secs(60)).await;
 
     dotenv().ok();
-    init_logger();
+    let telemetry_agent;
+
+    if env::consts::OS != "macos" {
+        let telemetry_key = match env::var_os("TELEMETRY_KEY") {
+            Some(v) => v.into_string().unwrap(),
+            None => panic!("$TELEMETRY_KEY is not set"),
+        };
+
+        let exec_env = match env::var_os("EXEC_ENV") {
+            Some(v) => v.into_string().unwrap(),
+            None => panic!("$EXEC_ENV is not set"),
+        };
+
+        telemetry_agent = PyroscopeAgent::builder(
+            "https://profiles-prod-004.grafana.net",
+            "telegram-secretary",
+        )
+        .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
+        .basic_auth("491298", telemetry_key)
+        .tags([("env", exec_env.as_str())].to_vec())
+        .build()
+        .unwrap();
+
+        let _ = telemetry_agent.start().unwrap();
+    }
 
     info!("telegram-secretaryary start");
 

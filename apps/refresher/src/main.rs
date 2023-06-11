@@ -3,8 +3,11 @@
 #![allow(unused_parens)]
 
 use log::{info, warn};
+use pyroscope::PyroscopeAgent;
+use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 use tokio::try_join;
 pub mod prisma;
+use std::env;
 use std::{sync::Arc, time::Duration};
 
 use handlers::create_voter_handlers;
@@ -28,7 +31,8 @@ use crate::consume_queue::{
 use config::{load_config_from_db, CONFIG};
 pub mod config;
 pub mod handlers;
-use env_logger::{Builder, Env};
+
+use dotenv::dotenv;
 
 #[derive(Debug)]
 enum RefreshType {
@@ -46,22 +50,32 @@ pub struct RefreshEntry {
     voters: Vec<String>,
 }
 
-fn init_logger() {
-    let env = Env::default()
-        .filter_or("LOG_LEVEL", "info")
-        .write_style_or("LOG_STYLE", "always");
-
-    Builder::from_env(env)
-        .format_level(false)
-        .format_timestamp_nanos()
-        .init();
-}
-
 #[tokio::main]
 async fn main() {
-    init_logger();
+    dotenv().ok();
+    let telemetry_agent;
 
-    info!("refresher start");
+    if env::consts::OS != "macos" {
+        let telemetry_key = match env::var_os("TELEMETRY_KEY") {
+            Some(v) => v.into_string().unwrap(),
+            None => panic!("$TELEMETRY_KEY is not set"),
+        };
+
+        let exec_env = match env::var_os("EXEC_ENV") {
+            Some(v) => v.into_string().unwrap(),
+            None => panic!("$EXEC_ENV is not set"),
+        };
+
+        telemetry_agent =
+            PyroscopeAgent::builder("https://profiles-prod-004.grafana.net", "refresher")
+                .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
+                .basic_auth("491298", telemetry_key)
+                .tags([("env", exec_env.as_str())].to_vec())
+                .build()
+                .unwrap();
+
+        let _ = telemetry_agent.start().unwrap();
+    }
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
     let config = *CONFIG.read().unwrap();

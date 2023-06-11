@@ -15,13 +15,12 @@ pub mod utils {
 }
 
 use chrono::{Timelike, Utc};
-use log::info;
-use std::{sync::Arc, time::Duration};
-use tokio::time::sleep;
-
-use env_logger::{Builder, Env};
-
 use dotenv::dotenv;
+use log::info;
+use pyroscope::PyroscopeAgent;
+use pyroscope_pprofrs::{pprof_backend, PprofConfig};
+use std::{env, sync::Arc, time::Duration};
+use tokio::time::sleep;
 use tokio::try_join;
 
 use crate::{
@@ -30,21 +29,32 @@ use crate::{
     quorum::quroum_emails::send_quorum_email,
 };
 
-fn init_logger() {
-    let env = Env::default()
-        .filter_or("LOG_LEVEL", "info")
-        .write_style_or("LOG_STYLE", "always");
-
-    Builder::from_env(env)
-        .format_level(false)
-        .format_timestamp_nanos()
-        .init();
-}
-
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-    init_logger();
+    let telemetry_agent;
+
+    if env::consts::OS != "macos" {
+        let telemetry_key = match env::var_os("TELEMETRY_KEY") {
+            Some(v) => v.into_string().unwrap(),
+            None => panic!("$TELEMETRY_KEY is not set"),
+        };
+
+        let exec_env = match env::var_os("EXEC_ENV") {
+            Some(v) => v.into_string().unwrap(),
+            None => panic!("$EXEC_ENV is not set"),
+        };
+
+        telemetry_agent =
+            PyroscopeAgent::builder("https://profiles-prod-004.grafana.net", "email-secretary")
+                .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
+                .basic_auth("491298", telemetry_key)
+                .tags([("env", exec_env.as_str())].to_vec())
+                .build()
+                .unwrap();
+
+        let _ = telemetry_agent.start().unwrap();
+    }
 
     info!("email-secretary start");
 
