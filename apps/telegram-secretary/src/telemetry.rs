@@ -1,7 +1,19 @@
 use std::env;
 
+use base64::{
+    alphabet,
+    engine::{self, general_purpose},
+    Engine as _,
+};
+use opentelemetry::{
+    sdk::{trace, Resource},
+    KeyValue,
+};
+
+use opentelemetry_otlp::WithExportConfig;
 use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, PprofConfig};
+use tonic::metadata::{MetadataMap, MetadataValue};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 use url::Url;
 
@@ -40,9 +52,36 @@ pub fn setup() {
     let filter_str = format!("{}=info", app_name);
     let env_filter = EnvFilter::try_new(filter_str).unwrap_or_else(|_| EnvFilter::new("info"));
 
+    let mut map = MetadataMap::with_capacity(3);
+
+    let encoded = general_purpose::STANDARD.encode(format!("337169:{}", telemetry_key));
+
+    map.insert(
+        "authorization",
+        format!("Basic {}", encoded).parse().unwrap(),
+    );
+
+    let tracer = opentelemetry_otlp::new_pipeline()
+        .tracing()
+        .with_exporter(
+            opentelemetry_otlp::new_exporter()
+                .tonic()
+                .with_endpoint("https://tempo-prod-08-prod-eu-west-3.grafana.net:443")
+                .with_metadata(map),
+        )
+        .with_trace_config(
+            trace::config()
+                .with_resource(Resource::new(vec![KeyValue::new("service.name", app_name)])),
+        )
+        .install_batch(opentelemetry::runtime::Tokio)
+        .unwrap();
+
+    let telemetry_layer = tracing_opentelemetry::layer().with_tracer(tracer);
+
     tracing_subscriber::registry()
         .with(env_filter)
         .with(layer)
+        .with(telemetry_layer)
         .init();
 
     tokio::spawn(task);

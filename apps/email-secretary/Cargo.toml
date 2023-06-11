@@ -13,11 +13,14 @@ codegen-units = 1
 
 [dependencies]
 anyhow = "1.0.71"
+base64 = "0.21.2"
 chrono = "0.4.26"
 dotenv = "0.15.0"
 futures = "0.3.28"
 log = "0.4.18"
 num-format = "0.4.4"
+opentelemetry = { version = "0.19.0", features = ["trace", "rt-tokio"] }
+opentelemetry-otlp = { version = "0.12.0", features = ["tonic", "tls", "tls-roots", "protobuf", "http-proto"] }
 prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.7",  features = ["postgresql"] }
 pyroscope = "0.5.6"
 pyroscope_pprofrs = "0.2.5"
@@ -25,7 +28,9 @@ reqwest = { version = "0.11.18", features = ["json"] }
 serde = "1.0.164"
 serde_json = "1.0.96"
 tokio = { version = "1.28.2", features = ["full"] }
+tonic = "0.8.3"
 tracing = "0.1.37"
 tracing-loki = "0.2.2"
+tracing-opentelemetry = "0.19.0"
 tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
 url = "2.4.0"
