@@ -155,7 +155,7 @@ pub async fn estimate_block(timestamp: i64) -> Result<i64> {
                         Err(_) => i64::from(0),
                     };
 
-                info!("{}", data);
+                debug!("{}", data);
                 return Ok(data);
             }
 
