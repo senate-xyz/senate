@@ -79,13 +79,23 @@ fn index() -> &'static str {
 async fn rocket() -> _ {
     dotenv().ok();
 
-    let agent = PyroscopeAgent::builder("https://profiles-prod-004.grafana.net", "detective")
-        .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
-        .basic_auth("491298", "eyJrIjoiZWZmY2RmODM0NDFkMzZmYmM2ZDVkNjM3OTkxZTE3YTM3NWZmNjk2NCIsIm4iOiJwdWJsaXNoZXJBcGlLZXkiLCJpZCI6NTEzOTk5fQ==")
-        .build()
-        .unwrap();
+    let telemetry_agent;
 
-    let _ = agent.start().unwrap();
+    if env::consts::OS != "macos" {
+        let telemetry_key = match env::var_os("TELEMETRY_KEY") {
+            Some(v) => v.into_string().unwrap(),
+            None => panic!("$TELEMETRY_KEY is not set"),
+        };
+
+        telemetry_agent =
+            PyroscopeAgent::builder("https://profiles-prod-004.grafana.net", "detective")
+                .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
+                .basic_auth("491298", telemetry_key)
+                .build()
+                .unwrap();
+
+        let _ = telemetry_agent.start().unwrap();
+    }
 
     let rpc_url = match env::var_os("ALCHEMY_NODE_URL") {
         Some(v) => v.into_string().unwrap(),

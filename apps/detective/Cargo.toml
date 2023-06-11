@@ -19,7 +19,7 @@ ethers = { version = "2.0.7", features = ["rustls", "openssl", "abigen"] }
 futures = "0.3.28"
 itertools = "0.10.5"
 num-bigint = "0.4.3"
-prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.8", default-features = false, features = ["postgresql"] }
+prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.7",  features = ["postgresql"] }
 pyroscope = "0.5.6"
 pyroscope_pprofrs = "0.2.5"
 regex = "1.8.4"
