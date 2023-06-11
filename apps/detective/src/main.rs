@@ -87,10 +87,16 @@ async fn rocket() -> _ {
             None => panic!("$TELEMETRY_KEY is not set"),
         };
 
+        let exec_env = match env::var_os("EXEC_ENV") {
+            Some(v) => v.into_string().unwrap(),
+            None => panic!("$EXEC_ENV is not set"),
+        };
+
         telemetry_agent =
             PyroscopeAgent::builder("https://profiles-prod-004.grafana.net", "detective")
                 .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
                 .basic_auth("491298", telemetry_key)
+                .tags([("detective", exec_env.as_str())].to_vec())
                 .build()
                 .unwrap();
 
