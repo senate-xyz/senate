@@ -12,13 +12,7 @@ use tokio::time::sleep;
 
 use crate::{
     prisma::{
-        self,
-        notification,
-        proposal,
-        user,
-        DaoHandlerType,
-        NotificationType,
-        PrismaClient,
+        self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient,
         ProposalState,
     },
     utils::vote::get_vote,
@@ -30,7 +24,6 @@ pub async fn _update_active_proposal_notifications(
     client: &Arc<PrismaClient>,
     bot: &Arc<DefaultParseMode<Throttle<teloxide::Bot>>>,
 ) {
-    println!("update_active_proposal_notifications");
     let active_proposals = client
         .proposal()
         .find_many(vec![prisma::proposal::state::equals(ProposalState::Active)])

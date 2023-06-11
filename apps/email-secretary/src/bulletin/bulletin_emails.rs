@@ -9,14 +9,9 @@ use serde_json::json;
 
 use crate::{
     prisma::{
-        self,
-        notification,
+        self, notification,
         proposal::{self},
-        user,
-        DaoHandlerType,
-        MagicUserState,
-        NotificationType,
-        ProposalState,
+        user, DaoHandlerType, MagicUserState, NotificationType, ProposalState,
     },
     utils::{countdown::countdown_gif, vote::get_vote},
 };
@@ -198,8 +193,6 @@ async fn send_bulletin(
             .await
             .unwrap();
     }
-
-    println!("{}", serde_json::to_string(&user_data).unwrap());
 
     Ok((true))
 }

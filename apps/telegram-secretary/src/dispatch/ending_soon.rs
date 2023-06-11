@@ -10,13 +10,7 @@ use teloxide::{
 use tokio::time::sleep;
 
 use crate::prisma::{
-    self,
-    notification,
-    proposal,
-    user,
-    DaoHandlerType,
-    NotificationType,
-    PrismaClient,
+    self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient,
 };
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
@@ -25,7 +19,6 @@ pub async fn dispatch_ending_soon_notifications(
     client: &Arc<PrismaClient>,
     bot: &Arc<DefaultParseMode<Throttle<teloxide::Bot>>>,
 ) {
-    println!("dispatch_ending_soon_notifications");
     let notifications = client
         .notification()
         .find_many(vec![
@@ -141,9 +134,7 @@ pub async fn dispatch_ending_soon_notifications(
                     .await
                     .unwrap();
             }
-            Err(e) => {
-                println!("ending soon error: {}", e)
-            }
+            Err(_) => {}
         }
 
         sleep(Duration::from_millis(100)).await;

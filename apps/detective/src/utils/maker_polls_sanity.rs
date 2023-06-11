@@ -91,11 +91,6 @@ async fn sanitize(
                     .exec()
                     .await
                     .unwrap();
-
-                println!(
-                    "Maker poll sanity: deleted proposal {:?}",
-                    existing_proposal
-                );
             }
             None => {}
         }

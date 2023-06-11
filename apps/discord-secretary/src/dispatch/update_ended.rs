@@ -14,13 +14,7 @@ use tokio::time::sleep;
 
 use crate::{
     prisma::{
-        self,
-        notification,
-        proposal,
-        user,
-        DaoHandlerType,
-        NotificationType,
-        PrismaClient,
+        self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient,
         ProposalState,
     },
     utils::vote::get_vote,
@@ -29,7 +23,6 @@ use crate::{
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn update_ended_proposal_notifications(client: &Arc<PrismaClient>) {
-    println!("update_ended_proposal_notifications");
     let active_proposals = client
         .proposal()
         .find_many(vec![prisma::proposal::state::equals(ProposalState::Hidden)])

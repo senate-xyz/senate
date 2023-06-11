@@ -15,7 +15,6 @@ use crate::{
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
-    println!("dispatch_new_proposal_notifications");
     let notifications = client
         .notification()
         .find_many(vec![

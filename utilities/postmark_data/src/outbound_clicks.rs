@@ -90,7 +90,6 @@ pub async fn outbound_clicks() {
         } else {
             end = true;
         }
-        println!("{:?}", postmark_data);
     }
     wtr.flush().unwrap();
 }

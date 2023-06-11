@@ -58,11 +58,6 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
     let client = Client::new();
     let mut retries = 0;
 
-    println!(
-        "https://api.etherscan.io/api?module=block&action=getblockcountdown&blockno={}&apikey={}",
-        block_number, etherscan_api_key
-    );
-
     loop {
         let response = client
             .get(format!(

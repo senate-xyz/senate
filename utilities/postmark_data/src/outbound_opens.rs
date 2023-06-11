@@ -87,7 +87,6 @@ pub async fn outbound_opens() {
         } else {
             end = true;
         }
-        println!("{:?}", postmark_data);
     }
     wtr.flush().unwrap();
 }

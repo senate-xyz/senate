@@ -21,7 +21,6 @@ pub async fn dispatch_ended_proposal_notifications(
     client: &Arc<PrismaClient>,
     bot: &Arc<DefaultParseMode<Throttle<teloxide::Bot>>>,
 ) {
-    println!("dispatch_ended_proposal_notifications");
     let ended_notifications = client
         .notification()
         .find_many(vec![
@@ -181,9 +180,7 @@ pub async fn dispatch_ended_proposal_notifications(
                                 .await
                                 .unwrap();
                         }
-                        Err(e) => {
-                            println!("ended error: {}", e)
-                        }
+                        Err(_) => {}
                     }
                 }
             }

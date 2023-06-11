@@ -4,19 +4,12 @@ use serenity::{http::Http, model::webhook::Webhook};
 use tokio::time::sleep;
 
 use crate::prisma::{
-    self,
-    notification,
-    proposal,
-    user,
-    DaoHandlerType,
-    NotificationType,
-    PrismaClient,
+    self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient,
 };
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
-    println!("dispatch_ending_soon_notifications");
     let notifications = client
         .notification()
         .find_many(vec![

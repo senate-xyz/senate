@@ -22,7 +22,6 @@ pub async fn dispatch_new_proposal_notifications(
     client: &Arc<PrismaClient>,
     bot: &Arc<DefaultParseMode<Throttle<teloxide::Bot>>>,
 ) {
-    println!("dispatch_new_proposal_notifications");
     let notifications = client
         .notification()
         .find_many(vec![
@@ -115,9 +114,7 @@ pub async fn dispatch_new_proposal_notifications(
                     .await
                     .unwrap();
             }
-            Err(e) => {
-                println!("new error: {}", e)
-            }
+            Err(_) => {}
         }
 
         sleep(Duration::from_millis(100)).await;

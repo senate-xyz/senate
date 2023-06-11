@@ -129,10 +129,5 @@ async fn sanitize(
             )])
             .exec()
             .await;
-
-        println!(
-            "Snapshot sanity: deleted {} proposals",
-            proposals_to_delete.len()
-        );
     }
 }
