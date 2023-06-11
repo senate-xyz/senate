@@ -110,8 +110,6 @@ async fn rocket() -> _ {
         let (layer, task) = tracing_loki::builder()
             .label("service", "detective")
             .unwrap()
-            .extra_field("pid", format!("{}", process::id()))
-            .unwrap()
             .build_url(
                 Url::parse(
                     format!(
@@ -126,8 +124,6 @@ async fn rocket() -> _ {
 
         tracing_subscriber::registry().with(layer).init();
 
-        // The background task needs to be spawned so the logs actually get
-        // delivered.
         tokio::spawn(task);
     }
 
