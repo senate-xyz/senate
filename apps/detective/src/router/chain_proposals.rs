@@ -77,6 +77,11 @@ pub async fn update_chain_proposals<'a>(
         to_block = current_block - 10;
     }
 
+    debug!(
+        "{:?} {:?} {:?} {:?} {:?} {:?}",
+        dao_handler, min_block, batch_size, from_block, to_block, current_block
+    );
+
     let result = get_results(ctx, from_block, to_block, dao_handler).await;
 
     match result {
@@ -84,10 +89,13 @@ pub async fn update_chain_proposals<'a>(
             daoHandlerId: data.daoHandlerId,
             response: "ok",
         }),
-        Err(_) => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "nok",
-        }),
+        Err(e) => {
+            warn!("{:?}", e);
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            })
+        }
     }
 }
 
@@ -198,11 +206,13 @@ async fn insert_proposals(
         )
     });
 
-    let _ = ctx
+    let updated = ctx
         .db
         ._batch(upserts)
         .await
         .expect("failed to insert proposals");
+
+    debug!("{:?}", updated);
 
     let open_proposals: Vec<ChainProposal> = proposals
         .iter()
@@ -225,9 +235,11 @@ async fn insert_proposals(
         to_block
     };
 
+    debug!("{:?} {:?}", open_proposals, new_index);
+
     let uptodate = dao_handler.chainindex.unwrap() - new_index < 1000;
 
-    let _ = ctx
+    let updated = ctx
         .db
         .daohandler()
         .update(
@@ -240,4 +252,6 @@ async fn insert_proposals(
         .exec()
         .await
         .expect("failed to update daohandlers");
+
+    debug!("{:?}", updated);
 }

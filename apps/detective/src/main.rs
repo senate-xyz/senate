@@ -119,6 +119,7 @@ async fn rocket() -> _ {
         let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(5 * 60));
         loop {
             interval.tick().await;
+            debug!("running sanity");
             maker_polls_sanity_check(Arc::clone(&context.db), Arc::clone(&context.rpc)).await;
             snapshot_sanity_check(Arc::clone(&context.db), Arc::clone(&context.http_client)).await;
         }

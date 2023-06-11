@@ -102,18 +102,27 @@ pub async fn update_snapshot_proposals<'a>(
         decoder.space, old_index
     );
 
+    debug!(
+        "{:?} {:?} {:?} {:?}",
+        dao_handler, decoder, old_index, graphql_query
+    );
+
     match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
         Ok(_) => Json(ProposalsResponse {
             daoHandlerId: data.daoHandlerId,
             response: "ok",
         }),
-        Err(_) => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "nok",
-        }),
+        Err(e) => {
+            warn!("{:?}", e);
+            Json(ProposalsResponse {
+                daoHandlerId: data.daoHandlerId,
+                response: "nok",
+            })
+        }
     }
 }
 
+#[instrument]
 async fn update_proposals(
     graphql_query: String,
     ctx: &Ctx,
@@ -197,10 +206,13 @@ async fn update_proposals(
         )
     });
 
-    ctx.db
+    let updated = ctx
+        .db
         ._batch(upserts)
         .await
         .context("failed to upsert proposals")?;
+
+    debug!("{:?}", updated);
 
     let open_proposals: Vec<&GraphQLProposal> = proposals
         .iter()
@@ -233,9 +245,14 @@ async fn update_proposals(
         new_index = old_index;
     }
 
+    debug!(
+        "{:?} {:?} {:?}",
+        open_proposals, closed_proposals, new_index
+    );
+
     let uptodate = old_index - new_index < 60 * 60;
 
-    let _ = ctx
+    let updated = ctx
         .db
         .daohandler()
         .update(
@@ -257,6 +274,8 @@ async fn update_proposals(
         .exec()
         .await
         .context("failed to update daohandler")?;
+
+    debug!("{:?}", updated);
 
     Ok(())
 }

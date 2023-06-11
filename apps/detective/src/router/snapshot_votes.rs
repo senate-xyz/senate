@@ -134,6 +134,11 @@ pub async fn update_snapshot_votes<'a>(
         search_from_timestamp
     );
 
+    debug!(
+        "{:?} {:?} {:?} {:?} {:?}",
+        dao_handler, decoder, search_from_timestamp, graphql_query, data.voters
+    );
+
     let response = match update_votes(
         graphql_query,
         search_from_timestamp,
@@ -152,20 +157,23 @@ pub async fn update_snapshot_votes<'a>(
                 success: true,
             })
             .collect(),
-        Err(_) => data
-            .voters
-            .clone()
-            .into_iter()
-            .map(|v| VotesResponse {
-                voter_address: v,
-                success: false,
-            })
-            .collect(),
+        Err(e) => {
+            warn!("{:?}", e);
+            data.voters
+                .clone()
+                .into_iter()
+                .map(|v| VotesResponse {
+                    voter_address: v,
+                    success: false,
+                })
+                .collect()
+        }
     };
 
     Json(response)
 }
 
+#[instrument]
 async fn update_votes(
     graphql_query: String,
     search_from_timestamp: i64,
@@ -214,6 +222,7 @@ async fn update_votes(
     Ok(())
 }
 
+#[instrument]
 async fn update_refresh_statuses(
     votes: Vec<GraphQLVote>,
     search_from_timestamp: i64,
@@ -253,7 +262,10 @@ async fn update_refresh_statuses(
         uptodate = true;
     }
 
-    ctx.db
+    debug!("{:?} {:?}", search_to_timestamp, new_index);
+
+    let updated = ctx
+        .db
         .voterhandler()
         .update_many(
             vec![
@@ -280,9 +292,12 @@ async fn update_refresh_statuses(
         .exec()
         .await?;
 
+    debug!("{:?} ", updated);
+
     Ok(())
 }
 
+#[instrument]
 async fn update_votes_for_proposal(
     votes: Vec<GraphQLVote>,
     p: GraphQLProposal,
@@ -328,13 +343,14 @@ async fn update_votes_for_proposal(
     }
 }
 
+#[instrument]
 async fn create_old_votes(
     ctx: &Ctx,
     votes_for_proposal: Vec<GraphQLVote>,
     proposal_id: String,
     dao_handler: daohandler::Data,
 ) -> Result<()> {
-    let _ = ctx
+    let created = ctx
         .db
         .vote()
         .create_many(
@@ -362,16 +378,19 @@ async fn create_old_votes(
         .exec()
         .await?;
 
+    debug!("{:?} ", created);
+
     Ok(())
 }
 
+#[instrument]
 async fn update_or_create_current_votes(
     ctx: &Ctx,
     votes_for_proposal: Vec<GraphQLVote>,
     proposal_id: String,
     dao_handler: daohandler::Data,
 ) -> Result<()> {
-    let _ = ctx
+    let updated = ctx
         .db
         ._batch(votes_for_proposal.into_iter().map(|v| {
             ctx.db.vote().upsert(
@@ -407,6 +426,8 @@ async fn update_or_create_current_votes(
             )
         }))
         .await?;
+
+    debug!("{:?} ", updated);
 
     Ok(())
 }

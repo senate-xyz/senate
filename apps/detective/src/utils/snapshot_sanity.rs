@@ -36,6 +36,8 @@ pub async fn snapshot_sanity_check(
     let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(30);
     let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
 
+    debug!("{:?} {:?}", sanitize_from, sanitize_to);
+
     let dao_handlers = db
         .clone()
         .daohandler()
@@ -72,6 +74,8 @@ async fn sanitize(
         Ok(data) => data,
         Err(_) => panic!("{:?} decoder not found", dao_handler.clone().id),
     };
+
+    debug!("{:?}", decoder);
 
     let graphql_query = format!(
         r#"
@@ -140,9 +144,9 @@ async fn sanitize(
             .await;
 
         info!(
-            "Sanitized {:?} Snapshot proposals for {:?}",
+            "Sanitized {} Snapshot proposals for {}",
             proposals_to_delete.len(),
-            dao_handler
+            dao_handler.id
         );
 
         debug!(

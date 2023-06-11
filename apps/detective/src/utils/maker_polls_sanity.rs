@@ -52,14 +52,17 @@ async fn sanitize(
     let from_block = estimate_block(sanitize_from.timestamp()).await.unwrap();
     let to_block = estimate_block(sanitize_to.timestamp()).await.unwrap();
 
-    debug!("from block: {} / to block: {}", from_block, to_block);
-
     let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder).unwrap();
 
     let address = decoder
         .address_create
         .parse::<Address>()
         .expect("bad address");
+
+    debug!(
+        "{:?} {:?} {:?} {:?}",
+        from_block, to_block, decoder, address
+    );
 
     let gov_contract = makerpollcreate::makerpollcreate::makerpollcreate::new(address, rpc.clone());
 
@@ -99,7 +102,7 @@ async fn sanitize(
                     .await
                     .unwrap();
 
-                info!("Sanitized {:?} MakerPoll proposal", existing_proposal.name);
+                info!("Sanitized {} MakerPoll proposal", existing_proposal.name);
 
                 debug!("Sanitized MakerPoll proposal - {:?}", existing_proposal);
             }

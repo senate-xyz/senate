@@ -53,7 +53,8 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
             .expect("bad timestamp"),
             Utc,
         );
-        info!("{}", result);
+
+        debug!("{:?}", result);
         return Ok(result);
     }
 
@@ -93,7 +94,8 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
                         ),
                         Err(_) => bail!("Unable to deserialize etherscan response."),
                     };
-                info!("{}", data);
+
+                debug!("{:?}", data);
                 return Ok(data);
             }
 

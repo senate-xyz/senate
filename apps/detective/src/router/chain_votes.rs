@@ -66,24 +66,7 @@ pub async fn update_chain_votes<'a>(
         .await
         .expect("bad prisma result");
 
-    let last_proposal = ctx
-        .db
-        .proposal()
-        .find_many(vec![proposal::daohandlerid::equals(
-            dao_handler.id.to_string(),
-        )])
-        .order_by(proposal::blockcreated::order(Direction::Desc))
-        .take(1)
-        .exec()
-        .await
-        .expect("bad prisma result");
-
     let first_proposal_block = match first_proposal.first() {
-        Some(s) => s.blockcreated.unwrap_or(0),
-        None => 0,
-    };
-
-    let _last_proposal_block = match last_proposal.first() {
         Some(s) => s.blockcreated.unwrap_or(0),
         None => 0,
     };
@@ -135,14 +118,23 @@ pub async fn update_chain_votes<'a>(
         from_block = to_block;
     }
 
+    debug!(
+        "{:?} {:?} {:?} {:?} {:?}",
+        dao_handler, batch_size, from_block, to_block, voters
+    );
+
     let result = get_results(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await;
 
     match result {
         Ok(r) => Json(success_response(r)),
-        Err(_) => Json(failed_response(voters)),
+        Err(e) => {
+            warn!("{:?}", e);
+            Json(failed_response(voters))
+        }
     }
 }
 
+#[instrument]
 async fn get_results(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -206,6 +198,7 @@ async fn get_results(
     }
 }
 
+#[instrument]
 fn success_response(r: Vec<VoteResult>) -> Vec<VotesResponse> {
     r.into_iter()
         .map(|v| VotesResponse {
@@ -215,6 +208,7 @@ fn success_response(r: Vec<VoteResult>) -> Vec<VotesResponse> {
         .collect()
 }
 
+#[instrument]
 fn failed_response(voters: Vec<String>) -> Vec<VotesResponse> {
     voters
         .into_iter()
@@ -225,6 +219,7 @@ fn failed_response(voters: Vec<String>) -> Vec<VotesResponse> {
         .collect()
 }
 
+#[instrument]
 async fn insert_votes(
     votes: &[VoteResult],
     to_block: &i64,
@@ -251,7 +246,13 @@ async fn insert_votes(
         .filter(|v| v.proposal_active)
         .collect();
 
-    ctx.db
+    debug!(
+        "{:?} {:?} {:?} ",
+        successful_votes, closed_votes, open_votes,
+    );
+
+    let updated = ctx
+        .db
         .vote()
         .create_many(
             closed_votes
@@ -273,6 +274,8 @@ async fn insert_votes(
         .skip_duplicates()
         .exec()
         .await?;
+
+    debug!("{:?}", updated);
 
     let upserts = open_votes.clone().into_iter().map(|v| {
         ctx.db.vote().upsert(
@@ -317,6 +320,8 @@ async fn insert_votes(
         uptodate = true;
     }
 
+    debug!("{:?} ", new_index);
+
     ctx.db
         .voterhandler()
         .update_many(
@@ -338,11 +343,13 @@ async fn insert_votes(
         .await
         .context("failed to update voterhandlers")?;
 
-    let _ = ctx
+    let updated = ctx
         .db
         ._batch(upserts)
         .await
         .context("failed to add votes")?;
+
+    debug!("{:?} ", updated);
 
     Ok(votes.to_owned())
 }
