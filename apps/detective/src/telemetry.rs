@@ -5,7 +5,7 @@ use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 use url::Url;
 
-pub async fn setup() {
+pub fn setup() {
     let app_name = "detective";
 
     let telemetry_agent;
