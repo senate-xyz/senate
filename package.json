@@ -22,7 +22,6 @@
     "build:discord-secretary": "turbo run build:discord-secretary",
     "build:telegram-secretary": "turbo run build:telegram-secretary",
     "build:db": "turbo run build:db",
-    "build:axiom": "turbo run build:axiom",
     "start": "turbo run start",
     "start:senate": "turbo run start:senate",
     "start:shortie": "turbo run start:shortie",

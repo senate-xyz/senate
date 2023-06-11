@@ -41,10 +41,6 @@
       "path": "../packages/database"
     },
     {
-      "name": "📦 @senate/axiom",
-      "path": "../packages/axiom"
-    },
-    {
       "name": "🛠️ @senate/stressTest",
       "path": "../utilities/stressTest"
     },

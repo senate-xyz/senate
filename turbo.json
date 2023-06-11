@@ -2,17 +2,17 @@
   "$schema": "https://turborepo.org/schema.json",
   "pipeline": {
     "build": {
-      "dependsOn": ["^build:db", "^build:axiom"],
+      "dependsOn": ["^build:db"],
       "cache": false
     },
 
     "build:senate": {
-      "dependsOn": ["^build:db", "^build:axiom"],
+      "dependsOn": ["^build:db"],
       "cache": false
     },
 
     "build:shortie": {
-      "dependsOn": ["^build:db", "^build:axiom"],
+      "dependsOn": ["^build:db"],
       "cache": false
     },
 
@@ -43,13 +43,11 @@
 
     "build:db": {
       "cache": false,
-      "dependsOn": ["^db:generate", "^build:axiom"]
+      "dependsOn": ["^db:generate"]
     },
     "db:push": { "cache": false },
     "db:seed": { "cache": false },
     "db:generate": { "cache": false },
-
-    "build:axiom": { "cache": false },
 
     "*": {
       "env": [
@@ -58,10 +56,6 @@
         "PORT",
 
         "DATABASE_URL",
-
-        "AXIOM_TOKEN",
-        "AXIOM_ORG_ID",
-        "AXIOM_DATASET",
 
         "ALCHEMY_NODE_URL",
         "ARBITRUM_NODE_URL",
@@ -76,23 +70,20 @@
 
         "DETECTIVE_URL",
 
-        "BULLETIN_ENABLE",
-        "BULLETIN_CRON_INTERVAL",
         "POSTMARK_TOKEN",
-        "VOTING_COUNTDOWN_TOKEN",
-        "BULLETIN_BCC_EMAILS"
+        "VOTING_COUNTDOWN_TOKEN"
       ]
     },
     "start": {},
     "start:senate": {},
     "start:shortie": {},
 
-    "dev": { "dependsOn": ["^db:generate", "^build:db", "^build:axiom"] },
+    "dev": { "dependsOn": ["^db:generate", "^build:db"] },
     "dev:senate": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+      "dependsOn": ["^db:generate", "^build:db"]
     },
     "dev:bulletin": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+      "dependsOn": ["^db:generate", "^build:db"]
     },
 
     "test:web": { "cache": false },

@@ -29,7 +29,6 @@ module.exports = {
     parserOptions: {
         tsconfigRootDir: __dirname,
         project: [
-            './../axiom/tsconfig.json',
             './../database/tsconfig.json',
             './../../apps/senate/tsconfig.json',
             './../../apps/shortie/tsconfig.json',
