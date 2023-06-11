@@ -5,6 +5,7 @@ use prisma_client_rust::bigdecimal::ToPrimitive;
 use reqwest::Client;
 use serde::Deserialize;
 use std::env;
+use tracing::{info, instrument};
 
 #[allow(dead_code, non_snake_case)]
 #[derive(Deserialize, PartialEq, Debug)]
@@ -23,6 +24,7 @@ pub struct EstimateTimestamp {
     result: EstimateTimestampResult,
 }
 
+#[instrument]
 pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
     let etherscan_api_key = match env::var_os("ETHERSCAN_API_KEY") {
         Some(v) => v.into_string().unwrap(),
@@ -51,7 +53,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
             .expect("bad timestamp"),
             Utc,
         );
-
+        info!("{}", result);
         return Ok(result);
     }
 
@@ -91,7 +93,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
                         ),
                         Err(_) => bail!("Unable to deserialize etherscan response."),
                     };
-
+                info!("{}", data);
                 return Ok(data);
             }
 
@@ -101,6 +103,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
                 tokio::time::sleep(backoff_duration).await;
             }
             _ => {
+                warn!("Could not get result");
                 return Ok(DateTime::from_utc(
                     NaiveDateTime::from_timestamp_millis(Utc::now().timestamp() * 1000)
                         .expect("bad timestamp"),
@@ -119,6 +122,7 @@ pub struct EstimateBlock {
     result: String,
 }
 
+#[instrument]
 pub async fn estimate_block(timestamp: i64) -> Result<i64> {
     let etherscan_api_key = match env::var_os("ETHERSCAN_API_KEY") {
         Some(v) => v.into_string().unwrap(),
@@ -149,6 +153,7 @@ pub async fn estimate_block(timestamp: i64) -> Result<i64> {
                         Err(_) => i64::from(0),
                     };
 
+                info!("{}", data);
                 return Ok(data);
             }
 
@@ -158,6 +163,7 @@ pub async fn estimate_block(timestamp: i64) -> Result<i64> {
                 tokio::time::sleep(backoff_duration).await;
             }
             _ => {
+                warn!("Could not get result");
                 return Ok(i64::from(0));
             }
         }

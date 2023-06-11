@@ -12,7 +12,7 @@ use ethers::{
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
-use tracing::{event, instrument, Level};
+use tracing::{debug, event, instrument, Level};
 
 use super::etherscan::{estimate_block, estimate_timestamp};
 
@@ -52,6 +52,8 @@ async fn sanitize(
     let from_block = estimate_block(sanitize_from.timestamp()).await.unwrap();
     let to_block = estimate_block(sanitize_to.timestamp()).await.unwrap();
 
+    debug!("from block: {} / to block: {}", from_block, to_block);
+
     let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder).unwrap();
 
     let address = decoder
@@ -67,6 +69,8 @@ async fn sanitize(
         .to_block(to_block);
 
     let withdrawn_proposals: Vec<PollWithdrawnFilter> = events.query().await.unwrap();
+
+    debug!("{:?}", withdrawn_proposals);
 
     for withdrawn_proposal in withdrawn_proposals {
         let proposal = db
@@ -95,17 +99,9 @@ async fn sanitize(
                     .await
                     .unwrap();
 
-                event!(
-                    Level::INFO,
-                    "Sanitized {:?} MakerPoll proposal",
-                    existing_proposal.name
-                );
+                info!("Sanitized {:?} MakerPoll proposal", existing_proposal.name);
 
-                event!(
-                    Level::DEBUG,
-                    "Sanitized MakerPoll proposal - {:?}",
-                    existing_proposal
-                );
+                debug!("Sanitized MakerPoll proposal - {:?}", existing_proposal);
             }
             None => {}
         }

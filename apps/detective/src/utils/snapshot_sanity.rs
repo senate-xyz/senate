@@ -96,6 +96,8 @@ async fn sanitize(
         sanitize_to.timestamp()
     );
 
+    debug!("{}", graphql_query);
+
     let graphql_response = http_client
         .get("https://hub.snapshot.org/graphql")
         .json(&serde_json::json!({ "query": graphql_query }))
@@ -104,6 +106,8 @@ async fn sanitize(
 
     let response_data: GraphQLResponse = graphql_response.unwrap().json().await.unwrap();
     let graph_proposals: Vec<GraphQLProposal> = response_data.data.proposals;
+
+    debug!("{:?}", graph_proposals);
 
     if database_proposals.len() > graph_proposals.len() {
         let graphql_proposal_ids: Vec<String> = graph_proposals
@@ -116,6 +120,8 @@ async fn sanitize(
             .into_iter()
             .filter(|proposal| !graphql_proposal_ids.contains(&proposal.externalid))
             .collect();
+
+        debug!("{:?}", proposals_to_delete);
 
         let _ = db
             .vote()
@@ -133,18 +139,15 @@ async fn sanitize(
             .exec()
             .await;
 
-        event!(
-            Level::INFO,
+        info!(
             "Sanitized {:?} Snapshot proposals for {:?}",
             proposals_to_delete.len(),
             dao_handler
         );
 
-        event!(
-            Level::DEBUG,
+        debug!(
             "Sanitized Snapshot proposals for {:?} - {:?}",
-            dao_handler,
-            proposals_to_delete,
+            dao_handler, proposals_to_delete,
         );
     }
 }

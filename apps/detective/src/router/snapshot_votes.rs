@@ -3,6 +3,7 @@ use chrono::Duration;
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use std::iter::once;
+use tracing::instrument;
 
 use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime, Utc};
 use rocket::serde::json::Json;
@@ -54,6 +55,7 @@ struct Decoder {
     space: String,
 }
 
+#[instrument]
 #[post("/snapshot_votes", data = "<data>")]
 pub async fn update_snapshot_votes<'a>(
     ctx: &Ctx,
@@ -141,29 +143,24 @@ pub async fn update_snapshot_votes<'a>(
     )
     .await
     {
-        Ok(_) => {
-            info!("snapshot votes update - {:#?}", data.daoHandlerId);
-            data.voters
-                .clone()
-                .into_iter()
-                .map(|v| VotesResponse {
-                    voter_address: v,
-                    success: true,
-                })
-                .collect()
-        }
-        Err(e) => {
-            warn!("snapshot votes update - {:#?}", e);
-
-            data.voters
-                .clone()
-                .into_iter()
-                .map(|v| VotesResponse {
-                    voter_address: v,
-                    success: false,
-                })
-                .collect()
-        }
+        Ok(_) => data
+            .voters
+            .clone()
+            .into_iter()
+            .map(|v| VotesResponse {
+                voter_address: v,
+                success: true,
+            })
+            .collect(),
+        Err(_) => data
+            .voters
+            .clone()
+            .into_iter()
+            .map(|v| VotesResponse {
+                voter_address: v,
+                success: false,
+            })
+            .collect(),
     };
 
     Json(response)

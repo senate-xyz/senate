@@ -17,6 +17,8 @@ use tokio::time::sleep;
 mod utils {
     pub mod vote;
 }
+
+pub mod telemetry;
 use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 
@@ -42,32 +44,9 @@ async fn main() {
     sleep(std::time::Duration::from_secs(60)).await;
 
     dotenv().ok();
-    let telemetry_agent;
-
-    if env::consts::OS != "macos" {
-        let telemetry_key = match env::var_os("TELEMETRY_KEY") {
-            Some(v) => v.into_string().unwrap(),
-            None => panic!("$TELEMETRY_KEY is not set"),
-        };
-
-        let exec_env = match env::var_os("EXEC_ENV") {
-            Some(v) => v.into_string().unwrap(),
-            None => panic!("$EXEC_ENV is not set"),
-        };
-
-        telemetry_agent = PyroscopeAgent::builder(
-            "https://profiles-prod-004.grafana.net",
-            "telegram-secretary",
-        )
-        .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
-        .basic_auth("491298", telemetry_key)
-        .tags([("env", exec_env.as_str())].to_vec())
-        .build()
-        .unwrap();
-
-        let _ = telemetry_agent.start().unwrap();
-    }
-
+    
+    telemetry::setup();
+    
     info!("telegram-secretaryary start");
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());

@@ -20,3 +20,7 @@ pyroscope_pprofrs = "0.2.5"
 serde = "1.0.164"
 serenity = { version = "0.11.5", features = ["cache"] }
 tokio = { version = "1.28.2", features = ["full"] }
+tracing = "0.1.37"
+tracing-loki = "0.2.2"
+tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+url = "2.4.0"

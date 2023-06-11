@@ -1,5 +1,6 @@
 use anyhow::{bail, Context, Result};
 use std::{cmp, ops::Div};
+use tracing::instrument;
 
 use ethers::{providers::Middleware, types::U64};
 use prisma_client_rust::Direction;
@@ -9,21 +10,13 @@ use serde_json::Value;
 
 use crate::{
     handlers::votes::{
-        aave::aave_votes,
-        compound::compound_votes,
-        dydx::dydx_votes,
-        ens::ens_votes,
-        gitcoin::gitcoin_votes,
-        hop::hop_votes,
-        maker_executive::makerexecutive_votes,
-        maker_poll::makerpoll_votes,
-        maker_poll_arbitrum::makerpollarbitrum_votes,
+        aave::aave_votes, compound::compound_votes, dydx::dydx_votes, ens::ens_votes,
+        gitcoin::gitcoin_votes, hop::hop_votes, maker_executive::makerexecutive_votes,
+        maker_poll::makerpoll_votes, maker_poll_arbitrum::makerpollarbitrum_votes,
         uniswap::uniswap_votes,
     },
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType},
-    Ctx,
-    VotesRequest,
-    VotesResponse,
+    Ctx, VotesRequest, VotesResponse,
 };
 
 #[derive(Debug, Deserialize, Clone)]
@@ -46,6 +39,7 @@ pub struct VoteResult {
     pub votes: Vec<Vote>,
 }
 
+#[instrument]
 #[post("/chain_votes", data = "<data>")]
 pub async fn update_chain_votes<'a>(
     ctx: &Ctx,
@@ -144,14 +138,8 @@ pub async fn update_chain_votes<'a>(
     let result = get_results(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await;
 
     match result {
-        Ok(r) => {
-            info!("chain votes update - {:#?}", data.daoHandlerId);
-            Json(success_response(r))
-        }
-        Err(e) => {
-            warn!("chain votes update - {:#?}", e);
-            Json(failed_response(voters))
-        }
+        Ok(r) => Json(success_response(r)),
+        Err(_) => Json(failed_response(voters)),
     }
 }
 

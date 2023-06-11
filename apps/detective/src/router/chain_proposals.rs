@@ -3,22 +3,16 @@ use ethers::{providers::Middleware, types::U64};
 use prisma_client_rust::chrono::{DateTime, FixedOffset, Utc};
 use rocket::serde::json::Json;
 use serde_json::Value;
+use tracing::instrument;
 
 use crate::{
     handlers::proposals::{
-        compound::compound_proposals,
-        dydx::dydx_proposals,
-        ens::ens_proposals,
-        gitcoin::gitcoin_proposals,
-        hop::hop_proposals,
-        maker_executive::maker_executive_proposals,
-        maker_poll::maker_poll_proposals,
-        uniswap::uniswap_proposals,
+        compound::compound_proposals, dydx::dydx_proposals, ens::ens_proposals,
+        gitcoin::gitcoin_proposals, hop::hop_proposals, maker_executive::maker_executive_proposals,
+        maker_poll::maker_poll_proposals, uniswap::uniswap_proposals,
     },
     prisma::{dao, daohandler, proposal, DaoHandlerType, ProposalState},
-    Ctx,
-    ProposalsRequest,
-    ProposalsResponse,
+    Ctx, ProposalsRequest, ProposalsResponse,
 };
 
 use crate::handlers::proposals::aave::aave_proposals;
@@ -42,6 +36,7 @@ pub struct ChainProposal {
     pub(crate) state: ProposalState,
 }
 
+#[instrument]
 #[post("/chain_proposals", data = "<data>")]
 pub async fn update_chain_proposals<'a>(
     ctx: &Ctx,
@@ -85,23 +80,18 @@ pub async fn update_chain_proposals<'a>(
     let result = get_results(ctx, from_block, to_block, dao_handler).await;
 
     match result {
-        Ok(_) => {
-            info!("chain proposals update - {:#?}", data.daoHandlerId);
-            Json(ProposalsResponse {
-                daoHandlerId: data.daoHandlerId,
-                response: "ok",
-            })
-        }
-        Err(e) => {
-            warn!("chain proposals update - {:#?}", e);
-            Json(ProposalsResponse {
-                daoHandlerId: data.daoHandlerId,
-                response: "nok",
-            })
-        }
+        Ok(_) => Json(ProposalsResponse {
+            daoHandlerId: data.daoHandlerId,
+            response: "ok",
+        }),
+        Err(_) => Json(ProposalsResponse {
+            daoHandlerId: data.daoHandlerId,
+            response: "nok",
+        }),
     }
 }
 
+#[instrument]
 async fn get_results(
     ctx: &Ctx,
     from_block: i64,
@@ -159,6 +149,7 @@ async fn get_results(
     }
 }
 
+#[instrument]
 async fn insert_proposals(
     proposals: Vec<ChainProposal>,
     to_block: i64,

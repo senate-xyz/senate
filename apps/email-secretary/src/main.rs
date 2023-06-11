@@ -13,6 +13,7 @@ pub mod utils {
     pub mod countdown;
     pub mod vote;
 }
+pub mod telemetry;
 
 use chrono::{Timelike, Utc};
 use dotenv::dotenv;
@@ -32,30 +33,8 @@ use crate::{
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-    let telemetry_agent;
 
-    if env::consts::OS != "macos" {
-        let telemetry_key = match env::var_os("TELEMETRY_KEY") {
-            Some(v) => v.into_string().unwrap(),
-            None => panic!("$TELEMETRY_KEY is not set"),
-        };
-
-        let exec_env = match env::var_os("EXEC_ENV") {
-            Some(v) => v.into_string().unwrap(),
-            None => panic!("$EXEC_ENV is not set"),
-        };
-
-        telemetry_agent =
-            PyroscopeAgent::builder("https://profiles-prod-004.grafana.net", "email-secretary")
-                .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
-                .basic_auth("491298", telemetry_key)
-                .tags([("env", exec_env.as_str())].to_vec())
-                .build()
-                .unwrap();
-
-        let _ = telemetry_agent.start().unwrap();
-    }
-
+    telemetry::setup();
     info!("email-secretary start");
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());

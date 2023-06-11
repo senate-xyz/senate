@@ -7,6 +7,7 @@ use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use rocket::serde::json::Json;
 use serde::Deserialize;
+use tracing::instrument;
 
 use crate::{
     prisma::{dao, daohandler, proposal, ProposalState},
@@ -45,6 +46,7 @@ struct Decoder {
     space: String,
 }
 
+#[instrument]
 #[post("/snapshot_proposals", data = "<data>")]
 pub async fn update_snapshot_proposals<'a>(
     ctx: &Ctx,
@@ -101,21 +103,14 @@ pub async fn update_snapshot_proposals<'a>(
     );
 
     match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
-        Ok(_) => {
-            info!("snapshot proposals update - {:#?}", data.daoHandlerId);
-            Json(ProposalsResponse {
-                daoHandlerId: data.daoHandlerId,
-                response: "ok",
-            })
-        }
-        Err(e) => {
-            warn!("snapshot proposals update - {:#?}", e);
-
-            Json(ProposalsResponse {
-                daoHandlerId: data.daoHandlerId,
-                response: "nok",
-            })
-        }
+        Ok(_) => Json(ProposalsResponse {
+            daoHandlerId: data.daoHandlerId,
+            response: "ok",
+        }),
+        Err(_) => Json(ProposalsResponse {
+            daoHandlerId: data.daoHandlerId,
+            response: "nok",
+        }),
     }
 }
 

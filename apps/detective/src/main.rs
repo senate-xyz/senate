@@ -6,6 +6,7 @@ pub mod contracts;
 pub mod handlers;
 pub mod prisma;
 mod router;
+pub mod telemetry;
 pub mod utils {
     pub mod etherscan;
     pub mod maker_polls_sanity;
@@ -26,8 +27,8 @@ use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, Pprof, PprofConfig};
 use std::process;
 use tracing::instrument;
-use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
+use tracing_subscriber::{layer::SubscriberExt, EnvFilter};
 use url::Url;
 
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
@@ -38,7 +39,7 @@ use utils::{maker_polls_sanity::maker_polls_sanity_check, snapshot_sanity::snaps
 #[macro_use]
 extern crate rocket;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Context {
     pub db: Arc<PrismaClient>,
     pub rpc: Arc<Provider<Http>>,
@@ -47,14 +48,14 @@ pub struct Context {
 pub type Ctx = rocket::State<Context>;
 
 #[allow(non_snake_case)]
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 #[serde(crate = "rocket::serde")]
 pub struct ProposalsRequest<'r> {
     daoHandlerId: &'r str,
 }
 
 #[allow(non_snake_case)]
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 #[serde(crate = "rocket::serde")]
 pub struct ProposalsResponse<'r> {
     daoHandlerId: &'r str,
@@ -62,7 +63,7 @@ pub struct ProposalsResponse<'r> {
 }
 
 #[allow(non_snake_case)]
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(crate = "rocket::serde")]
 pub struct VotesRequest<'r> {
     daoHandlerId: &'r str,
@@ -84,54 +85,8 @@ fn index() -> &'static str {
 #[launch]
 async fn rocket() -> _ {
     dotenv().ok();
-    let telemetry_agent;
 
-    if env::consts::OS != "macos" {
-        let telemetry_key = match env::var_os("TELEMETRY_KEY") {
-            Some(v) => v.into_string().unwrap(),
-            None => panic!("$TELEMETRY_KEY is not set"),
-        };
-
-        let exec_env = match env::var_os("EXEC_ENV") {
-            Some(v) => v.into_string().unwrap(),
-            None => panic!("$EXEC_ENV is not set"),
-        };
-
-        telemetry_agent =
-            PyroscopeAgent::builder("https://profiles-prod-004.grafana.net", "detective")
-                .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
-                .basic_auth("491298", telemetry_key.clone())
-                .tags([("env", exec_env.as_str())].to_vec())
-                .build()
-                .unwrap();
-
-        let _ = telemetry_agent.start().unwrap();
-
-        let (layer, task) = tracing_loki::builder()
-            .label("service", "detective")
-            .unwrap()
-            .build_url(
-                Url::parse(
-                    format!(
-                        "https://340656:{}@logs-prod-013.grafana.net/loki/api/v1/push",
-                        telemetry_key.clone()
-                    )
-                    .as_str(),
-                )
-                .unwrap(),
-            )
-            .unwrap();
-
-        tracing_subscriber::registry().with(layer).init();
-
-        tokio::spawn(task);
-    }
-
-    tracing::info!(
-        task = "tracing_setup",
-        result = "success",
-        "tracing successfully set up",
-    );
+    telemetry::setup();
 
     let rpc_url = match env::var_os("ALCHEMY_NODE_URL") {
         Some(v) => v.into_string().unwrap(),
