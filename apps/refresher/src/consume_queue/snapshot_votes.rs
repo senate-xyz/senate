@@ -120,7 +120,7 @@ pub(crate) async fn consume_snapshot_votes(
                     .unwrap();
             }
             Err(e) => {
-                warn!("refresher snapshot votes - {:#?}", e);
+                warn!("refresher err - {:#?}", e);
 
                 let voter_ids = client_ref
                     .voter()

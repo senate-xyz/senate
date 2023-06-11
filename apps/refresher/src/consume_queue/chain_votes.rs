@@ -144,7 +144,7 @@ pub(crate) async fn consume_chain_votes(
                 };
             }
             Err(e) => {
-                warn!("refresher chain votes - {:#?}", e);
+                warn!("refresher err - {:#?}", e);
 
                 let _ = client_ref
                     .daohandler()

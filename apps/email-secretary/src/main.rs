@@ -35,7 +35,6 @@ async fn main() {
     dotenv().ok();
 
     telemetry::setup();
-    info!("email-secretary start");
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
 

@@ -44,10 +44,8 @@ async fn main() {
     sleep(std::time::Duration::from_secs(60)).await;
 
     dotenv().ok();
-    
+
     telemetry::setup();
-    
-    info!("telegram-secretaryary start");
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
     let bot = Bot::from_env()

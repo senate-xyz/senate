@@ -69,7 +69,7 @@ pub(crate) async fn consume_snapshot_proposals(
                         let _ = client_ref._batch(dbupdate).await.unwrap();
                     }
                     Err(e) => {
-                        warn!("refresher snapshot proposals - {:#?}", e);
+                        warn!("refresher err - {:#?}", e);
 
                         let _ = client_ref
                             .daohandler()
@@ -90,7 +90,7 @@ pub(crate) async fn consume_snapshot_proposals(
                 }
             }
             Err(e) => {
-                warn!("refresher snapshot proposals - {:#?}", e);
+                warn!("refresher err - {:#?}", e);
 
                 let _ = client_ref
                     .daohandler()

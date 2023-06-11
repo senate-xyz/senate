@@ -123,7 +123,7 @@ async fn main() {
                     match consume_snapshot_proposals(item, &client_clone).await {
                         Ok(_) => {}
                         Err(e) => {
-                            warn!("refresher main - {:#?}", e);
+                            warn!("refresher err - {:#?}", e);
                         }
                     }
                 });
@@ -147,7 +147,7 @@ async fn main() {
                     match consume_snapshot_votes(item, &client_clone).await {
                         Ok(_) => {}
                         Err(e) => {
-                            warn!("refresher main - {:#?}", e);
+                            warn!("refresher err - {:#?}", e);
                         }
                     }
                 });
@@ -171,7 +171,7 @@ async fn main() {
                     match consume_chain_proposals(item, &client_clone).await {
                         Ok(_) => {}
                         Err(e) => {
-                            warn!("refresher main - {:#?}", e);
+                            warn!("refresher err - {:#?}", e);
                         }
                     }
                 });
@@ -195,7 +195,7 @@ async fn main() {
                     match consume_chain_votes(item, &client_clone).await {
                         Ok(_) => {}
                         Err(e) => {
-                            warn!("refresher main - {:#?}", e);
+                            warn!("refresher err - {:#?}", e);
                         }
                     }
                 });

@@ -42,15 +42,12 @@ prisma::proposal::include!(proposal_with_dao { dao });
 prisma::user::include!(user_with_voters_and_subscriptions { subscriptions voters});
 
 pub async fn send_quorum_email(db: &Arc<prisma::PrismaClient>) {
-    info!("send_quorum_email");
-
     generate_quorum_notifications(db).await;
 
     dispatch_quorum_notifications(db).await;
 }
 
 pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
-    info!("dispatch_quorum_notifications");
     let notifications = db
         .notification()
         .find_many(vec![
@@ -60,8 +57,6 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
         .exec()
         .await
         .unwrap();
-
-    info!("{:?}", notifications.len());
 
     for notification in notifications {
         let proposal = db
@@ -180,13 +175,10 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             .exec()
             .await
             .unwrap();
-
-        info!("{:?}", data);
     }
 }
 
 pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
-    info!("generate_quorum_notifications");
     let proposals_ending_soon = db
         .proposal()
         .find_many(vec![

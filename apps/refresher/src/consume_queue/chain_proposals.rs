@@ -87,7 +87,7 @@ pub(crate) async fn consume_chain_proposals(
                         let _ = client_ref._batch(dbupdate).await;
                     }
                     Err(e) => {
-                        warn!("refresher chain proposals - {:#?}", e);
+                        warn!("refresher err - {:#?}", e);
 
                         let _ = client_ref
                             .daohandler()
@@ -109,7 +109,7 @@ pub(crate) async fn consume_chain_proposals(
                 }
             }
             Err(e) => {
-                warn!("refresher chain proposals - {:#?}", e);
+                warn!("refresher err - {:#?}", e);
 
                 let _ = client_ref
                     .daohandler()
