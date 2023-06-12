@@ -15,6 +15,7 @@ use num_bigint::BigInt;
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
 use serde::Deserialize;
 use std::str::FromStr;
+use tracing::instrument;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -22,6 +23,7 @@ struct Decoder {
     address_vote: String,
 }
 
+#[instrument]
 pub async fn makerpoll_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -81,6 +83,7 @@ pub async fn makerpoll_votes(
         .collect())
 }
 
+#[instrument]
 async fn get_votes_for_voter(
     logs: Vec<(VotedFilter, LogMeta)>,
     dao_handler: daohandler::Data,
@@ -145,6 +148,7 @@ async fn get_votes_for_voter(
 
 //I have no idea how this works but this is the reverse of what mkr does here
 //https://github.com/makerdao/governance-portal-v2/blob/efeaa159a86748646af136f34c807b2dc9a2c401/modules/polling/api/victory_conditions/__tests__/instantRunoff.spec.ts#L13
+#[instrument]
 async fn get_options(raw_option: String) -> Result<Vec<u8>> {
     pub enum Endian {
         Big,

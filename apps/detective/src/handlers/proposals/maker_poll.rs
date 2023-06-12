@@ -21,6 +21,7 @@ use reqwest_middleware::ClientWithMiddleware;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{str, sync::Arc, vec};
+use tracing::instrument;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -29,6 +30,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
+#[instrument]
 pub async fn maker_poll_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -66,6 +68,7 @@ pub async fn maker_poll_proposals(
     Ok(result)
 }
 
+#[instrument]
 async fn data_for_proposal(
     p: (makerpollcreate::makerpollcreate::PollCreatedFilter, LogMeta),
     ctx: &Ctx,
@@ -164,6 +167,7 @@ struct ResultsData {
     results: Vec<ResultData>,
 }
 
+#[instrument]
 async fn get_results_data(
     poll_id: String,
     http_client: Arc<ClientWithMiddleware>,
@@ -207,6 +211,7 @@ async fn get_results_data(
     }
 }
 
+#[instrument]
 async fn get_title(url: String) -> Result<String> {
     let client = Client::new();
     let mut retries = 0;

@@ -25,6 +25,7 @@ use reqwest::{Client, StatusCode};
 use reqwest_middleware::ClientWithMiddleware;
 use serde::Deserialize;
 use std::{str, sync::Arc, time::Duration};
+use tracing::instrument;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -33,6 +34,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
+#[instrument]
 pub async fn dydx_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -191,6 +193,7 @@ struct IpfsData {
     title: String,
 }
 
+#[instrument]
 async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> Result<String> {
     let mut retries = 0;
     let mut current_gateway = 0;

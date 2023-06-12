@@ -1,7 +1,6 @@
 use crate::{
     contracts::dydxgov::{
-        VoteEmittedFilter,
-        {self},
+        VoteEmittedFilter, {self},
     },
     prisma::{daohandler, proposal},
     router::chain_votes::{Vote, VoteResult},
@@ -16,6 +15,7 @@ use ethers::{
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
 use serde::Deserialize;
+use tracing::instrument;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -23,6 +23,7 @@ struct Decoder {
     address: String,
 }
 
+#[instrument]
 pub async fn dydx_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -79,6 +80,7 @@ pub async fn dydx_votes(
         .collect())
 }
 
+#[instrument]
 async fn get_votes_for_voter(
     logs: Vec<(VoteEmittedFilter, LogMeta)>,
     dao_handler: daohandler::Data,

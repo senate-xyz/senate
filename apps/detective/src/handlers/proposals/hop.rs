@@ -18,6 +18,7 @@ use prisma_client_rust::{
 };
 use serde::Deserialize;
 use std::str;
+use tracing::instrument;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -26,6 +27,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
+#[instrument]
 pub async fn hop_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -61,6 +63,7 @@ pub async fn hop_proposals(
     Ok(result)
 }
 
+#[instrument]
 async fn data_for_proposal(
     p: (hopgov::hopgov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,
