@@ -6,7 +6,10 @@ use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
 use tracing::{event, instrument, Level};
 
-use crate::prisma::{self, daohandler, proposal, vote, DaoHandlerType};
+use crate::{
+    prisma::{self, daohandler, proposal, vote, DaoHandlerType},
+    Context,
+};
 
 #[derive(Debug, Deserialize)]
 struct Decoder {
@@ -29,16 +32,14 @@ struct GraphQLProposal {
 }
 
 #[instrument]
-pub async fn snapshot_sanity_check(
-    db: Arc<prisma::PrismaClient>,
-    http_client: Arc<ClientWithMiddleware>,
-) {
+pub async fn snapshot_sanity_check(ctx: &Context) {
     let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(30);
     let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
 
     debug!("{:?} {:?}", sanitize_from, sanitize_to);
 
-    let dao_handlers = db
+    let dao_handlers = ctx
+        .db
         .clone()
         .daohandler()
         .find_many(vec![daohandler::r#type::equals(DaoHandlerType::Snapshot)])
@@ -47,7 +48,7 @@ pub async fn snapshot_sanity_check(
         .unwrap();
 
     for dao_handler in dao_handlers {
-        sanitize(dao_handler, sanitize_from, sanitize_to, &db, &http_client).await;
+        sanitize(dao_handler, sanitize_from, sanitize_to, &ctx).await;
     }
 }
 
@@ -56,10 +57,10 @@ async fn sanitize(
     dao_handler: daohandler::Data,
     sanitize_from: chrono::DateTime<Utc>,
     sanitize_to: chrono::DateTime<Utc>,
-    db: &Arc<prisma::PrismaClient>,
-    http_client: &Arc<ClientWithMiddleware>,
+    ctx: &Context,
 ) {
-    let database_proposals = db
+    let database_proposals = ctx
+        .db
         .proposal()
         .find_many(vec![
             proposal::daohandlerid::equals(dao_handler.clone().id),
@@ -102,7 +103,8 @@ async fn sanitize(
 
     debug!("{}", graphql_query);
 
-    let graphql_response = http_client
+    let graphql_response = ctx
+        .http_client
         .get("https://hub.snapshot.org/graphql")
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()
@@ -127,7 +129,8 @@ async fn sanitize(
 
         debug!("{:?}", proposals_to_delete);
 
-        let _ = db
+        let _ = ctx
+            .db
             .vote()
             .delete_many(vec![vote::proposalid::in_vec(
                 proposals_to_delete.iter().map(|p| p.clone().id).collect(),
@@ -135,7 +138,8 @@ async fn sanitize(
             .exec()
             .await;
 
-        let _ = db
+        let _ = ctx
+            .db
             .proposal()
             .delete_many(vec![proposal::id::in_vec(
                 proposals_to_delete.iter().map(|p| p.clone().id).collect(),

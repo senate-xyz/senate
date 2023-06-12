@@ -86,7 +86,7 @@ async fn data_for_proposal(
     let voting_start_block_number = log.start_block.as_u64().to_i64().unwrap();
     let voting_end_block_number = log.end_block.as_u64().to_i64().unwrap();
 
-    let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number).await {
+    let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number, &ctx).await {
         Ok(r) => r,
         Err(_) => DateTime::from_utc(
             NaiveDateTime::from_timestamp_millis(
@@ -98,7 +98,7 @@ async fn data_for_proposal(
         ),
     };
 
-    let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number).await {
+    let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number, &ctx).await {
         Ok(r) => r,
         Err(_) => DateTime::from_utc(
             NaiveDateTime::from_timestamp_millis(

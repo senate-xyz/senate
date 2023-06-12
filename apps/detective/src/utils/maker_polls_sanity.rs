@@ -3,6 +3,7 @@ use std::sync::Arc;
 use crate::{
     contracts::makerpollcreate::{self, PollWithdrawnFilter},
     prisma::{self, daohandler, proposal, vote, DaoHandlerType},
+    Context,
 };
 use chrono::{Duration, Utc};
 use ethers::{
@@ -23,11 +24,12 @@ struct Decoder {
 }
 
 #[instrument]
-pub async fn maker_polls_sanity_check(db: Arc<prisma::PrismaClient>, rpc: Arc<Provider<Http>>) {
+pub async fn maker_polls_sanity_check(ctx: &Context) {
     let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(30);
     let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
 
-    let dao_handler = db
+    let dao_handler = ctx
+        .db
         .clone()
         .daohandler()
         .find_first(vec![daohandler::r#type::equals(DaoHandlerType::MakerPoll)])
@@ -36,7 +38,7 @@ pub async fn maker_polls_sanity_check(db: Arc<prisma::PrismaClient>, rpc: Arc<Pr
         .unwrap();
 
     match dao_handler {
-        Some(handler) => sanitize(handler, sanitize_from, sanitize_to, &db, &rpc).await,
+        Some(handler) => sanitize(handler, sanitize_from, sanitize_to, &ctx).await,
         None => {}
     }
 }
@@ -46,11 +48,12 @@ async fn sanitize(
     dao_handler: daohandler::Data,
     sanitize_from: chrono::DateTime<Utc>,
     sanitize_to: chrono::DateTime<Utc>,
-    db: &Arc<prisma::PrismaClient>,
-    rpc: &Arc<Provider<Http>>,
+    ctx: &Context,
 ) {
-    let from_block = estimate_block(sanitize_from.timestamp()).await.unwrap();
-    let to_block = estimate_block(sanitize_to.timestamp()).await.unwrap();
+    let from_block = estimate_block(sanitize_from.timestamp(), &ctx)
+        .await
+        .unwrap();
+    let to_block = estimate_block(sanitize_to.timestamp(), &ctx).await.unwrap();
 
     let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder).unwrap();
 
@@ -64,7 +67,8 @@ async fn sanitize(
         from_block, to_block, decoder, address
     );
 
-    let gov_contract = makerpollcreate::makerpollcreate::makerpollcreate::new(address, rpc.clone());
+    let gov_contract =
+        makerpollcreate::makerpollcreate::makerpollcreate::new(address, ctx.rpc.clone());
 
     let events = gov_contract
         .poll_withdrawn_filter()
@@ -76,7 +80,8 @@ async fn sanitize(
     debug!("{:?}", withdrawn_proposals);
 
     for withdrawn_proposal in withdrawn_proposals {
-        let proposal = db
+        let proposal = ctx
+            .db
             .proposal()
             .find_first(vec![
                 proposal::externalid::equals(withdrawn_proposal.poll_id.to_string()),
@@ -88,13 +93,15 @@ async fn sanitize(
 
         match proposal {
             Some(existing_proposal) => {
-                db.vote()
+                ctx.db
+                    .vote()
                     .delete_many(vec![vote::proposalid::equals(existing_proposal.clone().id)])
                     .exec()
                     .await
                     .unwrap();
 
-                db.proposal()
+                ctx.db
+                    .proposal()
                     .delete(proposal::id::equals(
                         existing_proposal.clone().id.to_string(),
                     ))

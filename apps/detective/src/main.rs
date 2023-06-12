@@ -120,8 +120,8 @@ async fn rocket() -> _ {
         loop {
             interval.tick().await;
             debug!("running sanity");
-            maker_polls_sanity_check(Arc::clone(&context.db), Arc::clone(&context.rpc)).await;
-            snapshot_sanity_check(Arc::clone(&context.db), Arc::clone(&context.http_client)).await;
+            maker_polls_sanity_check(&context).await;
+            snapshot_sanity_check(&context).await;
         }
     });
 
