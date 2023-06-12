@@ -68,6 +68,8 @@ pub async fn aave_votes(
         result.push(voteresult?);
     }
 
+    debug!("{:?}", result);
+
     Ok(result
         .iter()
         .map(|r| VoteResult {

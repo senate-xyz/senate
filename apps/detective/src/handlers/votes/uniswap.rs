@@ -63,6 +63,8 @@ pub async fn uniswap_votes(
         });
     }
 
+    debug!("{:?}", result);
+
     let mut result = Vec::new();
     while let Some(voteresult) = futures.next().await {
         result.push(voteresult?);

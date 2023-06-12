@@ -165,6 +165,8 @@ async fn proposal(
         state,
     };
 
+    debug!("{:?}", proposal);
+
     Ok(proposal)
 }
 

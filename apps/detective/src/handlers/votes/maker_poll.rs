@@ -73,6 +73,8 @@ pub async fn makerpoll_votes(
         result.push(voteresult?);
     }
 
+    debug!("{:?}", result);
+
     Ok(result
         .iter()
         .map(|r| VoteResult {

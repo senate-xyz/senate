@@ -83,6 +83,8 @@ pub async fn makerpollarbitrum_votes(
         result.push(voteresult?);
     }
 
+    debug!("{:?}", result);
+
     Ok(result
         .iter()
         .map(|r| VoteResult {

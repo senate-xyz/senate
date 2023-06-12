@@ -70,6 +70,8 @@ pub async fn dydx_votes(
         result.push(voteresult?);
     }
 
+    debug!("{:?}", result);
+
     Ok(result
         .iter()
         .map(|r| VoteResult {

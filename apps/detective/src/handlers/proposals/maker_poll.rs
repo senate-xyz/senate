@@ -152,6 +152,8 @@ async fn data_for_proposal(
         },
     };
 
+    debug!("{:?}", proposal);
+
     Ok(proposal)
 }
 
