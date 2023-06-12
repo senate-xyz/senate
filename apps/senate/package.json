@@ -8,8 +8,6 @@
     "scripts": {
         "build": "next build",
         "build:senate": "next build",
-        "synpress": "synpress open --configFile=synpress.config.ts",
-        "test:e2e": "synpress run --configFile=synpress.config.ts",
         "test": "start-server-and-test dev http://localhost:3001 test:e2e",
         "test:senate": "start-server-and-test dev http://localhost:3001 test:e2e",
         "start": "next start",
@@ -56,7 +54,6 @@
         "zod": "^3.21.4"
     },
     "devDependencies": {
-        "@synthetixio/synpress": "^3.5.1",
         "@types/node": "18.16.3",
         "@types/react": "18.2.0",
         "@types/react-dom": "18.2.1",
@@ -65,7 +62,6 @@
         "autoprefixer": "^10.4.14",
         "bip39": "^3.1.0",
         "core-js": "^3.30.1",
-        "cypress-localstorage-commands": "^2.2.3",
         "eslint": "8.39.0",
         "eslint-config-next": "13.3.4",
         "lokijs": "^1.5.12",
