@@ -155,6 +155,14 @@ async fn send_bulletin(
 ) -> Result<bool> {
     let user_data = get_user_bulletin_data(user.clone(), db).await?;
 
+    if user_data.newProposals.len() == 0
+        && user_data.endedProposals.len() == 0
+        && user_data.endingSoonProposals.len() == 0
+        && !user.emptydailybulletin
+    {
+        return Ok(false);
+    }
+
     let bulletin_template = if user.isaaveuser == MagicUserState::Enabled
         && user.isuniswapuser == MagicUserState::Enabled
     {
@@ -194,7 +202,7 @@ async fn send_bulletin(
             .unwrap();
     }
 
-    Ok((true))
+    Ok(true)
 }
 
 async fn get_user_bulletin_data(
