@@ -124,7 +124,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 .unwrap()
                 .round()
                 .to_i64()
-                .unwrap()
+                .unwrap_or(0)
                 .to_formatted_string(&Locale::en),
             requiredQuroum: proposal
                 .quorum
@@ -132,7 +132,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 .unwrap()
                 .round()
                 .to_i64()
-                .unwrap()
+                .unwrap_or(0)
                 .to_formatted_string(&Locale::en),
         };
 
