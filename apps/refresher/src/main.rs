@@ -112,10 +112,6 @@ async fn main() {
     let consumer_snapshot_proposal_client = client.clone();
     let consumer_snapshot_proposals_task = tokio::spawn(async move {
         loop {
-            info!(
-                "consumer_snapshot_proposals_task queue size: {:?}",
-                rx_snapshot_proposals.len()
-            );
             if let Ok(item) = rx_snapshot_proposals.recv_async().await {
                 let client_clone = consumer_snapshot_proposal_client.clone();
 
@@ -136,10 +132,6 @@ async fn main() {
     let consumer_snapshot_votes_client = client.clone();
     let consumer_snapshot_votes_task = tokio::spawn(async move {
         loop {
-            info!(
-                "consumer_snapshot_votes_task queue size: {:?}",
-                rx_snapshot_votes.len()
-            );
             if let Ok(item) = rx_snapshot_votes.recv_async().await {
                 let client_clone = consumer_snapshot_votes_client.clone();
 
@@ -160,10 +152,6 @@ async fn main() {
     let consumer_chain_proposal_client = client.clone();
     let consumer_chain_proposals_task = tokio::spawn(async move {
         loop {
-            info!(
-                "consumer_chain_proposals_task queue size: {:?}",
-                rx_chain_proposals.len()
-            );
             if let Ok(item) = rx_chain_proposals.recv_async().await {
                 let client_clone = consumer_chain_proposal_client.clone();
 
@@ -184,10 +172,6 @@ async fn main() {
     let consumer_chain_votes_client = client.clone();
     let consumer_chain_votes_task = tokio::spawn(async move {
         loop {
-            info!(
-                "consumer_chain_votes_task queue size: {:?}",
-                rx_chain_votes.len()
-            );
             if let Ok(item) = rx_chain_votes.recv_async().await {
                 let client_clone = consumer_chain_votes_client.clone();
 
