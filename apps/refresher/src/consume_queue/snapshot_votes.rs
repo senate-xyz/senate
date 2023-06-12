@@ -1,10 +1,15 @@
 use anyhow::Result;
 use log::warn;
-use std::{env, sync::Arc};
-use tracing::{debug, instrument};
+use opentelemetry::{propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator};
+use std::{collections::HashMap, env, sync::Arc};
+use tracing::{debug, debug_span, event, instrument, Instrument, Level};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use prisma_client_rust::chrono::{DateTime, Utc};
-use reqwest::Client;
+use reqwest::{
+    header::{HeaderName, HeaderValue},
+    Client,
+};
 use serde::Deserialize;
 
 use tokio::task;
@@ -35,6 +40,21 @@ pub(crate) async fn consume_snapshot_votes(
 
     let http_client = Client::builder().build().unwrap();
 
+    let span = tracing::Span::current();
+    let context = span.context();
+    let propagator = TraceContextPropagator::new();
+    let mut fields = HashMap::new();
+    propagator.inject_context(&context, &mut fields);
+    let headers = fields
+        .into_iter()
+        .map(|(k, v)| {
+            (
+                HeaderName::try_from(k).unwrap(),
+                HeaderValue::try_from(v).unwrap(),
+            )
+        })
+        .collect();
+
     let dao_handler = client
         .daohandler()
         .find_first(vec![daohandler::id::equals(entry.handler_id.to_string())])
@@ -47,12 +67,26 @@ pub(crate) async fn consume_snapshot_votes(
     let dao_handler_ref = dao_handler;
     let voters_ref = entry.voters.clone();
 
-    task::spawn(async move {
+    task::spawn({
+        let detective_span = debug_span!("detective");
+        async move {
+        event!(Level::DEBUG, "Sending detective request");
+
+
+        let span = tracing::Span::current();
+        let context = span.context();
+        let propagator = TraceContextPropagator::new();
+        let mut trace = HashMap::new();
+        propagator.inject_context(&context, &mut trace);
+
         let response = http_client
             .post(&post_url)
-            .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "voters": entry.voters }))
+            .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "voters": entry.voters, "trace": trace}))
+            .headers(headers)
             .send()
             .await;
+
+        event!(Level::DEBUG, "Received detective response");
 
         match response {
             Ok(res) => {
@@ -158,6 +192,7 @@ pub(crate) async fn consume_snapshot_votes(
                 warn!("refresher error: {:#?}", e);
             }
         }
+    }.instrument(detective_span)
     });
     Ok(())
 }

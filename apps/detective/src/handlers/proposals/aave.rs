@@ -34,7 +34,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
-#[instrument]
+#[instrument(skip(ctx), ret)]
 pub async fn aave_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -70,7 +70,6 @@ pub async fn aave_proposals(
     Ok(result)
 }
 
-#[instrument]
 async fn data_for_proposal(
     p: (aavegov::aavegov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,
@@ -196,7 +195,6 @@ struct IpfsData {
     title: String,
 }
 
-#[instrument]
 async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> Result<String> {
     let mut retries = 0;
     let mut current_gateway = 0;

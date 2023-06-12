@@ -23,7 +23,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
-#[instrument]
+#[instrument(skip(ctx), ret)]
 pub async fn gitcoin_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -59,7 +59,6 @@ pub async fn gitcoin_proposals(
     Ok(result)
 }
 
-#[instrument]
 async fn data_for_proposal(
     p: (gitcoingov::gitcoingov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,

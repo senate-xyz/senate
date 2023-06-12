@@ -2,12 +2,14 @@ use std::time::UNIX_EPOCH;
 
 use anyhow::{Context, Result};
 use chrono::{Datelike, Duration, TimeZone, Utc};
+use opentelemetry::propagation::TextMapPropagator;
 use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime};
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use rocket::serde::json::Json;
 use serde::Deserialize;
-use tracing::instrument;
+use tracing::{debug_span, instrument, span, trace_span, Instrument, Level, Span};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
     prisma::{dao, daohandler, proposal, ProposalState},
@@ -46,33 +48,42 @@ struct Decoder {
     space: String,
 }
 
-#[instrument]
 #[post("/snapshot_proposals", data = "<data>")]
 pub async fn update_snapshot_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>,
 ) -> Json<ProposalsResponse<'a>> {
-    let dao_handler = ctx
-        .db
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-        .exec()
-        .await
-        .expect("bad prisma result")
-        .expect("daoHandlerId not found");
+    let root_span = debug_span!("update_snapshot_proposals");
 
-    let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
-        Ok(data) => data,
-        Err(_) => panic!("{:?} decoder not found", data.daoHandlerId),
-    };
+    let carrier: std::collections::HashMap<String, String> =
+        serde_json::from_value(data.trace.clone()).unwrap_or_default();
+    let propagator = opentelemetry::sdk::propagation::TraceContextPropagator::new();
+    let parent_context = propagator.extract(&carrier);
 
-    let old_index = match dao_handler.snapshotindex {
-        Some(data) => data.timestamp(),
-        None => 0,
-    };
+    root_span.set_parent(parent_context.clone());
 
-    let graphql_query = format!(
-        r#"
+    async move {
+        let dao_handler = ctx
+            .db
+            .daohandler()
+            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .exec()
+            .await
+            .expect("bad prisma result")
+            .expect("daoHandlerId not found");
+
+        let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
+            Ok(data) => data,
+            Err(_) => panic!("{:?} decoder not found", data.daoHandlerId),
+        };
+
+        let old_index = match dao_handler.snapshotindex {
+            Some(data) => data.timestamp(),
+            None => 0,
+        };
+
+        let graphql_query = format!(
+            r#"
         {{
             proposals (
                 first: 1000,
@@ -99,30 +110,33 @@ pub async fn update_snapshot_proposals<'a>(
             }}
         }}
     "#,
-        decoder.space, old_index
-    );
+            decoder.space, old_index
+        );
 
-    debug!(
-        "{:?} {:?} {:?} {:?}",
-        dao_handler, decoder, old_index, graphql_query
-    );
+        debug!(
+            "{:?} {:?} {:?} {:?}",
+            dao_handler, decoder, old_index, graphql_query
+        );
 
-    match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
-        Ok(_) => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "ok",
-        }),
-        Err(e) => {
-            warn!("{:?}", e);
-            Json(ProposalsResponse {
+        match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
+            Ok(_) => Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,
-                response: "nok",
-            })
+                response: "ok",
+            }),
+            Err(e) => {
+                warn!("{:?}", e);
+                Json(ProposalsResponse {
+                    daoHandlerId: data.daoHandlerId,
+                    response: "nok",
+                })
+            }
         }
     }
+    .instrument(root_span)
+    .await
 }
 
-#[instrument]
+#[instrument(skip(ctx))]
 async fn update_proposals(
     graphql_query: String,
     ctx: &Ctx,

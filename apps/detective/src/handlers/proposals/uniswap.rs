@@ -21,7 +21,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
-#[instrument]
+#[instrument(skip(ctx))]
 pub async fn uniswap_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -57,7 +57,6 @@ pub async fn uniswap_proposals(
     Ok(result)
 }
 
-#[instrument]
 async fn data_for_proposal(
     p: (uniswapgov::uniswapgov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,

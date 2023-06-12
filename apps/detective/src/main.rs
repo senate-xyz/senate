@@ -25,6 +25,7 @@ use prisma::PrismaClient;
 
 use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, Pprof, PprofConfig};
+use serde_json::Value;
 use std::process;
 use tracing::instrument;
 use tracing_subscriber::util::SubscriberInitExt;
@@ -52,6 +53,7 @@ pub type Ctx = rocket::State<Context>;
 #[serde(crate = "rocket::serde")]
 pub struct ProposalsRequest<'r> {
     daoHandlerId: &'r str,
+    trace: Value,
 }
 
 #[allow(non_snake_case)]
@@ -68,6 +70,7 @@ pub struct ProposalsResponse<'r> {
 pub struct VotesRequest<'r> {
     daoHandlerId: &'r str,
     voters: Vec<String>,
+    trace: Value,
 }
 
 #[derive(Serialize, Debug, Clone)]

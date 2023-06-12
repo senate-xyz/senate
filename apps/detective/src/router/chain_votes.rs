@@ -1,6 +1,8 @@
 use anyhow::{bail, Context, Result};
+use opentelemetry::propagation::TextMapPropagator;
 use std::{cmp, ops::Div};
-use tracing::instrument;
+use tracing::{debug_span, instrument, span, trace_span, Instrument, Level, Span};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use ethers::{providers::Middleware, types::U64};
 use prisma_client_rust::Direction;
@@ -39,102 +41,114 @@ pub struct VoteResult {
     pub votes: Vec<Vote>,
 }
 
-#[instrument]
 #[post("/chain_votes", data = "<data>")]
 pub async fn update_chain_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>,
 ) -> Json<Vec<VotesResponse>> {
-    let dao_handler = ctx
-        .db
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-        .exec()
-        .await
-        .expect("bad prisma result")
-        .expect("daoHandlerId not found");
+    let root_span = debug_span!("update_chain_votes");
 
-    let first_proposal = ctx
-        .db
-        .proposal()
-        .find_many(vec![proposal::daohandlerid::equals(
-            dao_handler.id.to_string(),
-        )])
-        .order_by(proposal::blockcreated::order(Direction::Asc))
-        .take(1)
-        .exec()
-        .await
-        .expect("bad prisma result");
+    let carrier: std::collections::HashMap<String, String> =
+        serde_json::from_value(data.trace.clone()).unwrap_or_default();
+    let propagator = opentelemetry::sdk::propagation::TraceContextPropagator::new();
+    let parent_context = propagator.extract(&carrier);
 
-    let first_proposal_block = match first_proposal.first() {
-        Some(s) => s.blockcreated.unwrap_or(0),
-        None => 0,
-    };
+    root_span.set_parent(parent_context.clone());
 
-    let voter_handlers = ctx
-        .db
-        .voterhandler()
-        .find_many(vec![
-            voterhandler::voter::is(vec![voter::address::in_vec(data.voters.clone())]),
-            voterhandler::daohandler::is(vec![daohandler::id::equals(
-                data.daoHandlerId.to_string(),
-            )]),
-        ])
-        .exec()
-        .await
-        .expect("bad prisma result");
+    async move {
+        let dao_handler = ctx
+            .db
+            .daohandler()
+            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .exec()
+            .await
+            .expect("bad prisma result")
+            .expect("daoHandlerId not found");
 
-    let voters = data.voters.clone();
+        let first_proposal = ctx
+            .db
+            .proposal()
+            .find_many(vec![proposal::daohandlerid::equals(
+                dao_handler.id.to_string(),
+            )])
+            .order_by(proposal::blockcreated::order(Direction::Asc))
+            .take(1)
+            .exec()
+            .await
+            .expect("bad prisma result");
 
-    let oldest_vote_block = voter_handlers
-        .iter()
-        .map(|vh| vh.chainindex)
-        .min()
-        .unwrap_or_default()
-        .unwrap_or(0);
+        let first_proposal_block = match first_proposal.first() {
+            Some(s) => s.blockcreated.unwrap_or(0),
+            None => 0,
+        };
 
-    let current_block = ctx
-        .rpc
-        .get_block_number()
-        .await
-        .unwrap_or(U64::from(0))
-        .as_u64() as i64;
+        let voter_handlers = ctx
+            .db
+            .voterhandler()
+            .find_many(vec![
+                voterhandler::voter::is(vec![voter::address::in_vec(data.voters.clone())]),
+                voterhandler::daohandler::is(vec![daohandler::id::equals(
+                    data.daoHandlerId.to_string(),
+                )]),
+            ])
+            .exec()
+            .await
+            .expect("bad prisma result");
 
-    let batch_size = (dao_handler.votersrefreshspeed).div(voters.len() as i64);
+        let voters = data.voters.clone();
 
-    let mut from_block = cmp::max(oldest_vote_block, 0);
+        let oldest_vote_block = voter_handlers
+            .iter()
+            .map(|vh| vh.chainindex)
+            .min()
+            .unwrap_or_default()
+            .unwrap_or(0);
 
-    if from_block < first_proposal_block {
-        from_block = first_proposal_block;
-    }
+        let current_block = ctx
+            .rpc
+            .get_block_number()
+            .await
+            .unwrap_or(U64::from(0))
+            .as_u64() as i64;
 
-    let to_block = if current_block - from_block > batch_size {
-        from_block + batch_size
-    } else {
-        current_block
-    };
+        let batch_size = (dao_handler.votersrefreshspeed).div(voters.len() as i64);
 
-    if from_block > to_block {
-        from_block = to_block;
-    }
+        let mut from_block = cmp::max(oldest_vote_block, 0);
 
-    debug!(
-        "{:?} {:?} {:?} {:?} {:?}",
-        dao_handler, batch_size, from_block, to_block, voters
-    );
+        if from_block < first_proposal_block {
+            from_block = first_proposal_block;
+        }
 
-    let result = get_results(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await;
+        let to_block = if current_block - from_block > batch_size {
+            from_block + batch_size
+        } else {
+            current_block
+        };
 
-    match result {
-        Ok(r) => Json(success_response(r)),
-        Err(e) => {
-            warn!("{:?}", e);
-            Json(failed_response(voters))
+        if from_block > to_block {
+            from_block = to_block;
+        }
+
+        debug!(
+            "{:?} {:?} {:?} {:?} {:?}",
+            dao_handler, batch_size, from_block, to_block, voters
+        );
+
+        let result = get_results(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await;
+
+        match result {
+            Ok(r) => Json(success_response(r)),
+            Err(e) => {
+                warn!("{:?}", e);
+                Json(failed_response(voters))
+            }
         }
     }
+    .instrument(root_span)
+    .await
 }
 
-#[instrument]
+#[instrument(skip(ctx))]
 async fn get_results(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -219,7 +233,7 @@ fn failed_response(voters: Vec<String>) -> Vec<VotesResponse> {
         .collect()
 }
 
-#[instrument]
+#[instrument(skip(ctx))]
 async fn insert_votes(
     votes: &[VoteResult],
     to_block: &i64,

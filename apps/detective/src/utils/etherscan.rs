@@ -25,7 +25,7 @@ pub struct EstimateTimestamp {
     result: EstimateTimestampResult,
 }
 
-#[instrument]
+#[instrument(skip(ctx))]
 pub async fn estimate_timestamp(block_number: i64, ctx: &Context) -> Result<DateTime<Utc>> {
     let etherscan_api_key = match env::var_os("ETHERSCAN_API_KEY") {
         Some(v) => v.into_string().unwrap(),
@@ -121,7 +121,7 @@ pub struct EstimateBlock {
     result: String,
 }
 
-#[instrument]
+#[instrument(skip(ctx))]
 pub async fn estimate_block(timestamp: i64, ctx: &Context) -> Result<i64> {
     let etherscan_api_key = match env::var_os("ETHERSCAN_API_KEY") {
         Some(v) => v.into_string().unwrap(),

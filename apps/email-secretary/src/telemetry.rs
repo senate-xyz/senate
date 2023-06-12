@@ -32,7 +32,7 @@ pub fn setup() {
         None => panic!("$EXEC_ENV is not set"),
     };
 
-    let (layer, task) = tracing_loki::builder()
+    let (logging_layer, task) = tracing_loki::builder()
         .label("app", app_name)
         .unwrap()
         .label("env", exec_env.clone())
@@ -80,7 +80,7 @@ pub fn setup() {
 
     tracing_subscriber::registry()
         .with(env_filter)
-        .with(layer)
+        .with(logging_layer)
         .with(telemetry_layer)
         .init();
 

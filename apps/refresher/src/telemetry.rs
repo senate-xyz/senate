@@ -6,7 +6,8 @@ use base64::{
     Engine as _,
 };
 use opentelemetry::{
-    sdk::{trace, Resource},
+    global,
+    sdk::{propagation::TraceContextPropagator, trace, Resource},
     KeyValue,
 };
 
@@ -32,7 +33,7 @@ pub fn setup() {
         None => panic!("$EXEC_ENV is not set"),
     };
 
-    let (layer, task) = tracing_loki::builder()
+    let (logging_layer, task) = tracing_loki::builder()
         .label("app", app_name)
         .unwrap()
         .label("env", exec_env.clone())
@@ -48,6 +49,8 @@ pub fn setup() {
             .unwrap(),
         )
         .unwrap();
+
+    opentelemetry::global::set_text_map_propagator(TraceContextPropagator::new());
 
     let filter_str = format!("{}=debug", app_name);
     let env_filter = EnvFilter::try_new(filter_str).unwrap_or_else(|_| EnvFilter::new("debug"));
@@ -80,7 +83,7 @@ pub fn setup() {
 
     tracing_subscriber::registry()
         .with(env_filter)
-        .with(layer)
+        .with(logging_layer)
         .with(telemetry_layer)
         .init();
 

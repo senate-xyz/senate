@@ -27,7 +27,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
-#[instrument]
+#[instrument(skip(ctx), ret)]
 pub async fn ens_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -63,7 +63,6 @@ pub async fn ens_proposals(
     Ok(result)
 }
 
-#[instrument]
 async fn data_for_proposal(
     p: (ensgov::ensgov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,

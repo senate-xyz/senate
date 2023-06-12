@@ -37,7 +37,7 @@ const VOTE_MULTIPLE_ACTIONS_TOPIC: &str =
 const VOTE_SINGLE_ACTION_TOPIC: &str =
     "0xa69beaba00000000000000000000000000000000000000000000000000000000";
 
-#[instrument]
+#[instrument(skip(ctx), ret)]
 pub async fn maker_executive_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -90,7 +90,6 @@ pub async fn maker_executive_proposals(
     Ok(result)
 }
 
-#[instrument]
 async fn proposal(
     spell_address: &String,
     decoder: &Decoder,
@@ -175,7 +174,6 @@ struct TimeData {
     height: Value,
 }
 
-#[instrument]
 async fn get_proposal_block(
     time: DateTime<Utc>,
     http_client: Arc<ClientWithMiddleware>,
@@ -238,7 +236,6 @@ struct ProposalData {
     date: String,
 }
 
-#[instrument]
 async fn get_proposal_data(
     spell_address: String,
     http_client: Arc<ClientWithMiddleware>,
@@ -309,7 +306,7 @@ async fn get_proposal_data(
 
 //this takes out the first 4 bytes because that's the method being called
 //after that, it builds a vec of 32 byte chunks for as long as the input is
-#[instrument]
+
 fn extract_desired_bytes(bytes: &[u8]) -> Vec<[u8; 32]> {
     let mut iterration = 0;
 
@@ -333,7 +330,6 @@ fn extract_desired_bytes(bytes: &[u8]) -> Vec<[u8; 32]> {
     result_vec
 }
 
-#[instrument]
 async fn get_single_spell_addresses(
     logs: Vec<(LogNoteFilter, LogMeta)>,
     gov_contract: makerexecutive::makerexecutive::makerexecutive<
@@ -369,7 +365,6 @@ async fn get_single_spell_addresses(
     Ok(result)
 }
 
-#[instrument]
 async fn get_multi_spell_addresses(
     logs: Vec<(LogNoteFilter, LogMeta)>,
     _gov_contract: makerexecutive::makerexecutive::makerexecutive<

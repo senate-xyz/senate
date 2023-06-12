@@ -21,7 +21,7 @@ struct Decoder {
     address: String,
 }
 
-#[instrument]
+#[instrument(skip(ctx), ret)]
 pub async fn uniswap_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -80,7 +80,6 @@ pub async fn uniswap_votes(
         .collect())
 }
 
-#[instrument]
 async fn get_votes_for_voter(
     logs: Vec<(VoteCastFilter, LogMeta)>,
     dao_handler: daohandler::Data,

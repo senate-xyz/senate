@@ -1,9 +1,14 @@
 use anyhow::{bail, Result};
 use ethers::{providers::Middleware, types::U64};
+use opentelemetry::{
+    global, propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator,
+};
 use prisma_client_rust::chrono::{DateTime, FixedOffset, Utc};
+use reqwest::header::HeaderMap;
 use rocket::serde::json::Json;
 use serde_json::Value;
-use tracing::instrument;
+use tracing::{debug_span, instrument, span, trace_span, Instrument, Level, Span};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
     handlers::proposals::{
@@ -36,70 +41,82 @@ pub struct ChainProposal {
     pub(crate) state: ProposalState,
 }
 
-#[instrument]
 #[post("/chain_proposals", data = "<data>")]
 pub async fn update_chain_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>,
 ) -> Json<ProposalsResponse<'a>> {
-    let dao_handler = ctx
-        .db
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-        .exec()
-        .await
-        .expect("bad prisma result")
-        .expect("daoHandlerId not found");
+    let root_span = debug_span!("update_chain_proposals");
 
-    let min_block = dao_handler.chainindex;
-    let batch_size = dao_handler.refreshspeed;
+    let carrier: std::collections::HashMap<String, String> =
+        serde_json::from_value(data.trace.clone()).unwrap_or_default();
+    let propagator = opentelemetry::sdk::propagation::TraceContextPropagator::new();
+    let parent_context = propagator.extract(&carrier);
 
-    let mut from_block = min_block.unwrap_or(0);
+    root_span.set_parent(parent_context.clone());
 
-    let current_block = ctx
-        .rpc
-        .get_block_number()
-        .await
-        .unwrap_or(U64::from(from_block))
-        .as_u64() as i64;
+    async move {
+        let dao_handler = ctx
+            .db
+            .daohandler()
+            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .exec()
+            .await
+            .expect("bad prisma result")
+            .expect("daoHandlerId not found");
 
-    let mut to_block = if current_block - from_block > batch_size {
-        from_block + batch_size
-    } else {
-        current_block
-    };
+        let min_block = dao_handler.chainindex;
+        let batch_size = dao_handler.refreshspeed;
 
-    if from_block > current_block - 10 {
-        from_block = current_block - 10;
-    }
+        let mut from_block = min_block.unwrap_or(0);
 
-    if to_block > current_block - 10 {
-        to_block = current_block - 10;
-    }
+        let current_block = ctx
+            .rpc
+            .get_block_number()
+            .await
+            .unwrap_or(U64::from(from_block))
+            .as_u64() as i64;
 
-    debug!(
-        "{:?} {:?} {:?} {:?} {:?} {:?}",
-        dao_handler, min_block, batch_size, from_block, to_block, current_block
-    );
+        let mut to_block = if current_block - from_block > batch_size {
+            from_block + batch_size
+        } else {
+            current_block
+        };
 
-    let result = get_results(ctx, from_block, to_block, dao_handler).await;
+        if from_block > current_block - 10 {
+            from_block = current_block - 10;
+        }
 
-    match result {
-        Ok(_) => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            response: "ok",
-        }),
-        Err(e) => {
-            warn!("{:?}", e);
-            Json(ProposalsResponse {
+        if to_block > current_block - 10 {
+            to_block = current_block - 10;
+        }
+
+        debug!(
+            "{:?} {:?} {:?} {:?} {:?} {:?}",
+            dao_handler, min_block, batch_size, from_block, to_block, current_block
+        );
+
+        let result = get_results(ctx, from_block, to_block, dao_handler).await;
+
+        match result {
+            Ok(_) => Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,
-                response: "nok",
-            })
+                response: "ok",
+            }),
+            Err(e) => {
+                warn!("{:?}", e);
+                Json(ProposalsResponse {
+                    daoHandlerId: data.daoHandlerId,
+                    response: "nok",
+                })
+            }
         }
     }
+    .instrument(root_span)
+    .await
 }
 
-#[instrument]
+#[instrument(skip(ctx))]
 async fn get_results(
     ctx: &Ctx,
     from_block: i64,
@@ -157,7 +174,7 @@ async fn get_results(
     }
 }
 
-#[instrument]
+#[instrument(skip(ctx))]
 async fn insert_proposals(
     proposals: Vec<ChainProposal>,
     to_block: i64,
