@@ -49,7 +49,7 @@ pub fn setup() {
         )
         .unwrap();
 
-    let filter_str = format!("{}=info", app_name);
+    let filter_str = format!("{}=debug", app_name);
     let env_filter = EnvFilter::try_new(filter_str).unwrap_or_else(|_| EnvFilter::new("info"));
 
     let mut map = MetadataMap::with_capacity(3);
