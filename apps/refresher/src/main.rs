@@ -6,6 +6,7 @@ use log::{info, warn};
 use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 use tokio::try_join;
+use tracing::debug;
 pub mod prisma;
 use std::env;
 use std::{sync::Arc, time::Duration};
@@ -72,6 +73,7 @@ async fn main() {
     let producer_client_clone = client.clone();
 
     let producer_task = tokio::task::spawn_blocking(move || async move {
+        debug!("spawned producer_task");
         loop {
             let _ = load_config_from_db(&producer_client_clone).await;
             let _ = create_voter_handlers(&producer_client_clone).await;
@@ -79,12 +81,14 @@ async fn main() {
             if let Ok(queue) =
                 produce_snapshot_proposals_queue(&producer_client_clone, &config).await
             {
+                debug!("refresh produce_snapshot_proposals_queue: {:?}", queue);
                 for item in queue {
                     tx_snapshot_proposals.try_send(item).unwrap();
                 }
             }
 
             if let Ok(queue) = produce_snapshot_votes_queue(&producer_client_clone, &config).await {
+                debug!("refresh produce_snapshot_votes_queue: {:?}", queue);
                 for item in queue {
                     tx_snapshot_votes.try_send(item).unwrap();
                 }
@@ -92,12 +96,14 @@ async fn main() {
 
             if let Ok(queue) = produce_chain_proposals_queue(&producer_client_clone, &config).await
             {
+                debug!("refresh produce_chain_proposals_queue: {:?}", queue);
                 for item in queue {
                     tx_chain_proposals.try_send(item).unwrap();
                 }
             }
 
             if let Ok(queue) = produce_chain_votes_queue(&producer_client_clone, &config).await {
+                debug!("refresh produce_chain_votes_queue: {:?}", queue);
                 for item in queue {
                     tx_chain_votes.try_send(item).unwrap();
                 }
@@ -111,15 +117,17 @@ async fn main() {
 
     let consumer_snapshot_proposal_client = client.clone();
     let consumer_snapshot_proposals_task = tokio::spawn(async move {
+        debug!("spawned consumer_snapshot_proposals_task");
         loop {
             if let Ok(item) = rx_snapshot_proposals.recv_async().await {
+                info!("refresh consumer_snapshot_proposals_task: {:?}", item);
                 let client_clone = consumer_snapshot_proposal_client.clone();
 
                 tokio::spawn(async move {
                     match consume_snapshot_proposals(item, &client_clone).await {
                         Ok(_) => {}
                         Err(e) => {
-                            warn!("refresher err - {:#?}", e);
+                            warn!("refresher error: {:#?}", e);
                         }
                     }
                 });
@@ -131,15 +139,17 @@ async fn main() {
 
     let consumer_snapshot_votes_client = client.clone();
     let consumer_snapshot_votes_task = tokio::spawn(async move {
+        debug!("spawned consumer_snapshot_votes_task");
         loop {
             if let Ok(item) = rx_snapshot_votes.recv_async().await {
+                info!("refresh consumer_snapshot_votes_task: {:?}", item);
                 let client_clone = consumer_snapshot_votes_client.clone();
 
                 tokio::spawn(async move {
                     match consume_snapshot_votes(item, &client_clone).await {
                         Ok(_) => {}
                         Err(e) => {
-                            warn!("refresher err - {:#?}", e);
+                            warn!("refresher error: {:#?}", e);
                         }
                     }
                 });
@@ -151,15 +161,17 @@ async fn main() {
 
     let consumer_chain_proposal_client = client.clone();
     let consumer_chain_proposals_task = tokio::spawn(async move {
+        debug!("spawned consumer_chain_proposals_task");
         loop {
             if let Ok(item) = rx_chain_proposals.recv_async().await {
+                info!("refresh consumer_chain_proposals_task: {:?}", item);
                 let client_clone = consumer_chain_proposal_client.clone();
 
                 tokio::spawn(async move {
                     match consume_chain_proposals(item, &client_clone).await {
                         Ok(_) => {}
                         Err(e) => {
-                            warn!("refresher err - {:#?}", e);
+                            warn!("refresher error: {:#?}", e);
                         }
                     }
                 });
@@ -171,15 +183,17 @@ async fn main() {
 
     let consumer_chain_votes_client = client.clone();
     let consumer_chain_votes_task = tokio::spawn(async move {
+        debug!("spawned consumer_chain_votes_task");
         loop {
             if let Ok(item) = rx_chain_votes.recv_async().await {
+                info!("refresh consumer_chain_votes_task: {:?}", item);
                 let client_clone = consumer_chain_votes_client.clone();
 
                 tokio::spawn(async move {
                     match consume_chain_votes(item, &client_clone).await {
                         Ok(_) => {}
                         Err(e) => {
-                            warn!("refresher err - {:#?}", e);
+                            warn!("refresher error: {:#?}", e);
                         }
                     }
                 });

@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use tracing::{debug, instrument};
 
 use crate::{
     config::Config,
     prisma::{self, voterhandler},
-    RefreshEntry,
-    RefreshType,
+    RefreshEntry, RefreshType,
 };
 
 use prisma::{daohandler, PrismaClient};
@@ -16,6 +16,7 @@ use prisma_client_rust::{
     Direction,
 };
 
+#[instrument]
 pub async fn produce_chain_votes_queue(
     client: &PrismaClient,
     config: &Config,
@@ -162,6 +163,8 @@ pub async fn produce_chain_votes_queue(
         )
         .exec()
         .await?;
+
+    debug!("{:?}", refresh_queue);
 
     Ok(refresh_queue)
 }

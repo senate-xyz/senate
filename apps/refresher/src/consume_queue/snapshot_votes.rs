@@ -1,6 +1,7 @@
 use anyhow::Result;
 use log::warn;
 use std::{env, sync::Arc};
+use tracing::{debug, instrument};
 
 use prisma_client_rust::chrono::{DateTime, Utc};
 use reqwest::Client;
@@ -20,6 +21,7 @@ struct ApiResponse {
     success: bool,
 }
 
+#[instrument]
 pub(crate) async fn consume_snapshot_votes(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
@@ -114,14 +116,14 @@ pub(crate) async fn consume_snapshot_votes(
                     ],
                 );
 
-                client_ref
+                let result = client_ref
                     ._batch((update_ok_voters, update_nok_voters))
                     .await
                     .unwrap();
+
+                debug!("refresher update: {:?}", result);
             }
             Err(e) => {
-                warn!("refresher err - {:#?}", e);
-
                 let voter_ids = client_ref
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(voters_ref)])
@@ -132,7 +134,7 @@ pub(crate) async fn consume_snapshot_votes(
                     .map(|voter| voter.id.clone())
                     .collect();
 
-                let _ = client_ref
+                let result = client_ref
                     .voterhandler()
                     .update_many(
                         vec![
@@ -151,7 +153,9 @@ pub(crate) async fn consume_snapshot_votes(
                     )
                     .exec()
                     .await;
-                panic!("http error: {:?}", e);
+
+                debug!("refresher error update: {:?}", result);
+                warn!("refresher error: {:#?}", e);
             }
         }
     });

@@ -6,7 +6,9 @@ use prisma_client_rust::{
     chrono::{Duration, Utc},
     operator::{and, or},
 };
+use tracing::{debug, instrument};
 
+#[instrument]
 pub async fn produce_chain_proposals_queue(
     client: &PrismaClient,
     config: &Config,
@@ -71,6 +73,8 @@ pub async fn produce_chain_proposals_queue(
             voters: vec![],
         })
         .collect();
+
+    debug!("{:?}", refresh_queue);
 
     Ok(refresh_queue)
 }

@@ -1,6 +1,7 @@
 use anyhow::Result;
 use log::warn;
 use std::{cmp, env, sync::Arc};
+use tracing::{debug, instrument};
 
 use prisma_client_rust::chrono::Utc;
 use reqwest::Client;
@@ -20,6 +21,7 @@ struct ApiResponse {
     success: bool,
 }
 
+#[instrument]
 pub(crate) async fn consume_chain_votes(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
@@ -110,13 +112,15 @@ pub(crate) async fn consume_chain_votes(
                     ],
                 );
 
-                client_ref
+                let result = client_ref
                     ._batch((update_ok_voters, update_nok_voters))
                     .await
                     .unwrap();
 
+                debug!("refresher update: {:?}", result);
+
                 if ok_voters.len() > nok_voters.len() {
-                    let _ = client_ref
+                    let result = client_ref
                         .daohandler()
                         .update(
                             daohandler::id::equals(dao_handler_ref.id),
@@ -127,9 +131,12 @@ pub(crate) async fn consume_chain_votes(
                             ))],
                         )
                         .exec()
-                        .await;
+                        .await
+                        .unwrap();
+
+                    debug!("refresher ok: {:?}", result);
                 } else {
-                    let _ = client_ref
+                    let result = client_ref
                         .daohandler()
                         .update(
                             daohandler::id::equals(dao_handler_ref.id),
@@ -140,12 +147,13 @@ pub(crate) async fn consume_chain_votes(
                             ))],
                         )
                         .exec()
-                        .await;
+                        .await
+                        .unwrap();
+
+                    debug!("refresher nok: {:?}", result);
                 };
             }
             Err(e) => {
-                warn!("refresher err - {:#?}", e);
-
                 let _ = client_ref
                     .daohandler()
                     .update(
@@ -169,7 +177,7 @@ pub(crate) async fn consume_chain_votes(
                     .map(|voter| voter.id.clone())
                     .collect();
 
-                let _ = client_ref
+                let result = client_ref
                     .voterhandler()
                     .update_many(
                         vec![
@@ -185,7 +193,11 @@ pub(crate) async fn consume_chain_votes(
                         ],
                     )
                     .exec()
-                    .await;
+                    .await
+                    .unwrap();
+
+                debug!("refresher error update: {:?}", result);
+                warn!("refresher error: {:#?}", e);
             }
         }
     });

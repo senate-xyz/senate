@@ -1,6 +1,7 @@
 use anyhow::Result;
 use log::warn;
 use std::{cmp, env, sync::Arc};
+use tracing::{debug, instrument};
 
 use prisma_client_rust::chrono::Utc;
 use reqwest::Client;
@@ -19,6 +20,7 @@ struct ProposalsResponse {
     response: String,
 }
 
+#[instrument]
 pub(crate) async fn consume_chain_proposals(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
@@ -87,9 +89,7 @@ pub(crate) async fn consume_chain_proposals(
                         let _ = client_ref._batch(dbupdate).await;
                     }
                     Err(e) => {
-                        warn!("refresher err - {:#?}", e);
-
-                        let _ = client_ref
+                        let result = client_ref
                             .daohandler()
                             .update_many(
                                 vec![daohandler::id::equals(dao_handler_ref.id)],
@@ -104,14 +104,16 @@ pub(crate) async fn consume_chain_proposals(
                                 ],
                             )
                             .exec()
-                            .await;
+                            .await
+                            .unwrap();
+
+                        debug!("refresher error update: {:?}", result);
+                        warn!("refresher error: {:#?}", e);
                     }
                 }
             }
             Err(e) => {
-                warn!("refresher err - {:#?}", e);
-
-                let _ = client_ref
+                let result = client_ref
                     .daohandler()
                     .update_many(
                         vec![daohandler::id::equals(dao_handler_ref.id)],
@@ -126,7 +128,11 @@ pub(crate) async fn consume_chain_proposals(
                         ],
                     )
                     .exec()
-                    .await;
+                    .await
+                    .unwrap();
+
+                debug!("refresher error update: {:?}", result);
+                warn!("refresher error: {:#?}", e);
             }
         }
     });

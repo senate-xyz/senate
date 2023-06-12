@@ -2,6 +2,7 @@ use crate::prisma;
 use anyhow::Result;
 use prisma::PrismaClient;
 use std::sync::{Arc, RwLock};
+use tracing::{debug, instrument};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Config {
@@ -52,6 +53,7 @@ lazy_static::lazy_static! {
     );
 }
 
+#[instrument]
 async fn load_config_value(client: &PrismaClient, key: &str, default_value: u32) -> Result<u32> {
     if let Some(config_data) = client
         .config()
@@ -70,6 +72,8 @@ async fn load_config_value(client: &PrismaClient, key: &str, default_value: u32)
         Ok(default_value)
     }
 }
+
+#[instrument]
 pub(crate) async fn load_config_from_db(client: &PrismaClient) -> Result<()> {
     let refresh_interval = load_config_value(client, "refresh_interval", 300).await?;
 
@@ -112,5 +116,6 @@ pub(crate) async fn load_config_from_db(client: &PrismaClient) -> Result<()> {
     config.batch_chain_votes = batch_chain_votes;
     config.batch_snapshot_votes = batch_snapshot_votes;
 
+    debug!("loaded config");
     Ok(())
 }

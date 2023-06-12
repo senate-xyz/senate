@@ -1,6 +1,8 @@
 use crate::prisma::{voter, voterhandler, PrismaClient, RefreshStatus};
 use anyhow::Result;
+use tracing::{debug, instrument};
 
+#[instrument]
 pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
     let voters_count = client.voter().count(vec![]).exec().await.unwrap();
 
@@ -18,7 +20,7 @@ pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
             .unwrap();
 
         for voter in voters {
-            let _ = client
+            let result = client
                 .voterhandler()
                 .create_many(
                     daohandlers
@@ -35,6 +37,8 @@ pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
                 .skip_duplicates()
                 .exec()
                 .await?;
+
+            debug!("created {:?} votehandlers", result);
         }
     }
     Ok(())

@@ -1,6 +1,7 @@
 use anyhow::Result;
 use log::warn;
 use std::{env, sync::Arc};
+use tracing::{debug, instrument};
 
 use prisma_client_rust::chrono::{DateTime, Utc};
 use reqwest::Client;
@@ -19,6 +20,7 @@ struct ProposalsResponse {
     response: String,
 }
 
+#[instrument]
 pub(crate) async fn consume_snapshot_proposals(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
@@ -66,12 +68,12 @@ pub(crate) async fn consume_snapshot_proposals(
                             _ => panic!("Unexpected response"),
                         };
 
-                        let _ = client_ref._batch(dbupdate).await.unwrap();
+                        let result = client_ref._batch(dbupdate).await.unwrap();
+
+                        debug!("refresher update: {:?}", result);
                     }
                     Err(e) => {
-                        warn!("refresher err - {:#?}", e);
-
-                        let _ = client_ref
+                        let result = client_ref
                             .daohandler()
                             .update_many(
                                 vec![daohandler::id::equals(dao_handler_id_ref.to_string())],
@@ -85,14 +87,16 @@ pub(crate) async fn consume_snapshot_proposals(
                                 ],
                             )
                             .exec()
-                            .await;
+                            .await
+                            .unwrap();
+
+                        debug!("refresher error update: {:?}", result);
+                        warn!("refresher error: {:#?}", e);
                     }
                 }
             }
             Err(e) => {
-                warn!("refresher err - {:#?}", e);
-
-                let _ = client_ref
+                let result = client_ref
                     .daohandler()
                     .update_many(
                         vec![daohandler::id::equals(dao_handler_id_ref.to_string())],
@@ -105,7 +109,11 @@ pub(crate) async fn consume_snapshot_proposals(
                         ],
                     )
                     .exec()
-                    .await;
+                    .await
+                    .unwrap();
+
+                debug!("refresher error update: {:?}", result);
+                warn!("refresher error: {:#?}", e);
             }
         }
     });
