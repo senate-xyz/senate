@@ -118,22 +118,39 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             proposalName: proposal.name,
             countdownUrl: countdown_url,
             voteUrl: short_url,
-            currentQuorum: proposal
-                .scorestotal
-                .as_f64()
-                .unwrap()
-                .round()
-                .to_i128()
-                .unwrap()
-                .to_formatted_string(&Locale::en),
-            requiredQuroum: proposal
-                .quorum
-                .as_f64()
-                .unwrap()
-                .round()
-                .to_i128()
-                .unwrap()
-                .to_formatted_string(&Locale::en),
+            currentQuorum: if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                proposal
+                    .scorestotal
+                    .as_f64()
+                    .unwrap()
+                    .round()
+                    .to_i128()
+                    .unwrap()
+                    .to_formatted_string(&Locale::en)
+            } else {
+                (proposal
+                    .scorestotal
+                    .as_f64()
+                    .unwrap()
+                    .round()
+                    .to_i128()
+                    .unwrap()
+                    / 1000000000000000000)
+                    .to_formatted_string(&Locale::en)
+            },
+            requiredQuroum: if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                proposal
+                    .quorum
+                    .as_f64()
+                    .unwrap()
+                    .round()
+                    .to_i128()
+                    .unwrap()
+                    .to_formatted_string(&Locale::en)
+            } else {
+                (proposal.quorum.as_f64().unwrap().round().to_i128().unwrap() / 1000000000000000000)
+                    .to_formatted_string(&Locale::en)
+            },
         };
 
         if user.email.is_some() {
