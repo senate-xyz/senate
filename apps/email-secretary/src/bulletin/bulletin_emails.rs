@@ -155,6 +155,10 @@ async fn send_bulletin(
 ) -> Result<bool> {
     let user_data = get_user_bulletin_data(user.clone(), db).await?;
 
+    if user.email.is_none() {
+        return Ok(false);
+    }
+
     if user_data.newProposals.len() == 0
         && user_data.endedProposals.len() == 0
         && user_data.endingSoonProposals.len() == 0
@@ -175,32 +179,30 @@ async fn send_bulletin(
         "senate-bulletin"
     };
 
-    if user.email.is_some() {
-        let user_email = user.email.unwrap();
-        let client = reqwest::Client::new();
-        let mut headers = HeaderMap::new();
-        headers.insert(ACCEPT, "application/json".parse().unwrap());
-        headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
-        headers.insert(
-            "X-Postmark-Server-Token",
-            env::var("POSTMARK_TOKEN")
-                .expect("Missing Postmark Token")
-                .parse()
-                .unwrap(),
-        );
-        client
-            .post("https://api.postmarkapp.com/email/withTemplate")
-            .headers(headers)
-            .json(&EmailBody {
-                To: user_email,
-                From: "info@senatelabs.xyz".to_string(),
-                TemplateAlias: bulletin_template.to_string(),
-                TemplateModel: user_data.clone(),
-            })
-            .send()
-            .await
-            .unwrap();
-    }
+    let user_email = user.email.unwrap();
+    let client = reqwest::Client::new();
+    let mut headers = HeaderMap::new();
+    headers.insert(ACCEPT, "application/json".parse().unwrap());
+    headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
+    headers.insert(
+        "X-Postmark-Server-Token",
+        env::var("POSTMARK_TOKEN")
+            .expect("Missing Postmark Token")
+            .parse()
+            .unwrap(),
+    );
+    client
+        .post("https://api.postmarkapp.com/email/withTemplate")
+        .headers(headers)
+        .json(&EmailBody {
+            To: user_email,
+            From: "info@senatelabs.xyz".to_string(),
+            TemplateAlias: bulletin_template.to_string(),
+            TemplateModel: user_data.clone(),
+        })
+        .send()
+        .await
+        .unwrap();
 
     Ok(true)
 }
