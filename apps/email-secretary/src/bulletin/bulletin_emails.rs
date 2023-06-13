@@ -154,7 +154,7 @@ pub async fn send_bulletin_emails(db: &Arc<prisma::PrismaClient>) {
     }
 }
 
-#[instrument(skip(db), ret)]
+#[instrument(skip_all, fields(user = user.id), ret)]
 async fn send_bulletin(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -219,7 +219,7 @@ async fn send_bulletin(
     Ok(true)
 }
 
-#[instrument(skip(db), ret)]
+#[instrument(skip_all, fields(user = user.id), ret)]
 async fn get_user_bulletin_data(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -236,7 +236,7 @@ async fn get_user_bulletin_data(
     })
 }
 
-#[instrument(skip(db))]
+#[instrument(skip_all, fields(user = user.id))]
 async fn get_ending_soon_proposals(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -335,7 +335,7 @@ async fn get_ending_soon_proposals(
     Ok(ending_proposals)
 }
 
-#[instrument(skip(db))]
+#[instrument(skip_all, fields(user = user.id))]
 async fn get_new_proposals(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -433,7 +433,7 @@ async fn get_new_proposals(
     Ok(new_proposals)
 }
 
-#[instrument(skip(db))]
+#[instrument(skip_all, fields(user = user.id))]
 async fn get_ended_proposals(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
