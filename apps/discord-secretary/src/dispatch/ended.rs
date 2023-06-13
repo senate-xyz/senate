@@ -19,7 +19,7 @@ use crate::{
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "info")]
 pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
     let ended_notifications = client
         .notification()

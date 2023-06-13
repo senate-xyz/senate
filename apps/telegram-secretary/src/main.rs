@@ -58,7 +58,7 @@ async fn main() {
     let bot_for_new_proposals: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
         Arc::clone(&botwrapper);
     let new_proposals_task = tokio::task::spawn(async move {
-        debug!("started new_proposals_task");
+        info!("started new_proposals_task");
         loop {
             debug!("loop new_proposals_task");
             generate_new_proposal_notifications(&client_for_new_proposals).await;
@@ -73,7 +73,7 @@ async fn main() {
     let bot_for_ending_soon: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
         Arc::clone(&botwrapper);
     let ending_soon_task = tokio::task::spawn(async move {
-        debug!("started ending_soon_task");
+        info!("started ending_soon_task");
         loop {
             debug!("loop ending_soon_task");
             generate_ending_soon_notifications(
@@ -98,7 +98,7 @@ async fn main() {
     let bot_for_ended_proposals: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
         Arc::clone(&botwrapper);
     let ended_proposals_task = tokio::task::spawn(async move {
-        debug!("started ended_proposals_task");
+        info!("started ended_proposals_task");
         loop {
             debug!("loop ended_proposals_task");
             generate_ended_proposal_notifications(&client_for_ended_proposals).await;

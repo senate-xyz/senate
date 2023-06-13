@@ -7,7 +7,7 @@ use tracing::{debug_span, instrument, Instrument};
 
 use std::sync::Arc;
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "info")]
 pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
     let users = client
         .user()

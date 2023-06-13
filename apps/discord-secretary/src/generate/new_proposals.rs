@@ -6,7 +6,7 @@ use crate::prisma::{
 use anyhow::Result;
 use tracing::{debug_span, instrument, Instrument};
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "info")]
 pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
     let users = client
         .user()

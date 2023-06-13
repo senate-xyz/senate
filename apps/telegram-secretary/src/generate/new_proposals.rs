@@ -7,7 +7,7 @@ use anyhow::Result;
 use teloxide::Bot;
 use tracing::{debug_span, instrument, Instrument};
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "debug")]
 pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
     let users = client
         .user()
@@ -50,7 +50,7 @@ pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "debug")]
 pub async fn get_new_proposals_for_user(
     username: &String,
     client: &Arc<PrismaClient>,

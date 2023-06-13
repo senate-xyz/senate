@@ -7,7 +7,7 @@ use tracing::{debug_span, instrument, Instrument};
 
 use std::sync::Arc;
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "info")]
 pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
     let users = client
         .user()
@@ -50,7 +50,7 @@ pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
 proposal::include!(proposal_with_dao { dao daohandler });
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "debug")]
 pub async fn get_ended_proposals_for_user(
     username: &String,
     client: &Arc<PrismaClient>,

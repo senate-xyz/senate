@@ -11,7 +11,7 @@ use tracing::{debug_span, instrument, Instrument};
 
 use std::sync::Arc;
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "info")]
 pub async fn generate_ending_soon_notifications(
     client: &Arc<PrismaClient>,
     ending_type: NotificationType,
@@ -83,7 +83,7 @@ pub async fn generate_ending_soon_notifications(
 
 proposal::include!(proposal_with_dao { dao daohandler });
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "debug")]
 pub async fn get_ending_proposals_for_user(
     username: &String,
     timeleft: Duration,

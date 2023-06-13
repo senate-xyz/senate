@@ -10,7 +10,7 @@ use tracing::{debug_span, instrument, Instrument};
 
 use std::sync::Arc;
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "info")]
 pub async fn generate_ending_soon_notifications(
     client: &Arc<PrismaClient>,
     ending_type: NotificationType,
