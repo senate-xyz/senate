@@ -219,21 +219,7 @@ async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> R
                     return Ok(json["title"].as_str().unwrap_or("Unknown").to_string());
                 }
 
-                let re = Regex::new(r#"title:\s*(.*?)\s*discussions:"#).unwrap();
-                if let Some(captures) = re.captures(&text) {
-                    if let Some(matched) = captures.get(1) {
-                        return Ok(matched.as_str().trim().to_string());
-                    }
-                }
-
-                let re = Regex::new(r#"title:\s*(.*?)\s*author:"#).unwrap();
-                if let Some(captures) = re.captures(&text) {
-                    if let Some(matched) = captures.get(1) {
-                        return Ok(matched.as_str().trim().to_string());
-                    }
-                }
-
-                let re = Regex::new(r#"title:\s*(.*?)\s*status:"#).unwrap();
+                let re = Regex::new(r#"title:\s*(.*?)\n"#).unwrap();
                 if let Some(captures) = re.captures(&text) {
                     if let Some(matched) = captures.get(1) {
                         return Ok(matched.as_str().trim().to_string());
