@@ -200,6 +200,7 @@ async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> R
     let mut current_gateway = 0;
 
     let gateways = vec![
+        "https://senate.infura-ipfs.io/ipfs/",
         "https://cloudflare-ipfs.com/ipfs/",
         "https://gateway.pinata.cloud/ipfs/",
         "https://4everland.io/ipfs/",
