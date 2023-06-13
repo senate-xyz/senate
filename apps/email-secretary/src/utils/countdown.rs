@@ -1,7 +1,7 @@
 use std::env;
 
 use anyhow::{bail, Result};
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Duration, Utc};
 use serde::Deserialize;
 use serde_json::json;
 use tokio::time::sleep;
@@ -16,7 +16,7 @@ struct Message {
     src: Option<String>,
 }
 
-pub async fn countdown_gif(end_time: DateTime<Utc>) -> Result<String> {
+pub async fn countdown_gif(end_time: DateTime<Utc>, with_days: bool) -> Result<String> {
     let client = reqwest::Client::new();
     let token = env::var("VOTING_COUNTDOWN_TOKEN")?;
     let mut retries = 10;
@@ -25,6 +25,7 @@ pub async fn countdown_gif(end_time: DateTime<Utc>) -> Result<String> {
 
     let url = "https://countdownmail.com/api/create";
 
+    let more_than_one_day = end_time.signed_duration_since(Utc::now()) > Duration::days(1);
     loop {
         match client
             .post(url)
@@ -46,7 +47,7 @@ pub async fn countdown_gif(end_time: DateTime<Utc>) -> Result<String> {
                 "label_font_size": 8,
                 "expired_mes_on": 1,
                 "expired_mes": "Proposal Ended",
-                "day": 1,
+                "day": if !with_days && !more_than_one_day {0} else {1},
                 "days": "days",
                 "hours": "hours",
                 "minutes": "minutes",

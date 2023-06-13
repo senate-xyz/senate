@@ -248,7 +248,7 @@ async fn get_ending_soon_proposals(
         .unwrap();
 
     let ending_proposals = futures::future::join_all(proposals.iter().map(|p| async {
-        let countdown_url = countdown_gif(p.timeend.into()).await.unwrap();
+        let countdown_url = countdown_gif(p.timeend.into(), true).await.unwrap();
         let voted = get_vote(user.clone().id, p.clone().id, db).await.unwrap();
 
         let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
@@ -345,7 +345,7 @@ async fn get_new_proposals(
         .unwrap();
 
     let new_proposals = futures::future::join_all(proposals.iter().map(|p| async {
-        let countdown_url = countdown_gif(p.timeend.into()).await.unwrap();
+        let countdown_url = countdown_gif(p.timeend.into(), true).await.unwrap();
         let voted = get_vote(user.clone().id, p.clone().id, db).await.unwrap();
         let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
             Some(v) => v.into_string().unwrap(),

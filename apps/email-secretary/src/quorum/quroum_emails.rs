@@ -84,7 +84,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             "senate-quorum"
         };
 
-        let countdown_url = countdown_gif(proposal.timeend.into()).await.unwrap();
+        let countdown_url = countdown_gif(proposal.timeend.into(), false).await.unwrap();
 
         let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
             Some(v) => v.into_string().unwrap(),
