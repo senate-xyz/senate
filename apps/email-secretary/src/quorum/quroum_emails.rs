@@ -6,6 +6,7 @@ use num_format::{Locale, ToFormattedString};
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
+use tracing::{debug, debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
@@ -41,12 +42,14 @@ struct QuorumWarningData {
 prisma::proposal::include!(proposal_with_dao { dao });
 prisma::user::include!(user_with_voters_and_subscriptions { subscriptions voters});
 
+#[instrument(skip(db))]
 pub async fn send_quorum_email(db: &Arc<prisma::PrismaClient>) {
     generate_quorum_notifications(db).await;
 
     dispatch_quorum_notifications(db).await;
 }
 
+#[instrument(skip(db))]
 pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
     let notifications = db
         .notification()
@@ -55,6 +58,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             notification::dispatched::equals(false),
         ])
         .exec()
+        .instrument(debug_span!("get notifications"))
         .await
         .unwrap();
 
@@ -64,6 +68,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             .find_first(vec![proposal::id::equals(notification.clone().proposalid)])
             .include(proposal::include!({ dao daohandler }))
             .exec()
+            .instrument(debug_span!("get proposal"))
             .await
             .unwrap()
             .unwrap();
@@ -72,6 +77,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             .user()
             .find_first(vec![user::id::equals(notification.clone().userid)])
             .exec()
+            .instrument(debug_span!("get user"))
             .await
             .unwrap()
             .unwrap();
@@ -154,6 +160,15 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
         };
 
         if user.email.is_some() {
+            let content = &EmailBody {
+                To: user.email.unwrap(),
+                From: "info@senatelabs.xyz".to_string(),
+                TemplateAlias: quorum_template.to_string(),
+                TemplateModel: data.clone(),
+            };
+
+            debug!("{:?}", content);
+
             let client = reqwest::Client::new();
             let mut headers = HeaderMap::new();
             headers.insert(ACCEPT, "application/json".parse().unwrap());
@@ -168,13 +183,9 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             client
                 .post("https://api.postmarkapp.com/email/withTemplate")
                 .headers(headers)
-                .json(&EmailBody {
-                    To: user.email.unwrap(),
-                    From: "info@senatelabs.xyz".to_string(),
-                    TemplateAlias: quorum_template.to_string(),
-                    TemplateModel: data.clone(),
-                })
+                .json(content)
                 .send()
+                .instrument(debug_span!("send email"))
                 .await
                 .unwrap();
         }
@@ -190,11 +201,13 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 vec![notification::dispatched::set(true)],
             )
             .exec()
+            .instrument(debug_span!("update notification"))
             .await
             .unwrap();
     }
 }
 
+#[instrument(skip(db))]
 pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
     let proposals_ending_soon = db
         .proposal()
@@ -204,6 +217,7 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
         ])
         .include(proposal_with_dao::include())
         .exec()
+        .instrument(debug_span!("get proposals"))
         .await
         .unwrap();
 
@@ -221,6 +235,7 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 )])
                 .include(subscription::include!({ user dao }))
                 .exec()
+                .instrument(debug_span!("get subscriptions"))
                 .await
                 .unwrap();
 
@@ -254,6 +269,7 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                             vec![],
                         )
                         .exec()
+                        .instrument(debug_span!("insert notifications"))
                         .await
                         .unwrap();
                 }

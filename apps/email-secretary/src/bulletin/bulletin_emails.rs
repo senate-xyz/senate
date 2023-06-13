@@ -2,10 +2,12 @@ use std::{cmp::Ordering, env, sync::Arc};
 
 use anyhow::Result;
 use chrono::{Duration, Utc};
+use log::debug;
 use prisma_client_rust::{serde_json::Value, Direction};
 use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
@@ -93,6 +95,7 @@ struct MakerResult {
     mkrAmount: i64,
 }
 
+#[instrument(skip(db))]
 pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
     let notifications = db
         .notification()
@@ -131,6 +134,7 @@ pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
     }
 }
 
+#[instrument(skip(db))]
 pub async fn send_bulletin_emails(db: &Arc<prisma::PrismaClient>) {
     let users = db
         .user()
@@ -141,6 +145,7 @@ pub async fn send_bulletin_emails(db: &Arc<prisma::PrismaClient>) {
         ])
         .include(user_with_voters_and_subscriptions::include())
         .exec()
+        .instrument(debug_span!("get users"))
         .await
         .unwrap();
 
@@ -149,6 +154,7 @@ pub async fn send_bulletin_emails(db: &Arc<prisma::PrismaClient>) {
     }
 }
 
+#[instrument(skip(db), ret)]
 async fn send_bulletin(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -180,6 +186,16 @@ async fn send_bulletin(
     };
 
     let user_email = user.email.unwrap();
+
+    let content = &EmailBody {
+        To: user_email,
+        From: "info@senatelabs.xyz".to_string(),
+        TemplateAlias: bulletin_template.to_string(),
+        TemplateModel: user_data.clone(),
+    };
+
+    debug!("{:?}", content);
+
     let client = reqwest::Client::new();
     let mut headers = HeaderMap::new();
     headers.insert(ACCEPT, "application/json".parse().unwrap());
@@ -194,19 +210,16 @@ async fn send_bulletin(
     client
         .post("https://api.postmarkapp.com/email/withTemplate")
         .headers(headers)
-        .json(&EmailBody {
-            To: user_email,
-            From: "info@senatelabs.xyz".to_string(),
-            TemplateAlias: bulletin_template.to_string(),
-            TemplateModel: user_data.clone(),
-        })
+        .json(content)
         .send()
+        .instrument(debug_span!("send email"))
         .await
         .unwrap();
 
     Ok(true)
 }
 
+#[instrument(skip(db), ret)]
 async fn get_user_bulletin_data(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -223,6 +236,7 @@ async fn get_user_bulletin_data(
     })
 }
 
+#[instrument(skip(db))]
 async fn get_ending_soon_proposals(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -321,6 +335,7 @@ async fn get_ending_soon_proposals(
     Ok(ending_proposals)
 }
 
+#[instrument(skip(db))]
 async fn get_new_proposals(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -418,6 +433,7 @@ async fn get_new_proposals(
     Ok(new_proposals)
 }
 
+#[instrument(skip(db))]
 async fn get_ended_proposals(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
