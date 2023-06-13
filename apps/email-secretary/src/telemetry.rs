@@ -19,7 +19,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilte
 use url::Url;
 
 pub fn setup() {
-    let app_name = "email-secretary";
+    let app_name = "emailsecretary";
 
     let telemetry_agent;
 

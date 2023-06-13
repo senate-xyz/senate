@@ -978,7 +978,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "discord-secretary"
+name = "discordsecretary"
 version = "0.1.0"
 dependencies = [
  "anyhow",

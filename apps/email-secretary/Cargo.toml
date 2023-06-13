@@ -3,7 +3,7 @@ members = [".",
     "prisma-cli"]
 
 [package]
-name = "email-secretary"
+name = "emailsecretary"
 version = "0.1.0"
 edition = "2021"
 
