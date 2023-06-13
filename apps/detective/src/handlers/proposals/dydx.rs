@@ -21,9 +21,11 @@ use prisma_client_rust::{
     bigdecimal::ToPrimitive,
     chrono::{DateTime, NaiveDateTime, Utc},
 };
+use regex::Regex;
 use reqwest::{Client, StatusCode};
 use reqwest_middleware::ClientWithMiddleware;
 use serde::Deserialize;
+use serde_json::Value as JsonValue;
 use std::{str, sync::Arc, time::Duration};
 use tracing::instrument;
 
@@ -190,11 +192,6 @@ async fn data_for_proposal(
     Ok(proposal)
 }
 
-#[derive(Deserialize, Debug)]
-struct IpfsData {
-    title: String,
-}
-
 async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> Result<String> {
     let mut retries = 0;
     let mut current_gateway = 0;
@@ -208,23 +205,28 @@ async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> R
 
     loop {
         let response = http_client
-            .get(format!(
-                "{}/f01701220{}",
-                gateways[current_gateway], hexhash
-            ))
+            .get(format!("{}f01701220{}", gateways[current_gateway], hexhash))
             .timeout(Duration::from_secs(10))
             .send()
             .await;
 
         match response {
             Ok(res) if res.status() == StatusCode::OK => {
-                let ipfs_data = match res.json::<IpfsData>().await {
-                    Ok(r) => r,
-                    Err(_) => IpfsData {
-                        title: "Unknown".to_string(),
-                    },
-                };
-                return Ok(ipfs_data.title);
+                let text = res.text().await?;
+
+                // Check if the text is JSON
+                if let Ok(json) = serde_json::from_str::<JsonValue>(&text) {
+                    return Ok(json["title"].as_str().unwrap_or("Unknown").to_string());
+                }
+
+                let re = Regex::new(r#"title:\s*(.*?)\s*discussions:"#).unwrap();
+                if let Some(captures) = re.captures(&text) {
+                    if let Some(matched) = captures.get(1) {
+                        return Ok(matched.as_str().trim().to_string());
+                    }
+                }
+
+                return Ok("Unknown".to_string());
             }
             _ if retries % 5 == 0 => {
                 if current_gateway < gateways.len() - 2 {
@@ -233,61 +235,12 @@ async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> R
                     current_gateway = 0;
                 }
             }
-            _ if retries < 15 => {
+            _ if retries < 25 => {
                 retries += 1;
-                let backoff_duration = Duration::from_millis(2u64.pow(retries as u32) * 100);
+                let backoff_duration = Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
             }
             _ => return Ok("Unknown".to_string()),
         }
     }
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use crate::handlers::proposals::dydx::get_title;
-
-//     #[tokio::test]
-//     async fn get_title_once() {
-//         let result =
-//             get_title("0a387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into())
-//                 .await
-//                 .unwrap();
-//         assert_eq!(result, "Add MaticX to Aave v3 Polygon Pool");
-//     }
-
-//     #[tokio::test]
-//     async fn get_title_10_times() {
-//         let mut cnt = 0;
-//         loop {
-//             let result = get_title(
-//                 "0a387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into(),
-//             )
-//             .await
-//             .unwrap();
-//             assert_eq!(result, "Add MaticX to Aave v3 Polygon Pool");
-//             cnt += 1;
-//             if cnt == 10 {
-//                 break;
-//             }
-//         }
-//     }
-
-//     #[tokio::test]
-//     async fn get_invalid_title() {
-//         let result =
-//             get_title("0b387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into())
-//                 .await
-//                 .unwrap();
-//         assert_eq!(result, "Unknown");
-//     }
-
-//     #[tokio::test]
-//     async fn get_unavailable_title() {
-//         let result =
-//             get_title("e7e93497d3847536f07fe8dba53485cf68a275c7b07ca38b53d2cc2d43fab3b0".into())
-//                 .await
-//                 .unwrap();
-//         assert_eq!(result, "Unknown");
-//     }
-// }

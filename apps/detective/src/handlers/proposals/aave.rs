@@ -21,9 +21,11 @@ use prisma_client_rust::{
     bigdecimal::ToPrimitive,
     chrono::{DateTime, NaiveDateTime, Utc},
 };
+use regex::Regex;
 use reqwest::{Client, StatusCode};
 use reqwest_middleware::ClientWithMiddleware;
 use serde::Deserialize;
+use serde_json::Value as JsonValue;
 use std::{str, sync::Arc, time::Duration};
 use tracing::instrument;
 
@@ -190,11 +192,6 @@ async fn data_for_proposal(
     Ok(proposal)
 }
 
-#[derive(Deserialize, Debug)]
-struct IpfsData {
-    title: String,
-}
-
 async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> Result<String> {
     let mut retries = 0;
     let mut current_gateway = 0;
@@ -215,13 +212,21 @@ async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> R
 
         match response {
             Ok(res) if res.status() == StatusCode::OK => {
-                let ipfs_data = match res.json::<IpfsData>().await {
-                    Ok(r) => r,
-                    Err(_) => IpfsData {
-                        title: "Unknown".to_string(),
-                    },
-                };
-                return Ok(ipfs_data.title);
+                let text = res.text().await?;
+
+                // Check if the text is JSON
+                if let Ok(json) = serde_json::from_str::<JsonValue>(&text) {
+                    return Ok(json["title"].as_str().unwrap_or("Unknown").to_string());
+                }
+
+                let re = Regex::new(r#"title:\s*(.*?)\s*discussions:"#).unwrap();
+                if let Some(captures) = re.captures(&text) {
+                    if let Some(matched) = captures.get(1) {
+                        return Ok(matched.as_str().trim().to_string());
+                    }
+                }
+
+                return Ok("Unknown".to_string());
             }
             _ if retries % 5 == 0 => {
                 if current_gateway < gateways.len() - 2 {
@@ -240,51 +245,50 @@ async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> R
     }
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use crate::handlers::proposals::aave::get_title;
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
 
-//     #[tokio::test]
-//     async fn get_title_once() {
-//         let result =
-//             get_title("0a387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into())
-//                 .await
-//                 .unwrap();
-//         assert_eq!(result, "Add MaticX to Aave v3 Polygon Pool");
-//     }
+    use reqwest_middleware::ClientBuilder;
+    use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 
-//     #[tokio::test]
-//     async fn get_title_10_times() {
-//         let mut cnt = 0;
-//         loop {
-//             let result = get_title(
-//                 "0a387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into(),
-//             )
-//             .await
-//             .unwrap();
-//             assert_eq!(result, "Add MaticX to Aave v3 Polygon Pool");
-//             cnt += 1;
-//             if cnt == 10 {
-//                 break;
-//             }
-//         }
-//     }
+    use crate::handlers::proposals::aave::get_title;
 
-//     #[tokio::test]
-//     async fn get_invalid_title() {
-//         let result =
-//             get_title("0b387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into())
-//                 .await
-//                 .unwrap();
-//         assert_eq!(result, "Unknown");
-//     }
+    #[tokio::test]
+    async fn get_markdown_title() {
+        let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
 
-//     #[tokio::test]
-//     async fn get_unavailable_title() {
-//         let result =
-//             get_title("e7e93497d3847536f07fe8dba53485cf68a275c7b07ca38b53d2cc2d43fab3b0".into())
-//                 .await
-//                 .unwrap();
-//         assert_eq!(result, "Unknown");
-//     }
-// }
+        let http_client = Arc::new(
+            ClientBuilder::new(reqwest::Client::new())
+                .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+                .build(),
+        );
+
+        let result = get_title(
+            "f76d79693a81a1c0acd23c6ee151369752142b0d832daeaef9a4dd9f8c4bc7ce".into(),
+            http_client,
+        )
+        .await
+        .unwrap();
+        assert_eq!(result, "Polygon Supply Cap Update");
+    }
+
+    #[tokio::test]
+    async fn get_json_title() {
+        let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+
+        let http_client = Arc::new(
+            ClientBuilder::new(reqwest::Client::new())
+                .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+                .build(),
+        );
+
+        let result = get_title(
+            "8d4f6f42043d8db567d5e733762bb84a6f507997a779a66b2d17fdf9de403c13".into(),
+            http_client,
+        )
+        .await
+        .unwrap();
+        assert_eq!(result, "Add rETH to Arbitrum Aave v3");
+    }
+}
