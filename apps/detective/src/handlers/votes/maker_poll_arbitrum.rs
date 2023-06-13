@@ -63,10 +63,7 @@ pub async fn makerpollarbitrum_votes(
         .from_block(*from_block)
         .to_block(to_block);
 
-    let logs = events
-        .query_with_meta()
-        .instrument(debug_span!("get rpc events"))
-        .await?;
+    let logs = events.query_with_meta().await?;
 
     let mut futures = FuturesUnordered::new();
 
