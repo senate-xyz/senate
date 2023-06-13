@@ -10,6 +10,7 @@ use serenity::{
     utils::Colour,
 };
 use tokio::time::sleep;
+use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
@@ -21,12 +22,14 @@ use crate::{
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
+#[instrument(skip(client))]
 pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
     let active_proposals = client
         .proposal()
         .find_many(vec![prisma::proposal::state::equals(ProposalState::Active)])
         .include(proposal_with_dao::include())
         .exec()
+        .instrument(debug_span!("get proposals"))
         .await
         .unwrap();
 
@@ -39,6 +42,7 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                 notification::dispatched::equals(true),
             ])
             .exec()
+            .instrument(debug_span!("get notifications"))
             .await
             .unwrap();
 
@@ -62,6 +66,7 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                 .user()
                 .find_first(vec![user::id::equals(notification.clone().userid)])
                 .exec()
+                .instrument(debug_span!("get user"))
                 .await
                 .unwrap()
                 .unwrap();
@@ -71,6 +76,7 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                 .find_first(vec![proposal::id::equals(notification.proposalid)])
                 .include(proposal_with_dao::include())
                 .exec()
+                .instrument(debug_span!("get proposal"))
                 .await
                 .unwrap()
                 .unwrap();
@@ -128,6 +134,7 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                             })
                     })])
                 })
+                .instrument(debug_span!("edit message"))
                 .await
                 .expect("Could not execute webhook.");
         }

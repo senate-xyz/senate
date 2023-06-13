@@ -24,6 +24,7 @@ pub mod telemetry;
 use dotenv::dotenv;
 use std::{env, sync::Arc};
 use tokio::time::sleep;
+use tracing::debug;
 
 use crate::{
     dispatch::new_proposals::dispatch_new_proposal_notifications,
@@ -40,7 +41,9 @@ async fn main() {
 
     let client_for_new_proposals: Arc<PrismaClient> = Arc::clone(&client);
     let new_proposals_task = tokio::task::spawn(async move {
+        debug!("started new_proposals_task");
         loop {
+            debug!("loop new_proposals_task");
             generate_new_proposal_notifications(&client_for_new_proposals).await;
             dispatch_new_proposal_notifications(&client_for_new_proposals).await;
 
@@ -50,7 +53,9 @@ async fn main() {
 
     let client_for_ending_soon = Arc::clone(&client);
     let ending_soon_task = tokio::task::spawn(async move {
+        debug!("started ending_soon_task");
         loop {
+            debug!("loop ending_soon_task");
             generate_ending_soon_notifications(
                 &client_for_ending_soon,
                 NotificationType::FirstReminderDiscord,
@@ -71,7 +76,9 @@ async fn main() {
 
     let client_for_ended_proposals: Arc<PrismaClient> = Arc::clone(&client);
     let ended_proposals_task = tokio::task::spawn(async move {
+        debug!("started ended_proposals_task");
         loop {
+            debug!("loop ended_proposals_task");
             generate_ended_proposal_notifications(&client_for_ended_proposals).await;
             dispatch_ended_proposal_notifications(&client_for_ended_proposals).await;
 
@@ -81,7 +88,9 @@ async fn main() {
 
     let client_for_active_proposals: Arc<PrismaClient> = Arc::clone(&client);
     let active_proposals_task = tokio::task::spawn(async move {
+        debug!("started active_proposals_task");
         loop {
+            debug!("loop active_proposals_task");
             update_active_proposal_notifications(&client_for_active_proposals).await;
             update_ended_proposal_notifications(&client_for_active_proposals).await;
 
