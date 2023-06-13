@@ -1,7 +1,7 @@
 use anyhow::{bail, Context, Result};
 use opentelemetry::propagation::TextMapPropagator;
 use std::{cmp, ops::Div};
-use tracing::{debug_span, instrument, span, trace_span, Instrument, Level, Span};
+use tracing::{debug_span, info_span, instrument, span, trace_span, Instrument, Level, Span};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use ethers::{providers::Middleware, types::U64};
@@ -46,7 +46,7 @@ pub async fn update_chain_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>,
 ) -> Json<Vec<VotesResponse>> {
-    let root_span = debug_span!("update_chain_votes");
+    let root_span = info_span!("update_chain_votes");
 
     let carrier: std::collections::HashMap<String, String> =
         serde_json::from_value(data.trace.clone()).unwrap_or_default();
@@ -167,7 +167,7 @@ pub async fn update_chain_votes<'a>(
     .await
 }
 
-#[instrument(skip(ctx))]
+#[instrument(skip(ctx), level = "debug")]
 async fn get_results(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -231,7 +231,7 @@ async fn get_results(
     }
 }
 
-#[instrument(skip(ctx))]
+#[instrument(skip(ctx), level = "debug")]
 async fn insert_votes(
     votes: &[VoteResult],
     to_block: &i64,

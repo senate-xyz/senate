@@ -2,7 +2,7 @@ use crate::prisma::{voter, voterhandler, PrismaClient, RefreshStatus};
 use anyhow::Result;
 use tracing::{debug, instrument};
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "info")]
 pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
     let voters_count = client.voter().count(vec![]).exec().await.unwrap();
 

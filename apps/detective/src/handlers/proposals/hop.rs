@@ -28,7 +28,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
-#[instrument(skip(ctx), ret)]
+#[instrument(skip(ctx), ret, level = "info")]
 pub async fn hop_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -67,7 +67,7 @@ pub async fn hop_proposals(
     Ok(result)
 }
 
-#[instrument(skip(ctx), ret)]
+#[instrument(skip(ctx), ret, level = "debug")]
 async fn data_for_proposal(
     p: (hopgov::hopgov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,

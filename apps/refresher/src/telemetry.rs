@@ -33,6 +33,11 @@ pub fn setup() {
         None => panic!("$EXEC_ENV is not set"),
     };
 
+    let debug_level = match env::var_os("DEBUG_LEVEL") {
+        Some(v) => v.into_string().unwrap(),
+        None => panic!("$DEBUG_LEVEL is not set"),
+    };
+
     let (logging_layer, task) = tracing_loki::builder()
         .label("app", app_name)
         .unwrap()
@@ -52,7 +57,7 @@ pub fn setup() {
 
     opentelemetry::global::set_text_map_propagator(TraceContextPropagator::new());
 
-    let filter_str = format!("{}=debug", app_name);
+    let filter_str = format!("{}={}", app_name, debug_level);
     let env_filter = EnvFilter::try_new(filter_str).unwrap_or_else(|_| EnvFilter::new("debug"));
 
     let mut map = MetadataMap::with_capacity(3);

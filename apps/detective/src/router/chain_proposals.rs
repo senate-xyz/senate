@@ -7,7 +7,7 @@ use prisma_client_rust::chrono::{DateTime, FixedOffset, Utc};
 use reqwest::header::HeaderMap;
 use rocket::serde::json::Json;
 use serde_json::Value;
-use tracing::{debug_span, instrument, span, trace_span, Instrument, Level, Span};
+use tracing::{debug_span, info_span, instrument, span, trace_span, Instrument, Level, Span};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
@@ -46,7 +46,7 @@ pub async fn update_chain_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>,
 ) -> Json<ProposalsResponse<'a>> {
-    let root_span = debug_span!("update_chain_proposals");
+    let root_span = info_span!("update_chain_proposals");
 
     let carrier: std::collections::HashMap<String, String> =
         serde_json::from_value(data.trace.clone()).unwrap_or_default();
@@ -118,7 +118,7 @@ pub async fn update_chain_proposals<'a>(
     .await
 }
 
-#[instrument(skip(ctx))]
+#[instrument(skip(ctx), level = "debug")]
 async fn get_results(
     ctx: &Ctx,
     from_block: i64,
@@ -176,7 +176,7 @@ async fn get_results(
     }
 }
 
-#[instrument(skip(ctx))]
+#[instrument(skip(ctx), level = "debug")]
 async fn insert_proposals(
     proposals: Vec<ChainProposal>,
     to_block: i64,

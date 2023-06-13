@@ -2,7 +2,7 @@ use anyhow::Result;
 use log::warn;
 use opentelemetry::{propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator};
 use std::{collections::HashMap, env, sync::Arc};
-use tracing::{debug, debug_span, event, instrument, Instrument, Level};
+use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use prisma_client_rust::chrono::{DateTime, Utc};
@@ -25,7 +25,7 @@ struct ProposalsResponse {
     response: String,
 }
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "info")]
 pub(crate) async fn consume_snapshot_proposals(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
@@ -140,7 +140,7 @@ pub(crate) async fn consume_snapshot_proposals(
                 }
             }
         }
-        .instrument(debug_span!("detective request"))
+        .instrument(info_span!("detective request"))
     });
     Ok(())
 }

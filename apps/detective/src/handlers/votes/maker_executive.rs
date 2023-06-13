@@ -31,7 +31,7 @@ const VOTE_MULTIPLE_ACTIONS_TOPIC: &str =
 const VOTE_SINGLE_ACTION_TOPIC: &str =
     "0xa69beaba00000000000000000000000000000000000000000000000000000000";
 
-#[instrument(skip(ctx), ret)]
+#[instrument(skip(ctx), ret, level = "info")]
 pub async fn makerexecutive_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -126,7 +126,7 @@ pub async fn makerexecutive_votes(
         .collect())
 }
 
-#[instrument(skip(ctx), ret)]
+#[instrument(skip(ctx), ret, level = "debug")]
 async fn get_votes_for_voter(
     spell_addresses: Vec<String>,
     dao_handler: daohandler::Data,

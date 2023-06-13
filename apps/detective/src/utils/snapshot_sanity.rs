@@ -31,7 +31,7 @@ struct GraphQLProposal {
     id: String,
 }
 
-#[instrument(skip(ctx))]
+#[instrument(skip(ctx), level = "info")]
 pub async fn snapshot_sanity_check(ctx: &Context) {
     let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(30);
     let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
@@ -52,7 +52,7 @@ pub async fn snapshot_sanity_check(ctx: &Context) {
     }
 }
 
-#[instrument(skip(ctx))]
+#[instrument(skip(ctx), level = "debug")]
 async fn sanitize(
     dao_handler: daohandler::Data,
     sanitize_from: chrono::DateTime<Utc>,

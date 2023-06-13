@@ -37,7 +37,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
-#[instrument(skip(ctx), ret)]
+#[instrument(skip(ctx), ret, level = "info")]
 pub async fn aave_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -76,7 +76,7 @@ pub async fn aave_proposals(
     Ok(result)
 }
 
-#[instrument(skip(ctx), ret)]
+#[instrument(skip(ctx), ret, level = "debug")]
 async fn data_for_proposal(
     p: (aavegov::aavegov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,

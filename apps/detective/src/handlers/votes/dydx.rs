@@ -24,7 +24,7 @@ struct Decoder {
     address: String,
 }
 
-#[instrument(skip(ctx), ret)]
+#[instrument(skip(ctx), ret, level = "info")]
 pub async fn dydx_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -86,7 +86,7 @@ pub async fn dydx_votes(
         .collect())
 }
 
-#[instrument(skip(ctx), ret)]
+#[instrument(skip(ctx), ret, level = "debug")]
 async fn get_votes_for_voter(
     logs: Vec<(VoteEmittedFilter, LogMeta)>,
     dao_handler: daohandler::Data,

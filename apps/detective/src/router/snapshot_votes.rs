@@ -4,7 +4,7 @@ use opentelemetry::propagation::TextMapPropagator;
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use std::iter::once;
-use tracing::{debug_span, instrument, span, trace_span, Instrument, Level, Span};
+use tracing::{debug_span, info_span, instrument, span, trace_span, Instrument, Level, Span};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime, Utc};
@@ -62,7 +62,7 @@ pub async fn update_snapshot_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>,
 ) -> Json<Vec<VotesResponse>> {
-    let root_span = debug_span!("update_snapshot_votes");
+    let root_span = info_span!("update_snapshot_votes");
 
     let carrier: std::collections::HashMap<String, String> =
         serde_json::from_value(data.trace.clone()).unwrap_or_default();
@@ -189,7 +189,7 @@ pub async fn update_snapshot_votes<'a>(
     .await
 }
 
-#[instrument(skip(ctx))]
+#[instrument(skip(ctx), level = "debug")]
 async fn update_votes(
     graphql_query: String,
     search_from_timestamp: i64,
@@ -240,7 +240,7 @@ async fn update_votes(
     Ok(())
 }
 
-#[instrument(skip(ctx))]
+#[instrument(skip(ctx), level = "debug")]
 async fn update_refresh_statuses(
     votes: Vec<GraphQLVote>,
     search_from_timestamp: i64,
@@ -316,7 +316,7 @@ async fn update_refresh_statuses(
     Ok(())
 }
 
-#[instrument(skip(ctx))]
+#[instrument(skip(ctx), level = "debug")]
 async fn update_votes_for_proposal(
     votes: Vec<GraphQLVote>,
     p: GraphQLProposal,
@@ -363,7 +363,7 @@ async fn update_votes_for_proposal(
     }
 }
 
-#[instrument(skip(ctx))]
+#[instrument(skip(ctx), level = "debug")]
 async fn create_old_votes(
     ctx: &Ctx,
     votes_for_proposal: Vec<GraphQLVote>,
@@ -403,7 +403,7 @@ async fn create_old_votes(
     Ok(())
 }
 
-#[instrument(skip(ctx))]
+#[instrument(skip(ctx), level = "debug")]
 async fn update_or_create_current_votes(
     ctx: &Ctx,
     votes_for_proposal: Vec<GraphQLVote>,

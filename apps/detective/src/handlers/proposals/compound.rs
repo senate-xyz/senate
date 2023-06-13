@@ -24,7 +24,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
-#[instrument(skip(ctx), ret)]
+#[instrument(skip(ctx), ret, level = "info")]
 pub async fn compound_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -63,7 +63,7 @@ pub async fn compound_proposals(
     Ok(result)
 }
 
-#[instrument(skip(ctx), ret)]
+#[instrument(skip(ctx), ret, level = "debug")]
 async fn data_for_proposal(
     p: (compoundgov::compoundgov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,

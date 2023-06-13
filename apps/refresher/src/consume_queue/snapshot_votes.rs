@@ -2,7 +2,7 @@ use anyhow::Result;
 use log::warn;
 use opentelemetry::{propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator};
 use std::{collections::HashMap, env, sync::Arc};
-use tracing::{debug, debug_span, event, instrument, Instrument, Level};
+use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use prisma_client_rust::chrono::{DateTime, Utc};
@@ -26,7 +26,7 @@ struct ApiResponse {
     success: bool,
 }
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "info")]
 pub(crate) async fn consume_snapshot_votes(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
@@ -40,25 +40,11 @@ pub(crate) async fn consume_snapshot_votes(
 
     let http_client = Client::builder().build().unwrap();
 
-    let span = tracing::Span::current();
-    let context = span.context();
-    let propagator = TraceContextPropagator::new();
-    let mut fields = HashMap::new();
-    propagator.inject_context(&context, &mut fields);
-    let headers = fields
-        .into_iter()
-        .map(|(k, v)| {
-            (
-                HeaderName::try_from(k).unwrap(),
-                HeaderValue::try_from(v).unwrap(),
-            )
-        })
-        .collect();
-
     let dao_handler = client
         .daohandler()
         .find_first(vec![daohandler::id::equals(entry.handler_id.to_string())])
         .exec()
+        .instrument(debug_span!("get dao_handler"))
         .await
         .unwrap()
         .unwrap();
@@ -81,7 +67,6 @@ pub(crate) async fn consume_snapshot_votes(
         let response = http_client
             .post(&post_url)
             .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "voters": entry.voters, "trace": trace}))
-            .headers(headers)
             .send()
             .await;
 
@@ -196,7 +181,7 @@ pub(crate) async fn consume_snapshot_votes(
                 warn!("refresher error: {:#?}", e);
             }
         }
-    }.instrument(debug_span!("detective request"))
+    }.instrument(info_span!("detective request"))
     });
     Ok(())
 }

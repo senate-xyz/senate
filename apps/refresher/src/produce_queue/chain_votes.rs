@@ -17,7 +17,7 @@ use prisma_client_rust::{
 use tracing::{debug, Instrument};
 use tracing::{debug_span, instrument};
 
-#[instrument(skip(client))]
+#[instrument(skip(client), level = "info")]
 pub async fn produce_chain_votes_queue(
     client: &PrismaClient,
     config: &Config,
