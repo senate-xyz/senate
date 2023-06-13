@@ -9,6 +9,7 @@ use teloxide::{
     Bot,
 };
 use tokio::time::sleep;
+use tracing::{debug, debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient},
@@ -17,6 +18,7 @@ use crate::{
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
+#[instrument(skip_all)]
 pub async fn dispatch_ended_proposal_notifications(
     client: &Arc<PrismaClient>,
     bot: &Arc<DefaultParseMode<Throttle<teloxide::Bot>>>,
@@ -28,6 +30,7 @@ pub async fn dispatch_ended_proposal_notifications(
             notification::r#type::equals(NotificationType::EndedProposalTelegram),
         ])
         .exec()
+        .instrument(debug_span!("get notifications"))
         .await
         .unwrap();
 
@@ -40,6 +43,7 @@ pub async fn dispatch_ended_proposal_notifications(
                 NotificationType::NewProposalTelegram,
             ))
             .exec()
+            .instrument(debug_span!("get notification"))
             .await
             .unwrap();
 
@@ -50,6 +54,7 @@ pub async fn dispatch_ended_proposal_notifications(
                         .user()
                         .find_first(vec![user::id::equals(ended_notification.clone().userid)])
                         .exec()
+                        .instrument(debug_span!("get user"))
                         .await
                         .unwrap()
                         .unwrap();
@@ -61,6 +66,7 @@ pub async fn dispatch_ended_proposal_notifications(
                         )])
                         .include(proposal_with_dao::include())
                         .exec()
+                        .instrument(debug_span!("get proposal"))
                         .await
                         .unwrap()
                         .unwrap();
@@ -177,6 +183,7 @@ pub async fn dispatch_ended_proposal_notifications(
                                     ],
                                 )
                                 .exec()
+                                .instrument(debug_span!("update notification"))
                                 .await
                                 .unwrap();
                         }

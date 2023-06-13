@@ -5,7 +5,9 @@ use crate::prisma::{
 };
 use anyhow::Result;
 use teloxide::Bot;
+use tracing::{debug_span, instrument, Instrument};
 
+#[instrument(skip(client))]
 pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
     let users = client
         .user()
@@ -14,6 +16,7 @@ pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
             user::telegramchatid::gt("".to_string()),
         ])
         .exec()
+        .instrument(debug_span!("get users"))
         .await
         .unwrap();
 
@@ -39,6 +42,7 @@ pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
             )
             .skip_duplicates()
             .exec()
+            .instrument(debug_span!("create notifications"))
             .await
             .unwrap();
     }
@@ -46,6 +50,7 @@ pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
+#[instrument(skip(client))]
 pub async fn get_new_proposals_for_user(
     username: &String,
     client: &Arc<PrismaClient>,
@@ -54,6 +59,7 @@ pub async fn get_new_proposals_for_user(
         .user()
         .find_first(vec![prisma::user::address::equals(username.clone())])
         .exec()
+        .instrument(debug_span!("get user"))
         .await
         .unwrap()
         .unwrap();
@@ -62,6 +68,7 @@ pub async fn get_new_proposals_for_user(
         .subscription()
         .find_many(vec![subscription::userid::equals(user.id)])
         .exec()
+        .instrument(debug_span!("get subscriptions"))
         .await
         .unwrap();
 
@@ -73,6 +80,7 @@ pub async fn get_new_proposals_for_user(
         ])
         .include(proposal_with_dao::include())
         .exec()
+        .instrument(debug_span!("get proposals"))
         .await
         .unwrap();
 
