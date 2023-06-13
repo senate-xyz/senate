@@ -53,7 +53,7 @@ lazy_static::lazy_static! {
     );
 }
 
-#[instrument]
+#[instrument(skip(client))]
 async fn load_config_value(client: &PrismaClient, key: &str, default_value: u32) -> Result<u32> {
     if let Some(config_data) = client
         .config()
@@ -73,7 +73,7 @@ async fn load_config_value(client: &PrismaClient, key: &str, default_value: u32)
     }
 }
 
-#[instrument]
+#[instrument(skip(client))]
 pub(crate) async fn load_config_from_db(client: &PrismaClient) -> Result<()> {
     let refresh_interval = load_config_value(client, "refresh_interval", 300).await?;
 
