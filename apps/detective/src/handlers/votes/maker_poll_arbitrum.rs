@@ -63,7 +63,10 @@ pub async fn makerpollarbitrum_votes(
         .from_block(*from_block)
         .to_block(to_block);
 
-    let logs = events.query_with_meta().await?;
+    let logs = events
+        .query_with_meta()
+        .instrument(debug_span!("get rpc events"))
+        .await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -96,7 +99,7 @@ pub async fn makerpollarbitrum_votes(
         .collect())
 }
 
-#[instrument(skip(ctx), ret)]
+#[instrument(skip(ctx, logs), ret)]
 async fn get_votes_for_voter(
     logs: Vec<(VotedFilter, LogMeta)>,
     dao_handler: daohandler::Data,
