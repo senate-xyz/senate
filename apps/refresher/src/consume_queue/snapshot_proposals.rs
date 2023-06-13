@@ -25,7 +25,7 @@ struct ProposalsResponse {
     response: String,
 }
 
-#[instrument]
+#[instrument(skip(client))]
 pub(crate) async fn consume_snapshot_proposals(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
@@ -43,15 +43,14 @@ pub(crate) async fn consume_snapshot_proposals(
     let dao_handler_id_ref = entry.handler_id.clone();
 
     task::spawn({
-        let detective_span = debug_span!("detective");
         async move {
-            event!(Level::DEBUG, "Sending detective request");
-
             let span = tracing::Span::current();
             let context = span.context();
             let propagator = TraceContextPropagator::new();
             let mut trace = HashMap::new();
             propagator.inject_context(&context, &mut trace);
+
+            event!(Level::DEBUG, "Sending detective request");
 
             let response = http_client
                 .post(&post_url)
@@ -85,7 +84,11 @@ pub(crate) async fn consume_snapshot_proposals(
                                 _ => panic!("Unexpected response"),
                             };
 
-                            let result = client_ref._batch(dbupdate).await.unwrap();
+                            let result = client_ref
+                                ._batch(dbupdate)
+                                .instrument(debug_span!("update handlers"))
+                                .await
+                                .unwrap();
 
                             debug!("refresher update: {:?}", result);
                         }
@@ -104,6 +107,7 @@ pub(crate) async fn consume_snapshot_proposals(
                                     ],
                                 )
                                 .exec()
+                                .instrument(debug_span!("update handlers"))
                                 .await
                                 .unwrap();
 
@@ -127,6 +131,7 @@ pub(crate) async fn consume_snapshot_proposals(
                             ],
                         )
                         .exec()
+                        .instrument(debug_span!("update handlers"))
                         .await
                         .unwrap();
 
@@ -135,7 +140,7 @@ pub(crate) async fn consume_snapshot_proposals(
                 }
             }
         }
-        .instrument(detective_span)
+        .instrument(debug_span!("detective request"))
     });
     Ok(())
 }

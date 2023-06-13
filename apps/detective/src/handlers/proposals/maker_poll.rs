@@ -21,7 +21,8 @@ use reqwest_middleware::ClientWithMiddleware;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{str, sync::Arc, vec};
-use tracing::instrument;
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -52,7 +53,10 @@ pub async fn maker_poll_proposals(
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let proposals = events.query_with_meta().await?;
+    let proposals = events
+        .query_with_meta()
+        .instrument(debug_span!("get rpc events"))
+        .await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -68,6 +72,7 @@ pub async fn maker_poll_proposals(
     Ok(result)
 }
 
+#[instrument(skip(ctx), ret)]
 async fn data_for_proposal(
     p: (makerpollcreate::makerpollcreate::PollCreatedFilter, LogMeta),
     ctx: &Ctx,

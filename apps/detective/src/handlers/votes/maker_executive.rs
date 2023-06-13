@@ -17,7 +17,8 @@ use itertools::Itertools;
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::chrono::Utc;
 use serde::Deserialize;
-use tracing::instrument;
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -58,7 +59,10 @@ pub async fn makerexecutive_votes(
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let single_spell_logs = single_spell_events.query_with_meta().await?;
+    let single_spell_logs = single_spell_events
+        .query_with_meta()
+        .instrument(debug_span!("get rpc events"))
+        .await?;
 
     let multi_spell_events = gov_contract
         .log_note_filter()
@@ -67,7 +71,10 @@ pub async fn makerexecutive_votes(
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let multi_spell_logs = multi_spell_events.query_with_meta().await?;
+    let multi_spell_logs = multi_spell_events
+        .query_with_meta()
+        .instrument(debug_span!("get rpc events"))
+        .await?;
 
     let single_spells =
         get_single_spell_addresses(voters.clone(), single_spell_logs, gov_contract.clone()).await?;
@@ -119,6 +126,7 @@ pub async fn makerexecutive_votes(
         .collect())
 }
 
+#[instrument(skip(ctx), ret)]
 async fn get_votes_for_voter(
     spell_addresses: Vec<String>,
     dao_handler: daohandler::Data,

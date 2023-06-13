@@ -27,7 +27,8 @@ use reqwest_middleware::ClientWithMiddleware;
 use serde::Deserialize;
 use serde_json::Value as JsonValue;
 use std::{str, sync::Arc, time::Duration};
-use tracing::instrument;
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -54,7 +55,10 @@ pub async fn aave_proposals(
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let proposals = events.query_with_meta().await?;
+    let proposals = events
+        .query_with_meta()
+        .instrument(debug_span!("get rpc events"))
+        .await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -72,6 +76,7 @@ pub async fn aave_proposals(
     Ok(result)
 }
 
+#[instrument(skip(ctx), ret)]
 async fn data_for_proposal(
     p: (aavegov::aavegov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,

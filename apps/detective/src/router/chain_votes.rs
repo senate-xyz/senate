@@ -61,6 +61,7 @@ pub async fn update_chain_votes<'a>(
             .daohandler()
             .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
             .exec()
+            .instrument(debug_span!("get dao_handler"))
             .await
             .expect("bad prisma result")
             .expect("daoHandlerId not found");
@@ -74,6 +75,7 @@ pub async fn update_chain_votes<'a>(
             .order_by(proposal::blockcreated::order(Direction::Asc))
             .take(1)
             .exec()
+            .instrument(debug_span!("get first_proposal"))
             .await
             .expect("bad prisma result");
 
@@ -92,6 +94,7 @@ pub async fn update_chain_votes<'a>(
                 )]),
             ])
             .exec()
+            .instrument(debug_span!("get voter_handlers"))
             .await
             .expect("bad prisma result");
 
@@ -107,6 +110,7 @@ pub async fn update_chain_votes<'a>(
         let current_block = ctx
             .rpc
             .get_block_number()
+            .instrument(debug_span!("get current_block"))
             .await
             .unwrap_or(U64::from(0))
             .as_u64() as i64;
@@ -137,10 +141,25 @@ pub async fn update_chain_votes<'a>(
         let result = get_results(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await;
 
         match result {
-            Ok(r) => Json(success_response(r)),
+            Ok(r) => Json(
+                r.into_iter()
+                    .map(|v| VotesResponse {
+                        voter_address: v.voter_address,
+                        success: v.success,
+                    })
+                    .collect(),
+            ),
             Err(e) => {
                 warn!("{:?}", e);
-                Json(failed_response(voters))
+                Json(
+                    voters
+                        .into_iter()
+                        .map(|v| VotesResponse {
+                            voter_address: v,
+                            success: false,
+                        })
+                        .collect(),
+                )
             }
         }
     }
@@ -210,27 +229,6 @@ async fn get_results(
         }
         DaoHandlerType::Snapshot => bail!("not implemented"),
     }
-}
-
-#[instrument]
-fn success_response(r: Vec<VoteResult>) -> Vec<VotesResponse> {
-    r.into_iter()
-        .map(|v| VotesResponse {
-            voter_address: v.voter_address,
-            success: v.success,
-        })
-        .collect()
-}
-
-#[instrument]
-fn failed_response(voters: Vec<String>) -> Vec<VotesResponse> {
-    voters
-        .into_iter()
-        .map(|v| VotesResponse {
-            voter_address: v,
-            success: false,
-        })
-        .collect()
 }
 
 #[instrument(skip(ctx))]

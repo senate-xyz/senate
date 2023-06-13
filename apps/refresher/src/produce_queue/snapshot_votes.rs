@@ -1,6 +1,5 @@
 use anyhow::Result;
 use std::collections::HashMap;
-use tracing::{debug, instrument};
 
 use crate::{
     config::Config,
@@ -14,6 +13,8 @@ use prisma_client_rust::{
     operator::{and, or},
     Direction,
 };
+use tracing::{debug, Instrument};
+use tracing::{debug_span, instrument};
 
 #[instrument]
 pub async fn produce_snapshot_votes_queue(
@@ -47,6 +48,7 @@ pub async fn produce_snapshot_votes_queue(
             proposals : select { id }
         }))
         .exec()
+        .instrument(debug_span!("get dao_handlers"))
         .await?;
 
     let filtered_dao_handlers: Vec<_> = dao_handlers
@@ -82,6 +84,7 @@ pub async fn produce_snapshot_votes_queue(
                 voter : select { address }
             }))
             .exec()
+            .instrument(debug_span!("get voter_handlers"))
             .await
             .unwrap();
 
@@ -140,6 +143,7 @@ pub async fn produce_snapshot_votes_queue(
             ],
         )
         .exec()
+        .instrument(debug_span!("update pending"))
         .await?;
 
     debug!("{:?}", refresh_queue);

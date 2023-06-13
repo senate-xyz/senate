@@ -15,7 +15,8 @@ use num_bigint::BigInt;
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
 use serde::Deserialize;
 use std::str::FromStr;
-use tracing::instrument;
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -52,7 +53,10 @@ pub async fn makerpoll_votes(
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let logs = events.query_with_meta().await?;
+    let logs = events
+        .query_with_meta()
+        .instrument(debug_span!("get rpc events"))
+        .await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -85,6 +89,7 @@ pub async fn makerpoll_votes(
         .collect())
 }
 
+#[instrument(skip(ctx), ret)]
 async fn get_votes_for_voter(
     logs: Vec<(VotedFilter, LogMeta)>,
     dao_handler: daohandler::Data,

@@ -26,7 +26,7 @@ struct ApiResponse {
     success: bool,
 }
 
-#[instrument]
+#[instrument(skip(client))]
 pub(crate) async fn consume_snapshot_votes(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
@@ -68,7 +68,6 @@ pub(crate) async fn consume_snapshot_votes(
     let voters_ref = entry.voters.clone();
 
     task::spawn({
-        let detective_span = debug_span!("detective");
         async move {
         event!(Level::DEBUG, "Sending detective request");
 
@@ -109,6 +108,7 @@ pub(crate) async fn consume_snapshot_votes(
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(ok_voters.clone())])
                     .exec()
+                    .instrument(debug_span!("get voters"))
                     .await
                     .unwrap()
                     .iter()
@@ -119,6 +119,7 @@ pub(crate) async fn consume_snapshot_votes(
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(nok_voters.clone())])
                     .exec()
+                    .instrument(debug_span!("get voters"))
                     .await
                     .unwrap()
                     .iter()
@@ -152,6 +153,7 @@ pub(crate) async fn consume_snapshot_votes(
 
                 let result = client_ref
                     ._batch((update_ok_voters, update_nok_voters))
+                    .instrument(debug_span!("update handlers"))
                     .await
                     .unwrap();
 
@@ -162,6 +164,7 @@ pub(crate) async fn consume_snapshot_votes(
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(voters_ref)])
                     .exec()
+                    .instrument(debug_span!("get voters"))
                     .await
                     .unwrap()
                     .iter()
@@ -186,13 +189,14 @@ pub(crate) async fn consume_snapshot_votes(
                         ],
                     )
                     .exec()
+                    .instrument(debug_span!("update handlers"))
                     .await;
 
                 debug!("refresher error update: {:?}", result);
                 warn!("refresher error: {:#?}", e);
             }
         }
-    }.instrument(detective_span)
+    }.instrument(debug_span!("detective request"))
     });
     Ok(())
 }

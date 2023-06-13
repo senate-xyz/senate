@@ -27,7 +27,7 @@ struct ProposalsResponse {
     response: String,
 }
 
-#[instrument]
+#[instrument(skip(client))]
 pub(crate) async fn consume_chain_proposals(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
@@ -45,6 +45,7 @@ pub(crate) async fn consume_chain_proposals(
         .daohandler()
         .find_first(vec![daohandler::id::equals(entry.handler_id.to_string())])
         .exec()
+        .instrument(debug_span!("get dao_handler"))
         .await
         .unwrap()
         .unwrap();
@@ -53,8 +54,6 @@ pub(crate) async fn consume_chain_proposals(
     let dao_handler_ref = dao_handler;
 
     task::spawn({
-        let detective_span = debug_span!("detective");
-
         async move {
             event!(Level::DEBUG, "Sending detective request");
 
@@ -106,7 +105,10 @@ pub(crate) async fn consume_chain_proposals(
                                 _ => panic!("Unexpected response"),
                             };
 
-                            let _ = client_ref._batch(dbupdate).await;
+                            let _ = client_ref
+                                ._batch(dbupdate)
+                                .instrument(debug_span!("update handlers"))
+                                .await;
                         }
                         Err(e) => {
                             let result = client_ref
@@ -124,6 +126,7 @@ pub(crate) async fn consume_chain_proposals(
                                     ],
                                 )
                                 .exec()
+                                .instrument(debug_span!("update handlers"))
                                 .await
                                 .unwrap();
 
@@ -148,6 +151,7 @@ pub(crate) async fn consume_chain_proposals(
                             ],
                         )
                         .exec()
+                        .instrument(debug_span!("update handlers"))
                         .await
                         .unwrap();
 
@@ -156,7 +160,7 @@ pub(crate) async fn consume_chain_proposals(
                 }
             }
         }
-        .instrument(detective_span)
+        .instrument(debug_span!("detective request"))
     });
 
     Ok(())

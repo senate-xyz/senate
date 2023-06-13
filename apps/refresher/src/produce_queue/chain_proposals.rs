@@ -6,7 +6,8 @@ use prisma_client_rust::{
     chrono::{Duration, Utc},
     operator::{and, or},
 };
-use tracing::{debug, instrument};
+use tracing::{debug, Instrument};
+use tracing::{debug_span, instrument};
 
 #[instrument]
 pub async fn produce_chain_proposals_queue(
@@ -49,6 +50,7 @@ pub async fn produce_chain_proposals_queue(
             ]),
         ])
         .exec()
+        .instrument(debug_span!("get dao_handlers"))
         .await?;
 
     client
@@ -63,6 +65,7 @@ pub async fn produce_chain_proposals_queue(
             ],
         )
         .exec()
+        .instrument(debug_span!("update pending"))
         .await?;
 
     let refresh_queue: Vec<RefreshEntry> = dao_handlers

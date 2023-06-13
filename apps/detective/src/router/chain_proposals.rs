@@ -61,6 +61,7 @@ pub async fn update_chain_proposals<'a>(
             .daohandler()
             .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
             .exec()
+            .instrument(debug_span!("get dao_handlers"))
             .await
             .expect("bad prisma result")
             .expect("daoHandlerId not found");
@@ -73,6 +74,7 @@ pub async fn update_chain_proposals<'a>(
         let current_block = ctx
             .rpc
             .get_block_number()
+            .instrument(debug_span!("get current_block"))
             .await
             .unwrap_or(U64::from(from_block))
             .as_u64() as i64;
@@ -226,6 +228,7 @@ async fn insert_proposals(
     let updated = ctx
         .db
         ._batch(upserts)
+        .instrument(debug_span!("upsert proposals"))
         .await
         .expect("failed to insert proposals");
 
@@ -267,6 +270,7 @@ async fn insert_proposals(
             ],
         )
         .exec()
+        .instrument(debug_span!("update chainindex"))
         .await
         .expect("failed to update daohandlers");
 

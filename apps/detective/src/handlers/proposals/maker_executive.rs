@@ -23,7 +23,8 @@ use reqwest::{
 use reqwest_middleware::ClientWithMiddleware;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tracing::instrument;
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -57,7 +58,10 @@ pub async fn maker_executive_proposals(
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let single_spell_logs = single_spell_events.query_with_meta().await?;
+    let single_spell_logs = single_spell_events
+        .query_with_meta()
+        .instrument(debug_span!("get rpc events"))
+        .await?;
 
     let multi_spell_events = gov_contract
         .log_note_filter()
@@ -65,7 +69,10 @@ pub async fn maker_executive_proposals(
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let multi_spell_logs = multi_spell_events.query_with_meta().await?;
+    let multi_spell_logs = multi_spell_events
+        .query_with_meta()
+        .instrument(debug_span!("get rpc events"))
+        .await?;
 
     let single_spells = get_single_spell_addresses(single_spell_logs, gov_contract.clone()).await?;
     let multi_spells = get_multi_spell_addresses(multi_spell_logs, gov_contract.clone()).await?;
@@ -90,6 +97,7 @@ pub async fn maker_executive_proposals(
     Ok(result)
 }
 
+#[instrument(skip(ctx), ret)]
 async fn proposal(
     spell_address: &String,
     decoder: &Decoder,

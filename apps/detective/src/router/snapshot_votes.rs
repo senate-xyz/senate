@@ -77,6 +77,7 @@ pub async fn update_snapshot_votes<'a>(
             .daohandler()
             .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
             .exec()
+            .instrument(debug_span!("get dao_handler"))
             .await
             .expect("bad prisma result")
             .expect("daoHandlerId not found");
@@ -96,6 +97,7 @@ pub async fn update_snapshot_votes<'a>(
                 )]),
             ])
             .exec()
+            .instrument(debug_span!("get voter_handlers"))
             .await
             .expect("bad prisma result");
 
@@ -200,10 +202,12 @@ async fn update_votes(
         .get("https://hub.snapshot.org/graphql")
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()
+        .instrument(debug_span!("get graphql_response"))
         .await?;
 
     let response_data: GraphQLResponse = graphql_response
         .json()
+        .instrument(debug_span!("get json response_data"))
         .await
         .with_context(|| format!("bad graphql response {}", graphql_query))?;
 
@@ -304,6 +308,7 @@ async fn update_refresh_statuses(
             ],
         )
         .exec()
+        .instrument(debug_span!("update snapshotindex"))
         .await?;
 
     debug!("{:?} ", updated);
@@ -326,6 +331,7 @@ async fn update_votes_for_proposal(
             dao_handler.daoid.to_string(),
         ))
         .exec()
+        .instrument(debug_span!("find proposal"))
         .await
     {
         Ok(r) => match r {

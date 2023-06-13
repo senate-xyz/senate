@@ -18,7 +18,8 @@ use prisma_client_rust::{
 };
 use serde::Deserialize;
 use std::str;
-use tracing::instrument;
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -45,7 +46,10 @@ pub async fn hop_proposals(
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let proposals = events.query_with_meta().await?;
+    let proposals = events
+        .query_with_meta()
+        .instrument(debug_span!("get rpc events"))
+        .await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -63,6 +67,7 @@ pub async fn hop_proposals(
     Ok(result)
 }
 
+#[instrument(skip(ctx), ret)]
 async fn data_for_proposal(
     p: (hopgov::hopgov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,

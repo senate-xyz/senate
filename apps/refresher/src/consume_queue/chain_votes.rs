@@ -26,7 +26,7 @@ struct ApiResponse {
     success: bool,
 }
 
-#[instrument]
+#[instrument(skip(client))]
 pub(crate) async fn consume_chain_votes(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
@@ -40,25 +40,11 @@ pub(crate) async fn consume_chain_votes(
 
     let http_client = Client::builder().build().unwrap();
 
-    let span = tracing::Span::current();
-    let context = span.context();
-    let propagator = TraceContextPropagator::new();
-    let mut fields = HashMap::new();
-    propagator.inject_context(&context, &mut fields);
-    let headers = fields
-        .into_iter()
-        .map(|(k, v)| {
-            (
-                HeaderName::try_from(k).unwrap(),
-                HeaderValue::try_from(v).unwrap(),
-            )
-        })
-        .collect();
-
     let dao_handler = client
         .daohandler()
         .find_first(vec![daohandler::id::equals(entry.handler_id.to_string())])
         .exec()
+        .instrument(debug_span!("get dao_handler"))
         .await
         .unwrap()
         .unwrap();
@@ -68,20 +54,18 @@ pub(crate) async fn consume_chain_votes(
     let voters_ref = entry.voters.clone();
 
     task::spawn({
-        let detective_span = debug_span!("detective");
         async move {
-        event!(Level::DEBUG, "Sending detective request");
+        let span = tracing::Span::current();
+        let context = span.context();
+        let propagator = TraceContextPropagator::new();
+        let mut trace = HashMap::new();
+        propagator.inject_context(&context, &mut trace);
 
-let span = tracing::Span::current();
-    let context = span.context();
-    let propagator = TraceContextPropagator::new();
-    let mut trace = HashMap::new();
-    propagator.inject_context(&context, &mut trace);
+        event!(Level::DEBUG, "Sending detective request");
 
         let response = http_client
             .post(&post_url)
             .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "voters": entry.voters, "trace": trace }))
-            .headers(headers)
             .send()
             .await;
 
@@ -107,6 +91,7 @@ let span = tracing::Span::current();
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(ok_voters.clone())])
                     .exec()
+                    .instrument(debug_span!("get voters"))
                     .await
                     .unwrap()
                     .iter()
@@ -117,6 +102,7 @@ let span = tracing::Span::current();
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(nok_voters.clone())])
                     .exec()
+                    .instrument(debug_span!("get voters"))
                     .await
                     .unwrap()
                     .iter()
@@ -147,6 +133,7 @@ let span = tracing::Span::current();
 
                 let result = client_ref
                     ._batch((update_ok_voters, update_nok_voters))
+                    .instrument(debug_span!("update handlers"))
                     .await
                     .unwrap();
 
@@ -204,6 +191,7 @@ let span = tracing::Span::current();
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(voters_ref)])
                     .exec()
+                    .instrument(debug_span!("get voters"))
                     .await
                     .unwrap()
                     .iter()
@@ -226,6 +214,7 @@ let span = tracing::Span::current();
                         ],
                     )
                     .exec()
+                    .instrument(debug_span!("update handlers"))
                     .await
                     .unwrap();
 
@@ -233,7 +222,7 @@ let span = tracing::Span::current();
                 warn!("refresher error: {:#?}", e);
             }
         }
-    }.instrument(detective_span)
+    }.instrument(debug_span!("detective request"))
     });
 
     Ok(())
