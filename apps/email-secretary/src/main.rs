@@ -23,6 +23,7 @@ use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 use std::{env, sync::Arc, time::Duration};
 use tokio::time::sleep;
 use tokio::try_join;
+use tracing::debug;
 
 use crate::{
     bulletin::bulletin_emails::{send_bulletin_emails, send_triggered_emails},
@@ -40,7 +41,9 @@ async fn main() {
 
     let client_for_bulletin: Arc<PrismaClient> = Arc::clone(&client);
     let bulletin_task = tokio::task::spawn(async move {
+        debug!("started bulletin_task");
         loop {
+            debug!("loop bulletin_task");
             send_triggered_emails(&client_for_bulletin).await;
 
             let now = Utc::now();
@@ -54,7 +57,9 @@ async fn main() {
 
     let client_for_quorum = Arc::clone(&client);
     let quroum_task = tokio::task::spawn(async move {
+        debug!("started quroum_task");
         loop {
+            debug!("loop quroum_task");
             send_quorum_email(&client_for_quorum).await;
 
             sleep(Duration::from_secs(60)).await;

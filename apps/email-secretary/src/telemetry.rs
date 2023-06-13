@@ -6,7 +6,8 @@ use base64::{
     Engine as _,
 };
 use opentelemetry::{
-    sdk::{trace, Resource},
+    global,
+    sdk::{propagation::TraceContextPropagator, trace, Resource},
     KeyValue,
 };
 
@@ -48,6 +49,8 @@ pub fn setup() {
             .unwrap(),
         )
         .unwrap();
+
+    opentelemetry::global::set_text_map_propagator(TraceContextPropagator::new());
 
     let filter_str = format!("{}=debug", app_name);
     let env_filter = EnvFilter::try_new(filter_str).unwrap_or_else(|_| EnvFilter::new("debug"));
