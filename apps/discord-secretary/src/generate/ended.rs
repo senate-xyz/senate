@@ -1,11 +1,5 @@
 use crate::prisma::{
-    notification,
-    proposal,
-    subscription,
-    user,
-    NotificationType,
-    PrismaClient,
-    ProposalState,
+    notification, proposal, subscription, user, NotificationType, PrismaClient, ProposalState,
 };
 use anyhow::Result;
 use prisma_client_rust::chrono::{Duration, Utc};
