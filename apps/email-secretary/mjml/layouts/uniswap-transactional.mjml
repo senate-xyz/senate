@@ -49,18 +49,18 @@
       </mj-group>
     </mj-section>
 
-    <mj-section css-class="uniswap-background desktop-version rounded-corners">
-      <mj-column width="80px">
+    <mj-section css-class="uniswap-background desktop-version rounded-corners" padding="0px 0px">
+      <mj-column width="15%" padding="30px 0px">
         <mj-image
-          padding="20px 0 0 0"
-          width="80px"
-          height="80px"
-          src="https://senatelabs.xyz/assets/Emails/uniswap-logo.png"
+          padding="0px"
+          width="57px"
+          height="66px"
+          src="https://dev.senatelabs.xyz/assets/Emails/uniswap-logo.png"
         ></mj-image>
       </mj-column>
-      <mj-column width="70%">
+      <mj-column width="70%" vertical-align="middle" padding="40px 0px">
         <mj-text
-          padding="30px 0px 0px 10px"
+          padding="0px"
           color="white"
           font-size="32px"
           font-family="sans-serif"
@@ -68,7 +68,7 @@
           >Uniswap</mj-text
         >
         <mj-text
-          padding="5px 0px 0px 10px"
+          padding="0px"
           color="white"
           font-size="14px"
           font-family="sans-serif"

@@ -200,13 +200,12 @@ async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> R
         "https://senate.infura-ipfs.io/ipfs/",
         "https://cloudflare-ipfs.com/ipfs/",
         "https://gateway.pinata.cloud/ipfs/",
-        "https://4everland.io/ipfs/",
     ];
 
     loop {
         let response = http_client
             .get(format!("{}f01701220{}", gateways[current_gateway], hexhash))
-            .timeout(Duration::from_secs(10))
+            .timeout(Duration::from_secs(5))
             .send()
             .await;
 
@@ -228,14 +227,14 @@ async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> R
 
                 return Ok("Unknown".to_string());
             }
-            _ if retries % 5 == 0 => {
+            _ if retries % 3 == 0 => {
                 if current_gateway < gateways.len() - 2 {
                     current_gateway = current_gateway + 1;
                 } else {
                     current_gateway = 0;
                 }
             }
-            _ if retries < 25 => {
+            _ if retries < 12 => {
                 retries += 1;
                 let backoff_duration = Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;

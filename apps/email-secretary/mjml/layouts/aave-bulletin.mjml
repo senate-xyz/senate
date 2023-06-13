@@ -52,18 +52,18 @@
       </mj-group>
     </mj-section>
 
-    <mj-section css-class="aave-background desktop-version rounded-corners">
-      <mj-column width="80px">
+    <mj-section css-class="aave-background desktop-version rounded-corners" padding="0px 0px">
+      <mj-column width="15%" padding="30px 0px">
         <mj-image
-          padding="20px 0 0 0"
-          width="80px"
-          height="80px"
-          src="https://senatelabs.xyz/assets/Emails/aave-logo.png"
+        padding="0px"
+          width="45px"
+          height="67px"
+          src="https://dev.senatelabs.xyz/assets/Emails/aave-logo.png"
         ></mj-image>
       </mj-column>
-      <mj-column width="70%">
+      <mj-column width="70%" vertical-align="middle" padding="40px 0px">
         <mj-text
-          padding="30px 0px 0px 10px"
+          padding="0px"
           color="white"
           font-size="32px"
           font-family="sans-serif"
@@ -71,7 +71,7 @@
           >Aave Proposals</mj-text
         >
         <mj-text
-          padding="5px 0px 0px 10px"
+          padding="0px"
           color="white"
           font-size="14px"
           font-family="sans-serif"

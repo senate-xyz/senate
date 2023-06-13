@@ -14,6 +14,8 @@ export const accountSettingsRouter = router({
         .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
+            const challengeCode = Math.random().toString(36).substring(2)
+
             const user = await prisma.user.upsert({
                 where: {
                     address: String(username)
@@ -23,6 +25,8 @@ export const accountSettingsRouter = router({
                     email: input.email,
                     emaildailybulletin: true,
                     emailquorumwarning: true,
+                    verifiedemail: false,
+                    challengecode: challengeCode,
                     voters: {
                         connectOrCreate: {
                             where: {
@@ -37,7 +41,28 @@ export const accountSettingsRouter = router({
                 update: {
                     email: input.email,
                     emaildailybulletin: true,
-                    emailquorumwarning: true
+                    emailquorumwarning: true,
+                    verifiedemail: false,
+                    challengecode: challengeCode
+                }
+            })
+
+            const emailClient = new ServerClient(
+                process.env.POSTMARK_TOKEN ?? 'Missing Token'
+            )
+
+            await emailClient.sendEmailWithTemplate({
+                From: 'info@senatelabs.xyz',
+                To: String(user.email),
+                TemplateAlias: 'senate-confirm',
+                TemplateModel: {
+                    todaysDate: new Date().toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    }),
+                    url: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
                 }
             })
 
@@ -117,7 +142,7 @@ export const accountSettingsRouter = router({
                     })
                 }
 
-            emailClient.sendEmailWithTemplate({
+            await emailClient.sendEmailWithTemplate({
                 From: 'info@senatelabs.xyz',
                 To: String(user.email),
                 TemplateAlias: 'senate-confirm',

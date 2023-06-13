@@ -269,15 +269,23 @@ async fn get_ending_soon_proposals(
         EndingSoonProposals {
             daoLogoUrl: format!(
                 "{}{}{}",
-                "https://senatelabs.xyz", p.dao.picture, "_medium.png"
+                env::var_os("NEXT_PUBLIC_WEB_URL")
+                    .unwrap()
+                    .into_string()
+                    .unwrap(),
+                p.dao.picture,
+                "_medium.png"
             ),
             chainLogoUrl: format!(
                 "{}{}",
-                "https://senatelabs.xyz",
+                env::var_os("NEXT_PUBLIC_WEB_URL")
+                    .unwrap()
+                    .into_string()
+                    .unwrap(),
                 if p.daohandler.r#type == DaoHandlerType::Snapshot {
-                    "/assets/Icon/off-chain.png"
+                    "/assets/Emails/off-chain-rectangle.png"
                 } else {
-                    "/assets/Icon/on-chain.png"
+                    "/assets/Emails/on-chain-rectangle.png"
                 }
             ),
             url: short_url,
@@ -285,9 +293,21 @@ async fn get_ending_soon_proposals(
             countdownUrl: countdown_url,
             countdownString: p.timeend.format("on %b %e, %Y at %H:%M UTC").to_string(),
             voteStatusIconUrl: if voted {
-                "https://senatelabs.xyz/assets/Emails/voted.png".to_string()
+                format!(
+                    "{}/assets/Emails/voted.png",
+                    env::var_os("NEXT_PUBLIC_WEB_URL")
+                        .unwrap()
+                        .into_string()
+                        .unwrap()
+                )
             } else {
-                "https://senatelabs.xyz/assets/Emails/not-voted-yet.png".to_string()
+                format!(
+                    "{}/assets/Emails/not-voted-yet.png",
+                    env::var_os("NEXT_PUBLIC_WEB_URL")
+                        .unwrap()
+                        .into_string()
+                        .unwrap()
+                )
             },
             voteStatus: if voted {
                 "Voted".to_string()
@@ -346,15 +366,23 @@ async fn get_new_proposals(
         NewProposals {
             daoLogoUrl: format!(
                 "{}{}{}",
-                "https://senatelabs.xyz", p.dao.picture, "_medium.png"
+                env::var_os("NEXT_PUBLIC_WEB_URL")
+                    .unwrap()
+                    .into_string()
+                    .unwrap(),
+                p.dao.picture,
+                "_medium.png"
             ),
             chainLogoUrl: format!(
                 "{}{}",
-                "https://senatelabs.xyz",
+                env::var_os("NEXT_PUBLIC_WEB_URL")
+                    .unwrap()
+                    .into_string()
+                    .unwrap(),
                 if p.daohandler.r#type == DaoHandlerType::Snapshot {
-                    "/assets/Icon/off-chain.png"
+                    "/assets/Emails/off-chain-rectangle.png"
                 } else {
-                    "/assets/Icon/on-chain.png"
+                    "/assets/Emails/on-chain-rectangle.png"
                 }
             ),
             url: short_url,
@@ -362,9 +390,21 @@ async fn get_new_proposals(
             countdownUrl: countdown_url,
             countdownString: p.timeend.format("on %b %e, %Y at %H:%M UTC").to_string(),
             voteStatusIconUrl: if voted {
-                "https://senatelabs.xyz/assets/Emails/voted.png".to_string()
+                format!(
+                    "{}/assets/Emails/voted.png",
+                    env::var_os("NEXT_PUBLIC_WEB_URL")
+                        .unwrap()
+                        .into_string()
+                        .unwrap()
+                )
             } else {
-                "https://senatelabs.xyz/assets/Emails/not-voted-yet.png".to_string()
+                format!(
+                    "{}/assets/Emails/not-voted-yet.png",
+                    env::var_os("NEXT_PUBLIC_WEB_URL")
+                        .unwrap()
+                        .into_string()
+                        .unwrap()
+                )
             },
             voteStatus: if voted {
                 "Voted".to_string()
@@ -434,24 +474,44 @@ async fn get_ended_proposals(
         EndedProposals {
             daoLogoUrl: format!(
                 "{}{}{}",
-                "https://senatelabs.xyz", p.dao.picture, "_medium.png"
+                env::var_os("NEXT_PUBLIC_WEB_URL")
+                    .unwrap()
+                    .into_string()
+                    .unwrap(),
+                p.dao.picture,
+                "_medium.png"
             ),
             chainLogoUrl: format!(
                 "{}{}",
-                "https://senatelabs.xyz",
+                env::var_os("NEXT_PUBLIC_WEB_URL")
+                    .unwrap()
+                    .into_string()
+                    .unwrap(),
                 if p.daohandler.r#type == DaoHandlerType::Snapshot {
-                    "/assets/Icon/off-chain.png"
+                    "/assets/Emails/off-chain-rectangle.png"
                 } else {
-                    "/assets/Icon/on-chain.png"
+                    "/assets/Emails/on-chain-rectangle.png"
                 }
             ),
             url: short_url,
             proposalName: p.clone().name,
             countdownString: p.timeend.format("on %b %e, %Y at %H:%M UTC").to_string(),
             voteStatusIconUrl: if voted {
-                "https://senatelabs.xyz/assets/Emails/voted.png".to_string()
+                format!(
+                    "{}/assets/Emails/voted.png",
+                    env::var_os("NEXT_PUBLIC_WEB_URL")
+                        .unwrap()
+                        .into_string()
+                        .unwrap()
+                )
             } else {
-                "https://senatelabs.xyz/assets/Emails/did-not-vote.png".to_string()
+                format!(
+                    "{}/assets/Emails/did-not-vote.png",
+                    env::var_os("NEXT_PUBLIC_WEB_URL")
+                        .unwrap()
+                        .into_string()
+                        .unwrap()
+                )
             },
             voteStatus: if voted {
                 "Voted".to_string()

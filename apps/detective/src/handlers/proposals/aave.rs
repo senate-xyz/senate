@@ -200,13 +200,12 @@ async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> R
         "https://senate.infura-ipfs.io/ipfs/",
         "https://cloudflare-ipfs.com/ipfs/",
         "https://gateway.pinata.cloud/ipfs/",
-        "https://4everland.io/ipfs/",
     ];
 
     loop {
         let response = http_client
             .get(format!("{}f01701220{}", gateways[current_gateway], hexhash))
-            .timeout(Duration::from_secs(10))
+            .timeout(Duration::from_secs(5))
             .send()
             .await;
 
@@ -228,14 +227,14 @@ async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> R
 
                 return Ok("Unknown".to_string());
             }
-            _ if retries % 5 == 0 => {
+            _ if retries % 3 == 0 => {
                 if current_gateway < gateways.len() - 2 {
                     current_gateway = current_gateway + 1;
                 } else {
                     current_gateway = 0;
                 }
             }
-            _ if retries < 25 => {
+            _ if retries < 12 => {
                 retries += 1;
                 let backoff_duration = Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
@@ -266,11 +265,30 @@ mod tests {
 
         let result = get_title(
             "f76d79693a81a1c0acd23c6ee151369752142b0d832daeaef9a4dd9f8c4bc7ce".into(),
-            http_client,
+            http_client.clone(),
         )
         .await
         .unwrap();
         assert_eq!(result, "Polygon Supply Cap Update");
+
+        let result = get_title(
+            "12f2d9c91e4e23ae4009ab9ef5862ee0ae79498937b66252213221f04a5d5b32".into(),
+            http_client.clone(),
+        )
+        .await
+        .unwrap();
+        assert_eq!(result, "Add 1INCH to Aave v2 market");
+
+        let result = get_title(
+            "e7e93497d3847536f07fe8dba53485cf68a275c7b07ca38b53d2cc2d43fab3b0".into(),
+            http_client.clone(),
+        )
+        .await
+        .unwrap();
+        assert_eq!(result, "Unknown");
+
+        let result = get_title("deadbeef".into(), http_client).await.unwrap();
+        assert_eq!(result, "Unknown");
     }
 
     #[tokio::test]
@@ -285,10 +303,15 @@ mod tests {
 
         let result = get_title(
             "8d4f6f42043d8db567d5e733762bb84a6f507997a779a66b2d17fdf9de403c13".into(),
-            http_client,
+            http_client.clone(),
         )
         .await
         .unwrap();
         assert_eq!(result, "Add rETH to Arbitrum Aave v3");
+
+        let result = get_title("deadbeef".into(), http_client.clone())
+            .await
+            .unwrap();
+        assert_eq!(result, "Unknown");
     }
 }
