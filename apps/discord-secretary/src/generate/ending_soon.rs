@@ -38,7 +38,7 @@ pub async fn generate_ending_soon_notifications(
             user::discordreminders::equals(true),
         ])
         .exec()
-        .instrument(debug_span!("get user"))
+        .instrument(debug_span!("get users"))
         .await
         .unwrap();
 
