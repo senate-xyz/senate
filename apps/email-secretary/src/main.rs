@@ -41,7 +41,7 @@ async fn main() {
 
     let client_for_bulletin: Arc<PrismaClient> = Arc::clone(&client);
     let bulletin_task = tokio::task::spawn(async move {
-        debug!("started bulletin_task");
+        info!("started bulletin_task");
         loop {
             debug!("loop bulletin_task");
             send_triggered_emails(&client_for_bulletin).await;
@@ -57,7 +57,7 @@ async fn main() {
 
     let client_for_quorum = Arc::clone(&client);
     let quroum_task = tokio::task::spawn(async move {
-        debug!("started quroum_task");
+        info!("started quroum_task");
         loop {
             debug!("loop quroum_task");
             send_quorum_email(&client_for_quorum).await;

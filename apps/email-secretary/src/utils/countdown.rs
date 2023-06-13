@@ -17,7 +17,7 @@ struct Message {
     src: Option<String>,
 }
 
-#[instrument(ret)]
+#[instrument(ret, level = "debug")]
 pub async fn countdown_gif(end_time: DateTime<Utc>, with_days: bool) -> Result<String> {
     let client = reqwest::Client::new();
     let token = env::var("VOTING_COUNTDOWN_TOKEN")?;

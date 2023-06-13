@@ -4,7 +4,7 @@ use tracing::instrument;
 
 use std::sync::Arc;
 
-#[instrument(skip(db), ret)]
+#[instrument(skip(db), ret, level = "debug")]
 pub async fn get_vote(
     user_id: String,
     proposal_id: String,

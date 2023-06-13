@@ -42,14 +42,14 @@ struct QuorumWarningData {
 prisma::proposal::include!(proposal_with_dao { dao });
 prisma::user::include!(user_with_voters_and_subscriptions { subscriptions voters});
 
-#[instrument(skip(db))]
+#[instrument(skip(db), level = "info")]
 pub async fn send_quorum_email(db: &Arc<prisma::PrismaClient>) {
     generate_quorum_notifications(db).await;
 
     dispatch_quorum_notifications(db).await;
 }
 
-#[instrument(skip(db))]
+#[instrument(skip(db), level = "info")]
 pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
     let notifications = db
         .notification()
@@ -207,7 +207,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
     }
 }
 
-#[instrument(skip(db))]
+#[instrument(skip(db), level = "info")]
 pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
     let proposals_ending_soon = db
         .proposal()
