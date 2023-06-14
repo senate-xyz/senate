@@ -89,7 +89,7 @@ export const SubscribedDAO = (props: {
                                     { daoId: props.daoId },
                                     {
                                         onSuccess: () => {
-                                            router.refresh()
+                                            if (router) router.refresh()
                                             setShowMenu(false)
                                         }
                                     }

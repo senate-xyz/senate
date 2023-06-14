@@ -30,6 +30,14 @@ const config = {
         }
 
         return config
+    },
+    async rewrites() {
+        return [
+            {
+                source: '/ingest/:path*',
+                destination: 'https://eu.posthog.com/:path*'
+            }
+        ]
     }
 }
 export default config

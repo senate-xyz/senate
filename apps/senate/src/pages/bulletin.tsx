@@ -40,7 +40,7 @@ const Home = () => {
                 onSuccess: () => {
                     setSuccess(true)
                     setError(false)
-                    router.push('/daos')
+                    if (router) router.push('/daos')
                 },
                 onError: () => {
                     setError(true)

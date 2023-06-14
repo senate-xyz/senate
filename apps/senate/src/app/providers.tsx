@@ -24,6 +24,7 @@ import {
     rainbowWallet
 } from '@rainbow-me/rainbowkit/wallets'
 import { usePathname } from 'next/navigation'
+import PHProvider from './components/csr/PostHogProvider'
 
 const { chains, publicClient } = configureChains(
     [mainnet],
@@ -115,29 +116,8 @@ export default function RootProvider({
     return (
         <WagmiConfig config={config}>
             <SessionProvider refetchInterval={60}>
-                {pathname?.includes('verify') ? (
-                    <RainbowKitProvider
-                        appInfo={{
-                            appName: 'Senate',
-                            disclaimer: Disclaimer,
-                            learnMoreUrl: 'https://senate.notion.site'
-                        }}
-                        chains={chains}
-                        modalSize='compact'
-                        theme={darkTheme({
-                            accentColor: '#262626',
-                            accentColorForeground: 'white',
-                            borderRadius: 'none',
-                            overlayBlur: 'small',
-                            fontStack: 'rounded'
-                        })}
-                    >
-                        <TrpcClientProvider>{children}</TrpcClientProvider>
-                    </RainbowKitProvider>
-                ) : (
-                    <RainbowKitSiweNextAuthProvider
-                        getSiweMessageOptions={getSiweMessageOptions}
-                    >
+                <PHProvider>
+                    {pathname?.includes('verify') ? (
                         <RainbowKitProvider
                             appInfo={{
                                 appName: 'Senate',
@@ -156,8 +136,33 @@ export default function RootProvider({
                         >
                             <TrpcClientProvider>{children}</TrpcClientProvider>
                         </RainbowKitProvider>
-                    </RainbowKitSiweNextAuthProvider>
-                )}
+                    ) : (
+                        <RainbowKitSiweNextAuthProvider
+                            getSiweMessageOptions={getSiweMessageOptions}
+                        >
+                            <RainbowKitProvider
+                                appInfo={{
+                                    appName: 'Senate',
+                                    disclaimer: Disclaimer,
+                                    learnMoreUrl: 'https://senate.notion.site'
+                                }}
+                                chains={chains}
+                                modalSize='compact'
+                                theme={darkTheme({
+                                    accentColor: '#262626',
+                                    accentColorForeground: 'white',
+                                    borderRadius: 'none',
+                                    overlayBlur: 'small',
+                                    fontStack: 'rounded'
+                                })}
+                            >
+                                <TrpcClientProvider>
+                                    {children}
+                                </TrpcClientProvider>
+                            </RainbowKitProvider>
+                        </RainbowKitSiweNextAuthProvider>
+                    )}
+                </PHProvider>
             </SessionProvider>
         </WagmiConfig>
     )

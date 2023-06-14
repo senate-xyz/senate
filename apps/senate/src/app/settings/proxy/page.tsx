@@ -17,7 +17,7 @@ export default function Home() {
     const [proxyAddress, setProxyAddress] = useState('')
 
     useEffect(() => {
-        if (!account.isConnected) router.push('/settings/account')
+        if (!account.isConnected) if (router) router.push('/settings/account')
     }, [account])
 
     const onEnter = async () => {

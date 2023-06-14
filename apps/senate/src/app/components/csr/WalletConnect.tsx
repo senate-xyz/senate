@@ -38,7 +38,7 @@ const WalletConnect = () => {
     }, [account.isConnected, posthog])
 
     useEffect(() => {
-        router.refresh()
+        if (router) router.refresh()
     }, [account.isConnected, account.isDisconnected, session.status])
 
     useEffect(() => {

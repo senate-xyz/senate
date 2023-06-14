@@ -7,13 +7,17 @@ import { Suspense, useEffect } from 'react'
 
 if (typeof window !== 'undefined') {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
-        api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST
+        api_host: `${process.env.NEXT_PUBLIC_WEB_URL}/ingest`
     })
+}
+
+function Fallback() {
+    return <></>
 }
 
 export default function PHProvider({ children }) {
     return (
-        <Suspense>
+        <Suspense fallback={<Fallback />}>
             <HogProvider>{children}</HogProvider>
         </Suspense>
     )

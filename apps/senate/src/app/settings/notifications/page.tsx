@@ -19,7 +19,7 @@ export default function Home() {
     const router = useRouter()
 
     useEffect(() => {
-        if (!account.isConnected) router.push('/settings/account')
+        if (!account.isConnected) if (router) router.push('/settings/account')
     }, [account])
 
     return (

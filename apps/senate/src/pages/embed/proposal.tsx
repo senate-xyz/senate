@@ -1,7 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/router'
-import { trpc } from '../../server/trpcClient'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { RouterOutputs } from '../../server/trpc'
@@ -9,9 +7,6 @@ import Image from 'next/image'
 import '../../styles/globals.css'
 import RootProvider from '../../app/providers'
 import '@rainbow-me/rainbowkit/styles.css'
-import { useEffect } from 'react'
-import { useAccount } from 'wagmi'
-import { useSession } from 'next-auth/react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 dayjs.extend(relativeTime)
@@ -25,31 +20,33 @@ const EmbeddedProposalHome = () => {
 }
 
 const EmbeddedProposal = () => {
-    const router = useRouter()
-    const { url } = router.query
+    // const router = useRouter()
+    // const { url } = router.query
 
-    const proposal = trpc.public.proposal.useQuery({
-        url: String(url) ?? ''
-    })
+    // const proposal = trpc.public.proposal.useQuery({
+    //     url: String(url) ?? ''
+    // })
 
-    const account = useAccount()
-    const session = useSession()
+    // const account = useAccount()
+    // const session = useSession()
 
-    useEffect(() => {
-        proposal.refetch()
-    }, [account.isConnected, account.isDisconnected, session.status])
+    // useEffect(() => {
+    //     proposal.refetch()
+    // }, [account.isConnected, account.isDisconnected, session.status])
 
-    return (
-        <div>
-            {proposal.data && (
-                <div>
-                    <Proposal proposal={proposal.data} />
-                </div>
-            )}
-        </div>
-    )
+    // return (
+    //     <div>
+    //         {proposal.data && (
+    //             <div>
+    //                 <Proposal proposal={proposal.data} />
+    //             </div>
+    //         )}
+    //     </div>
+    // )
+    return <></>
 }
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
     return (
         <div className='flex h-screen w-full flex-col items-start bg-[#121212] text-[#EDEDED]'>
