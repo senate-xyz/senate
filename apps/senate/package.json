@@ -40,6 +40,8 @@
         "framer-motion": "10.12.16",
         "next": "13.4.5",
         "next-auth": "4.22.1",
+        "posthog-js": "^1.67.1",
+        "posthog-node": "^3.1.1",
         "postmark": "3.0.18",
         "react": "18.2.0",
         "react-cookie": "4.1.1",

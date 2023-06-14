@@ -7,8 +7,10 @@ import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { disconnect } from '@wagmi/core'
 import { trpc } from '../../../server/trpcClient'
+import { usePostHog } from 'posthog-js/react'
 
 const WalletConnect = () => {
+    const posthog = usePostHog()
     const router = useRouter()
     const searchParams = useSearchParams()
     const account = useAccount()
@@ -30,6 +32,10 @@ const WalletConnect = () => {
             activeConnector.on('change', handleConnectorUpdate)
         }
     }, [activeConnector])
+
+    useEffect(() => {
+        if (account.isConnected && posthog) posthog.identify(account.address)
+    }, [account.isConnected, posthog])
 
     useEffect(() => {
         router.refresh()

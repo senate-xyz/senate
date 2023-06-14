@@ -1,6 +1,11 @@
 import { router, privateProcedure } from '../trpc'
 import { z } from 'zod'
 import { prisma } from '@senate/database'
+import { PostHog } from 'posthog-node'
+
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
+    host: process.env.NEXT_PUBLIC_POSTHOG_HOST
+})
 
 export const subscriptionsRouter = router({
     subscribe: privateProcedure
@@ -37,6 +42,14 @@ export const subscriptionsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: 'subscribed dao',
+                properties: {
+                    dao: input.daoId
+                }
+            })
+
             return result
         }),
 
@@ -63,6 +76,14 @@ export const subscriptionsRouter = router({
                         userid: user?.id,
                         daoid: input.daoId
                     }
+                }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: 'unsubscribed dao',
+                properties: {
+                    dao: input.daoId
                 }
             })
 
