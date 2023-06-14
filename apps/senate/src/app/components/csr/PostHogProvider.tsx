@@ -11,13 +11,13 @@ if (typeof window !== 'undefined') {
     })
 }
 
-function Fallback() {
-    return <></>
+function Fallback({ children }) {
+    return <>{children}</>
 }
 
 export default function PHProvider({ children }) {
     return (
-        <Suspense fallback={<Fallback />}>
+        <Suspense fallback={<Fallback>{children}</Fallback>}>
             <HogProvider>{children}</HogProvider>
         </Suspense>
     )
