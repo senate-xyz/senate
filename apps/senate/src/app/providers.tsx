@@ -144,9 +144,11 @@ function HogProvider({ children }) {
 export default function RootProvider({ children }) {
     return (
         <SessionProvider refetchInterval={60}>
-            <Suspense fallback={<Fallback>{children}</Fallback>}>
-                <RootProviderInner>{children}</RootProviderInner>
-            </Suspense>{' '}
+            <TrpcClientProvider>
+                <Suspense fallback={<Fallback>{children}</Fallback>}>
+                    <RootProviderInner>{children}</RootProviderInner>
+                </Suspense>{' '}
+            </TrpcClientProvider>
         </SessionProvider>
     )
 }
@@ -174,7 +176,7 @@ function RootProviderInner({ children }: { children: React.ReactNode }) {
                             fontStack: 'rounded'
                         })}
                     >
-                        <TrpcClientProvider>{children}</TrpcClientProvider>
+                        {children}
                     </RainbowKitProvider>
                 ) : (
                     <RainbowKitSiweNextAuthProvider
@@ -196,7 +198,7 @@ function RootProviderInner({ children }: { children: React.ReactNode }) {
                                 fontStack: 'rounded'
                             })}
                         >
-                            <TrpcClientProvider>{children}</TrpcClientProvider>
+                            {children}
                         </RainbowKitProvider>
                     </RainbowKitSiweNextAuthProvider>
                 )}
