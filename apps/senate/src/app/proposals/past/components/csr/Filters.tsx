@@ -197,7 +197,7 @@ export const Filters = (props: {
                                 Any
                             </option>
                             {props.proxies.map((proxy) => {
-                                return <Proxy address={proxy} />
+                                return <Proxy address={proxy} key={proxy} />
                             })}
                         </select>
                     </div>
