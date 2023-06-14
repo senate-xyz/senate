@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, Suspense, useEffect, useState } from 'react'
 import WalletConnect from './WalletConnect'
 import { Menu, Transition } from '@headlessui/react'
 import Image from 'next/image'
@@ -211,7 +211,9 @@ export const Header = (props: { title: string }) => {
 
                             <div className='flex w-full justify-center pt-8 text-[18px] font-normal'>
                                 <Menu.Item>
-                                    <WalletConnect />
+                                    <Suspense>
+                                        <WalletConnect />
+                                    </Suspense>
                                 </Menu.Item>
                             </div>
                         </Menu.Items>
@@ -220,7 +222,9 @@ export const Header = (props: { title: string }) => {
             </div>
 
             <div className='hidden justify-end pr-20 lg:flex lg:w-full'>
-                <WalletConnect />
+                <Suspense>
+                    <WalletConnect />
+                </Suspense>
             </div>
         </div>
     )

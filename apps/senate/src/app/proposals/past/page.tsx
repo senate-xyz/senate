@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import { Filters } from './components/csr/Filters'
 import Table from './components/ssr/Table'
+import { Suspense } from 'react'
 
 export const revalidate = 300
 
@@ -85,7 +86,9 @@ export default async function Home({
                 <ConnectWalletModal />
             </div> */}
 
-            <Filters subscriptions={subscripions} proxies={proxies} />
+            <Suspense>
+                <Filters subscriptions={subscripions} proxies={proxies} />
+            </Suspense>
 
             <Table
                 from={searchParams?.from}
