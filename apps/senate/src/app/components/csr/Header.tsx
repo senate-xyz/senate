@@ -11,8 +11,8 @@ export const Header = (props: { title: string }) => {
     const [titleSize, setTitleSize] = useState('lg:text-[78px]')
     const pathname = usePathname()
 
-    if (typeof window != 'undefined') {
-        window.addEventListener('wheel', () => {
+    useEffect(() => {
+        const handleScroll = () => {
             if (
                 window.scrollY > 0 &&
                 document.body.scrollHeight > window.innerHeight + 100
@@ -23,20 +23,13 @@ export const Header = (props: { title: string }) => {
                 setHeaderHeight('lg:h-[192px]')
                 setTitleSize('lg:text-[78px]')
             }
-        })
-    }
-
-    useEffect(() => {
-        if (
-            window.scrollY > 0 &&
-            document.body.scrollHeight > window.innerHeight + 100
-        ) {
-            setHeaderHeight('lg:h-[96px]')
-            setTitleSize('lg:text-[52px]')
-        } else {
-            setHeaderHeight('lg:h-[192px]')
-            setTitleSize('lg:text-[78px]')
         }
+
+        window.addEventListener('wheel', handleScroll)
+
+        handleScroll()
+
+        return () => window.removeEventListener('wheel', handleScroll)
     }, [])
 
     return (
