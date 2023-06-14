@@ -3,10 +3,14 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import { ContactIcons } from '../ssr/ContactIcons'
 
 export const NavBar = () => {
     const pathname = usePathname()
-    return !pathname?.includes('verify') ? (
+    return !pathname?.includes('verify') &&
+        !pathname?.includes('bulletin') &&
+        !pathname?.includes('landing') &&
+        !pathname?.includes('outofservice') ? (
         <div className='flex min-h-screen min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black'>
             <Link href='/' className='my-[4rem]'>
                 <Image
@@ -110,41 +114,7 @@ export const NavBar = () => {
                     )}
                 </Link>
             </div>
-
-            <div className='flex grow flex-row items-end justify-between justify-self-end pb-2 opacity-50'>
-                <Link href='https://twitter.com/SenateLabs'>
-                    <Image
-                        loading='eager'
-                        priority={true}
-                        src='/assets/Icon/Twitter.svg'
-                        alt='twitter'
-                        width={24}
-                        height={24}
-                    />
-                </Link>
-
-                <Link href='https://discord.gg/shtxfNqazd'>
-                    <Image
-                        loading='eager'
-                        priority={true}
-                        src='/assets/Icon/DiscordWhite.svg'
-                        alt='twitter'
-                        width={24}
-                        height={24}
-                    />
-                </Link>
-
-                <Link href='https://github.com/senate-xyz/senate'>
-                    <Image
-                        loading='eager'
-                        priority={true}
-                        src='/assets/Icon/Github.svg'
-                        alt='twitter'
-                        width={24}
-                        height={24}
-                    />
-                </Link>
-            </div>
+            <ContactIcons />
         </div>
     ) : (
         <></>

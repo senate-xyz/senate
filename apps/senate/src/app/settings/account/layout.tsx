@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
+import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 
 export const metadata: Metadata = {
     title: 'Senate - Account Settings',
@@ -40,7 +41,7 @@ export default async function RootLayout({
 }: {
     children: React.ReactNode
 }) {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions())
 
     return (
         <>

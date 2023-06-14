@@ -1,14 +1,14 @@
 'use client'
 
-import '../styles/globals.css'
+import '../../styles/globals.css'
 
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { trpc } from '../server/trpcClient'
 import { useRouter } from 'next/navigation'
-import RootProvider from '../app/providers'
 import { Transition } from '@headlessui/react'
 import Head from 'next/head'
+import { trpc } from '../../server/trpcClient'
+import RootProvider from '../providers'
 
 const WrapperHome = () => {
     return (
@@ -74,21 +74,29 @@ const Home = () => {
                         />
                     </div>
                     <div className='hidden w-full grow flex-col items-center justify-center bg-white lg:flex lg:w-0.5'>
-                        <Transition appear={true} show={true}>
+                        <Transition show={true}>
+                            <Transition
+                                show={true}
+                                enter='transition-opacity duration-75'
+                                enterFrom='opacity-0'
+                                enterTo='opacity-100'
+                                leave='transition-opacity duration-150'
+                                leaveFrom='opacity-100'
+                                leaveTo='opacity-0'
+                            >
+                                I will fade in and out
+                            </Transition>
                             <Transition.Child
-                                appear={true}
                                 enter='transition ease-in-out duration-[1000ms] delay-[500ms]'
                                 enterFrom='opacity-0'
                                 enterTo='opacity-100'
                             >
                                 <Transition.Child
-                                    appear={true}
                                     enter='transition ease-in-out duration-[6000ms] delay-[2000ms]'
                                     enterFrom='translate-y-[0px]'
                                     enterTo='-translate-y-[1000px]'
                                 >
                                     <Transition.Child
-                                        appear={true}
                                         enter='transition ease-in-out duration-[6000ms] delay-[12000ms]'
                                         enterFrom='translate-y-[0px]'
                                         enterTo='translate-y-[1000px]'

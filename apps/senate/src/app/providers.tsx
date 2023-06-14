@@ -1,3 +1,5 @@
+'use client'
+
 import {
     RainbowKitProvider,
     darkTheme,
@@ -23,8 +25,10 @@ import {
     rabbyWallet,
     rainbowWallet
 } from '@rainbow-me/rainbowkit/wallets'
-import { usePathname } from 'next/navigation'
-import PHProvider from './components/csr/PostHogProvider'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect } from 'react'
+import posthog from 'posthog-js'
+import { PostHogProvider } from 'posthog-js/react'
 
 const { chains, publicClient } = configureChains(
     [mainnet],
@@ -106,18 +110,76 @@ const Disclaimer: DisclaimerComponent = () => (
     </div>
 )
 
-export default function RootProvider({
-    children
-}: {
-    children: React.ReactNode
-}) {
+function Fallback({ children }) {
+    return <>{children}</>
+}
+
+function PHProvider({ children }) {
+    return (
+        <Suspense fallback={<Fallback>{children}</Fallback>}>
+            <HogProvider>{children}</HogProvider>
+        </Suspense>
+    )
+}
+
+function HogProvider({ children }) {
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
+    // Track pageviews
+    useEffect(() => {
+        if (pathname && searchParams) {
+            let url = window.origin + pathname
+            if (searchParams.toString()) {
+                url = url + `?${searchParams.toString()}`
+            }
+            posthog.capture('$pageview', {
+                $current_url: url
+            })
+        }
+    }, [pathname, searchParams])
+
+    return <PostHogProvider client={posthog}>{children}</PostHogProvider>
+}
+
+export default function RootProvider({ children }) {
+    return (
+        <SessionProvider refetchInterval={60}>
+            <Suspense fallback={<Fallback>{children}</Fallback>}>
+                <RootProviderInner>{children}</RootProviderInner>
+            </Suspense>{' '}
+        </SessionProvider>
+    )
+}
+
+function RootProviderInner({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
 
     return (
         <WagmiConfig config={config}>
-            <SessionProvider refetchInterval={60}>
-                <PHProvider>
-                    {pathname?.includes('verify') ? (
+            <PHProvider>
+                {pathname?.includes('verify') ? (
+                    <RainbowKitProvider
+                        appInfo={{
+                            appName: 'Senate',
+                            disclaimer: Disclaimer,
+                            learnMoreUrl: 'https://senate.notion.site'
+                        }}
+                        chains={chains}
+                        modalSize='compact'
+                        theme={darkTheme({
+                            accentColor: '#262626',
+                            accentColorForeground: 'white',
+                            borderRadius: 'none',
+                            overlayBlur: 'small',
+                            fontStack: 'rounded'
+                        })}
+                    >
+                        <TrpcClientProvider>{children}</TrpcClientProvider>
+                    </RainbowKitProvider>
+                ) : (
+                    <RainbowKitSiweNextAuthProvider
+                        getSiweMessageOptions={getSiweMessageOptions}
+                    >
                         <RainbowKitProvider
                             appInfo={{
                                 appName: 'Senate',
@@ -136,34 +198,9 @@ export default function RootProvider({
                         >
                             <TrpcClientProvider>{children}</TrpcClientProvider>
                         </RainbowKitProvider>
-                    ) : (
-                        <RainbowKitSiweNextAuthProvider
-                            getSiweMessageOptions={getSiweMessageOptions}
-                        >
-                            <RainbowKitProvider
-                                appInfo={{
-                                    appName: 'Senate',
-                                    disclaimer: Disclaimer,
-                                    learnMoreUrl: 'https://senate.notion.site'
-                                }}
-                                chains={chains}
-                                modalSize='compact'
-                                theme={darkTheme({
-                                    accentColor: '#262626',
-                                    accentColorForeground: 'white',
-                                    borderRadius: 'none',
-                                    overlayBlur: 'small',
-                                    fontStack: 'rounded'
-                                })}
-                            >
-                                <TrpcClientProvider>
-                                    {children}
-                                </TrpcClientProvider>
-                            </RainbowKitProvider>
-                        </RainbowKitSiweNextAuthProvider>
-                    )}
-                </PHProvider>
-            </SessionProvider>
+                    </RainbowKitSiweNextAuthProvider>
+                )}
+            </PHProvider>
         </WagmiConfig>
     )
 }

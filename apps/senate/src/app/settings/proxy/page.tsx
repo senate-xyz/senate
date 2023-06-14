@@ -65,7 +65,12 @@ export default function Home() {
                 {voters.data.length > 0 ? (
                     <div className='mt-12 flex flex-col gap-6'>
                         {voters.data.map((voter) => {
-                            return <Voter address={voter.address} />
+                            return (
+                                <Voter
+                                    address={voter.address}
+                                    key={voter.address}
+                                />
+                            )
                         })}
                     </div>
                 ) : null}

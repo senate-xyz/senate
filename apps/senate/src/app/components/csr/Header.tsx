@@ -211,7 +211,7 @@ export const Header = (props: { title: string }) => {
 
                             <div className='flex w-full justify-center pt-8 text-[18px] font-normal'>
                                 <Menu.Item>
-                                    <Suspense>
+                                    <Suspense fallback={<></>}>
                                         <WalletConnect />
                                     </Suspense>
                                 </Menu.Item>
@@ -222,7 +222,7 @@ export const Header = (props: { title: string }) => {
             </div>
 
             <div className='hidden justify-end pr-20 lg:flex lg:w-full'>
-                <Suspense>
+                <Suspense fallback={<></>}>
                     <WalletConnect />
                 </Suspense>
             </div>
