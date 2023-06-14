@@ -27,7 +27,7 @@
         "@prisma/client": "4.15.0",
         "ethers": "^6.6.0",
         "exponential-backoff": "^3.1.1",
-        "type-fest": "^3.11.1"
+        "type-fest": "^3.12.0"
     },
     "devDependencies": {
         "@senate/config": "*",
