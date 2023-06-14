@@ -13,7 +13,7 @@ use ethers::{
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
-use tracing::{debug, event, instrument, Level};
+use tracing::{debug, debug_span, event, instrument, Instrument, Level};
 
 use super::etherscan::{estimate_block, estimate_timestamp};
 
@@ -34,6 +34,7 @@ pub async fn maker_polls_sanity_check(ctx: &Context) {
         .daohandler()
         .find_first(vec![daohandler::r#type::equals(DaoHandlerType::MakerPoll)])
         .exec()
+        .instrument(debug_span!("get_dao_handlers"))
         .await
         .unwrap();
 
@@ -75,7 +76,11 @@ async fn sanitize(
         .from_block(from_block)
         .to_block(to_block);
 
-    let withdrawn_proposals: Vec<PollWithdrawnFilter> = events.query().await.unwrap();
+    let withdrawn_proposals: Vec<PollWithdrawnFilter> = events
+        .query()
+        .instrument(debug_span!("get_rpc_events"))
+        .await
+        .unwrap();
 
     debug!("{:?}", withdrawn_proposals);
 
@@ -88,6 +93,7 @@ async fn sanitize(
                 proposal::daohandlerid::equals(dao_handler.clone().id),
             ])
             .exec()
+            .instrument(debug_span!("get_proposals"))
             .await
             .unwrap();
 
@@ -97,6 +103,7 @@ async fn sanitize(
                     .vote()
                     .delete_many(vec![vote::proposalid::equals(existing_proposal.clone().id)])
                     .exec()
+                    .instrument(debug_span!("delete_votes"))
                     .await
                     .unwrap();
 
@@ -106,6 +113,7 @@ async fn sanitize(
                         existing_proposal.clone().id.to_string(),
                     ))
                     .exec()
+                    .instrument(debug_span!("delete_proposal"))
                     .await
                     .unwrap();
 

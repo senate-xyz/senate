@@ -31,7 +31,7 @@ pub async fn _update_ended_proposal_notifications(
         .find_many(vec![prisma::proposal::state::equals(ProposalState::Hidden)])
         .include(proposal_with_dao::include())
         .exec()
-        .instrument(debug_span!("get proposals"))
+        .instrument(debug_span!("get_proposals"))
         .await
         .unwrap();
 
@@ -44,7 +44,7 @@ pub async fn _update_ended_proposal_notifications(
                 notification::dispatched::equals(true),
             ])
             .exec()
-            .instrument(debug_span!("get notifications"))
+            .instrument(debug_span!("get_notifications"))
             .await
             .unwrap();
 
@@ -62,7 +62,7 @@ pub async fn _update_ended_proposal_notifications(
                 .user()
                 .find_first(vec![user::id::equals(notification.clone().userid)])
                 .exec()
-                .instrument(debug_span!("get user"))
+                .instrument(debug_span!("get_user"))
                 .await
                 .unwrap()
                 .unwrap();
@@ -72,7 +72,7 @@ pub async fn _update_ended_proposal_notifications(
                 .find_first(vec![proposal::id::equals(notification.clone().proposalid)])
                 .include(proposal_with_dao::include())
                 .exec()
-                .instrument(debug_span!("get proposal"))
+                .instrument(debug_span!("get_proposal"))
                 .await
                 .unwrap()
                 .unwrap();

@@ -9,7 +9,7 @@ use prisma_client_rust::{
 use tracing::{debug, Instrument};
 use tracing::{debug_span, instrument};
 
-#[instrument(skip(client), level = "info")]
+#[instrument(skip(client), ret, level = "info")]
 pub async fn produce_chain_proposals_queue(
     client: &PrismaClient,
     config: &Config,
@@ -50,7 +50,7 @@ pub async fn produce_chain_proposals_queue(
             ]),
         ])
         .exec()
-        .instrument(debug_span!("get dao_handlers"))
+        .instrument(debug_span!("get_dao_handlers"))
         .await?;
 
     client
@@ -65,7 +65,7 @@ pub async fn produce_chain_proposals_queue(
             ],
         )
         .exec()
-        .instrument(debug_span!("update pending"))
+        .instrument(debug_span!("update_pending"))
         .await?;
 
     let refresh_queue: Vec<RefreshEntry> = dao_handlers
@@ -76,8 +76,6 @@ pub async fn produce_chain_proposals_queue(
             voters: vec![],
         })
         .collect();
-
-    debug!("{:?}", refresh_queue);
 
     Ok(refresh_queue)
 }

@@ -31,7 +31,7 @@ pub async fn dispatch_ending_soon_notifications(
             ]),
         ])
         .exec()
-        .instrument(debug_span!("get notifications"))
+        .instrument(debug_span!("get_notifications"))
         .await
         .unwrap();
 
@@ -40,7 +40,7 @@ pub async fn dispatch_ending_soon_notifications(
             .user()
             .find_first(vec![user::id::equals(notification.clone().userid)])
             .exec()
-            .instrument(debug_span!("get user"))
+            .instrument(debug_span!("get_user"))
             .await
             .unwrap()
             .unwrap();
@@ -50,7 +50,7 @@ pub async fn dispatch_ending_soon_notifications(
             .find_first(vec![proposal::id::equals(notification.clone().proposalid)])
             .include(proposal_with_dao::include())
             .exec()
-            .instrument(debug_span!("get proposal"))
+            .instrument(debug_span!("get_proposal"))
             .await
             .unwrap()
             .unwrap();
@@ -137,7 +137,7 @@ pub async fn dispatch_ending_soon_notifications(
                         ],
                     )
                     .exec()
-                    .instrument(debug_span!("update notification"))
+                    .instrument(debug_span!("update_notification"))
                     .await
                     .unwrap();
             }

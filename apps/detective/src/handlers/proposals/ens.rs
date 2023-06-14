@@ -48,7 +48,7 @@ pub async fn ens_proposals(
 
     let proposals = events
         .query_with_meta()
-        .instrument(debug_span!("get rpc events"))
+        .instrument(debug_span!("get_rpc_events"))
         .await?;
 
     let mut futures = FuturesUnordered::new();
@@ -67,7 +67,7 @@ pub async fn ens_proposals(
     Ok(result)
 }
 
-#[instrument(skip(ctx), ret, level = "debug")]
+#[instrument(skip(p, ctx), ret, level = "debug")]
 async fn data_for_proposal(
     p: (ensgov::ensgov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,

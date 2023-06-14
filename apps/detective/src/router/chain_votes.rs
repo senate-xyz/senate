@@ -61,7 +61,7 @@ pub async fn update_chain_votes<'a>(
             .daohandler()
             .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
             .exec()
-            .instrument(debug_span!("get dao_handler"))
+            .instrument(debug_span!("get_dao_handler"))
             .await
             .expect("bad prisma result")
             .expect("daoHandlerId not found");
@@ -75,7 +75,7 @@ pub async fn update_chain_votes<'a>(
             .order_by(proposal::blockcreated::order(Direction::Asc))
             .take(1)
             .exec()
-            .instrument(debug_span!("get first_proposal"))
+            .instrument(debug_span!("get_first_proposal"))
             .await
             .expect("bad prisma result");
 
@@ -94,7 +94,7 @@ pub async fn update_chain_votes<'a>(
                 )]),
             ])
             .exec()
-            .instrument(debug_span!("get voter_handlers"))
+            .instrument(debug_span!("get_voter_handlers"))
             .await
             .expect("bad prisma result");
 
@@ -110,7 +110,7 @@ pub async fn update_chain_votes<'a>(
         let current_block = ctx
             .rpc
             .get_block_number()
-            .instrument(debug_span!("get current_block"))
+            .instrument(debug_span!("get_current_block"))
             .await
             .unwrap_or(U64::from(0))
             .as_u64() as i64;
@@ -352,12 +352,14 @@ async fn insert_votes(
             ],
         )
         .exec()
+        .instrument(debug_span!("update_chainindex"))
         .await
         .context("failed to update voterhandlers")?;
 
     let updated = ctx
         .db
         ._batch(upserts)
+        .instrument(debug_span!("upsert_votes"))
         .await
         .context("failed to add votes")?;
 

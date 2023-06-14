@@ -24,7 +24,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
             notification::r#type::equals(NotificationType::NewProposalDiscord),
         ])
         .exec()
-        .instrument(debug_span!("get notifications"))
+        .instrument(debug_span!("get_notifications"))
         .await
         .unwrap();
 
@@ -33,7 +33,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
             .user()
             .find_first(vec![user::id::equals(notification.userid)])
             .exec()
-            .instrument(debug_span!("get user"))
+            .instrument(debug_span!("get_user"))
             .await
             .unwrap()
             .unwrap();
@@ -43,7 +43,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
             .find_first(vec![proposal::id::equals(notification.proposalid)])
             .include(proposal_with_dao::include())
             .exec()
-            .instrument(debug_span!("get proposal"))
+            .instrument(debug_span!("get_proposal"))
             .await
             .unwrap()
             .unwrap();
@@ -106,7 +106,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                 .username("Senate Secretary")
                 .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
             })
-            .instrument(debug_span!("send message"))
+            .instrument(debug_span!("send_message"))
             .await
             .expect("Could not execute webhook.");
 
@@ -127,7 +127,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                         ],
                     )
                     .exec()
-                    .instrument(debug_span!("update notification"))
+                    .instrument(debug_span!("update_notification"))
                     .await
                     .unwrap();
             }

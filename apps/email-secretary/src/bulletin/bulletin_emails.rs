@@ -145,7 +145,7 @@ pub async fn send_bulletin_emails(db: &Arc<prisma::PrismaClient>) {
         ])
         .include(user_with_voters_and_subscriptions::include())
         .exec()
-        .instrument(debug_span!("get users"))
+        .instrument(debug_span!("get_users"))
         .await
         .unwrap();
 
@@ -212,7 +212,7 @@ async fn send_bulletin(
         .headers(headers)
         .json(content)
         .send()
-        .instrument(debug_span!("send email"))
+        .instrument(debug_span!("send_email"))
         .await
         .unwrap();
 

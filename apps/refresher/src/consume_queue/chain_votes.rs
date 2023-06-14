@@ -44,7 +44,7 @@ pub(crate) async fn consume_chain_votes(
         .daohandler()
         .find_first(vec![daohandler::id::equals(entry.handler_id.to_string())])
         .exec()
-        .instrument(debug_span!("get dao_handler"))
+        .instrument(debug_span!("get_dao_handler"))
         .await
         .unwrap()
         .unwrap();
@@ -61,7 +61,6 @@ pub(crate) async fn consume_chain_votes(
         let mut trace = HashMap::new();
         propagator.inject_context(&context, &mut trace);
 
-        event!(Level::DEBUG, "Sending detective request");
 
         let response = http_client
             .post(&post_url)
@@ -69,7 +68,6 @@ pub(crate) async fn consume_chain_votes(
             .send()
             .await;
 
-        event!(Level::DEBUG, "Received detective response");
 
         match response {
             Ok(res) => {
@@ -91,7 +89,7 @@ pub(crate) async fn consume_chain_votes(
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(ok_voters.clone())])
                     .exec()
-                    .instrument(debug_span!("get voters"))
+                    .instrument(debug_span!("get_voters"))
                     .await
                     .unwrap()
                     .iter()
@@ -102,7 +100,7 @@ pub(crate) async fn consume_chain_votes(
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(nok_voters.clone())])
                     .exec()
-                    .instrument(debug_span!("get voters"))
+                    .instrument(debug_span!("get_voters"))
                     .await
                     .unwrap()
                     .iter()
@@ -133,7 +131,7 @@ pub(crate) async fn consume_chain_votes(
 
                 let result = client_ref
                     ._batch((update_ok_voters, update_nok_voters))
-                    .instrument(debug_span!("update handlers"))
+                    .instrument(debug_span!("update_handlers"))
                     .await
                     .unwrap();
 
@@ -191,7 +189,7 @@ pub(crate) async fn consume_chain_votes(
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(voters_ref)])
                     .exec()
-                    .instrument(debug_span!("get voters"))
+                    .instrument(debug_span!("get_voters"))
                     .await
                     .unwrap()
                     .iter()
@@ -214,7 +212,7 @@ pub(crate) async fn consume_chain_votes(
                         ],
                     )
                     .exec()
-                    .instrument(debug_span!("update handlers"))
+                    .instrument(debug_span!("update_handlers"))
                     .await
                     .unwrap();
 
@@ -222,7 +220,7 @@ pub(crate) async fn consume_chain_votes(
                 warn!("refresher error: {:#?}", e);
             }
         }
-    }.instrument(info_span!("detective request"))
+    }.instrument(info_span!("detective_request"))
     });
 
     Ok(())

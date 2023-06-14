@@ -86,7 +86,7 @@ pub(crate) async fn consume_snapshot_proposals(
 
                             let result = client_ref
                                 ._batch(dbupdate)
-                                .instrument(debug_span!("update handlers"))
+                                .instrument(debug_span!("update_handlers"))
                                 .await
                                 .unwrap();
 
@@ -107,7 +107,7 @@ pub(crate) async fn consume_snapshot_proposals(
                                     ],
                                 )
                                 .exec()
-                                .instrument(debug_span!("update handlers"))
+                                .instrument(debug_span!("update_handlers"))
                                 .await
                                 .unwrap();
 
@@ -131,7 +131,7 @@ pub(crate) async fn consume_snapshot_proposals(
                             ],
                         )
                         .exec()
-                        .instrument(debug_span!("update handlers"))
+                        .instrument(debug_span!("update_handlers"))
                         .await
                         .unwrap();
 
@@ -140,7 +140,7 @@ pub(crate) async fn consume_snapshot_proposals(
                 }
             }
         }
-        .instrument(info_span!("detective request"))
+        .instrument(info_span!("detective_request"))
     });
     Ok(())
 }

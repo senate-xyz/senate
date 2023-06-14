@@ -68,7 +68,7 @@ pub async fn update_snapshot_proposals<'a>(
             .daohandler()
             .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
             .exec()
-            .instrument(debug_span!("get dao_handler"))
+            .instrument(debug_span!("get_dao_handler"))
             .await
             .expect("bad prisma result")
             .expect("daoHandlerId not found");
@@ -149,12 +149,11 @@ async fn update_proposals(
         .get("https://hub.snapshot.org/graphql")
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()
-        .instrument(debug_span!("get graphql_response"))
+        .instrument(debug_span!("get_graphql_response"))
         .await?;
 
     let response_data: GraphQLResponse = graphql_response
         .json()
-        .instrument(debug_span!("get json response_data"))
         .await
         .with_context(|| format!("bad graphql response {}", graphql_query))?;
 
@@ -226,7 +225,7 @@ async fn update_proposals(
     let updated = ctx
         .db
         ._batch(upserts)
-        .instrument(debug_span!("upsert proposals"))
+        .instrument(debug_span!("upsert_proposals"))
         .await
         .context("failed to upsert proposals")?;
 
@@ -290,7 +289,7 @@ async fn update_proposals(
             ],
         )
         .exec()
-        .instrument(debug_span!("update snapshotindex"))
+        .instrument(debug_span!("update_snapshotindex"))
         .await
         .context("failed to update daohandler")?;
 

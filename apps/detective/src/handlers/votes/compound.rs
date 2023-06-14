@@ -50,7 +50,7 @@ pub async fn compound_votes(
 
     let logs = events
         .query_with_meta()
-        .instrument(debug_span!("get rpc events"))
+        .instrument(debug_span!("get_rpc_events"))
         .await?;
 
     let mut futures = FuturesUnordered::new();
@@ -84,7 +84,7 @@ pub async fn compound_votes(
         .collect())
 }
 
-#[instrument(skip(ctx), ret, level = "debug")]
+#[instrument(skip(ctx, logs), ret, level = "debug")]
 async fn get_votes_for_voter(
     logs: Vec<(VoteCastFilter, LogMeta)>,
     dao_handler: daohandler::Data,

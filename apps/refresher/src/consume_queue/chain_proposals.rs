@@ -45,7 +45,7 @@ pub(crate) async fn consume_chain_proposals(
         .daohandler()
         .find_first(vec![daohandler::id::equals(entry.handler_id.to_string())])
         .exec()
-        .instrument(debug_span!("get dao_handler"))
+        .instrument(debug_span!("get_dao_handler"))
         .await
         .unwrap()
         .unwrap();
@@ -55,8 +55,6 @@ pub(crate) async fn consume_chain_proposals(
 
     task::spawn({
         async move {
-            event!(Level::DEBUG, "Sending detective request");
-
             let span = tracing::Span::current();
             let context = span.context();
             let propagator = TraceContextPropagator::new();
@@ -68,8 +66,6 @@ pub(crate) async fn consume_chain_proposals(
                 .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "trace": trace}))
                 .send()
                 .await;
-
-            event!(Level::DEBUG, "Received detective response");
 
             match response {
                 Ok(res) => {
@@ -107,7 +103,7 @@ pub(crate) async fn consume_chain_proposals(
 
                             let _ = client_ref
                                 ._batch(dbupdate)
-                                .instrument(debug_span!("update handlers"))
+                                .instrument(debug_span!("update_handlers"))
                                 .await;
                         }
                         Err(e) => {
@@ -126,7 +122,7 @@ pub(crate) async fn consume_chain_proposals(
                                     ],
                                 )
                                 .exec()
-                                .instrument(debug_span!("update handlers"))
+                                .instrument(debug_span!("update_handlers"))
                                 .await
                                 .unwrap();
 
@@ -151,7 +147,7 @@ pub(crate) async fn consume_chain_proposals(
                             ],
                         )
                         .exec()
-                        .instrument(debug_span!("update handlers"))
+                        .instrument(debug_span!("update_handlers"))
                         .await
                         .unwrap();
 
@@ -160,7 +156,7 @@ pub(crate) async fn consume_chain_proposals(
                 }
             }
         }
-        .instrument(info_span!("detective request"))
+        .instrument(info_span!("detective_request"))
     });
 
     Ok(())

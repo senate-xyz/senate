@@ -60,7 +60,7 @@ pub async fn maker_executive_proposals(
 
     let single_spell_logs = single_spell_events
         .query_with_meta()
-        .instrument(debug_span!("get rpc events"))
+        .instrument(debug_span!("get_rpc_events"))
         .await?;
 
     let multi_spell_events = gov_contract
@@ -71,7 +71,7 @@ pub async fn maker_executive_proposals(
 
     let multi_spell_logs = multi_spell_events
         .query_with_meta()
-        .instrument(debug_span!("get rpc events"))
+        .instrument(debug_span!("get_rpc_events"))
         .await?;
 
     let single_spells = get_single_spell_addresses(single_spell_logs, gov_contract.clone()).await?;

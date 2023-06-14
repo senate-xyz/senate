@@ -61,7 +61,7 @@ pub async fn makerexecutive_votes(
 
     let single_spell_logs = single_spell_events
         .query_with_meta()
-        .instrument(debug_span!("get rpc events"))
+        .instrument(debug_span!("get_rpc_events"))
         .await?;
 
     let multi_spell_events = gov_contract
@@ -73,7 +73,7 @@ pub async fn makerexecutive_votes(
 
     let multi_spell_logs = multi_spell_events
         .query_with_meta()
-        .instrument(debug_span!("get rpc events"))
+        .instrument(debug_span!("get_rpc_events"))
         .await?;
 
     let single_spells =

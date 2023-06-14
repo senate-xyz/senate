@@ -16,7 +16,7 @@ pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
             user::telegramchatid::gt("".to_string()),
         ])
         .exec()
-        .instrument(debug_span!("get users"))
+        .instrument(debug_span!("get_users"))
         .await
         .unwrap();
 
@@ -42,7 +42,7 @@ pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
             )
             .skip_duplicates()
             .exec()
-            .instrument(debug_span!("create notifications"))
+            .instrument(debug_span!("create_notifications"))
             .await
             .unwrap();
     }
@@ -59,7 +59,7 @@ pub async fn get_ended_proposals_for_user(
         .user()
         .find_first(vec![user::address::equals(username.clone())])
         .exec()
-        .instrument(debug_span!("get user"))
+        .instrument(debug_span!("get_user"))
         .await
         .unwrap()
         .unwrap();
@@ -68,7 +68,7 @@ pub async fn get_ended_proposals_for_user(
         .subscription()
         .find_many(vec![subscription::userid::equals(user.id)])
         .exec()
-        .instrument(debug_span!("get subscriptions"))
+        .instrument(debug_span!("get_subscriptions"))
         .await
         .unwrap();
 
@@ -88,7 +88,7 @@ pub async fn get_ended_proposals_for_user(
         ])
         .include(proposal_with_dao::include())
         .exec()
-        .instrument(debug_span!("get proposals"))
+        .instrument(debug_span!("get_proposals"))
         .await
         .unwrap();
 

@@ -4,7 +4,7 @@ use chrono::{Duration, Utc};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
-use tracing::{event, instrument, Level};
+use tracing::{debug_span, event, instrument, Instrument, Level};
 
 use crate::{
     prisma::{self, daohandler, proposal, vote, DaoHandlerType},
@@ -44,6 +44,7 @@ pub async fn snapshot_sanity_check(ctx: &Context) {
         .daohandler()
         .find_many(vec![daohandler::r#type::equals(DaoHandlerType::Snapshot)])
         .exec()
+        .instrument(debug_span!("get_dao_handlers"))
         .await
         .unwrap();
 
@@ -68,6 +69,7 @@ async fn sanitize(
             proposal::timecreated::lte(sanitize_to.into()),
         ])
         .exec()
+        .instrument(debug_span!("get_proposals"))
         .await
         .unwrap();
 
@@ -108,6 +110,7 @@ async fn sanitize(
         .get("https://hub.snapshot.org/graphql")
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()
+        .instrument(debug_span!("get_graphql_response"))
         .await;
 
     let response_data: GraphQLResponse = graphql_response.unwrap().json().await.unwrap();
@@ -136,6 +139,7 @@ async fn sanitize(
                 proposals_to_delete.iter().map(|p| p.clone().id).collect(),
             )])
             .exec()
+            .instrument(debug_span!("delete_votes"))
             .await;
 
         let _ = ctx
@@ -145,6 +149,7 @@ async fn sanitize(
                 proposals_to_delete.iter().map(|p| p.clone().id).collect(),
             )])
             .exec()
+            .instrument(debug_span!("delete_proposals"))
             .await;
 
         info!(

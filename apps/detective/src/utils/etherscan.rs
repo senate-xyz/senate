@@ -6,7 +6,7 @@ use prisma_client_rust::bigdecimal::ToPrimitive;
 use reqwest::Client;
 use serde::Deserialize;
 use std::env;
-use tracing::{info, instrument};
+use tracing::{debug_span, info, instrument, Instrument};
 
 #[allow(dead_code, non_snake_case)]
 #[derive(Deserialize, PartialEq, Debug)]
@@ -25,7 +25,7 @@ pub struct EstimateTimestamp {
     result: EstimateTimestampResult,
 }
 
-#[instrument(skip(ctx), level = "info")]
+#[instrument(skip(ctx), ret, level = "info")]
 pub async fn estimate_timestamp(block_number: i64, ctx: &Context) -> Result<DateTime<Utc>> {
     let etherscan_api_key = match env::var_os("ETHERSCAN_API_KEY") {
         Some(v) => v.into_string().unwrap(),
@@ -69,6 +69,7 @@ pub async fn estimate_timestamp(block_number: i64, ctx: &Context) -> Result<Date
             ))
             .timeout(std::time::Duration::from_secs(10))
             .send()
+            .instrument(debug_span!("etherscan_api_call"))
             .await;
 
         match response {
@@ -121,7 +122,7 @@ pub struct EstimateBlock {
     result: String,
 }
 
-#[instrument(skip(ctx), level = "info")]
+#[instrument(skip(ctx), ret, level = "info")]
 pub async fn estimate_block(timestamp: i64, ctx: &Context) -> Result<i64> {
     let etherscan_api_key = match env::var_os("ETHERSCAN_API_KEY") {
         Some(v) => v.into_string().unwrap(),
@@ -138,6 +139,7 @@ pub async fn estimate_block(timestamp: i64, ctx: &Context) -> Result<i64> {
             ))
             .timeout(std::time::Duration::from_secs(10))
             .send()
+            .instrument(debug_span!("etherscan_api_call"))
             .await;
 
         match response {

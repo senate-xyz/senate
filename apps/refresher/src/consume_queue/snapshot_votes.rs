@@ -44,7 +44,7 @@ pub(crate) async fn consume_snapshot_votes(
         .daohandler()
         .find_first(vec![daohandler::id::equals(entry.handler_id.to_string())])
         .exec()
-        .instrument(debug_span!("get dao_handler"))
+        .instrument(debug_span!("get_dao_handler"))
         .await
         .unwrap()
         .unwrap();
@@ -93,7 +93,7 @@ pub(crate) async fn consume_snapshot_votes(
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(ok_voters.clone())])
                     .exec()
-                    .instrument(debug_span!("get voters"))
+                    .instrument(debug_span!("get_voters"))
                     .await
                     .unwrap()
                     .iter()
@@ -104,7 +104,7 @@ pub(crate) async fn consume_snapshot_votes(
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(nok_voters.clone())])
                     .exec()
-                    .instrument(debug_span!("get voters"))
+                    .instrument(debug_span!("get_voters"))
                     .await
                     .unwrap()
                     .iter()
@@ -149,7 +149,7 @@ pub(crate) async fn consume_snapshot_votes(
                     .voter()
                     .find_many(vec![prisma::voter::address::in_vec(voters_ref)])
                     .exec()
-                    .instrument(debug_span!("get voters"))
+                    .instrument(debug_span!("get_voters"))
                     .await
                     .unwrap()
                     .iter()
@@ -174,7 +174,7 @@ pub(crate) async fn consume_snapshot_votes(
                         ],
                     )
                     .exec()
-                    .instrument(debug_span!("update handlers"))
+                    .instrument(debug_span!("update_handlers"))
                     .await;
 
                 debug!("refresher error update: {:?}", result);

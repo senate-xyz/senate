@@ -58,7 +58,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             notification::dispatched::equals(false),
         ])
         .exec()
-        .instrument(debug_span!("get notifications"))
+        .instrument(debug_span!("get_notifications"))
         .await
         .unwrap();
 
@@ -68,7 +68,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             .find_first(vec![proposal::id::equals(notification.clone().proposalid)])
             .include(proposal::include!({ dao daohandler }))
             .exec()
-            .instrument(debug_span!("get proposal"))
+            .instrument(debug_span!("get_proposal"))
             .await
             .unwrap()
             .unwrap();
@@ -77,7 +77,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             .user()
             .find_first(vec![user::id::equals(notification.clone().userid)])
             .exec()
-            .instrument(debug_span!("get user"))
+            .instrument(debug_span!("get_user"))
             .await
             .unwrap()
             .unwrap();
@@ -185,7 +185,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 .headers(headers)
                 .json(content)
                 .send()
-                .instrument(debug_span!("send email"))
+                .instrument(debug_span!("send_email"))
                 .await
                 .unwrap();
         }
@@ -217,7 +217,7 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
         ])
         .include(proposal_with_dao::include())
         .exec()
-        .instrument(debug_span!("get proposals"))
+        .instrument(debug_span!("get_proposals"))
         .await
         .unwrap();
 
@@ -235,7 +235,7 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 )])
                 .include(subscription::include!({ user dao }))
                 .exec()
-                .instrument(debug_span!("get subscriptions"))
+                .instrument(debug_span!("get_subscriptions"))
                 .await
                 .unwrap();
 
@@ -269,7 +269,7 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                             vec![],
                         )
                         .exec()
-                        .instrument(debug_span!("insert notifications"))
+                        .instrument(debug_span!("insert_notifications"))
                         .await
                         .unwrap();
                 }
