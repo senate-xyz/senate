@@ -61,13 +61,11 @@ pub(crate) async fn consume_chain_votes(
         let mut trace = HashMap::new();
         propagator.inject_context(&context, &mut trace);
 
-
         let response = http_client
             .post(&post_url)
             .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "voters": entry.voters, "trace": trace }))
             .send()
             .await;
-
 
         match response {
             Ok(res) => {

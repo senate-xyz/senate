@@ -50,15 +50,11 @@ pub(crate) async fn consume_snapshot_proposals(
             let mut trace = HashMap::new();
             propagator.inject_context(&context, &mut trace);
 
-            event!(Level::DEBUG, "Sending detective request");
-
             let response = http_client
                 .post(&post_url)
                 .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "trace": trace}))
                 .send()
                 .await;
-
-            event!(Level::DEBUG, "Received detective response");
 
             match response {
                 Ok(res) => {

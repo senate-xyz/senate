@@ -55,9 +55,6 @@ pub(crate) async fn consume_snapshot_votes(
 
     task::spawn({
         async move {
-        event!(Level::DEBUG, "Sending detective request");
-
-
         let span = tracing::Span::current();
         let context = span.context();
         let propagator = TraceContextPropagator::new();
@@ -69,8 +66,6 @@ pub(crate) async fn consume_snapshot_votes(
             .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "voters": entry.voters, "trace": trace}))
             .send()
             .await;
-
-        event!(Level::DEBUG, "Received detective response");
 
         match response {
             Ok(res) => {
