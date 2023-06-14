@@ -32,10 +32,7 @@ pub async fn makerpollarbitrum_votes(
     from_block: &i64,
     voters: Vec<String>,
 ) -> Result<Vec<VoteResult>> {
-    let rpc_url = match env::var_os("ARBITRUM_NODE_URL") {
-        Some(v) => v.into_string().unwrap(),
-        None => panic!("$ARBITRUM_NODE_URL is not set"),
-    };
+    let rpc_url = env::var("ARBITRUM_NODE_URL").expect("$ARBITRUM_NODE_URL is not set");
 
     let provider = Provider::<Http>::try_from(rpc_url).unwrap();
     let client = Arc::new(provider);

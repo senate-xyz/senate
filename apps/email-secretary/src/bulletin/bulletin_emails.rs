@@ -3,6 +3,7 @@ use std::{cmp::Ordering, env, sync::Arc};
 use anyhow::Result;
 use chrono::{Duration, Utc};
 use log::debug;
+use posthog_rs::Event;
 use prisma_client_rust::{serde_json::Value, Direction};
 use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
@@ -215,6 +216,17 @@ async fn send_bulletin(
         .instrument(debug_span!("send_email"))
         .await
         .unwrap();
+
+    let mut event = posthog_rs::Event::new("sent_bulletin_email", user.address.as_str());
+    event.insert_prop("type", bulletin_template).unwrap();
+
+    posthog_rs::client(
+        env::var("NEXT_PUBLIC_POSTHOG_KEY")
+            .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
+            .as_str(),
+    )
+    .capture(event)
+    .unwrap();
 
     Ok(true)
 }

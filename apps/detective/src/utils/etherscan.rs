@@ -27,15 +27,8 @@ pub struct EstimateTimestamp {
 
 #[instrument(skip(ctx), ret, level = "info")]
 pub async fn estimate_timestamp(block_number: i64, ctx: &Context) -> Result<DateTime<Utc>> {
-    let etherscan_api_key = match env::var_os("ETHERSCAN_API_KEY") {
-        Some(v) => v.into_string().unwrap(),
-        None => panic!("$ETHERSCAN_API_KEY is not set"),
-    };
-
-    let rpc_url = match env::var_os("ALCHEMY_NODE_URL") {
-        Some(v) => v.into_string().unwrap(),
-        None => panic!("$ALCHEMY_NODE_URL is not set"),
-    };
+    let etherscan_api_key = env::var("ETHERSCAN_API_KEY").expect("$ETHERSCAN_API_KEY is not set");
+    let rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
 
     let provider = Provider::<Http>::try_from(rpc_url).unwrap();
 

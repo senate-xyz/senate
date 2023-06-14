@@ -91,10 +91,7 @@ async fn rocket() -> _ {
 
     telemetry::setup();
 
-    let rpc_url = match env::var_os("ALCHEMY_NODE_URL") {
-        Some(v) => v.into_string().unwrap(),
-        None => panic!("$ALCHEMY_NODE_URL is not set"),
-    };
+    let rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
 
     let provider = Provider::<Http>::try_from(rpc_url).unwrap();
     let rpc = Arc::new(provider);

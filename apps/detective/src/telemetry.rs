@@ -23,20 +23,9 @@ pub fn setup() {
 
     let telemetry_agent;
 
-    let telemetry_key = match env::var_os("TELEMETRY_KEY") {
-        Some(v) => v.into_string().unwrap(),
-        None => panic!("$TELEMETRY_KEY is not set"),
-    };
-
-    let exec_env = match env::var_os("EXEC_ENV") {
-        Some(v) => v.into_string().unwrap(),
-        None => panic!("$EXEC_ENV is not set"),
-    };
-
-    let debug_level = match env::var_os("DEBUG_LEVEL") {
-        Some(v) => v.into_string().unwrap(),
-        None => panic!("$DEBUG_LEVEL is not set"),
-    };
+    let telemetry_key = env::var("TELEMETRY_KEY").expect("$TELEMETRY_KEY is not set");
+    let exec_env = env::var("EXEC_ENV").expect("$EXEC_ENV is not set");
+    let debug_level = env::var("DEBUG_LEVEL").expect("$DEBUG_LEVEL is not set");
 
     let (logging_layer, task) = tracing_loki::builder()
         .label("app", app_name)

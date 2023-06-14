@@ -31,10 +31,7 @@ pub(crate) async fn consume_chain_votes(
     entry: RefreshEntry,
     client: &Arc<PrismaClient>,
 ) -> Result<()> {
-    let detective_url = match env::var_os("DETECTIVE_URL") {
-        Some(v) => v.into_string().unwrap(),
-        None => panic!("$DETECTIVE_URL is not set"),
-    };
+    let detective_url = env::var("DETECTIVE_URL").expect("$DETECTIVE_URL is not set");
 
     let post_url = format!("{}/votes/chain_votes", detective_url);
 

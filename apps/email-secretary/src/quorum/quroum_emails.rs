@@ -188,6 +188,17 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 .instrument(debug_span!("send_email"))
                 .await
                 .unwrap();
+
+            let mut event = posthog_rs::Event::new("sent_quorum_email", user.address.as_str());
+            event.insert_prop("type", quorum_template).unwrap();
+
+            posthog_rs::client(
+                env::var("NEXT_PUBLIC_POSTHOG_KEY")
+                    .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
+                    .as_str(),
+            )
+            .capture(event)
+            .unwrap();
         }
 
         let _ = db
