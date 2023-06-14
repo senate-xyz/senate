@@ -4,6 +4,11 @@ import { SiweMessage } from 'siwe'
 import { getCsrfToken } from 'next-auth/react'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '@senate/database'
+import { PostHog } from 'posthog-node'
+
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
+    host: `${process.env.NEXT_PUBLIC_WEB_URL}/ingest`
+})
 
 export function authOptions(
     req?: NextApiRequest,
@@ -39,6 +44,17 @@ export function authOptions(
                     })
 
                     if (result.success) {
+                        const existingUser = await prisma.user.findFirst({
+                            where: { address: siwe.address }
+                        })
+
+                        if (!existingUser) {
+                            posthog.capture({
+                                distinctId: siwe.address,
+                                event: 'sign_up_wallet'
+                            })
+                        }
+
                         await prisma.user.upsert({
                             where: {
                                 address: siwe.address
@@ -62,6 +78,11 @@ export function authOptions(
                                 acceptedterms: true,
                                 acceptedtermstimestamp: new Date()
                             }
+                        })
+
+                        posthog.capture({
+                            distinctId: siwe.address,
+                            event: 'connect_wallet'
                         })
 
                         return {

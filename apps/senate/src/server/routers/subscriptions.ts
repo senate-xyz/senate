@@ -42,11 +42,15 @@ export const subscriptionsRouter = router({
                 }
             })
 
+            const dao = await prisma.dao.findFirst({
+                where: { id: input.daoId }
+            })
+
             posthog.capture({
                 distinctId: user.address,
-                event: 'subscribed dao',
+                event: 'subscribe',
                 properties: {
-                    dao: input.daoId
+                    dao: dao?.name
                 }
             })
 
@@ -79,11 +83,15 @@ export const subscriptionsRouter = router({
                 }
             })
 
+            const dao = await prisma.dao.findFirst({
+                where: { id: input.daoId }
+            })
+
             posthog.capture({
                 distinctId: user.address,
-                event: 'unsubscribed dao',
+                event: 'unsubscribe',
                 properties: {
-                    dao: input.daoId
+                    dao: dao?.name
                 }
             })
 

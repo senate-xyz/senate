@@ -3,6 +3,11 @@ import { z } from 'zod'
 import { prisma } from '@senate/database'
 import { ServerClient } from 'postmark'
 import { MagicUserState } from '@senate/database'
+import { PostHog } from 'posthog-node'
+
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
+    host: `${process.env.NEXT_PUBLIC_WEB_URL}/ingest`
+})
 
 export const accountSettingsRouter = router({
     setEmailAndEnableBulletin: privateProcedure
@@ -212,6 +217,11 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val ? 'enable_bulletin' : 'disable_bulletin'
+            })
+
             return user
         }),
 
@@ -306,6 +316,11 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val ? 'enable_discord' : 'disable_discord'
+            })
+
             return user
         }),
 
@@ -370,6 +385,11 @@ export const accountSettingsRouter = router({
                 data: {
                     telegramnotifications: input.val
                 }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val ? 'enable_telegram' : 'disable_telegram'
             })
 
             return user
@@ -477,7 +497,7 @@ export const accountSettingsRouter = router({
         .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
-            const user = await prisma.user.findFirst({
+            const user = await prisma.user.findFirstOrThrow({
                 where: {
                     address: {
                         equals: String(username)
@@ -503,6 +523,14 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: 'add_proxy',
+                properties: {
+                    proxy: input.address
+                }
+            })
+
             return result
         }),
 
@@ -515,7 +543,7 @@ export const accountSettingsRouter = router({
         .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
-            const user = await prisma.user.findFirst({
+            const user = await prisma.user.findFirstOrThrow({
                 where: {
                     address: {
                         equals: String(username)
@@ -533,6 +561,14 @@ export const accountSettingsRouter = router({
                             address: input.address
                         }
                     }
+                }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: 'remove_proxy',
+                properties: {
+                    proxy: input.address
                 }
             })
 
