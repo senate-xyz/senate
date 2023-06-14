@@ -1,7 +1,11 @@
-'use client'
-
-import { useSession } from 'next-auth/react'
+import { Metadata } from 'next'
+import { getServerSession } from 'next-auth'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+    title: 'Senate - Account Settings',
+    icons: '/assets/Senate_Logo/64/Black.svg'
+}
 
 const defaultTab: { id: number; name: string; color: string; link: string } = {
     id: 0,
@@ -31,18 +35,18 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
     }
 ]
 
-export default function RootLayout({
+export default async function RootLayout({
     children
 }: {
     children: React.ReactNode
 }) {
-    const session = useSession()
+    const session = await getServerSession()
 
     return (
         <>
             <div className='flex grow flex-col bg-[#1E1B20]'>
                 <div className='flex w-full flex-row gap-10 overflow-x-auto overflow-y-hidden leading-[36px]'>
-                    {session.status == 'authenticated' ? (
+                    {session?.user != null && session?.user != undefined ? (
                         tabs.map((tab) => {
                             return (
                                 <Link

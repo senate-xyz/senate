@@ -6,6 +6,7 @@ import { Transition } from '@headlessui/react'
 import { useRouter } from 'next/navigation'
 import { useCookies } from 'react-cookie'
 import { useEffect } from 'react'
+import Head from 'next/head'
 
 const WrapperHome = () => {
     return <Home />
@@ -22,6 +23,9 @@ const Home = () => {
 
     return (
         <div>
+            <Head>
+                <title>Senate - Landing</title>
+            </Head>
             <div className='flex min-h-screen w-full flex-row bg-black'>
                 <div className='flex min-h-screen w-full flex-col'>
                     <div className='flex h-full min-h-screen w-full flex-row items-center justify-center px-4'>

@@ -3,6 +3,7 @@
 import '../styles/globals.css'
 import Image from 'next/image'
 import { Transition } from '@headlessui/react'
+import Head from 'next/head'
 
 const WrapperHome = () => {
     return <Home />
@@ -13,6 +14,9 @@ export default WrapperHome
 const Home = () => {
     return (
         <div>
+            <Head>
+                <title>Senate - Out of service</title>
+            </Head>
             <div className='flex min-h-screen w-full flex-row bg-black'>
                 <div className='flex min-h-full w-full flex-col'>
                     <div className='flex h-full w-full flex-row items-center justify-center px-4'>

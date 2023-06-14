@@ -8,6 +8,7 @@ import { trpc } from '../server/trpcClient'
 import { useRouter } from 'next/navigation'
 import RootProvider from '../app/providers'
 import { Transition } from '@headlessui/react'
+import Head from 'next/head'
 
 const WrapperHome = () => {
     return (
@@ -52,6 +53,9 @@ const Home = () => {
 
     return (
         <div>
+            <Head>
+                <title>Senate - Daily Bulletin</title>
+            </Head>
             <div className='flex min-h-screen w-full bg-black'>
                 <div className='flex min-h-full w-full flex-col lg:flex-row'>
                     <div
