@@ -26,7 +26,7 @@ import {
     rainbowWallet
 } from '@rainbow-me/rainbowkit/wallets'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { Suspense, useEffect } from 'react'
+import { useEffect } from 'react'
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 
@@ -114,12 +114,15 @@ function Fallback({ children }) {
     return <>{children}</>
 }
 
-function PHProvider({ children }) {
-    return (
-        <Suspense fallback={<Fallback>{children}</Fallback>}>
-            <HogProvider>{children}</HogProvider>
-        </Suspense>
-    )
+// Check that PostHog is client-side (used to handle Next.js SSR)
+if (typeof window !== 'undefined') {
+    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
+        api_host: `${process.env.NEXT_PUBLIC_WEB_URL}/ingest`,
+        // Enable debug mode in development
+        loaded: (posthog) => {
+            if (process.env.NODE_ENV === 'development') posthog.debug()
+        }
+    })
 }
 
 function HogProvider({ children }) {
@@ -143,13 +146,13 @@ function HogProvider({ children }) {
 
 export default function RootProvider({ children }) {
     return (
-        <SessionProvider refetchInterval={60}>
-            <TrpcClientProvider>
-                <Suspense fallback={<Fallback>{children}</Fallback>}>
+        <HogProvider>
+            <SessionProvider refetchInterval={60}>
+                <TrpcClientProvider>
                     <RootProviderInner>{children}</RootProviderInner>
-                </Suspense>{' '}
-            </TrpcClientProvider>
-        </SessionProvider>
+                </TrpcClientProvider>
+            </SessionProvider>
+        </HogProvider>
     )
 }
 
@@ -158,8 +161,29 @@ function RootProviderInner({ children }: { children: React.ReactNode }) {
 
     return (
         <WagmiConfig config={config}>
-            <PHProvider>
-                {pathname?.includes('verify') ? (
+            {pathname?.includes('verify') ? (
+                <RainbowKitProvider
+                    appInfo={{
+                        appName: 'Senate',
+                        disclaimer: Disclaimer,
+                        learnMoreUrl: 'https://senate.notion.site'
+                    }}
+                    chains={chains}
+                    modalSize='compact'
+                    theme={darkTheme({
+                        accentColor: '#262626',
+                        accentColorForeground: 'white',
+                        borderRadius: 'none',
+                        overlayBlur: 'small',
+                        fontStack: 'rounded'
+                    })}
+                >
+                    {children}
+                </RainbowKitProvider>
+            ) : (
+                <RainbowKitSiweNextAuthProvider
+                    getSiweMessageOptions={getSiweMessageOptions}
+                >
                     <RainbowKitProvider
                         appInfo={{
                             appName: 'Senate',
@@ -178,31 +202,8 @@ function RootProviderInner({ children }: { children: React.ReactNode }) {
                     >
                         {children}
                     </RainbowKitProvider>
-                ) : (
-                    <RainbowKitSiweNextAuthProvider
-                        getSiweMessageOptions={getSiweMessageOptions}
-                    >
-                        <RainbowKitProvider
-                            appInfo={{
-                                appName: 'Senate',
-                                disclaimer: Disclaimer,
-                                learnMoreUrl: 'https://senate.notion.site'
-                            }}
-                            chains={chains}
-                            modalSize='compact'
-                            theme={darkTheme({
-                                accentColor: '#262626',
-                                accentColorForeground: 'white',
-                                borderRadius: 'none',
-                                overlayBlur: 'small',
-                                fontStack: 'rounded'
-                            })}
-                        >
-                            {children}
-                        </RainbowKitProvider>
-                    </RainbowKitSiweNextAuthProvider>
-                )}
-            </PHProvider>
+                </RainbowKitSiweNextAuthProvider>
+            )}
         </WagmiConfig>
     )
 }

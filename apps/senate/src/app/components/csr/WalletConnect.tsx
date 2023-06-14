@@ -3,7 +3,7 @@
 import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit'
 import { signOut, useSession } from 'next-auth/react'
 import { redirect, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { disconnect } from '@wagmi/core'
 import { trpc } from '../../../server/trpcClient'
@@ -79,7 +79,9 @@ const WalletConnect = () => {
 
     return (
         <div>
-            <ConnectButton showBalance={false} />
+            <Suspense fallback={<></>}>
+                <ConnectButton showBalance={false} />
+            </Suspense>
         </div>
     )
 }

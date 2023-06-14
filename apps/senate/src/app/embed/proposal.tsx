@@ -8,6 +8,7 @@ import '../../styles/globals.css'
 import RootProvider from '../../app/providers'
 import '@rainbow-me/rainbowkit/styles.css'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { Suspense } from 'react'
 
 dayjs.extend(relativeTime)
 
@@ -203,7 +204,9 @@ const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
                         )}
                         {props.proposal.voted == 'not-connected' && (
                             <div className='p-3'>
-                                <ConnectButton showBalance={false} />
+                                <Suspense fallback={<></>}>
+                                    <ConnectButton showBalance={false} />
+                                </Suspense>
                             </div>
                         )}
                     </div>
