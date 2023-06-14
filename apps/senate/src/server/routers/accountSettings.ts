@@ -71,6 +71,22 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: 'enable_bulletin',
+                properties: {
+                    email: input.email
+                }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: 'update_email',
+                properties: {
+                    email: input.email
+                }
+            })
+
             return user
         }),
 
@@ -162,6 +178,14 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: 'update_email',
+                properties: {
+                    email: input.email
+                }
+            })
+
             return user
         }),
 
@@ -241,6 +265,13 @@ export const accountSettingsRouter = router({
                 data: { emptydailybulletin: input.val }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val
+                    ? 'enable_empty_bulletin'
+                    : 'disable_empty_bulletin'
+            })
+
             return user
         }),
 
@@ -258,6 +289,13 @@ export const accountSettingsRouter = router({
                     address: String(username)
                 },
                 data: { emailquorumwarning: input.val }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val
+                    ? 'enable_quorum_emails'
+                    : 'disable_quorum_email'
             })
 
             return user
@@ -343,6 +381,13 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val
+                    ? 'enable_discord_reminders'
+                    : 'disable_discord_reminders'
+            })
+
             return user
         }),
 
@@ -362,6 +407,14 @@ export const accountSettingsRouter = router({
 
                 data: {
                     discordwebhook: input.url
+                }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: 'set_discord_webhook',
+                properties: {
+                    webhook: input.url
                 }
             })
 
@@ -414,6 +467,13 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val
+                    ? 'enable_telegram_reminders'
+                    : 'disable_telegram_reminders'
+            })
+
             return user
         }),
 
@@ -433,6 +493,14 @@ export const accountSettingsRouter = router({
 
                 data: {
                     telegramchatid: input.chatid.toString()
+                }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: 'set_telegram_chatid',
+                properties: {
+                    chatid: input.chatid
                 }
             })
 
