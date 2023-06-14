@@ -110,10 +110,6 @@ const Disclaimer: DisclaimerComponent = () => (
     </div>
 )
 
-function Fallback({ children }) {
-    return <>{children}</>
-}
-
 // Check that PostHog is client-side (used to handle Next.js SSR)
 if (typeof window !== 'undefined') {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
