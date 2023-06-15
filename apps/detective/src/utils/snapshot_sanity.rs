@@ -49,7 +49,7 @@ pub async fn snapshot_sanity_check(ctx: &Context) {
         .unwrap();
 
     for dao_handler in dao_handlers {
-        sanitize(dao_handler, sanitize_from, sanitize_to, &ctx).await;
+        sanitize(dao_handler, sanitize_from, sanitize_to, ctx).await;
     }
 }
 

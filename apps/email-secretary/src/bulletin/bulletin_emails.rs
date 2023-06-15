@@ -126,7 +126,7 @@ pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
             .unwrap()
             .unwrap();
 
-        send_bulletin(user, &db).await.unwrap();
+        send_bulletin(user, db).await.unwrap();
 
         db.notification()
             .delete(notification::id::equals(notification.id))
@@ -167,9 +167,9 @@ async fn send_bulletin(
         return Ok(false);
     }
 
-    if user_data.newProposals.len() == 0
-        && user_data.endedProposals.len() == 0
-        && user_data.endingSoonProposals.len() == 0
+    if user_data.newProposals.is_empty()
+        && user_data.endedProposals.is_empty()
+        && user_data.endingSoonProposals.is_empty()
         && !user.emptydailybulletin
     {
         return Ok(false);

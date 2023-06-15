@@ -86,7 +86,7 @@ pub async fn maker_executive_proposals(
     let mut futures = FuturesUnordered::new();
 
     for p in spell_addresses.iter() {
-        futures.push(async { proposal(p, &decoder, dao_handler, &ctx).await });
+        futures.push(async { proposal(p, &decoder, dao_handler, ctx).await });
     }
 
     let mut result = Vec::new();

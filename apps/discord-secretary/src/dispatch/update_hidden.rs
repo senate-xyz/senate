@@ -127,7 +127,7 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                     .unwrap();
 
                     let message_content = if result_index == 100 {
-                        format!("❓ Could not fetch results")
+                        "❓ Could not fetch results".to_string()
                     } else if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
                         format!(
                             "✅ **{}** {}%",
@@ -137,7 +137,7 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                             (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
                         )
                     } else {
-                        format!("❌ No Quorum")
+                        "❌ No Quorum".to_string()
                     };
 
                     webhook

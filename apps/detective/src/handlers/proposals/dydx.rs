@@ -93,7 +93,7 @@ async fn data_for_proposal(
     let voting_start_block_number = log.start_block.as_u64().to_i64().unwrap();
     let voting_end_block_number = log.end_block.as_u64().to_i64().unwrap();
 
-    let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number, &ctx).await {
+    let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number, ctx).await {
         Ok(r) => r,
         Err(_) => DateTime::from_utc(
             NaiveDateTime::from_timestamp_millis(
@@ -105,7 +105,7 @@ async fn data_for_proposal(
         ),
     };
 
-    let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number, &ctx).await {
+    let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number, ctx).await {
         Ok(r) => r,
         Err(_) => DateTime::from_utc(
             NaiveDateTime::from_timestamp_millis(
@@ -234,7 +234,7 @@ async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> R
             }
             _ if retries % 3 == 0 => {
                 if current_gateway < gateways.len() - 2 {
-                    current_gateway = current_gateway + 1;
+                    current_gateway += 1;
                 } else {
                     current_gateway = 0;
                 }

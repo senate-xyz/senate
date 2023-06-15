@@ -382,12 +382,12 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 .filter(|s| {
                     s.user.verifiedaddress
                         && s.user.verifiedemail
-                        && s.user.email.clone().unwrap().len() > 0
+                        && !s.user.email.clone().unwrap().is_empty()
                 })
                 .collect();
 
             for sub in subscriptions_with_email.iter() {
-                let voted = get_vote(sub.userid.clone(), proposal.id.clone(), &db)
+                let voted = get_vote(sub.userid.clone(), proposal.id.clone(), db)
                     .await
                     .unwrap();
                 if sub.dao.quorumwarningemail && !voted {

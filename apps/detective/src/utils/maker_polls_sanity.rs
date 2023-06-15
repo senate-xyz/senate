@@ -39,7 +39,7 @@ pub async fn maker_polls_sanity_check(ctx: &Context) {
         .unwrap();
 
     match dao_handler {
-        Some(handler) => sanitize(handler, sanitize_from, sanitize_to, &ctx).await,
+        Some(handler) => sanitize(handler, sanitize_from, sanitize_to, ctx).await,
         None => {}
     }
 }
@@ -51,10 +51,10 @@ async fn sanitize(
     sanitize_to: chrono::DateTime<Utc>,
     ctx: &Context,
 ) {
-    let from_block = estimate_block(sanitize_from.timestamp(), &ctx)
+    let from_block = estimate_block(sanitize_from.timestamp(), ctx)
         .await
         .unwrap();
-    let to_block = estimate_block(sanitize_to.timestamp(), &ctx).await.unwrap();
+    let to_block = estimate_block(sanitize_to.timestamp(), ctx).await.unwrap();
 
     let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder).unwrap();
 
