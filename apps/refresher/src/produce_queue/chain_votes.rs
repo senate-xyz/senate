@@ -94,7 +94,7 @@ pub async fn produce_chain_votes_queue(
                     ]),
                 ]),
             ])
-            .order_by(voterhandler::uptodate::order(Direction::Desc))
+            .order_by(voterhandler::lastrefresh::order(Direction::Desc))
             .include(voterhandler::include!({
                 voter : select { address }
             }))

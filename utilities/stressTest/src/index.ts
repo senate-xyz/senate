@@ -125,24 +125,19 @@ async function fetchVoters(): Promise<string[]> {
 
 async function linkVotersToUser(user: User, voters: Array<string>) {
     console.log(`Adding ${voters.length} voters to db`)
-    await prisma.$transaction(
-        voters.map((voter) => {
-            return prisma.user.update({
-                where: { address: user.address },
-                data: {
-                    voters: {
-                        connectOrCreate: {
-                            where: { address: voter },
-                            create: { address: voter }
-                        }
+
+    for (const voter of voters)
+        await prisma.user.update({
+            where: { address: user.address },
+            data: {
+                voters: {
+                    connectOrCreate: {
+                        where: { address: voter },
+                        create: { address: voter }
                     }
                 }
-            })
-        }),
-        {
-            isolationLevel: 'ReadCommitted'
-        }
-    )
+            }
+        })
 }
 
 async function buildSnapshotVoterAddressesDataSet(
@@ -216,14 +211,15 @@ async function bootstrapStressTestUserWithSubscriptions(): Promise<User> {
 }
 
 async function createStressTestUser(): Promise<User> {
-    return await prisma.user.upsert({
-        where: {
+    await prisma.user.createMany({
+        data: {
             address: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965'
         },
-        create: {
-            address: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965'
-        },
-        update: {}
+        skipDuplicates: true
+    })
+
+    return await prisma.user.findFirst({
+        where: { address: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965' }
     })
 }
 
