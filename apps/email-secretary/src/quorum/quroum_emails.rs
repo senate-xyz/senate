@@ -56,7 +56,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
         .notification()
         .find_many(vec![
             notification::r#type::equals(NotificationType::QuorumNotReachedEmail),
-            notification::dispatchedstatus::in_vec(vec![
+            notification::dispatchstatus::in_vec(vec![
                 NotificationDispatchedState::NotDispatched,
                 NotificationDispatchedState::FirstRetry,
                 NotificationDispatchedState::SecondRetry,
@@ -212,7 +212,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                             .capture(event)
                             .unwrap();
 
-                            vec![notification::dispatchedstatus::set(
+                            vec![notification::dispatchstatus::set(
                                 NotificationDispatchedState::Dispatched,
                             )]
                         }
@@ -228,24 +228,24 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                             )
                             .capture(event)
                             .unwrap();
-                            match notification.dispatchedstatus {
+                            match notification.dispatchstatus {
                                 NotificationDispatchedState::NotDispatched => {
-                                    vec![notification::dispatchedstatus::set(
+                                    vec![notification::dispatchstatus::set(
                                         NotificationDispatchedState::FirstRetry,
                                     )]
                                 }
                                 NotificationDispatchedState::FirstRetry => {
-                                    vec![notification::dispatchedstatus::set(
+                                    vec![notification::dispatchstatus::set(
                                         NotificationDispatchedState::SecondRetry,
                                     )]
                                 }
                                 NotificationDispatchedState::SecondRetry => {
-                                    vec![notification::dispatchedstatus::set(
+                                    vec![notification::dispatchstatus::set(
                                         NotificationDispatchedState::ThirdRetry,
                                     )]
                                 }
                                 NotificationDispatchedState::ThirdRetry => {
-                                    vec![notification::dispatchedstatus::set(
+                                    vec![notification::dispatchstatus::set(
                                         NotificationDispatchedState::Failed,
                                     )]
                                 }
@@ -277,7 +277,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                                 notification::proposalid::equals(notification.clone().proposalid),
                                 notification::r#type::equals(notification.clone().r#type),
                             ],
-                            vec![notification::dispatchedstatus::set(
+                            vec![notification::dispatchstatus::set(
                                 NotificationDispatchedState::Deleted,
                             )],
                         )
@@ -295,7 +295,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                         notification::proposalid::equals(notification.clone().proposalid),
                         notification::r#type::equals(notification.clone().r#type),
                     ],
-                    vec![notification::dispatchedstatus::set(
+                    vec![notification::dispatchstatus::set(
                         NotificationDispatchedState::Deleted,
                     )],
                 )

@@ -103,9 +103,7 @@ pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
         .notification()
         .find_many(vec![
             notification::r#type::equals(NotificationType::BulletinEmail),
-            notification::dispatchedstatus::in_vec(vec![
-                NotificationDispatchedState::NotDispatched,
-            ]),
+            notification::dispatchstatus::in_vec(vec![NotificationDispatchedState::NotDispatched]),
         ])
         .exec()
         .await
@@ -128,7 +126,7 @@ pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
                 vec![notification::r#type::equals(
                     NotificationType::BulletinEmail,
                 )],
-                vec![notification::dispatchedstatus::set(
+                vec![notification::dispatchstatus::set(
                     NotificationDispatchedState::Dispatched,
                 )],
             )

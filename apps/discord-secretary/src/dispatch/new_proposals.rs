@@ -22,7 +22,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
     let notifications = client
         .notification()
         .find_many(vec![
-            notification::dispatchedstatus::in_vec(vec![
+            notification::dispatchstatus::in_vec(vec![
                 NotificationDispatchedState::NotDispatched,
                 NotificationDispatchedState::FirstRetry,
                 NotificationDispatchedState::SecondRetry,
@@ -122,7 +122,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                 let update_data = match message {
                     Ok(msg) => {
                         vec![
-                            notification::dispatchedstatus::set(
+                            notification::dispatchstatus::set(
                                 NotificationDispatchedState::Dispatched,
                             ),
                             notification::discordmessagelink::set(
@@ -133,24 +133,24 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                             ),
                         ]
                     }
-                    Err(_) => match notification.dispatchedstatus {
+                    Err(_) => match notification.dispatchstatus {
                         NotificationDispatchedState::NotDispatched => {
-                            vec![notification::dispatchedstatus::set(
+                            vec![notification::dispatchstatus::set(
                                 NotificationDispatchedState::FirstRetry,
                             )]
                         }
                         NotificationDispatchedState::FirstRetry => {
-                            vec![notification::dispatchedstatus::set(
+                            vec![notification::dispatchstatus::set(
                                 NotificationDispatchedState::SecondRetry,
                             )]
                         }
                         NotificationDispatchedState::SecondRetry => {
-                            vec![notification::dispatchedstatus::set(
+                            vec![notification::dispatchstatus::set(
                                 NotificationDispatchedState::ThirdRetry,
                             )]
                         }
                         NotificationDispatchedState::ThirdRetry => {
-                            vec![notification::dispatchedstatus::set(
+                            vec![notification::dispatchstatus::set(
                                 NotificationDispatchedState::Failed,
                             )]
                         }
@@ -186,7 +186,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                             notification::proposalid::equals(notification.clone().proposalid),
                             notification::r#type::equals(NotificationType::NewProposalDiscord),
                         ],
-                        vec![notification::dispatchedstatus::set(
+                        vec![notification::dispatchstatus::set(
                             NotificationDispatchedState::Deleted,
                         )],
                     )

@@ -40,7 +40,7 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
             .find_many(vec![
                 notification::proposalid::equals(active_proposal.id.into()),
                 notification::r#type::equals(NotificationType::NewProposalDiscord),
-                notification::dispatchedstatus::equals(
+                notification::dispatchstatus::equals(
                     prisma::NotificationDispatchedState::Dispatched,
                 ),
             ])

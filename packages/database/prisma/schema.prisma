@@ -222,8 +222,8 @@ model notification {
   proposalid String?
   proposal   proposal? @relation(fields: [proposalid], references: [id], onDelete: Cascade)
 
-  type             NotificationType
-  dispatchedstatus NotificationDispatchedState @default(NOT_DISPATCHED)
+  type           NotificationType
+  dispatchstatus NotificationDispatchedState @default(NOT_DISPATCHED)
 
   emailmessageid String?
 
@@ -233,11 +233,11 @@ model notification {
   telegramchatid    String?
   telegrammessageid String?
 
-  @@id([userid, type, dispatchedstatus])
+  @@id([userid, type, dispatchstatus])
   @@index(fields: [userid], type: Hash)
   @@index(fields: [type], type: Hash)
   @@index(fields: [proposalid], type: Hash)
-  @@index(fields: [dispatchedstatus], type: Hash)
+  @@index(fields: [dispatchstatus], type: Hash)
 }
 
 model config {
