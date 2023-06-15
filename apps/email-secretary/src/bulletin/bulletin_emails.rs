@@ -14,7 +14,8 @@ use crate::{
     prisma::{
         self, notification,
         proposal::{self},
-        user, DaoHandlerType, MagicUserState, NotificationType, ProposalState,
+        user, DaoHandlerType, MagicUserState, NotificationDispatchedState, NotificationType,
+        ProposalState,
     },
     utils::{countdown::countdown_gif, vote::get_vote},
 };
@@ -101,8 +102,10 @@ pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
     let notifications = db
         .notification()
         .find_many(vec![
-            notification::r#type::equals(NotificationType::TriggerBulletinEmail),
-            notification::dispatched::equals(false),
+            notification::r#type::equals(NotificationType::BulletinEmail),
+            notification::dispatchedstatus::in_vec(vec![
+                NotificationDispatchedState::NotDispatched,
+            ]),
         ])
         .exec()
         .await
@@ -121,13 +124,13 @@ pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
         send_bulletin(user, &db).await.unwrap();
 
         db.notification()
-            .update(
-                notification::userid_proposalid_type(
-                    notification.userid,
-                    notification.proposalid,
-                    notification.r#type,
-                ),
-                vec![notification::dispatched::set(true)],
+            .update_many(
+                vec![notification::r#type::equals(
+                    NotificationType::BulletinEmail,
+                )],
+                vec![notification::dispatchedstatus::set(
+                    NotificationDispatchedState::Dispatched,
+                )],
             )
             .exec()
             .await

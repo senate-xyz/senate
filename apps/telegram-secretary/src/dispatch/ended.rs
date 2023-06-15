@@ -12,7 +12,10 @@ use tokio::time::sleep;
 use tracing::{debug, debug_span, instrument, Instrument};
 
 use crate::{
-    prisma::{self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient},
+    prisma::{
+        self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
+        NotificationType, PrismaClient,
+    },
     utils::vote::get_vote,
 };
 
@@ -26,7 +29,12 @@ pub async fn dispatch_ended_proposal_notifications(
     let ended_notifications = client
         .notification()
         .find_many(vec![
-            notification::dispatched::equals(false),
+            notification::dispatchedstatus::in_vec(vec![
+                NotificationDispatchedState::NotDispatched,
+                NotificationDispatchedState::FirstRetry,
+                NotificationDispatchedState::SecondRetry,
+                NotificationDispatchedState::ThirdRetry,
+            ]),
             notification::r#type::equals(NotificationType::EndedProposalTelegram),
         ])
         .exec()
@@ -34,87 +42,76 @@ pub async fn dispatch_ended_proposal_notifications(
         .await
         .unwrap();
 
-    for ended_notification in ended_notifications {
-        let new_notification = client
-            .notification()
-            .find_unique(notification::userid_proposalid_type(
-                ended_notification.clone().userid,
-                ended_notification.clone().proposalid,
-                NotificationType::NewProposalTelegram,
-            ))
+    for notification in ended_notifications {
+        let user = client
+            .user()
+            .find_first(vec![user::id::equals(notification.clone().userid)])
             .exec()
-            .instrument(debug_span!("get_notification"))
+            .instrument(debug_span!("get_user"))
+            .await
+            .unwrap()
+            .unwrap();
+
+        let proposal = client
+            .proposal()
+            .find_first(vec![proposal::id::equals(
+                notification.clone().proposalid.unwrap(),
+            )])
+            .include(proposal_with_dao::include())
+            .exec()
+            .instrument(debug_span!("get_proposal"))
             .await
             .unwrap();
 
-        match new_notification {
-            Some(new_notification) => {
-                if new_notification.dispatched {
-                    let user = client
-                        .user()
-                        .find_first(vec![user::id::equals(ended_notification.clone().userid)])
-                        .exec()
-                        .instrument(debug_span!("get_user"))
-                        .await
-                        .unwrap()
-                        .unwrap();
+        match proposal {
+            Some(proposal) => {
+                let (result_index, max_score) = proposal
+                    .scores
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|score| score.as_f64().unwrap())
+                    .enumerate()
+                    .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
+                    .unwrap();
 
-                    let proposal = client
-                        .proposal()
-                        .find_first(vec![proposal::id::equals(
-                            ended_notification.clone().proposalid,
-                        )])
-                        .include(proposal_with_dao::include())
-                        .exec()
-                        .instrument(debug_span!("get_proposal"))
-                        .await
-                        .unwrap()
-                        .unwrap();
+                let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+                    Some(v) => v.into_string().unwrap(),
+                    None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+                };
 
-                    let (result_index, max_score) = proposal
-                        .scores
-                        .as_array()
-                        .unwrap()
-                        .iter()
-                        .map(|score| score.as_f64().unwrap())
-                        .enumerate()
-                        .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
-                        .unwrap();
+                let short_url = format!(
+                    "{}{}",
+                    shortner_url,
+                    proposal
+                        .id
+                        .chars()
+                        .rev()
+                        .take(7)
+                        .collect::<Vec<char>>()
+                        .into_iter()
+                        .rev()
+                        .collect::<String>()
+                );
 
-                    let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
-                        Some(v) => v.into_string().unwrap(),
-                        None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
-                    };
+                let voted = get_vote(
+                    notification.clone().userid,
+                    notification.clone().proposalid.unwrap(),
+                    client,
+                )
+                .await
+                .unwrap();
 
-                    let short_url = format!(
-                        "{}{}",
-                        shortner_url,
-                        proposal
-                            .id
-                            .chars()
-                            .rev()
-                            .take(7)
-                            .collect::<Vec<char>>()
-                            .into_iter()
-                            .rev()
-                            .collect::<String>()
+                let message = if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
+                    let result = format!(
+                        "{} {}%",
+                        proposal.choices.as_array().unwrap()[result_index]
+                            .as_str()
+                            .unwrap(),
+                        (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
                     );
 
-                    let voted =
-                        get_vote(new_notification.userid, new_notification.proposalid, client)
-                            .await
-                            .unwrap();
-
-                    let message = if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
-                        let result = format!(
-                            "{} {}%",
-                            proposal.choices.as_array().unwrap()[result_index]
-                                .as_str()
-                                .unwrap(),
-                            (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
-                        );
-
-                        bot
+                    bot
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
@@ -137,8 +134,8 @@ pub async fn dispatch_ended_proposal_notifications(
                             ),
                         ).disable_web_page_preview(true)
                         .await
-                    } else {
-                        bot
+                } else {
+                    bot
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
@@ -160,38 +157,78 @@ pub async fn dispatch_ended_proposal_notifications(
                             ),
                         ).disable_web_page_preview(true)
                         .await
-                    };
+                };
 
-                    match message {
-                        Ok(msg) => {
-                            client
-                                .notification()
-                                .update(
-                                    notification::userid_proposalid_type(
-                                        ended_notification.clone().userid,
-                                        ended_notification.clone().proposalid,
-                                        NotificationType::EndedProposalTelegram,
-                                    ),
-                                    vec![
-                                        notification::dispatched::set(true),
-                                        notification::telegramchatid::set(
-                                            msg.chat.id.to_string().into(),
-                                        ),
-                                        notification::telegrammessageid::set(
-                                            msg.id.to_string().into(),
-                                        ),
-                                    ],
-                                )
-                                .exec()
-                                .instrument(debug_span!("update_notification"))
-                                .await
-                                .unwrap();
-                        }
-                        Err(_) => {}
+                let update_data = match message {
+                    Ok(msg) => {
+                        vec![
+                            notification::dispatchedstatus::set(
+                                NotificationDispatchedState::Dispatched,
+                            ),
+                            notification::telegramchatid::set(msg.chat.id.to_string().into()),
+                            notification::telegrammessageid::set(msg.id.to_string().into()),
+                        ]
                     }
-                }
+                    Err(_) => match notification.dispatchedstatus {
+                        NotificationDispatchedState::NotDispatched => {
+                            vec![notification::dispatchedstatus::set(
+                                NotificationDispatchedState::FirstRetry,
+                            )]
+                        }
+                        NotificationDispatchedState::FirstRetry => {
+                            vec![notification::dispatchedstatus::set(
+                                NotificationDispatchedState::SecondRetry,
+                            )]
+                        }
+                        NotificationDispatchedState::SecondRetry => {
+                            vec![notification::dispatchedstatus::set(
+                                NotificationDispatchedState::ThirdRetry,
+                            )]
+                        }
+                        NotificationDispatchedState::ThirdRetry => {
+                            vec![notification::dispatchedstatus::set(
+                                NotificationDispatchedState::Failed,
+                            )]
+                        }
+                        NotificationDispatchedState::Dispatched => todo!(),
+                        NotificationDispatchedState::Deleted => todo!(),
+                        NotificationDispatchedState::Failed => todo!(),
+                    },
+                };
+
+                client
+                    .notification()
+                    .update_many(
+                        vec![
+                            notification::userid::equals(notification.clone().userid),
+                            notification::proposalid::equals(notification.clone().proposalid),
+                            notification::r#type::equals(notification.clone().r#type),
+                        ],
+                        update_data,
+                    )
+                    .exec()
+                    .instrument(debug_span!("update_notification"))
+                    .await
+                    .unwrap();
             }
-            None => {}
+            None => {
+                client
+                    .notification()
+                    .update_many(
+                        vec![
+                            notification::userid::equals(notification.clone().userid),
+                            notification::proposalid::equals(notification.clone().proposalid),
+                            notification::r#type::equals(notification.clone().r#type),
+                        ],
+                        vec![notification::dispatchedstatus::set(
+                            NotificationDispatchedState::Deleted,
+                        )],
+                    )
+                    .exec()
+                    .instrument(debug_span!("update_notification"))
+                    .await
+                    .unwrap();
+            }
         }
 
         sleep(Duration::from_millis(100)).await;

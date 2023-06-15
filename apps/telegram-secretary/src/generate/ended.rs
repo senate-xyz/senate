@@ -1,5 +1,6 @@
 use crate::prisma::{
-    notification, proposal, subscription, user, NotificationType, PrismaClient, ProposalState,
+    notification, proposal, subscription, user, NotificationDispatchedState, NotificationType,
+    PrismaClient, ProposalState,
 };
 use anyhow::Result;
 use prisma_client_rust::chrono::{Duration, Utc};
@@ -33,9 +34,8 @@ pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                     .map(|np| {
                         notification::create_unchecked(
                             user.clone().id,
-                            np.clone().id,
                             NotificationType::EndedProposalTelegram,
-                            vec![notification::dispatched::set(false)],
+                            vec![notification::proposalid::set(np.clone().id.into())],
                         )
                     })
                     .collect(),

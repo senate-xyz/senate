@@ -8,7 +8,7 @@ pub mod prisma;
 use dispatch::{
     ended::dispatch_ended_proposal_notifications, ending_soon::dispatch_ending_soon_notifications,
     update_active::update_active_proposal_notifications,
-    update_ended::update_ended_proposal_notifications,
+    update_hidden::update_hidden_proposal_notifications,
 };
 use generate::{
     ended::generate_ended_proposal_notifications, ending_soon::generate_ending_soon_notifications,
@@ -92,7 +92,7 @@ async fn main() {
         loop {
             debug!("loop active_proposals_task");
             update_active_proposal_notifications(&client_for_active_proposals).await;
-            update_ended_proposal_notifications(&client_for_active_proposals).await;
+            update_hidden_proposal_notifications(&client_for_active_proposals).await;
 
             sleep(std::time::Duration::from_secs(60)).await;
         }

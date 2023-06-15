@@ -24,7 +24,7 @@ use crate::{
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 #[instrument(skip(client), level = "info")]
-pub async fn update_ended_proposal_notifications(client: &Arc<PrismaClient>) {
+pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
     let active_proposals = client
         .proposal()
         .find_many(vec![prisma::proposal::state::equals(ProposalState::Hidden)])
@@ -38,9 +38,11 @@ pub async fn update_ended_proposal_notifications(client: &Arc<PrismaClient>) {
         let notifications_for_proposal = client
             .notification()
             .find_many(vec![
-                notification::proposalid::equals(active_proposal.id),
+                notification::proposalid::equals(active_proposal.id.into()),
                 notification::r#type::equals(NotificationType::NewProposalDiscord),
-                notification::dispatched::equals(true),
+                notification::dispatchedstatus::equals(
+                    prisma::NotificationDispatchedState::Dispatched,
+                ),
             ])
             .exec()
             .instrument(debug_span!("get_notifications"))
@@ -66,7 +68,9 @@ pub async fn update_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
             let proposal = client
                 .proposal()
-                .find_first(vec![proposal::id::equals(notification.clone().proposalid)])
+                .find_first(vec![proposal::id::equals(
+                    notification.clone().proposalid.unwrap(),
+                )])
                 .include(proposal_with_dao::include())
                 .exec()
                 .instrument(debug_span!("get_proposal"))
@@ -112,7 +116,7 @@ pub async fn update_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
                     let voted = get_vote(
                         notification.clone().userid,
-                        notification.clone().proposalid,
+                        notification.clone().proposalid.unwrap(),
                         client,
                     )
                     .await
@@ -162,13 +166,13 @@ pub async fn update_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         })
                         .instrument(debug_span!("edit_message"))
                         .await
-                        .expect("Could not execute webhook.");
+                        .ok();
                 }
                 None => {
                     webhook
                         .delete_message(&http, MessageId::from(initial_message_id))
                         .await
-                        .expect("Could not execute webhook.");
+                        .ok();
                 }
             }
         }

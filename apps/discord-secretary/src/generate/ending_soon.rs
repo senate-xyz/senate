@@ -10,7 +10,6 @@ use tracing::{debug_span, instrument, Instrument};
 
 use std::sync::Arc;
 
-#[instrument(skip(client), level = "info")]
 pub async fn generate_ending_soon_notifications(
     client: &Arc<PrismaClient>,
     ending_type: NotificationType,
@@ -27,7 +26,7 @@ pub async fn generate_ending_soon_notifications(
         NotificationType::SecondReminderTelegram => todo!(),
         NotificationType::ThirdReminderTelegram => todo!(),
         NotificationType::EndedProposalTelegram => todo!(),
-        NotificationType::TriggerBulletinEmail => todo!(),
+        NotificationType::BulletinEmail => todo!(),
     };
 
     let users = client
@@ -49,7 +48,7 @@ pub async fn generate_ending_soon_notifications(
 
         let mut ending_not_voted_proposals = vec![];
 
-        for proposal in &ending_proposals {
+        for proposal in ending_proposals {
             if !get_vote(user.clone().id, proposal.clone().id, client)
                 .await
                 .unwrap()
@@ -62,12 +61,11 @@ pub async fn generate_ending_soon_notifications(
             .create_many(
                 ending_not_voted_proposals
                     .iter()
-                    .map(|p| {
+                    .map(|np| {
                         notification::create_unchecked(
                             user.clone().id,
-                            p.id.clone(),
                             ending_type,
-                            vec![notification::dispatched::set(false)],
+                            vec![notification::proposalid::set(np.clone().id.into())],
                         )
                     })
                     .collect(),

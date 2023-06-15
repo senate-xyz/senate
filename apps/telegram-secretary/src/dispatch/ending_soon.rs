@@ -11,7 +11,8 @@ use tokio::time::sleep;
 use tracing::{debug, debug_span, instrument, Instrument};
 
 use crate::prisma::{
-    self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient,
+    self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
+    NotificationType, PrismaClient,
 };
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
@@ -24,7 +25,12 @@ pub async fn dispatch_ending_soon_notifications(
     let notifications = client
         .notification()
         .find_many(vec![
-            notification::dispatched::equals(false),
+            notification::dispatchedstatus::in_vec(vec![
+                NotificationDispatchedState::NotDispatched,
+                NotificationDispatchedState::FirstRetry,
+                NotificationDispatchedState::SecondRetry,
+                NotificationDispatchedState::ThirdRetry,
+            ]),
             notification::r#type::in_vec(vec![
                 NotificationType::FirstReminderTelegram,
                 NotificationType::SecondReminderTelegram,
@@ -47,43 +53,46 @@ pub async fn dispatch_ending_soon_notifications(
 
         let proposal = client
             .proposal()
-            .find_first(vec![proposal::id::equals(notification.clone().proposalid)])
+            .find_first(vec![proposal::id::equals(
+                notification.clone().proposalid.unwrap(),
+            )])
             .include(proposal_with_dao::include())
             .exec()
             .instrument(debug_span!("get_proposal"))
             .await
-            .unwrap()
             .unwrap();
 
-        let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
-            Some(v) => v.into_string().unwrap(),
-            None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
-        };
+        match proposal {
+            Some(proposal) => {
+                let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+                    Some(v) => v.into_string().unwrap(),
+                    None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+                };
 
-        let short_url = format!(
-            "{}{}",
-            shortner_url,
-            proposal
-                .id
-                .chars()
-                .rev()
-                .take(7)
-                .collect::<Vec<char>>()
-                .into_iter()
-                .rev()
-                .collect::<String>()
-        );
+                let short_url = format!(
+                    "{}{}",
+                    shortner_url,
+                    proposal
+                        .id
+                        .chars()
+                        .rev()
+                        .take(7)
+                        .collect::<Vec<char>>()
+                        .into_iter()
+                        .rev()
+                        .collect::<String>()
+                );
 
-        let message_content = match notification.r#type {
-            NotificationType::QuorumNotReachedEmail => todo!(),
-            NotificationType::NewProposalDiscord => todo!(),
-            NotificationType::FirstReminderDiscord => todo!(),
-            NotificationType::SecondReminderDiscord => todo!(),
-            NotificationType::ThirdReminderDiscord => todo!(),
-            NotificationType::EndedProposalDiscord => todo!(),
-            NotificationType::NewProposalTelegram => todo!(),
-            NotificationType::FirstReminderTelegram => {
-                format!(
+                let message_content = match notification.r#type {
+                    NotificationType::QuorumNotReachedEmail => todo!(),
+                    NotificationType::NewProposalDiscord => todo!(),
+                    NotificationType::FirstReminderDiscord => todo!(),
+                    NotificationType::SecondReminderDiscord => todo!(),
+                    NotificationType::ThirdReminderDiscord => todo!(),
+                    NotificationType::EndedProposalDiscord => todo!(),
+                    NotificationType::NewProposalTelegram => todo!(),
+                    NotificationType::FirstReminderTelegram => {
+                        format!(
                     "⌛ <b>{}</b> {} proposal <b>ends in 2️⃣4️⃣ hours.</b> 🕒 \nVote here 👉 {}",
                     proposal.dao.name,
                     if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
@@ -93,55 +102,102 @@ pub async fn dispatch_ending_soon_notifications(
                     },
                     short_url
                 )
-            }
-            NotificationType::SecondReminderTelegram => {
-                format!(
-                    "🚨 <b>{}</b> {} proposal <b>ends in 6️⃣ hours.</b> 🕒 \nVote here 👉 {}",
-                    proposal.dao.name,
-                    if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                        "off-chain"
-                    } else {
-                        "on-chain"
-                    },
-                    short_url
-                )
-            }
-            NotificationType::ThirdReminderTelegram => todo!(),
-            NotificationType::EndedProposalTelegram => todo!(),
-            NotificationType::TriggerBulletinEmail => todo!(),
-        };
+                    }
+                    NotificationType::SecondReminderTelegram => {
+                        format!(
+                            "🚨 <b>{}</b> {} proposal <b>ends in 6️⃣ hours.</b> 🕒 \nVote here 👉 {}",
+                            proposal.dao.name,
+                            if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                "off-chain"
+                            } else {
+                                "on-chain"
+                            },
+                            short_url
+                        )
+                    }
+                    NotificationType::ThirdReminderTelegram => todo!(),
+                    NotificationType::EndedProposalTelegram => todo!(),
+                    NotificationType::BulletinEmail => todo!(),
+                };
 
-        debug!("Send message");
-        let message = bot
-            .send_message(
-                ChatId(user.telegramchatid.parse().unwrap()),
-                message_content,
-            )
-            .disable_web_page_preview(true)
-            .await;
+                let message = bot
+                    .send_message(
+                        ChatId(user.telegramchatid.parse().unwrap()),
+                        message_content,
+                    )
+                    .disable_web_page_preview(true)
+                    .await;
 
-        match message {
-            Ok(msg) => {
-                client
-                    .notification()
-                    .update(
-                        notification::userid_proposalid_type(
-                            notification.clone().userid,
-                            notification.clone().proposalid,
-                            notification.clone().r#type,
-                        ),
+                let update_data = match message {
+                    Ok(msg) => {
                         vec![
-                            notification::dispatched::set(true),
+                            notification::dispatchedstatus::set(
+                                NotificationDispatchedState::Dispatched,
+                            ),
                             notification::telegramchatid::set(msg.chat.id.to_string().into()),
                             notification::telegrammessageid::set(msg.id.to_string().into()),
+                        ]
+                    }
+                    Err(_) => match notification.dispatchedstatus {
+                        NotificationDispatchedState::NotDispatched => {
+                            vec![notification::dispatchedstatus::set(
+                                NotificationDispatchedState::FirstRetry,
+                            )]
+                        }
+                        NotificationDispatchedState::FirstRetry => {
+                            vec![notification::dispatchedstatus::set(
+                                NotificationDispatchedState::SecondRetry,
+                            )]
+                        }
+                        NotificationDispatchedState::SecondRetry => {
+                            vec![notification::dispatchedstatus::set(
+                                NotificationDispatchedState::ThirdRetry,
+                            )]
+                        }
+                        NotificationDispatchedState::ThirdRetry => {
+                            vec![notification::dispatchedstatus::set(
+                                NotificationDispatchedState::Failed,
+                            )]
+                        }
+                        NotificationDispatchedState::Dispatched => todo!(),
+                        NotificationDispatchedState::Deleted => todo!(),
+                        NotificationDispatchedState::Failed => todo!(),
+                    },
+                };
+
+                client
+                    .notification()
+                    .update_many(
+                        vec![
+                            notification::userid::equals(notification.clone().userid),
+                            notification::proposalid::equals(notification.clone().proposalid),
+                            notification::r#type::equals(notification.clone().r#type),
                         ],
+                        update_data,
                     )
                     .exec()
                     .instrument(debug_span!("update_notification"))
                     .await
                     .unwrap();
             }
-            Err(_) => {}
+            None => {
+                client
+                    .notification()
+                    .update_many(
+                        vec![
+                            notification::userid::equals(notification.clone().userid),
+                            notification::proposalid::equals(notification.clone().proposalid),
+                            notification::r#type::equals(notification.clone().r#type),
+                        ],
+                        vec![notification::dispatchedstatus::set(
+                            NotificationDispatchedState::Deleted,
+                        )],
+                    )
+                    .exec()
+                    .instrument(debug_span!("update_notification"))
+                    .await
+                    .unwrap();
+            }
         }
 
         sleep(Duration::from_millis(100)).await;

@@ -145,19 +145,10 @@ export const testingRouter = router({
             }
         })
 
-        const proposalsCount = await prisma.proposal.count()
-
-        const randomNumber = Math.floor(Math.random() * proposalsCount)
-
-        const randomProposal = await prisma.proposal.findFirst({
-            skip: randomNumber
-        })
-
         await prisma.notification.create({
             data: {
                 userid: String(user?.id),
-                proposalid: String(randomProposal?.id),
-                type: NotificationType.TRIGGER_BULLETIN_EMAIL
+                type: NotificationType.BULLETIN_EMAIL
             }
         })
     })

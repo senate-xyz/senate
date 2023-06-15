@@ -13,7 +13,10 @@ use tokio::time::sleep;
 use tracing::{debug, debug_span, instrument, Instrument};
 
 use crate::{
-    prisma::{self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient},
+    prisma::{
+        self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
+        NotificationType, PrismaClient,
+    },
     utils::vote::get_vote,
 };
 
@@ -27,7 +30,12 @@ pub async fn dispatch_new_proposal_notifications(
     let notifications = client
         .notification()
         .find_many(vec![
-            notification::dispatched::equals(false),
+            notification::dispatchedstatus::in_vec(vec![
+                NotificationDispatchedState::NotDispatched,
+                NotificationDispatchedState::FirstRetry,
+                NotificationDispatchedState::SecondRetry,
+                NotificationDispatchedState::ThirdRetry,
+            ]),
             notification::r#type::equals(NotificationType::NewProposalTelegram),
         ])
         .exec()
@@ -38,7 +46,7 @@ pub async fn dispatch_new_proposal_notifications(
     for notification in notifications {
         let user = client
             .user()
-            .find_first(vec![user::id::equals(notification.userid)])
+            .find_first(vec![user::id::equals(notification.clone().userid)])
             .exec()
             .instrument(debug_span!("get_user"))
             .await
@@ -47,38 +55,41 @@ pub async fn dispatch_new_proposal_notifications(
 
         let proposal = client
             .proposal()
-            .find_first(vec![proposal::id::equals(notification.proposalid)])
+            .find_first(vec![proposal::id::equals(
+                notification.clone().proposalid.unwrap(),
+            )])
             .include(proposal_with_dao::include())
             .exec()
             .instrument(debug_span!("get_proposal"))
             .await
-            .unwrap()
             .unwrap();
 
-        let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
-            Some(v) => v.into_string().unwrap(),
-            None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
-        };
+        match proposal {
+            Some(proposal) => {
+                let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+                    Some(v) => v.into_string().unwrap(),
+                    None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+                };
 
-        let short_url = format!(
-            "{}{}",
-            shortner_url,
-            proposal
-                .id
-                .chars()
-                .rev()
-                .take(7)
-                .collect::<Vec<char>>()
-                .into_iter()
-                .rev()
-                .collect::<String>()
-        );
+                let short_url = format!(
+                    "{}{}",
+                    shortner_url,
+                    proposal
+                        .id
+                        .chars()
+                        .rev()
+                        .take(7)
+                        .collect::<Vec<char>>()
+                        .into_iter()
+                        .rev()
+                        .collect::<String>()
+                );
 
-        debug!("Send message");
-        let message = bot
-            .send_message(
-                ChatId(user.telegramchatid.parse().unwrap()),
-                format!(
+                debug!("Send message");
+                let message = bot
+                    .send_message(
+                        ChatId(user.telegramchatid.parse().unwrap()),
+                        format!(
                     "📢 New <b>{}</b> {} proposal ending <b>{}</b>\n<a href=\"{}\"><i>{}</i></a>\n",
                     proposal.dao.name,
                     if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
@@ -96,32 +107,80 @@ pub async fn dispatch_new_proposal_notifications(
                         .replace('\"', "&quot;")
                         .replace('\'', "&#39;"),
                 ),
-            )
-            .disable_web_page_preview(true)
-            .await;
+                    )
+                    .disable_web_page_preview(true)
+                    .await;
 
-        match message {
-            Ok(msg) => {
-                client
-                    .notification()
-                    .update(
-                        notification::userid_proposalid_type(
-                            user.id,
-                            proposal.id,
-                            NotificationType::NewProposalTelegram,
-                        ),
+                let update_data = match message {
+                    Ok(msg) => {
                         vec![
-                            notification::dispatched::set(true),
+                            notification::dispatchedstatus::set(
+                                NotificationDispatchedState::Dispatched,
+                            ),
                             notification::telegramchatid::set(msg.chat.id.to_string().into()),
                             notification::telegrammessageid::set(msg.id.to_string().into()),
+                        ]
+                    }
+                    Err(_) => match notification.dispatchedstatus {
+                        NotificationDispatchedState::NotDispatched => {
+                            vec![notification::dispatchedstatus::set(
+                                NotificationDispatchedState::FirstRetry,
+                            )]
+                        }
+                        NotificationDispatchedState::FirstRetry => {
+                            vec![notification::dispatchedstatus::set(
+                                NotificationDispatchedState::SecondRetry,
+                            )]
+                        }
+                        NotificationDispatchedState::SecondRetry => {
+                            vec![notification::dispatchedstatus::set(
+                                NotificationDispatchedState::ThirdRetry,
+                            )]
+                        }
+                        NotificationDispatchedState::ThirdRetry => {
+                            vec![notification::dispatchedstatus::set(
+                                NotificationDispatchedState::Failed,
+                            )]
+                        }
+                        NotificationDispatchedState::Dispatched => todo!(),
+                        NotificationDispatchedState::Deleted => todo!(),
+                        NotificationDispatchedState::Failed => todo!(),
+                    },
+                };
+
+                client
+                    .notification()
+                    .update_many(
+                        vec![
+                            notification::userid::equals(notification.clone().userid),
+                            notification::proposalid::equals(notification.clone().proposalid),
+                            notification::r#type::equals(notification.clone().r#type),
                         ],
+                        update_data,
                     )
                     .exec()
-                    .instrument(debug_span!("update_notifications"))
+                    .instrument(debug_span!("update_notification"))
                     .await
                     .unwrap();
             }
-            Err(_) => {}
+            None => {
+                client
+                    .notification()
+                    .update_many(
+                        vec![
+                            notification::userid::equals(notification.clone().userid),
+                            notification::proposalid::equals(notification.clone().proposalid),
+                            notification::r#type::equals(notification.clone().r#type),
+                        ],
+                        vec![notification::dispatchedstatus::set(
+                            NotificationDispatchedState::Deleted,
+                        )],
+                    )
+                    .exec()
+                    .instrument(debug_span!("update_notification"))
+                    .await
+                    .unwrap();
+            }
         }
 
         sleep(Duration::from_millis(100)).await;

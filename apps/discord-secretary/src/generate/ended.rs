@@ -33,9 +33,8 @@ pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                     .map(|np| {
                         notification::create_unchecked(
                             user.clone().id,
-                            np.clone().id,
                             NotificationType::EndedProposalDiscord,
-                            vec![notification::dispatched::set(false)],
+                            vec![notification::proposalid::set(np.clone().id.into())],
                         )
                     })
                     .collect(),

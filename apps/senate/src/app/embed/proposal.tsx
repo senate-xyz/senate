@@ -47,7 +47,7 @@ const EmbeddedProposal = () => {
     return <></>
 }
 
-// eslint-disable-next-line unused-imports/no-unused-vars
+// eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
 const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
     return (
         <div className='flex h-screen w-full flex-col items-start bg-[#121212] text-[#EDEDED]'>

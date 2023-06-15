@@ -37,9 +37,11 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
         let notifications_for_proposal = client
             .notification()
             .find_many(vec![
-                notification::proposalid::equals(active_proposal.id),
+                notification::proposalid::equals(active_proposal.id.into()),
                 notification::r#type::equals(NotificationType::NewProposalDiscord),
-                notification::dispatched::equals(true),
+                notification::dispatchedstatus::equals(
+                    prisma::NotificationDispatchedState::Dispatched,
+                ),
             ])
             .exec()
             .instrument(debug_span!("get_notifications"))
@@ -56,7 +58,7 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
 
             let voted = get_vote(
                 notification.clone().userid,
-                notification.clone().proposalid,
+                notification.clone().proposalid.unwrap(),
                 client,
             )
             .await
@@ -73,12 +75,11 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
 
             let proposal = client
                 .proposal()
-                .find_first(vec![proposal::id::equals(notification.proposalid)])
+                .find_first(vec![proposal::id::equals(notification.proposalid.unwrap())])
                 .include(proposal_with_dao::include())
                 .exec()
                 .instrument(debug_span!("get_proposal"))
                 .await
-                .unwrap()
                 .unwrap();
 
             let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
@@ -86,57 +87,66 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                 None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
             };
 
-            let short_url = format!(
-                "{}{}",
-                shortner_url,
-                proposal
-                    .id
-                    .chars()
-                    .rev()
-                    .take(7)
-                    .collect::<Vec<char>>()
-                    .into_iter()
-                    .rev()
-                    .collect::<String>()
-            );
-
             let http = Http::new("");
 
             let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
                 .await
                 .expect("Missing webhook");
 
-            webhook
-                .edit_message(&http, MessageId::from(initial_message_id), |w| {
-                    w.embeds(vec![Embed::fake(|e| {
-                        e.title(proposal.name)
-                            .description(format!(
-                                "**{}** {} proposal ending **<t:{}:R>**",
-                                proposal.dao.name,
-                                if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                    "off-chain"
-                                } else {
-                                    "on-chain"
-                                },
-                                proposal.timeend.timestamp()
-                            ))
-                            .url(short_url)
-                            .color(Colour(0xFFFFFF))
-                            //.field("", message_content, true)
-                            .thumbnail(format!(
-                                "https://www.senatelabs.xyz/{}_medium.png",
-                                proposal.dao.picture
-                            ))
-                            .image(if voted {
-                                "https://senatelabs.xyz/assets/Discord/active-vote2x.png"
-                            } else {
-                                "https://senatelabs.xyz/assets/Discord/active-no-vote2x.png"
-                            })
-                    })])
-                })
-                .instrument(debug_span!("edit_message"))
-                .await
-                .expect("Could not execute webhook.");
+            match proposal {
+                Some(proposal) => {
+                    let short_url = format!(
+                        "{}{}",
+                        shortner_url,
+                        proposal
+                            .id
+                            .chars()
+                            .rev()
+                            .take(7)
+                            .collect::<Vec<char>>()
+                            .into_iter()
+                            .rev()
+                            .collect::<String>()
+                    );
+
+                    webhook
+                        .edit_message(&http, MessageId::from(initial_message_id), |w| {
+                            w.embeds(vec![Embed::fake(|e| {
+                                e.title(proposal.name)
+                                    .description(format!(
+                                        "**{}** {} proposal ending **<t:{}:R>**",
+                                        proposal.dao.name,
+                                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                            "off-chain"
+                                        } else {
+                                            "on-chain"
+                                        },
+                                        proposal.timeend.timestamp()
+                                    ))
+                                    .url(short_url)
+                                    .color(Colour(0xFFFFFF))
+                                    .thumbnail(format!(
+                                        "https://www.senatelabs.xyz/{}_medium.png",
+                                        proposal.dao.picture
+                                    ))
+                                    .image(if voted {
+                                        "https://senatelabs.xyz/assets/Discord/active-vote2x.png"
+                                    } else {
+                                        "https://senatelabs.xyz/assets/Discord/active-no-vote2x.png"
+                                    })
+                            })])
+                        })
+                        .instrument(debug_span!("edit_message"))
+                        .await
+                        .ok();
+                }
+                None => {
+                    webhook
+                        .delete_message(&http, MessageId::from(initial_message_id))
+                        .await
+                        .expect("Could not execute webhook.");
+                }
+            }
         }
 
         sleep(Duration::from_millis(100)).await;

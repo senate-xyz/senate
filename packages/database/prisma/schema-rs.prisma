@@ -238,11 +238,14 @@ model subscription {
 
 model notification {
   userid     String
-  user       user     @relation(fields: [userid], references: [id], onDelete: Cascade)
-  proposalid String
-  proposal   proposal @relation(fields: [proposalid], references: [id], onDelete: Cascade)
+  user       user      @relation(fields: [userid], references: [id], onDelete: Cascade)
+  proposalid String?
+  proposal   proposal? @relation(fields: [proposalid], references: [id], onDelete: Cascade)
 
-  type NotificationType
+  type             NotificationType
+  dispatchedstatus NotificationDispatchedState @default(NOT_DISPATCHED)
+
+  emailmessageid String?
 
   discordmessagelink String?
   discordmessageid   String?
@@ -250,12 +253,11 @@ model notification {
   telegramchatid    String?
   telegrammessageid String?
 
-  dispatched Boolean @default(false)
-
-  @@id([userid, proposalid, type])
+  @@id([userid, type, dispatchedstatus])
   @@index(fields: [userid], type: Hash)
   @@index(fields: [type], type: Hash)
   @@index(fields: [proposalid], type: Hash)
+  @@index(fields: [dispatchedstatus], type: Hash)
 }
 
 model config {
@@ -271,9 +273,19 @@ enum MagicUserState {
   ENABLED
 }
 
+enum NotificationDispatchedState {
+  NOT_DISPATCHED
+  FIRST_RETRY
+  SECOND_RETRY
+  THIRD_RETRY
+  DISPATCHED
+  DELETED
+  FAILED
+}
+
 enum NotificationType {
   QUORUM_NOT_REACHED_EMAIL
-  TRIGGER_BULLETIN_EMAIL
+  BULLETIN_EMAIL
 
   NEW_PROPOSAL_DISCORD
   FIRST_REMINDER_DISCORD
