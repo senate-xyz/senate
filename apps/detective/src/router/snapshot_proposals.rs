@@ -87,7 +87,7 @@ pub async fn update_snapshot_proposals<'a>(
             r#"
         {{
             proposals (
-                first: 50,
+                first: 500,
                 where: {{
                     space: {:?},
                     created_gte: {}

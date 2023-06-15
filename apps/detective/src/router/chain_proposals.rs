@@ -183,7 +183,7 @@ async fn insert_proposals(
     ctx: &Ctx,
     dao_handler: daohandler::Data,
 ) {
-    let upserts = proposals.clone().into_iter().take(50).map(|p| {
+    let upserts = proposals.clone().into_iter().map(|p| {
         ctx.db.proposal().upsert(
             proposal::externalid_daoid(p.external_id.to_string(), dao_handler.daoid.to_string()),
             proposal::create(
