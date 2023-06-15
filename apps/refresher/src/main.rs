@@ -70,8 +70,19 @@ async fn main() {
     let (tx_chain_proposals, rx_chain_proposals) = flume::unbounded();
     let (tx_chain_votes, rx_chain_votes) = flume::unbounded();
 
-    let producer_client_clone = client.clone();
+    let config_client_clone = client.clone();
+    let config_load_task = tokio::task::spawn_blocking(move || async move {
+        info!("spawned config_load_task");
+        loop {
+            let _ = load_config_from_db(&config_client_clone).await;
 
+            sleep(Duration::from_secs(60)).await;
+        }
+    })
+    .await
+    .unwrap();
+
+    let producer_client_clone = client.clone();
     let producer_task = tokio::task::spawn_blocking(move || async move {
         info!("spawned producer_task");
         loop {
@@ -202,6 +213,8 @@ async fn main() {
             sleep(Duration::from_millis(300)).await;
         }
     });
+
+    config_load_task.await;
 
     producer_task.await;
 
