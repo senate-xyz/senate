@@ -23,7 +23,8 @@ import {
     ledgerWallet,
     metaMaskWallet,
     rabbyWallet,
-    rainbowWallet
+    safeWallet,
+    walletConnectWallet
 } from '@rainbow-me/rainbowkit/wallets'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect } from 'react'
@@ -42,14 +43,21 @@ const connectors = connectorsForWallets([
     {
         groupName: 'Recommended',
         wallets: [
+            metaMaskWallet({
+                projectId: 'ba2ea900f1a01f07f3f489619d9451b3',
+                chains: chains
+            }),
             injectedWallet({ chains }),
-            rainbowWallet({ chains }),
-            metaMaskWallet({ chains })
+            walletConnectWallet({
+                projectId: 'ba2ea900f1a01f07f3f489619d9451b3',
+                chains
+            })
         ]
     },
     {
         groupName: 'Others',
         wallets: [
+            safeWallet({ chains: chains }),
             coinbaseWallet({ chains, appName: 'Senate' }),
             braveWallet({
                 chains
