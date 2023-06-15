@@ -38,7 +38,7 @@ model user {
 
   subscriptions subscription[]
   voters        voter[]
-  notification  notification[]
+  notifications notification[]
 
   acceptedterms          Boolean   @default(false)
   acceptedtermstimestamp DateTime?
@@ -217,6 +217,8 @@ model subscription {
 }
 
 model notification {
+  id String @id @default(cuid())
+
   userid     String
   user       user      @relation(fields: [userid], references: [id], onDelete: Cascade)
   proposalid String?
@@ -233,7 +235,7 @@ model notification {
   telegramchatid    String?
   telegrammessageid String?
 
-  @@id([userid, type, dispatchstatus])
+  @@unique([userid, proposalid, type])
   @@index(fields: [userid], type: Hash)
   @@index(fields: [type], type: Hash)
   @@index(fields: [proposalid], type: Hash)

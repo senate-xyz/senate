@@ -23,7 +23,7 @@
             padding="0px 0px 0px 0px"
             width="48px"
             height="48px"
-            src="https://senatelabs.xyz/assets/Senate_Logo/64/White.png"
+            src="https://www.senatelabs.xyz/assets/Senate_Logo/64/White.png"
           ></mj-image>
         </mj-column>
         <mj-column vertical-align="middle" padding="0px 10px">
@@ -52,7 +52,7 @@
           padding="0 0 0 0"
           width="64px"
           height="64px"
-          src="https://senatelabs.xyz/assets/Senate_Logo/64/White.png"
+          src="https://www.senatelabs.xyz/assets/Senate_Logo/64/White.png"
         ></mj-image>
       </mj-column>
       <mj-column width="80%">
@@ -96,7 +96,7 @@
           background-color="white"
           color="black"
           border-radius="0px"
-          href="https://senatelabs.xyz"
+          href="https://www.senatelabs.xyz"
           >Enter the Senate</mj-button
         >
       </mj-column>

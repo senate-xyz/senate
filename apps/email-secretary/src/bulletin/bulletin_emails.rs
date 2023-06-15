@@ -8,6 +8,7 @@ use prisma_client_rust::{serde_json::Value, Direction};
 use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use tokio::task::spawn_blocking;
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
@@ -97,6 +98,12 @@ struct MakerResult {
     mkrAmount: i64,
 }
 
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct PostmarkResult {
+    MessageID: String,
+}
+
 #[instrument(skip(db), level = "info")]
 pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
     let notifications = db
@@ -122,14 +129,7 @@ pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
         send_bulletin(user, &db).await.unwrap();
 
         db.notification()
-            .update_many(
-                vec![notification::r#type::equals(
-                    NotificationType::BulletinEmail,
-                )],
-                vec![notification::dispatchstatus::set(
-                    NotificationDispatchedState::Dispatched,
-                )],
-            )
+            .delete(notification::id::equals(notification.id))
             .exec()
             .await
             .unwrap();
@@ -209,7 +209,7 @@ async fn send_bulletin(
             .parse()
             .unwrap(),
     );
-    client
+    let response = client
         .post("https://api.postmarkapp.com/email/withTemplate")
         .headers(headers)
         .json(content)
@@ -218,16 +218,74 @@ async fn send_bulletin(
         .await
         .unwrap();
 
-    let mut event = posthog_rs::Event::new("sent_bulletin_email", user.address.as_str());
-    event.insert_prop("type", bulletin_template).unwrap();
+    let result: Result<PostmarkResult, reqwest::Error> = response.json().await;
 
-    posthog_rs::client(
-        env::var("NEXT_PUBLIC_POSTHOG_KEY")
-            .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
-            .as_str(),
-    )
-    .capture(event)
-    .unwrap();
+    match result {
+        Ok(postmark_result) => {
+            db.notification()
+                .create_many(vec![notification::create_unchecked(
+                    user.id,
+                    NotificationType::BulletinEmail,
+                    vec![
+                        notification::dispatchstatus::set(NotificationDispatchedState::Dispatched),
+                        notification::emailmessageid::set(postmark_result.clone().MessageID.into()),
+                    ],
+                )])
+                .skip_duplicates()
+                .exec()
+                .instrument(debug_span!("create_notifications"))
+                .await
+                .unwrap();
+
+            spawn_blocking(move || {
+                let mut event =
+                    posthog_rs::Event::new("sent_bulletin_email", user.address.as_str());
+                event.insert_prop("type", bulletin_template).unwrap();
+                event
+                    .insert_prop("messageid", postmark_result.clone().MessageID)
+                    .unwrap();
+
+                let _ = posthog_rs::client(
+                    env::var("NEXT_PUBLIC_POSTHOG_KEY")
+                        .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
+                        .as_str(),
+                )
+                .capture(event);
+            })
+            .await
+            .unwrap();
+        }
+        Err(_) => {
+            db.notification()
+                .create_many(vec![notification::create_unchecked(
+                    user.id,
+                    NotificationType::BulletinEmail,
+                    vec![notification::dispatchstatus::set(
+                        NotificationDispatchedState::Failed,
+                    )],
+                )])
+                .skip_duplicates()
+                .exec()
+                .instrument(debug_span!("create_notifications"))
+                .await
+                .unwrap();
+
+            spawn_blocking(move || {
+                let mut event =
+                    posthog_rs::Event::new("fail_bulletin_email", user.address.as_str());
+                event.insert_prop("type", bulletin_template).unwrap();
+
+                let _ = posthog_rs::client(
+                    env::var("NEXT_PUBLIC_POSTHOG_KEY")
+                        .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
+                        .as_str(),
+                )
+                .capture(event);
+            })
+            .await
+            .unwrap();
+        }
+    }
 
     Ok(true)
 }

@@ -14,8 +14,8 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
-        self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient,
-        ProposalState,
+        self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
+        NotificationType, PrismaClient, ProposalState,
     },
     utils::vote::get_vote,
 };
@@ -56,14 +56,6 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                 .parse()
                 .unwrap();
 
-            let voted = get_vote(
-                notification.clone().userid,
-                notification.clone().proposalid.unwrap(),
-                client,
-            )
-            .await
-            .unwrap();
-
             let user = client
                 .user()
                 .find_first(vec![user::id::equals(notification.clone().userid)])
@@ -75,23 +67,37 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
 
             let proposal = client
                 .proposal()
-                .find_first(vec![proposal::id::equals(notification.proposalid.unwrap())])
+                .find_first(vec![proposal::id::equals(
+                    notification.clone().proposalid.unwrap(),
+                )])
                 .include(proposal_with_dao::include())
                 .exec()
                 .instrument(debug_span!("get_proposal"))
                 .await
                 .unwrap();
 
+            let http = Http::new("");
+
+            let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
+                .await
+                .ok();
+
+            if webhook.is_none() {
+                continue;
+            }
+
             let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
                 Some(v) => v.into_string().unwrap(),
                 None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
             };
 
-            let http = Http::new("");
-
-            let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
-                .await
-                .expect("Missing webhook");
+            let voted = get_vote(
+                notification.clone().userid,
+                notification.clone().proposalid.unwrap(),
+                client,
+            )
+            .await
+            .unwrap();
 
             match proposal {
                 Some(proposal) => {
@@ -110,6 +116,8 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                     );
 
                     webhook
+                        .clone()
+                        .unwrap()
                         .edit_message(&http, MessageId::from(initial_message_id), |w| {
                             w.embeds(vec![Embed::fake(|e| {
                                 e.title(proposal.name)
@@ -130,9 +138,9 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                                         proposal.dao.picture
                                     ))
                                     .image(if voted {
-                                        "https://senatelabs.xyz/assets/Discord/active-vote2x.png"
+                                        "https://www.senatelabs.xyz/assets/Discord/active-vote2x.png"
                                     } else {
-                                        "https://senatelabs.xyz/assets/Discord/active-no-vote2x.png"
+                                        "https://www.senatelabs.xyz/assets/Discord/active-no-vote2x.png"
                                     })
                             })])
                         })
@@ -142,6 +150,8 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                 }
                 None => {
                     webhook
+                        .clone()
+                        .unwrap()
                         .delete_message(&http, MessageId::from(initial_message_id))
                         .await
                         .expect("Could not execute webhook.");

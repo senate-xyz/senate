@@ -16,6 +16,8 @@ use crate::{
     utils::vote::get_vote,
 };
 
+use super::utils::notification_retry::update_notification_retry;
+
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
@@ -45,6 +47,18 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
             .unwrap()
             .unwrap();
 
+        let http = Http::new("");
+
+        let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
+            .await
+            .ok();
+
+        if webhook.is_none() {
+            update_notification_retry(client, notification).await;
+
+            continue;
+        }
+
         let proposal = client
             .proposal()
             .find_first(vec![proposal::id::equals(
@@ -58,12 +72,6 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
 
         match proposal {
             Some(proposal) => {
-                let http = Http::new("");
-
-                let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
-                    .await
-                    .expect("Missing webhook");
-
                 let voted = get_vote(user.clone().id, proposal.clone().id, client)
                     .await
                     .unwrap();
@@ -88,6 +96,8 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                 );
 
                 let message = webhook
+                    .clone()
+                    .unwrap()
                     .execute(&http, true, |w| {
                         w.embeds(vec![Embed::fake(|e| {
                             e.title(proposal.name)
@@ -108,9 +118,9 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                                     proposal.dao.picture
                                 ))
                                 .image(if voted {
-                                    "https://senatelabs.xyz/assets/Discord/active-vote2x.png"
+                                    "https://www.senatelabs.xyz/assets/Discord/active-vote2x.png"
                                 } else {
-                                    "https://senatelabs.xyz/assets/Discord/active-no-vote2x.png"
+                                    "https://www.senatelabs.xyz/assets/Discord/active-no-vote2x.png"
                                 })
                         })])
                         .username("Senate Secretary")

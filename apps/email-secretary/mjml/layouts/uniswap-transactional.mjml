@@ -26,7 +26,7 @@
             padding="0px 0px 0px 0px"
             width="48px"
             height="48px"
-            src="https://senatelabs.xyz/assets/Emails/uniswap-logo.png"
+            src="https://www.senatelabs.xyz/assets/Emails/uniswap-logo.png"
           ></mj-image>
         </mj-column>
         <mj-column vertical-align="middle" padding="0px 10px">
@@ -49,13 +49,16 @@
       </mj-group>
     </mj-section>
 
-    <mj-section css-class="uniswap-background desktop-version rounded-corners" padding="0px 0px">
+    <mj-section
+      css-class="uniswap-background desktop-version rounded-corners"
+      padding="0px 0px"
+    >
       <mj-column width="15%" padding="30px 0px">
         <mj-image
           padding="0px"
           width="57px"
           height="66px"
-          src="https://dev.senatelabs.xyz/assets/Emails/uniswap-logo.png"
+          src="https://www.senatelabs.xyz/assets/Emails/uniswap-logo.png"
         ></mj-image>
       </mj-column>
       <mj-column width="70%" vertical-align="middle" padding="40px 0px">
@@ -100,7 +103,7 @@
           background-color="white"
           color="black"
           border-radius="0px"
-          href="https://senatelabs.xyz"
+          href="https://www.senatelabs.xyz"
           >Enter the Senate</mj-button
         >
       </mj-column>

@@ -20,11 +20,13 @@ use crate::{
     utils::vote::get_vote,
 };
 
+use super::utils::notification_retry::update_notification_retry;
+
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 #[instrument(skip(client), level = "info")]
 pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
-    let ended_notifications = client
+    let notifications = client
         .notification()
         .find_many(vec![
             notification::dispatchstatus::in_vec(vec![
@@ -40,12 +42,12 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
         .await
         .unwrap();
 
-    for ended_notification in ended_notifications {
+    for notification in notifications {
         let new_notification = client
             .notification()
             .find_first(vec![
-                notification::userid::equals(ended_notification.clone().userid),
-                notification::proposalid::equals(ended_notification.clone().proposalid),
+                notification::userid::equals(notification.clone().userid),
+                notification::proposalid::equals(notification.clone().proposalid),
                 notification::r#type::equals(NotificationType::NewProposalDiscord),
                 notification::dispatchstatus::equals(NotificationDispatchedState::Dispatched),
             ])
@@ -56,7 +58,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
         let user = client
             .user()
-            .find_first(vec![user::id::equals(ended_notification.clone().userid)])
+            .find_first(vec![user::id::equals(notification.clone().userid)])
             .exec()
             .instrument(debug_span!("get_user"))
             .await
@@ -66,7 +68,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
         let proposal = client
             .proposal()
             .find_first(vec![proposal::id::equals(
-                ended_notification.clone().proposalid.unwrap(),
+                notification.clone().proposalid.unwrap(),
             )])
             .include(proposal_with_dao::include())
             .exec()
@@ -78,7 +80,13 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
         let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
             .await
-            .expect("Missing webhook");
+            .ok();
+
+        if webhook.is_none() {
+            update_notification_retry(client, notification).await;
+
+            continue;
+        }
 
         match new_notification {
             Some(new_notification) => {
@@ -140,6 +148,8 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         );
 
                         webhook
+                            .clone()
+                            .unwrap()
                             .edit_message(&http, MessageId::from(initial_message_id), |w| {
                                 w.embeds(vec![Embed::fake(|e| {
                                     e.title(proposal.name)
@@ -161,9 +171,9 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                         proposal.dao.picture
                                     ))
                                     .image(if voted {
-                                        "https://senatelabs.xyz/assets/Discord/past-vote2x.png"
+                                        "https://www.senatelabs.xyz/assets/Discord/past-vote2x.png"
                                     } else {
-                                        "https://senatelabs.xyz/assets/Discord/past-no-vote2x.png"
+                                        "https://www.senatelabs.xyz/assets/Discord/past-no-vote2x.png"
                                     })
                                 })])
                             })
@@ -172,6 +182,8 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             .ok();
 
                         let message = webhook
+                            .clone()
+                            .unwrap()
                             .execute(&http, true, |w| {
                                 w.content(format!(
                                     "🗳️ **{}** {} proposal {} **just ended.** ☑️",
@@ -205,7 +217,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                     ),
                                 ]
                             }
-                            Err(_) => match ended_notification.dispatchstatus {
+                            Err(_) => match notification.dispatchstatus {
                                 NotificationDispatchedState::NotDispatched => {
                                     vec![notification::dispatchstatus::set(
                                         NotificationDispatchedState::FirstRetry,
@@ -236,11 +248,11 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             .notification()
                             .update_many(
                                 vec![
-                                    notification::userid::equals(ended_notification.clone().userid),
+                                    notification::userid::equals(notification.clone().userid),
                                     notification::proposalid::equals(
-                                        ended_notification.clone().proposalid,
+                                        notification.clone().proposalid,
                                     ),
-                                    notification::r#type::equals(ended_notification.clone().r#type),
+                                    notification::r#type::equals(notification.clone().r#type),
                                 ],
                                 update_data,
                             )
@@ -251,6 +263,8 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                     }
                     None => {
                         webhook
+                            .clone()
+                            .unwrap()
                             .delete_message(&http, MessageId::from(initial_message_id))
                             .await
                             .ok();
@@ -259,11 +273,11 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             .notification()
                             .update_many(
                                 vec![
-                                    notification::userid::equals(ended_notification.clone().userid),
+                                    notification::userid::equals(notification.clone().userid),
                                     notification::proposalid::equals(
-                                        ended_notification.clone().proposalid,
+                                        notification.clone().proposalid,
                                     ),
-                                    notification::r#type::equals(ended_notification.clone().r#type),
+                                    notification::r#type::equals(notification.clone().r#type),
                                 ],
                                 vec![notification::dispatchstatus::set(
                                     NotificationDispatchedState::Deleted,
@@ -279,6 +293,8 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
             None => match proposal {
                 Some(proposal) => {
                     let message = webhook
+                        .clone()
+                        .unwrap()
                         .execute(&http, true, |w| {
                             w.content(format!(
                                 "🗳️ **{}** {} proposal {} **just ended.** ☑️",
@@ -312,7 +328,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 ),
                             ]
                         }
-                        Err(_) => match ended_notification.dispatchstatus {
+                        Err(_) => match notification.dispatchstatus {
                             NotificationDispatchedState::NotDispatched => {
                                 vec![notification::dispatchstatus::set(
                                     NotificationDispatchedState::FirstRetry,
@@ -343,11 +359,9 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         .notification()
                         .update_many(
                             vec![
-                                notification::userid::equals(ended_notification.clone().userid),
-                                notification::proposalid::equals(
-                                    ended_notification.clone().proposalid,
-                                ),
-                                notification::r#type::equals(ended_notification.clone().r#type),
+                                notification::userid::equals(notification.clone().userid),
+                                notification::proposalid::equals(notification.clone().proposalid),
+                                notification::r#type::equals(notification.clone().r#type),
                             ],
                             update_data,
                         )

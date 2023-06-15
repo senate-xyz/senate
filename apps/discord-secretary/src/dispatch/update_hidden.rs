@@ -81,7 +81,11 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
 
             let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
                 .await
-                .expect("Missing webhook");
+                .ok();
+
+            if webhook.is_none() {
+                continue;
+            }
 
             match proposal {
                 Some(proposal) => {
@@ -137,6 +141,8 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                     };
 
                     webhook
+                        .clone()
+                        .unwrap()
                         .edit_message(&http, MessageId::from(initial_message_id), |w| {
                             w.embeds(vec![Embed::fake(|e| {
                                 e.title(proposal.name)
@@ -158,9 +164,9 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                                         proposal.dao.picture
                                     ))
                                     .image(if voted {
-                                        "https://senatelabs.xyz/assets/Discord/past-vote2x.png"
+                                        "https://www.senatelabs.xyz/assets/Discord/past-vote2x.png"
                                     } else {
-                                        "https://senatelabs.xyz/assets/Discord/past-no-vote2x.png"
+                                        "https://www.senatelabs.xyz/assets/Discord/past-no-vote2x.png"
                                     })
                             })])
                         })
@@ -170,6 +176,8 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                 }
                 None => {
                     webhook
+                        .clone()
+                        .unwrap()
                         .delete_message(&http, MessageId::from(initial_message_id))
                         .await
                         .ok();

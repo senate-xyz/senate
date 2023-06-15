@@ -29,7 +29,7 @@
             padding="0px 0px 0px 0px"
             width="48px"
             height="48px"
-            src="https://senatelabs.xyz/assets/Emails/aave-logo.png"
+            src="https://www.senatelabs.xyz/assets/Emails/aave-logo.png"
           ></mj-image>
         </mj-column>
         <mj-column vertical-align="middle" padding="0px 10px">
@@ -52,13 +52,16 @@
       </mj-group>
     </mj-section>
 
-   <mj-section css-class="aave-background desktop-version rounded-corners" padding="0px 0px">
+    <mj-section
+      css-class="aave-background desktop-version rounded-corners"
+      padding="0px 0px"
+    >
       <mj-column width="15%" padding="30px 0px">
         <mj-image
-        padding="0px"
+          padding="0px"
           width="45px"
           height="67px"
-          src="https://dev.senatelabs.xyz/assets/Emails/aave-logo.png"
+          src="https://www.senatelabs.xyz/assets/Emails/aave-logo.png"
         ></mj-image>
       </mj-column>
       <mj-column width="70%" vertical-align="middle" padding="40px 0px">
