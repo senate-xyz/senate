@@ -93,8 +93,7 @@ const getProposals = async (
                                 ? {
                                       in: userSubscriptions.map(
                                           (sub) => sub.dao.name
-                                      ),
-                                      mode: 'insensitive'
+                                      )
                                   }
                                 : {
                                       equals: String(dao?.name)
