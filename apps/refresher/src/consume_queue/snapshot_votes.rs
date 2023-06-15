@@ -1,7 +1,7 @@
 use anyhow::Result;
 use log::warn;
 use opentelemetry::{propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator};
-use std::{collections::HashMap, env, sync::Arc, cmp};
+use std::{cmp, collections::HashMap, env, sync::Arc};
 use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
@@ -156,7 +156,6 @@ pub(crate) async fn consume_snapshot_votes(
                         .exec()
                         .await
                         .unwrap();
-                   
                 };
 
                 let result = client_ref

@@ -160,7 +160,6 @@ pub(crate) async fn consume_chain_votes(
                         .exec()
                         .await
                         .unwrap();
-                   
                 };
             }
             Err(e) => {
