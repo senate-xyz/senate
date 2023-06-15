@@ -122,7 +122,7 @@ pub async fn update_snapshot_votes<'a>(
         let graphql_query = format!(
             r#"{{
         votes(
-            first: 1000,
+            first: {:?},
             orderBy: "created",
             orderDirection: asc,
             where: {{
@@ -142,6 +142,11 @@ pub async fn update_snapshot_votes<'a>(
             }}
         }}
     }}"#,
+            if dao_handler.votersrefreshspeed > 1000 {
+                1000
+            } else {
+                dao_handler.votersrefreshspeed
+            },
             data.voters.clone(),
             decoder.space,
             search_from_timestamp

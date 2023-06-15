@@ -133,7 +133,7 @@ pub(crate) async fn consume_chain_votes(
                 debug!("refresher update: {:?}", result);
 
                 if ok_voters.len() > nok_voters.len() {
-                    let result = client_ref
+                    let _ = client_ref
                         .daohandler()
                         .update(
                             daohandler::id::equals(dao_handler_ref.id),
@@ -146,10 +146,8 @@ pub(crate) async fn consume_chain_votes(
                         .exec()
                         .await
                         .unwrap();
-
-                    debug!("refresher ok: {:?}", result);
                 } else {
-                    let result = client_ref
+                    let _: daohandler::Data = client_ref
                         .daohandler()
                         .update(
                             daohandler::id::equals(dao_handler_ref.id),
@@ -162,8 +160,7 @@ pub(crate) async fn consume_chain_votes(
                         .exec()
                         .await
                         .unwrap();
-
-                    debug!("refresher nok: {:?}", result);
+                   
                 };
             }
             Err(e) => {

@@ -1,7 +1,7 @@
 use anyhow::Result;
 use log::warn;
 use opentelemetry::{propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator};
-use std::{collections::HashMap, env, sync::Arc};
+use std::{collections::HashMap, env, sync::Arc, cmp};
 use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
@@ -127,6 +127,37 @@ pub(crate) async fn consume_snapshot_votes(
                         )),
                     ],
                 );
+
+                if ok_voters.len() > nok_voters.len() {
+                    let _ = client_ref
+                        .daohandler()
+                        .update(
+                            daohandler::id::equals(dao_handler_ref.id),
+                            vec![daohandler::votersrefreshspeed::set(cmp::min(
+                                dao_handler_ref.votersrefreshspeed
+                                    + (dao_handler_ref.votersrefreshspeed * 75 / 100),
+                                1000,
+                            ))],
+                        )
+                        .exec()
+                        .await
+                        .unwrap();
+                } else {
+                    let _: daohandler::Data = client_ref
+                        .daohandler()
+                        .update(
+                            daohandler::id::equals(dao_handler_ref.id),
+                            vec![daohandler::votersrefreshspeed::set(cmp::max(
+                                dao_handler_ref.votersrefreshspeed
+                                    - (dao_handler_ref.votersrefreshspeed * 50 / 100),
+                                10,
+                            ))],
+                        )
+                        .exec()
+                        .await
+                        .unwrap();
+                   
+                };
 
                 let result = client_ref
                     ._batch((update_ok_voters, update_nok_voters))
