@@ -104,7 +104,7 @@ model daohandler {
   votersrefreshspeed BigInt @default(50000000)
 
   daoid         String
-  dao           dao            @relation(fields: [daoid], references: [id], onDelete: Cascade)
+  dao           dao            @relation(fields: [daoid], references: [id], onUpdate: NoAction, onDelete: NoAction)
   proposals     proposal[]
   voterhandlers voterhandler[]
   votes         vote[]
@@ -138,9 +138,9 @@ model proposal {
   url          String   @db.VarChar(1024)
 
   daohandlerid String
-  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade)
+  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onUpdate: NoAction, onDelete: NoAction)
   daoid        String
-  dao          dao        @relation(fields: [daoid], references: [id], onDelete: Cascade)
+  dao          dao        @relation(fields: [daoid], references: [id], onUpdate: NoAction, onDelete: NoAction)
   votes        vote[]
 
   createdat    DateTime       @default(now())
@@ -160,13 +160,13 @@ model vote {
   reason      String @db.VarChar(2048)
 
   voteraddress String
-  voter        voter      @relation(fields: [voteraddress], references: [address], onDelete: Cascade)
+  voter        voter      @relation(fields: [voteraddress], references: [address], onUpdate: NoAction, onDelete: NoAction)
   proposalid   String
-  proposal     proposal   @relation(fields: [proposalid], references: [id], onDelete: Cascade)
+  proposal     proposal   @relation(fields: [proposalid], references: [id], onUpdate: NoAction, onDelete: NoAction)
   daoid        String
-  dao          dao        @relation(fields: [daoid], references: [id], onDelete: Cascade)
+  dao          dao        @relation(fields: [daoid], references: [id], onUpdate: NoAction, onDelete: NoAction)
   daohandlerid String
-  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade)
+  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onUpdate: NoAction, onDelete: NoAction)
 
   blockcreated BigInt?   @default(0)
   timecreated  DateTime?
@@ -191,9 +191,9 @@ model voterhandler {
   uptodate      Boolean       @default(false)
 
   daohandlerid String
-  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade)
+  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onUpdate: NoAction, onDelete: NoAction)
   voterid      String
-  voter        voter      @relation(fields: [voterid], references: [id], onDelete: Cascade)
+  voter        voter      @relation(fields: [voterid], references: [id], onUpdate: NoAction, onDelete: NoAction)
 
   createdat DateTime @default(now())
   updatedat DateTime @updatedAt
@@ -209,9 +209,9 @@ model subscription {
   id String @id @default(cuid())
 
   userid String
-  user   user   @relation(fields: [userid], references: [id], onDelete: Cascade)
+  user   user   @relation(fields: [userid], references: [id], onUpdate: NoAction, onDelete: NoAction)
   daoid  String
-  dao    dao    @relation(fields: [daoid], references: [id], onDelete: Cascade)
+  dao    dao    @relation(fields: [daoid], references: [id], onUpdate: NoAction, onDelete: NoAction)
 
   createdat DateTime @default(now())
   updatedat DateTime @updatedAt
@@ -225,9 +225,9 @@ model notification {
   id String @id @default(cuid())
 
   userid     String
-  user       user      @relation(fields: [userid], references: [id], onDelete: Cascade)
+  user       user      @relation(fields: [userid], references: [id], onUpdate: NoAction, onDelete: NoAction)
   proposalid String?
-  proposal   proposal? @relation(fields: [proposalid], references: [id], onDelete: Cascade)
+  proposal   proposal? @relation(fields: [proposalid], references: [id], onUpdate: NoAction, onDelete: NoAction)
 
   type           NotificationType
   dispatchstatus NotificationDispatchedState @default(NOT_DISPATCHED)
