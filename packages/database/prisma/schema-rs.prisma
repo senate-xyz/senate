@@ -1,30 +1,35 @@
 generator detective {
-  provider = "cargo prisma"
-  output   = "../../../apps/detective/src/prisma.rs"
+  provider     = "cargo prisma"
+  output       = "../../../apps/detective/src/prisma.rs"
+  relationMode = "prisma"
 }
 
 generator refresher {
-  provider = "cargo prisma"
-  output   = "../../../apps/refresher/src/prisma.rs"
+  provider     = "cargo prisma"
+  output       = "../../../apps/refresher/src/prisma.rs"
+  relationMode = "prisma"
 }
 
 generator discordsecretary {
-  provider = "cargo prisma"
-  output   = "../../../apps/discord-secretary/src/prisma.rs"
+  provider     = "cargo prisma"
+  output       = "../../../apps/discord-secretary/src/prisma.rs"
+  relationMode = "prisma"
 }
 
 generator telegramsecretary {
-  provider = "cargo prisma"
-  output   = "../../../apps/telegram-secretary/src/prisma.rs"
+  provider     = "cargo prisma"
+  output       = "../../../apps/telegram-secretary/src/prisma.rs"
+  relationMode = "prisma"
 }
 
 generator emailsecretary {
-  provider = "cargo prisma"
-  output   = "../../../apps/email-secretary/src/prisma.rs"
+  provider     = "cargo prisma"
+  output       = "../../../apps/email-secretary/src/prisma.rs"
+  relationMode = "prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -68,8 +73,8 @@ model user {
   createdat              DateTime  @default(now())
   updatedat              DateTime  @updatedAt
 
-  @@index(fields: [email], type: Hash)
-  @@index(fields: [address], type: Hash)
+  @@index(fields: [email])
+  @@index(fields: [address])
 }
 
 model voter {
@@ -84,7 +89,7 @@ model voter {
   createdat DateTime @default(now())
   updatedat DateTime @updatedAt
 
-  @@index(fields: [address], type: Hash)
+  @@index(fields: [address])
 }
 
 model dao {
@@ -103,7 +108,7 @@ model dao {
   createdat DateTime @default(now())
   updatedat DateTime @updatedAt
 
-  @@index(fields: [name], type: Hash)
+  @@index(fields: [name])
 }
 
 model daohandler {
@@ -133,7 +138,8 @@ model daohandler {
 
   @@unique([daoid, type])
   @@index([lastrefresh, refreshstatus])
-  @@index(fields: [refreshstatus], type: Hash)
+  @@index(fields: [refreshstatus])
+  @@index(fields: [daoid])
 }
 
 model proposal {
@@ -166,8 +172,8 @@ model proposal {
   notification notification[]
 
   @@unique([externalid, daoid])
-  @@index(fields: [daoid], type: Hash)
-  @@index(fields: [daohandlerid], type: Hash)
+  @@index(fields: [daoid])
+  @@index(fields: [daohandlerid])
 }
 
 model vote {
@@ -193,9 +199,10 @@ model vote {
   updatedat DateTime @updatedAt
 
   @@unique([voteraddress, daoid, proposalid])
-  @@index(fields: [proposalid], type: Hash)
-  @@index(fields: [daoid], type: Hash)
-  @@index(fields: [voteraddress], type: Hash)
+  @@index(fields: [proposalid])
+  @@index(fields: [daoid])
+  @@index(fields: [voteraddress])
+  @@index(fields: [daohandlerid])
 }
 
 model voterhandler {
@@ -217,8 +224,9 @@ model voterhandler {
 
   @@unique([voterid, daohandlerid])
   @@index([lastrefresh, refreshstatus, daohandlerid])
-  @@index(fields: [refreshstatus], type: Hash)
-  @@index(fields: [daohandlerid], type: Hash)
+  @@index(fields: [refreshstatus])
+  @@index(fields: [daohandlerid])
+  @@index(fields: [voterid])
 }
 
 model subscription {
@@ -233,7 +241,8 @@ model subscription {
   updatedat DateTime @updatedAt
 
   @@unique([userid, daoid])
-  @@index(fields: [daoid], type: Hash)
+  @@index(fields: [daoid])
+  @@index(fields: [userid])
 }
 
 model notification {
@@ -256,17 +265,17 @@ model notification {
   telegrammessageid String?
 
   @@unique([userid, proposalid, type])
-  @@index(fields: [userid], type: Hash)
-  @@index(fields: [type], type: Hash)
-  @@index(fields: [proposalid], type: Hash)
-  @@index(fields: [dispatchstatus], type: Hash)
+  @@index(fields: [userid])
+  @@index(fields: [type])
+  @@index(fields: [proposalid])
+  @@index(fields: [dispatchstatus])
 }
 
 model config {
   key   String @id
   value Int
 
-  @@index(fields: [key], type: Hash)
+  @@index(fields: [key])
 }
 
 enum MagicUserState {

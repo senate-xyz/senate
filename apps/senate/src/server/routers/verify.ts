@@ -77,8 +77,7 @@ export const verifyRouter = router({
                     const aave = await prisma.dao.findFirstOrThrow({
                         where: {
                             name: {
-                                equals: 'aave',
-                                mode: 'insensitive'
+                                equals: 'Aave'
                             }
                         }
                     })
@@ -96,8 +95,7 @@ export const verifyRouter = router({
                     const uniswap = await prisma.dao.findFirstOrThrow({
                         where: {
                             name: {
-                                equals: 'uniswap',
-                                mode: 'insensitive'
+                                equals: 'Uniswap'
                             }
                         }
                     })
@@ -166,7 +164,7 @@ export const verifyRouter = router({
                 if (newUser.isaaveuser == 'VERIFICATION') {
                     const aave = await prisma.dao.findFirstOrThrow({
                         where: {
-                            name: { equals: 'aave', mode: 'insensitive' }
+                            name: { equals: 'Aave' }
                         }
                     })
 
@@ -182,7 +180,7 @@ export const verifyRouter = router({
                 if (newUser.isuniswapuser == 'VERIFICATION') {
                     const uniswap = await prisma.dao.findFirstOrThrow({
                         where: {
-                            name: { equals: 'uniswap', mode: 'insensitive' }
+                            name: { equals: 'Uniswap' }
                         }
                     })
 
