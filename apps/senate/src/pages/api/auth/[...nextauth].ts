@@ -101,7 +101,7 @@ export function authOptions(
         providers,
         session: {
             strategy: 'jwt',
-            maxAge: 2592000
+            maxAge: 14400
         },
         callbacks: {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -164,24 +164,24 @@ export function authOptions(
                     `WebsiteToken=deleted; Max-Age=0`,
                     `AnotherCookieName=deleted; Max-Age=0`
                 ])
-            },
-            async session(message) {
-                const user = await prisma.user.findFirst({
-                    where: {
-                        address: String(message.session.user?.name)
-                    }
-                })
-
-                if (user)
-                    await prisma.user.update({
-                        where: {
-                            address: String(message.session.user?.name)
-                        },
-                        data: {
-                            lastactive: new Date()
-                        }
-                    })
             }
+            // async session(message) {
+            //     const user = await prisma.user.findFirst({
+            //         where: {
+            //             address: String(message.session.user?.name)
+            //         }
+            //     })
+
+            //     if (user)
+            //         await prisma.user.update({
+            //             where: {
+            //                 address: String(message.session.user?.name)
+            //             },
+            //             data: {
+            //                 lastactive: new Date()
+            //             }
+            //         })
+            // }
         }
     }
 }
