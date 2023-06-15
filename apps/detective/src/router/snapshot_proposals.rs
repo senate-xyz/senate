@@ -87,7 +87,7 @@ pub async fn update_snapshot_proposals<'a>(
             r#"
         {{
             proposals (
-                first: 500,
+                first: {:?},
                 where: {{
                     space: {:?},
                     created_gte: {}
@@ -111,7 +111,13 @@ pub async fn update_snapshot_proposals<'a>(
             }}
         }}
     "#,
-            decoder.space, old_index
+            if dao_handler.refreshspeed > 100 {
+                100
+            } else {
+                dao_handler.refreshspeed
+            },
+            decoder.space,
+            old_index
         );
 
         debug!(

@@ -39,6 +39,15 @@ pub(crate) async fn consume_snapshot_proposals(
     let client_ref = client.clone();
     let dao_handler_id_ref = entry.handler_id.clone();
 
+    let dao_handler = client
+        .daohandler()
+        .find_first(vec![daohandler::id::equals(entry.handler_id.to_string())])
+        .exec()
+        .instrument(debug_span!("get_dao_handler"))
+        .await
+        .unwrap()
+        .unwrap();
+
     task::spawn({
         async move {
             let span = tracing::Span::current();
@@ -65,6 +74,11 @@ pub(crate) async fn consume_snapshot_proposals(
                                     vec![
                                         daohandler::refreshstatus::set(prisma::RefreshStatus::Done),
                                         daohandler::lastrefresh::set(Utc::now().into()),
+                                        daohandler::refreshspeed::set(cmp::min(
+                                            dao_handler_ref.refreshspeed
+                                                + (dao_handler_ref.refreshspeed * 10 / 100),
+                                            100,
+                                        )),
                                     ],
                                 ),
                                 "nok" => client_ref.daohandler().update_many(
@@ -72,6 +86,11 @@ pub(crate) async fn consume_snapshot_proposals(
                                     vec![
                                         daohandler::refreshstatus::set(prisma::RefreshStatus::New),
                                         daohandler::lastrefresh::set(Utc::now().into()),
+                                        daohandler::refreshspeed::set(cmp::max(
+                                            dao_handler_ref.refreshspeed
+                                                - (dao_handler_ref.refreshspeed * 25 / 100),
+                                            10,
+                                        )),
                                     ],
                                 ),
                                 _ => panic!("Unexpected response"),
