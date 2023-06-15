@@ -1,7 +1,7 @@
 use anyhow::Result;
 use log::warn;
 use opentelemetry::{propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator};
-use std::{collections::HashMap, env, sync::Arc};
+use std::{cmp, collections::HashMap, env, sync::Arc};
 use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
@@ -47,6 +47,8 @@ pub(crate) async fn consume_snapshot_proposals(
         .await
         .unwrap()
         .unwrap();
+
+    let dao_handler_ref = dao_handler;
 
     task::spawn({
         async move {
