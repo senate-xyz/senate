@@ -96,9 +96,7 @@ model daohandler {
   chainindex    BigInt?   @default(0)
   snapshotindex DateTime? @default("2000-01-01T00:00:00.00Z")
 
-  lastrefresh   DateTime      @default("2000-01-01T00:00:00.00Z")
-  refreshstatus RefreshStatus @default(NEW)
-  uptodate      Boolean       @default(false)
+  uptodate Boolean @default(false)
 
   refreshspeed       BigInt @default(1000000)
   votersrefreshspeed BigInt @default(50000000)
@@ -113,8 +111,6 @@ model daohandler {
   updatedat DateTime @updatedAt
 
   @@unique([daoid, type])
-  @@index([lastrefresh, refreshstatus])
-  @@index(fields: [refreshstatus])
   @@index(fields: [daoid])
 }
 
@@ -184,11 +180,9 @@ model vote {
 model voterhandler {
   id String @id @default(cuid())
 
-  chainindex    BigInt?       @default(0)
-  snapshotindex DateTime?     @default("2000-01-01T00:00:00.00Z")
-  lastrefresh   DateTime      @default("2000-01-01T00:00:00.00Z")
-  refreshstatus RefreshStatus @default(NEW)
-  uptodate      Boolean       @default(false)
+  chainindex    BigInt?   @default(0)
+  snapshotindex DateTime? @default("2000-01-01T00:00:00.00Z")
+  uptodate      Boolean   @default(false)
 
   daohandlerid String
   daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onUpdate: NoAction, onDelete: NoAction)
@@ -199,8 +193,6 @@ model voterhandler {
   updatedat DateTime @updatedAt
 
   @@unique([voterid, daohandlerid])
-  @@index([lastrefresh, refreshstatus, daohandlerid])
-  @@index(fields: [refreshstatus])
   @@index(fields: [daohandlerid])
   @@index(fields: [voterid])
 }

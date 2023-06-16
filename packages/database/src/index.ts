@@ -12,7 +12,6 @@ export {
     type dao as DAO,
     type user as User,
     NotificationType,
-    RefreshStatus,
     DAOHandlerType,
     ProposalState,
     MagicUserState,

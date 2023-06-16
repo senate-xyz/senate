@@ -1,4 +1,10 @@
-use crate::{config::Config, prisma, RefreshEntry, RefreshType};
+use crate::{
+    config::Config,
+    prisma,
+    refresh_status::DAOS_REFRESH_STATUS,
+    RefreshEntry,
+    RefreshType,
+};
 use anyhow::Result;
 
 use prisma::{daohandler, PrismaClient};
@@ -8,61 +14,44 @@ use prisma_client_rust::{
 };
 use tracing::{debug, debug_span, instrument, Instrument};
 
-#[instrument(skip(client), ret, level = "info")]
-pub async fn produce_snapshot_proposals_queue(
-    client: &PrismaClient,
-    config: &Config,
-) -> Result<Vec<RefreshEntry>> {
+#[instrument(, ret, level = "info")]
+pub async fn produce_snapshot_proposals_queue(config: &Config) -> Result<Vec<RefreshEntry>> {
     let normal_refresh = Utc::now() - Duration::seconds(config.normal_snapshot_proposals.into());
     let force_refresh = Utc::now() - Duration::seconds(config.force_snapshot_proposals.into());
     let new_refresh = Utc::now() - Duration::seconds(config.new_snapshot_proposals.into());
 
-    let dao_handlers = client
-        .daohandler()
-        .find_many(vec![
-            daohandler::r#type::equals(prisma::DaoHandlerType::Snapshot),
-            or(vec![
-                and(vec![
-                    daohandler::refreshstatus::equals(prisma::RefreshStatus::Done),
-                    daohandler::lastrefresh::lt(normal_refresh.into()),
-                ]),
-                and(vec![
-                    daohandler::refreshstatus::equals(prisma::RefreshStatus::Pending),
-                    daohandler::lastrefresh::lt(force_refresh.into()),
-                ]),
-                and(vec![
-                    daohandler::refreshstatus::equals(prisma::RefreshStatus::New),
-                    daohandler::lastrefresh::lt(new_refresh.into()),
-                ]),
-            ]),
-        ])
-        .exec()
-        .instrument(debug_span!("get_dao_handlers"))
-        .await?;
+    let handler_types = vec![prisma::DaoHandlerType::Snapshot];
 
-    client
-        .daohandler()
-        .update_many(
-            vec![daohandler::id::in_vec(
-                dao_handlers.iter().map(|dao| dao.id.clone()).collect(),
-            )],
-            vec![
-                daohandler::refreshstatus::set(prisma::RefreshStatus::Pending),
-                daohandler::lastrefresh::set(Utc::now().into()),
-            ],
-        )
-        .exec()
-        .instrument(debug_span!("update_pending"))
-        .await?;
+    let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
+
+    let mut dao_handlers: Vec<_> = daos_refresh_status
+        .iter_mut()
+        .filter(|r| {
+            handler_types.contains(&r.r#type)
+                && ((r.refresh_status == prisma::RefreshStatus::Done
+                    && r.last_refresh < normal_refresh)
+                    || (r.refresh_status == prisma::RefreshStatus::Pending
+                        && r.last_refresh < force_refresh)
+                    || (r.refresh_status == prisma::RefreshStatus::New
+                        && r.last_refresh < new_refresh))
+        })
+        .collect();
 
     let refresh_queue: Vec<RefreshEntry> = dao_handlers
         .iter()
         .map(|dao_handler| RefreshEntry {
-            handler_id: dao_handler.id.clone(),
+            handler_id: dao_handler.dao_handler_id.clone(),
             refresh_type: RefreshType::Daosnapshotproposals,
             voters: vec![],
         })
         .collect();
+
+    for dh in &mut *dao_handlers {
+        dh.refresh_status = prisma::RefreshStatus::Pending;
+        dh.last_refresh = Utc::now();
+
+        println!("{:?}", dh);
+    }
 
     Ok(refresh_queue)
 }

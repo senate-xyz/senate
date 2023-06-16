@@ -3828,10 +3828,12 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "base64 0.21.2",
+ "chrono",
  "dotenv",
  "flume",
  "lazy_static",
  "log",
+ "once_cell",
  "opentelemetry 0.19.0",
  "opentelemetry-otlp",
  "prisma-client-rust",

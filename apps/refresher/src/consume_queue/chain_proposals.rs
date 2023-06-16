@@ -19,38 +19,22 @@ use tokio::task;
 
 use crate::{
     prisma::{self, daohandler, PrismaClient},
+    refresh_status::DAOS_REFRESH_STATUS,
     RefreshEntry,
 };
 
 #[derive(Deserialize)]
 #[allow(non_snake_case)]
 struct ProposalsResponse {
-    daoHandlerId: String,
     response: String,
 }
-
-#[instrument(skip(client), level = "info")]
-pub(crate) async fn consume_chain_proposals(
-    entry: RefreshEntry,
-    client: &Arc<PrismaClient>,
-) -> Result<()> {
+#[instrument(level = "info")]
+pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
     let detective_url = env::var("DETECTIVE_URL").expect("$DETECTIVE_URL is not set");
 
     let post_url = format!("{}/proposals/chain_proposals", detective_url);
 
     let http_client = Client::builder().build().unwrap();
-
-    let dao_handler = client
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(entry.handler_id.to_string())])
-        .exec()
-        .instrument(debug_span!("get_dao_handler"))
-        .await
-        .unwrap()
-        .unwrap();
-
-    let client_ref = client.clone();
-    let dao_handler_ref = dao_handler;
 
     task::spawn({
         async move {
@@ -59,6 +43,13 @@ pub(crate) async fn consume_chain_proposals(
             let propagator = TraceContextPropagator::new();
             let mut trace = HashMap::new();
             propagator.inject_context(&context, &mut trace);
+
+            let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
+            let dao_handler_position = daos_refresh_status
+                .iter()
+                .position(|r| r.dao_handler_id == entry.handler_id)
+                .expect("DaoHandler not found in refresh status array");
+            let dao_handler = daos_refresh_status.get_mut(dao_handler_position).unwrap();
 
             let response = http_client
                 .post(&post_url)
@@ -72,85 +63,48 @@ pub(crate) async fn consume_chain_proposals(
 
                     match data {
                         Ok(data) => {
-                            let dbupdate = match data.response.as_str() {
-                                "ok" => client_ref.daohandler().update_many(
-                                    vec![daohandler::id::equals(data.daoHandlerId.to_string())],
-                                    vec![
-                                        daohandler::refreshstatus::set(prisma::RefreshStatus::Done),
-                                        daohandler::lastrefresh::set(Utc::now().into()),
-                                        daohandler::refreshspeed::set(cmp::min(
-                                            dao_handler_ref.refreshspeed
-                                                + (dao_handler_ref.refreshspeed * 10 / 100),
-                                            10000000,
-                                        )),
-                                    ],
-                                ),
-                                "nok" => client_ref.daohandler().update_many(
-                                    vec![daohandler::id::equals(data.daoHandlerId.to_string())],
-                                    vec![
-                                        daohandler::refreshstatus::set(prisma::RefreshStatus::New),
-                                        daohandler::lastrefresh::set(Utc::now().into()),
-                                        daohandler::refreshspeed::set(cmp::max(
-                                            dao_handler_ref.refreshspeed
-                                                - (dao_handler_ref.refreshspeed * 25 / 100),
-                                            100,
-                                        )),
-                                    ],
-                                ),
+                            match data.response.as_str() {
+                                "ok" => {
+                                    dao_handler.refresh_status = prisma::RefreshStatus::Done;
+                                    dao_handler.last_refresh = Utc::now();
+                                    dao_handler.refreshspeed = cmp::min(
+                                        dao_handler.refreshspeed
+                                            + (dao_handler.refreshspeed * 10 / 100),
+                                        10000000,
+                                    );
+                                }
+                                "nok" => {
+                                    dao_handler.refresh_status = prisma::RefreshStatus::New;
+                                    dao_handler.last_refresh = Utc::now();
+                                    dao_handler.refreshspeed = cmp::max(
+                                        dao_handler.refreshspeed
+                                            - (dao_handler.refreshspeed * 25 / 100),
+                                        100,
+                                    );
+                                }
                                 _ => panic!("Unexpected response"),
                             };
-
-                            let _ = client_ref
-                                ._batch(dbupdate)
-                                .instrument(debug_span!("update_handlers"))
-                                .await;
                         }
                         Err(e) => {
-                            let result = client_ref
-                                .daohandler()
-                                .update_many(
-                                    vec![daohandler::id::equals(dao_handler_ref.id)],
-                                    vec![
-                                        daohandler::refreshstatus::set(prisma::RefreshStatus::New),
-                                        daohandler::lastrefresh::set(Utc::now().into()),
-                                        daohandler::refreshspeed::set(cmp::max(
-                                            dao_handler_ref.refreshspeed
-                                                - (dao_handler_ref.refreshspeed * 25 / 100),
-                                            100,
-                                        )),
-                                    ],
-                                )
-                                .exec()
-                                .instrument(debug_span!("update_handlers"))
-                                .await
-                                .unwrap();
+                            dao_handler.refresh_status = prisma::RefreshStatus::New;
+                            dao_handler.last_refresh = Utc::now();
+                            dao_handler.refreshspeed = cmp::max(
+                                dao_handler.refreshspeed - (dao_handler.refreshspeed * 25 / 100),
+                                100,
+                            );
 
-                            debug!("refresher error update: {:?}", result);
                             warn!("refresher error: {:#?}", e);
                         }
                     }
                 }
                 Err(e) => {
-                    let result = client_ref
-                        .daohandler()
-                        .update_many(
-                            vec![daohandler::id::equals(dao_handler_ref.id)],
-                            vec![
-                                daohandler::refreshstatus::set(prisma::RefreshStatus::New),
-                                daohandler::lastrefresh::set(Utc::now().into()),
-                                daohandler::refreshspeed::set(cmp::max(
-                                    dao_handler_ref.refreshspeed
-                                        - (dao_handler_ref.refreshspeed * 25 / 100),
-                                    100,
-                                )),
-                            ],
-                        )
-                        .exec()
-                        .instrument(debug_span!("update_handlers"))
-                        .await
-                        .unwrap();
+                    dao_handler.refresh_status = prisma::RefreshStatus::New;
+                    dao_handler.last_refresh = Utc::now();
+                    dao_handler.refreshspeed = cmp::max(
+                        dao_handler.refreshspeed - (dao_handler.refreshspeed * 25 / 100),
+                        100,
+                    );
 
-                    debug!("refresher error update: {:?}", result);
                     warn!("refresher error: {:#?}", e);
                 }
             }

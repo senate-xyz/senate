@@ -29,7 +29,7 @@ pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
                             voterhandler::create_unchecked(
                                 daohandler.id.clone(),
                                 voter.id.clone(),
-                                vec![voterhandler::refreshstatus::set(RefreshStatus::New)],
+                                vec![],
                             )
                         })
                         .collect(),
