@@ -110,7 +110,6 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                         );
                     },
                 }
-                
             }
             Err(_) => {
                 for vh in voter_refresh_status.iter_mut() {

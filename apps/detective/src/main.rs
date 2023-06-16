@@ -13,10 +13,8 @@ pub mod utils {
     pub mod snapshot_sanity;
 }
 use crate::router::{
-    chain_proposals::update_chain_proposals,
-    chain_votes::update_chain_votes,
-    snapshot_proposals::update_snapshot_proposals,
-    snapshot_votes::update_snapshot_votes,
+    chain_proposals::update_chain_proposals, chain_votes::update_chain_votes,
+    snapshot_proposals::update_snapshot_proposals, snapshot_votes::update_snapshot_votes,
 };
 use std::{env, sync::Arc};
 

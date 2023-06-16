@@ -27,7 +27,6 @@ struct ApiResponse {
     success: bool,
 }
 
-
 pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
     let detective_url = env::var("DETECTIVE_URL").expect("$DETECTIVE_URL is not set");
 
@@ -116,7 +115,6 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                     },
                 }
 
-                
             }
             Err(_) => {
                 for vh in voter_refresh_status.iter_mut() {

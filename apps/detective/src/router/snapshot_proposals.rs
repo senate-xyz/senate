@@ -13,9 +13,7 @@ use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
     prisma::{dao, daohandler, proposal, ProposalState},
-    Ctx,
-    ProposalsRequest,
-    ProposalsResponse,
+    Ctx, ProposalsRequest, ProposalsResponse,
 };
 
 #[derive(Debug, Deserialize)]

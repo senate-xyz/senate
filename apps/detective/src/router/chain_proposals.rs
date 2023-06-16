@@ -1,9 +1,7 @@
 use anyhow::{bail, Result};
 use ethers::{providers::Middleware, types::U64};
 use opentelemetry::{
-    global,
-    propagation::TextMapPropagator,
-    sdk::propagation::TraceContextPropagator,
+    global, propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator,
 };
 use prisma_client_rust::chrono::{DateTime, FixedOffset, Utc};
 use reqwest::header::HeaderMap;
@@ -14,19 +12,12 @@ use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
     handlers::proposals::{
-        compound::compound_proposals,
-        dydx::dydx_proposals,
-        ens::ens_proposals,
-        gitcoin::gitcoin_proposals,
-        hop::hop_proposals,
-        maker_executive::maker_executive_proposals,
-        maker_poll::maker_poll_proposals,
-        uniswap::uniswap_proposals,
+        compound::compound_proposals, dydx::dydx_proposals, ens::ens_proposals,
+        gitcoin::gitcoin_proposals, hop::hop_proposals, maker_executive::maker_executive_proposals,
+        maker_poll::maker_poll_proposals, uniswap::uniswap_proposals,
     },
     prisma::{dao, daohandler, proposal, DaoHandlerType, ProposalState},
-    Ctx,
-    ProposalsRequest,
-    ProposalsResponse,
+    Ctx, ProposalsRequest, ProposalsResponse,
 };
 
 use crate::handlers::proposals::aave::aave_proposals;
