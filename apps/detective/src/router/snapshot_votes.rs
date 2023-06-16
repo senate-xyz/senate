@@ -280,7 +280,7 @@ async fn update_refresh_statuses(
 
     let mut uptodate = false;
 
-    if (search_to_timestamp - dao_handler.snapshotindex.unwrap().timestamp() < 60 * 60
+    if (search_to_timestamp - dao_handler.snapshotindex.unwrap().timestamp() < 10 * 60 * 60
         && dao_handler.uptodate)
         || votes.len() < 100
     {
