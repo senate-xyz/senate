@@ -427,7 +427,7 @@ async fn update_or_create_current_votes(
     dao_handler: daohandler::Data,
 ) -> Result<()> {
     for v in votes_for_proposal {
-        let exists = ctx
+        let existing = ctx
             .db
             .vote()
             .find_unique(vote::voteraddress_daoid_proposalid(
@@ -439,30 +439,35 @@ async fn update_or_create_current_votes(
             .await
             .unwrap();
 
-        match exists {
-            Some(_) => {
-                ctx.db
-                    .vote()
-                    .update(
-                        vote::voteraddress_daoid_proposalid(
-                            v.voter.clone(),
-                            dao_handler.daoid.clone(),
-                            proposal_id.clone(),
-                        ),
-                        vec![
-                            vote::timecreated::set(Some(DateTime::from_utc(
-                                NaiveDateTime::from_timestamp_millis(v.created * 1000)
-                                    .expect("bad created timestamp"),
-                                FixedOffset::east_opt(0).unwrap(),
-                            ))),
-                            vote::choice::set(v.choice.clone()),
-                            vote::votingpower::set(v.vp.into()),
-                            vote::reason::set(v.reason),
-                        ],
-                    )
-                    .exec()
-                    .await
-                    .unwrap();
+        match existing {
+            Some(existing) => {
+                if existing.choice != v.choice
+                    || existing.votingpower != v.vp
+                    || existing.reason != v.reason
+                {
+                    ctx.db
+                        .vote()
+                        .update(
+                            vote::voteraddress_daoid_proposalid(
+                                v.voter.clone(),
+                                dao_handler.daoid.clone(),
+                                proposal_id.clone(),
+                            ),
+                            vec![
+                                vote::timecreated::set(Some(DateTime::from_utc(
+                                    NaiveDateTime::from_timestamp_millis(v.created * 1000)
+                                        .expect("bad created timestamp"),
+                                    FixedOffset::east_opt(0).unwrap(),
+                                ))),
+                                vote::choice::set(v.choice.clone()),
+                                vote::votingpower::set(v.vp.into()),
+                                vote::reason::set(v.reason),
+                            ],
+                        )
+                        .exec()
+                        .await
+                        .unwrap();
+                }
             }
             None => {
                 ctx.db

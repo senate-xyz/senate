@@ -307,7 +307,7 @@ async fn insert_votes(
     }
 
     for open_vote in open_votes {
-        let exists = ctx
+        let existing = ctx
             .db
             .vote()
             .find_unique(vote::voteraddress_daoid_proposalid(
@@ -319,25 +319,30 @@ async fn insert_votes(
             .await
             .unwrap();
 
-        match exists {
-            Some(_) => {
-                ctx.db
-                    .vote()
-                    .update(
-                        vote::voteraddress_daoid_proposalid(
-                            open_vote.voter_address.to_string(),
-                            dao_handler.daoid.to_string(),
-                            open_vote.proposal_id.clone(),
-                        ),
-                        vec![
-                            vote::choice::set(open_vote.choice.clone()),
-                            vote::votingpower::set(open_vote.voting_power.clone()),
-                            vote::reason::set(open_vote.reason),
-                        ],
-                    )
-                    .exec()
-                    .await
-                    .unwrap();
+        match existing {
+            Some(existing) => {
+                if existing.choice != open_vote.choice
+                    || existing.votingpower != open_vote.voting_power
+                    || existing.reason != open_vote.reason
+                {
+                    ctx.db
+                        .vote()
+                        .update(
+                            vote::voteraddress_daoid_proposalid(
+                                open_vote.voter_address.to_string(),
+                                dao_handler.daoid.to_string(),
+                                open_vote.proposal_id.clone(),
+                            ),
+                            vec![
+                                vote::choice::set(open_vote.choice.clone()),
+                                vote::votingpower::set(open_vote.voting_power.clone()),
+                                vote::reason::set(open_vote.reason),
+                            ],
+                        )
+                        .exec()
+                        .await
+                        .unwrap();
+                }
             }
             None => {
                 ctx.db
