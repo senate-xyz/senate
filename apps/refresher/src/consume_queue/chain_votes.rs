@@ -97,14 +97,14 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
 
                     if nok_voters_response.contains(&vh.voter_address)
                     {
-                        vh.refresh_status = prisma::RefreshStatus::Done;
+                        vh.refresh_status = prisma::RefreshStatus::New;
                         vh.last_refresh = Utc::now();
                     }
                 }
             }
             Err(_) => {
                 for vh in voter_refresh_status.iter_mut() {
-                    vh.refresh_status = prisma::RefreshStatus::Done;
+                    vh.refresh_status = prisma::RefreshStatus::New;
                     vh.last_refresh = Utc::now();
                 }
                 dao_handler_r.votersrefreshspeed = cmp::max(
