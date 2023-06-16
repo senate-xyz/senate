@@ -4,7 +4,8 @@ use std::collections::HashMap;
 use crate::{
     config::Config,
     prisma::{self, voterhandler},
-    RefreshEntry, RefreshType,
+    RefreshEntry,
+    RefreshType,
 };
 
 use prisma::{daohandler, PrismaClient};
@@ -13,8 +14,7 @@ use prisma_client_rust::{
     operator::{and, or},
     Direction,
 };
-use tracing::{debug, Instrument};
-use tracing::{debug_span, instrument};
+use tracing::{debug, debug_span, instrument, Instrument};
 
 #[instrument(skip(client), ret, level = "info")]
 pub async fn produce_snapshot_votes_queue(

@@ -1,5 +1,6 @@
 use anyhow::{bail, Context, Result};
 use chrono::Duration;
+use futures::future::join_all;
 use opentelemetry::propagation::TextMapPropagator;
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
@@ -14,7 +15,9 @@ use serde_json::Value;
 
 use crate::{
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler},
-    Ctx, VotesRequest, VotesResponse,
+    Ctx,
+    VotesRequest,
+    VotesResponse,
 };
 
 #[derive(Debug, Deserialize)]
@@ -414,44 +417,55 @@ async fn update_or_create_current_votes(
     proposal_id: String,
     dao_handler: daohandler::Data,
 ) -> Result<()> {
-    let updated = ctx
-        .db
-        ._batch(votes_for_proposal.into_iter().map(|v| {
-            ctx.db.vote().upsert(
-                vote::voteraddress_daoid_proposalid(
-                    v.voter.clone(),
-                    dao_handler.daoid.clone(),
-                    proposal_id.clone(),
-                ),
-                vote::create(
-                    v.choice.clone(),
-                    v.vp.into(),
-                    v.reason.clone(),
-                    voter::address::equals(v.voter.clone()),
-                    proposal::id::equals(proposal_id.clone()),
-                    dao::id::equals(dao_handler.daoid.clone()),
-                    daohandler::id::equals(dao_handler.id.clone()),
-                    vec![vote::timecreated::set(Some(DateTime::from_utc(
-                        NaiveDateTime::from_timestamp_millis(v.created * 1000)
-                            .expect("bad created timestamp"),
-                        FixedOffset::east_opt(0).unwrap(),
-                    )))],
-                ),
-                vec![
-                    vote::timecreated::set(Some(DateTime::from_utc(
-                        NaiveDateTime::from_timestamp_millis(v.created * 1000)
-                            .expect("bad created timestamp"),
-                        FixedOffset::east_opt(0).unwrap(),
-                    ))),
-                    vote::choice::set(v.choice.clone()),
-                    vote::votingpower::set(v.vp.into()),
-                    vote::reason::set(v.reason),
-                ],
+    for v in votes_for_proposal {
+        let created = ctx
+            .db
+            .vote()
+            .create(
+                v.choice.clone(),
+                v.vp.into(),
+                v.reason.clone(),
+                voter::address::equals(v.voter.clone()),
+                proposal::id::equals(proposal_id.clone()),
+                dao::id::equals(dao_handler.daoid.clone()),
+                daohandler::id::equals(dao_handler.id.clone()),
+                vec![vote::timecreated::set(Some(DateTime::from_utc(
+                    NaiveDateTime::from_timestamp_millis(v.created * 1000)
+                        .expect("bad created timestamp"),
+                    FixedOffset::east_opt(0).unwrap(),
+                )))],
             )
-        }))
-        .await?;
+            .exec()
+            .await;
 
-    debug!("{:?} ", updated);
+        match created {
+            Ok(_) => {}
+            Err(_) => {
+                ctx.db
+                    .vote()
+                    .update(
+                        vote::voteraddress_daoid_proposalid(
+                            v.voter.clone(),
+                            dao_handler.daoid.clone(),
+                            proposal_id.clone(),
+                        ),
+                        vec![
+                            vote::timecreated::set(Some(DateTime::from_utc(
+                                NaiveDateTime::from_timestamp_millis(v.created * 1000)
+                                    .expect("bad created timestamp"),
+                                FixedOffset::east_opt(0).unwrap(),
+                            ))),
+                            vote::choice::set(v.choice.clone()),
+                            vote::votingpower::set(v.vp.into()),
+                            vote::reason::set(v.reason),
+                        ],
+                    )
+                    .exec()
+                    .await
+                    .ok();
+            }
+        }
+    }
 
     Ok(())
 }

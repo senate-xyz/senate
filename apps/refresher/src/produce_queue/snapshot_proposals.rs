@@ -6,8 +6,7 @@ use prisma_client_rust::{
     chrono::{Duration, Utc},
     operator::{and, or},
 };
-use tracing::{debug, Instrument};
-use tracing::{debug_span, instrument};
+use tracing::{debug, debug_span, instrument, Instrument};
 
 #[instrument(skip(client), ret, level = "info")]
 pub async fn produce_snapshot_proposals_queue(

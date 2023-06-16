@@ -38,9 +38,8 @@ pub async fn maker_polls_sanity_check(ctx: &Context) {
         .await
         .unwrap();
 
-    match dao_handler {
-        Some(handler) => sanitize(handler, sanitize_from, sanitize_to, ctx).await,
-        None => {}
+    if let Some(handler) = dao_handler {
+        sanitize(handler, sanitize_from, sanitize_to, ctx).await
     }
 }
 
@@ -97,31 +96,28 @@ async fn sanitize(
             .await
             .unwrap();
 
-        match proposal {
-            Some(existing_proposal) => {
-                ctx.db
-                    .vote()
-                    .delete_many(vec![vote::proposalid::equals(existing_proposal.clone().id)])
-                    .exec()
-                    .instrument(debug_span!("delete_votes"))
-                    .await
-                    .unwrap();
+        if let Some(existing_proposal) = proposal {
+            ctx.db
+                .vote()
+                .delete_many(vec![vote::proposalid::equals(existing_proposal.clone().id)])
+                .exec()
+                .instrument(debug_span!("delete_votes"))
+                .await
+                .unwrap();
 
-                ctx.db
-                    .proposal()
-                    .delete(proposal::id::equals(
-                        existing_proposal.clone().id.to_string(),
-                    ))
-                    .exec()
-                    .instrument(debug_span!("delete_proposal"))
-                    .await
-                    .unwrap();
+            ctx.db
+                .proposal()
+                .delete(proposal::id::equals(
+                    existing_proposal.clone().id.to_string(),
+                ))
+                .exec()
+                .instrument(debug_span!("delete_proposal"))
+                .await
+                .unwrap();
 
-                info!("Sanitized {} MakerPoll proposal", existing_proposal.name);
+            info!("Sanitized {} MakerPoll proposal", existing_proposal.name);
 
-                debug!("Sanitized MakerPoll proposal - {:?}", existing_proposal);
-            }
-            None => {}
+            debug!("Sanitized MakerPoll proposal - {:?}", existing_proposal);
         }
     }
 }
