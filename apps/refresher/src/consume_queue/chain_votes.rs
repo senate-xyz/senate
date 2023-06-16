@@ -77,7 +77,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                                 dao_handler_r.votersrefreshspeed = cmp::min(
                                     dao_handler_r.votersrefreshspeed
                                         + (dao_handler_r.votersrefreshspeed * 10 / 100),
-                                    100000000,
+                                    1000000000,
                                 );
                             }
 
