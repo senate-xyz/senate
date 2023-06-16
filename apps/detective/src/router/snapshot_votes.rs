@@ -427,29 +427,20 @@ async fn update_or_create_current_votes(
     dao_handler: daohandler::Data,
 ) -> Result<()> {
     for v in votes_for_proposal {
-        let created = ctx
+        let exists = ctx
             .db
             .vote()
-            .create(
-                v.choice.clone(),
-                v.vp.into(),
-                v.reason.clone(),
-                voter::address::equals(v.voter.clone()),
-                proposal::id::equals(proposal_id.clone()),
-                dao::id::equals(dao_handler.daoid.clone()),
-                daohandler::id::equals(dao_handler.id.clone()),
-                vec![vote::timecreated::set(Some(DateTime::from_utc(
-                    NaiveDateTime::from_timestamp_millis(v.created * 1000)
-                        .expect("bad created timestamp"),
-                    FixedOffset::east_opt(0).unwrap(),
-                )))],
-            )
+            .find_unique(vote::voteraddress_daoid_proposalid(
+                v.voter.to_string(),
+                dao_handler.daoid.clone(),
+                proposal_id.clone(),
+            ))
             .exec()
-            .await;
+            .await
+            .unwrap();
 
-        match created {
-            Ok(_) => {}
-            Err(_) => {
+        match exists {
+            Some(_) => {
                 ctx.db
                     .vote()
                     .update(
@@ -471,7 +462,28 @@ async fn update_or_create_current_votes(
                     )
                     .exec()
                     .await
-                    .ok();
+                    .unwrap();
+            }
+            None => {
+                ctx.db
+                    .vote()
+                    .create(
+                        v.choice.clone(),
+                        v.vp.into(),
+                        v.reason.clone(),
+                        voter::address::equals(v.voter.clone()),
+                        proposal::id::equals(proposal_id.clone()),
+                        dao::id::equals(dao_handler.daoid.clone()),
+                        daohandler::id::equals(dao_handler.id.clone()),
+                        vec![vote::timecreated::set(Some(DateTime::from_utc(
+                            NaiveDateTime::from_timestamp_millis(v.created * 1000)
+                                .expect("bad created timestamp"),
+                            FixedOffset::east_opt(0).unwrap(),
+                        )))],
+                    )
+                    .exec()
+                    .await
+                    .unwrap();
             }
         }
     }
