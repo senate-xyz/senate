@@ -11,8 +11,14 @@ use tokio::time::sleep;
 use tracing::{debug, debug_span, instrument, Instrument};
 
 use crate::prisma::{
-    self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
-    NotificationType, PrismaClient,
+    self,
+    notification,
+    proposal,
+    user,
+    DaoHandlerType,
+    NotificationDispatchedState,
+    NotificationType,
+    PrismaClient,
 };
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });

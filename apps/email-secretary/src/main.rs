@@ -21,8 +21,7 @@ use log::info;
 use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 use std::{env, sync::Arc, time::Duration};
-use tokio::time::sleep;
-use tokio::try_join;
+use tokio::{time::sleep, try_join};
 use tracing::debug;
 
 use crate::{

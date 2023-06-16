@@ -14,8 +14,14 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
-        self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
-        NotificationType, PrismaClient,
+        self,
+        notification,
+        proposal,
+        user,
+        DaoHandlerType,
+        NotificationDispatchedState,
+        NotificationType,
+        PrismaClient,
     },
     utils::vote::get_vote,
 };
@@ -290,8 +296,8 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                     }
                 }
             }
-            None => match proposal {
-                Some(proposal) => {
+            None => {
+                if let Some(proposal) = proposal {
                     let message = webhook
                         .clone()
                         .unwrap()
@@ -370,8 +376,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                         .await
                         .unwrap();
                 }
-                None => {}
-            },
+            }
         }
 
         sleep(Duration::from_millis(100)).await;

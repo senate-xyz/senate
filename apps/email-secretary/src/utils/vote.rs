@@ -32,9 +32,8 @@ pub async fn get_vote(
             .await
             .unwrap();
 
-        match vote {
-            Some(_) => voted = true,
-            None => {}
+        if let Some(_) = vote {
+            voted = true
         }
     }
 

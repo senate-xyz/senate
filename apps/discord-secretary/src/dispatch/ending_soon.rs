@@ -7,8 +7,14 @@ use tracing::{debug_span, instrument, Instrument};
 use crate::{
     dispatch::new_proposals,
     prisma::{
-        self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
-        NotificationType, PrismaClient,
+        self,
+        notification,
+        proposal,
+        user,
+        DaoHandlerType,
+        NotificationDispatchedState,
+        NotificationType,
+        PrismaClient,
     },
 };
 

@@ -1,7 +1,13 @@
 use std::sync::Arc;
 
 use crate::prisma::{
-    self, notification, subscription, user, NotificationType, PrismaClient, ProposalState,
+    self,
+    notification,
+    subscription,
+    user,
+    NotificationType,
+    PrismaClient,
+    ProposalState,
 };
 use anyhow::Result;
 use teloxide::Bot;

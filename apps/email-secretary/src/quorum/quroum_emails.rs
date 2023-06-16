@@ -12,9 +12,15 @@ use tracing::{debug, debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
-        self, dao,
+        self,
+        dao,
         notification::{self},
-        proposal, subscription, user, DaoHandlerType, MagicUserState, NotificationDispatchedState,
+        proposal,
+        subscription,
+        user,
+        DaoHandlerType,
+        MagicUserState,
+        NotificationDispatchedState,
         NotificationType,
     },
     utils::{countdown::countdown_gif, vote::get_vote},
