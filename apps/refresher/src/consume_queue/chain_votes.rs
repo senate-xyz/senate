@@ -73,16 +73,16 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                     .collect();
 
                 if ok_voters_response.len() > 0 {
-                    dao_handler.votersrefreshspeed = cmp::min(
-                        dao_handler.votersrefreshspeed
-                        + (dao_handler.votersrefreshspeed * 10 / 100),
+                    dao_handler_r.votersrefreshspeed = cmp::min(
+                        dao_handler_r.votersrefreshspeed
+                        + (dao_handler_r.votersrefreshspeed * 10 / 100),
                         100000000,
                     );
                 }
 
                 if nok_voters_response.len() > 0 {
                     dao_handler_r.votersrefreshspeed = cmp::max(
-                        dao_handler_r.votersrefreshspeed - (dao_handler.votersrefreshspeed * 25 / 100),
+                        dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
                         100,
                     );
                 }
@@ -108,7 +108,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                     vh.last_refresh = Utc::now();
                 }
                 dao_handler_r.votersrefreshspeed = cmp::max(
-                    dao_handler_r.votersrefreshspeed - (dao_handler.votersrefreshspeed * 25 / 100),
+                    dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
                     100,
                 );
             }
