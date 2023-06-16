@@ -2,20 +2,19 @@ use anyhow::{bail, Context, Result};
 use chrono::Duration;
 use futures::future::join_all;
 use opentelemetry::propagation::TextMapPropagator;
+use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime, Utc};
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
-use std::iter::once;
-use tracing::{debug_span, info_span, instrument, span, trace_span, Instrument, Level, Span};
-use tracing_opentelemetry::OpenTelemetrySpanExt;
-
-use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime, Utc};
 use rocket::serde::json::Json;
 use serde::{Deserialize, Deserializer};
 use serde_json::Value;
+use std::iter::once;
+use tracing::{debug_span, info_span, instrument, Instrument, Level, span, Span, trace_span};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
-    prisma::{dao, daohandler, proposal, vote, voter, voterhandler},
-    Ctx, VotesRequest, VotesResponse,
+    Ctx,
+    prisma::{dao, daohandler, proposal, vote, voter, voterhandler}, VotesRequest, VotesResponse,
 };
 
 #[derive(Debug, Deserialize)]
@@ -47,8 +46,8 @@ struct GraphQLVote {
 }
 
 fn parse_proposal<'de, D>(d: D) -> Result<GraphQLProposal, D::Error>
-where
-    D: Deserializer<'de>,
+    where
+        D: Deserializer<'de>,
 {
     Deserialize::deserialize(d).map(|x: Option<_>| x.unwrap_or(GraphQLProposal { id: "".into() }))
 }
@@ -165,7 +164,7 @@ pub async fn update_snapshot_votes<'a>(
             voter_handlers,
             ctx,
         )
-        .await
+            .await
         {
             Ok(_) => data
                 .voters
@@ -191,8 +190,8 @@ pub async fn update_snapshot_votes<'a>(
 
         Json(response)
     }
-    .instrument(root_span)
-    .await
+        .instrument(root_span)
+        .await
 }
 
 #[instrument(skip(ctx, voter_handlers), level = "debug")]
@@ -240,7 +239,7 @@ async fn update_votes(
         voter_handlers,
         ctx,
     )
-    .await?;
+        .await?;
 
     Ok(())
 }
@@ -268,9 +267,9 @@ async fn update_refresh_statuses(
             .expect("bad snapshotindex")
             .timestamp(),
     ]
-    .into_iter()
-    .min()
-    .expect("bad new_index");
+        .into_iter()
+        .min()
+        .expect("bad new_index");
 
     if search_to_timestamp == search_from_timestamp || votes.is_empty() {
         new_index = Utc::now().timestamp();
@@ -361,7 +360,7 @@ async fn update_votes_for_proposal(
                         proposal.id,
                         dao_handler.clone(),
                     )
-                    .await?;
+                        .await?;
                 }
 
                 Ok(())

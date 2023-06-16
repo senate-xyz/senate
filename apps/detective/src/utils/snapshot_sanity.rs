@@ -1,14 +1,13 @@
-use std::sync::Arc;
-
 use chrono::{Duration, Utc};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
+use std::sync::Arc;
 use tracing::{debug_span, event, instrument, Instrument, Level};
 
 use crate::{
-    prisma::{self, daohandler, proposal, vote, DaoHandlerType},
     Context,
+    prisma::{self, daohandler, DaoHandlerType, proposal, vote},
 };
 
 #[derive(Debug, Deserialize)]

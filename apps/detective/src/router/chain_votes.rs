@@ -1,24 +1,23 @@
 use anyhow::{bail, Context, Result};
-use opentelemetry::propagation::TextMapPropagator;
-use std::{cmp, ops::Div};
-use tracing::{debug_span, info_span, instrument, span, trace_span, Instrument, Level, Span};
-use tracing_opentelemetry::OpenTelemetrySpanExt;
-
 use ethers::{providers::Middleware, types::U64};
+use opentelemetry::propagation::TextMapPropagator;
 use prisma_client_rust::Direction;
 use rocket::serde::json::Json;
 use serde::Deserialize;
 use serde_json::Value;
+use std::{cmp, ops::Div};
+use tracing::{debug_span, info_span, instrument, Instrument, Level, span, Span, trace_span};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
+    Ctx,
     handlers::votes::{
         aave::aave_votes, compound::compound_votes, dydx::dydx_votes, ens::ens_votes,
         gitcoin::gitcoin_votes, hop::hop_votes, maker_executive::makerexecutive_votes,
         maker_poll::makerpoll_votes, maker_poll_arbitrum::makerpollarbitrum_votes,
         uniswap::uniswap_votes,
     },
-    prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType},
-    Ctx, VotesRequest, VotesResponse,
+    prisma::{dao, daohandler, DaoHandlerType, proposal, vote, voter, voterhandler}, VotesRequest, VotesResponse,
 };
 
 #[derive(Debug, Deserialize, Clone)]
@@ -163,8 +162,8 @@ pub async fn update_chain_votes<'a>(
             }
         }
     }
-    .instrument(root_span)
-    .await
+        .instrument(root_span)
+        .await
 }
 
 #[instrument(skip(ctx, voters), level = "debug")]

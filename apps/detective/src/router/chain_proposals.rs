@@ -7,19 +7,18 @@ use prisma_client_rust::chrono::{DateTime, FixedOffset, Utc};
 use reqwest::header::HeaderMap;
 use rocket::serde::json::Json;
 use serde_json::Value;
-use tracing::{debug_span, info_span, instrument, span, trace_span, Instrument, Level, Span};
+use tracing::{debug_span, info_span, instrument, Instrument, Level, span, Span, trace_span};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
+    Ctx,
     handlers::proposals::{
         compound::compound_proposals, dydx::dydx_proposals, ens::ens_proposals,
         gitcoin::gitcoin_proposals, hop::hop_proposals, maker_executive::maker_executive_proposals,
         maker_poll::maker_poll_proposals, uniswap::uniswap_proposals,
     },
-    prisma::{dao, daohandler, proposal, DaoHandlerType, ProposalState},
-    Ctx, ProposalsRequest, ProposalsResponse,
+    prisma::{dao, daohandler, DaoHandlerType, proposal, ProposalState}, ProposalsRequest, ProposalsResponse,
 };
-
 use crate::handlers::proposals::aave::aave_proposals;
 
 #[allow(dead_code)]
@@ -114,8 +113,8 @@ pub async fn update_chain_proposals<'a>(
             }
         }
     }
-    .instrument(root_span)
-    .await
+        .instrument(root_span)
+        .await
 }
 
 #[instrument(skip(ctx), level = "debug")]

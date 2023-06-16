@@ -2,42 +2,41 @@
 #![allow(unused_imports)]
 #![allow(unused_parens)]
 
+#[macro_use]
+extern crate rocket;
+
+use dotenv::dotenv;
+use ethers::providers::{Http, Provider};
+use prisma::PrismaClient;
+use pyroscope::PyroscopeAgent;
+use pyroscope_pprofrs::{Pprof, pprof_backend, PprofConfig};
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use std::{env, sync::Arc};
+use std::process;
+use tracing::instrument;
+use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
+use url::Url;
+use utils::{maker_polls_sanity::maker_polls_sanity_check, snapshot_sanity::snapshot_sanity_check};
+
+use crate::router::{
+    chain_proposals::update_chain_proposals, chain_votes::update_chain_votes,
+    snapshot_proposals::update_snapshot_proposals, snapshot_votes::update_snapshot_votes,
+};
+
 pub mod contracts;
 pub mod handlers;
 pub mod prisma;
 mod router;
 pub mod telemetry;
+
 pub mod utils {
     pub mod etherscan;
     pub mod maker_polls_sanity;
     pub mod snapshot_sanity;
 }
-use crate::router::{
-    chain_proposals::update_chain_proposals, chain_votes::update_chain_votes,
-    snapshot_proposals::update_snapshot_proposals, snapshot_votes::update_snapshot_votes,
-};
-use std::{env, sync::Arc};
-
-use dotenv::dotenv;
-use ethers::providers::{Http, Provider};
-
-use prisma::PrismaClient;
-
-use pyroscope::PyroscopeAgent;
-use pyroscope_pprofrs::{pprof_backend, Pprof, PprofConfig};
-use serde_json::Value;
-use std::process;
-use tracing::instrument;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
-use url::Url;
-
-use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
-use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
-use serde::{Deserialize, Serialize};
-use utils::{maker_polls_sanity::maker_polls_sanity_check, snapshot_sanity::snapshot_sanity_check};
-
-#[macro_use]
-extern crate rocket;
 
 #[derive(Clone, Debug)]
 pub struct Context {
@@ -45,6 +44,7 @@ pub struct Context {
     pub rpc: Arc<Provider<Http>>,
     pub http_client: Arc<ClientWithMiddleware>,
 }
+
 pub type Ctx = rocket::State<Context>;
 
 #[allow(non_snake_case)]
