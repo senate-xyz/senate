@@ -1,5 +1,5 @@
-import {prisma} from '@senate/database'
-import {redirect} from 'next/navigation'
+import { prisma } from '@senate/database'
+import { redirect } from 'next/navigation'
 
 async function getProposalUrl(slug: string) {
     const proposal = await prisma.proposal.findFirst({
@@ -16,7 +16,7 @@ async function getProposalUrl(slug: string) {
     return proposal ? proposal.url : ''
 }
 
-export default async function Page({params}: { params: { slug: string } }) {
+export default async function Page({ params }: { params: { slug: string } }) {
     const url = await getProposalUrl(params.slug)
 
     if (url) {

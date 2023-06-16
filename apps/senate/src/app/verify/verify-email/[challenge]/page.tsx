@@ -1,6 +1,6 @@
 import '@rainbow-me/rainbowkit/styles.css'
 
-import {prisma} from '@senate/database'
+import { prisma } from '@senate/database'
 import Link from 'next/link'
 
 const isValidChallenge = async (challenge: string) => {
@@ -25,7 +25,7 @@ const verifyUser = async (challenge: string) => {
     })
 }
 
-export default async function Page({params}) {
+export default async function Page({ params }) {
     const validChallenge = await isValidChallenge(String(params.challenge))
 
     if (!validChallenge)

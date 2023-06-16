@@ -1,8 +1,8 @@
-import {privateProcedure, router} from '../trpc'
-import {z} from 'zod'
-import {MagicUserState, prisma} from '@senate/database'
-import {ServerClient} from 'postmark'
-import {PostHog} from 'posthog-node'
+import { privateProcedure, router } from '../trpc'
+import { z } from 'zod'
+import { MagicUserState, prisma } from '@senate/database'
+import { ServerClient } from 'postmark'
+import { PostHog } from 'posthog-node'
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
     host: `${process.env.NEXT_PUBLIC_WEB_URL}/ingest`
@@ -15,7 +15,7 @@ export const accountSettingsRouter = router({
                 email: z.string().email()
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const challengeCode = Math.random().toString(36).substring(2)
@@ -95,7 +95,7 @@ export const accountSettingsRouter = router({
                 email: z.string().email()
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const emailClient = new ServerClient(
                 process.env.POSTMARK_TOKEN ?? 'Missing Token'
             )
@@ -114,7 +114,7 @@ export const accountSettingsRouter = router({
 
             if (existingTempUser) {
                 await prisma.user.deleteMany({
-                    where: {email: input.email}
+                    where: { email: input.email }
                 })
             }
 
@@ -188,7 +188,7 @@ export const accountSettingsRouter = router({
             return user
         }),
 
-    resendVerification: privateProcedure.mutation(async ({ctx}) => {
+    resendVerification: privateProcedure.mutation(async ({ ctx }) => {
         const emailClient = new ServerClient(
             process.env.POSTMARK_TOKEN ?? 'Missing Token'
         )
@@ -200,7 +200,7 @@ export const accountSettingsRouter = router({
             where: {
                 address: String(username)
             },
-            data: {challengecode: challengeCode, verifiedemail: false}
+            data: { challengecode: challengeCode, verifiedemail: false }
         })
 
         emailClient.sendEmailWithTemplate({
@@ -227,7 +227,7 @@ export const accountSettingsRouter = router({
                 val: z.boolean()
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const user = await prisma.user.update({
@@ -254,14 +254,14 @@ export const accountSettingsRouter = router({
                 val: z.boolean()
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const user = await prisma.user.update({
                 where: {
                     address: String(username)
                 },
-                data: {emptydailybulletin: input.val}
+                data: { emptydailybulletin: input.val }
             })
 
             posthog.capture({
@@ -280,14 +280,14 @@ export const accountSettingsRouter = router({
                 val: z.boolean()
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const user = await prisma.user.update({
                 where: {
                     address: String(username)
                 },
-                data: {emailquorumwarning: input.val}
+                data: { emailquorumwarning: input.val }
             })
 
             posthog.capture({
@@ -300,7 +300,7 @@ export const accountSettingsRouter = router({
             return user
         }),
 
-    disableAaveUser: privateProcedure.mutation(async ({ctx}) => {
+    disableAaveUser: privateProcedure.mutation(async ({ ctx }) => {
         const username = await ctx.user.name
 
         const user = await prisma.user.upsert({
@@ -311,13 +311,13 @@ export const accountSettingsRouter = router({
                 address: String(username),
                 isaaveuser: MagicUserState.DISABLED
             },
-            update: {isaaveuser: MagicUserState.DISABLED}
+            update: { isaaveuser: MagicUserState.DISABLED }
         })
 
         return user
     }),
 
-    disableUniswapUser: privateProcedure.mutation(async ({ctx}) => {
+    disableUniswapUser: privateProcedure.mutation(async ({ ctx }) => {
         const username = await ctx.user.name
 
         const user = await prisma.user.upsert({
@@ -328,7 +328,7 @@ export const accountSettingsRouter = router({
                 address: String(username),
                 isuniswapuser: MagicUserState.DISABLED
             },
-            update: {isuniswapuser: MagicUserState.DISABLED}
+            update: { isuniswapuser: MagicUserState.DISABLED }
         })
 
         return user
@@ -340,7 +340,7 @@ export const accountSettingsRouter = router({
                 val: z.boolean()
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const user = await prisma.user.update({
@@ -367,7 +367,7 @@ export const accountSettingsRouter = router({
                 val: z.boolean()
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const user = await prisma.user.update({
@@ -396,7 +396,7 @@ export const accountSettingsRouter = router({
                 url: z.string().url().includes('discord.com/api/webhooks/')
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const user = await prisma.user.update({
@@ -426,7 +426,7 @@ export const accountSettingsRouter = router({
                 val: z.boolean()
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const user = await prisma.user.update({
@@ -453,7 +453,7 @@ export const accountSettingsRouter = router({
                 val: z.boolean()
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const user = await prisma.user.update({
@@ -482,7 +482,7 @@ export const accountSettingsRouter = router({
                 chatid: z.number().int()
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const user = await prisma.user.update({
@@ -506,7 +506,7 @@ export const accountSettingsRouter = router({
             return user
         }),
 
-    getAcceptedTerms: privateProcedure.query(async ({ctx}) => {
+    getAcceptedTerms: privateProcedure.query(async ({ ctx }) => {
         const username = await ctx.user.name
 
         const user = await prisma.user.findFirst({
@@ -520,7 +520,7 @@ export const accountSettingsRouter = router({
         return user?.acceptedterms
     }),
 
-    getAcceptedTermsTimestamp: privateProcedure.query(async ({ctx}) => {
+    getAcceptedTermsTimestamp: privateProcedure.query(async ({ ctx }) => {
         const username = await ctx.user.name
 
         const user = await prisma.user.findFirst({
@@ -534,7 +534,7 @@ export const accountSettingsRouter = router({
         return user?.acceptedtermstimestamp
     }),
 
-    voters: privateProcedure.query(async ({ctx}) => {
+    voters: privateProcedure.query(async ({ ctx }) => {
         const username = await ctx.user.name
 
         const user = await prisma.user.findFirst({
@@ -561,7 +561,7 @@ export const accountSettingsRouter = router({
                 address: z.string().startsWith('0x').length(42)
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const user = await prisma.user.findFirstOrThrow({
@@ -607,7 +607,7 @@ export const accountSettingsRouter = router({
                 address: z.string().startsWith('0x').length(42)
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const user = await prisma.user.findFirstOrThrow({
@@ -642,7 +642,7 @@ export const accountSettingsRouter = router({
             return result
         }),
 
-    getUser: privateProcedure.query(async ({ctx}) => {
+    getUser: privateProcedure.query(async ({ ctx }) => {
         const username = await ctx.user.name
 
         const user = await prisma.user.findFirst({
@@ -656,7 +656,7 @@ export const accountSettingsRouter = router({
         return user
     }),
 
-    deleteUser: privateProcedure.mutation(async ({ctx}) => {
+    deleteUser: privateProcedure.mutation(async ({ ctx }) => {
         const username = await ctx.user.name
 
         const user = await prisma.user.findFirst({
@@ -667,7 +667,7 @@ export const accountSettingsRouter = router({
             }
         })
         await prisma.user.delete({
-            where: {id: user?.id}
+            where: { id: user?.id }
         })
     })
 })

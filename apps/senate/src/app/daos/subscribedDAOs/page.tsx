@@ -1,10 +1,10 @@
-import {SubscribedDAO} from './components/csr'
-import {getAverageColor} from 'fast-average-color-node'
-import {prisma} from '@senate/database'
-import {getServerSession} from 'next-auth'
-import {authOptions} from '../../../pages/api/auth/[...nextauth]'
+import { SubscribedDAO } from './components/csr'
+import { getAverageColor } from 'fast-average-color-node'
+import { prisma } from '@senate/database'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import 'server-only'
-import {Suspense} from 'react'
+import { Suspense } from 'react'
 
 const getSubscribedDAOs = async () => {
     const session = await getServerSession(authOptions())
@@ -13,14 +13,14 @@ const getSubscribedDAOs = async () => {
     const user = await prisma.user
         .findFirstOrThrow({
             where: {
-                address: {equals: userAddress}
+                address: { equals: userAddress }
             },
             select: {
                 id: true
             }
         })
         .catch(() => {
-            return {id: '0'}
+            return { id: '0' }
         })
 
     const subscriptionsList = await prisma.subscription.findMany({
@@ -31,7 +31,7 @@ const getSubscribedDAOs = async () => {
             dao: {
                 include: {
                     handlers: true,
-                    proposals: {where: {timeend: {gt: new Date()}}}
+                    proposals: { where: { timeend: { gt: new Date() } } }
                 }
             }
         },
@@ -61,7 +61,7 @@ export default async function SubscribedDAOs() {
             )
                 .then((color) => color)
                 .catch(() => {
-                    return {hex: '#5A5A5A'}
+                    return { hex: '#5A5A5A' }
                 })
             return {
                 daoId: sub.id,
@@ -79,8 +79,7 @@ export default async function SubscribedDAOs() {
                     </p>
 
                     <Suspense>
-                        <div
-                            className='grid grid-cols-1 place-items-center gap-10 min-[650px]:grid-cols-2 min-[900px]:grid-cols-3 lg:place-items-start min-[1200px]:grid-cols-4 min-[1500px]:grid-cols-5 min-[1800px]:grid-cols-6 min-[2200px]:grid-cols-7 min-[2300px]:grid-cols-8 min-[2500px]:grid-cols-9 min-[3000px]:grid-cols-10'>
+                        <div className='grid grid-cols-1 place-items-center gap-10 min-[650px]:grid-cols-2 min-[900px]:grid-cols-3 lg:place-items-start min-[1200px]:grid-cols-4 min-[1500px]:grid-cols-5 min-[1800px]:grid-cols-6 min-[2200px]:grid-cols-7 min-[2300px]:grid-cols-8 min-[2500px]:grid-cols-9 min-[3000px]:grid-cols-10'>
                             {subscriptions.map((sub, index) => {
                                 return (
                                     <SubscribedDAO

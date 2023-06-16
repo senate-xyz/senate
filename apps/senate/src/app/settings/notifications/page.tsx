@@ -1,14 +1,14 @@
 'use client'
 
-import {redirect, useRouter} from 'next/navigation'
-import {useEffect} from 'react'
-import {useAccount} from 'wagmi'
+import { redirect, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { useAccount } from 'wagmi'
 import UserEmail from './components/csr/UserEmail'
 import IsUniswapUser from './components/csr/IsUniswapUser'
 import IsAaveUser from './components/csr/IsAaveUser'
 import Discord from './components/csr/Discord'
 import Telegram from './components/csr/Telegram'
-import {trpc} from '../../../server/trpcClient'
+import { trpc } from '../../../server/trpcClient'
 
 export default function Home() {
     const featureFlags = trpc.public.featureFlags.useQuery()
@@ -35,13 +35,13 @@ export default function Home() {
                 </div>
             </div>
 
-            {featureFlags.data?.includes('email_settings') && <UserEmail/>}
-            {featureFlags.data?.includes('discord_settings') && <Discord/>}
-            {featureFlags.data?.includes('telegram_settings') && <Telegram/>}
+            {featureFlags.data?.includes('email_settings') && <UserEmail />}
+            {featureFlags.data?.includes('discord_settings') && <Discord />}
+            {featureFlags.data?.includes('telegram_settings') && <Telegram />}
             {featureFlags.data?.includes('magic_user_settings') && (
                 <div className='flex flex-row gap-8'>
-                    <IsAaveUser/>
-                    <IsUniswapUser/>
+                    <IsAaveUser />
+                    <IsUniswapUser />
                 </div>
             )}
         </div>

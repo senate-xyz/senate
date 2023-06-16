@@ -1,7 +1,7 @@
-import {privateProcedure, router} from '../trpc'
-import {z} from 'zod'
-import {prisma} from '@senate/database'
-import {PostHog} from 'posthog-node'
+import { privateProcedure, router } from '../trpc'
+import { z } from 'zod'
+import { prisma } from '@senate/database'
+import { PostHog } from 'posthog-node'
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
     host: `${process.env.NEXT_PUBLIC_WEB_URL}/ingest`
@@ -14,7 +14,7 @@ export const subscriptionsRouter = router({
                 daoId: z.string()
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const user = await prisma.user.findFirstOrThrow({
@@ -43,7 +43,7 @@ export const subscriptionsRouter = router({
             })
 
             const dao = await prisma.dao.findFirst({
-                where: {id: input.daoId}
+                where: { id: input.daoId }
             })
 
             posthog.capture({
@@ -63,7 +63,7 @@ export const subscriptionsRouter = router({
                 daoId: z.string()
             })
         )
-        .mutation(async ({input, ctx}) => {
+        .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
             const user = await prisma.user.findFirstOrThrow({
@@ -84,7 +84,7 @@ export const subscriptionsRouter = router({
             })
 
             const dao = await prisma.dao.findFirst({
-                where: {id: input.daoId}
+                where: { id: input.daoId }
             })
 
             posthog.capture({

@@ -1,9 +1,9 @@
 'use client'
 
-import {useEffect, useState} from 'react'
-import {trpc} from '../../../../../server/trpcClient'
-import {useRouter} from 'next/navigation'
-import {useAccount} from 'wagmi'
+import { useEffect, useState } from 'react'
+import { trpc } from '../../../../../server/trpcClient'
+import { useRouter } from 'next/navigation'
+import { useAccount } from 'wagmi'
 import Image from 'next/image'
 
 const Discord = () => {
@@ -42,7 +42,7 @@ const Discord = () => {
 
     const onEnter = () => {
         setDiscordWebhook.mutate(
-            {url: currentWebhook},
+            { url: currentWebhook },
             {
                 onSuccess: () => {
                     setEdit(false)
@@ -78,8 +78,7 @@ const Discord = () => {
                         }}
                         className='peer sr-only'
                     />
-                    <div
-                        className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]"/>
+                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
                 </label>
             </div>
 
@@ -118,12 +117,12 @@ const Discord = () => {
                                             'https'
                                         )
                                             ? user.data.discordwebhook ==
-                                            currentWebhook
+                                              currentWebhook
                                                 ? 'bg-[#ABABAB] hover:bg-[#999999]'
                                                 : 'bg-white hover:bg-[#e5e5e5]'
                                             : currentWebhook.length
-                                                ? 'bg-white hover:bg-[#e5e5e5]'
-                                                : 'bg-[#ABABAB] hover:bg-[#999999]'
+                                            ? 'bg-white hover:bg-[#e5e5e5]'
+                                            : 'bg-[#ABABAB] hover:bg-[#999999]'
                                     } text-center`}
                                     onClick={() => onEnter()}
                                 >
@@ -153,8 +152,7 @@ const Discord = () => {
                         <div className='font-[18px] leading-[23px] text-white'>
                             Ending soon reminders
                         </div>
-                        <label
-                            className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
+                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
                             <input
                                 type='checkbox'
                                 checked={getDiscordReminders}
@@ -165,8 +163,7 @@ const Discord = () => {
                                 }}
                                 className='peer sr-only'
                             />
-                            <div
-                                className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]"/>
+                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
                         </label>
                     </div>
                 </div>

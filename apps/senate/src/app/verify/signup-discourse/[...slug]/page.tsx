@@ -1,8 +1,8 @@
 import '@rainbow-me/rainbowkit/styles.css'
 
-import {prisma} from '@senate/database'
+import { prisma } from '@senate/database'
 import Link from 'next/link'
-import {VerifyButton} from './components/VerifyButton'
+import { VerifyButton } from './components/VerifyButton'
 
 const isValidChallenge = async (challenge: string) => {
     const user = await prisma.user.findFirst({
@@ -14,7 +14,7 @@ const isValidChallenge = async (challenge: string) => {
     return user ? true : false
 }
 
-export default async function Page({params}) {
+export default async function Page({ params }) {
     const validChallenge = await isValidChallenge(String(params.slug[1]))
 
     if (!validChallenge)
@@ -37,7 +37,7 @@ export default async function Page({params}) {
                 <p className='text-3xl font-bold text-white'>
                     Please connect your wallet and sign the message
                 </p>
-                <VerifyButton challenge={String(params.slug[1])}/>
+                <VerifyButton challenge={String(params.slug[1])} />
             </div>
         )
     }

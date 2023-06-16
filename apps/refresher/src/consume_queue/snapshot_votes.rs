@@ -74,14 +74,14 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                                 .filter(|result| !result.success)
                                 .map(|result| result.voter_address.clone())
                                 .collect();
-                            if ok_voters_response.len() > 0 {
+                            if !ok_voters_response.is_empty() {
                                 dao_handler_r.votersrefreshspeed = cmp::min(
                                     dao_handler_r.votersrefreshspeed
                                         + (dao_handler_r.votersrefreshspeed * 10 / 100),
                                     1000,
                                 );
                             }
-                            if nok_voters_response.len() > 0 {
+                            if !nok_voters_response.is_empty() {
                                 dao_handler_r.votersrefreshspeed = cmp::max(
                                     dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
                                     10,

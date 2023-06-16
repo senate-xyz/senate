@@ -1,6 +1,6 @@
-import {isUpToDate} from './Table'
+import { isUpToDate } from './Table'
 import Image from 'next/image'
-import dayjs, {extend} from 'dayjs'
+import dayjs, { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
 extend(relativeTime)
@@ -88,7 +88,7 @@ export const MobileActiveProposal = async (props: {
                                     'snapshot.org'
                                 )
                                     ? props.proposal.proposalLink +
-                                    '?app=senate'
+                                      '?app=senate'
                                     : props.proposal.proposalLink
                             }
                             target='_blank'

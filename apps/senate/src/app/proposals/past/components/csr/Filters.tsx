@@ -1,9 +1,9 @@
 'use client'
 
-import {useEffect, useState} from 'react'
-import {useRouter, useSearchParams} from 'next/navigation'
-import {useAccount, usePublicClient} from 'wagmi'
-import {useSession} from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useAccount, usePublicClient } from 'wagmi'
+import { useSession } from 'next-auth/react'
 
 const endOptions: { name: string; time: number }[] = [
     {
@@ -197,7 +197,7 @@ export const Filters = (props: {
                                 Any
                             </option>
                             {props.proxies.map((proxy) => {
-                                return <Proxy address={proxy} key={proxy}/>
+                                return <Proxy address={proxy} key={proxy} />
                             })}
                         </select>
                     </div>

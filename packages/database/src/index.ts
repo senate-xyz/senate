@@ -1,7 +1,7 @@
-import {Prisma, PrismaClient} from '@prisma/client'
-import {backOff, type IBackOffOptions} from 'exponential-backoff'
+import { Prisma, PrismaClient } from '@prisma/client'
+import { backOff, type IBackOffOptions } from 'exponential-backoff'
 
-export type {JsonArray, JsonValue} from 'type-fest'
+export type { JsonArray, JsonValue } from 'type-fest'
 
 export {
     type PrismaClient,

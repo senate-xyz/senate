@@ -1,8 +1,8 @@
 'use client'
 
-import {useSession} from 'next-auth/react'
-import {useEffect, useState} from 'react'
-import {useAccount, usePublicClient} from 'wagmi'
+import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import { useAccount, usePublicClient } from 'wagmi'
 
 const UserAddress = () => {
     const session = useSession()
@@ -13,7 +13,7 @@ const UserAddress = () => {
 
     useEffect(() => {
         if (session.status === 'authenticated' && account.address) {
-            provider.getEnsName({address: account.address}).then((ens) => {
+            provider.getEnsName({ address: account.address }).then((ens) => {
                 setEns(ens ?? '')
             })
         }

@@ -3,17 +3,17 @@
 import '../../styles/globals.css'
 
 import Image from 'next/image'
-import {useEffect, useState} from 'react'
-import {useRouter} from 'next/navigation'
-import {Transition} from '@headlessui/react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Transition } from '@headlessui/react'
 import Head from 'next/head'
-import {trpc} from '../../server/trpcClient'
+import { trpc } from '../../server/trpcClient'
 import RootProvider from '../providers'
 
 const WrapperHome = () => {
     return (
         <RootProvider>
-            <Home/>
+            <Home />
         </RootProvider>
     )
 }
@@ -36,7 +36,7 @@ const Home = () => {
 
     const onEnter = () => {
         setEmail.mutate(
-            {email: newEmail},
+            { email: newEmail },
             {
                 onSuccess: () => {
                     setSuccess(true)
@@ -116,8 +116,7 @@ const Home = () => {
                         </Transition>
                     </div>
 
-                    <div
-                        className='flex h-1/2 w-full grow flex-col items-start bg-black px-10 py-20 lg:h-screen lg:w-0.5 lg:items-center'>
+                    <div className='flex h-1/2 w-full grow flex-col items-start bg-black px-10 py-20 lg:h-screen lg:w-0.5 lg:items-center'>
                         <div className='text-[36px] font-bold text-white'>
                             Get your Daily Bulletin
                         </div>

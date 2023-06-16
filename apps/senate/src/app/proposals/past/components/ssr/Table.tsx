@@ -1,12 +1,17 @@
 import Image from 'next/image'
-import {extend} from 'dayjs'
+import { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import {type JsonArray, prisma, ProposalState, type Vote} from '@senate/database'
-import {getServerSession} from 'next-auth'
-import {authOptions} from '../../../../../pages/api/auth/[...nextauth]'
+import {
+    type JsonArray,
+    prisma,
+    ProposalState,
+    type Vote
+} from '@senate/database'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
 import 'server-only'
-import {MobilePastProposal} from './MobileRow'
-import {PastProposal} from './DesktopRow'
+import { MobilePastProposal } from './MobileRow'
+import { PastProposal } from './DesktopRow'
 
 extend(relativeTime)
 
@@ -23,7 +28,7 @@ const getProposals = async (
 
     const user = await prisma.user.findFirst({
         where: {
-            address: {equals: userAddress}
+            address: { equals: userAddress }
         },
         include: {
             voters: true
@@ -91,44 +96,44 @@ const getProposals = async (
                         name:
                             from == 'any'
                                 ? {
-                                    in: userSubscriptions.map(
-                                        (sub) => sub.dao.name
-                                    )
-                                }
+                                      in: userSubscriptions.map(
+                                          (sub) => sub.dao.name
+                                      )
+                                  }
                                 : {
-                                    equals: String(dao?.name)
-                                }
+                                      equals: String(dao?.name)
+                                  }
                     }
                 },
                 {
                     timeend: Boolean(active)
                         ? {
-                            lte: new Date(
-                                Date.now() + Number(end * 24 * 60 * 60 * 1000)
-                            )
-                        }
+                              lte: new Date(
+                                  Date.now() + Number(end * 24 * 60 * 60 * 1000)
+                              )
+                          }
                         : {
-                            gte: new Date(
-                                Date.now() - Number(end * 24 * 60 * 60 * 1000)
-                            )
-                        }
+                              gte: new Date(
+                                  Date.now() - Number(end * 24 * 60 * 60 * 1000)
+                              )
+                          }
                 },
                 {
                     state: Boolean(active)
                         ? {
-                            in: [ProposalState.ACTIVE, ProposalState.PENDING]
-                        }
+                              in: [ProposalState.ACTIVE, ProposalState.PENDING]
+                          }
                         : {
-                            in: [
-                                ProposalState.QUEUED,
-                                ProposalState.DEFEATED,
-                                ProposalState.EXECUTED,
-                                ProposalState.EXPIRED,
-                                ProposalState.SUCCEEDED,
-                                ProposalState.HIDDEN,
-                                ProposalState.UNKNOWN
-                            ]
-                        }
+                              in: [
+                                  ProposalState.QUEUED,
+                                  ProposalState.DEFEATED,
+                                  ProposalState.EXECUTED,
+                                  ProposalState.EXPIRED,
+                                  ProposalState.SUCCEEDED,
+                                  ProposalState.HIDDEN,
+                                  ProposalState.UNKNOWN
+                              ]
+                          }
                 },
                 voteStatusQuery
             ]
@@ -192,9 +197,9 @@ const getProposals = async (
                 timeEnd: proposal.timeend,
                 voted: user
                     ? String(
-                        proposal.votes.map((vote: Vote) => vote.choice)
-                            .length > 0
-                    )
+                          proposal.votes.map((vote: Vote) => vote.choice)
+                              .length > 0
+                      )
                     : 'not-connected',
                 highestScoreChoice: highestScoreChoice,
                 highestScore: highestScore,
@@ -215,7 +220,7 @@ export const isUpToDate = async (daohandlerid: string) => {
 
     const user = await prisma.user.findFirst({
         where: {
-            address: {equals: userAddress}
+            address: { equals: userAddress }
         },
         include: {
             voters: true
@@ -224,8 +229,8 @@ export const isUpToDate = async (daohandlerid: string) => {
 
     const voterHandlers = await prisma.voterhandler.findMany({
         where: {
-            daohandlerid: {equals: daohandlerid},
-            voter: {id: {in: user?.voters.map((v) => v.id)}}
+            daohandlerid: { equals: daohandlerid },
+            voter: { id: { in: user?.voters.map((v) => v.id) } }
         }
     })
 
@@ -255,48 +260,48 @@ export default async function Table(props: {
         <div className={`mt-[16px] flex flex-col`}>
             <div className='flex w-full flex-col lg:hidden'>
                 {proposals.map((proposal, index) => (
-                    <MobilePastProposal key={index} proposal={proposal}/>
+                    <MobilePastProposal key={index} proposal={proposal} />
                 ))}
             </div>
             <div className='hidden lg:flex'>
                 <table className='w-full table-auto border-separate border-spacing-y-[4px] text-left'>
                     <thead className='h-[56px] bg-black text-white'>
-                    <tr>
-                        <th className='h-[56px] w-[200px] items-center pl-[16px]'>
-                            <div className='flex gap-1'>
-                                <div>DAO</div>
-                            </div>
-                        </th>
-                        <th className='h-[56px] items-center'>
-                            <div className='flex gap-1'>
-                                <div>Proposal Title</div>
-                            </div>
-                        </th>
-                        <th className='h-[56px] w-[250px] items-center font-normal'>
-                            <div className='flex gap-1'>
-                                <div>Ended on</div>
-                                <Image
-                                    loading='eager'
-                                    priority={true}
-                                    width={24}
-                                    height={24}
-                                    src={'/assets/Icon/SortDiscending.svg'}
-                                    alt='ended-on'
-                                />
-                            </div>
-                        </th>
-                        <th className='h-[56px] w-[200px] items-center text-center font-normal'>
-                            <div className='flex justify-center gap-1'>
-                                <div>Vote status</div>
-                            </div>
-                        </th>
-                    </tr>
+                        <tr>
+                            <th className='h-[56px] w-[200px] items-center pl-[16px]'>
+                                <div className='flex gap-1'>
+                                    <div>DAO</div>
+                                </div>
+                            </th>
+                            <th className='h-[56px] items-center'>
+                                <div className='flex gap-1'>
+                                    <div>Proposal Title</div>
+                                </div>
+                            </th>
+                            <th className='h-[56px] w-[250px] items-center font-normal'>
+                                <div className='flex gap-1'>
+                                    <div>Ended on</div>
+                                    <Image
+                                        loading='eager'
+                                        priority={true}
+                                        width={24}
+                                        height={24}
+                                        src={'/assets/Icon/SortDiscending.svg'}
+                                        alt='ended-on'
+                                    />
+                                </div>
+                            </th>
+                            <th className='h-[56px] w-[200px] items-center text-center font-normal'>
+                                <div className='flex justify-center gap-1'>
+                                    <div>Vote status</div>
+                                </div>
+                            </th>
+                        </tr>
                     </thead>
 
                     <tbody>
-                    {proposals.map((proposal, index: number) => (
-                        <PastProposal key={index} proposal={proposal}/>
-                    ))}
+                        {proposals.map((proposal, index: number) => (
+                            <PastProposal key={index} proposal={proposal} />
+                        ))}
                     </tbody>
                 </table>
             </div>

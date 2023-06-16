@@ -1,19 +1,19 @@
 'use client'
 
-import {ConnectButton} from '@rainbow-me/rainbowkit'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
-import {Suspense, useEffect, useState} from 'react'
-import {useAccount, useSignMessage} from 'wagmi'
-import {trpc} from '../../../../../server/trpcClient'
-import {useRouter} from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { useAccount, useSignMessage } from 'wagmi'
+import { trpc } from '../../../../../server/trpcClient'
+import { useRouter } from 'next/navigation'
 
 export const VerifyButton = (props: { challenge: string }) => {
     const router = useRouter()
 
     const message = `Welcome to Senate! \nchallenge: ${props.challenge}`
     const [signPopup, setSignPopup] = useState(false)
-    const {address, isConnected, connector: activeConnector} = useAccount()
-    const {signMessage, data: signedMessage} = useSignMessage({
+    const { address, isConnected, connector: activeConnector } = useAccount()
+    const { signMessage, data: signedMessage } = useSignMessage({
         message: message
     })
 
@@ -51,7 +51,7 @@ export const VerifyButton = (props: { challenge: string }) => {
 
     return (
         <Suspense fallback={<></>}>
-            <ConnectButton showBalance={false}/>
+            <ConnectButton showBalance={false} />
         </Suspense>
     )
 }

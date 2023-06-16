@@ -1,6 +1,6 @@
 'use client'
 
-import {trpc} from '../../../../../server/trpcClient'
+import { trpc } from '../../../../../server/trpcClient'
 
 const IsAaveUser = () => {
     const user = trpc.accountSettings.getUser.useQuery()
@@ -24,8 +24,7 @@ const IsAaveUser = () => {
                             }}
                             className='peer sr-only'
                         />
-                        <div
-                            className="bg-aave-gradient peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5  after:w-5 after:bg-black after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700"/>
+                        <div className="bg-aave-gradient peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5  after:w-5 after:bg-black after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
                     </label>
                 </div>
             </div>

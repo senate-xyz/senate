@@ -1,12 +1,20 @@
 'use client'
 
-import {connectorsForWallets, darkTheme, DisclaimerComponent, RainbowKitProvider} from '@rainbow-me/rainbowkit'
-import {GetSiweMessageOptions, RainbowKitSiweNextAuthProvider} from '@rainbow-me/rainbowkit-siwe-next-auth'
-import {SessionProvider} from 'next-auth/react'
-import {configureChains, createConfig, mainnet, WagmiConfig} from 'wagmi'
-import {alchemyProvider} from 'wagmi/providers/alchemy'
-import {publicProvider} from 'wagmi/providers/public'
-import {TrpcClientProvider} from '../server/trpcClient'
+import {
+    connectorsForWallets,
+    darkTheme,
+    DisclaimerComponent,
+    RainbowKitProvider
+} from '@rainbow-me/rainbowkit'
+import {
+    GetSiweMessageOptions,
+    RainbowKitSiweNextAuthProvider
+} from '@rainbow-me/rainbowkit-siwe-next-auth'
+import { SessionProvider } from 'next-auth/react'
+import { configureChains, createConfig, mainnet, WagmiConfig } from 'wagmi'
+import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { publicProvider } from 'wagmi/providers/public'
+import { TrpcClientProvider } from '../server/trpcClient'
 import Link from 'next/link'
 import {
     braveWallet,
@@ -18,15 +26,15 @@ import {
     safeWallet,
     walletConnectWallet
 } from '@rainbow-me/rainbowkit/wallets'
-import {usePathname, useSearchParams} from 'next/navigation'
-import {Suspense, useEffect} from 'react'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect } from 'react'
 import posthog from 'posthog-js'
-import {PostHogProvider} from 'posthog-js/react'
+import { PostHogProvider } from 'posthog-js/react'
 
-const {chains, publicClient} = configureChains(
+const { chains, publicClient } = configureChains(
     [mainnet],
     [
-        alchemyProvider({apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? ''}),
+        alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? '' }),
         publicProvider()
     ]
 )
@@ -39,7 +47,7 @@ const connectors = connectorsForWallets([
                 projectId: 'ba2ea900f1a01f07f3f489619d9451b3',
                 chains: chains
             }),
-            injectedWallet({chains}),
+            injectedWallet({ chains }),
             walletConnectWallet({
                 projectId: 'ba2ea900f1a01f07f3f489619d9451b3',
                 chains
@@ -49,8 +57,8 @@ const connectors = connectorsForWallets([
     {
         groupName: 'Others',
         wallets: [
-            safeWallet({chains: chains}),
-            coinbaseWallet({chains, appName: 'Senate'}),
+            safeWallet({ chains: chains }),
+            coinbaseWallet({ chains, appName: 'Senate' }),
             braveWallet({
                 chains
             }),
@@ -121,7 +129,7 @@ if (typeof window !== 'undefined') {
     })
 }
 
-function HogProvider({children}) {
+function HogProvider({ children }) {
     const pathname = usePathname()
     const searchParams = useSearchParams()
     // Track pageviews
@@ -140,7 +148,7 @@ function HogProvider({children}) {
     return <PostHogProvider client={posthog}>{children}</PostHogProvider>
 }
 
-export default function RootProvider({children}) {
+export default function RootProvider({ children }) {
     return (
         <Suspense fallback={<RootProviderInner>{children}</RootProviderInner>}>
             <HogProvider>
@@ -150,7 +158,7 @@ export default function RootProvider({children}) {
     )
 }
 
-function RootProviderInner({children}: { children: React.ReactNode }) {
+function RootProviderInner({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
 
     return (

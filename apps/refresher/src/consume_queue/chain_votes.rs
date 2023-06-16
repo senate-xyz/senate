@@ -74,7 +74,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                                 .map(|result| result.voter_address.clone())
                                 .collect();
 
-                            if ok_voters_response.len() > 0 {
+                            if !ok_voters_response.is_empty() {
                                 dao_handler_r.votersrefreshspeed = cmp::min(
                                     dao_handler_r.votersrefreshspeed
                                         + (dao_handler_r.votersrefreshspeed * 10 / 100),
@@ -82,7 +82,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                                 );
                             }
 
-                            if nok_voters_response.len() > 0 {
+                            if !nok_voters_response.is_empty() {
                                 dao_handler_r.votersrefreshspeed = cmp::max(
                                     dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
                                     100,

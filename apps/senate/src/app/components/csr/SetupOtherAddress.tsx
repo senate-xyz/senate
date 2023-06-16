@@ -1,9 +1,9 @@
 'use client'
 
-import {useCookies} from 'react-cookie'
+import { useCookies } from 'react-cookie'
 import Image from 'next/image'
 import Link from 'next/link'
-import {trpc} from '../../../server/trpcClient'
+import { trpc } from '../../../server/trpcClient'
 
 const SetupOtherAddress = () => {
     const [cookie, setCookie] = useCookies(['proposalsBannedDismissed'])

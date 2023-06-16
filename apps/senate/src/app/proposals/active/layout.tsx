@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import {Suspense} from 'react'
+import { Suspense } from 'react'
 import Loading from './loading'
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
@@ -18,8 +18,8 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
 ]
 
 export default async function RootLayout({
-                                             children
-                                         }: {
+    children
+}: {
     children: React.ReactNode
 }) {
     return (
@@ -37,7 +37,7 @@ export default async function RootLayout({
                     )
                 })}
             </div>
-            <Suspense fallback={<Loading/>}>{children}</Suspense>
+            <Suspense fallback={<Loading />}>{children}</Suspense>
         </div>
     )
 }

@@ -1,13 +1,13 @@
 'use client'
 
-import {useConnectModal} from '@rainbow-me/rainbowkit'
-import {useSession} from 'next-auth/react'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
-import {useRouter} from 'next/navigation'
-import {useEffect, useState} from 'react'
-import {useCookies} from 'react-cookie'
-import {useAccount} from 'wagmi'
-import {trpc} from '../../../../../server/trpcClient'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useCookies } from 'react-cookie'
+import { useAccount } from 'wagmi'
+import { trpc } from '../../../../../server/trpcClient'
 
 export const UnsubscribedDAO = (props: {
     daoId: string
@@ -34,7 +34,7 @@ export const UnsubscribedDAO = (props: {
 
     const account = useAccount()
     const session = useSession()
-    const {openConnectModal} = useConnectModal()
+    const { openConnectModal } = useConnectModal()
 
     const router = useRouter()
     const subscribe = trpc.subscriptions.subscribe.useMutation()
@@ -166,18 +166,18 @@ export const UnsubscribedDAO = (props: {
                     onClick={() => {
                         account.isConnected && session.status == 'authenticated'
                             ? subscribe.mutate(
-                                {
-                                    daoId: props.daoId
-                                },
-                                {
-                                    onSuccess: () => {
-                                        if (router) router.refresh()
-                                    },
-                                    onError: () => {
-                                        if (router) router.refresh()
-                                    }
-                                }
-                            )
+                                  {
+                                      daoId: props.daoId
+                                  },
+                                  {
+                                      onSuccess: () => {
+                                          if (router) router.refresh()
+                                      },
+                                      onError: () => {
+                                          if (router) router.refresh()
+                                      }
+                                  }
+                              )
                             : connectAndSubscribe(props.daoId)
                     }}
                 >
