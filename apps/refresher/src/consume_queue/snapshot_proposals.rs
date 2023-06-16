@@ -40,18 +40,18 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
             let mut trace = HashMap::new();
             propagator.inject_context(&context, &mut trace);
 
-            let response = http_client
-                .post(&post_url)
-                .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "trace": trace}))
-                .send()
-                .await;
-
             let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
             let dao_handler_position = daos_refresh_status
                 .iter()
                 .position(|r| r.dao_handler_id == entry.handler_id)
                 .expect("DaoHandler not found in refresh status array");
             let dao_handler = daos_refresh_status.get_mut(dao_handler_position).unwrap();
+
+            let response = http_client
+                .post(&post_url)
+                .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "refreshspeed":dao_handler.refreshspeed, "trace": trace}))
+                .send()
+                .await;
 
             match response {
                 Ok(res) => {

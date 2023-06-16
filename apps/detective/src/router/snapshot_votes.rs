@@ -145,10 +145,10 @@ pub async fn update_snapshot_votes<'a>(
             }}
         }}
     }}"#,
-            if dao_handler.votersrefreshspeed > 1000 {
+            if data.refreshspeed > 1000 {
                 1000
             } else {
-                dao_handler.votersrefreshspeed
+                data.refreshspeed
             },
             data.voters.clone(),
             decoder.space,

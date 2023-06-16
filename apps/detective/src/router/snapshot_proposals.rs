@@ -13,7 +13,9 @@ use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
     prisma::{dao, daohandler, proposal, ProposalState},
-    Ctx, ProposalsRequest, ProposalsResponse,
+    Ctx,
+    ProposalsRequest,
+    ProposalsResponse,
 };
 
 #[derive(Debug, Deserialize)]
@@ -111,10 +113,10 @@ pub async fn update_snapshot_proposals<'a>(
             }}
         }}
     "#,
-            if dao_handler.refreshspeed > 100 {
+            if data.refreshspeed.clone() > 100 {
                 100
             } else {
-                dao_handler.refreshspeed
+                data.refreshspeed.clone()
             },
             decoder.space,
             old_index

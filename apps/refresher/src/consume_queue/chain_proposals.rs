@@ -53,7 +53,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
 
             let response = http_client
                 .post(&post_url)
-                .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "trace": trace}))
+                .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "refreshspeed":dao_handler.refreshspeed, "trace": trace}))
                 .send()
                 .await;
 

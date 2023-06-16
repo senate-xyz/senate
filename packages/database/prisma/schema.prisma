@@ -98,9 +98,6 @@ model daohandler {
 
   uptodate Boolean @default(false)
 
-  refreshspeed       BigInt @default(1000000)
-  votersrefreshspeed BigInt @default(50000000)
-
   daoid         String
   dao           dao            @relation(fields: [daoid], references: [id], onUpdate: NoAction, onDelete: NoAction)
   proposals     proposal[]

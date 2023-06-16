@@ -54,6 +54,7 @@ pub type Ctx = rocket::State<Context>;
 #[serde(crate = "rocket::serde")]
 pub struct ProposalsRequest<'r> {
     daoHandlerId: &'r str,
+    refreshspeed: i64,
     trace: Value,
 }
 
@@ -71,6 +72,7 @@ pub struct ProposalsResponse<'r> {
 pub struct VotesRequest<'r> {
     daoHandlerId: &'r str,
     voters: Vec<String>,
+    refreshspeed: i64,
     trace: Value,
 }
 
