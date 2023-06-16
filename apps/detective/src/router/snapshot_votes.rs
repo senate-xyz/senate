@@ -287,6 +287,10 @@ async fn update_refresh_statuses(
         uptodate = true;
     }
 
+    if search_to_timestamp > dao_handler.snapshotindex.unwrap().timestamp() {
+        uptodate = true;
+    }
+
     debug!("{:?} {:?}", search_to_timestamp, new_index);
 
     let updated = ctx
