@@ -1,9 +1,7 @@
 use anyhow::Result;
 use log::warn;
 use opentelemetry::{
-    global,
-    propagation::TextMapPropagator,
-    sdk::propagation::TraceContextPropagator,
+    global, propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator,
 };
 use std::{cmp, collections::HashMap, env, sync::Arc};
 use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level, Span};

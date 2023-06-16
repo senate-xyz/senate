@@ -1,9 +1,5 @@
 use crate::{
-    config::Config,
-    prisma,
-    refresh_status::DAOS_REFRESH_STATUS,
-    RefreshEntry,
-    RefreshType,
+    config::Config, prisma, refresh_status::DAOS_REFRESH_STATUS, RefreshEntry, RefreshType,
 };
 use anyhow::Result;
 

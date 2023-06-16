@@ -16,39 +16,24 @@ use tokio::task;
 
 use crate::{
     prisma::{self, daohandler, PrismaClient},
+    refresh_status::{DAOS_REFRESH_STATUS, VOTERS_REFRESH_STATUS},
     RefreshEntry,
 };
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, dead_code)]
 #[derive(Deserialize)]
 struct ApiResponse {
     voter_address: String,
     success: bool,
 }
 
-#[instrument(skip(client), level = "info")]
-pub(crate) async fn consume_snapshot_votes(
-    entry: RefreshEntry,
-    client: &Arc<PrismaClient>,
-) -> Result<()> {
+#[instrument(level = "info")]
+pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
     let detective_url = env::var("DETECTIVE_URL").expect("$DETECTIVE_URL is not set");
 
     let post_url = format!("{}/votes/snapshot_votes", detective_url);
 
     let http_client = Client::builder().build().unwrap();
-
-    let dao_handler = client
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(entry.handler_id.to_string())])
-        .exec()
-        .instrument(debug_span!("get_dao_handler"))
-        .await
-        .unwrap()
-        .unwrap();
-
-    let client_ref = client.clone();
-    let dao_handler_ref = dao_handler;
-    let voters_ref = entry.voters.clone();
 
     task::spawn({
         async move {
@@ -58,9 +43,16 @@ pub(crate) async fn consume_snapshot_votes(
         let mut trace = HashMap::new();
         propagator.inject_context(&context, &mut trace);
 
+        let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
+        let mut voter_refresh_status = VOTERS_REFRESH_STATUS.lock().await;
+        let dao_handler_position = daos_refresh_status
+            .iter()
+            .position(|r| r.dao_handler_id == entry.handler_id)
+            .expect("DaoHandler not found in refresh status array");
+        let dao_handler_r = daos_refresh_status.get_mut(dao_handler_position).unwrap();
         let response = http_client
             .post(&post_url)
-            .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "voters": entry.voters, "trace": trace}))
+            .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "voters": entry.voters, "refreshspeed": dao_handler_r.votersrefreshspeed,  "trace": trace }))
             .send()
             .await;
 
@@ -68,139 +60,57 @@ pub(crate) async fn consume_snapshot_votes(
             Ok(res) => {
                 let data: Vec<ApiResponse> = res.json().await.unwrap();
 
-                // Filter data based on the "response" field
-                let ok_voters: Vec<String> = data
+                let ok_voters_response: Vec<String> = data
                     .iter()
                     .filter(|result| result.success)
                     .map(|result| result.voter_address.clone())
                     .collect();
 
-                let nok_voters: Vec<String> = data
+                let nok_voters_response: Vec<String> = data
                     .iter()
                     .filter(|result| !result.success)
                     .map(|result| result.voter_address.clone())
                     .collect();
 
-                let ok_voter_ids = client_ref
-                    .voter()
-                    .find_many(vec![prisma::voter::address::in_vec(ok_voters.clone())])
-                    .exec()
-                    .instrument(debug_span!("get_voters"))
-                    .await
-                    .unwrap()
-                    .iter()
-                    .map(|voter| voter.id.clone())
-                    .collect();
+                if ok_voters_response.len() > 0 {
+                    dao_handler_r.votersrefreshspeed = cmp::min(
+                        dao_handler_r.votersrefreshspeed
+                        + (dao_handler_r.votersrefreshspeed * 10 / 100),
+                        1000,
+                    );
+                }
 
-                let nok_voter_ids = client_ref
-                    .voter()
-                    .find_many(vec![prisma::voter::address::in_vec(nok_voters.clone())])
-                    .exec()
-                    .instrument(debug_span!("get_voters"))
-                    .await
-                    .unwrap()
-                    .iter()
-                    .map(|voter| voter.id.clone())
-                    .collect();
+                if nok_voters_response.len() > 0 {
+                    dao_handler_r.votersrefreshspeed = cmp::max(
+                        dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
+                        10,
+                    );
+                }
 
-                let update_ok_voters = client_ref.voterhandler().update_many(
-                    vec![
-                        prisma::voterhandler::voterid::in_vec(ok_voter_ids),
-                        prisma::voterhandler::daohandlerid::equals(dao_handler_ref.id.to_string()),
-                    ],
-                    vec![
-                        prisma::voterhandler::refreshstatus::set(prisma::RefreshStatus::Done),
-                        prisma::voterhandler::lastrefresh::set(Utc::now().into()),
-                    ],
-                );
 
-                let update_nok_voters = client_ref.voterhandler().update_many(
-                    vec![
-                        prisma::voterhandler::voterid::in_vec(nok_voter_ids),
-                        prisma::voterhandler::daohandlerid::equals(dao_handler_ref.id.to_string()),
-                    ],
-                    vec![
-                        prisma::voterhandler::refreshstatus::set(prisma::RefreshStatus::New),
-                        prisma::voterhandler::lastrefresh::set(Utc::now().into()),
-                        prisma::voterhandler::snapshotindex::set(Some(
-                            DateTime::parse_from_rfc3339("2000-01-01T00:00:00.00Z").unwrap(),
-                        )),
-                    ],
-                );
+                for vh in voter_refresh_status.iter_mut() {
+                    if ok_voters_response.contains(&vh.voter_address)
+                    {
+                        vh.refresh_status = prisma::RefreshStatus::Done;
+                        vh.last_refresh = Utc::now();
+                    }
 
-                if ok_voters.len() > nok_voters.len() {
-                    let _ = client_ref
-                        .daohandler()
-                        .update(
-                            daohandler::id::equals(dao_handler_ref.id),
-                            vec![daohandler::votersrefreshspeed::set(cmp::min(
-                                dao_handler_ref.votersrefreshspeed
-                                    + (dao_handler_ref.votersrefreshspeed * 75 / 100),
-                                1000,
-                            ))],
-                        )
-                        .exec()
-                        .await
-                        .unwrap();
-                } else {
-                    let _: daohandler::Data = client_ref
-                        .daohandler()
-                        .update(
-                            daohandler::id::equals(dao_handler_ref.id),
-                            vec![daohandler::votersrefreshspeed::set(cmp::max(
-                                dao_handler_ref.votersrefreshspeed
-                                    - (dao_handler_ref.votersrefreshspeed * 50 / 100),
-                                10,
-                            ))],
-                        )
-                        .exec()
-                        .await
-                        .unwrap();
-                };
-
-                let result = client_ref
-                    ._batch((update_ok_voters, update_nok_voters))
-                    .instrument(debug_span!("update handlers"))
-                    .await
-                    .unwrap();
-
-                debug!("refresher update: {:?}", result);
+                    if nok_voters_response.contains(&vh.voter_address)
+                    {
+                        vh.refresh_status = prisma::RefreshStatus::New;
+                        vh.last_refresh = Utc::now();
+                    }
+                }
             }
-            Err(e) => {
-                let voter_ids = client_ref
-                    .voter()
-                    .find_many(vec![prisma::voter::address::in_vec(voters_ref)])
-                    .exec()
-                    .instrument(debug_span!("get_voters"))
-                    .await
-                    .unwrap()
-                    .iter()
-                    .map(|voter| voter.id.clone())
-                    .collect();
-
-                let result = client_ref
-                    .voterhandler()
-                    .update_many(
-                        vec![
-                            prisma::voterhandler::voterid::in_vec(voter_ids),
-                            prisma::voterhandler::daohandlerid::equals(
-                                dao_handler_ref.id.to_string(),
-                            ),
-                        ],
-                        vec![
-                            prisma::voterhandler::refreshstatus::set(prisma::RefreshStatus::New),
-                            prisma::voterhandler::lastrefresh::set(Utc::now().into()),
-                            prisma::voterhandler::snapshotindex::set(Some(
-                                DateTime::parse_from_rfc3339("2000-01-01T00:00:00.00Z").unwrap(),
-                            )),
-                        ],
-                    )
-                    .exec()
-                    .instrument(debug_span!("update_handlers"))
-                    .await;
-
-                debug!("refresher error update: {:?}", result);
-                warn!("refresher error: {:#?}", e);
+            Err(_) => {
+                for vh in voter_refresh_status.iter_mut() {
+                    vh.refresh_status = prisma::RefreshStatus::New;
+                    vh.last_refresh = Utc::now();
+                }
+                dao_handler_r.votersrefreshspeed = cmp::max(
+                    dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
+                    10,
+                );
             }
         }
     }.instrument(info_span!("detective request"))
