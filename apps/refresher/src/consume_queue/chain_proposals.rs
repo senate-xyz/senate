@@ -57,7 +57,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
 
             match response {
                 Ok(res) => {
-                    let data: Result<ProposalsResponse, reqwest::Error> = res.json().await;
+                    let data = res.json::<ProposalsResponse>().await;
 
                     match data {
                         Ok(data) => {

@@ -58,49 +58,59 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
 
         match response {
             Ok(res) => {
-                let data: Vec<ApiResponse> = res.json().await.unwrap();
+                let data = res.json::<Vec<ApiResponse>>().await;
 
-                let ok_voters_response: Vec<String> = data
-                    .iter()
-                    .filter(|result| result.success)
-                    .map(|result| result.voter_address.clone())
-                    .collect();
+                match data {
+                    Ok(data) => {
+                        let ok_voters_response: Vec<String> = data
+                            .iter()
+                            .filter(|result| result.success)
+                            .map(|result| result.voter_address.clone())
+                            .collect();
 
-                let nok_voters_response: Vec<String> = data
-                    .iter()
-                    .filter(|result| !result.success)
-                    .map(|result| result.voter_address.clone())
-                    .collect();
-
-                if ok_voters_response.len() > 0 {
-                    dao_handler_r.votersrefreshspeed = cmp::min(
-                        dao_handler_r.votersrefreshspeed
-                        + (dao_handler_r.votersrefreshspeed * 10 / 100),
-                        1000,
-                    );
+                        let nok_voters_response: Vec<String> = data
+                            .iter()
+                            .filter(|result| !result.success)
+                            .map(|result| result.voter_address.clone())
+                            .collect();
+                        if ok_voters_response.len() > 0 {
+                            dao_handler_r.votersrefreshspeed = cmp::min(
+                                dao_handler_r.votersrefreshspeed
+                                + (dao_handler_r.votersrefreshspeed * 10 / 100),
+                                1000,
+                            );
+                        }
+                        if nok_voters_response.len() > 0 {
+                            dao_handler_r.votersrefreshspeed = cmp::max(
+                                dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
+                                10,
+                            );
+                        }
+                        for vh in voter_refresh_status.iter_mut() {
+                            if ok_voters_response.contains(&vh.voter_address)
+                            {
+                                vh.refresh_status = prisma::RefreshStatus::Done;
+                                vh.last_refresh = Utc::now();
+                            }
+                            if nok_voters_response.contains(&vh.voter_address)
+                            {
+                                vh.refresh_status = prisma::RefreshStatus::New;
+                                vh.last_refresh = Utc::now();
+                            }
+                        }
+                    },
+                    Err(_) => {
+                        for vh in voter_refresh_status.iter_mut() {
+                            vh.refresh_status = prisma::RefreshStatus::New;
+                            vh.last_refresh = Utc::now();
+                        }
+                        dao_handler_r.votersrefreshspeed = cmp::max(
+                            dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
+                            10,
+                        );
+                    },
                 }
-
-                if nok_voters_response.len() > 0 {
-                    dao_handler_r.votersrefreshspeed = cmp::max(
-                        dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
-                        10,
-                    );
-                }
-
-
-                for vh in voter_refresh_status.iter_mut() {
-                    if ok_voters_response.contains(&vh.voter_address)
-                    {
-                        vh.refresh_status = prisma::RefreshStatus::Done;
-                        vh.last_refresh = Utc::now();
-                    }
-
-                    if nok_voters_response.contains(&vh.voter_address)
-                    {
-                        vh.refresh_status = prisma::RefreshStatus::New;
-                        vh.last_refresh = Utc::now();
-                    }
-                }
+                
             }
             Err(_) => {
                 for vh in voter_refresh_status.iter_mut() {
