@@ -1,12 +1,11 @@
-use std::{env, sync::Arc};
-
 use anyhow::bail;
 use chrono::{Duration, Utc};
 use log::info;
 use num_format::{Locale, ToFormattedString};
 use prisma_client_rust::bigdecimal::ToPrimitive;
-use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
+use reqwest::header::{ACCEPT, CONTENT_TYPE, HeaderMap};
 use serde::{Deserialize, Serialize};
+use std::{env, sync::Arc};
 use tokio::task::spawn_blocking;
 use tracing::{debug, debug_span, instrument, Instrument};
 
@@ -14,14 +13,14 @@ use crate::{
     prisma::{
         self,
         dao,
+        DaoHandlerType,
+        MagicUserState,
         notification::{self},
+        NotificationDispatchedState,
+        NotificationType,
         proposal,
         subscription,
         user,
-        DaoHandlerType,
-        MagicUserState,
-        NotificationDispatchedState,
-        NotificationType,
     },
     utils::{countdown::countdown_gif, vote::get_vote},
 };
@@ -55,7 +54,7 @@ struct PostmarkResult {
 }
 
 prisma::proposal::include!(proposal_with_dao { dao });
-prisma::user::include!(user_with_voters_and_subscriptions { subscriptions voters});
+prisma::user::include!(user_with_voters_and_subscriptions { subscriptions voters });
 
 #[instrument(skip(db), level = "info")]
 pub async fn send_quorum_email(db: &Arc<prisma::PrismaClient>) {
@@ -88,7 +87,10 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             .find_first(vec![proposal::id::equals(
                 notification.clone().proposalid.unwrap(),
             )])
-            .include(proposal::include!({ dao daohandler }))
+            .include(proposal::include!({
+                dao
+                daohandler
+            }))
             .exec()
             .instrument(debug_span!("get_proposal"))
             .await
@@ -344,10 +346,10 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                     .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
                     .as_str(),
             )
-            .capture(posthog_event);
+                .capture(posthog_event);
         })
-        .await
-        .unwrap();
+            .await
+            .unwrap();
     }
 }
 
@@ -377,7 +379,10 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 .find_many(vec![subscription::daoid::equals(
                     proposal.daoid.to_string(),
                 )])
-                .include(subscription::include!({ user dao }))
+                .include(subscription::include!({
+                    user
+                    dao
+                }))
                 .exec()
                 .instrument(debug_span!("get_subscriptions"))
                 .await

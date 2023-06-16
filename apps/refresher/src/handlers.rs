@@ -1,6 +1,7 @@
-use crate::prisma::{voter, voterhandler, PrismaClient, RefreshStatus};
 use anyhow::Result;
 use tracing::{debug, instrument};
+
+use crate::prisma::{PrismaClient, RefreshStatus, voter, voterhandler};
 
 #[instrument(skip(client), level = "info")]
 pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {

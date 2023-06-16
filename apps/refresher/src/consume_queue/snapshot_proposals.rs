@@ -1,17 +1,16 @@
 use anyhow::Result;
 use log::warn;
 use opentelemetry::{propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator};
-use std::{cmp, collections::HashMap, env, sync::Arc};
-use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level};
-use tracing_opentelemetry::OpenTelemetrySpanExt;
-
 use prisma_client_rust::chrono::{DateTime, Utc};
 use reqwest::{
-    header::{HeaderName, HeaderValue},
     Client,
+    header::{HeaderName, HeaderValue},
 };
 use serde::Deserialize;
+use std::{cmp, collections::HashMap, env, sync::Arc};
 use tokio::task;
+use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
     prisma::{self, daohandler, PrismaClient},
@@ -24,6 +23,7 @@ use crate::{
 struct ProposalsResponse {
     response: String,
 }
+
 #[instrument(level = "info")]
 pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()> {
     let detective_url = env::var("DETECTIVE_URL").expect("$DETECTIVE_URL is not set");
@@ -105,7 +105,7 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                 }
             }
         }
-        .instrument(info_span!("detective_request"))
+            .instrument(info_span!("detective_request"))
     );
 
     Ok(())

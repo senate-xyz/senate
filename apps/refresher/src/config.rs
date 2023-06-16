@@ -1,8 +1,9 @@
-use crate::prisma;
 use anyhow::Result;
 use prisma::PrismaClient;
 use std::sync::{Arc, RwLock};
 use tracing::{debug, instrument};
+
+use crate::prisma;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Config {

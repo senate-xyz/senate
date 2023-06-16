@@ -1,7 +1,4 @@
-use std::{cmp::Ordering, env, sync::Arc, time::Duration};
-
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
-
 use serenity::{
     http::Http,
     model::{
@@ -10,19 +7,20 @@ use serenity::{
     },
     utils::Colour,
 };
+use std::{cmp::Ordering, env, sync::Arc, time::Duration};
 use tokio::time::sleep;
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
         self,
-        notification,
-        proposal,
-        user,
         DaoHandlerType,
+        notification,
         NotificationType,
         PrismaClient,
+        proposal,
         ProposalState,
+        user,
     },
     utils::vote::get_vote,
 };
@@ -129,8 +127,8 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                         notification.clone().proposalid.unwrap(),
                         client,
                     )
-                    .await
-                    .unwrap();
+                        .await
+                        .unwrap();
 
                     let message_content = if result_index == 100 {
                         "❓ Could not fetch results".to_string()

@@ -1,20 +1,20 @@
+use anyhow::Result;
+use prisma_client_rust::chrono::{Duration, Utc};
+use std::sync::Arc;
+use tracing::{debug_span, instrument, Instrument};
+
 use crate::{
     prisma::{
         notification,
-        proposal,
-        subscription,
-        user,
         NotificationType,
         PrismaClient,
+        proposal,
         ProposalState,
+        subscription,
+        user,
     },
     utils::vote::get_vote,
 };
-use anyhow::Result;
-use prisma_client_rust::chrono::{Duration, Utc};
-use tracing::{debug_span, instrument, Instrument};
-
-use std::sync::Arc;
 
 pub async fn generate_ending_soon_notifications(
     client: &Arc<PrismaClient>,

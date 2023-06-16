@@ -2,15 +2,13 @@
 #![allow(unused_imports)]
 #![allow(unused_parens)]
 
-mod dispatch;
-mod generate;
-pub mod prisma;
 use dispatch::{
     ended::dispatch_ended_proposal_notifications,
     ending_soon::dispatch_ending_soon_notifications,
     update_active::update_active_proposal_notifications,
     update_hidden::update_hidden_proposal_notifications,
 };
+use dotenv::dotenv;
 use generate::{
     ended::generate_ended_proposal_notifications,
     ending_soon::generate_ending_soon_notifications,
@@ -18,14 +16,9 @@ use generate::{
 use prisma::NotificationType;
 use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, PprofConfig};
-use tokio::try_join;
-mod utils {
-    pub mod vote;
-}
-pub mod telemetry;
-use dotenv::dotenv;
 use std::{env, sync::Arc};
 use tokio::time::sleep;
+use tokio::try_join;
 use tracing::{debug, info};
 
 use crate::{
@@ -33,6 +26,16 @@ use crate::{
     generate::new_proposals::generate_new_proposal_notifications,
     prisma::PrismaClient,
 };
+
+mod dispatch;
+mod generate;
+pub mod prisma;
+
+mod utils {
+    pub mod vote;
+}
+
+pub mod telemetry;
 
 #[tokio::main]
 async fn main() {
@@ -63,13 +66,13 @@ async fn main() {
                 &client_for_ending_soon,
                 NotificationType::FirstReminderDiscord,
             )
-            .await;
+                .await;
 
             generate_ending_soon_notifications(
                 &client_for_ending_soon,
                 NotificationType::SecondReminderDiscord,
             )
-            .await;
+                .await;
 
             dispatch_ending_soon_notifications(&client_for_ending_soon).await;
 
@@ -107,5 +110,5 @@ async fn main() {
         ended_proposals_task,
         active_proposals_task
     )
-    .unwrap();
+        .unwrap();
 }

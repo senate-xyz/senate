@@ -1,16 +1,16 @@
+use anyhow::Result;
 use std::sync::Arc;
+use tracing::{debug_span, instrument, Instrument};
 
 use crate::prisma::{
     self,
     notification,
-    subscription,
-    user,
     NotificationType,
     PrismaClient,
     ProposalState,
+    subscription,
+    user,
 };
-use anyhow::Result;
-use tracing::{debug_span, instrument, Instrument};
 
 #[instrument(skip(client), level = "info")]
 pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {

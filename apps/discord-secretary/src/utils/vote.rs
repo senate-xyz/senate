@@ -1,8 +1,8 @@
-use crate::prisma::{self, PrismaClient};
 use anyhow::Result;
+use std::sync::Arc;
 use tracing::instrument;
 
-use std::sync::Arc;
+use crate::prisma::{self, PrismaClient};
 
 #[instrument(skip(client), ret, level = "debug")]
 pub async fn get_vote(

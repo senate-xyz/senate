@@ -1,17 +1,17 @@
-use crate::{
-    config::Config,
-    prisma,
-    refresh_status::{DaoHandlerRefreshStatus, DAOS_REFRESH_STATUS},
-    RefreshEntry, RefreshType,
-};
 use anyhow::Result;
-
 use prisma::{daohandler, PrismaClient};
 use prisma_client_rust::{
     chrono::{Duration, Utc},
     operator::{and, or},
 };
 use tracing::{debug, debug_span, instrument, Instrument};
+
+use crate::{
+    config::Config,
+    prisma,
+    refresh_status::{DaoHandlerRefreshStatus, DAOS_REFRESH_STATUS},
+    RefreshEntry, RefreshType,
+};
 
 #[instrument(ret, level = "info")]
 pub async fn produce_chain_proposals_queue(config: &Config) -> Result<Vec<RefreshEntry>> {
@@ -38,11 +38,11 @@ pub async fn produce_chain_proposals_queue(config: &Config) -> Result<Vec<Refres
         .filter(|r| {
             handler_types.contains(&r.r#type)
                 && ((r.refresh_status == prisma::RefreshStatus::Done
-                    && r.last_refresh < normal_refresh)
-                    || (r.refresh_status == prisma::RefreshStatus::Pending
-                        && r.last_refresh < force_refresh)
-                    || (r.refresh_status == prisma::RefreshStatus::New
-                        && r.last_refresh < new_refresh))
+                && r.last_refresh < normal_refresh)
+                || (r.refresh_status == prisma::RefreshStatus::Pending
+                && r.last_refresh < force_refresh)
+                || (r.refresh_status == prisma::RefreshStatus::New
+                && r.last_refresh < new_refresh))
         })
         .collect();
 

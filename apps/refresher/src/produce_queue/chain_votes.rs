@@ -1,6 +1,12 @@
-use std::collections::HashMap;
-
 use anyhow::Result;
+use prisma::{daohandler, PrismaClient};
+use prisma_client_rust::{
+    chrono::{Duration, Utc},
+    Direction,
+    operator::{and, or},
+};
+use std::collections::HashMap;
+use tracing::{debug, debug_span, instrument, Instrument};
 
 use crate::{
     config::Config,
@@ -8,14 +14,6 @@ use crate::{
     refresh_status::{DAOS_REFRESH_STATUS, VOTERS_REFRESH_STATUS},
     RefreshEntry, RefreshType,
 };
-
-use prisma::{daohandler, PrismaClient};
-use prisma_client_rust::{
-    chrono::{Duration, Utc},
-    operator::{and, or},
-    Direction,
-};
-use tracing::{debug, debug_span, instrument, Instrument};
 
 #[instrument(skip(client), ret, level = "info")]
 pub async fn produce_chain_votes_queue(
@@ -56,11 +54,11 @@ pub async fn produce_chain_votes_queue(
             .filter(|r| {
                 r.dao_handler_id == dao_handler.dao_handler_id
                     && ((r.refresh_status == prisma::RefreshStatus::Done
-                        && r.last_refresh < normal_refresh)
-                        || (r.refresh_status == prisma::RefreshStatus::Pending
-                            && r.last_refresh < force_refresh)
-                        || (r.refresh_status == prisma::RefreshStatus::New
-                            && r.last_refresh < new_refresh))
+                    && r.last_refresh < normal_refresh)
+                    || (r.refresh_status == prisma::RefreshStatus::Pending
+                    && r.last_refresh < force_refresh)
+                    || (r.refresh_status == prisma::RefreshStatus::New
+                    && r.last_refresh < new_refresh))
             })
             .collect();
 
@@ -72,7 +70,10 @@ pub async fn produce_chain_votes_queue(
                     .map(|r| r.voter_handler_id.clone())
                     .collect(),
             )])
-            .include(voterhandler::include!({ voter : select { address }}))
+            .include(voterhandler::include!({
+                voter: select
+                { address }
+            }))
             .exec()
             .await
             .unwrap();

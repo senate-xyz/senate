@@ -1,23 +1,22 @@
-use std::{env, sync::Arc, time::Duration};
-
 use serenity::{
     http::Http,
     model::{prelude::Embed, webhook::Webhook},
     utils::Colour,
 };
+use std::{env, sync::Arc, time::Duration};
 use tokio::time::sleep;
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
         self,
-        notification,
-        proposal,
-        user,
         DaoHandlerType,
+        notification,
         NotificationDispatchedState,
         NotificationType,
         PrismaClient,
+        proposal,
+        user,
     },
     utils::vote::get_vote,
 };
@@ -129,8 +128,8 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                                     "https://www.senatelabs.xyz/assets/Discord/active-no-vote2x.png"
                                 })
                         })])
-                        .username("Senate Secretary")
-                        .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
+                            .username("Senate Secretary")
+                            .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")
                     })
                     .instrument(debug_span!("send_message"))
                     .await;

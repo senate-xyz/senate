@@ -2,19 +2,6 @@
 #![allow(unused_imports)]
 #![allow(unused_parens)]
 
-pub mod prisma;
-pub mod bulletin {
-    pub mod bulletin_emails;
-}
-pub mod quorum {
-    pub mod quroum_emails;
-}
-pub mod utils {
-    pub mod countdown;
-    pub mod vote;
-}
-pub mod telemetry;
-
 use chrono::{Timelike, Utc};
 use dotenv::dotenv;
 use log::info;
@@ -29,6 +16,23 @@ use crate::{
     prisma::PrismaClient,
     quorum::quroum_emails::send_quorum_email,
 };
+
+pub mod prisma;
+
+pub mod bulletin {
+    pub mod bulletin_emails;
+}
+
+pub mod quorum {
+    pub mod quroum_emails;
+}
+
+pub mod utils {
+    pub mod countdown;
+    pub mod vote;
+}
+
+pub mod telemetry;
 
 #[tokio::main]
 async fn main() {

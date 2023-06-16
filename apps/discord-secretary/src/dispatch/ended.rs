@@ -1,5 +1,3 @@
-use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
-
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use serenity::{
     http::Http,
@@ -9,19 +7,20 @@ use serenity::{
     },
     utils::Colour,
 };
+use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
 use tokio::time::sleep;
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
         self,
-        notification,
-        proposal,
-        user,
         DaoHandlerType,
+        notification,
         NotificationDispatchedState,
         NotificationType,
         PrismaClient,
+        proposal,
+        user,
     },
     utils::vote::get_vote,
 };
@@ -131,8 +130,8 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             new_notification.proposalid.unwrap(),
                             client,
                         )
-                        .await
-                        .unwrap();
+                            .await
+                            .unwrap();
 
                         let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
                             Some(v) => v.into_string().unwrap(),
@@ -159,28 +158,28 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             .edit_message(&http, MessageId::from(initial_message_id), |w| {
                                 w.embeds(vec![Embed::fake(|e| {
                                     e.title(proposal.name)
-                                    .description(format!(
-                                        "**{}** {} proposal ended on {}",
-                                        proposal.dao.name,
-                                        if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                            "off-chain"
+                                        .description(format!(
+                                            "**{}** {} proposal ended on {}",
+                                            proposal.dao.name,
+                                            if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                                "off-chain"
+                                            } else {
+                                                "on-chain"
+                                            },
+                                            format!("{}", proposal.timeend.format("%B %e").to_string())
+                                        ))
+                                        .field("", message_content, false)
+                                        .url(short_url)
+                                        .color(Colour(0x23272A))
+                                        .thumbnail(format!(
+                                            "https://www.senatelabs.xyz/{}_medium.png",
+                                            proposal.dao.picture
+                                        ))
+                                        .image(if voted {
+                                            "https://www.senatelabs.xyz/assets/Discord/past-vote2x.png"
                                         } else {
-                                            "on-chain"
-                                        },
-                                        format!("{}", proposal.timeend.format("%B %e").to_string())
-                                    ))
-                                    .field("", message_content, false)
-                                    .url(short_url)
-                                    .color(Colour(0x23272A))
-                                    .thumbnail(format!(
-                                        "https://www.senatelabs.xyz/{}_medium.png",
-                                        proposal.dao.picture
-                                    ))
-                                    .image(if voted {
-                                        "https://www.senatelabs.xyz/assets/Discord/past-vote2x.png"
-                                    } else {
-                                        "https://www.senatelabs.xyz/assets/Discord/past-no-vote2x.png"
-                                    })
+                                            "https://www.senatelabs.xyz/assets/Discord/past-no-vote2x.png"
+                                        })
                                 })])
                             })
                             .instrument(debug_span!("edit_message"))
@@ -201,10 +200,10 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                     },
                                     new_notification.discordmessagelink.unwrap(),
                                 ))
-                                .username("Senate Secretary")
-                                .avatar_url(
-                                    "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
-                                )
+                                    .username("Senate Secretary")
+                                    .avatar_url(
+                                        "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
+                                    )
                             })
                             .instrument(debug_span!("send_message"))
                             .await;
@@ -312,10 +311,10 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 },
                                 proposal.name,
                             ))
-                            .username("Senate Secretary")
-                            .avatar_url(
-                                "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
-                            )
+                                .username("Senate Secretary")
+                                .avatar_url(
+                                    "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
+                                )
                         })
                         .instrument(debug_span!("send_message"))
                         .await;
