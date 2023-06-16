@@ -12,21 +12,13 @@ use serde_json::Value;
 
 use crate::{
     handlers::votes::{
-        aave::aave_votes,
-        compound::compound_votes,
-        dydx::dydx_votes,
-        ens::ens_votes,
-        gitcoin::gitcoin_votes,
-        hop::hop_votes,
-        maker_executive::makerexecutive_votes,
-        maker_poll::makerpoll_votes,
-        maker_poll_arbitrum::makerpollarbitrum_votes,
+        aave::aave_votes, compound::compound_votes, dydx::dydx_votes, ens::ens_votes,
+        gitcoin::gitcoin_votes, hop::hop_votes, maker_executive::makerexecutive_votes,
+        maker_poll::makerpoll_votes, maker_poll_arbitrum::makerpollarbitrum_votes,
         uniswap::uniswap_votes,
     },
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType},
-    Ctx,
-    VotesRequest,
-    VotesResponse,
+    Ctx, VotesRequest, VotesResponse,
 };
 
 #[derive(Debug, Deserialize, Clone)]
@@ -142,8 +134,8 @@ pub async fn update_chain_votes<'a>(
         }
 
         debug!(
-            "{:?} {:?} {:?} {:?} {:?}",
-            dao_handler, batch_size, from_block, to_block, voters
+            "{:?} {:?} {:?} {:?}",
+            dao_handler, batch_size, from_block, to_block
         );
 
         let result = get_results(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await;
@@ -175,7 +167,7 @@ pub async fn update_chain_votes<'a>(
     .await
 }
 
-#[instrument(skip(ctx), level = "debug")]
+#[instrument(skip(ctx, voters), level = "debug")]
 async fn get_results(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -239,7 +231,7 @@ async fn get_results(
     }
 }
 
-#[instrument(skip(ctx), level = "debug")]
+#[instrument(skip(ctx, votes), level = "debug")]
 async fn insert_votes(
     votes: &[VoteResult],
     to_block: &i64,
@@ -265,11 +257,6 @@ async fn insert_votes(
         .into_iter()
         .filter(|v| v.proposal_active)
         .collect();
-
-    debug!(
-        "{:?} {:?} {:?} ",
-        successful_votes, closed_votes, open_votes,
-    );
 
     for closed_vote in closed_votes {
         let exists = ctx

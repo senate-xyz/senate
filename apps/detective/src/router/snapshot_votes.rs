@@ -15,9 +15,7 @@ use serde_json::Value;
 
 use crate::{
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler},
-    Ctx,
-    VotesRequest,
-    VotesResponse,
+    Ctx, VotesRequest, VotesResponse,
 };
 
 #[derive(Debug, Deserialize)]
@@ -156,8 +154,8 @@ pub async fn update_snapshot_votes<'a>(
         );
 
         debug!(
-            "{:?} {:?} {:?} {:?} {:?}",
-            dao_handler, decoder, search_from_timestamp, graphql_query, data.voters
+            "{:?} {:?} {:?} {:?}",
+            dao_handler, decoder, search_from_timestamp, graphql_query,
         );
 
         let response = match update_votes(
@@ -197,7 +195,7 @@ pub async fn update_snapshot_votes<'a>(
     .await
 }
 
-#[instrument(skip(ctx), level = "debug")]
+#[instrument(skip(ctx, voter_handlers), level = "debug")]
 async fn update_votes(
     graphql_query: String,
     search_from_timestamp: i64,
@@ -247,7 +245,7 @@ async fn update_votes(
     Ok(())
 }
 
-#[instrument(skip(ctx), level = "debug")]
+#[instrument(skip(ctx, votes, voter_handlers), level = "debug")]
 async fn update_refresh_statuses(
     votes: Vec<GraphQLVote>,
     search_from_timestamp: i64,
@@ -327,7 +325,7 @@ async fn update_refresh_statuses(
     Ok(())
 }
 
-#[instrument(skip(ctx), level = "debug")]
+#[instrument(skip(ctx, votes), level = "debug")]
 async fn update_votes_for_proposal(
     votes: Vec<GraphQLVote>,
     p: GraphQLProposal,
@@ -374,7 +372,7 @@ async fn update_votes_for_proposal(
     }
 }
 
-#[instrument(skip(ctx), level = "debug")]
+#[instrument(skip(ctx, votes_for_proposal), level = "debug")]
 async fn create_old_votes(
     ctx: &Ctx,
     votes_for_proposal: Vec<GraphQLVote>,
@@ -423,7 +421,7 @@ async fn create_old_votes(
     Ok(true)
 }
 
-#[instrument(skip(ctx), level = "debug")]
+#[instrument(skip(ctx, votes_for_proposal), level = "debug")]
 async fn update_or_create_current_votes(
     ctx: &Ctx,
     votes_for_proposal: Vec<GraphQLVote>,
