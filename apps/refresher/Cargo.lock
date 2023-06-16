@@ -523,7 +523,7 @@ dependencies = [
  "js-sys",
  "num-traits",
  "serde",
- "time 0.1.43",
+ "time 0.1.45",
  "wasm-bindgen",
  "winapi",
 ]
@@ -675,9 +675,9 @@ dependencies = [
 
 [[package]]
 name = "cpufeatures"
-version = "0.2.7"
+version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3e4c1eaa2012c47becbbad2ab175484c2a84d1185b566fb2cc5b8707343dfe58"
+checksum = "03e69e28e9f7f77debdedbaafa2866e1de9ba56df55a8bd7cfc724c25a09987c"
 dependencies = [
  "libc",
 ]
@@ -2373,7 +2373,7 @@ dependencies = [
  "serde_bytes",
  "serde_with",
  "sha-1",
- "sha2 0.10.6",
+ "sha2 0.10.7",
  "socket2 0.4.9",
  "stringprep",
  "strsim",
@@ -2544,7 +2544,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha1",
- "sha2 0.10.6",
+ "sha2 0.10.7",
  "smallvec",
  "subprocess",
  "thiserror",
@@ -3082,7 +3082,7 @@ checksum = "745a452f8eb71e39ffd8ee32b3c5f51d03845f99786fa9b68db6ff509c505411"
 dependencies = [
  "once_cell",
  "pest",
- "sha2 0.10.6",
+ "sha2 0.10.7",
 ]
 
 [[package]]
@@ -3175,7 +3175,7 @@ dependencies = [
  "md-5",
  "memchr",
  "rand 0.8.5",
- "sha2 0.10.6",
+ "sha2 0.10.7",
  "stringprep",
 ]
 
@@ -3585,7 +3585,7 @@ dependencies = [
  "mach",
  "once_cell",
  "raw-cpuid",
- "wasi 0.10.2+wasi-snapshot-preview1",
+ "wasi 0.10.0+wasi-snapshot-preview1",
  "web-sys",
  "winapi",
 ]
@@ -4337,9 +4337,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.96"
+version = "1.0.97"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "057d394a50403bcac12672b2b18fb387ab6d289d957dab67dd201875391e52f1"
+checksum = "bdf3bf93142acad5821c99197022e170842cdbc1c30482b98750c688c640842a"
 dependencies = [
  "indexmap",
  "itoa",
@@ -4438,9 +4438,9 @@ dependencies = [
 
 [[package]]
 name = "sha2"
-version = "0.10.6"
+version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82e6b795fe2e3b1e845bafcb27aa35405c4d47cdfc92af5fc8d3002f76cebdc0"
+checksum = "479fb9d862239e610720565ca91403019f2f00410f1864c5aa7479b950a76ed8"
 dependencies = [
  "cfg-if",
  "cpufeatures",
@@ -4885,11 +4885,12 @@ dependencies = [
 
 [[package]]
 name = "time"
-version = "0.1.43"
+version = "0.1.45"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca8a50ef2360fbd1eeb0ecd46795a87a19024eb4b53c5dc916ca1fd95fe62438"
+checksum = "1b797afad3f312d1c66a56d11d0316f916356d11bd158fbc6ca6389ff6bf805a"
 dependencies = [
  "libc",
+ "wasi 0.10.0+wasi-snapshot-preview1",
  "winapi",
 ]
 
@@ -5222,9 +5223,9 @@ dependencies = [
 
 [[package]]
 name = "tracing-loki"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "630f9edbf303c204f36d08d99510bb7b5b2cb6c010146be3aa6537a183907a95"
+checksum = "3dd4fccab2576134d2aa57a1457f93e6612e8afea2a170f392fd1c081e249998"
 dependencies = [
  "loki-api",
  "reqwest",
@@ -5544,9 +5545,9 @@ checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
 
 [[package]]
 name = "wasi"
-version = "0.10.2+wasi-snapshot-preview1"
+version = "0.10.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd6fbd9a79829dd1ad0cc20627bf1ed606756a7f77edff7b66b7064f9cb327c6"
+checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
 
 [[package]]
 name = "wasi"

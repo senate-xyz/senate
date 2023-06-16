@@ -91,7 +91,6 @@ async fn main() {
     let producer_task = tokio::task::spawn_blocking(move || async move {
         info!("spawned producer_task");
         loop {
-            let _ = load_config_from_db(&producer_client_clone).await;
             let _ = create_voter_handlers(&producer_client_clone).await;
             let _ = create_refresh_statuses(&producer_client_clone).await;
 

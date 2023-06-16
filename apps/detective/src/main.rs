@@ -88,6 +88,11 @@ fn index() -> &'static str {
     "Hello, world!"
 }
 
+#[get("/")]
+fn health() -> &'static str {
+    "ok"
+}
+
 #[launch]
 async fn rocket() -> _ {
     dotenv().ok();
@@ -135,6 +140,7 @@ async fn rocket() -> _ {
             http_client,
         })
         .mount("/", routes![index])
+        .mount("/health", routes![health])
         .mount(
             "/proposals",
             routes![update_snapshot_proposals, update_chain_proposals],
