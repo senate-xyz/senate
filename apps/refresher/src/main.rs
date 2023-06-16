@@ -22,8 +22,10 @@ mod produce_queue;
 mod refresh_status;
 
 use crate::{
+    consume_queue::chain_votes::consume_chain_votes,
     produce_queue::{
         chain_proposals::produce_chain_proposals_queue,
+        chain_votes::produce_chain_votes_queue,
         snapshot_proposals::produce_snapshot_proposals_queue,
     },
     refresh_status::create_refresh_statuses,
@@ -75,7 +77,7 @@ async fn main() {
     let (tx_snapshot_proposals, rx_snapshot_proposals) = flume::unbounded();
     // let (tx_snapshot_votes, rx_snapshot_votes) = flume::unbounded();
     let (tx_chain_proposals, rx_chain_proposals) = flume::unbounded();
-    // let (tx_chain_votes, rx_chain_votes) = flume::unbounded();
+    let (tx_chain_votes, rx_chain_votes) = flume::unbounded();
 
     let config_client_clone = client.clone();
     let config_load_task = tokio::task::spawn(async move {
@@ -115,12 +117,12 @@ async fn main() {
             //     }
             // }
 
-            // if let Ok(queue) = produce_chain_votes_queue(&producer_client_clone, &config).await {
-            //     info!("refresh produce_chain_votes_queue: {:?}", queue);
-            //     for item in queue {
-            //         tx_chain_votes.try_send(item).unwrap();
-            //     }
-            // }
+            if let Ok(queue) = produce_chain_votes_queue(&producer_client_clone, &config).await {
+                info!("refresh produce_chain_votes_queue: {:?}", queue);
+                for item in queue {
+                    tx_chain_votes.try_send(item).unwrap();
+                }
+            }
 
             sleep(Duration::from_secs(1)).await;
         }
@@ -190,23 +192,21 @@ async fn main() {
         }
     });
 
-    let _consumer_chain_votes_client = client.clone();
     let consumer_chain_votes_task = tokio::spawn(async move {
         info!("spawned consumer_chain_votes_task");
         loop {
-            // if let Ok(item) = rx_chain_votes.recv_async().await {
-            //     info!("refresh consumer_chain_votes_task: {:?}", item);
-            //     let client_clone = consumer_chain_votes_client.clone();
+            if let Ok(item) = rx_chain_votes.recv_async().await {
+                info!("refresh consumer_chain_votes_task: {:?}", item);
 
-            //     tokio::spawn(async move {
-            //         match consume_chain_votes(item, &client_clone).await {
-            //             Ok(_) => {}
-            //             Err(e) => {
-            //                 warn!("refresher error: {:#?}", e);
-            //             }
-            //         }
-            //     });
-            // }
+                tokio::spawn(async move {
+                    match consume_chain_votes(item).await {
+                        Ok(_) => {}
+                        Err(e) => {
+                            warn!("refresher error: {:#?}", e);
+                        }
+                    }
+                });
+            }
 
             sleep(Duration::from_millis(300)).await;
         }

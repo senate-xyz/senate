@@ -5,6 +5,7 @@ use anyhow::Result;
 use crate::{
     config::Config,
     prisma::{self, voterhandler},
+    refresh_status::{DAOS_REFRESH_STATUS, VOTERS_REFRESH_STATUS},
     RefreshEntry,
     RefreshType,
 };
@@ -39,73 +40,46 @@ pub async fn produce_chain_votes_queue(
         prisma::DaoHandlerType::DydxChain,
     ];
 
-    let dao_handlers = client
-        .daohandler()
-        .find_many(vec![
-            daohandler::r#type::in_vec(handler_types.clone()),
-            daohandler::voterhandlers::some(vec![or(vec![
-                and(vec![
-                    voterhandler::refreshstatus::equals(prisma::RefreshStatus::Done),
-                    voterhandler::lastrefresh::lt(normal_refresh.into()),
-                ]),
-                and(vec![
-                    voterhandler::refreshstatus::equals(prisma::RefreshStatus::Pending),
-                    voterhandler::lastrefresh::lt(force_refresh.into()),
-                ]),
-                and(vec![
-                    voterhandler::refreshstatus::equals(prisma::RefreshStatus::New),
-                    voterhandler::lastrefresh::lt(new_refresh.into()),
-                ]),
-            ])]),
-        ])
-        .include(daohandler::include!({ proposals }))
-        .exec()
-        .instrument(debug_span!("get_dao_handlers"))
-        .await?;
+    let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
+    let mut voters_refresh_status = VOTERS_REFRESH_STATUS.lock().await;
 
-    let filtered_dao_handlers: Vec<_> = dao_handlers
-        .into_iter()
-        .filter(|dao_handler| {
-            !dao_handler.proposals.is_empty()
-                || dao_handler.r#type == prisma::DaoHandlerType::MakerPollArbitrum
-        })
+    let dao_handlers: Vec<_> = daos_refresh_status
+        .iter_mut()
+        .filter(|r| handler_types.contains(&r.r#type))
         .collect();
 
     let mut voter_handler_to_refresh = Vec::new();
     let mut refresh_queue = Vec::new();
 
-    for dao_handler in filtered_dao_handlers {
+    for dao_handler in dao_handlers {
+        let mut voter_handlers_r: Vec<_> = voters_refresh_status
+            .iter_mut()
+            .filter(|r| {
+                r.dao_handler_id == dao_handler.dao_handler_id
+                    && ((r.refresh_status == prisma::RefreshStatus::Done
+                        && r.last_refresh < normal_refresh)
+                        || (r.refresh_status == prisma::RefreshStatus::Pending
+                            && r.last_refresh < force_refresh)
+                        || (r.refresh_status == prisma::RefreshStatus::New
+                            && r.last_refresh < new_refresh))
+            })
+            .collect();
+
         let voter_handlers = client
             .voterhandler()
-            .find_many(vec![
-                voterhandler::daohandlerid::equals(dao_handler.id.to_string()),
-                or(vec![
-                    and(vec![
-                        voterhandler::refreshstatus::equals(prisma::RefreshStatus::Done),
-                        voterhandler::lastrefresh::lt(normal_refresh.into()),
-                    ]),
-                    and(vec![
-                        voterhandler::refreshstatus::equals(prisma::RefreshStatus::Pending),
-                        voterhandler::lastrefresh::lt(force_refresh.into()),
-                    ]),
-                    and(vec![
-                        voterhandler::refreshstatus::equals(prisma::RefreshStatus::New),
-                        voterhandler::lastrefresh::lt(new_refresh.into()),
-                    ]),
-                ]),
-            ])
-            .order_by(voterhandler::lastrefresh::order(Direction::Desc))
-            .include(voterhandler::include!({
-                voter : select { address }
-            }))
+            .find_many(vec![voterhandler::id::in_vec(
+                voter_handlers_r
+                    .iter()
+                    .map(|r| r.voter_handler_id.clone())
+                    .collect(),
+            )])
+            .include(voterhandler::include!({ voter : select { address }}))
             .exec()
-            .instrument(debug_span!("get_voter_handlers"))
             .await
             .unwrap();
 
         let vote_indexes: Vec<i64> = voter_handlers
             .iter()
-            .cloned()
             .map(|voter_handler| voter_handler.chainindex.unwrap())
             .collect();
 
@@ -136,7 +110,7 @@ pub async fn produce_chain_votes_queue(
                     None
                 } else {
                     Some(RefreshEntry {
-                        handler_id: dao_handler.id.clone(),
+                        handler_id: dao_handler.dao_handler_id.clone(),
                         refresh_type: RefreshType::Daochainvotes,
                         voters: bucket_vh
                             .iter()
@@ -147,26 +121,15 @@ pub async fn produce_chain_votes_queue(
             })
             .collect();
 
+        for vhr in &mut *voter_handlers_r {
+            vhr.refresh_status = prisma::RefreshStatus::Pending;
+            vhr.last_refresh = Utc::now();
+
+            println!("{:?}", vhr);
+        }
+
         refresh_queue.extend(items)
     }
-
-    client
-        .voterhandler()
-        .update_many(
-            vec![voterhandler::id::in_vec(
-                voter_handler_to_refresh
-                    .iter()
-                    .map(|vhandler| vhandler.id.clone())
-                    .collect(),
-            )],
-            vec![
-                voterhandler::refreshstatus::set(prisma::RefreshStatus::Pending),
-                voterhandler::lastrefresh::set(Utc::now().into()),
-            ],
-        )
-        .exec()
-        .instrument(debug_span!("update_pending"))
-        .await?;
 
     Ok(refresh_queue)
 }

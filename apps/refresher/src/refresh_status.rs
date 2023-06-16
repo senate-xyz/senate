@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use crate::prisma::{self, dao, DaoHandlerType, PrismaClient};
+use crate::prisma::{self, dao, voterhandler, DaoHandlerType, PrismaClient};
 use once_cell::sync::Lazy;
 
 #[derive(Debug)]
@@ -17,6 +17,8 @@ pub struct DaoHandlerRefreshStatus {
 
 #[derive(Debug)]
 pub struct VoterHandlerRefreshStatus {
+    pub voter_address: String,
+    pub dao_handler_id: String,
     pub voter_handler_id: String,
     pub refresh_status: prisma::RefreshStatus,
     pub last_refresh: DateTime<Utc>,
@@ -80,6 +82,7 @@ pub async fn create_voters_refresh_statuses(client: &PrismaClient) {
     let voter_handlers = client
         .voterhandler()
         .find_many(vec![])
+        .include(voterhandler::include!({ voter }))
         .exec()
         .await
         .unwrap();
@@ -93,6 +96,8 @@ pub async fn create_voters_refresh_statuses(client: &PrismaClient) {
                 voter_handler_id: voterhandler.clone().id,
                 refresh_status: prisma::RefreshStatus::New,
                 last_refresh: Utc::now(),
+                dao_handler_id: voterhandler.clone().daohandlerid,
+                voter_address: voterhandler.clone().voter.address,
             });
         }
     });

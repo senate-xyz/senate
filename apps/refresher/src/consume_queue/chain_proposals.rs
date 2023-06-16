@@ -36,7 +36,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
 
     let http_client = Client::builder().build().unwrap();
 
-    task::spawn({
+    task::spawn(
         async move {
             let span = tracing::Span::current();
             let context = span.context();
@@ -110,7 +110,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
             }
         }
         .instrument(info_span!("detective_request"))
-    });
+    );
 
     Ok(())
 }
