@@ -1,15 +1,10 @@
-use anyhow::Result;
 use std::sync::Arc;
+
+use anyhow::Result;
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::prisma::{
-    self,
-    notification,
-    NotificationType,
-    PrismaClient,
-    ProposalState,
-    subscription,
-    user,
+    self, notification, subscription, user, NotificationType, PrismaClient, ProposalState,
 };
 
 #[instrument(skip(client), level = "info")]

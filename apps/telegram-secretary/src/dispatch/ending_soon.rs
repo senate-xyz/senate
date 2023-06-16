@@ -11,14 +11,8 @@ use tokio::time::sleep;
 use tracing::{debug, debug_span, instrument, Instrument};
 
 use crate::prisma::{
-    self,
-    notification,
-    proposal,
-    user,
-    DaoHandlerType,
-    NotificationDispatchedState,
-    NotificationType,
-    PrismaClient,
+    self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
+    NotificationType, PrismaClient,
 };
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
@@ -99,15 +93,15 @@ pub async fn dispatch_ending_soon_notifications(
                     NotificationType::NewProposalTelegram => todo!(),
                     NotificationType::FirstReminderTelegram => {
                         format!(
-                    "⌛ <b>{}</b> {} proposal <b>ends in 2️⃣4️⃣ hours.</b> 🕒 \nVote here 👉 {}",
-                    proposal.dao.name,
-                    if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                        "off-chain"
-                    } else {
-                        "on-chain"
-                    },
-                    short_url
-                )
+                            "⌛ <b>{}</b> {} proposal <b>ends in 2️⃣4️⃣ hours.</b> 🕒 \nVote here 👉 {}",
+                            proposal.dao.name,
+                            if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                "off-chain"
+                            } else {
+                                "on-chain"
+                            },
+                            short_url
+                        )
                     }
                     NotificationType::SecondReminderTelegram => {
                         format!(

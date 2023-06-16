@@ -2,18 +2,26 @@
 #![allow(unused_imports)]
 #![allow(unused_parens)]
 
-use config::{CONFIG, load_config_from_db};
+use std::{env, sync::Arc, time::Duration};
+
 use dotenv::dotenv;
-use handlers::create_voter_handlers;
+use flume as _;
 use log::{info, warn};
-use prisma::PrismaClient;
 use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, PprofConfig};
-use std::{env, sync::Arc, time::Duration};
+use reqwest as _;
+use serde_json as _;
 use tokio::time::sleep;
 use tokio::try_join;
 use tracing::debug;
 
+use config::{load_config_from_db, CONFIG};
+use handlers::create_voter_handlers;
+use prisma::PrismaClient;
+
+use crate::consume_queue::{
+    chain_proposals::consume_chain_proposals, snapshot_proposals::consume_snapshot_proposals,
+};
 use crate::{
     consume_queue::{chain_votes::consume_chain_votes, snapshot_votes::consume_snapshot_votes},
     produce_queue::{
@@ -23,13 +31,6 @@ use crate::{
     },
     refresh_status::create_refresh_statuses,
 };
-use crate::consume_queue::{
-    chain_proposals::consume_chain_proposals, snapshot_proposals::consume_snapshot_proposals,
-};
-
-use flume as _;
-use reqwest as _;
-use serde_json as _;
 
 pub mod prisma;
 
@@ -125,8 +126,8 @@ async fn main() {
             sleep(Duration::from_secs(1)).await;
         }
     })
-        .await
-        .unwrap();
+    .await
+    .unwrap();
 
     let consumer_snapshot_proposals_task = tokio::spawn(async move {
         info!("spawned consumer_snapshot_proposals_task");
@@ -217,5 +218,5 @@ async fn main() {
         consumer_chain_proposals_task,
         consumer_chain_votes_task
     )
-        .unwrap();
+    .unwrap();
 }

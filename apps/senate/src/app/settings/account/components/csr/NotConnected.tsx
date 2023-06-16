@@ -1,10 +1,10 @@
 'use client'
 
-import { useConnectModal } from '@rainbow-me/rainbowkit'
+import {useConnectModal} from '@rainbow-me/rainbowkit'
 import Link from 'next/link'
 
 const NotConnected = () => {
-    const { openConnectModal } = useConnectModal()
+    const {openConnectModal} = useConnectModal()
     return (
         <div>
             <div className='flex flex-col gap-5'>

@@ -1,8 +1,8 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { useAccount } from 'wagmi'
+import {useRouter} from 'next/navigation'
+import {useEffect, useState} from 'react'
+import {useAccount} from 'wagmi'
 
 const SetupDailyBulletin = () => {
     const router = useRouter()

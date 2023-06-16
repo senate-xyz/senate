@@ -1,14 +1,8 @@
-import {
-    prisma,
-    type User,
-    DAOHandlerType,
-    type DAOHandler,
-    type Decoder
-} from '@senate/database'
+import {type DAOHandler, DAOHandlerType, type Decoder, prisma, type User} from '@senate/database'
 import axios from 'axios'
 import promptSync from 'prompt-sync'
 
-const prompt = promptSync({ sigint: true })
+const prompt = promptSync({sigint: true})
 
 async function main() {
     console.log("🚀 Let's gooooo...")
@@ -128,12 +122,12 @@ async function linkVotersToUser(user: User, voters: Array<string>) {
 
     for (const voter of voters)
         await prisma.user.update({
-            where: { address: user.address },
+            where: {address: user.address},
             data: {
                 voters: {
                     connectOrCreate: {
-                        where: { address: voter },
-                        create: { address: voter }
+                        where: {address: voter},
+                        create: {address: voter}
                     }
                 }
             }
@@ -219,7 +213,7 @@ async function createStressTestUser(): Promise<User> {
     })
 
     return await prisma.user.findFirst({
-        where: { address: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965' }
+        where: {address: '0xD8ECE0f01dC86DfBd55fB90EfaFAd1a2a254C965'}
     })
 }
 

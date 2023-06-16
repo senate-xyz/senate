@@ -2,16 +2,17 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
-import { ContactIcons } from '../ssr/ContactIcons'
+import {usePathname} from 'next/navigation'
+import {ContactIcons} from '../ssr/ContactIcons'
 
 export const NavBar = () => {
     const pathname = usePathname()
     return !pathname?.includes('verify') &&
-        !pathname?.includes('bulletin') &&
-        !pathname?.includes('landing') &&
-        !pathname?.includes('outofservice') ? (
-        <div className='flex min-h-screen min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black'>
+    !pathname?.includes('bulletin') &&
+    !pathname?.includes('landing') &&
+    !pathname?.includes('outofservice') ? (
+        <div
+            className='flex min-h-screen min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black'>
             <Link href='/' className='my-[4rem]'>
                 <Image
                     loading='eager'
@@ -114,7 +115,7 @@ export const NavBar = () => {
                     )}
                 </Link>
             </div>
-            <ContactIcons />
+            <ContactIcons/>
         </div>
     ) : (
         <></>

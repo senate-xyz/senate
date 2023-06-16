@@ -1,11 +1,5 @@
 use std::{collections::HashSet, sync::Arc};
 
-use crate::{
-    contracts::{makerexecutive, makerexecutive::LogNoteFilter},
-    prisma::{daohandler, ProposalState},
-    router::chain_proposals::ChainProposal,
-    Ctx,
-};
 use anyhow::{Context, Result};
 use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use ethers::{
@@ -25,6 +19,13 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tracing::Instrument;
 use tracing::{debug_span, instrument};
+
+use crate::{
+    contracts::{makerexecutive, makerexecutive::LogNoteFilter},
+    prisma::{daohandler, ProposalState},
+    router::chain_proposals::ChainProposal,
+    Ctx,
+};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -235,6 +236,7 @@ struct SpellData {
     hasBeenCast: bool,
     hasBeenScheduled: bool,
 }
+
 #[allow(non_snake_case)]
 #[derive(Deserialize, Serialize, PartialEq, Debug, Clone)]
 struct ProposalData {

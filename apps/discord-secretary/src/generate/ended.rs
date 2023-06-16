@@ -1,16 +1,11 @@
+use std::sync::Arc;
+
 use anyhow::Result;
 use prisma_client_rust::chrono::{Duration, Utc};
-use std::sync::Arc;
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::prisma::{
-    notification,
-    NotificationType,
-    PrismaClient,
-    proposal,
-    ProposalState,
-    subscription,
-    user,
+    notification, proposal, subscription, user, NotificationType, PrismaClient, ProposalState,
 };
 
 #[instrument(skip(client), level = "info")]

@@ -1,26 +1,22 @@
+use std::{cmp::Ordering, env, sync::Arc};
+
 use anyhow::Result;
 use chrono::{Duration, Utc};
 use log::debug;
 use posthog_rs::Event;
-use prisma_client_rust::{Direction, serde_json::Value};
-use reqwest::header::{ACCEPT, CONTENT_TYPE, HeaderMap};
+use prisma_client_rust::{serde_json::Value, Direction};
+use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::{cmp::Ordering, env, sync::Arc};
 use tokio::task::spawn_blocking;
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
-        self,
-        DaoHandlerType,
-        MagicUserState,
-        notification,
-        NotificationDispatchedState,
-        NotificationType,
+        self, notification,
         proposal::{self},
+        user, DaoHandlerType, MagicUserState, NotificationDispatchedState, NotificationType,
         ProposalState,
-        user,
     },
     utils::{countdown::countdown_gif, vote::get_vote},
 };
@@ -254,10 +250,10 @@ async fn send_bulletin(
                         .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
                         .as_str(),
                 )
-                    .capture(event);
+                .capture(event);
             })
-                .await
-                .unwrap();
+            .await
+            .unwrap();
         }
         Err(_) => {
             db.notification()
@@ -284,10 +280,10 @@ async fn send_bulletin(
                         .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
                         .as_str(),
                 )
-                    .capture(event);
+                .capture(event);
             })
-                .await
-                .unwrap();
+            .await
+            .unwrap();
         }
     }
 
@@ -405,7 +401,7 @@ async fn get_ending_soon_proposals(
             },
         }
     }))
-        .await;
+    .await;
 
     Ok(ending_proposals)
 }
@@ -503,7 +499,7 @@ async fn get_new_proposals(
             },
         }
     }))
-        .await;
+    .await;
 
     Ok(new_proposals)
 }
@@ -632,7 +628,7 @@ async fn get_ended_proposals(
             },
         }
     }))
-        .await;
+    .await;
 
     Ok(ended_proposals)
 }

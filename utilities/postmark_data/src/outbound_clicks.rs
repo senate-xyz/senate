@@ -43,7 +43,7 @@ pub async fn outbound_clicks() {
         "Agent",
         "Geo",
     ])
-    .unwrap();
+        .unwrap();
 
     while !end {
         let token = match env::var_os("POSTMARK_TOKEN") {
@@ -82,7 +82,7 @@ pub async fn outbound_clicks() {
                 row.UserAgent.as_str().unwrap_or("unknown"),
                 row.Geo.as_str().unwrap_or("unknown"),
             ])
-            .unwrap();
+                .unwrap();
         }
 
         if postmark_data.Clicks.len() > 0 {

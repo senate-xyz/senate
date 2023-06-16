@@ -1,21 +1,16 @@
-use crate::{
-    prisma::{
-        notification,
-        proposal,
-        subscription,
-        user,
-        NotificationType,
-        PrismaClient,
-        ProposalState,
-    },
-    utils::vote::get_vote,
-};
+use std::sync::Arc;
+
 use anyhow::Result;
 use prisma_client_rust::chrono::{Duration, Utc};
 use teloxide::Bot;
 use tracing::{debug_span, instrument, Instrument};
 
-use std::sync::Arc;
+use crate::{
+    prisma::{
+        notification, proposal, subscription, user, NotificationType, PrismaClient, ProposalState,
+    },
+    utils::vote::get_vote,
+};
 
 #[instrument(skip(client), level = "info")]
 pub async fn generate_ending_soon_notifications(

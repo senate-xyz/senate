@@ -1,18 +1,13 @@
-use crate::prisma::{
-    notification,
-    proposal,
-    subscription,
-    user,
-    NotificationDispatchedState,
-    NotificationType,
-    PrismaClient,
-    ProposalState,
-};
+use std::sync::Arc;
+
 use anyhow::Result;
 use prisma_client_rust::chrono::{Duration, Utc};
 use tracing::{debug_span, instrument, Instrument};
 
-use std::sync::Arc;
+use crate::prisma::{
+    notification, proposal, subscription, user, NotificationDispatchedState, NotificationType,
+    PrismaClient, ProposalState,
+};
 
 #[instrument(skip(client), level = "info")]
 pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {

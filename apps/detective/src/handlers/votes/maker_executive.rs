@@ -1,24 +1,24 @@
 use std::collections::HashSet;
 
-use crate::{
-    contracts::makerexecutive::{self, LogNoteFilter},
-    prisma::{daohandler, proposal},
-    router::chain_votes::{Vote, VoteResult},
-    Ctx,
-};
 use anyhow::{bail, Result};
 use ethers::{
     prelude::LogMeta,
     types::{Address, H160, H256, U256},
     utils::to_checksum,
 };
-use itertools::Itertools;
-
 use futures::stream::{FuturesUnordered, StreamExt};
+use itertools::Itertools;
 use prisma_client_rust::chrono::Utc;
 use serde::Deserialize;
 use tracing::Instrument;
 use tracing::{debug_span, instrument};
+
+use crate::{
+    contracts::makerexecutive::{self, LogNoteFilter},
+    prisma::{daohandler, proposal},
+    router::chain_votes::{Vote, VoteResult},
+    Ctx,
+};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]

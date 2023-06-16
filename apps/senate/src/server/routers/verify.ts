@@ -1,7 +1,7 @@
-import { z } from 'zod'
-import { router, publicProcedure } from '../trpc'
-import { prisma } from '@senate/database'
-import { verifyMessage } from 'viem'
+import {z} from 'zod'
+import {publicProcedure, router} from '../trpc'
+import {prisma} from '@senate/database'
+import {verifyMessage} from 'viem'
 
 export const verifyRouter = router({
     userOfChallenge: publicProcedure
@@ -10,7 +10,7 @@ export const verifyRouter = router({
                 challenge: z.string()
             })
         )
-        .query(async ({ input }) => {
+        .query(async ({input}) => {
             const user = await prisma.user.findFirst({
                 where: {
                     challengecode: input.challenge
@@ -26,7 +26,7 @@ export const verifyRouter = router({
                 challenge: z.string()
             })
         )
-        .query(async ({ input }) => {
+        .query(async ({input}) => {
             const user = await prisma.user.findFirst({
                 where: {
                     challengecode: input.challenge
@@ -45,7 +45,7 @@ export const verifyRouter = router({
                 signature: z.string()
             })
         )
-        .mutation(async ({ input }) => {
+        .mutation(async ({input}) => {
             const challengeRegex = /(?<=challenge:\s)[a-zA-Z0-9]+/
             const challengeMatch = input.message.match(challengeRegex)
 
@@ -110,7 +110,7 @@ export const verifyRouter = router({
                 }
 
                 await prisma.user.update({
-                    where: { id: addressUser.id },
+                    where: {id: addressUser.id},
                     data: {
                         isaaveuser:
                             emailUser.isaaveuser == 'VERIFICATION'
@@ -132,7 +132,7 @@ export const verifyRouter = router({
                 })
 
                 await prisma.user.deleteMany({
-                    where: { id: emailUser.id }
+                    where: {id: emailUser.id}
                 })
             } else {
                 const newUser = await prisma.user.findFirstOrThrow({
@@ -142,7 +142,7 @@ export const verifyRouter = router({
                 })
 
                 await prisma.user.update({
-                    where: { id: newUser.id },
+                    where: {id: newUser.id},
                     data: {
                         address: input.address,
                         isaaveuser:
@@ -164,7 +164,7 @@ export const verifyRouter = router({
                 if (newUser.isaaveuser == 'VERIFICATION') {
                     const aave = await prisma.dao.findFirstOrThrow({
                         where: {
-                            name: { equals: 'Aave' }
+                            name: {equals: 'Aave'}
                         }
                     })
 
@@ -180,7 +180,7 @@ export const verifyRouter = router({
                 if (newUser.isuniswapuser == 'VERIFICATION') {
                     const uniswap = await prisma.dao.findFirstOrThrow({
                         where: {
-                            name: { equals: 'Uniswap' }
+                            name: {equals: 'Uniswap'}
                         }
                     })
 

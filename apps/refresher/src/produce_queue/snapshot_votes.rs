@@ -1,12 +1,14 @@
+use std::collections::HashMap;
+
 use anyhow::Result;
-use prisma::{daohandler, PrismaClient};
 use prisma_client_rust::{
     chrono::{Duration, Utc},
     operator::{and, or},
     Direction,
 };
-use std::collections::HashMap;
 use tracing::{debug, debug_span, instrument, Instrument};
+
+use prisma::{daohandler, PrismaClient};
 
 use crate::{
     config::Config,

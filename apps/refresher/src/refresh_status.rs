@@ -1,9 +1,10 @@
+use std::sync::Arc;
+
 use chrono::{DateTime, Utc};
 use once_cell::sync::Lazy;
-use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use crate::prisma::{self, dao, DaoHandlerType, PrismaClient, voterhandler};
+use crate::prisma::{self, dao, voterhandler, DaoHandlerType, PrismaClient};
 
 #[derive(Debug)]
 pub struct DaoHandlerRefreshStatus {

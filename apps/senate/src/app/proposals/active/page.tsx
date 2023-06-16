@@ -1,10 +1,10 @@
-import { prisma } from '@senate/database'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../pages/api/auth/[...nextauth]'
-import { Filters } from './components/csr/Filters'
+import {prisma} from '@senate/database'
+import {getServerSession} from 'next-auth'
+import {authOptions} from '../../../pages/api/auth/[...nextauth]'
+import {Filters} from './components/csr/Filters'
 import Table from './components/ssr/Table'
-import { Suspense } from 'react'
-import { Metadata } from 'next'
+import {Suspense} from 'react'
+import {Metadata} from 'next'
 
 export const revalidate = 300
 
@@ -19,7 +19,7 @@ const getSubscribedDAOs = async () => {
     try {
         const user = await prisma.user.findFirstOrThrow({
             where: {
-                address: { equals: userAddress }
+                address: {equals: userAddress}
             },
             select: {
                 id: true
@@ -30,7 +30,7 @@ const getSubscribedDAOs = async () => {
             where: {
                 subscriptions: {
                     some: {
-                        user: { is: user }
+                        user: {is: user}
                     }
                 }
             },
@@ -56,7 +56,7 @@ const getProxies = async () => {
     try {
         const user = await prisma.user.findFirstOrThrow({
             where: {
-                address: { equals: userAddress }
+                address: {equals: userAddress}
             },
             include: {
                 voters: true
@@ -72,8 +72,8 @@ const getProxies = async () => {
 }
 
 export default async function Home({
-    searchParams
-}: {
+                                       searchParams
+                                   }: {
     params: { slug: string }
     searchParams?: { from: string; end: number; voted: string; proxy: string }
 }) {
@@ -81,7 +81,7 @@ export default async function Home({
     const proxies = await getProxies()
 
     const subscripions = subscribedDAOs.map((subDAO) => {
-        return { id: subDAO.id, name: subDAO.name }
+        return {id: subDAO.id, name: subDAO.name}
     })
 
     return (
@@ -91,7 +91,7 @@ export default async function Home({
             </div> */}
 
             <Suspense>
-                <Filters subscriptions={subscripions} proxies={proxies} />
+                <Filters subscriptions={subscripions} proxies={proxies}/>
             </Suspense>
 
             <Table

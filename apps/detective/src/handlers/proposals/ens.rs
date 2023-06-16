@@ -1,10 +1,5 @@
-use crate::{
-    contracts::{ensgov, ensgov::ensgov::ProposalCreatedFilter},
-    prisma::{daohandler, ProposalState},
-    router::chain_proposals::ChainProposal,
-    utils::etherscan::estimate_timestamp,
-    Ctx,
-};
+use std::str;
+
 use anyhow::Result;
 use ethers::{
     prelude::LogMeta,
@@ -17,9 +12,16 @@ use prisma_client_rust::{
     chrono::{DateTime, NaiveDateTime, Utc},
 };
 use serde::Deserialize;
-use std::str;
 use tracing::Instrument;
 use tracing::{debug_span, instrument};
+
+use crate::{
+    contracts::{ensgov, ensgov::ensgov::ProposalCreatedFilter},
+    prisma::{daohandler, ProposalState},
+    router::chain_proposals::ChainProposal,
+    utils::etherscan::estimate_timestamp,
+    Ctx,
+};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]

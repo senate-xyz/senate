@@ -1,9 +1,5 @@
-use crate::{
-    contracts::{makerpollcreate, makerpollcreate::PollCreatedFilter},
-    prisma::{daohandler, ProposalState},
-    router::chain_proposals::ChainProposal,
-    Ctx,
-};
+use std::{str, sync::Arc, vec};
+
 use anyhow::{Context, Result};
 use chrono::Duration;
 use ethers::{prelude::LogMeta, providers::Middleware, types::Address};
@@ -20,9 +16,15 @@ use reqwest::{
 use reqwest_middleware::ClientWithMiddleware;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::{str, sync::Arc, vec};
 use tracing::Instrument;
 use tracing::{debug_span, instrument};
+
+use crate::{
+    contracts::{makerpollcreate, makerpollcreate::PollCreatedFilter},
+    prisma::{daohandler, ProposalState},
+    router::chain_proposals::ChainProposal,
+    Ctx,
+};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -168,6 +170,7 @@ struct ResultData {
     optionName: Value,
     optionId: Value,
 }
+
 #[derive(Deserialize, Serialize, PartialEq, Debug)]
 struct ResultsData {
     results: Vec<ResultData>,

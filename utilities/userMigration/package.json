@@ -1,33 +1,33 @@
 {
-    "name": "@senate/user-migration",
-    "version": "1.0.0",
-    "author": "Senate",
-    "private": true,
-    "license": "GNU GPLv3",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "scripts": {
-        "build": "yarn generate && tsup",
-        "start": "node dist/index",
-        "dev": "tsup && node dist/index",
-        "clean": "rimraf .turbo node_modules dist yarn-error.log",
-        "generate": "prisma generate --schema prisma/new/schema.prisma && prisma generate --schema prisma/old/schema.prisma",
-        "lint": "eslint src",
-        "lint:fix": "eslint src --fix",
-        "prettier": "prettier src --check",
-        "prettier:fix": "prettier src --write",
-        "update": "ncu -u"
-    },
-    "dependencies": {
-        "@prisma/client": "^4.15.0",
-        "@types/prompt-sync": "^4.2.0",
-        "inquirer": "9.2.7",
-        "prisma": "^4.15.0"
-    },
-    "devDependencies": {
-        "@types/inquirer": "^9.0.3",
-        "rimraf": "^5.0.1",
-        "tsup": "^7.0.0",
-        "typescript": "^5.1.3"
-    }
+  "name": "@senate/user-migration",
+  "version": "1.0.0",
+  "author": "Senate",
+  "private": true,
+  "license": "GNU GPLv3",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "yarn generate && tsup",
+    "start": "node dist/index",
+    "dev": "tsup && node dist/index",
+    "clean": "rimraf .turbo node_modules dist yarn-error.log",
+    "generate": "prisma generate --schema prisma/new/schema.prisma && prisma generate --schema prisma/old/schema.prisma",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "prettier": "prettier src --check",
+    "prettier:fix": "prettier src --write",
+    "update": "ncu -u"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.15.0",
+    "@types/prompt-sync": "^4.2.0",
+    "inquirer": "9.2.7",
+    "prisma": "^4.15.0"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.3",
+    "rimraf": "^5.0.1",
+    "tsup": "^7.0.0",
+    "typescript": "^5.1.3"
+  }
 }

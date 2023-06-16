@@ -1,3 +1,5 @@
+use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
+
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use serenity::{
     http::Http,
@@ -7,20 +9,13 @@ use serenity::{
     },
     utils::Colour,
 };
-use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
 use tokio::time::sleep;
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
-        self,
-        DaoHandlerType,
-        notification,
-        NotificationDispatchedState,
-        NotificationType,
-        PrismaClient,
-        proposal,
-        user,
+        self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
+        NotificationType, PrismaClient,
     },
     utils::vote::get_vote,
 };
@@ -130,8 +125,8 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             new_notification.proposalid.unwrap(),
                             client,
                         )
-                            .await
-                            .unwrap();
+                        .await
+                        .unwrap();
 
                         let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
                             Some(v) => v.into_string().unwrap(),
@@ -200,10 +195,10 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                     },
                                     new_notification.discordmessagelink.unwrap(),
                                 ))
-                                    .username("Senate Secretary")
-                                    .avatar_url(
-                                        "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
-                                    )
+                                .username("Senate Secretary")
+                                .avatar_url(
+                                    "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
+                                )
                             })
                             .instrument(debug_span!("send_message"))
                             .await;
@@ -311,10 +306,10 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 },
                                 proposal.name,
                             ))
-                                .username("Senate Secretary")
-                                .avatar_url(
-                                    "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
-                                )
+                            .username("Senate Secretary")
+                            .avatar_url(
+                                "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
+                            )
                         })
                         .instrument(debug_span!("send_message"))
                         .await;

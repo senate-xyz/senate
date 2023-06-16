@@ -41,7 +41,7 @@ pub async fn outbound_opens() {
         "Platform",
         "Agent",
     ])
-    .unwrap();
+        .unwrap();
 
     while !end {
         let token = match env::var_os("POSTMARK_TOKEN") {
@@ -79,7 +79,7 @@ pub async fn outbound_opens() {
                 row.Platform.as_str().unwrap_or("unknown"),
                 row.UserAgent.as_str().unwrap_or("unknown"),
             ])
-            .unwrap();
+                .unwrap();
         }
 
         if postmark_data.Opens.len() > 0 {

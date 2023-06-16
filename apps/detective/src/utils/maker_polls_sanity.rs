@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use chrono::{Duration, Utc};
 use ethers::{
     providers::{Http, Provider},
@@ -6,13 +8,12 @@ use ethers::{
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
-use std::sync::Arc;
 use tracing::{debug, debug_span, event, instrument, Instrument, Level};
 
 use crate::{
-    Context,
     contracts::makerpollcreate::{self, PollWithdrawnFilter},
-    prisma::{self, daohandler, DaoHandlerType, proposal, vote},
+    prisma::{self, daohandler, proposal, vote, DaoHandlerType},
+    Context,
 };
 
 use super::etherscan::{estimate_block, estimate_timestamp};

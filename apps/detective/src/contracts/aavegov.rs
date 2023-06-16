@@ -1,4 +1,5 @@
 pub use aavegov::*;
+
 /// This module was auto-generated with ethers-rs Abigen.
 /// More information at: <https://github.com/gakonst/ethers-rs>
 #[allow(
@@ -7,36 +8,46 @@ pub use aavegov::*;
     clippy::upper_case_acronyms,
     clippy::type_complexity,
     dead_code,
-    non_camel_case_types,
+    non_camel_case_types
 )]
 pub mod aavegov {
     #[rustfmt::skip]
     const __ABI: &str = "[\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"governanceStrategy\",\n        \"type\": \"address\"\n      },\n      { \"internalType\": \"uint256\", \"name\": \"votingDelay\", \"type\": \"uint256\" },\n      { \"internalType\": \"address\", \"name\": \"guardian\", \"type\": \"address\" },\n      { \"internalType\": \"address[]\", \"name\": \"executors\", \"type\": \"address[]\" }\n    ],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"constructor\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"executor\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"ExecutorAuthorized\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"executor\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"ExecutorUnauthorized\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"newStrategy\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"initiatorChange\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"GovernanceStrategyChanged\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"previousOwner\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"newOwner\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"OwnershipTransferred\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalCanceled\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"creator\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"contract IExecutorWithTimelock\",\n        \"name\": \"executor\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address[]\",\n        \"name\": \"targets\",\n        \"type\": \"address[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256[]\",\n        \"name\": \"values\",\n        \"type\": \"uint256[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string[]\",\n        \"name\": \"signatures\",\n        \"type\": \"string[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"bytes[]\",\n        \"name\": \"calldatas\",\n        \"type\": \"bytes[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"bool[]\",\n        \"name\": \"withDelegatecalls\",\n        \"type\": \"bool[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"startBlock\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"endBlock\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"strategy\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"bytes32\",\n        \"name\": \"ipfsHash\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"name\": \"ProposalCreated\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"initiatorExecution\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"ProposalExecuted\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"executionTime\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"initiatorQueueing\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"ProposalQueued\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"voter\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"bool\",\n        \"name\": \"support\",\n        \"type\": \"bool\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"votingPower\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"VoteEmitted\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"newVotingDelay\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"initiatorChange\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"VotingDelayChanged\",\n    \"type\": \"event\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"DOMAIN_TYPEHASH\",\n    \"outputs\": [{ \"internalType\": \"bytes32\", \"name\": \"\", \"type\": \"bytes32\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"NAME\",\n    \"outputs\": [{ \"internalType\": \"string\", \"name\": \"\", \"type\": \"string\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"VOTE_EMITTED_TYPEHASH\",\n    \"outputs\": [{ \"internalType\": \"bytes32\", \"name\": \"\", \"type\": \"bytes32\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"__abdicate\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"address[]\", \"name\": \"executors\", \"type\": \"address[]\" }\n    ],\n    \"name\": \"authorizeExecutors\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"cancel\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"contract IExecutorWithTimelock\",\n        \"name\": \"executor\",\n        \"type\": \"address\"\n      },\n      { \"internalType\": \"address[]\", \"name\": \"targets\", \"type\": \"address[]\" },\n      { \"internalType\": \"uint256[]\", \"name\": \"values\", \"type\": \"uint256[]\" },\n      { \"internalType\": \"string[]\", \"name\": \"signatures\", \"type\": \"string[]\" },\n      { \"internalType\": \"bytes[]\", \"name\": \"calldatas\", \"type\": \"bytes[]\" },\n      {\n        \"internalType\": \"bool[]\",\n        \"name\": \"withDelegatecalls\",\n        \"type\": \"bool[]\"\n      },\n      { \"internalType\": \"bytes32\", \"name\": \"ipfsHash\", \"type\": \"bytes32\" }\n    ],\n    \"name\": \"create\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"execute\",\n    \"outputs\": [],\n    \"stateMutability\": \"payable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"getGovernanceStrategy\",\n    \"outputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"getGuardian\",\n    \"outputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"getProposalById\",\n    \"outputs\": [\n      {\n        \"components\": [\n          { \"internalType\": \"uint256\", \"name\": \"id\", \"type\": \"uint256\" },\n          { \"internalType\": \"address\", \"name\": \"creator\", \"type\": \"address\" },\n          {\n            \"internalType\": \"contract IExecutorWithTimelock\",\n            \"name\": \"executor\",\n            \"type\": \"address\"\n          },\n          {\n            \"internalType\": \"address[]\",\n            \"name\": \"targets\",\n            \"type\": \"address[]\"\n          },\n          {\n            \"internalType\": \"uint256[]\",\n            \"name\": \"values\",\n            \"type\": \"uint256[]\"\n          },\n          {\n            \"internalType\": \"string[]\",\n            \"name\": \"signatures\",\n            \"type\": \"string[]\"\n          },\n          { \"internalType\": \"bytes[]\", \"name\": \"calldatas\", \"type\": \"bytes[]\" },\n          {\n            \"internalType\": \"bool[]\",\n            \"name\": \"withDelegatecalls\",\n            \"type\": \"bool[]\"\n          },\n          {\n            \"internalType\": \"uint256\",\n            \"name\": \"startBlock\",\n            \"type\": \"uint256\"\n          },\n          { \"internalType\": \"uint256\", \"name\": \"endBlock\", \"type\": \"uint256\" },\n          {\n            \"internalType\": \"uint256\",\n            \"name\": \"executionTime\",\n            \"type\": \"uint256\"\n          },\n          { \"internalType\": \"uint256\", \"name\": \"forVotes\", \"type\": \"uint256\" },\n          {\n            \"internalType\": \"uint256\",\n            \"name\": \"againstVotes\",\n            \"type\": \"uint256\"\n          },\n          { \"internalType\": \"bool\", \"name\": \"executed\", \"type\": \"bool\" },\n          { \"internalType\": \"bool\", \"name\": \"canceled\", \"type\": \"bool\" },\n          { \"internalType\": \"address\", \"name\": \"strategy\", \"type\": \"address\" },\n          { \"internalType\": \"bytes32\", \"name\": \"ipfsHash\", \"type\": \"bytes32\" }\n        ],\n        \"internalType\": \"struct IAaveGovernanceV2.ProposalWithoutVotes\",\n        \"name\": \"\",\n        \"type\": \"tuple\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"getProposalState\",\n    \"outputs\": [\n      {\n        \"internalType\": \"enum IAaveGovernanceV2.ProposalState\",\n        \"name\": \"\",\n        \"type\": \"uint8\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"getProposalsCount\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"address\", \"name\": \"voter\", \"type\": \"address\" }\n    ],\n    \"name\": \"getVoteOnProposal\",\n    \"outputs\": [\n      {\n        \"components\": [\n          { \"internalType\": \"bool\", \"name\": \"support\", \"type\": \"bool\" },\n          {\n            \"internalType\": \"uint248\",\n            \"name\": \"votingPower\",\n            \"type\": \"uint248\"\n          }\n        ],\n        \"internalType\": \"struct IAaveGovernanceV2.Vote\",\n        \"name\": \"\",\n        \"type\": \"tuple\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"getVotingDelay\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"address\", \"name\": \"executor\", \"type\": \"address\" }\n    ],\n    \"name\": \"isExecutorAuthorized\",\n    \"outputs\": [{ \"internalType\": \"bool\", \"name\": \"\", \"type\": \"bool\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"owner\",\n    \"outputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"queue\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"renounceOwnership\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"governanceStrategy\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"setGovernanceStrategy\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"votingDelay\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"setVotingDelay\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"bool\", \"name\": \"support\", \"type\": \"bool\" }\n    ],\n    \"name\": \"submitVote\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"bool\", \"name\": \"support\", \"type\": \"bool\" },\n      { \"internalType\": \"uint8\", \"name\": \"v\", \"type\": \"uint8\" },\n      { \"internalType\": \"bytes32\", \"name\": \"r\", \"type\": \"bytes32\" },\n      { \"internalType\": \"bytes32\", \"name\": \"s\", \"type\": \"bytes32\" }\n    ],\n    \"name\": \"submitVoteBySignature\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"address\", \"name\": \"newOwner\", \"type\": \"address\" }\n    ],\n    \"name\": \"transferOwnership\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"address[]\", \"name\": \"executors\", \"type\": \"address[]\" }\n    ],\n    \"name\": \"unauthorizeExecutors\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  }\n]\n";
     ///The parsed JSON ABI of the contract.
-    pub static AAVEGOV_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> = ::ethers::contract::Lazy::new(||
-    ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid"));
+    pub static AAVEGOV_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> =
+        ::ethers::contract::Lazy::new(|| {
+            ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid")
+        });
+
     pub struct aavegov<M>(::ethers::contract::Contract<M>);
+
     impl<M> ::core::clone::Clone for aavegov<M> {
         fn clone(&self) -> Self {
             Self(::core::clone::Clone::clone(&self.0))
         }
     }
+
     impl<M> ::core::ops::Deref for aavegov<M> {
         type Target = ::ethers::contract::Contract<M>;
         fn deref(&self) -> &Self::Target {
             &self.0
         }
     }
+
     impl<M> ::core::ops::DerefMut for aavegov<M> {
         fn deref_mut(&mut self) -> &mut Self::Target {
             &mut self.0
         }
     }
+
     impl<M> ::core::fmt::Debug for aavegov<M> {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-            f.debug_tuple(stringify!(aavegov)).field(&self.address()).finish()
+            f.debug_tuple(stringify!(aavegov))
+                .field(&self.address())
+                .finish()
         }
     }
+
     impl<M: ::ethers::providers::Middleware> aavegov<M> {
         /// Creates a new contract instance with the specified `ethers` client at
         /// `address`. The contract derefs to a `ethers::Contract` object.
@@ -44,26 +55,20 @@ pub mod aavegov {
             address: T,
             client: ::std::sync::Arc<M>,
         ) -> Self {
-            Self(
-                ::ethers::contract::Contract::new(
-                    address.into(),
-                    AAVEGOV_ABI.clone(),
-                    client,
-                ),
-            )
+            Self(::ethers::contract::Contract::new(
+                address.into(),
+                AAVEGOV_ABI.clone(),
+                client,
+            ))
         }
         ///Calls the contract's `DOMAIN_TYPEHASH` (0x20606b70) function
-        pub fn domain_typehash(
-            &self,
-        ) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
+        pub fn domain_typehash(&self) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
             self.0
                 .method_hash([32, 96, 107, 112], ())
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `NAME` (0xa3f4df7e) function
-        pub fn name(
-            &self,
-        ) -> ::ethers::contract::builders::ContractCall<M, ::std::string::String> {
+        pub fn name(&self) -> ::ethers::contract::builders::ContractCall<M, ::std::string::String> {
             self.0
                 .method_hash([163, 244, 223, 126], ())
                 .expect("method not found (this should never happen)")
@@ -138,10 +143,7 @@ pub mod aavegov {
         ///Calls the contract's `getGovernanceStrategy` (0x06be3e8e) function
         pub fn get_governance_strategy(
             &self,
-        ) -> ::ethers::contract::builders::ContractCall<
-            M,
-            ::ethers::core::types::Address,
-        > {
+        ) -> ::ethers::contract::builders::ContractCall<M, ::ethers::core::types::Address> {
             self.0
                 .method_hash([6, 190, 62, 142], ())
                 .expect("method not found (this should never happen)")
@@ -149,10 +151,7 @@ pub mod aavegov {
         ///Calls the contract's `getGuardian` (0xa75b87d2) function
         pub fn get_guardian(
             &self,
-        ) -> ::ethers::contract::builders::ContractCall<
-            M,
-            ::ethers::core::types::Address,
-        > {
+        ) -> ::ethers::contract::builders::ContractCall<M, ::ethers::core::types::Address> {
             self.0
                 .method_hash([167, 91, 135, 210], ())
                 .expect("method not found (this should never happen)")
@@ -213,10 +212,7 @@ pub mod aavegov {
         ///Calls the contract's `owner` (0x8da5cb5b) function
         pub fn owner(
             &self,
-        ) -> ::ethers::contract::builders::ContractCall<
-            M,
-            ::ethers::core::types::Address,
-        > {
+        ) -> ::ethers::contract::builders::ContractCall<M, ::ethers::core::types::Address> {
             self.0
                 .method_hash([141, 165, 203, 91], ())
                 .expect("method not found (this should never happen)")
@@ -231,9 +227,7 @@ pub mod aavegov {
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `renounceOwnership` (0x715018a6) function
-        pub fn renounce_ownership(
-            &self,
-        ) -> ::ethers::contract::builders::ContractCall<M, ()> {
+        pub fn renounce_ownership(&self) -> ::ethers::contract::builders::ContractCall<M, ()> {
             self.0
                 .method_hash([113, 80, 24, 166], ())
                 .expect("method not found (this should never happen)")
@@ -300,21 +294,15 @@ pub mod aavegov {
         ///Gets the contract's `ExecutorAuthorized` event
         pub fn executor_authorized_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ExecutorAuthorizedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ExecutorAuthorizedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ExecutorUnauthorized` event
         pub fn executor_unauthorized_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ExecutorUnauthorizedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ExecutorUnauthorizedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `GovernanceStrategyChanged` event
@@ -330,86 +318,67 @@ pub mod aavegov {
         ///Gets the contract's `OwnershipTransferred` event
         pub fn ownership_transferred_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            OwnershipTransferredFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, OwnershipTransferredFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ProposalCanceled` event
         pub fn proposal_canceled_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalCanceledFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalCanceledFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ProposalCreated` event
         pub fn proposal_created_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalCreatedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalCreatedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ProposalExecuted` event
         pub fn proposal_executed_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalExecutedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalExecutedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ProposalQueued` event
         pub fn proposal_queued_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalQueuedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalQueuedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `VoteEmitted` event
         pub fn vote_emitted_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            VoteEmittedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, VoteEmittedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `VotingDelayChanged` event
         pub fn voting_delay_changed_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            VotingDelayChangedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, VotingDelayChangedFilter>
+        {
             self.0.event()
         }
         /// Returns an `Event` builder for all the events of this contract.
         pub fn events(
             &self,
         ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, aavegovEvents> {
-            self.0.event_with_filter(::core::default::Default::default())
+            self.0
+                .event_with_filter(::core::default::Default::default())
         }
     }
-    impl<M: ::ethers::providers::Middleware> From<::ethers::contract::Contract<M>>
-    for aavegov<M> {
+
+    impl<M: ::ethers::providers::Middleware> From<::ethers::contract::Contract<M>> for aavegov<M> {
         fn from(contract: ::ethers::contract::Contract<M>) -> Self {
             Self::new(contract.address(), contract.client())
         }
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -418,12 +387,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ExecutorAuthorized", abi = "ExecutorAuthorized(address)")]
     pub struct ExecutorAuthorizedFilter {
         pub executor: ::ethers::core::types::Address,
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -432,12 +402,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ExecutorUnauthorized", abi = "ExecutorUnauthorized(address)")]
     pub struct ExecutorUnauthorizedFilter {
         pub executor: ::ethers::core::types::Address,
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -446,7 +417,7 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(
         name = "GovernanceStrategyChanged",
@@ -458,6 +429,7 @@ pub mod aavegov {
         #[ethevent(indexed)]
         pub initiator_change: ::ethers::core::types::Address,
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -466,7 +438,7 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(
         name = "OwnershipTransferred",
@@ -478,6 +450,7 @@ pub mod aavegov {
         #[ethevent(indexed)]
         pub new_owner: ::ethers::core::types::Address,
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -486,12 +459,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ProposalCanceled", abi = "ProposalCanceled(uint256)")]
     pub struct ProposalCanceledFilter {
         pub id: ::ethers::core::types::U256,
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -500,7 +474,7 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(
         name = "ProposalCreated",
@@ -522,6 +496,7 @@ pub mod aavegov {
         pub strategy: ::ethers::core::types::Address,
         pub ipfs_hash: [u8; 32],
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -530,7 +505,7 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ProposalExecuted", abi = "ProposalExecuted(uint256,address)")]
     pub struct ProposalExecutedFilter {
@@ -538,6 +513,7 @@ pub mod aavegov {
         #[ethevent(indexed)]
         pub initiator_execution: ::ethers::core::types::Address,
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -546,15 +522,19 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
-    #[ethevent(name = "ProposalQueued", abi = "ProposalQueued(uint256,uint256,address)")]
+    #[ethevent(
+        name = "ProposalQueued",
+        abi = "ProposalQueued(uint256,uint256,address)"
+    )]
     pub struct ProposalQueuedFilter {
         pub id: ::ethers::core::types::U256,
         pub execution_time: ::ethers::core::types::U256,
         #[ethevent(indexed)]
         pub initiator_queueing: ::ethers::core::types::Address,
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -563,9 +543,12 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
-    #[ethevent(name = "VoteEmitted", abi = "VoteEmitted(uint256,address,bool,uint256)")]
+    #[ethevent(
+        name = "VoteEmitted",
+        abi = "VoteEmitted(uint256,address,bool,uint256)"
+    )]
     pub struct VoteEmittedFilter {
         pub id: ::ethers::core::types::U256,
         #[ethevent(indexed)]
@@ -573,6 +556,7 @@ pub mod aavegov {
         pub support: bool,
         pub voting_power: ::ethers::core::types::U256,
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -581,14 +565,18 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
-    #[ethevent(name = "VotingDelayChanged", abi = "VotingDelayChanged(uint256,address)")]
+    #[ethevent(
+        name = "VotingDelayChanged",
+        abi = "VotingDelayChanged(uint256,address)"
+    )]
     pub struct VotingDelayChangedFilter {
         pub new_voting_delay: ::ethers::core::types::U256,
         #[ethevent(indexed)]
         pub initiator_change: ::ethers::core::types::Address,
     }
+
     ///Container type for all of the contract's events
     #[derive(Clone, ::ethers::contract::EthAbiType, Debug, PartialEq, Eq, Hash)]
     pub enum aavegovEvents {
@@ -603,6 +591,7 @@ pub mod aavegov {
         VoteEmittedFilter(VoteEmittedFilter),
         VotingDelayChangedFilter(VotingDelayChangedFilter),
     }
+
     impl ::ethers::contract::EthLogDecode for aavegovEvents {
         fn decode_log(
             log: &::ethers::core::abi::RawLog,
@@ -640,90 +629,86 @@ pub mod aavegov {
             Err(::ethers::core::abi::Error::InvalidData)
         }
     }
+
     impl ::core::fmt::Display for aavegovEvents {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
             match self {
-                Self::ExecutorAuthorizedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ExecutorUnauthorizedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::ExecutorAuthorizedFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ExecutorUnauthorizedFilter(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GovernanceStrategyChangedFilter(element) => {
                     ::core::fmt::Display::fmt(element, f)
                 }
-                Self::OwnershipTransferredFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ProposalCanceledFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ProposalCreatedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ProposalExecutedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ProposalQueuedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::OwnershipTransferredFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ProposalCanceledFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ProposalCreatedFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ProposalExecutedFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ProposalQueuedFilter(element) => ::core::fmt::Display::fmt(element, f),
                 Self::VoteEmittedFilter(element) => ::core::fmt::Display::fmt(element, f),
-                Self::VotingDelayChangedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::VotingDelayChangedFilter(element) => ::core::fmt::Display::fmt(element, f),
             }
         }
     }
+
     impl ::core::convert::From<ExecutorAuthorizedFilter> for aavegovEvents {
         fn from(value: ExecutorAuthorizedFilter) -> Self {
             Self::ExecutorAuthorizedFilter(value)
         }
     }
+
     impl ::core::convert::From<ExecutorUnauthorizedFilter> for aavegovEvents {
         fn from(value: ExecutorUnauthorizedFilter) -> Self {
             Self::ExecutorUnauthorizedFilter(value)
         }
     }
+
     impl ::core::convert::From<GovernanceStrategyChangedFilter> for aavegovEvents {
         fn from(value: GovernanceStrategyChangedFilter) -> Self {
             Self::GovernanceStrategyChangedFilter(value)
         }
     }
+
     impl ::core::convert::From<OwnershipTransferredFilter> for aavegovEvents {
         fn from(value: OwnershipTransferredFilter) -> Self {
             Self::OwnershipTransferredFilter(value)
         }
     }
+
     impl ::core::convert::From<ProposalCanceledFilter> for aavegovEvents {
         fn from(value: ProposalCanceledFilter) -> Self {
             Self::ProposalCanceledFilter(value)
         }
     }
+
     impl ::core::convert::From<ProposalCreatedFilter> for aavegovEvents {
         fn from(value: ProposalCreatedFilter) -> Self {
             Self::ProposalCreatedFilter(value)
         }
     }
+
     impl ::core::convert::From<ProposalExecutedFilter> for aavegovEvents {
         fn from(value: ProposalExecutedFilter) -> Self {
             Self::ProposalExecutedFilter(value)
         }
     }
+
     impl ::core::convert::From<ProposalQueuedFilter> for aavegovEvents {
         fn from(value: ProposalQueuedFilter) -> Self {
             Self::ProposalQueuedFilter(value)
         }
     }
+
     impl ::core::convert::From<VoteEmittedFilter> for aavegovEvents {
         fn from(value: VoteEmittedFilter) -> Self {
             Self::VoteEmittedFilter(value)
         }
     }
+
     impl ::core::convert::From<VotingDelayChangedFilter> for aavegovEvents {
         fn from(value: VotingDelayChangedFilter) -> Self {
             Self::VotingDelayChangedFilter(value)
         }
     }
+
     ///Container type for all input parameters for the `DOMAIN_TYPEHASH` function with signature `DOMAIN_TYPEHASH()` and selector `0x20606b70`
     #[derive(
         Clone,
@@ -733,10 +718,11 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "DOMAIN_TYPEHASH", abi = "DOMAIN_TYPEHASH()")]
     pub struct DomainTypehashCall;
+
     ///Container type for all input parameters for the `NAME` function with signature `NAME()` and selector `0xa3f4df7e`
     #[derive(
         Clone,
@@ -746,10 +732,11 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "NAME", abi = "NAME()")]
     pub struct NameCall;
+
     ///Container type for all input parameters for the `VOTE_EMITTED_TYPEHASH` function with signature `VOTE_EMITTED_TYPEHASH()` and selector `0x34b18c26`
     #[derive(
         Clone,
@@ -759,10 +746,11 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "VOTE_EMITTED_TYPEHASH", abi = "VOTE_EMITTED_TYPEHASH()")]
     pub struct VoteEmittedTypehashCall;
+
     ///Container type for all input parameters for the `__abdicate` function with signature `__abdicate()` and selector `0x760fbc13`
     #[derive(
         Clone,
@@ -772,10 +760,11 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "__abdicate", abi = "__abdicate()")]
     pub struct AbdicateCall;
+
     ///Container type for all input parameters for the `authorizeExecutors` function with signature `authorizeExecutors(address[])` and selector `0x64c786d9`
     #[derive(
         Clone,
@@ -785,12 +774,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "authorizeExecutors", abi = "authorizeExecutors(address[])")]
     pub struct AuthorizeExecutorsCall {
         pub executors: ::std::vec::Vec<::ethers::core::types::Address>,
     }
+
     ///Container type for all input parameters for the `cancel` function with signature `cancel(uint256)` and selector `0x40e58ee5`
     #[derive(
         Clone,
@@ -800,12 +790,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "cancel", abi = "cancel(uint256)")]
     pub struct CancelCall {
         pub proposal_id: ::ethers::core::types::U256,
     }
+
     ///Container type for all input parameters for the `create` function with signature `create(address,address[],uint256[],string[],bytes[],bool[],bytes32)` and selector `0xf8741a9c`
     #[derive(
         Clone,
@@ -815,7 +806,7 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(
         name = "create",
@@ -830,6 +821,7 @@ pub mod aavegov {
         pub with_delegatecalls: ::std::vec::Vec<bool>,
         pub ipfs_hash: [u8; 32],
     }
+
     ///Container type for all input parameters for the `execute` function with signature `execute(uint256)` and selector `0xfe0d94c1`
     #[derive(
         Clone,
@@ -839,12 +831,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "execute", abi = "execute(uint256)")]
     pub struct ExecuteCall {
         pub proposal_id: ::ethers::core::types::U256,
     }
+
     ///Container type for all input parameters for the `getGovernanceStrategy` function with signature `getGovernanceStrategy()` and selector `0x06be3e8e`
     #[derive(
         Clone,
@@ -854,10 +847,11 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getGovernanceStrategy", abi = "getGovernanceStrategy()")]
     pub struct GetGovernanceStrategyCall;
+
     ///Container type for all input parameters for the `getGuardian` function with signature `getGuardian()` and selector `0xa75b87d2`
     #[derive(
         Clone,
@@ -867,10 +861,11 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getGuardian", abi = "getGuardian()")]
     pub struct GetGuardianCall;
+
     ///Container type for all input parameters for the `getProposalById` function with signature `getProposalById(uint256)` and selector `0x3656de21`
     #[derive(
         Clone,
@@ -880,12 +875,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getProposalById", abi = "getProposalById(uint256)")]
     pub struct GetProposalByIdCall {
         pub proposal_id: ::ethers::core::types::U256,
     }
+
     ///Container type for all input parameters for the `getProposalState` function with signature `getProposalState(uint256)` and selector `0x9080936f`
     #[derive(
         Clone,
@@ -895,12 +891,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getProposalState", abi = "getProposalState(uint256)")]
     pub struct GetProposalStateCall {
         pub proposal_id: ::ethers::core::types::U256,
     }
+
     ///Container type for all input parameters for the `getProposalsCount` function with signature `getProposalsCount()` and selector `0x98e527d3`
     #[derive(
         Clone,
@@ -910,10 +907,11 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getProposalsCount", abi = "getProposalsCount()")]
     pub struct GetProposalsCountCall;
+
     ///Container type for all input parameters for the `getVoteOnProposal` function with signature `getVoteOnProposal(uint256,address)` and selector `0x4185ff83`
     #[derive(
         Clone,
@@ -923,13 +921,14 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getVoteOnProposal", abi = "getVoteOnProposal(uint256,address)")]
     pub struct GetVoteOnProposalCall {
         pub proposal_id: ::ethers::core::types::U256,
         pub voter: ::ethers::core::types::Address,
     }
+
     ///Container type for all input parameters for the `getVotingDelay` function with signature `getVotingDelay()` and selector `0xa2b170b0`
     #[derive(
         Clone,
@@ -939,10 +938,11 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getVotingDelay", abi = "getVotingDelay()")]
     pub struct GetVotingDelayCall;
+
     ///Container type for all input parameters for the `isExecutorAuthorized` function with signature `isExecutorAuthorized(address)` and selector `0x548b514e`
     #[derive(
         Clone,
@@ -952,12 +952,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "isExecutorAuthorized", abi = "isExecutorAuthorized(address)")]
     pub struct IsExecutorAuthorizedCall {
         pub executor: ::ethers::core::types::Address,
     }
+
     ///Container type for all input parameters for the `owner` function with signature `owner()` and selector `0x8da5cb5b`
     #[derive(
         Clone,
@@ -967,10 +968,11 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "owner", abi = "owner()")]
     pub struct OwnerCall;
+
     ///Container type for all input parameters for the `queue` function with signature `queue(uint256)` and selector `0xddf0b009`
     #[derive(
         Clone,
@@ -980,12 +982,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "queue", abi = "queue(uint256)")]
     pub struct QueueCall {
         pub proposal_id: ::ethers::core::types::U256,
     }
+
     ///Container type for all input parameters for the `renounceOwnership` function with signature `renounceOwnership()` and selector `0x715018a6`
     #[derive(
         Clone,
@@ -995,10 +998,11 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "renounceOwnership", abi = "renounceOwnership()")]
     pub struct RenounceOwnershipCall;
+
     ///Container type for all input parameters for the `setGovernanceStrategy` function with signature `setGovernanceStrategy(address)` and selector `0x9aad6f6a`
     #[derive(
         Clone,
@@ -1008,12 +1012,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "setGovernanceStrategy", abi = "setGovernanceStrategy(address)")]
     pub struct SetGovernanceStrategyCall {
         pub governance_strategy: ::ethers::core::types::Address,
     }
+
     ///Container type for all input parameters for the `setVotingDelay` function with signature `setVotingDelay(uint256)` and selector `0x70b0f660`
     #[derive(
         Clone,
@@ -1023,12 +1028,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "setVotingDelay", abi = "setVotingDelay(uint256)")]
     pub struct SetVotingDelayCall {
         pub voting_delay: ::ethers::core::types::U256,
     }
+
     ///Container type for all input parameters for the `submitVote` function with signature `submitVote(uint256,bool)` and selector `0x612c56fa`
     #[derive(
         Clone,
@@ -1038,13 +1044,14 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "submitVote", abi = "submitVote(uint256,bool)")]
     pub struct SubmitVoteCall {
         pub proposal_id: ::ethers::core::types::U256,
         pub support: bool,
     }
+
     ///Container type for all input parameters for the `submitVoteBySignature` function with signature `submitVoteBySignature(uint256,bool,uint8,bytes32,bytes32)` and selector `0xaf1e0bd3`
     #[derive(
         Clone,
@@ -1054,7 +1061,7 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(
         name = "submitVoteBySignature",
@@ -1067,6 +1074,7 @@ pub mod aavegov {
         pub r: [u8; 32],
         pub s: [u8; 32],
     }
+
     ///Container type for all input parameters for the `transferOwnership` function with signature `transferOwnership(address)` and selector `0xf2fde38b`
     #[derive(
         Clone,
@@ -1076,12 +1084,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "transferOwnership", abi = "transferOwnership(address)")]
     pub struct TransferOwnershipCall {
         pub new_owner: ::ethers::core::types::Address,
     }
+
     ///Container type for all input parameters for the `unauthorizeExecutors` function with signature `unauthorizeExecutors(address[])` and selector `0x1a1caf7f`
     #[derive(
         Clone,
@@ -1091,12 +1100,13 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "unauthorizeExecutors", abi = "unauthorizeExecutors(address[])")]
     pub struct UnauthorizeExecutorsCall {
         pub executors: ::std::vec::Vec<::ethers::core::types::Address>,
     }
+
     ///Container type for all of the contract's call
     #[derive(Clone, ::ethers::contract::EthAbiType, Debug, PartialEq, Eq, Hash)]
     pub enum aavegovCalls {
@@ -1126,151 +1136,132 @@ pub mod aavegov {
         TransferOwnership(TransferOwnershipCall),
         UnauthorizeExecutors(UnauthorizeExecutorsCall),
     }
+
     impl ::ethers::core::abi::AbiDecode for aavegovCalls {
         fn decode(
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <DomainTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <DomainTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::DomainTypehash(decoded));
             }
-            if let Ok(decoded)
-                = <NameCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <NameCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Name(decoded));
             }
-            if let Ok(decoded)
-                = <VoteEmittedTypehashCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <VoteEmittedTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::VoteEmittedTypehash(decoded));
             }
-            if let Ok(decoded)
-                = <AbdicateCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <AbdicateCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Abdicate(decoded));
             }
-            if let Ok(decoded)
-                = <AuthorizeExecutorsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <AuthorizeExecutorsCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::AuthorizeExecutors(decoded));
             }
-            if let Ok(decoded)
-                = <CancelCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CancelCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Cancel(decoded));
             }
-            if let Ok(decoded)
-                = <CreateCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CreateCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Create(decoded));
             }
-            if let Ok(decoded)
-                = <ExecuteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ExecuteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Execute(decoded));
             }
-            if let Ok(decoded)
-                = <GetGovernanceStrategyCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <GetGovernanceStrategyCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::GetGovernanceStrategy(decoded));
             }
-            if let Ok(decoded)
-                = <GetGuardianCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetGuardianCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::GetGuardian(decoded));
             }
-            if let Ok(decoded)
-                = <GetProposalByIdCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <GetProposalByIdCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::GetProposalById(decoded));
             }
-            if let Ok(decoded)
-                = <GetProposalStateCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <GetProposalStateCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::GetProposalState(decoded));
             }
-            if let Ok(decoded)
-                = <GetProposalsCountCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <GetProposalsCountCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::GetProposalsCount(decoded));
             }
-            if let Ok(decoded)
-                = <GetVoteOnProposalCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <GetVoteOnProposalCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::GetVoteOnProposal(decoded));
             }
-            if let Ok(decoded)
-                = <GetVotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <GetVotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::GetVotingDelay(decoded));
             }
-            if let Ok(decoded)
-                = <IsExecutorAuthorizedCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <IsExecutorAuthorizedCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::IsExecutorAuthorized(decoded));
             }
-            if let Ok(decoded)
-                = <OwnerCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <OwnerCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Owner(decoded));
             }
-            if let Ok(decoded)
-                = <QueueCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <QueueCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Queue(decoded));
             }
-            if let Ok(decoded)
-                = <RenounceOwnershipCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <RenounceOwnershipCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::RenounceOwnership(decoded));
             }
-            if let Ok(decoded)
-                = <SetGovernanceStrategyCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <SetGovernanceStrategyCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::SetGovernanceStrategy(decoded));
             }
-            if let Ok(decoded)
-                = <SetVotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <SetVotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::SetVotingDelay(decoded));
             }
-            if let Ok(decoded)
-                = <SubmitVoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <SubmitVoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::SubmitVote(decoded));
             }
-            if let Ok(decoded)
-                = <SubmitVoteBySignatureCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <SubmitVoteBySignatureCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::SubmitVoteBySignature(decoded));
             }
-            if let Ok(decoded)
-                = <TransferOwnershipCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <TransferOwnershipCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::TransferOwnership(decoded));
             }
-            if let Ok(decoded)
-                = <UnauthorizeExecutorsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <UnauthorizeExecutorsCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::UnauthorizeExecutors(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())
         }
     }
+
     impl ::ethers::core::abi::AbiEncode for aavegovCalls {
         fn encode(self) -> Vec<u8> {
             match self {
-                Self::DomainTypehash(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::DomainTypehash(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Name(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::VoteEmittedTypehash(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::Abdicate(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::Abdicate(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::AuthorizeExecutors(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
@@ -1280,223 +1271,216 @@ pub mod aavegov {
                 Self::GetGovernanceStrategy(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::GetGuardian(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::GetProposalById(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::GetProposalState(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::GetProposalsCount(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::GetVoteOnProposal(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::GetVotingDelay(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::GetGuardian(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::GetProposalById(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::GetProposalState(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::GetProposalsCount(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::GetVoteOnProposal(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::GetVotingDelay(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::IsExecutorAuthorized(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
                 Self::Owner(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Queue(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::RenounceOwnership(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::RenounceOwnership(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::SetGovernanceStrategy(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::SetVotingDelay(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::SubmitVote(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::SetVotingDelay(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::SubmitVote(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::SubmitVoteBySignature(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::TransferOwnership(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::TransferOwnership(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::UnauthorizeExecutors(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
             }
         }
     }
+
     impl ::core::fmt::Display for aavegovCalls {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
             match self {
                 Self::DomainTypehash(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Name(element) => ::core::fmt::Display::fmt(element, f),
-                Self::VoteEmittedTypehash(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::VoteEmittedTypehash(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Abdicate(element) => ::core::fmt::Display::fmt(element, f),
-                Self::AuthorizeExecutors(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::AuthorizeExecutors(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Cancel(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Create(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Execute(element) => ::core::fmt::Display::fmt(element, f),
-                Self::GetGovernanceStrategy(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::GetGovernanceStrategy(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GetGuardian(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GetProposalById(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GetProposalState(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GetProposalsCount(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GetVoteOnProposal(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GetVotingDelay(element) => ::core::fmt::Display::fmt(element, f),
-                Self::IsExecutorAuthorized(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::IsExecutorAuthorized(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Owner(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Queue(element) => ::core::fmt::Display::fmt(element, f),
                 Self::RenounceOwnership(element) => ::core::fmt::Display::fmt(element, f),
-                Self::SetGovernanceStrategy(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::SetGovernanceStrategy(element) => ::core::fmt::Display::fmt(element, f),
                 Self::SetVotingDelay(element) => ::core::fmt::Display::fmt(element, f),
                 Self::SubmitVote(element) => ::core::fmt::Display::fmt(element, f),
-                Self::SubmitVoteBySignature(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::SubmitVoteBySignature(element) => ::core::fmt::Display::fmt(element, f),
                 Self::TransferOwnership(element) => ::core::fmt::Display::fmt(element, f),
-                Self::UnauthorizeExecutors(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::UnauthorizeExecutors(element) => ::core::fmt::Display::fmt(element, f),
             }
         }
     }
+
     impl ::core::convert::From<DomainTypehashCall> for aavegovCalls {
         fn from(value: DomainTypehashCall) -> Self {
             Self::DomainTypehash(value)
         }
     }
+
     impl ::core::convert::From<NameCall> for aavegovCalls {
         fn from(value: NameCall) -> Self {
             Self::Name(value)
         }
     }
+
     impl ::core::convert::From<VoteEmittedTypehashCall> for aavegovCalls {
         fn from(value: VoteEmittedTypehashCall) -> Self {
             Self::VoteEmittedTypehash(value)
         }
     }
+
     impl ::core::convert::From<AbdicateCall> for aavegovCalls {
         fn from(value: AbdicateCall) -> Self {
             Self::Abdicate(value)
         }
     }
+
     impl ::core::convert::From<AuthorizeExecutorsCall> for aavegovCalls {
         fn from(value: AuthorizeExecutorsCall) -> Self {
             Self::AuthorizeExecutors(value)
         }
     }
+
     impl ::core::convert::From<CancelCall> for aavegovCalls {
         fn from(value: CancelCall) -> Self {
             Self::Cancel(value)
         }
     }
+
     impl ::core::convert::From<CreateCall> for aavegovCalls {
         fn from(value: CreateCall) -> Self {
             Self::Create(value)
         }
     }
+
     impl ::core::convert::From<ExecuteCall> for aavegovCalls {
         fn from(value: ExecuteCall) -> Self {
             Self::Execute(value)
         }
     }
+
     impl ::core::convert::From<GetGovernanceStrategyCall> for aavegovCalls {
         fn from(value: GetGovernanceStrategyCall) -> Self {
             Self::GetGovernanceStrategy(value)
         }
     }
+
     impl ::core::convert::From<GetGuardianCall> for aavegovCalls {
         fn from(value: GetGuardianCall) -> Self {
             Self::GetGuardian(value)
         }
     }
+
     impl ::core::convert::From<GetProposalByIdCall> for aavegovCalls {
         fn from(value: GetProposalByIdCall) -> Self {
             Self::GetProposalById(value)
         }
     }
+
     impl ::core::convert::From<GetProposalStateCall> for aavegovCalls {
         fn from(value: GetProposalStateCall) -> Self {
             Self::GetProposalState(value)
         }
     }
+
     impl ::core::convert::From<GetProposalsCountCall> for aavegovCalls {
         fn from(value: GetProposalsCountCall) -> Self {
             Self::GetProposalsCount(value)
         }
     }
+
     impl ::core::convert::From<GetVoteOnProposalCall> for aavegovCalls {
         fn from(value: GetVoteOnProposalCall) -> Self {
             Self::GetVoteOnProposal(value)
         }
     }
+
     impl ::core::convert::From<GetVotingDelayCall> for aavegovCalls {
         fn from(value: GetVotingDelayCall) -> Self {
             Self::GetVotingDelay(value)
         }
     }
+
     impl ::core::convert::From<IsExecutorAuthorizedCall> for aavegovCalls {
         fn from(value: IsExecutorAuthorizedCall) -> Self {
             Self::IsExecutorAuthorized(value)
         }
     }
+
     impl ::core::convert::From<OwnerCall> for aavegovCalls {
         fn from(value: OwnerCall) -> Self {
             Self::Owner(value)
         }
     }
+
     impl ::core::convert::From<QueueCall> for aavegovCalls {
         fn from(value: QueueCall) -> Self {
             Self::Queue(value)
         }
     }
+
     impl ::core::convert::From<RenounceOwnershipCall> for aavegovCalls {
         fn from(value: RenounceOwnershipCall) -> Self {
             Self::RenounceOwnership(value)
         }
     }
+
     impl ::core::convert::From<SetGovernanceStrategyCall> for aavegovCalls {
         fn from(value: SetGovernanceStrategyCall) -> Self {
             Self::SetGovernanceStrategy(value)
         }
     }
+
     impl ::core::convert::From<SetVotingDelayCall> for aavegovCalls {
         fn from(value: SetVotingDelayCall) -> Self {
             Self::SetVotingDelay(value)
         }
     }
+
     impl ::core::convert::From<SubmitVoteCall> for aavegovCalls {
         fn from(value: SubmitVoteCall) -> Self {
             Self::SubmitVote(value)
         }
     }
+
     impl ::core::convert::From<SubmitVoteBySignatureCall> for aavegovCalls {
         fn from(value: SubmitVoteBySignatureCall) -> Self {
             Self::SubmitVoteBySignature(value)
         }
     }
+
     impl ::core::convert::From<TransferOwnershipCall> for aavegovCalls {
         fn from(value: TransferOwnershipCall) -> Self {
             Self::TransferOwnership(value)
         }
     }
+
     impl ::core::convert::From<UnauthorizeExecutorsCall> for aavegovCalls {
         fn from(value: UnauthorizeExecutorsCall) -> Self {
             Self::UnauthorizeExecutors(value)
         }
     }
+
     ///Container type for all return fields from the `DOMAIN_TYPEHASH` function with signature `DOMAIN_TYPEHASH()` and selector `0x20606b70`
     #[derive(
         Clone,
@@ -1506,9 +1490,10 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct DomainTypehashReturn(pub [u8; 32]);
+
     ///Container type for all return fields from the `NAME` function with signature `NAME()` and selector `0xa3f4df7e`
     #[derive(
         Clone,
@@ -1518,9 +1503,10 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct NameReturn(pub ::std::string::String);
+
     ///Container type for all return fields from the `VOTE_EMITTED_TYPEHASH` function with signature `VOTE_EMITTED_TYPEHASH()` and selector `0x34b18c26`
     #[derive(
         Clone,
@@ -1530,9 +1516,10 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct VoteEmittedTypehashReturn(pub [u8; 32]);
+
     ///Container type for all return fields from the `create` function with signature `create(address,address[],uint256[],string[],bytes[],bool[],bytes32)` and selector `0xf8741a9c`
     #[derive(
         Clone,
@@ -1542,9 +1529,10 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct CreateReturn(pub ::ethers::core::types::U256);
+
     ///Container type for all return fields from the `getGovernanceStrategy` function with signature `getGovernanceStrategy()` and selector `0x06be3e8e`
     #[derive(
         Clone,
@@ -1554,9 +1542,10 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetGovernanceStrategyReturn(pub ::ethers::core::types::Address);
+
     ///Container type for all return fields from the `getGuardian` function with signature `getGuardian()` and selector `0xa75b87d2`
     #[derive(
         Clone,
@@ -1566,9 +1555,10 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetGuardianReturn(pub ::ethers::core::types::Address);
+
     ///Container type for all return fields from the `getProposalById` function with signature `getProposalById(uint256)` and selector `0x3656de21`
     #[derive(
         Clone,
@@ -1578,9 +1568,10 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetProposalByIdReturn(pub ProposalWithoutVotes);
+
     ///Container type for all return fields from the `getProposalState` function with signature `getProposalState(uint256)` and selector `0x9080936f`
     #[derive(
         Clone,
@@ -1590,9 +1581,10 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetProposalStateReturn(pub u8);
+
     ///Container type for all return fields from the `getProposalsCount` function with signature `getProposalsCount()` and selector `0x98e527d3`
     #[derive(
         Clone,
@@ -1602,9 +1594,10 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetProposalsCountReturn(pub ::ethers::core::types::U256);
+
     ///Container type for all return fields from the `getVoteOnProposal` function with signature `getVoteOnProposal(uint256,address)` and selector `0x4185ff83`
     #[derive(
         Clone,
@@ -1614,9 +1607,10 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetVoteOnProposalReturn(pub Vote);
+
     ///Container type for all return fields from the `getVotingDelay` function with signature `getVotingDelay()` and selector `0xa2b170b0`
     #[derive(
         Clone,
@@ -1626,9 +1620,10 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetVotingDelayReturn(pub ::ethers::core::types::U256);
+
     ///Container type for all return fields from the `isExecutorAuthorized` function with signature `isExecutorAuthorized(address)` and selector `0x548b514e`
     #[derive(
         Clone,
@@ -1638,9 +1633,10 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct IsExecutorAuthorizedReturn(pub bool);
+
     ///Container type for all return fields from the `owner` function with signature `owner()` and selector `0x8da5cb5b`
     #[derive(
         Clone,
@@ -1650,9 +1646,10 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct OwnerReturn(pub ::ethers::core::types::Address);
+
     ///`ProposalWithoutVotes(uint256,address,address,address[],uint256[],string[],bytes[],bool[],uint256,uint256,uint256,uint256,uint256,bool,bool,address,bytes32)`
     #[derive(
         Clone,
@@ -1662,7 +1659,7 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ProposalWithoutVotes {
         pub id: ::ethers::core::types::U256,
@@ -1683,6 +1680,7 @@ pub mod aavegov {
         pub strategy: ::ethers::core::types::Address,
         pub ipfs_hash: [u8; 32],
     }
+
     ///`Vote(bool,uint248)`
     #[derive(
         Clone,
@@ -1692,7 +1690,7 @@ pub mod aavegov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct Vote {
         pub support: bool,

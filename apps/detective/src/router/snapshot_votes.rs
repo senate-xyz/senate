@@ -1,3 +1,5 @@
+use std::iter::once;
+
 use anyhow::{bail, Context, Result};
 use chrono::Duration;
 use futures::future::join_all;
@@ -8,7 +10,6 @@ use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use rocket::serde::json::Json;
 use serde::{Deserialize, Deserializer};
 use serde_json::Value;
-use std::iter::once;
 use tracing::{debug_span, info_span, instrument, span, trace_span, Instrument, Level, Span};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 

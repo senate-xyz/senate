@@ -2,11 +2,11 @@
 
 import '../../styles/globals.css'
 import Image from 'next/image'
-import { Transition } from '@headlessui/react'
+import {Transition} from '@headlessui/react'
 import Head from 'next/head'
 
 const WrapperHome = () => {
-    return <Home />
+    return <Home/>
 }
 
 export default WrapperHome
@@ -51,7 +51,8 @@ const Home = () => {
                                 leaveFrom='opacity-100'
                                 leaveTo='opacity-0'
                             >
-                                <div className='mb-8 -translate-y-20 text-center text-[24px] font-light text-white lg:w-[447px]'>
+                                <div
+                                    className='mb-8 -translate-y-20 text-center text-[24px] font-light text-white lg:w-[447px]'>
                                     The app is being updated and will be back up
                                     soon.
                                 </div>

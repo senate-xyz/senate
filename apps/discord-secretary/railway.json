@@ -3,7 +3,10 @@
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "Dockerfile.discord-secretary",
-    "watchPatterns": ["apps/discord-secretary", "packages/database"]
+    "watchPatterns": [
+      "apps/discord-secretary",
+      "packages/database"
+    ]
   },
   "deploy": {
     "numReplicas": 1,

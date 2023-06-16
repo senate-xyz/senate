@@ -1,5 +1,5 @@
-import { DAOHandlerType, ProposalState } from '@senate/database'
-import { isUpToDate } from './Table'
+import {DAOHandlerType, ProposalState} from '@senate/database'
+import {isUpToDate} from './Table'
 import Image from 'next/image'
 
 export const PastProposal = async (props: {
@@ -106,55 +106,56 @@ export const PastProposal = async (props: {
                 <div className='flex h-[96px] flex-col justify-center gap-1 py-2'>
                     {props.proposal.daoHandlerType ==
                         DAOHandlerType.MAKER_EXECUTIVE && (
-                        <div className='text-[21px] leading-[26px] text-white'>
-                            <div className='mb-1 flex flex-row gap-2'>
-                                {(props.proposal.state ==
-                                    ProposalState.EXECUTED ||
-                                    props.proposal.state ==
+                            <div className='text-[21px] leading-[26px] text-white'>
+                                <div className='mb-1 flex flex-row gap-2'>
+                                    {(props.proposal.state ==
+                                        ProposalState.EXECUTED ||
+                                        props.proposal.state ==
                                         ProposalState.QUEUED) && (
-                                    <div className='flex flex-row gap-2'>
-                                        <div className='h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]'>
-                                            <Image
-                                                loading='eager'
-                                                priority={true}
-                                                width={22}
-                                                height={22}
-                                                src={'/assets/Icon/Check.svg'}
-                                                alt='off-chain'
-                                            />
-                                        </div>
+                                        <div className='flex flex-row gap-2'>
+                                            <div className='h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]'>
+                                                <Image
+                                                    loading='eager'
+                                                    priority={true}
+                                                    width={22}
+                                                    height={22}
+                                                    src={'/assets/Icon/Check.svg'}
+                                                    alt='off-chain'
+                                                />
+                                            </div>
 
-                                        <div>Passed</div>
-                                    </div>
-                                )}
-                                {props.proposal.state ==
-                                    ProposalState.EXPIRED && (
-                                    <div className='flex flex-row gap-2'>
-                                        <div className='h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]'>
-                                            <Image
-                                                loading='eager'
-                                                priority={true}
-                                                width={22}
-                                                height={22}
-                                                src={'/assets/Icon/NoCheck.svg'}
-                                                alt='off-chain'
-                                            />
+                                            <div>Passed</div>
                                         </div>
+                                    )}
+                                    {props.proposal.state ==
+                                        ProposalState.EXPIRED && (
+                                            <div className='flex flex-row gap-2'>
+                                                <div
+                                                    className='h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]'>
+                                                    <Image
+                                                        loading='eager'
+                                                        priority={true}
+                                                        width={22}
+                                                        height={22}
+                                                        src={'/assets/Icon/NoCheck.svg'}
+                                                        alt='off-chain'
+                                                    />
+                                                </div>
 
-                                        <div>Did not pass</div>
-                                    </div>
-                                )}
+                                                <div>Did not pass</div>
+                                            </div>
+                                        )}
+                                </div>
+                                <div className='text-[18px] leading-[26px] text-white'>
+                                    with{' '}
+                                    {(
+                                        props.proposal.scoresTotal /
+                                        1000000000000000000
+                                    ).toFixed(2)}{' '}
+                                    MKR
+                                </div>
                             </div>
-                            <div className='text-[18px] leading-[26px] text-white'>
-                                with{' '}
-                                {(
-                                    props.proposal.scoresTotal /
-                                    1000000000000000000
-                                ).toFixed(2)}{' '}
-                                MKR
-                            </div>
-                        </div>
-                    )}
+                        )}
                     {props.proposal.daoHandlerType !=
                         DAOHandlerType.MAKER_EXECUTIVE &&
                         props.proposal.highestScoreChoice != 'undefined' &&

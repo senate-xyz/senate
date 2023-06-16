@@ -1,7 +1,6 @@
 use std::{env, sync::Arc, time::Duration};
 
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
-
 use teloxide::{
     adaptors::{DefaultParseMode, Throttle},
     requests::Requester,
@@ -13,13 +12,7 @@ use tracing::{debug, debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
-        self,
-        notification,
-        proposal,
-        user,
-        DaoHandlerType,
-        NotificationType,
-        PrismaClient,
+        self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient,
         ProposalState,
     },
     utils::vote::get_vote,

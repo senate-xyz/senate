@@ -1,3 +1,14 @@
+use std::str;
+
+use anyhow::Result;
+use chrono::{DateTime, NaiveDateTime, Utc};
+use ethers::{prelude::LogMeta, providers::Middleware, types::Address};
+use futures::stream::{FuturesUnordered, StreamExt};
+use prisma_client_rust::bigdecimal::ToPrimitive;
+use serde::Deserialize;
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
+
 use crate::{
     contracts::{uniswapgov, uniswapgov::ProposalCreatedFilter},
     prisma::{daohandler, ProposalState},
@@ -5,15 +16,6 @@ use crate::{
     utils::etherscan::estimate_timestamp,
     Ctx,
 };
-use anyhow::Result;
-use chrono::{DateTime, NaiveDateTime, Utc};
-use ethers::{prelude::LogMeta, providers::Middleware, types::Address};
-use futures::stream::{FuturesUnordered, StreamExt};
-use prisma_client_rust::bigdecimal::ToPrimitive;
-use serde::Deserialize;
-use std::str;
-use tracing::Instrument;
-use tracing::{debug_span, instrument};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]

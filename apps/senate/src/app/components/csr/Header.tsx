@@ -1,10 +1,10 @@
 'use client'
 
-import { Fragment, Suspense, useEffect, useState } from 'react'
+import {Fragment, Suspense, useEffect, useState} from 'react'
 import WalletConnect from './WalletConnect'
-import { Menu, Transition } from '@headlessui/react'
+import {Menu, Transition} from '@headlessui/react'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import {usePathname} from 'next/navigation'
 
 export const Header = (props: { title: string }) => {
     const [headerHeight, setHeaderHeight] = useState('lg:h-[192px]')
@@ -74,7 +74,8 @@ export const Header = (props: { title: string }) => {
                         leaveFrom='transform opacity-100 scale-100'
                         leaveTo='transform opacity-0 scale-95'
                     >
-                        <Menu.Items className='absolute left-0 top-0 h-screen w-screen bg-black p-2 text-[26px] font-extrabold leading-[60px] text-white transition'>
+                        <Menu.Items
+                            className='absolute left-0 top-0 h-screen w-screen bg-black p-2 text-[26px] font-extrabold leading-[60px] text-white transition'>
                             <div className='flex flex-row justify-between'>
                                 <Menu.Item>
                                     {({}) => (
@@ -91,7 +92,7 @@ export const Header = (props: { title: string }) => {
                                     )}
                                 </Menu.Item>
                                 <Menu.Item>
-                                    {({ close }) => (
+                                    {({close}) => (
                                         <a onClick={close}>
                                             <Image
                                                 loading='eager'
@@ -107,7 +108,7 @@ export const Header = (props: { title: string }) => {
                             </div>
 
                             <Menu.Item>
-                                {({ active }) => (
+                                {({active}) => (
                                     <div className='relative flex flex-row items-center pl-6 pt-8'>
                                         {pathname?.includes('daos') ? (
                                             <Image
@@ -139,7 +140,7 @@ export const Header = (props: { title: string }) => {
                             </Menu.Item>
 
                             <Menu.Item>
-                                {({ active }) => (
+                                {({active}) => (
                                     <div className='relative flex flex-row items-center pl-6 pt-8'>
                                         {pathname?.includes('proposals') ? (
                                             <Image
@@ -171,7 +172,7 @@ export const Header = (props: { title: string }) => {
                             </Menu.Item>
 
                             <Menu.Item>
-                                {({ active }) => (
+                                {({active}) => (
                                     <div className='relative flex flex-row items-center pl-6 pt-8'>
                                         {pathname?.includes('settings') ? (
                                             <Image
@@ -205,7 +206,7 @@ export const Header = (props: { title: string }) => {
                             <div className='flex w-full justify-center pt-8 text-[18px] font-normal'>
                                 <Menu.Item>
                                     <Suspense fallback={<></>}>
-                                        <WalletConnect />
+                                        <WalletConnect/>
                                     </Suspense>
                                 </Menu.Item>
                             </div>
@@ -216,7 +217,7 @@ export const Header = (props: { title: string }) => {
 
             <div className='hidden justify-end pr-20 lg:flex lg:w-full'>
                 <Suspense fallback={<></>}>
-                    <WalletConnect />
+                    <WalletConnect/>
                 </Suspense>
             </div>
         </div>

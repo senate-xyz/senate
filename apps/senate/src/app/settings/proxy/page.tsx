@@ -1,9 +1,9 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { useAccount, usePublicClient } from 'wagmi'
-import { trpc } from '../../../server/trpcClient'
+import {useRouter} from 'next/navigation'
+import {useEffect, useState} from 'react'
+import {useAccount, usePublicClient} from 'wagmi'
+import {trpc} from '../../../server/trpcClient'
 
 export default function Home() {
     const account = useAccount()
@@ -37,7 +37,7 @@ export default function Home() {
         }
 
         addVoter.mutate(
-            { address: resolvedAddress },
+            {address: resolvedAddress},
             {
                 onSuccess() {
                     voters.refetch()
@@ -119,7 +119,7 @@ export default function Home() {
     )
 }
 
-const Voter = ({ address }: { address: string }) => {
+const Voter = ({address}: { address: string }) => {
     const provider = usePublicClient()
     const [voterEns, setVoterEns] = useState('')
 

@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import {Metadata} from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -28,8 +28,8 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
 ]
 
 export default async function RootLayout({
-    children
-}: {
+                                             children
+                                         }: {
     children: React.ReactNode
 }) {
     return (

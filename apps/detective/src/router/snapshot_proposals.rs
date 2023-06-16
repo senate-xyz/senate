@@ -1,3 +1,5 @@
+use std::time::UNIX_EPOCH;
+
 use anyhow::{Context, Result};
 use chrono::{Datelike, Duration, TimeZone, Utc};
 use opentelemetry::propagation::TextMapPropagator;
@@ -6,13 +8,12 @@ use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use rocket::serde::json::Json;
 use serde::Deserialize;
-use std::time::UNIX_EPOCH;
-use tracing::{debug_span, info_span, instrument, Instrument, Level, span, Span, trace_span};
+use tracing::{debug_span, info_span, instrument, span, trace_span, Instrument, Level, Span};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
-    Ctx,
-    prisma::{dao, daohandler, proposal, ProposalState}, ProposalsRequest, ProposalsResponse,
+    prisma::{dao, daohandler, proposal, ProposalState},
+    Ctx, ProposalsRequest, ProposalsResponse,
 };
 
 #[derive(Debug, Deserialize)]
@@ -132,8 +133,8 @@ pub async fn update_snapshot_proposals<'a>(
             }
         }
     }
-        .instrument(root_span)
-        .await
+    .instrument(root_span)
+    .await
 }
 
 #[instrument(skip(ctx), level = "debug")]

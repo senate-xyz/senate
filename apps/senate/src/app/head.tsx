@@ -13,7 +13,7 @@ export default function Head() {
                 name='viewport'
             />
 
-            <link rel='icon' href='/favicon.ico' />
+            <link rel='icon' href='/favicon.ico'/>
         </>
     )
 }

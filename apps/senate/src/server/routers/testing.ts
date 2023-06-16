@@ -1,8 +1,8 @@
-import { router, privateProcedure } from '../trpc'
-import { NotificationType, prisma } from '@senate/database'
+import {privateProcedure, router} from '../trpc'
+import {NotificationType, prisma} from '@senate/database'
 
 export const testingRouter = router({
-    randomQuorumAlert: privateProcedure.mutation(async ({ ctx }) => {
+    randomQuorumAlert: privateProcedure.mutation(async ({ctx}) => {
         const username = await ctx.user.name
 
         const proposalsCount = await prisma.proposal.count()
@@ -30,7 +30,7 @@ export const testingRouter = router({
         })
     }),
 
-    lastQuorumAlert: privateProcedure.mutation(async ({ ctx }) => {
+    lastQuorumAlert: privateProcedure.mutation(async ({ctx}) => {
         const username = await ctx.user.name
 
         const firstProposal = await prisma.proposal.findFirst({
@@ -58,7 +58,7 @@ export const testingRouter = router({
             }
         })
     }),
-    lastAaveQuorumAlert: privateProcedure.mutation(async ({ ctx }) => {
+    lastAaveQuorumAlert: privateProcedure.mutation(async ({ctx}) => {
         const username = await ctx.user.name
 
         const firstProposal = await prisma.proposal.findFirst({
@@ -89,7 +89,7 @@ export const testingRouter = router({
             }
         })
     }),
-    lastUniswapQuorumAlert: privateProcedure.mutation(async ({ ctx }) => {
+    lastUniswapQuorumAlert: privateProcedure.mutation(async ({ctx}) => {
         const username = await ctx.user.name
 
         const firstProposal = await prisma.proposal.findFirst({
@@ -121,7 +121,7 @@ export const testingRouter = router({
         })
     }),
     deleteDispatchedNotifications: privateProcedure.mutation(
-        async ({ ctx }) => {
+        async ({ctx}) => {
             const username = await ctx.user.name
             const user = await prisma.user.findFirst({
                 where: {
@@ -131,11 +131,11 @@ export const testingRouter = router({
                 }
             })
             await prisma.notification.deleteMany({
-                where: { userid: user?.id }
+                where: {userid: user?.id}
             })
         }
     ),
-    sendBulletin: privateProcedure.mutation(async ({ ctx }) => {
+    sendBulletin: privateProcedure.mutation(async ({ctx}) => {
         const username = await ctx.user.name
         const user = await prisma.user.findFirst({
             where: {

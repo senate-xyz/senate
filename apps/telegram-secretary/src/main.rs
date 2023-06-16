@@ -2,11 +2,12 @@
 #![allow(unused_imports)]
 #![allow(unused_parens)]
 
-mod dispatch;
-mod generate;
-pub mod prisma;
-use log::info;
 use std::{env, sync::Arc};
+
+use dotenv::dotenv;
+use log::info;
+use pyroscope::PyroscopeAgent;
+use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 use teloxide::{
     adaptors::{throttle::Limits, DefaultParseMode, Throttle},
     prelude::*,
@@ -14,14 +15,8 @@ use teloxide::{
     utils::command::BotCommands,
 };
 use tokio::time::sleep;
+use tokio::try_join;
 use tracing::debug;
-mod utils {
-    pub mod vote;
-}
-
-pub mod telemetry;
-use pyroscope::PyroscopeAgent;
-use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 
 use crate::{
     dispatch::{
@@ -36,8 +31,16 @@ use crate::{
     },
     prisma::{NotificationType, PrismaClient},
 };
-use dotenv::dotenv;
-use tokio::try_join;
+
+mod dispatch;
+mod generate;
+pub mod prisma;
+
+mod utils {
+    pub mod vote;
+}
+
+pub mod telemetry;
 
 #[tokio::main]
 async fn main() {

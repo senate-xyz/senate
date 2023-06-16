@@ -1,23 +1,24 @@
-use crate::{
-    contracts::makerpollvotearbitrum::{self, VotedFilter},
-    prisma::{daohandler, proposal},
-    router::chain_votes::{Vote, VoteResult},
-    Ctx,
-};
+use std::{env, str::FromStr, sync::Arc};
+
 use anyhow::{bail, Result};
 use ethers::{
     prelude::LogMeta,
     providers::{Http, Middleware, Provider},
     types::{Address, U64},
 };
-
 use futures::stream::{FuturesUnordered, StreamExt};
 use num_bigint::BigInt;
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
 use serde::Deserialize;
-use std::{env, str::FromStr, sync::Arc};
 use tracing::Instrument;
 use tracing::{debug_span, instrument};
+
+use crate::{
+    contracts::makerpollvotearbitrum::{self, VotedFilter},
+    prisma::{daohandler, proposal},
+    router::chain_votes::{Vote, VoteResult},
+    Ctx,
+};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]

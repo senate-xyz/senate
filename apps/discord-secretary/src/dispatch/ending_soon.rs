@@ -1,19 +1,14 @@
-use serenity::{http::Http, model::webhook::Webhook};
 use std::{env, sync::Arc, time::Duration};
+
+use serenity::{http::Http, model::webhook::Webhook};
 use tokio::time::sleep;
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     dispatch::new_proposals,
     prisma::{
-        self,
-        DaoHandlerType,
-        notification,
-        NotificationDispatchedState,
-        NotificationType,
-        PrismaClient,
-        proposal,
-        user,
+        self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
+        NotificationType, PrismaClient,
     },
 };
 

@@ -1,17 +1,17 @@
+use anyhow::{bail, Result};
+use ethers::{prelude::LogMeta, types::Address};
+use futures::stream::{FuturesUnordered, StreamExt};
+use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
+use serde::Deserialize;
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
+
 use crate::{
     contracts::gitcoingov::{self, VoteCastFilter},
     prisma::{daohandler, proposal},
     router::chain_votes::{Vote, VoteResult},
     Ctx,
 };
-use anyhow::{bail, Result};
-use ethers::{prelude::LogMeta, types::Address};
-
-use futures::stream::{FuturesUnordered, StreamExt};
-use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
-use serde::Deserialize;
-use tracing::Instrument;
-use tracing::{debug_span, instrument};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]

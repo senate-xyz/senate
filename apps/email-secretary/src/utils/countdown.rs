@@ -1,8 +1,9 @@
+use std::env;
+
 use anyhow::{bail, Result};
 use chrono::{DateTime, Duration, Utc};
 use serde::Deserialize;
 use serde_json::json;
-use std::env;
 use tokio::time::sleep;
 use tracing::instrument;
 

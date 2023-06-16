@@ -1,5 +1,5 @@
-import { DAOHandlerType, ProposalState } from '@senate/database'
-import { isUpToDate } from './Table'
+import {DAOHandlerType, ProposalState} from '@senate/database'
+import {isUpToDate} from './Table'
 import Image from 'next/image'
 
 export const MobilePastProposal = async (props: {
@@ -89,7 +89,7 @@ export const MobilePastProposal = async (props: {
                                     'snapshot.org'
                                 )
                                     ? props.proposal.proposalLink +
-                                      '?app=senate'
+                                    '?app=senate'
                                     : props.proposal.proposalLink
                             }
                             target='_blank'
@@ -106,69 +106,72 @@ export const MobilePastProposal = async (props: {
                     <div className='flex w-3/4 flex-col justify-between gap-1'>
                         {props.proposal.daoHandlerType ==
                             DAOHandlerType.MAKER_EXECUTIVE && (
-                            <div>
-                                <div className='text-[21px] leading-[26px] text-white'>
-                                    {(props.proposal.state ==
-                                        ProposalState.EXECUTED ||
-                                        props.proposal.state ==
+                                <div>
+                                    <div className='text-[21px] leading-[26px] text-white'>
+                                        {(props.proposal.state ==
+                                            ProposalState.EXECUTED ||
+                                            props.proposal.state ==
                                             ProposalState.QUEUED) && (
-                                        <div className='flex flex-row gap-2'>
-                                            <div className='h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]'>
-                                                <Image
-                                                    loading='eager'
-                                                    priority={true}
-                                                    width={22}
-                                                    height={22}
-                                                    src={
-                                                        '/assets/Icon/Check.svg'
-                                                    }
-                                                    alt='off-chain'
-                                                />
-                                            </div>
+                                            <div className='flex flex-row gap-2'>
+                                                <div
+                                                    className='h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]'>
+                                                    <Image
+                                                        loading='eager'
+                                                        priority={true}
+                                                        width={22}
+                                                        height={22}
+                                                        src={
+                                                            '/assets/Icon/Check.svg'
+                                                        }
+                                                        alt='off-chain'
+                                                    />
+                                                </div>
 
-                                            <div>Passed</div>
-                                        </div>
-                                    )}
-                                    {props.proposal.state ==
-                                        ProposalState.EXPIRED && (
-                                        <div className='flex flex-row gap-2'>
-                                            <div className='h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]'>
-                                                <Image
-                                                    loading='eager'
-                                                    priority={true}
-                                                    width={22}
-                                                    height={22}
-                                                    src={
-                                                        '/assets/Icon/NoCheck.svg'
-                                                    }
-                                                    alt='off-chain'
-                                                />
+                                                <div>Passed</div>
                                             </div>
+                                        )}
+                                        {props.proposal.state ==
+                                            ProposalState.EXPIRED && (
+                                                <div className='flex flex-row gap-2'>
+                                                    <div
+                                                        className='h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]'>
+                                                        <Image
+                                                            loading='eager'
+                                                            priority={true}
+                                                            width={22}
+                                                            height={22}
+                                                            src={
+                                                                '/assets/Icon/NoCheck.svg'
+                                                            }
+                                                            alt='off-chain'
+                                                        />
+                                                    </div>
 
-                                            <div>Did not pass</div>
-                                        </div>
-                                    )}
+                                                    <div>Did not pass</div>
+                                                </div>
+                                            )}
+                                    </div>
+                                    <div className='text-[18px] leading-[26px] text-white'>
+                                        with{' '}
+                                        {(
+                                            props.proposal.scoresTotal /
+                                            1000000000000000000
+                                        ).toFixed(2)}{' '}
+                                        MKR
+                                    </div>
                                 </div>
-                                <div className='text-[18px] leading-[26px] text-white'>
-                                    with{' '}
-                                    {(
-                                        props.proposal.scoresTotal /
-                                        1000000000000000000
-                                    ).toFixed(2)}{' '}
-                                    MKR
-                                </div>
-                            </div>
-                        )}
+                            )}
                         {props.proposal.daoHandlerType !=
                             DAOHandlerType.MAKER_EXECUTIVE &&
                             props.proposal.state != 'HIDDEN' &&
                             props.proposal.highestScoreChoice !=
-                                'undefined' && (
+                            'undefined' && (
                                 <div>
                                     {props.proposal.passedQuorum ? (
                                         <div>
                                             <div className='flex flex-row gap-2'>
-                                                <div className='flex h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]'>
+                                                <div
+                                                    className='flex h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]'>
                                                     <Image
                                                         loading='eager'
                                                         priority={true}
@@ -192,7 +195,7 @@ export const MobilePastProposal = async (props: {
                                                     style={{
                                                         width: `${(
                                                             (props.proposal
-                                                                .highestScore /
+                                                                    .highestScore /
                                                                 props.proposal
                                                                     .scoresTotal) *
                                                             100
@@ -203,7 +206,7 @@ export const MobilePastProposal = async (props: {
                                                     <div className='px-2 text-black'>
                                                         {(
                                                             (props.proposal
-                                                                .highestScore /
+                                                                    .highestScore /
                                                                 props.proposal
                                                                     .scoresTotal) *
                                                             100
@@ -215,7 +218,8 @@ export const MobilePastProposal = async (props: {
                                         </div>
                                     ) : (
                                         <div className='flex flex-row gap-2'>
-                                            <div className='flex h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]'>
+                                            <div
+                                                className='flex h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]'>
                                                 <Image
                                                     loading='eager'
                                                     priority={true}
@@ -271,7 +275,7 @@ export const MobilePastProposal = async (props: {
                         {props.proposal.daoHandlerType !=
                             DAOHandlerType.MAKER_EXECUTIVE &&
                             props.proposal.highestScoreChoice ==
-                                'undefined' && (
+                            'undefined' && (
                                 <div className='text-[17px] leading-[26px] text-white'>
                                     Unable to fetch results data
                                 </div>

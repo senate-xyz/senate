@@ -1,7 +1,7 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import { MagicUserState, prisma } from '@senate/database'
-import { z } from 'zod'
-import { ServerClient } from 'postmark'
+import {NextApiRequest, NextApiResponse} from 'next'
+import {MagicUserState, prisma} from '@senate/database'
+import {z} from 'zod'
+import {ServerClient} from 'postmark'
 
 const emailClient = new ServerClient(
     process.env.POSTMARK_TOKEN ?? 'Missing Token'
@@ -14,7 +14,7 @@ export default async function handler(
     const email = req.body.email
 
     const existingUser = await prisma.user.findFirst({
-        where: { email: email }
+        where: {email: email}
     })
 
     if (existingUser) {
@@ -99,7 +99,7 @@ export default async function handler(
         try {
             schema.parse(email)
         } catch {
-            res.status(500).json({ email: email, result: 'failed' })
+            res.status(500).json({email: email, result: 'failed'})
             return
         }
 

@@ -2,20 +2,20 @@
 
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { RouterOutputs } from '../../server/trpc'
+import {RouterOutputs} from '../../server/trpc'
 import Image from 'next/image'
 import '../../styles/globals.css'
 import RootProvider from '../../app/providers'
 import '@rainbow-me/rainbowkit/styles.css'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { Suspense } from 'react'
+import {ConnectButton} from '@rainbow-me/rainbowkit'
+import {Suspense} from 'react'
 
 dayjs.extend(relativeTime)
 
 const EmbeddedProposalHome = () => {
     return (
         <RootProvider>
-            <EmbeddedProposal />
+            <EmbeddedProposal/>
         </RootProvider>
     )
 }
@@ -94,7 +94,7 @@ const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
                                     'snapshot.org'
                                 )
                                     ? props.proposal.proposalLink +
-                                      '?app=senate'
+                                    '?app=senate'
                                     : props.proposal.proposalLink
                             }
                             target='_blank'
@@ -123,7 +123,7 @@ const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
                                             style={{
                                                 width: `${(
                                                     (props.proposal
-                                                        .highestScore /
+                                                            .highestScore /
                                                         Number(
                                                             props.proposal
                                                                 .scoresTotal
@@ -136,7 +136,7 @@ const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
                                             <div className='px-2 text-black'>
                                                 {(
                                                     (props.proposal
-                                                        .highestScore /
+                                                            .highestScore /
                                                         Number(
                                                             props.proposal
                                                                 .scoresTotal
@@ -205,7 +205,7 @@ const Proposal = (props: { proposal: RouterOutputs['public']['proposal'] }) => {
                         {props.proposal.voted == 'not-connected' && (
                             <div className='p-3'>
                                 <Suspense fallback={<></>}>
-                                    <ConnectButton showBalance={false} />
+                                    <ConnectButton showBalance={false}/>
                                 </Suspense>
                             </div>
                         )}

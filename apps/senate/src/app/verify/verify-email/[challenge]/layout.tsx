@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import {Metadata} from 'next'
 
 export const metadata: Metadata = {
     title: 'Senate - Verification',
@@ -6,8 +6,8 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({
-    children
-}: {
+                                       children
+                                   }: {
     children: React.ReactNode
 }) {
     return (

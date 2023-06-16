@@ -2,14 +2,14 @@
 
 import '../../styles/globals.css'
 import Image from 'next/image'
-import { Transition } from '@headlessui/react'
-import { useRouter } from 'next/navigation'
-import { useCookies } from 'react-cookie'
-import { useEffect } from 'react'
+import {Transition} from '@headlessui/react'
+import {useRouter} from 'next/navigation'
+import {useCookies} from 'react-cookie'
+import {useEffect} from 'react'
 import Head from 'next/head'
 
 const WrapperHome = () => {
-    return <Home />
+    return <Home/>
 }
 
 export default WrapperHome
@@ -50,7 +50,8 @@ const Home = () => {
                                 />
                             </div>
 
-                            <div className='mb-8 mt-4 w-full text-center text-[24px] font-light text-white lg:w-[447px]'>
+                            <div
+                                className='mb-8 mt-4 w-full text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Welcome to Senate!
                             </div>
 
@@ -71,10 +72,12 @@ const Home = () => {
                                 .
                             </div>
 
-                            <div className='w-full whitespace-pre text-center text-[24px] font-light text-white lg:w-[447px]'>
+                            <div
+                                className='w-full whitespace-pre text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Does that sound cool to you?
                             </div>
-                            <div className='w-full whitespace-pre text-center text-[24px] font-light text-white lg:w-[447px]'>
+                            <div
+                                className='w-full whitespace-pre text-center text-[24px] font-light text-white lg:w-[447px]'>
                                 Then go ahead, and...
                             </div>
 

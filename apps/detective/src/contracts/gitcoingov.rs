@@ -1,4 +1,5 @@
 pub use gitcoingov::*;
+
 /// This module was auto-generated with ethers-rs Abigen.
 /// More information at: <https://github.com/gakonst/ethers-rs>
 #[allow(
@@ -7,36 +8,46 @@ pub use gitcoingov::*;
     clippy::upper_case_acronyms,
     clippy::type_complexity,
     dead_code,
-    non_camel_case_types,
+    non_camel_case_types
 )]
 pub mod gitcoingov {
     #[rustfmt::skip]
     const __ABI: &str = "[\n  {\n    \"inputs\": [\n      { \"internalType\": \"address\", \"name\": \"timelock_\", \"type\": \"address\" },\n      { \"internalType\": \"address\", \"name\": \"gtc_\", \"type\": \"address\" }\n    ],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"constructor\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalCanceled\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"proposer\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address[]\",\n        \"name\": \"targets\",\n        \"type\": \"address[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256[]\",\n        \"name\": \"values\",\n        \"type\": \"uint256[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string[]\",\n        \"name\": \"signatures\",\n        \"type\": \"string[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"bytes[]\",\n        \"name\": \"calldatas\",\n        \"type\": \"bytes[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"startBlock\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"endBlock\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string\",\n        \"name\": \"description\",\n        \"type\": \"string\"\n      }\n    ],\n    \"name\": \"ProposalCreated\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalExecuted\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"eta\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalQueued\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"voter\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"bool\",\n        \"name\": \"support\",\n        \"type\": \"bool\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"votes\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"VoteCast\",\n    \"type\": \"event\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"BALLOT_TYPEHASH\",\n    \"outputs\": [{ \"internalType\": \"bytes32\", \"name\": \"\", \"type\": \"bytes32\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"DOMAIN_TYPEHASH\",\n    \"outputs\": [{ \"internalType\": \"bytes32\", \"name\": \"\", \"type\": \"bytes32\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"cancel\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"bool\", \"name\": \"support\", \"type\": \"bool\" }\n    ],\n    \"name\": \"castVote\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"bool\", \"name\": \"support\", \"type\": \"bool\" },\n      { \"internalType\": \"uint8\", \"name\": \"v\", \"type\": \"uint8\" },\n      { \"internalType\": \"bytes32\", \"name\": \"r\", \"type\": \"bytes32\" },\n      { \"internalType\": \"bytes32\", \"name\": \"s\", \"type\": \"bytes32\" }\n    ],\n    \"name\": \"castVoteBySig\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"execute\",\n    \"outputs\": [],\n    \"stateMutability\": \"payable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"getActions\",\n    \"outputs\": [\n      { \"internalType\": \"address[]\", \"name\": \"targets\", \"type\": \"address[]\" },\n      { \"internalType\": \"uint256[]\", \"name\": \"values\", \"type\": \"uint256[]\" },\n      { \"internalType\": \"string[]\", \"name\": \"signatures\", \"type\": \"string[]\" },\n      { \"internalType\": \"bytes[]\", \"name\": \"calldatas\", \"type\": \"bytes[]\" }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" },\n      { \"internalType\": \"address\", \"name\": \"voter\", \"type\": \"address\" }\n    ],\n    \"name\": \"getReceipt\",\n    \"outputs\": [\n      {\n        \"components\": [\n          { \"internalType\": \"bool\", \"name\": \"hasVoted\", \"type\": \"bool\" },\n          { \"internalType\": \"bool\", \"name\": \"support\", \"type\": \"bool\" },\n          { \"internalType\": \"uint96\", \"name\": \"votes\", \"type\": \"uint96\" }\n        ],\n        \"internalType\": \"struct GovernorAlpha.Receipt\",\n        \"name\": \"\",\n        \"type\": \"tuple\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"gtc\",\n    \"outputs\": [\n      { \"internalType\": \"contract GTCInterface\", \"name\": \"\", \"type\": \"address\" }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [{ \"internalType\": \"address\", \"name\": \"\", \"type\": \"address\" }],\n    \"name\": \"latestProposalIds\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"name\",\n    \"outputs\": [{ \"internalType\": \"string\", \"name\": \"\", \"type\": \"string\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"proposalCount\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"proposalMaxOperations\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"pure\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"proposalThreshold\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"pure\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"name\": \"proposals\",\n    \"outputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"id\", \"type\": \"uint256\" },\n      { \"internalType\": \"address\", \"name\": \"proposer\", \"type\": \"address\" },\n      { \"internalType\": \"uint256\", \"name\": \"eta\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"startBlock\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"endBlock\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"forVotes\", \"type\": \"uint256\" },\n      { \"internalType\": \"uint256\", \"name\": \"againstVotes\", \"type\": \"uint256\" },\n      { \"internalType\": \"bool\", \"name\": \"canceled\", \"type\": \"bool\" },\n      { \"internalType\": \"bool\", \"name\": \"executed\", \"type\": \"bool\" }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"address[]\", \"name\": \"targets\", \"type\": \"address[]\" },\n      { \"internalType\": \"uint256[]\", \"name\": \"values\", \"type\": \"uint256[]\" },\n      { \"internalType\": \"string[]\", \"name\": \"signatures\", \"type\": \"string[]\" },\n      { \"internalType\": \"bytes[]\", \"name\": \"calldatas\", \"type\": \"bytes[]\" },\n      { \"internalType\": \"string\", \"name\": \"description\", \"type\": \"string\" }\n    ],\n    \"name\": \"propose\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"queue\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"quorumVotes\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"pure\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      { \"internalType\": \"uint256\", \"name\": \"proposalId\", \"type\": \"uint256\" }\n    ],\n    \"name\": \"state\",\n    \"outputs\": [\n      {\n        \"internalType\": \"enum GovernorAlpha.ProposalState\",\n        \"name\": \"\",\n        \"type\": \"uint8\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"timelock\",\n    \"outputs\": [\n      {\n        \"internalType\": \"contract TimelockInterface\",\n        \"name\": \"\",\n        \"type\": \"address\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"votingDelay\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"pure\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"votingPeriod\",\n    \"outputs\": [{ \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" }],\n    \"stateMutability\": \"pure\",\n    \"type\": \"function\"\n  }\n]\n";
     ///The parsed JSON ABI of the contract.
-    pub static GITCOINGOV_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> = ::ethers::contract::Lazy::new(||
-    ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid"));
+    pub static GITCOINGOV_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> =
+        ::ethers::contract::Lazy::new(|| {
+            ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid")
+        });
+
     pub struct gitcoingov<M>(::ethers::contract::Contract<M>);
+
     impl<M> ::core::clone::Clone for gitcoingov<M> {
         fn clone(&self) -> Self {
             Self(::core::clone::Clone::clone(&self.0))
         }
     }
+
     impl<M> ::core::ops::Deref for gitcoingov<M> {
         type Target = ::ethers::contract::Contract<M>;
         fn deref(&self) -> &Self::Target {
             &self.0
         }
     }
+
     impl<M> ::core::ops::DerefMut for gitcoingov<M> {
         fn deref_mut(&mut self) -> &mut Self::Target {
             &mut self.0
         }
     }
+
     impl<M> ::core::fmt::Debug for gitcoingov<M> {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-            f.debug_tuple(stringify!(gitcoingov)).field(&self.address()).finish()
+            f.debug_tuple(stringify!(gitcoingov))
+                .field(&self.address())
+                .finish()
         }
     }
+
     impl<M: ::ethers::providers::Middleware> gitcoingov<M> {
         /// Creates a new contract instance with the specified `ethers` client at
         /// `address`. The contract derefs to a `ethers::Contract` object.
@@ -44,26 +55,20 @@ pub mod gitcoingov {
             address: T,
             client: ::std::sync::Arc<M>,
         ) -> Self {
-            Self(
-                ::ethers::contract::Contract::new(
-                    address.into(),
-                    GITCOINGOV_ABI.clone(),
-                    client,
-                ),
-            )
+            Self(::ethers::contract::Contract::new(
+                address.into(),
+                GITCOINGOV_ABI.clone(),
+                client,
+            ))
         }
         ///Calls the contract's `BALLOT_TYPEHASH` (0xdeaaa7cc) function
-        pub fn ballot_typehash(
-            &self,
-        ) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
+        pub fn ballot_typehash(&self) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
             self.0
                 .method_hash([222, 170, 167, 204], ())
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `DOMAIN_TYPEHASH` (0x20606b70) function
-        pub fn domain_typehash(
-            &self,
-        ) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
+        pub fn domain_typehash(&self) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
             self.0
                 .method_hash([32, 96, 107, 112], ())
                 .expect("method not found (this should never happen)")
@@ -139,10 +144,7 @@ pub mod gitcoingov {
         ///Calls the contract's `gtc` (0xe419d406) function
         pub fn gtc(
             &self,
-        ) -> ::ethers::contract::builders::ContractCall<
-            M,
-            ::ethers::core::types::Address,
-        > {
+        ) -> ::ethers::contract::builders::ContractCall<M, ::ethers::core::types::Address> {
             self.0
                 .method_hash([228, 25, 212, 6], ())
                 .expect("method not found (this should never happen)")
@@ -157,9 +159,7 @@ pub mod gitcoingov {
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `name` (0x06fdde03) function
-        pub fn name(
-            &self,
-        ) -> ::ethers::contract::builders::ContractCall<M, ::std::string::String> {
+        pub fn name(&self) -> ::ethers::contract::builders::ContractCall<M, ::std::string::String> {
             self.0
                 .method_hash([6, 253, 222, 3], ())
                 .expect("method not found (this should never happen)")
@@ -255,10 +255,7 @@ pub mod gitcoingov {
         ///Calls the contract's `timelock` (0xd33219b4) function
         pub fn timelock(
             &self,
-        ) -> ::ethers::contract::builders::ContractCall<
-            M,
-            ::ethers::core::types::Address,
-        > {
+        ) -> ::ethers::contract::builders::ContractCall<M, ::ethers::core::types::Address> {
             self.0
                 .method_hash([211, 50, 25, 180], ())
                 .expect("method not found (this should never happen)")
@@ -282,70 +279,52 @@ pub mod gitcoingov {
         ///Gets the contract's `ProposalCanceled` event
         pub fn proposal_canceled_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalCanceledFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalCanceledFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ProposalCreated` event
         pub fn proposal_created_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalCreatedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalCreatedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ProposalExecuted` event
         pub fn proposal_executed_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalExecutedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalExecutedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ProposalQueued` event
         pub fn proposal_queued_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalQueuedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalQueuedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `VoteCast` event
         pub fn vote_cast_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            VoteCastFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, VoteCastFilter> {
             self.0.event()
         }
         /// Returns an `Event` builder for all the events of this contract.
         pub fn events(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            gitcoingovEvents,
-        > {
-            self.0.event_with_filter(::core::default::Default::default())
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, gitcoingovEvents> {
+            self.0
+                .event_with_filter(::core::default::Default::default())
         }
     }
-    impl<M: ::ethers::providers::Middleware> From<::ethers::contract::Contract<M>>
-    for gitcoingov<M> {
+
+    impl<M: ::ethers::providers::Middleware> From<::ethers::contract::Contract<M>> for gitcoingov<M> {
         fn from(contract: ::ethers::contract::Contract<M>) -> Self {
             Self::new(contract.address(), contract.client())
         }
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -354,12 +333,13 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ProposalCanceled", abi = "ProposalCanceled(uint256)")]
     pub struct ProposalCanceledFilter {
         pub id: ::ethers::core::types::U256,
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -368,7 +348,7 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(
         name = "ProposalCreated",
@@ -385,6 +365,7 @@ pub mod gitcoingov {
         pub end_block: ::ethers::core::types::U256,
         pub description: ::std::string::String,
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -393,12 +374,13 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ProposalExecuted", abi = "ProposalExecuted(uint256)")]
     pub struct ProposalExecutedFilter {
         pub id: ::ethers::core::types::U256,
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -407,13 +389,14 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ProposalQueued", abi = "ProposalQueued(uint256,uint256)")]
     pub struct ProposalQueuedFilter {
         pub id: ::ethers::core::types::U256,
         pub eta: ::ethers::core::types::U256,
     }
+
     #[derive(
         Clone,
         ::ethers::contract::EthEvent,
@@ -422,7 +405,7 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "VoteCast", abi = "VoteCast(address,uint256,bool,uint256)")]
     pub struct VoteCastFilter {
@@ -431,6 +414,7 @@ pub mod gitcoingov {
         pub support: bool,
         pub votes: ::ethers::core::types::U256,
     }
+
     ///Container type for all of the contract's events
     #[derive(Clone, ::ethers::contract::EthAbiType, Debug, PartialEq, Eq, Hash)]
     pub enum gitcoingovEvents {
@@ -440,6 +424,7 @@ pub mod gitcoingov {
         ProposalQueuedFilter(ProposalQueuedFilter),
         VoteCastFilter(VoteCastFilter),
     }
+
     impl ::ethers::contract::EthLogDecode for gitcoingovEvents {
         fn decode_log(
             log: &::ethers::core::abi::RawLog,
@@ -462,50 +447,49 @@ pub mod gitcoingov {
             Err(::ethers::core::abi::Error::InvalidData)
         }
     }
+
     impl ::core::fmt::Display for gitcoingovEvents {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
             match self {
-                Self::ProposalCanceledFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ProposalCreatedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ProposalExecutedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ProposalQueuedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::ProposalCanceledFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ProposalCreatedFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ProposalExecutedFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ProposalQueuedFilter(element) => ::core::fmt::Display::fmt(element, f),
                 Self::VoteCastFilter(element) => ::core::fmt::Display::fmt(element, f),
             }
         }
     }
+
     impl ::core::convert::From<ProposalCanceledFilter> for gitcoingovEvents {
         fn from(value: ProposalCanceledFilter) -> Self {
             Self::ProposalCanceledFilter(value)
         }
     }
+
     impl ::core::convert::From<ProposalCreatedFilter> for gitcoingovEvents {
         fn from(value: ProposalCreatedFilter) -> Self {
             Self::ProposalCreatedFilter(value)
         }
     }
+
     impl ::core::convert::From<ProposalExecutedFilter> for gitcoingovEvents {
         fn from(value: ProposalExecutedFilter) -> Self {
             Self::ProposalExecutedFilter(value)
         }
     }
+
     impl ::core::convert::From<ProposalQueuedFilter> for gitcoingovEvents {
         fn from(value: ProposalQueuedFilter) -> Self {
             Self::ProposalQueuedFilter(value)
         }
     }
+
     impl ::core::convert::From<VoteCastFilter> for gitcoingovEvents {
         fn from(value: VoteCastFilter) -> Self {
             Self::VoteCastFilter(value)
         }
     }
+
     ///Container type for all input parameters for the `BALLOT_TYPEHASH` function with signature `BALLOT_TYPEHASH()` and selector `0xdeaaa7cc`
     #[derive(
         Clone,
@@ -515,10 +499,11 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "BALLOT_TYPEHASH", abi = "BALLOT_TYPEHASH()")]
     pub struct BallotTypehashCall;
+
     ///Container type for all input parameters for the `DOMAIN_TYPEHASH` function with signature `DOMAIN_TYPEHASH()` and selector `0x20606b70`
     #[derive(
         Clone,
@@ -528,10 +513,11 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "DOMAIN_TYPEHASH", abi = "DOMAIN_TYPEHASH()")]
     pub struct DomainTypehashCall;
+
     ///Container type for all input parameters for the `cancel` function with signature `cancel(uint256)` and selector `0x40e58ee5`
     #[derive(
         Clone,
@@ -541,12 +527,13 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "cancel", abi = "cancel(uint256)")]
     pub struct CancelCall {
         pub proposal_id: ::ethers::core::types::U256,
     }
+
     ///Container type for all input parameters for the `castVote` function with signature `castVote(uint256,bool)` and selector `0x15373e3d`
     #[derive(
         Clone,
@@ -556,13 +543,14 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "castVote", abi = "castVote(uint256,bool)")]
     pub struct CastVoteCall {
         pub proposal_id: ::ethers::core::types::U256,
         pub support: bool,
     }
+
     ///Container type for all input parameters for the `castVoteBySig` function with signature `castVoteBySig(uint256,bool,uint8,bytes32,bytes32)` and selector `0x4634c61f`
     #[derive(
         Clone,
@@ -572,7 +560,7 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(
         name = "castVoteBySig",
@@ -585,6 +573,7 @@ pub mod gitcoingov {
         pub r: [u8; 32],
         pub s: [u8; 32],
     }
+
     ///Container type for all input parameters for the `execute` function with signature `execute(uint256)` and selector `0xfe0d94c1`
     #[derive(
         Clone,
@@ -594,12 +583,13 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "execute", abi = "execute(uint256)")]
     pub struct ExecuteCall {
         pub proposal_id: ::ethers::core::types::U256,
     }
+
     ///Container type for all input parameters for the `getActions` function with signature `getActions(uint256)` and selector `0x328dd982`
     #[derive(
         Clone,
@@ -609,12 +599,13 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getActions", abi = "getActions(uint256)")]
     pub struct GetActionsCall {
         pub proposal_id: ::ethers::core::types::U256,
     }
+
     ///Container type for all input parameters for the `getReceipt` function with signature `getReceipt(uint256,address)` and selector `0xe23a9a52`
     #[derive(
         Clone,
@@ -624,13 +615,14 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getReceipt", abi = "getReceipt(uint256,address)")]
     pub struct GetReceiptCall {
         pub proposal_id: ::ethers::core::types::U256,
         pub voter: ::ethers::core::types::Address,
     }
+
     ///Container type for all input parameters for the `gtc` function with signature `gtc()` and selector `0xe419d406`
     #[derive(
         Clone,
@@ -640,10 +632,11 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "gtc", abi = "gtc()")]
     pub struct GtcCall;
+
     ///Container type for all input parameters for the `latestProposalIds` function with signature `latestProposalIds(address)` and selector `0x17977c61`
     #[derive(
         Clone,
@@ -653,10 +646,11 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "latestProposalIds", abi = "latestProposalIds(address)")]
     pub struct LatestProposalIdsCall(pub ::ethers::core::types::Address);
+
     ///Container type for all input parameters for the `name` function with signature `name()` and selector `0x06fdde03`
     #[derive(
         Clone,
@@ -666,10 +660,11 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "name", abi = "name()")]
     pub struct NameCall;
+
     ///Container type for all input parameters for the `proposalCount` function with signature `proposalCount()` and selector `0xda35c664`
     #[derive(
         Clone,
@@ -679,10 +674,11 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "proposalCount", abi = "proposalCount()")]
     pub struct ProposalCountCall;
+
     ///Container type for all input parameters for the `proposalMaxOperations` function with signature `proposalMaxOperations()` and selector `0x7bdbe4d0`
     #[derive(
         Clone,
@@ -692,10 +688,11 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "proposalMaxOperations", abi = "proposalMaxOperations()")]
     pub struct ProposalMaxOperationsCall;
+
     ///Container type for all input parameters for the `proposalThreshold` function with signature `proposalThreshold()` and selector `0xb58131b0`
     #[derive(
         Clone,
@@ -705,10 +702,11 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "proposalThreshold", abi = "proposalThreshold()")]
     pub struct ProposalThresholdCall;
+
     ///Container type for all input parameters for the `proposals` function with signature `proposals(uint256)` and selector `0x013cf08b`
     #[derive(
         Clone,
@@ -718,10 +716,11 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "proposals", abi = "proposals(uint256)")]
     pub struct ProposalsCall(pub ::ethers::core::types::U256);
+
     ///Container type for all input parameters for the `propose` function with signature `propose(address[],uint256[],string[],bytes[],string)` and selector `0xda95691a`
     #[derive(
         Clone,
@@ -731,7 +730,7 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(
         name = "propose",
@@ -744,6 +743,7 @@ pub mod gitcoingov {
         pub calldatas: ::std::vec::Vec<::ethers::core::types::Bytes>,
         pub description: ::std::string::String,
     }
+
     ///Container type for all input parameters for the `queue` function with signature `queue(uint256)` and selector `0xddf0b009`
     #[derive(
         Clone,
@@ -753,12 +753,13 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "queue", abi = "queue(uint256)")]
     pub struct QueueCall {
         pub proposal_id: ::ethers::core::types::U256,
     }
+
     ///Container type for all input parameters for the `quorumVotes` function with signature `quorumVotes()` and selector `0x24bc1a64`
     #[derive(
         Clone,
@@ -768,10 +769,11 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "quorumVotes", abi = "quorumVotes()")]
     pub struct QuorumVotesCall;
+
     ///Container type for all input parameters for the `state` function with signature `state(uint256)` and selector `0x3e4f49e6`
     #[derive(
         Clone,
@@ -781,12 +783,13 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "state", abi = "state(uint256)")]
     pub struct StateCall {
         pub proposal_id: ::ethers::core::types::U256,
     }
+
     ///Container type for all input parameters for the `timelock` function with signature `timelock()` and selector `0xd33219b4`
     #[derive(
         Clone,
@@ -796,10 +799,11 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "timelock", abi = "timelock()")]
     pub struct TimelockCall;
+
     ///Container type for all input parameters for the `votingDelay` function with signature `votingDelay()` and selector `0x3932abb1`
     #[derive(
         Clone,
@@ -809,10 +813,11 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "votingDelay", abi = "votingDelay()")]
     pub struct VotingDelayCall;
+
     ///Container type for all input parameters for the `votingPeriod` function with signature `votingPeriod()` and selector `0x02a251a3`
     #[derive(
         Clone,
@@ -822,10 +827,11 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "votingPeriod", abi = "votingPeriod()")]
     pub struct VotingPeriodCall;
+
     ///Container type for all of the contract's call
     #[derive(Clone, ::ethers::contract::EthAbiType, Debug, PartialEq, Eq, Hash)]
     pub enum gitcoingovCalls {
@@ -852,166 +858,126 @@ pub mod gitcoingov {
         VotingDelay(VotingDelayCall),
         VotingPeriod(VotingPeriodCall),
     }
+
     impl ::ethers::core::abi::AbiDecode for gitcoingovCalls {
         fn decode(
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <BallotTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <BallotTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::BallotTypehash(decoded));
             }
-            if let Ok(decoded)
-                = <DomainTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <DomainTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::DomainTypehash(decoded));
             }
-            if let Ok(decoded)
-                = <CancelCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CancelCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Cancel(decoded));
             }
-            if let Ok(decoded)
-                = <CastVoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CastVoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::CastVote(decoded));
             }
-            if let Ok(decoded)
-                = <CastVoteBySigCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CastVoteBySigCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::CastVoteBySig(decoded));
             }
-            if let Ok(decoded)
-                = <ExecuteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ExecuteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Execute(decoded));
             }
-            if let Ok(decoded)
-                = <GetActionsCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetActionsCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::GetActions(decoded));
             }
-            if let Ok(decoded)
-                = <GetReceiptCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetReceiptCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::GetReceipt(decoded));
             }
-            if let Ok(decoded)
-                = <GtcCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GtcCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Gtc(decoded));
             }
-            if let Ok(decoded)
-                = <LatestProposalIdsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <LatestProposalIdsCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::LatestProposalIds(decoded));
             }
-            if let Ok(decoded)
-                = <NameCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <NameCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Name(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalCountCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ProposalCountCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::ProposalCount(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalMaxOperationsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <ProposalMaxOperationsCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::ProposalMaxOperations(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalThresholdCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <ProposalThresholdCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::ProposalThreshold(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalsCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ProposalsCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Proposals(decoded));
             }
-            if let Ok(decoded)
-                = <ProposeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ProposeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Propose(decoded));
             }
-            if let Ok(decoded)
-                = <QueueCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <QueueCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Queue(decoded));
             }
-            if let Ok(decoded)
-                = <QuorumVotesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <QuorumVotesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::QuorumVotes(decoded));
             }
-            if let Ok(decoded)
-                = <StateCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <StateCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::State(decoded));
             }
-            if let Ok(decoded)
-                = <TimelockCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <TimelockCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Timelock(decoded));
             }
-            if let Ok(decoded)
-                = <VotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::VotingDelay(decoded));
             }
-            if let Ok(decoded)
-                = <VotingPeriodCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VotingPeriodCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::VotingPeriod(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())
         }
     }
+
     impl ::ethers::core::abi::AbiEncode for gitcoingovCalls {
         fn encode(self) -> Vec<u8> {
             match self {
-                Self::BallotTypehash(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::DomainTypehash(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::BallotTypehash(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::DomainTypehash(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Cancel(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::CastVote(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::CastVoteBySig(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::CastVote(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::CastVoteBySig(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Execute(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::GetActions(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::GetReceipt(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::GetActions(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::GetReceipt(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Gtc(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::LatestProposalIds(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::LatestProposalIds(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Name(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::ProposalCount(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::ProposalCount(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::ProposalMaxOperations(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::ProposalThreshold(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::Proposals(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::ProposalThreshold(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::Proposals(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Propose(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Queue(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::QuorumVotes(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::QuorumVotes(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::State(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::Timelock(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::VotingDelay(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::VotingPeriod(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::Timelock(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::VotingDelay(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::VotingPeriod(element) => ::ethers::core::abi::AbiEncode::encode(element),
             }
         }
     }
+
     impl ::core::fmt::Display for gitcoingovCalls {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
             match self {
@@ -1027,9 +993,7 @@ pub mod gitcoingov {
                 Self::LatestProposalIds(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Name(element) => ::core::fmt::Display::fmt(element, f),
                 Self::ProposalCount(element) => ::core::fmt::Display::fmt(element, f),
-                Self::ProposalMaxOperations(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::ProposalMaxOperations(element) => ::core::fmt::Display::fmt(element, f),
                 Self::ProposalThreshold(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Proposals(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Propose(element) => ::core::fmt::Display::fmt(element, f),
@@ -1042,116 +1006,139 @@ pub mod gitcoingov {
             }
         }
     }
+
     impl ::core::convert::From<BallotTypehashCall> for gitcoingovCalls {
         fn from(value: BallotTypehashCall) -> Self {
             Self::BallotTypehash(value)
         }
     }
+
     impl ::core::convert::From<DomainTypehashCall> for gitcoingovCalls {
         fn from(value: DomainTypehashCall) -> Self {
             Self::DomainTypehash(value)
         }
     }
+
     impl ::core::convert::From<CancelCall> for gitcoingovCalls {
         fn from(value: CancelCall) -> Self {
             Self::Cancel(value)
         }
     }
+
     impl ::core::convert::From<CastVoteCall> for gitcoingovCalls {
         fn from(value: CastVoteCall) -> Self {
             Self::CastVote(value)
         }
     }
+
     impl ::core::convert::From<CastVoteBySigCall> for gitcoingovCalls {
         fn from(value: CastVoteBySigCall) -> Self {
             Self::CastVoteBySig(value)
         }
     }
+
     impl ::core::convert::From<ExecuteCall> for gitcoingovCalls {
         fn from(value: ExecuteCall) -> Self {
             Self::Execute(value)
         }
     }
+
     impl ::core::convert::From<GetActionsCall> for gitcoingovCalls {
         fn from(value: GetActionsCall) -> Self {
             Self::GetActions(value)
         }
     }
+
     impl ::core::convert::From<GetReceiptCall> for gitcoingovCalls {
         fn from(value: GetReceiptCall) -> Self {
             Self::GetReceipt(value)
         }
     }
+
     impl ::core::convert::From<GtcCall> for gitcoingovCalls {
         fn from(value: GtcCall) -> Self {
             Self::Gtc(value)
         }
     }
+
     impl ::core::convert::From<LatestProposalIdsCall> for gitcoingovCalls {
         fn from(value: LatestProposalIdsCall) -> Self {
             Self::LatestProposalIds(value)
         }
     }
+
     impl ::core::convert::From<NameCall> for gitcoingovCalls {
         fn from(value: NameCall) -> Self {
             Self::Name(value)
         }
     }
+
     impl ::core::convert::From<ProposalCountCall> for gitcoingovCalls {
         fn from(value: ProposalCountCall) -> Self {
             Self::ProposalCount(value)
         }
     }
+
     impl ::core::convert::From<ProposalMaxOperationsCall> for gitcoingovCalls {
         fn from(value: ProposalMaxOperationsCall) -> Self {
             Self::ProposalMaxOperations(value)
         }
     }
+
     impl ::core::convert::From<ProposalThresholdCall> for gitcoingovCalls {
         fn from(value: ProposalThresholdCall) -> Self {
             Self::ProposalThreshold(value)
         }
     }
+
     impl ::core::convert::From<ProposalsCall> for gitcoingovCalls {
         fn from(value: ProposalsCall) -> Self {
             Self::Proposals(value)
         }
     }
+
     impl ::core::convert::From<ProposeCall> for gitcoingovCalls {
         fn from(value: ProposeCall) -> Self {
             Self::Propose(value)
         }
     }
+
     impl ::core::convert::From<QueueCall> for gitcoingovCalls {
         fn from(value: QueueCall) -> Self {
             Self::Queue(value)
         }
     }
+
     impl ::core::convert::From<QuorumVotesCall> for gitcoingovCalls {
         fn from(value: QuorumVotesCall) -> Self {
             Self::QuorumVotes(value)
         }
     }
+
     impl ::core::convert::From<StateCall> for gitcoingovCalls {
         fn from(value: StateCall) -> Self {
             Self::State(value)
         }
     }
+
     impl ::core::convert::From<TimelockCall> for gitcoingovCalls {
         fn from(value: TimelockCall) -> Self {
             Self::Timelock(value)
         }
     }
+
     impl ::core::convert::From<VotingDelayCall> for gitcoingovCalls {
         fn from(value: VotingDelayCall) -> Self {
             Self::VotingDelay(value)
         }
     }
+
     impl ::core::convert::From<VotingPeriodCall> for gitcoingovCalls {
         fn from(value: VotingPeriodCall) -> Self {
             Self::VotingPeriod(value)
         }
     }
+
     ///Container type for all return fields from the `BALLOT_TYPEHASH` function with signature `BALLOT_TYPEHASH()` and selector `0xdeaaa7cc`
     #[derive(
         Clone,
@@ -1161,9 +1148,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct BallotTypehashReturn(pub [u8; 32]);
+
     ///Container type for all return fields from the `DOMAIN_TYPEHASH` function with signature `DOMAIN_TYPEHASH()` and selector `0x20606b70`
     #[derive(
         Clone,
@@ -1173,9 +1161,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct DomainTypehashReturn(pub [u8; 32]);
+
     ///Container type for all return fields from the `getActions` function with signature `getActions(uint256)` and selector `0x328dd982`
     #[derive(
         Clone,
@@ -1185,7 +1174,7 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetActionsReturn {
         pub targets: ::std::vec::Vec<::ethers::core::types::Address>,
@@ -1193,6 +1182,7 @@ pub mod gitcoingov {
         pub signatures: ::std::vec::Vec<::std::string::String>,
         pub calldatas: ::std::vec::Vec<::ethers::core::types::Bytes>,
     }
+
     ///Container type for all return fields from the `getReceipt` function with signature `getReceipt(uint256,address)` and selector `0xe23a9a52`
     #[derive(
         Clone,
@@ -1202,9 +1192,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetReceiptReturn(pub Receipt);
+
     ///Container type for all return fields from the `gtc` function with signature `gtc()` and selector `0xe419d406`
     #[derive(
         Clone,
@@ -1214,9 +1205,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GtcReturn(pub ::ethers::core::types::Address);
+
     ///Container type for all return fields from the `latestProposalIds` function with signature `latestProposalIds(address)` and selector `0x17977c61`
     #[derive(
         Clone,
@@ -1226,9 +1218,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct LatestProposalIdsReturn(pub ::ethers::core::types::U256);
+
     ///Container type for all return fields from the `name` function with signature `name()` and selector `0x06fdde03`
     #[derive(
         Clone,
@@ -1238,9 +1231,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct NameReturn(pub ::std::string::String);
+
     ///Container type for all return fields from the `proposalCount` function with signature `proposalCount()` and selector `0xda35c664`
     #[derive(
         Clone,
@@ -1250,9 +1244,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ProposalCountReturn(pub ::ethers::core::types::U256);
+
     ///Container type for all return fields from the `proposalMaxOperations` function with signature `proposalMaxOperations()` and selector `0x7bdbe4d0`
     #[derive(
         Clone,
@@ -1262,9 +1257,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ProposalMaxOperationsReturn(pub ::ethers::core::types::U256);
+
     ///Container type for all return fields from the `proposalThreshold` function with signature `proposalThreshold()` and selector `0xb58131b0`
     #[derive(
         Clone,
@@ -1274,9 +1270,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ProposalThresholdReturn(pub ::ethers::core::types::U256);
+
     ///Container type for all return fields from the `proposals` function with signature `proposals(uint256)` and selector `0x013cf08b`
     #[derive(
         Clone,
@@ -1286,7 +1283,7 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ProposalsReturn {
         pub id: ::ethers::core::types::U256,
@@ -1299,6 +1296,7 @@ pub mod gitcoingov {
         pub canceled: bool,
         pub executed: bool,
     }
+
     ///Container type for all return fields from the `propose` function with signature `propose(address[],uint256[],string[],bytes[],string)` and selector `0xda95691a`
     #[derive(
         Clone,
@@ -1308,9 +1306,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ProposeReturn(pub ::ethers::core::types::U256);
+
     ///Container type for all return fields from the `quorumVotes` function with signature `quorumVotes()` and selector `0x24bc1a64`
     #[derive(
         Clone,
@@ -1320,9 +1319,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct QuorumVotesReturn(pub ::ethers::core::types::U256);
+
     ///Container type for all return fields from the `state` function with signature `state(uint256)` and selector `0x3e4f49e6`
     #[derive(
         Clone,
@@ -1332,9 +1332,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct StateReturn(pub u8);
+
     ///Container type for all return fields from the `timelock` function with signature `timelock()` and selector `0xd33219b4`
     #[derive(
         Clone,
@@ -1344,9 +1345,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct TimelockReturn(pub ::ethers::core::types::Address);
+
     ///Container type for all return fields from the `votingDelay` function with signature `votingDelay()` and selector `0x3932abb1`
     #[derive(
         Clone,
@@ -1356,9 +1358,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct VotingDelayReturn(pub ::ethers::core::types::U256);
+
     ///Container type for all return fields from the `votingPeriod` function with signature `votingPeriod()` and selector `0x02a251a3`
     #[derive(
         Clone,
@@ -1368,9 +1371,10 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct VotingPeriodReturn(pub ::ethers::core::types::U256);
+
     ///`Receipt(bool,bool,uint96)`
     #[derive(
         Clone,
@@ -1380,7 +1384,7 @@ pub mod gitcoingov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct Receipt {
         pub has_voted: bool,

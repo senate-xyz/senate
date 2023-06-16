@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { trpc } from '../../../../../server/trpcClient'
-import { useRouter } from 'next/navigation'
-import { useAccount } from 'wagmi'
+import {useEffect, useState} from 'react'
+import {trpc} from '../../../../../server/trpcClient'
+import {useRouter} from 'next/navigation'
+import {useAccount} from 'wagmi'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -40,7 +40,7 @@ const Telegram = () => {
         trpc.accountSettings.updateTelegramReminders.useMutation()
 
     const onEnter = () => {
-        setTelegramChatId.mutate({ chatid: parseInt(currentChatId) })
+        setTelegramChatId.mutate({chatid: parseInt(currentChatId)})
     }
 
     return (
@@ -68,7 +68,8 @@ const Telegram = () => {
                         }}
                         className='peer sr-only'
                     />
-                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
+                    <div
+                        className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]"/>
                 </label>
             </div>
 
@@ -123,7 +124,8 @@ const Telegram = () => {
                         <div className='font-[18px] leading-[23px] text-white'>
                             Ending soon reminders
                         </div>
-                        <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
+                        <label
+                            className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
                             <input
                                 type='checkbox'
                                 checked={getTelegramReminders}
@@ -134,7 +136,8 @@ const Telegram = () => {
                                 }}
                                 className='peer sr-only'
                             />
-                            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
+                            <div
+                                className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]"/>
                         </label>
                     </div>
                 </div>

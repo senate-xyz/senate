@@ -1,13 +1,7 @@
 import inquirer from 'inquirer'
 
-import {
-    PrismaClient as PrismaNewClient,
-    Prisma as PrismaNew
-} from '../prisma/new/generated/client'
-import {
-    PrismaClient as PrismaOldClient,
-    Prisma as PrismaOld
-} from '../prisma/old/generated/client'
+import {Prisma as PrismaNew, PrismaClient as PrismaNewClient} from '../prisma/new/generated/client'
+import {Prisma as PrismaOld, PrismaClient as PrismaOldClient} from '../prisma/old/generated/client'
 import fs from 'fs'
 
 const newPrisma = new PrismaNewClient()
@@ -21,8 +15,8 @@ async function main() {
                 name: 'run',
                 message: 'What do you want to do?',
                 choices: [
-                    { name: 'Export users from db to file', value: 'export' },
-                    { name: 'Import users from file to db', value: 'import' }
+                    {name: 'Export users from db to file', value: 'export'},
+                    {name: 'Import users from file to db', value: 'import'}
                 ]
             },
             {
@@ -69,7 +63,7 @@ export type NewUsertype = PrismaNew.userGetPayload<{
 const exportUsers = async (toFile: string) => {
     const data = await oldPrisma.user.findMany({
         include: {
-            subscriptions: { select: { dao: { select: { name: true } } } },
+            subscriptions: {select: {dao: {select: {name: true}}}},
             voters: true
         }
     })
@@ -85,7 +79,7 @@ const exportUsers = async (toFile: string) => {
         }
     )
 
-    console.log({ data: data, file: toFile })
+    console.log({data: data, file: toFile})
 }
 
 const importUsers = async (fromFile: string) => {

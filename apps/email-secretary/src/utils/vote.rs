@@ -1,5 +1,6 @@
-use anyhow::Result;
 use std::sync::Arc;
+
+use anyhow::Result;
 use tracing::instrument;
 
 use crate::prisma::{self, PrismaClient};

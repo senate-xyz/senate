@@ -1,3 +1,5 @@
+use std::env;
+
 use base64::{
     alphabet,
     engine::{self, general_purpose},
@@ -5,15 +7,14 @@ use base64::{
 };
 use opentelemetry::{
     global,
+    sdk::{propagation::TraceContextPropagator, trace, Resource},
     KeyValue,
-    sdk::{propagation::TraceContextPropagator, Resource, trace},
 };
 use opentelemetry_otlp::WithExportConfig;
 use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, PprofConfig};
-use std::env;
 use tonic::metadata::{MetadataMap, MetadataValue};
-use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 use url::Url;
 
 pub fn setup() {
@@ -36,9 +37,9 @@ pub fn setup() {
                     "https://340656:{}@logs-prod-013.grafana.net/",
                     telemetry_key
                 )
-                    .as_str(),
+                .as_str(),
             )
-                .unwrap(),
+            .unwrap(),
         )
         .unwrap();
 

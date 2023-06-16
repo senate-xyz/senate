@@ -1,6 +1,6 @@
-import { isUpToDate } from './Table'
+import {isUpToDate} from './Table'
 import Image from 'next/image'
-import dayjs, { extend } from 'dayjs'
+import dayjs, {extend} from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
 extend(relativeTime)

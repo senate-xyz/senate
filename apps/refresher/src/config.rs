@@ -1,7 +1,9 @@
-use anyhow::Result;
-use prisma::PrismaClient;
 use std::sync::{Arc, RwLock};
+
+use anyhow::Result;
 use tracing::{debug, instrument};
+
+use prisma::PrismaClient;
 
 use crate::prisma;
 

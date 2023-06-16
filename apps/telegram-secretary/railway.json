@@ -3,7 +3,10 @@
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "Dockerfile.telegram-secretary",
-    "watchPatterns": ["apps/telegram-secretary", "packages/database"]
+    "watchPatterns": [
+      "apps/telegram-secretary",
+      "packages/database"
+    ]
   },
   "deploy": {
     "numReplicas": 1,

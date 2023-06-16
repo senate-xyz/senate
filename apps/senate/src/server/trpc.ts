@@ -8,22 +8,17 @@
  * @see https://trpc.io/docs/v10/procedures
  */
 
-import type { Context } from './context'
-import {
-    inferRouterInputs,
-    inferRouterOutputs,
-    initTRPC,
-    TRPCError
-} from '@trpc/server'
+import type {Context} from './context'
+import {inferRouterInputs, inferRouterOutputs, initTRPC, TRPCError} from '@trpc/server'
 import superjson from 'superjson'
-import { AppRouter } from './routers/_app'
+import {AppRouter} from './routers/_app'
 
 const t = initTRPC.context<Context>().create({
     /**
      * @see https://trpc.io/docs/v10/data-transformers
      */
     transformer: superjson,
-    errorFormatter: ({ shape }) => {
+    errorFormatter: ({shape}) => {
         return {
             ...shape,
             data: {

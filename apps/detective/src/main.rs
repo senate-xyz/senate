@@ -5,20 +5,22 @@
 #[macro_use]
 extern crate rocket;
 
+use std::process;
+use std::{env, sync::Arc};
+
 use dotenv::dotenv;
 use ethers::providers::{Http, Provider};
-use prisma::PrismaClient;
 use pyroscope::PyroscopeAgent;
-use pyroscope_pprofrs::{Pprof, pprof_backend, PprofConfig};
+use pyroscope_pprofrs::{pprof_backend, Pprof, PprofConfig};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::{env, sync::Arc};
-use std::process;
 use tracing::instrument;
-use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 use url::Url;
+
+use prisma::PrismaClient;
 use utils::{maker_polls_sanity::maker_polls_sanity_check, snapshot_sanity::snapshot_sanity_check};
 
 use crate::router::{

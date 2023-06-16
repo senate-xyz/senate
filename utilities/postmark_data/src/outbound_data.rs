@@ -67,7 +67,7 @@ pub async fn outbound_data() {
                 row.ReceivedAt.as_str().unwrap(),
                 row.Status.as_str().unwrap(),
             ])
-            .unwrap();
+                .unwrap();
         }
 
         if postmark_data.Messages.len() > 0 {

@@ -102,7 +102,6 @@ dist
 
 # vuepress v2.x temp and cache directory
 .temp
-.cache
 
 # Serverless directories
 .serverless/
@@ -130,4 +129,4 @@ packages/database/prisma/db.sqlite
 
 /apps/web/tests/e2e/screenshots
 /apps/web/tests/e2e/videos
-.idea/
+

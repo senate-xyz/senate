@@ -1,13 +1,13 @@
 'use client'
 
-import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit'
-import { signOut, useSession } from 'next-auth/react'
-import { redirect, useRouter, useSearchParams } from 'next/navigation'
-import { Suspense, useEffect, useState } from 'react'
-import { useAccount } from 'wagmi'
-import { disconnect } from '@wagmi/core'
-import { trpc } from '../../../server/trpcClient'
-import { usePostHog } from 'posthog-js/react'
+import {ConnectButton, useConnectModal} from '@rainbow-me/rainbowkit'
+import {signOut, useSession} from 'next-auth/react'
+import {redirect, useRouter, useSearchParams} from 'next/navigation'
+import {Suspense, useEffect, useState} from 'react'
+import {useAccount} from 'wagmi'
+import {disconnect} from '@wagmi/core'
+import {trpc} from '../../../server/trpcClient'
+import {usePostHog} from 'posthog-js/react'
 
 const WalletConnect = () => {
     const posthog = usePostHog()
@@ -18,11 +18,11 @@ const WalletConnect = () => {
     const acceptedTerms = trpc.accountSettings.getAcceptedTerms.useQuery()
     const acceptedTermsTimestamp =
         trpc.accountSettings.getAcceptedTermsTimestamp.useQuery()
-    const { connector: activeConnector } = useAccount()
-    const { openConnectModal } = useConnectModal()
+    const {connector: activeConnector} = useAccount()
+    const {openConnectModal} = useConnectModal()
 
     useEffect(() => {
-        const handleConnectorUpdate = ({ account }) => {
+        const handleConnectorUpdate = ({account}) => {
             if (account) {
                 signOut()
             }
@@ -80,7 +80,7 @@ const WalletConnect = () => {
     return (
         <div>
             <Suspense fallback={<></>}>
-                <ConnectButton showBalance={false} />
+                <ConnectButton showBalance={false}/>
             </Suspense>
         </div>
     )

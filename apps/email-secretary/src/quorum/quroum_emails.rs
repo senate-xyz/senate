@@ -1,26 +1,21 @@
+use std::{env, sync::Arc};
+
 use anyhow::bail;
 use chrono::{Duration, Utc};
 use log::info;
 use num_format::{Locale, ToFormattedString};
 use prisma_client_rust::bigdecimal::ToPrimitive;
-use reqwest::header::{ACCEPT, CONTENT_TYPE, HeaderMap};
+use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
-use std::{env, sync::Arc};
 use tokio::task::spawn_blocking;
 use tracing::{debug, debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
-        self,
-        dao,
-        DaoHandlerType,
-        MagicUserState,
+        self, dao,
         notification::{self},
-        NotificationDispatchedState,
+        proposal, subscription, user, DaoHandlerType, MagicUserState, NotificationDispatchedState,
         NotificationType,
-        proposal,
-        subscription,
-        user,
     },
     utils::{countdown::countdown_gif, vote::get_vote},
 };
@@ -346,10 +341,10 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                     .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
                     .as_str(),
             )
-                .capture(posthog_event);
+            .capture(posthog_event);
         })
-            .await
-            .unwrap();
+        .await
+        .unwrap();
     }
 }
 

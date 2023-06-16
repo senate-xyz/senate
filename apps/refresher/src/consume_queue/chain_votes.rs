@@ -1,3 +1,5 @@
+use std::{cmp, collections::HashMap, env, sync::Arc};
+
 use anyhow::Result;
 use log::warn;
 use opentelemetry::{propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator};
@@ -7,7 +9,6 @@ use reqwest::{
     Client,
 };
 use serde::Deserialize;
-use std::{cmp, collections::HashMap, env, sync::Arc};
 use tokio::task;
 use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level};
 use tracing_opentelemetry::OpenTelemetrySpanExt;

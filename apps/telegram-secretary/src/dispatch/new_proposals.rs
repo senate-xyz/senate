@@ -14,14 +14,8 @@ use tracing::{debug, debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
-        self,
-        notification,
-        proposal,
-        user,
-        DaoHandlerType,
-        NotificationDispatchedState,
-        NotificationType,
-        PrismaClient,
+        self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
+        NotificationType, PrismaClient,
     },
     utils::vote::get_vote,
 };
@@ -96,23 +90,23 @@ pub async fn dispatch_new_proposal_notifications(
                     .send_message(
                         ChatId(user.telegramchatid.parse().unwrap()),
                         format!(
-                    "📢 New <b>{}</b> {} proposal ending <b>{}</b>\n<a href=\"{}\"><i>{}</i></a>\n",
-                    proposal.dao.name,
-                    if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                        "off-chain"
-                    } else {
-                        "on-chain"
-                    },
-                    proposal.timeend.format("%Y-%m-%d %H:%M"),
-                    short_url,
-                    proposal
-                        .name
-                        .replace('&', "&amp;")
-                        .replace('<', "&lt;")
-                        .replace('>', "&gt;")
-                        .replace('\"', "&quot;")
-                        .replace('\'', "&#39;"),
-                ),
+                            "📢 New <b>{}</b> {} proposal ending <b>{}</b>\n<a href=\"{}\"><i>{}</i></a>\n",
+                            proposal.dao.name,
+                            if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                "off-chain"
+                            } else {
+                                "on-chain"
+                            },
+                            proposal.timeend.format("%Y-%m-%d %H:%M"),
+                            short_url,
+                            proposal
+                                .name
+                                .replace('&', "&amp;")
+                                .replace('<', "&lt;")
+                                .replace('>', "&gt;")
+                                .replace('\"', "&quot;")
+                                .replace('\'', "&#39;"),
+                        ),
                     )
                     .disable_web_page_preview(true)
                     .await;

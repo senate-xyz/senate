@@ -1,10 +1,10 @@
-import NextAuth, { type NextAuthOptions } from 'next-auth'
+import NextAuth, {type NextAuthOptions} from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
-import { SiweMessage } from 'siwe'
-import { getCsrfToken } from 'next-auth/react'
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { prisma } from '@senate/database'
-import { PostHog } from 'posthog-node'
+import {SiweMessage} from 'siwe'
+import {getCsrfToken} from 'next-auth/react'
+import type {NextApiRequest, NextApiResponse} from 'next'
+import {prisma} from '@senate/database'
+import {PostHog} from 'posthog-node'
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
     host: `${process.env.NEXT_PUBLIC_WEB_URL}/ingest`
@@ -40,12 +40,12 @@ export function authOptions(
                     const result = await siwe.verify({
                         signature: credentials?.signature || '',
                         domain: nextAuthUrl.host,
-                        nonce: await getCsrfToken({ req })
+                        nonce: await getCsrfToken({req})
                     })
 
                     if (result.success) {
                         const existingUser = await prisma.user.findFirst({
-                            where: { address: siwe.address }
+                            where: {address: siwe.address}
                         })
 
                         if (!existingUser) {
@@ -62,8 +62,8 @@ export function authOptions(
                                     acceptedtermstimestamp: new Date(),
                                     voters: {
                                         connectOrCreate: {
-                                            where: { address: siwe.address },
-                                            create: { address: siwe.address }
+                                            where: {address: siwe.address},
+                                            create: {address: siwe.address}
                                         }
                                     }
                                 }
@@ -76,7 +76,7 @@ export function authOptions(
                                 data: {
                                     verifiedaddress: true,
                                     lastactive: new Date(),
-                                    sessioncount: { increment: 1 },
+                                    sessioncount: {increment: 1},
                                     acceptedterms: true,
                                     acceptedtermstimestamp: new Date()
                                 }
@@ -108,7 +108,7 @@ export function authOptions(
         },
         callbacks: {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            async session({ session, token }: { session: any; token: any }) {
+            async session({session, token}: { session: any; token: any }) {
                 session.address = token.sub
                 session.user.name = token.sub
                 return session
@@ -157,7 +157,7 @@ export function authOptions(
                         },
                         data: {
                             lastactive: new Date(),
-                            sessioncount: { increment: 1 }
+                            sessioncount: {increment: 1}
                         }
                     })
             },

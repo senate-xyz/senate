@@ -1,17 +1,12 @@
 use std::sync::Arc;
 
-use crate::prisma::{
-    self,
-    notification,
-    subscription,
-    user,
-    NotificationType,
-    PrismaClient,
-    ProposalState,
-};
 use anyhow::Result;
 use teloxide::Bot;
 use tracing::{debug_span, instrument, Instrument};
+
+use crate::prisma::{
+    self, notification, subscription, user, NotificationType, PrismaClient, ProposalState,
+};
 
 #[instrument(skip(client), level = "debug")]
 pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {

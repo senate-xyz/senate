@@ -1,4 +1,5 @@
 use std::sync::Arc;
+
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::prisma::{notification, NotificationDispatchedState, PrismaClient};

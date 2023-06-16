@@ -1,6 +1,6 @@
 import '@rainbow-me/rainbowkit/styles.css'
 
-import { prisma } from '@senate/database'
+import {prisma} from '@senate/database'
 import Link from 'next/link'
 
 const isValidChallenge = async (challenge: string) => {
@@ -22,7 +22,7 @@ const verifyUser = async (dao: string, challenge: string) => {
 
     const subscribedao = await prisma.dao.findFirstOrThrow({
         where: {
-            name: { equals: dao }
+            name: {equals: dao}
         }
     })
 
@@ -62,7 +62,7 @@ const verifyUser = async (dao: string, challenge: string) => {
     })
 }
 
-export default async function Page({ params }) {
+export default async function Page({params}) {
     const validChallenge = await isValidChallenge(String(params.slug[1]))
 
     if (!validChallenge)

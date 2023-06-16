@@ -1,6 +1,6 @@
-import { z } from 'zod'
-import { publicProcedure, router } from '../trpc'
-import { JsonArray, Vote, prisma } from '@senate/database'
+import {z} from 'zod'
+import {publicProcedure, router} from '../trpc'
+import {JsonArray, prisma, Vote} from '@senate/database'
 
 export const publicRouter = router({
     featureFlags: publicProcedure.query(async () => {
@@ -21,7 +21,7 @@ export const publicRouter = router({
                 url: z.string()
             })
         )
-        .query(async ({ input, ctx }) => {
+        .query(async ({input, ctx}) => {
             const user = await prisma.user.findFirst({
                 where: {
                     address: ctx.user?.name ?? ''
@@ -88,9 +88,9 @@ export const publicRouter = router({
                     Number(proposal.quorum) < Number(proposal.scorestotal),
                 voted: user
                     ? String(
-                          proposal.votes.map((vote: Vote) => vote.choice)
-                              .length > 0
-                      )
+                        proposal.votes.map((vote: Vote) => vote.choice)
+                            .length > 0
+                    )
                     : 'not-connected'
             }
 

@@ -1,14 +1,5 @@
-use crate::{
-    contracts::{
-        dydxexecutor,
-        dydxgov::{self, ProposalCreatedFilter},
-        dydxstrategy,
-    },
-    prisma::{daohandler, ProposalState},
-    router::chain_proposals::ChainProposal,
-    utils::etherscan::estimate_timestamp,
-    Ctx,
-};
+use std::{str, sync::Arc, time::Duration};
+
 use anyhow::Result;
 use ethers::{
     prelude::LogMeta,
@@ -26,9 +17,20 @@ use reqwest::{Client, StatusCode};
 use reqwest_middleware::ClientWithMiddleware;
 use serde::Deserialize;
 use serde_json::Value as JsonValue;
-use std::{str, sync::Arc, time::Duration};
 use tracing::Instrument;
 use tracing::{debug_span, instrument};
+
+use crate::{
+    contracts::{
+        dydxexecutor,
+        dydxgov::{self, ProposalCreatedFilter},
+        dydxstrategy,
+    },
+    prisma::{daohandler, ProposalState},
+    router::chain_proposals::ChainProposal,
+    utils::etherscan::estimate_timestamp,
+    Ctx,
+};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]

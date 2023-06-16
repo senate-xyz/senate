@@ -3,7 +3,10 @@
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "Dockerfile.email-secretary",
-    "watchPatterns": ["apps/email-secretary", "packages/database"]
+    "watchPatterns": [
+      "apps/email-secretary",
+      "packages/database"
+    ]
   },
   "deploy": {
     "numReplicas": 1,

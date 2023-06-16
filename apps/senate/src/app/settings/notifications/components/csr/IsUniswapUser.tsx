@@ -1,6 +1,6 @@
 'use client'
 
-import { trpc } from '../../../../../server/trpcClient'
+import {trpc} from '../../../../../server/trpcClient'
 
 const IsUniswapUser = () => {
     const user = trpc.accountSettings.getUser.useQuery()
@@ -25,7 +25,8 @@ const IsUniswapUser = () => {
                             }}
                             className='peer sr-only'
                         />
-                        <div className="bg-uniswap-gradient peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5  after:w-5 after:bg-black after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+                        <div
+                            className="bg-uniswap-gradient peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5  after:w-5 after:bg-black after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700"/>
                     </label>
                 </div>
             </div>

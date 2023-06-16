@@ -1,7 +1,7 @@
 'use client'
 
-import { signOut } from 'next-auth/react'
-import { trpc } from '../../../server/trpcClient'
+import {signOut} from 'next-auth/react'
+import {trpc} from '../../../server/trpcClient'
 
 const Testing = () => {
     const featureFlags = trpc.public.featureFlags.useQuery()
@@ -20,7 +20,8 @@ const Testing = () => {
         featureFlags.data?.includes('testing_stuff') && (
             <div className='flex max-w-[400px] flex-col gap-2 border border-red-400 p-2'>
                 <div className='font-bold text-white'>Testing stuff</div>
-                <div /> <div />
+                <div/>
+                <div/>
                 <div
                     className='w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500'
                     onClick={() => {
@@ -33,7 +34,8 @@ const Testing = () => {
                 >
                     Delete my own user!
                 </div>
-                <div /> <div />
+                <div/>
+                <div/>
                 <div className='text-white'>Can take up to one minute</div>
                 <div
                     className='w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500'
@@ -85,7 +87,8 @@ const Testing = () => {
                 >
                     Delete dispatched notifications
                 </div>
-                <div /> <div />
+                <div/>
+                <div/>
                 <div
                     className='w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500'
                     onClick={() => {

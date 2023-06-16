@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { prisma } from './index'
-import { DAOHandlerType } from '@prisma/client'
+import {prisma} from './index'
+import {DAOHandlerType} from '@prisma/client'
 
 const seedData = async () => {
     console.log('Inserting daos')
 
     await prisma.dao.upsert({
-        where: { name: 'Aave' },
+        where: {name: 'Aave'},
         update: {},
         create: {
             name: 'Aave',
@@ -36,7 +36,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'MakerDAO' },
+        where: {name: 'MakerDAO'},
         update: {},
         create: {
             name: 'MakerDAO',
@@ -77,7 +77,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Balancer' },
+        where: {name: 'Balancer'},
         update: {},
         create: {
             name: 'Balancer',
@@ -96,7 +96,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Optimism' },
+        where: {name: 'Optimism'},
         update: {},
         create: {
             name: 'Optimism',
@@ -115,7 +115,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Element' },
+        where: {name: 'Element'},
         update: {},
         create: {
             name: 'Element',
@@ -134,7 +134,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: '1inch' },
+        where: {name: '1inch'},
         update: {},
         create: {
             name: '1inch',
@@ -153,7 +153,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Hop Protocol' },
+        where: {name: 'Hop Protocol'},
         update: {},
         create: {
             name: 'Hop Protocol',
@@ -182,7 +182,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'SafeDAO' },
+        where: {name: 'SafeDAO'},
         update: {},
         create: {
             name: 'SafeDAO',
@@ -201,7 +201,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Compound' },
+        where: {name: 'Compound'},
         update: {},
         create: {
             name: 'Compound',
@@ -232,7 +232,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Synthetix' },
+        where: {name: 'Synthetix'},
         update: {},
         create: {
             name: 'Synthetix',
@@ -251,7 +251,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'dYdX' },
+        where: {name: 'dYdX'},
         update: {},
         create: {
             name: 'dYdX',
@@ -280,7 +280,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Uniswap' },
+        where: {name: 'Uniswap'},
         update: {},
         create: {
             name: 'Uniswap',
@@ -311,7 +311,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'ENS' },
+        where: {name: 'ENS'},
         update: {},
         create: {
             name: 'ENS',
@@ -340,7 +340,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'FWB' },
+        where: {name: 'FWB'},
         update: {},
         create: {
             name: 'FWB',
@@ -359,7 +359,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'GnosisDAO' },
+        where: {name: 'GnosisDAO'},
         update: {},
         create: {
             name: 'GnosisDAO',
@@ -381,7 +381,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Index Coop' },
+        where: {name: 'Index Coop'},
         update: {},
         create: {
             name: 'Index Coop',
@@ -400,7 +400,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Paladin' },
+        where: {name: 'Paladin'},
         update: {},
         create: {
             name: 'Paladin',
@@ -419,7 +419,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Sushi' },
+        where: {name: 'Sushi'},
         update: {},
         create: {
             name: 'Sushi',
@@ -438,7 +438,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Instadapp' },
+        where: {name: 'Instadapp'},
         update: {},
         create: {
             name: 'Instadapp',
@@ -457,7 +457,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Gitcoin' },
+        where: {name: 'Gitcoin'},
         update: {},
         create: {
             name: 'Gitcoin',
@@ -486,7 +486,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Gearbox' },
+        where: {name: 'Gearbox'},
         update: {},
         create: {
             name: 'Gearbox',
@@ -505,7 +505,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Euler' },
+        where: {name: 'Euler'},
         update: {},
         create: {
             name: 'Euler',
@@ -524,7 +524,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Aura Finance' },
+        where: {name: 'Aura Finance'},
         update: {},
         create: {
             name: 'Aura Finance',
@@ -543,7 +543,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Developer DAO' },
+        where: {name: 'Developer DAO'},
         update: {},
         create: {
             name: 'Developer DAO',
@@ -562,7 +562,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'APWine' },
+        where: {name: 'APWine'},
         update: {},
         create: {
             name: 'APWine',
@@ -581,7 +581,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Morpho' },
+        where: {name: 'Morpho'},
         update: {},
         create: {
             name: 'Morpho',
@@ -600,7 +600,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Lido DAO' },
+        where: {name: 'Lido DAO'},
         update: {},
         create: {
             name: 'Lido DAO',
@@ -619,7 +619,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Starknet' },
+        where: {name: 'Starknet'},
         update: {},
         create: {
             name: 'Starknet',
@@ -638,7 +638,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Arbitrum DAO' },
+        where: {name: 'Arbitrum DAO'},
         update: {},
         create: {
             name: 'Arbitrum DAO',
@@ -657,7 +657,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'dOrg' },
+        where: {name: 'dOrg'},
         update: {},
         create: {
             name: 'dOrg',
@@ -676,7 +676,7 @@ const seedData = async () => {
     })
 
     await prisma.dao.upsert({
-        where: { name: 'Solace DAO' },
+        where: {name: 'Solace DAO'},
         update: {},
         create: {
             name: 'Solace DAO',
@@ -894,8 +894,8 @@ const seedVoters = async () => {
                 data: {
                     voters: {
                         connectOrCreate: {
-                            where: { address: voter },
-                            create: { address: voter }
+                            where: {address: voter},
+                            create: {address: voter}
                         }
                     }
                 }

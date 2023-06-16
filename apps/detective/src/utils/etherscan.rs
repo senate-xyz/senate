@@ -1,10 +1,11 @@
+use std::env;
+
 use anyhow::{bail, Result};
 use chrono::{DateTime, NaiveDateTime, Utc};
 use ethers::providers::{Http, Middleware, Provider};
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use reqwest::Client;
 use serde::Deserialize;
-use std::env;
 use tracing::{debug_span, info, instrument, Instrument};
 
 use crate::Context;
@@ -45,7 +46,7 @@ pub async fn estimate_timestamp(block_number: i64, ctx: &Context) -> Result<Date
             NaiveDateTime::from_timestamp_millis(
                 block.unwrap().timestamp.as_u64().to_i64().unwrap() * 1000,
             )
-                .expect("bad timestamp"),
+            .expect("bad timestamp"),
             Utc,
         );
 
@@ -74,14 +75,14 @@ pub async fn estimate_timestamp(block_number: i64, ctx: &Context) -> Result<Date
                         NaiveDateTime::from_timestamp_millis(
                             Utc::now().timestamp() * 1000
                                 + d.result
-                                .EstimateTimeInSec
-                                .parse::<f64>()
-                                .unwrap()
-                                .to_i64()
-                                .unwrap()
-                                * 1000,
+                                    .EstimateTimeInSec
+                                    .parse::<f64>()
+                                    .unwrap()
+                                    .to_i64()
+                                    .unwrap()
+                                    * 1000,
                         )
-                            .expect("bad timestamp"),
+                        .expect("bad timestamp"),
                         Utc,
                     ),
                     Err(_) => bail!("Unable to deserialize etherscan response."),

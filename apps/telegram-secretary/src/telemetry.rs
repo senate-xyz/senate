@@ -10,7 +10,6 @@ use opentelemetry::{
     sdk::{propagation::TraceContextPropagator, trace, Resource},
     KeyValue,
 };
-
 use opentelemetry_otlp::WithExportConfig;
 use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, PprofConfig};
