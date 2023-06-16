@@ -271,31 +271,25 @@ async fn update_proposals(
 
     let uptodate = old_index - new_index < 60 * 60;
 
-    let updated = ctx
-        .db
-        .daohandler()
-        .update(
-            daohandler::id::equals(dao_handler.id),
-            vec![
-                daohandler::snapshotindex::set(Some(
-                    DateTime::from_utc(
-                        //TODO
-                        //temporary workaround, force new_index to always hold back 24h
-                        //to make sure we refresh stuff
-                        NaiveDateTime::from_timestamp_millis((new_index - 60 * 60 * 24) * 1000)
+    if new_index * 1000 != dao_handler.snapshotindex.unwrap().timestamp() {
+        ctx.db
+            .daohandler()
+            .update(
+                daohandler::id::equals(dao_handler.id),
+                vec![
+                    daohandler::snapshotindex::set(Some(DateTime::from_utc(
+                        NaiveDateTime::from_timestamp_millis(new_index * 1000)
                             .expect("can not create snapshotindex"),
                         FixedOffset::east_opt(0).unwrap(),
-                    ) - Duration::minutes(60),
-                )),
-                daohandler::uptodate::set(uptodate),
-            ],
-        )
-        .exec()
-        .instrument(debug_span!("update_snapshotindex"))
-        .await
-        .context("failed to update daohandler")?;
-
-    debug!("{:?}", updated);
+                    ))),
+                    daohandler::uptodate::set(uptodate),
+                ],
+            )
+            .exec()
+            .instrument(debug_span!("update_snapshotindex"))
+            .await
+            .context("failed to update daohandler")?;
+    }
 
     Ok(())
 }

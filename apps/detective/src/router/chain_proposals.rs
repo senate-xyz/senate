@@ -268,20 +268,19 @@ async fn insert_proposals(
 
     let uptodate = dao_handler.chainindex.unwrap() - new_index < 1000;
 
-    let updated = ctx
-        .db
-        .daohandler()
-        .update(
-            daohandler::id::equals(dao_handler.id.to_string()),
-            vec![
-                daohandler::chainindex::set(new_index.into()),
-                daohandler::uptodate::set(uptodate),
-            ],
-        )
-        .exec()
-        .instrument(debug_span!("update_chainindex"))
-        .await
-        .expect("failed to update daohandlers");
-
-    debug!("{:?}", updated);
+    if new_index != dao_handler.chainindex.unwrap() {
+        ctx.db
+            .daohandler()
+            .update(
+                daohandler::id::equals(dao_handler.id.to_string()),
+                vec![
+                    daohandler::chainindex::set(new_index.into()),
+                    daohandler::uptodate::set(uptodate),
+                ],
+            )
+            .exec()
+            .instrument(debug_span!("update_chainindex"))
+            .await
+            .expect("failed to update daohandlers");
+    }
 }
