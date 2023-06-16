@@ -3,8 +3,8 @@ use log::warn;
 use opentelemetry::{propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator};
 use prisma_client_rust::chrono::Utc;
 use reqwest::{
-    Client,
     header::{HeaderName, HeaderValue},
+    Client,
 };
 use serde::Deserialize;
 use std::{cmp, collections::HashMap, env, sync::Arc};
@@ -31,6 +31,8 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
     let post_url = format!("{}/votes/chain_votes", detective_url);
 
     let http_client = Client::builder().build().unwrap();
+
+    println!("{:?}", entry);
 
     task::spawn(
         async move {

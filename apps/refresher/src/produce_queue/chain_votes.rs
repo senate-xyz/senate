@@ -2,8 +2,8 @@ use anyhow::Result;
 use prisma::{daohandler, PrismaClient};
 use prisma_client_rust::{
     chrono::{Duration, Utc},
-    Direction,
     operator::{and, or},
+    Direction,
 };
 use std::collections::HashMap;
 use tracing::{debug, debug_span, instrument, Instrument};
@@ -54,11 +54,11 @@ pub async fn produce_chain_votes_queue(
             .filter(|r| {
                 r.dao_handler_id == dao_handler.dao_handler_id
                     && ((r.refresh_status == prisma::RefreshStatus::Done
-                    && r.last_refresh < normal_refresh)
-                    || (r.refresh_status == prisma::RefreshStatus::Pending
-                    && r.last_refresh < force_refresh)
-                    || (r.refresh_status == prisma::RefreshStatus::New
-                    && r.last_refresh < new_refresh))
+                        && r.last_refresh < normal_refresh)
+                        || (r.refresh_status == prisma::RefreshStatus::Pending
+                            && r.last_refresh < force_refresh)
+                        || (r.refresh_status == prisma::RefreshStatus::New
+                            && r.last_refresh < new_refresh))
             })
             .collect();
 
@@ -124,8 +124,6 @@ pub async fn produce_chain_votes_queue(
         for vhr in &mut *voter_handlers_r {
             vhr.refresh_status = prisma::RefreshStatus::Pending;
             vhr.last_refresh = Utc::now();
-
-            println!("{:?}", vhr);
         }
 
         refresh_queue.extend(items)

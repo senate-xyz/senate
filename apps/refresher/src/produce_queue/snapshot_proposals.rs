@@ -25,11 +25,11 @@ pub async fn produce_snapshot_proposals_queue(config: &Config) -> Result<Vec<Ref
         .filter(|r| {
             handler_types.contains(&r.r#type)
                 && ((r.refresh_status == prisma::RefreshStatus::Done
-                && r.last_refresh < normal_refresh)
-                || (r.refresh_status == prisma::RefreshStatus::Pending
-                && r.last_refresh < force_refresh)
-                || (r.refresh_status == prisma::RefreshStatus::New
-                && r.last_refresh < new_refresh))
+                    && r.last_refresh < normal_refresh)
+                    || (r.refresh_status == prisma::RefreshStatus::Pending
+                        && r.last_refresh < force_refresh)
+                    || (r.refresh_status == prisma::RefreshStatus::New
+                        && r.last_refresh < new_refresh))
         })
         .collect();
 
@@ -45,8 +45,6 @@ pub async fn produce_snapshot_proposals_queue(config: &Config) -> Result<Vec<Ref
     for dh in &mut *dao_handlers {
         dh.refresh_status = prisma::RefreshStatus::Pending;
         dh.last_refresh = Utc::now();
-
-        println!("{:?}", dh);
     }
 
     Ok(refresh_queue)
