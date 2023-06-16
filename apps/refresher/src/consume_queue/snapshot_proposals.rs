@@ -86,7 +86,7 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                             dao_handler.last_refresh = Utc::now();
                             dao_handler.refreshspeed = cmp::max(
                                 dao_handler.refreshspeed - (dao_handler.refreshspeed * 25 / 100),
-                                100,
+                                10,
                             );
 
                             warn!("refresher error: {:#?}", e);
@@ -98,7 +98,7 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                     dao_handler.last_refresh = Utc::now();
                     dao_handler.refreshspeed = cmp::max(
                         dao_handler.refreshspeed - (dao_handler.refreshspeed * 25 / 100),
-                        100,
+                        10,
                     );
 
                     warn!("refresher error: {:#?}", e);

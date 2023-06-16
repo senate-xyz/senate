@@ -13,8 +13,10 @@ pub mod utils {
     pub mod snapshot_sanity;
 }
 use crate::router::{
-    chain_proposals::update_chain_proposals, chain_votes::update_chain_votes,
-    snapshot_proposals::update_snapshot_proposals, snapshot_votes::update_snapshot_votes,
+    chain_proposals::update_chain_proposals,
+    chain_votes::update_chain_votes,
+    snapshot_proposals::update_snapshot_proposals,
+    snapshot_votes::update_snapshot_votes,
 };
 use std::{env, sync::Arc};
 
@@ -28,8 +30,7 @@ use pyroscope_pprofrs::{pprof_backend, Pprof, PprofConfig};
 use serde_json::Value;
 use std::process;
 use tracing::instrument;
-use tracing_subscriber::util::SubscriberInitExt;
-use tracing_subscriber::{layer::SubscriberExt, EnvFilter};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 use url::Url;
 
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
