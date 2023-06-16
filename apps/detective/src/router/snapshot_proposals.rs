@@ -87,39 +87,33 @@ pub async fn update_snapshot_proposals<'a>(
 
         let graphql_query = format!(
             r#"
-        {{
-            proposals (
-                first: {:?},
-                where: {{
-                    space: {:?},
-                    created_gte: {}
-                }},
-                orderBy: "created",
-                orderDirection: asc
-            )
-            {{
-                id
-                title
-                choices
-                scores
-                scores_total
-                scores_state
-                created
-                start
-                end
-                quorum
-                link
-                state
-            }}
-        }}
-    "#,
-            if data.refreshspeed.clone() > 100 {
-                100
-            } else {
-                data.refreshspeed.clone()
-            },
-            decoder.space,
-            old_index
+                {{
+                    proposals (
+                        first: {:?},
+                        where: {{
+                            space: {:?},
+                            created_gte: {}
+                        }},
+                        orderBy: "created",
+                        orderDirection: asc
+                    )
+                    {{
+                        id
+                        title
+                        choices
+                        scores
+                        scores_total
+                        scores_state
+                        created
+                        start
+                        end
+                        quorum
+                        link
+                        state
+                    }}
+                }}
+            "#,
+            data.refreshspeed, decoder.space, old_index
         );
 
         debug!(
