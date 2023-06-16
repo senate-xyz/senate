@@ -376,38 +376,47 @@ async fn create_old_votes(
     votes_for_proposal: Vec<GraphQLVote>,
     proposal_id: String,
     dao_handler: daohandler::Data,
-) -> Result<()> {
-    let created = ctx
-        .db
-        .vote()
-        .create_many(
-            votes_for_proposal
-                .iter()
-                .map(|v| {
-                    vote::create_unchecked(
-                        v.choice.clone(),
-                        v.vp.into(),
-                        v.reason.clone(),
-                        v.voter.clone(),
+) -> Result<bool> {
+    for old_vote in votes_for_proposal {
+        let exists = ctx
+            .db
+            .vote()
+            .find_unique(vote::voteraddress_daoid_proposalid(
+                old_vote.voter.to_string(),
+                dao_handler.daoid.clone(),
+                proposal_id.clone(),
+            ))
+            .exec()
+            .await
+            .unwrap();
+
+        match exists {
+            Some(_) => {}
+            None => {
+                ctx.db
+                    .vote()
+                    .create_unchecked(
+                        old_vote.choice.clone(),
+                        old_vote.vp.into(),
+                        old_vote.reason.clone(),
+                        old_vote.voter.clone(),
                         proposal_id.clone(),
                         dao_handler.daoid.clone(),
                         dao_handler.id.clone(),
                         vec![vote::timecreated::set(Some(DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(v.created * 1000)
+                            NaiveDateTime::from_timestamp_millis(old_vote.created * 1000)
                                 .expect("bad created timestamp"),
                             FixedOffset::east_opt(0).unwrap(),
                         )))],
                     )
-                })
-                .collect(),
-        )
-        .skip_duplicates()
-        .exec()
-        .await?;
+                    .exec()
+                    .await
+                    .unwrap();
+            }
+        }
+    }
 
-    debug!("{:?} ", created);
-
-    Ok(())
+    Ok(true)
 }
 
 #[instrument(skip(ctx), level = "debug")]

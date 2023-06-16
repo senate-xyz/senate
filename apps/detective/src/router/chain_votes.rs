@@ -12,13 +12,21 @@ use serde_json::Value;
 
 use crate::{
     handlers::votes::{
-        aave::aave_votes, compound::compound_votes, dydx::dydx_votes, ens::ens_votes,
-        gitcoin::gitcoin_votes, hop::hop_votes, maker_executive::makerexecutive_votes,
-        maker_poll::makerpoll_votes, maker_poll_arbitrum::makerpollarbitrum_votes,
+        aave::aave_votes,
+        compound::compound_votes,
+        dydx::dydx_votes,
+        ens::ens_votes,
+        gitcoin::gitcoin_votes,
+        hop::hop_votes,
+        maker_executive::makerexecutive_votes,
+        maker_poll::makerpoll_votes,
+        maker_poll_arbitrum::makerpollarbitrum_votes,
         uniswap::uniswap_votes,
     },
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType},
-    Ctx, VotesRequest, VotesResponse,
+    Ctx,
+    VotesRequest,
+    VotesResponse,
 };
 
 #[derive(Debug, Deserialize, Clone)]
@@ -263,56 +271,93 @@ async fn insert_votes(
         successful_votes, closed_votes, open_votes,
     );
 
-    let updated = ctx
-        .db
-        .vote()
-        .create_many(
-            closed_votes
-                .iter()
-                .map(|v| {
-                    vote::create_unchecked(
-                        v.choice.clone(),
-                        v.voting_power.clone(),
-                        v.reason.clone(),
-                        v.voter_address.to_string(),
-                        v.proposal_id.clone(),
+    for closed_vote in closed_votes {
+        let exists = ctx
+            .db
+            .vote()
+            .find_unique(vote::voteraddress_daoid_proposalid(
+                closed_vote.voter_address.to_string(),
+                dao_handler.daoid.clone(),
+                closed_vote.proposal_id.clone(),
+            ))
+            .exec()
+            .await
+            .unwrap();
+
+        match exists {
+            Some(_) => {}
+            None => {
+                ctx.db
+                    .vote()
+                    .create_unchecked(
+                        closed_vote.choice.clone(),
+                        closed_vote.voting_power.clone(),
+                        closed_vote.reason.clone(),
+                        closed_vote.voter_address.to_string(),
+                        closed_vote.proposal_id.clone(),
                         dao_handler.daoid.clone(),
                         dao_handler.id.clone(),
-                        vec![vote::blockcreated::set(v.block_created.into())],
+                        vec![vote::blockcreated::set(closed_vote.block_created.into())],
                     )
-                })
-                .collect(),
-        )
-        .skip_duplicates()
-        .exec()
-        .await?;
+                    .exec()
+                    .await
+                    .unwrap();
+            }
+        }
+    }
 
-    debug!("{:?}", updated);
+    for open_vote in open_votes {
+        let exists = ctx
+            .db
+            .vote()
+            .find_unique(vote::voteraddress_daoid_proposalid(
+                open_vote.voter_address.to_string(),
+                dao_handler.daoid.clone(),
+                open_vote.proposal_id.clone(),
+            ))
+            .exec()
+            .await
+            .unwrap();
 
-    let upserts = open_votes.clone().into_iter().map(|v| {
-        ctx.db.vote().upsert(
-            vote::voteraddress_daoid_proposalid(
-                v.voter_address.to_string(),
-                dao_handler.daoid.to_string(),
-                v.proposal_id.clone(),
-            ),
-            vote::create(
-                v.choice.clone(),
-                v.voting_power.clone(),
-                v.reason.clone(),
-                voter::address::equals(v.voter_address.clone()),
-                proposal::id::equals(v.proposal_id.clone()),
-                dao::id::equals(dao_handler.daoid.clone()),
-                daohandler::id::equals(dao_handler.id.clone()),
-                vec![],
-            ),
-            vec![
-                vote::choice::set(v.choice.clone()),
-                vote::votingpower::set(v.voting_power.clone()),
-                vote::reason::set(v.reason),
-            ],
-        )
-    });
+        match exists {
+            Some(_) => {
+                ctx.db
+                    .vote()
+                    .update(
+                        vote::voteraddress_daoid_proposalid(
+                            open_vote.voter_address.to_string(),
+                            dao_handler.daoid.to_string(),
+                            open_vote.proposal_id.clone(),
+                        ),
+                        vec![
+                            vote::choice::set(open_vote.choice.clone()),
+                            vote::votingpower::set(open_vote.voting_power.clone()),
+                            vote::reason::set(open_vote.reason),
+                        ],
+                    )
+                    .exec()
+                    .await
+                    .unwrap();
+            }
+            None => {
+                ctx.db
+                    .vote()
+                    .create(
+                        open_vote.choice.clone(),
+                        open_vote.voting_power.clone(),
+                        open_vote.reason.clone(),
+                        voter::address::equals(open_vote.voter_address.clone()),
+                        proposal::id::equals(open_vote.proposal_id.clone()),
+                        dao::id::equals(dao_handler.daoid.clone()),
+                        daohandler::id::equals(dao_handler.id.clone()),
+                        vec![],
+                    )
+                    .exec()
+                    .await
+                    .unwrap();
+            }
+        }
+    }
 
     let daochainindex = &dao_handler.chainindex.unwrap();
 
@@ -355,15 +400,6 @@ async fn insert_votes(
         .instrument(debug_span!("update_chainindex"))
         .await
         .context("failed to update voterhandlers")?;
-
-    let updated = ctx
-        .db
-        ._batch(upserts)
-        .instrument(debug_span!("upsert_votes"))
-        .await
-        .context("failed to add votes")?;
-
-    debug!("{:?} ", updated);
 
     Ok(votes.to_owned())
 }
