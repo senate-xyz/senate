@@ -184,27 +184,29 @@ const UserEmail = () => {
                             </div>
                         )}
                     </div>
-                    {featureFlags.data?.includes('email_extended_settings') && (
-                        <div className='flex flex-col gap-4'>
-                            <div className='flex max-w-[382px] flex-row items-center justify-between gap-4'>
-                                <div className='font-[18px] leading-[23px] text-white'>
-                                    Get empty emails
-                                </div>
-                                <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
-                                    <input
-                                        type='checkbox'
-                                        checked={getEmptyEmails}
-                                        onChange={(e) => {
-                                            updateEmptyEmails.mutate({
-                                                val: e.target.checked
-                                            })
-                                        }}
-                                        className='peer sr-only'
-                                    />
-                                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
-                                </label>
-                            </div>
 
+                    <div className='flex flex-col gap-4'>
+                        <div className='flex max-w-[382px] flex-row items-center justify-between gap-4'>
+                            <div className='font-[18px] leading-[23px] text-white'>
+                                Get empty emails
+                            </div>
+                            <label className='relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500'>
+                                <input
+                                    type='checkbox'
+                                    checked={getEmptyEmails}
+                                    onChange={(e) => {
+                                        updateEmptyEmails.mutate({
+                                            val: e.target.checked
+                                        })
+                                    }}
+                                    className='peer sr-only'
+                                />
+                                <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
+                            </label>
+                        </div>
+                        {featureFlags.data?.includes(
+                            'email_extended_settings'
+                        ) && (
                             <div className='flex max-w-[382px] flex-row items-center justify-between gap-4'>
                                 <div className='font-[18px] leading-[23px] text-white'>
                                     Get quorum alerts
@@ -223,8 +225,8 @@ const UserEmail = () => {
                                     <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
                                 </label>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             )}
         </div>
