@@ -1,7 +1,8 @@
 {
   "include": [
-    "src",
-    "prisma"
+    "**/*.ts",
+    ".eslintrc.config.cjs",
+    "prettier.config.cjs"
   ],
   "exclude": [
     "node_modules",

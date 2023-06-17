@@ -1,104 +1,105 @@
-import { Prisma, PrismaClient } from '@prisma/client'
-import { backOff, type IBackOffOptions } from 'exponential-backoff'
+import { Prisma, PrismaClient } from "@prisma/client";
+import { backOff, type IBackOffOptions } from "exponential-backoff";
 
-export type { JsonArray, JsonValue } from 'type-fest'
+export type { JsonArray, JsonValue } from "type-fest";
 
 export {
-    type PrismaClient,
-    type proposal as Proposal,
-    type voter as Voter,
-    type voterhandler as VoterHandler,
-    type vote as Vote,
-    type subscription as Subscription,
-    type dao as DAO,
-    type user as User,
-    NotificationType,
-    DAOHandlerType,
-    ProposalState,
-    MagicUserState,
-    type daohandler as DAOHandler
-} from '@prisma/client'
+  type PrismaClient,
+  type proposal as Proposal,
+  type voter as Voter,
+  type voterhandler as VoterHandler,
+  type vote as Vote,
+  type subscription as Subscription,
+  type dao as DAO,
+  type user as User,
+  NotificationType,
+  DAOHandlerType,
+  ProposalState,
+  MagicUserState,
+  type daohandler as DAOHandler,
+} from "@prisma/client";
 
 export type Decoder = {
-    address?: string
-    proposalUrl?: string
-    space?: string
+  address?: string;
+  proposalUrl?: string;
+  space?: string;
 
-    //makerpools
-    address_vote?: string
-    address_create?: string
-}
+  //makerpools
+  address_vote?: string;
+  address_create?: string;
+};
 
 export type RefreshArgs = {
-    voters: string[]
-}
+  voters: string[];
+};
 
 export type ProposalType = Prisma.proposalGetPayload<{
-    include: { votes: true; dao: true }
-}>
+  include: { votes: true; dao: true };
+}>;
 
 export type SubscriptionType = Prisma.subscriptionGetPayload<{
-    include: { dao: true }
-}>
+  include: { dao: true };
+}>;
 
 export type DAOHandlerWithDAO = Prisma.daohandlerGetPayload<{
-    include: { dao: true }
-}>
+  include: { dao: true };
+}>;
 
 export type DAOType = Prisma.daoGetPayload<{
-    include: {
-        handlers: true
-        subscriptions: true
-    }
-}>
+  include: {
+    handlers: true;
+    subscriptions: true;
+  };
+}>;
 
 export type UserWithSubscriptionsAndVotingAddresses = Prisma.userGetPayload<{
-    include: {
-        subscriptions: true
-        voters: true
-    }
-}>
+  include: {
+    subscriptions: true;
+    voters: true;
+  };
+}>;
 
-export const Serializable = Prisma.TransactionIsolationLevel.Serializable
+export const Serializable = Prisma.TransactionIsolationLevel.Serializable;
 
 function RetryTransactions(options?: Partial<IBackOffOptions>) {
-    return Prisma.defineExtension((prisma) =>
-        prisma.$extends({
-            client: {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                $transaction(...args: any) {
-                    return backOff(
-                        // eslint-disable-next-line prefer-spread
-                        () => prisma.$transaction.apply(prisma, args),
-                        {
-                            retry: (e) => {
-                                // Retry the transaction only if the error was due to a write conflict or deadlock
-                                // See: https://www.prisma.io/docs/reference/api-reference/error-reference#p2034
-                                return e.code === 'P2034' || e.code === 'P1001'
-                            },
-                            ...options
-                        }
-                    )
-                }
-            } as { $transaction: (typeof prisma)['$transaction'] }
-        })
-    )
+  return Prisma.defineExtension((prisma) =>
+    prisma.$extends({
+      client: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        $transaction(...args: any) {
+          return backOff(
+            // eslint-disable-next-line prefer-spread, @typescript-eslint/no-unsafe-argument
+            () => prisma.$transaction.apply(prisma, args),
+            {
+              retry: (e) => {
+                // Retry the transaction only if the error was due to a write conflict or deadlock
+                // See: https://www.prisma.io/docs/reference/api-reference/error-reference#p2034
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                return e.code === "P2034" || e.code === "P1001";
+              },
+              ...options,
+            }
+          );
+        },
+      } as { $transaction: (typeof prisma)["$transaction"] },
+    })
+  );
 }
 
 const extendedPrismaClient = () => {
-    const prisma = new PrismaClient()
+  const prisma = new PrismaClient();
 
-    const extendedPrisma = prisma.$extends(
-        RetryTransactions({
-            jitter: 'full',
-            numOfAttempts: 5
-        })
-    )
+  const extendedPrisma = prisma.$extends(
+    RetryTransactions({
+      jitter: "full",
+      numOfAttempts: 5,
+    })
+  );
 
-    return extendedPrisma
-}
+  return extendedPrisma;
+};
 
-export type ExtendedPrismaClient = ReturnType<typeof extendedPrismaClient>
+export type ExtendedPrismaClient = ReturnType<typeof extendedPrismaClient>;
 
 /**
  * Instantiate prisma client for Next.js:
@@ -106,12 +107,12 @@ export type ExtendedPrismaClient = ReturnType<typeof extendedPrismaClient>
  */
 
 declare global {
-    // eslint-disable-next-line no-var
-    var prisma: ExtendedPrismaClient | undefined
+  // eslint-disable-next-line no-var
+  var prisma: ExtendedPrismaClient | undefined;
 }
 
-export const prisma = global.prisma || extendedPrismaClient()
+export const prisma = global.prisma || extendedPrismaClient();
 
-if (process.env.NODE_ENV !== 'production') {
-    global.prisma = prisma
+if (process.env.NODE_ENV !== "production") {
+  global.prisma = prisma;
 }

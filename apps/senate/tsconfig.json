@@ -7,7 +7,8 @@
     "**/*.cjs",
     "**/*.mjs",
     "tests/e2e/support.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".eslintrc.config.cjs"
   ],
   "exclude": [
     "node_modules"

@@ -33,7 +33,9 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".eslintrc.config.cjs",
+    "prettier.config.cjs"
   ],
   "exclude": [
     "node_modules"
