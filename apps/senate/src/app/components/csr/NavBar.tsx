@@ -35,7 +35,7 @@ export const NavBar = () => {
                                 height={64}
                                 alt={'active daos button'}
                             />
-                            <p className='text-[13px] text-white'>DAOs</p>
+                            <p className='text-[13px] text-white'>Orgs</p>
                         </div>
                     ) : (
                         <div className='flex flex-col items-center'>
@@ -47,7 +47,7 @@ export const NavBar = () => {
                                 height={64}
                                 alt={'inactive daos button'}
                             />
-                            <p className='text-[13px] text-gray-600'>DAOs</p>
+                            <p className='text-[13px] text-gray-600'>Orgs</p>
                         </div>
                     )}
                 </Link>
