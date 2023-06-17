@@ -1,10 +1,10 @@
-import { Suspense } from 'react'
-import Loading from './loading'
+import { Suspense } from "react";
+import Loading from "./loading";
 
 export default function RootLayout({
-    children
+  children,
 }: {
-    children: React.ReactNode
+  children: React.ReactNode;
 }) {
-    return <Suspense fallback={<Loading />}> {children} </Suspense>
+  return <Suspense fallback={<Loading />}> {children} </Suspense>;
 }

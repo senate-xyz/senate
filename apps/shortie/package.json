@@ -19,21 +19,24 @@
     "update": "ncu -u"
   },
   "dependencies": {
-    "@senate/config": "*",
     "@senate/database": "*",
     "next": "13.4.6",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "@types/prettier": "^2.7.3",
+    "@types/eslint": "^8.40.2",
+    "@typescript-eslint/eslint-plugin": "^5.59.11",
+    "@typescript-eslint/parser": "^5.59.11",
+    "prettier": "^2.8.8",
+    "prettier-plugin-tailwindcss": "^0.3.0",
+    "eslint": "^8.43.0",
+    "eslint-config-next": "^13.4.6",
     "@types/node": "20.3.1",
     "@types/react": "18.2.12",
     "@types/react-dom": "18.2.5",
-    "@typescript-eslint/eslint-plugin": "^5.59.11",
-    "@typescript-eslint/parser": "^5.59.11",
     "autoprefixer": "^10.4.14",
-    "eslint": "8.42.0",
-    "eslint-config-next": "13.4.6",
     "postcss": "^8.4.24",
     "tailwindcss": "^3.3.2",
     "typescript": "5.1.3"

@@ -1,10 +1,10 @@
-import { Metadata } from 'next'
+import { type Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: 'Senate - Proposals',
-    icons: '/assets/Senate_Logo/64/Black.svg'
-}
+  title: "Senate - Proposals",
+  icons: "/assets/Senate_Logo/64/Black.svg",
+};
 
 export default function Home() {
-    return <main></main>
+  return <main></main>;
 }

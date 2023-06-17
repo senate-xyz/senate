@@ -33,10 +33,6 @@
       "path": "../apps/shortie"
     },
     {
-      "name": "⚙️ @senate/config",
-      "path": "../packages/config"
-    },
-    {
       "name": "📦 @senate/database",
       "path": "../packages/database"
     },
@@ -65,11 +61,11 @@
     "[prisma]": {
       "editor.defaultFormatter": "Prisma.prisma"
     },
-    "rust-analyzer.rustfmt.rangeFormatting.enable": true,
     "[rust]": {
       "editor.defaultFormatter": "rust-lang.rust-analyzer",
       "editor.formatOnSave": true
     },
+    "rust-analyzer.rustfmt.rangeFormatting.enable": true,
     "rust-analyzer.check.command": "check"
   },
   "extensions": {
