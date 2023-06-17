@@ -3,74 +3,68 @@
 @tailwind utilities;
 
 .bg-aave-gradient {
-  background: linear-gradient(
-      53.9deg,
-      rgba(48, 186, 198, 0.5) -0.34%,
-      rgba(182, 80, 158, 0.5) 90.27%
+    background: linear-gradient(
+            53.9deg,
+            rgba(48, 186, 198, 0.5) -0.34%,
+            rgba(182, 80, 158, 0.5) 90.27%
     ),
     #273248;
 }
 
 .bg-uniswap-gradient {
-  background: linear-gradient(
-      53.9deg,
-      rgba(233, 51, 122, 0.5) -0.34%,
-      rgba(251, 198, 219, 0.5) 90.27%
+    background: linear-gradient(
+            53.9deg,
+            rgba(233, 51, 122, 0.5) -0.34%,
+            rgba(251, 198, 219, 0.5) 90.27%
     ),
     #482731;
 }
 
 @layer base {
-  :root {
-    @apply bg-black dark:bg-black;
-  }
+    :root {
+        @apply bg-black dark:bg-black;
+    }
 }
 
 @font-face {
-  font-family: "Matter";
-  font-weight: 300;
-  src: url("../../public/assets/Fonts_for_Senate/MatterTRIAL-Light.woff")
-    format("woff");
-  font-display: swap;
+    font-family: "Matter";
+    font-weight: 300;
+    src: url("../../public/assets/Fonts_for_Senate/MatterTRIAL-Light.woff") format("woff");
+    font-display: swap;
 }
 
 @font-face {
-  font-family: "Matter";
-  font-weight: 400;
-  src: url("../../public/assets/Fonts_for_Senate/MatterTRIAL-Regular.woff")
-    format("woff");
-  font-display: swap;
+    font-family: "Matter";
+    font-weight: 400;
+    src: url("../../public/assets/Fonts_for_Senate/MatterTRIAL-Regular.woff") format("woff");
+    font-display: swap;
 }
 
 @font-face {
-  font-family: "Matter";
-  font-weight: 500;
+    font-family: "Matter";
+    font-weight: 500;
 
-  src: url("../../public/assets/Fonts_for_Senate/MatterTRIAL-Medium.woff")
-    format("woff");
-  font-display: swap;
+    src: url("../../public/assets/Fonts_for_Senate/MatterTRIAL-Medium.woff") format("woff");
+    font-display: swap;
 }
 
 @font-face {
-  font-family: "Matter";
-  font-weight: 600;
-  src: url("../../public/assets/Fonts_for_Senate/MatterTRIAL-SemiBold.woff")
-    format("woff");
-  font-display: swap;
+    font-family: "Matter";
+    font-weight: 600;
+    src: url("../../public/assets/Fonts_for_Senate/MatterTRIAL-SemiBold.woff") format("woff");
+    font-display: swap;
 }
 
 @font-face {
-  font-family: "Matter";
-  font-weight: 700;
-  src: url("../../public/assets/Fonts_for_Senate/MatterTRIAL-Bold.woff")
-    format("woff");
-  font-display: swap;
+    font-family: "Matter";
+    font-weight: 700;
+    src: url("../../public/assets/Fonts_for_Senate/MatterTRIAL-Bold.woff") format("woff");
+    font-display: swap;
 }
 
 @font-face {
-  font-family: "Matter";
-  font-weight: 900;
-  src: url("../../public/assets/Fonts_for_Senate/MatterTRIAL-Heavy.woff")
-    format("woff");
-  font-display: swap;
+    font-family: "Matter";
+    font-weight: 900;
+    src: url("../../public/assets/Fonts_for_Senate/MatterTRIAL-Heavy.woff") format("woff");
+    font-display: swap;
 }

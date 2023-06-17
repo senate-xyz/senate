@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import "@rainbow-me/rainbowkit/styles.css";
 
-import { prisma } from "@senate/database";
+import {prisma} from "@senate/database";
 import Link from "next/link";
-import { VerifyButton } from "./components/VerifyButton";
+import {VerifyButton} from "./components/VerifyButton";
 
 const isValidChallenge = async (challenge: string) => {
   const user = await prisma.user.findFirst({

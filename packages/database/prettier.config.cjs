@@ -1,5 +1,4 @@
 /** @type {import("prettier").Config} */
-const config = {
-};
+const config = {};
 
 module.exports = config;

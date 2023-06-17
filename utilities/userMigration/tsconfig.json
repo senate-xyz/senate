@@ -2,7 +2,7 @@
   "include": [
     "src",
     "prisma",
-    ".eslintrc.cjs",
+    ".eslintrc.config.cjs",
     "prettier.config.cjs"
   ],
   "exclude": [
