@@ -73,7 +73,7 @@ export default async function RootLayout({
     const userDAOs = await hasSubscribedDAOs()
     return (
         <div className='bg-[#1E1B20] lg:pl-[92px]'>
-            <Header title='DAOs' />
+            <Header title='Orgs' />
             <div className='pt-[92px] lg:pt-[192px]'>
                 {!userBulletin && userDAOs && <SetupDailyBulletin />}
             </div>
