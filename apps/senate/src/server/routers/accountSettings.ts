@@ -20,29 +20,11 @@ export const accountSettingsRouter = router({
 
             const challengeCode = Math.random().toString(36).substring(2)
 
-            const user = await prisma.user.upsert({
+            const user = await prisma.user.update({
                 where: {
                     address: String(username)
                 },
-                create: {
-                    address: String(username),
-                    email: input.email,
-                    emaildailybulletin: true,
-                    emailquorumwarning: true,
-                    verifiedemail: false,
-                    challengecode: challengeCode,
-                    voters: {
-                        connectOrCreate: {
-                            where: {
-                                address: String(username)
-                            },
-                            create: {
-                                address: String(username)
-                            }
-                        }
-                    }
-                },
-                update: {
+                data: {
                     email: input.email,
                     emaildailybulletin: true,
                     emailquorumwarning: true,
@@ -120,29 +102,11 @@ export const accountSettingsRouter = router({
 
             const challengeCode = Math.random().toString(36).substring(2)
 
-            const user = await prisma.user.upsert({
+            const user = await prisma.user.update({
                 where: {
                     address: String(username)
                 },
-                create: {
-                    address: String(username),
-                    email: input.email,
-                    verifiedemail: false,
-                    challengecode: challengeCode,
-                    isaaveuser: existingTempUser?.isaaveuser,
-                    isuniswapuser: existingTempUser?.isuniswapuser,
-                    voters: {
-                        connectOrCreate: {
-                            where: {
-                                address: String(username)
-                            },
-                            create: {
-                                address: String(username)
-                            }
-                        }
-                    }
-                },
-                update: {
+                data: {
                     email: input.email,
                     verifiedemail: false,
                     challengecode: challengeCode,
