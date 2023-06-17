@@ -19,7 +19,7 @@ struct Decoder {
     address: String,
 }
 
-#[instrument(skip(ctx), ret, level = "info")]
+#[instrument(skip(ctx, voters), ret, level = "info")]
 pub async fn gitcoin_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,

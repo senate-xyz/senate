@@ -26,7 +26,7 @@ struct Decoder {
     address_vote: String,
 }
 
-#[instrument(skip(ctx), ret, level = "info")]
+#[instrument(skip(ctx, voters), ret, level = "info")]
 pub async fn makerpollarbitrum_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
