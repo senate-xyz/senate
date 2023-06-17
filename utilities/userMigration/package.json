@@ -12,10 +12,10 @@
     "dev": "tsup && node dist/index",
     "clean": "rimraf .turbo node_modules dist yarn-error.log",
     "generate": "prisma generate --schema prisma/new/schema.prisma && prisma generate --schema prisma/old/schema.prisma",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
-    "prettier": "prettier src --check",
-    "prettier:fix": "prettier src --write",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "prettier": "prettier --check",
+    "prettier:fix": "prettier --write",
     "update": "ncu -u"
   },
   "dependencies": {

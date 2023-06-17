@@ -11,11 +11,11 @@
     "build:shortie": "next build",
     "start": "next start",
     "start:shortie": "next start",
-    "lint": "next lint",
     "clean": "rimraf .next .turbo node_modules dist",
-    "lint:fix": "eslint src --fix",
-    "prettier": "prettier src --check",
-    "prettier:fix": "prettier src --write",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "prettier": "prettier --check",
+    "prettier:fix": "prettier --write",
     "update": "ncu -u"
   },
   "dependencies": {
