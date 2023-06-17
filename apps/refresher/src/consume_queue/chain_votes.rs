@@ -54,7 +54,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                 .send()
                 .await;
 
-            println!("{:?} {:?}", entry.refresh_type, dao_handler);
+            println!("{:?} {:?}", entry.refresh_type, dao_handler_r);
 
             match response {
                 Ok(res) => {
