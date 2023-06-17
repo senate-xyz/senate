@@ -13,24 +13,16 @@
       "path": "../apps/refresher"
     },
     {
-      "name": "🦀 @senate/discord-butler",
-      "path": "../apps/discord-butler"
+      "name": "🦀 @senate/email-secretary",
+      "path": "../apps/email-secretary"
     },
     {
-      "name": "🦀 @senate/telegram-butler",
-      "path": "../apps/telegram-butler"
+      "name": "🦀 @senate/discord-secretary",
+      "path": "../apps/discord-secretary"
     },
     {
-      "name": "🦀 @senate/quorum-email",
-      "path": "../apps/quorum-email"
-    },
-    {
-      "name": "🚀 @senate/bulletin",
-      "path": "../apps/bulletin"
-    },
-    {
-      "name": "🚀 @senate/sanity",
-      "path": "../apps/sanity"
+      "name": "🦀 @senate/telegram-secretary",
+      "path": "../apps/telegram-secretary"
     },
     {
       "name": "🌐 @senate/senate",
@@ -49,16 +41,16 @@
       "path": "../packages/database"
     },
     {
-      "name": "📦 @senate/axiom",
-      "path": "../packages/axiom"
-    },
-    {
       "name": "🛠️ @senate/stressTest",
       "path": "../utilities/stressTest"
     },
     {
       "name": "🛠️ @senate/userMigration",
       "path": "../utilities/userMigration"
+    },
+    {
+      "name": "🛠️ @senate/postmark_data",
+      "path": "../utilities/postmark_data"
     }
   ],
   "settings": {
@@ -77,7 +69,8 @@
     "[rust]": {
       "editor.defaultFormatter": "rust-lang.rust-analyzer",
       "editor.formatOnSave": true
-    }
+    },
+    "rust-analyzer.check.command": "check"
   },
   "extensions": {
     "recommendations": [
@@ -89,7 +82,10 @@
       "VisualStudioExptTeam.vscodeintellicode",
       "VisualStudioExptTeam.intellicode-api-usage-examples",
       "usernamehw.errorlens",
-      "rust-lang.rust-analyzer"
+      "rust-lang.rust-analyzer",
+      "tamasfe.even-better-toml",
+      "serayuzgur.crates",
+      "attilabuti.vscode-mjml"
     ]
   }
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, Suspense, useEffect, useState } from 'react'
 import WalletConnect from './WalletConnect'
 import { Menu, Transition } from '@headlessui/react'
 import Image from 'next/image'
@@ -11,8 +11,8 @@ export const Header = (props: { title: string }) => {
     const [titleSize, setTitleSize] = useState('lg:text-[78px]')
     const pathname = usePathname()
 
-    if (typeof window != 'undefined') {
-        window.addEventListener('wheel', () => {
+    useEffect(() => {
+        const handleScroll = () => {
             if (
                 window.scrollY > 0 &&
                 document.body.scrollHeight > window.innerHeight + 100
@@ -23,20 +23,13 @@ export const Header = (props: { title: string }) => {
                 setHeaderHeight('lg:h-[192px]')
                 setTitleSize('lg:text-[78px]')
             }
-        })
-    }
-
-    useEffect(() => {
-        if (
-            window.scrollY > 0 &&
-            document.body.scrollHeight > window.innerHeight + 100
-        ) {
-            setHeaderHeight('lg:h-[96px]')
-            setTitleSize('lg:text-[52px]')
-        } else {
-            setHeaderHeight('lg:h-[192px]')
-            setTitleSize('lg:text-[78px]')
         }
+
+        window.addEventListener('wheel', handleScroll)
+
+        handleScroll()
+
+        return () => window.removeEventListener('wheel', handleScroll)
     }, [])
 
     return (
@@ -211,7 +204,9 @@ export const Header = (props: { title: string }) => {
 
                             <div className='flex w-full justify-center pt-8 text-[18px] font-normal'>
                                 <Menu.Item>
-                                    <WalletConnect />
+                                    <Suspense fallback={<></>}>
+                                        <WalletConnect />
+                                    </Suspense>
                                 </Menu.Item>
                             </div>
                         </Menu.Items>
@@ -220,7 +215,9 @@ export const Header = (props: { title: string }) => {
             </div>
 
             <div className='hidden justify-end pr-20 lg:flex lg:w-full'>
-                <WalletConnect />
+                <Suspense fallback={<></>}>
+                    <WalletConnect />
+                </Suspense>
             </div>
         </div>
     )

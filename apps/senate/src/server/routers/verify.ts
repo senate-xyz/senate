@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { router, publicProcedure } from '../trpc'
+import { publicProcedure, router } from '../trpc'
 import { prisma } from '@senate/database'
 import { verifyMessage } from 'viem'
 
@@ -73,29 +73,13 @@ export const verifyRouter = router({
                     }
                 })
 
-                await prisma.user.update({
-                    where: { id: addressUser.id },
-                    data: {
-                        isaaveuser:
-                            emailUser.isaaveuser == 'VERIFICATION'
-                                ? 'ENABLED'
-                                : addressUser.isaaveuser,
-                        isuniswapuser:
-                            emailUser.isuniswapuser == 'VERIFICATION'
-                                ? 'ENABLED'
-                                : addressUser.isuniswapuser,
-                        challengecode: '',
-                        email: emailUser.email,
-                        verifiedaddress: true,
-                        verifiedemail: true,
-                        acceptedterms: true,
-                        acceptedtermstimestamp: new Date()
-                    }
-                })
-
-                if (addressUser.isaaveuser == 'VERIFICATION') {
+                if (emailUser.isaaveuser == 'VERIFICATION') {
                     const aave = await prisma.dao.findFirstOrThrow({
-                        where: { name: { equals: 'aave', mode: 'insensitive' } }
+                        where: {
+                            name: {
+                                equals: 'Aave'
+                            }
+                        }
                     })
 
                     await prisma.subscription.createMany({
@@ -107,10 +91,12 @@ export const verifyRouter = router({
                     })
                 }
 
-                if (addressUser.isuniswapuser == 'VERIFICATION') {
+                if (emailUser.isuniswapuser == 'VERIFICATION') {
                     const uniswap = await prisma.dao.findFirstOrThrow({
                         where: {
-                            name: { equals: 'uniswap', mode: 'insensitive' }
+                            name: {
+                                equals: 'Uniswap'
+                            }
                         }
                     })
 
@@ -122,6 +108,28 @@ export const verifyRouter = router({
                         skipDuplicates: true
                     })
                 }
+
+                await prisma.user.update({
+                    where: { id: addressUser.id },
+                    data: {
+                        isaaveuser:
+                            emailUser.isaaveuser == 'VERIFICATION'
+                                ? 'ENABLED'
+                                : addressUser.isaaveuser,
+                        isuniswapuser:
+                            emailUser.isuniswapuser == 'VERIFICATION'
+                                ? 'ENABLED'
+                                : addressUser.isuniswapuser,
+                        emaildailybulletin: true,
+                        emailquorumwarning: true,
+                        challengecode: '',
+                        email: emailUser.email,
+                        verifiedaddress: true,
+                        verifiedemail: true,
+                        acceptedterms: true,
+                        acceptedtermstimestamp: new Date()
+                    }
+                })
 
                 await prisma.user.deleteMany({
                     where: { id: emailUser.id }
@@ -145,6 +153,8 @@ export const verifyRouter = router({
                             newUser.isuniswapuser == 'VERIFICATION'
                                 ? 'ENABLED'
                                 : newUser.isuniswapuser,
+                        emaildailybulletin: true,
+                        emailquorumwarning: true,
                         challengecode: '',
                         verifiedaddress: true,
                         verifiedemail: true
@@ -154,7 +164,7 @@ export const verifyRouter = router({
                 if (newUser.isaaveuser == 'VERIFICATION') {
                     const aave = await prisma.dao.findFirstOrThrow({
                         where: {
-                            name: { equals: 'aave', mode: 'insensitive' }
+                            name: { equals: 'Aave' }
                         }
                     })
 
@@ -170,7 +180,7 @@ export const verifyRouter = router({
                 if (newUser.isuniswapuser == 'VERIFICATION') {
                     const uniswap = await prisma.dao.findFirstOrThrow({
                         where: {
-                            name: { equals: 'uniswap', mode: 'insensitive' }
+                            name: { equals: 'Uniswap' }
                         }
                     })
 

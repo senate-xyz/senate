@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { publicProcedure, router } from '../trpc'
-import { JsonArray, Vote, prisma } from '@senate/database'
+import { JsonArray, prisma, Vote } from '@senate/database'
 
 export const publicRouter = router({
     featureFlags: publicProcedure.query(async () => {

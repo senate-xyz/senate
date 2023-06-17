@@ -2,10 +2,10 @@ import Image from 'next/image'
 import { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import {
-    type Vote,
-    prisma,
     type JsonArray,
-    ProposalState
+    prisma,
+    ProposalState,
+    type Vote
 } from '@senate/database'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
@@ -98,8 +98,7 @@ const getProposals = async (
                                 ? {
                                       in: userSubscriptions.map(
                                           (sub) => sub.dao.name
-                                      ),
-                                      mode: 'insensitive'
+                                      )
                                   }
                                 : {
                                       equals: String(dao?.name)
@@ -175,8 +174,10 @@ const getProposals = async (
                 const scores = proposal.scores as JsonArray
 
                 for (let i = 0; i < scores.length; i++) {
-                    if (parseFloat(scores[i]!.toString()) > highestScore) {
-                        highestScore = parseFloat(scores[i]!.toString())
+                    if (
+                        parseFloat(String(scores[i]?.toString())) > highestScore
+                    ) {
+                        highestScore = parseFloat(String(scores[i]?.toString()))
                         highestScoreIndex = i
                     }
                 }
@@ -259,7 +260,6 @@ export default async function Table(props: {
         <div className={`mt-[16px] flex flex-col`}>
             <div className='flex w-full flex-col lg:hidden'>
                 {proposals.map((proposal, index) => (
-                    /* @ts-expect-error Server Component */
                     <MobilePastProposal key={index} proposal={proposal} />
                 ))}
             </div>
@@ -300,7 +300,6 @@ export default async function Table(props: {
 
                     <tbody>
                         {proposals.map((proposal, index: number) => (
-                            /* @ts-expect-error Server Component */
                             <PastProposal key={index} proposal={proposal} />
                         ))}
                     </tbody>

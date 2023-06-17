@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { extend } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { type Vote, prisma, ProposalState } from '@senate/database'
+import { prisma, ProposalState, type Vote } from '@senate/database'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../pages/api/auth/[...nextauth]'
 import 'server-only'
@@ -93,8 +93,7 @@ const getProposals = async (
                                 ? {
                                       in: userSubscriptions.map(
                                           (sub) => sub.dao.name
-                                      ),
-                                      mode: 'insensitive'
+                                      )
                                   }
                                 : {
                                       equals: String(dao?.name)
@@ -222,7 +221,6 @@ export default async function Table(props: {
         <div className={`mt-[16px] flex flex-col`}>
             <div className='flex w-full flex-col lg:hidden'>
                 {proposals.map((proposal, index) => (
-                    /* @ts-expect-error Server Component */
                     <MobileActiveProposal key={index} proposal={proposal} />
                 ))}
             </div>
@@ -263,7 +261,6 @@ export default async function Table(props: {
 
                     <tbody>
                         {proposals.map((proposal, index) => (
-                            /* @ts-expect-error Server Component */
                             <ActiveProposal key={index} proposal={proposal} />
                         ))}
                     </tbody>

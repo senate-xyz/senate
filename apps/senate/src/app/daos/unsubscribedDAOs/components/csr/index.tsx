@@ -53,16 +53,15 @@ export const UnsubscribedDAO = (props: {
         ) {
             subscribe.mutate(
                 {
-                    daoId: cookie.subscribe,
-                    notificationsEnabled: true
+                    daoId: cookie.subscribe
                 },
                 {
                     onSuccess: () => {
-                        router.refresh()
+                        if (router) router.refresh()
                         removeCookie('subscribe')
                     },
                     onError: () => {
-                        router.refresh()
+                        if (router) router.refresh()
                         removeCookie('subscribe')
                     }
                 }
@@ -168,15 +167,14 @@ export const UnsubscribedDAO = (props: {
                         account.isConnected && session.status == 'authenticated'
                             ? subscribe.mutate(
                                   {
-                                      daoId: props.daoId,
-                                      notificationsEnabled: true
+                                      daoId: props.daoId
                                   },
                                   {
                                       onSuccess: () => {
-                                          router.refresh()
+                                          if (router) router.refresh()
                                       },
                                       onError: () => {
-                                          router.refresh()
+                                          if (router) router.refresh()
                                       }
                                   }
                               )

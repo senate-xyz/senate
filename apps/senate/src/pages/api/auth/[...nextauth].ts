@@ -4,6 +4,11 @@ import { SiweMessage } from 'siwe'
 import { getCsrfToken } from 'next-auth/react'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '@senate/database'
+import { PostHog } from 'posthog-node'
+
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
+    host: `${process.env.NEXT_PUBLIC_WEB_URL}/ingest`
+})
 
 export function authOptions(
     req?: NextApiRequest,
@@ -39,29 +44,48 @@ export function authOptions(
                     })
 
                     if (result.success) {
-                        await prisma.user.upsert({
-                            where: {
-                                address: siwe.address
-                            },
-                            create: {
-                                address: siwe.address,
-                                verifiedaddress: true,
-                                acceptedterms: true,
-                                acceptedtermstimestamp: new Date(),
-                                voters: {
-                                    connectOrCreate: {
-                                        where: { address: siwe.address },
-                                        create: { address: siwe.address }
+                        const existingUser = await prisma.user.findFirst({
+                            where: { address: siwe.address }
+                        })
+
+                        if (!existingUser) {
+                            posthog.capture({
+                                distinctId: siwe.address,
+                                event: 'sign_up_wallet'
+                            })
+
+                            await prisma.user.create({
+                                data: {
+                                    address: siwe.address,
+                                    verifiedaddress: true,
+                                    acceptedterms: true,
+                                    acceptedtermstimestamp: new Date(),
+                                    voters: {
+                                        connectOrCreate: {
+                                            where: { address: siwe.address },
+                                            create: { address: siwe.address }
+                                        }
                                     }
                                 }
-                            },
-                            update: {
-                                verifiedaddress: true,
-                                lastactive: new Date(),
-                                sessioncount: { increment: 1 },
-                                acceptedterms: true,
-                                acceptedtermstimestamp: new Date()
-                            }
+                            })
+                        } else {
+                            await prisma.user.update({
+                                where: {
+                                    address: siwe.address
+                                },
+                                data: {
+                                    verifiedaddress: true,
+                                    lastactive: new Date(),
+                                    sessioncount: { increment: 1 },
+                                    acceptedterms: true,
+                                    acceptedtermstimestamp: new Date()
+                                }
+                            })
+                        }
+
+                        posthog.capture({
+                            distinctId: siwe.address,
+                            event: 'connect_wallet'
                         })
 
                         return {
@@ -80,7 +104,7 @@ export function authOptions(
         providers,
         session: {
             strategy: 'jwt',
-            maxAge: 2592000
+            maxAge: 14400
         },
         callbacks: {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -126,7 +150,6 @@ export function authOptions(
                         address: String(message.user.name)
                     }
                 })
-
                 if (user)
                     await prisma.user.update({
                         where: {
@@ -143,23 +166,6 @@ export function authOptions(
                     `WebsiteToken=deleted; Max-Age=0`,
                     `AnotherCookieName=deleted; Max-Age=0`
                 ])
-            },
-            async session(message) {
-                const user = await prisma.user.findFirst({
-                    where: {
-                        address: String(message.session.user?.name)
-                    }
-                })
-
-                if (user)
-                    await prisma.user.update({
-                        where: {
-                            address: String(message.session.user?.name)
-                        },
-                        data: {
-                            lastactive: new Date()
-                        }
-                    })
             }
         }
     }

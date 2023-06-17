@@ -16,25 +16,17 @@
     "build": "turbo run build",
     "build:senate": "turbo run build:senate",
     "build:shortie": "turbo run build:shortie",
-    "build:bulletin": "turbo run build:bulletin",
-    "build:sanity": "turbo run build:sanity",
     "build:detective": "turbo run build:detective",
     "build:refresher": "turbo run build:refresher",
-    "build:discord-butler": "turbo run build:discord-butler",
-    "build:telegram-butler": "turbo run build:telegram-butler",
-    "build:quorum-email": "turbo run build:quorum-email",
+    "build:email-secretary": "turbo run build:email-secretary",
+    "build:discord-secretary": "turbo run build:discord-secretary",
+    "build:telegram-secretary": "turbo run build:telegram-secretary",
     "build:db": "turbo run build:db",
-    "build:axiom": "turbo run build:axiom",
     "start": "turbo run start",
     "start:senate": "turbo run start:senate",
     "start:shortie": "turbo run start:shortie",
-    "start:bulletin": "turbo run start:bulletin",
-    "start:sanity": "turbo run start:sanity",
-    "start:quorum-email": "turbo run start:quorum-email",
     "dev": "turbo run dev --parallel",
     "dev:senate": "turbo run dev:senate",
-    "dev:bulletin": "turbo run dev:bulletin",
-    "dev:sanity": "turbo run dev:sanity",
     "test:senate": "turbo run test:senate",
     "test:e2e": "turbo run test:e2e",
     "db:push": "turbo run db:push",
@@ -45,12 +37,12 @@
     "prettier:fix": "turbo run prettier:fix",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
-    "update": "ncu -u && turbo run update && yarn"
+    "update": "rustup update && ncu -u && turbo run update && yarn"
   },
   "devDependencies": {
     "prettier": "^2.8.8",
     "tsx": "^3.12.7",
-    "turbo": "^1.9.9"
+    "turbo": "^1.10.3"
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {

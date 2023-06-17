@@ -3,7 +3,10 @@
   "build": {
     "builder": "NIXPACKS",
     "buildCommand": "yarn build:shortie",
-    "watchPatterns": ["apps/senate", "packages/**"]
+    "watchPatterns": [
+      "apps/shortie",
+      "packages/**"
+    ]
   },
   "deploy": {
     "startCommand": "yarn start:shortie",

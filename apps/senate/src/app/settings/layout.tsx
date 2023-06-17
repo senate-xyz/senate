@@ -1,4 +1,10 @@
+import { Metadata } from 'next'
 import { Header } from '../components/csr/Header'
+
+export const metadata: Metadata = {
+    title: 'Senate - Proxy Settings',
+    icons: '/assets/Senate_Logo/64/Black.svg'
+}
 
 export default function RootLayout({
     children

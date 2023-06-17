@@ -66,9 +66,10 @@ export const Filters = (props: {
     }, [searchParams])
 
     useEffect(() => {
-        router.push(
-            `/proposals/active?from=${from}&end=${end}&voted=${voted}&proxy=${proxy}`
-        )
+        if (router)
+            router.push(
+                `/proposals/active?from=${from}&end=${end}&voted=${voted}&proxy=${proxy}`
+            )
     }, [from, end, voted, router, proxy])
 
     return (
@@ -200,7 +201,7 @@ export const Filters = (props: {
                                 Any
                             </option>
                             {props.proxies.map((proxy) => {
-                                return <Proxy address={proxy} />
+                                return <Proxy address={proxy} key={proxy} />
                             })}
                         </select>
                     </div>

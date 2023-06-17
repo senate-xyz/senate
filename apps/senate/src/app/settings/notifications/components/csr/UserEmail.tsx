@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { trpc } from '../../../../../server/trpcClient'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'

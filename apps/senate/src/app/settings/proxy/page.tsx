@@ -17,7 +17,7 @@ export default function Home() {
     const [proxyAddress, setProxyAddress] = useState('')
 
     useEffect(() => {
-        if (!account.isConnected) router.push('/settings/account')
+        if (!account.isConnected) if (router) router.push('/settings/account')
     }, [account])
 
     const onEnter = async () => {
@@ -65,7 +65,12 @@ export default function Home() {
                 {voters.data.length > 0 ? (
                     <div className='mt-12 flex flex-col gap-6'>
                         {voters.data.map((voter) => {
-                            return <Voter address={voter.address} />
+                            return (
+                                <Voter
+                                    address={voter.address}
+                                    key={voter.address}
+                                />
+                            )
                         })}
                     </div>
                 ) : null}

@@ -2,7 +2,6 @@
 
 import { redirect, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { useCookies } from 'react-cookie'
 import { useAccount } from 'wagmi'
 import UserEmail from './components/csr/UserEmail'
 import IsUniswapUser from './components/csr/IsUniswapUser'
@@ -15,16 +14,12 @@ export default function Home() {
     const featureFlags = trpc.public.featureFlags.useQuery()
 
     if (process.env.OUTOFSERVICE === 'true') redirect('/outofservice')
-    const [cookie] = useCookies(['hasSeenLanding'])
-    useEffect(() => {
-        if (!cookie.hasSeenLanding) redirect('/landing')
-    }, [cookie])
 
     const account = useAccount()
     const router = useRouter()
 
     useEffect(() => {
-        if (!account.isConnected) router.push('/settings/account')
+        if (!account.isConnected) if (router) router.push('/settings/account')
     }, [account])
 
     return (

@@ -3,8 +3,15 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 import { Filters } from './components/csr/Filters'
 import Table from './components/ssr/Table'
+import { Suspense } from 'react'
+import { Metadata } from 'next'
 
 export const revalidate = 300
+
+export const metadata: Metadata = {
+    title: 'Senate - Active Proposals',
+    icons: '/assets/Senate_Logo/64/Black.svg'
+}
 
 const getSubscribedDAOs = async () => {
     const session = await getServerSession(authOptions())
@@ -83,9 +90,10 @@ export default async function Home({
                 <ConnectWalletModal />
             </div> */}
 
-            <Filters subscriptions={subscripions} proxies={proxies} />
+            <Suspense>
+                <Filters subscriptions={subscripions} proxies={proxies} />
+            </Suspense>
 
-            {/* @ts-expect-error Server Component */}
             <Table
                 from={searchParams?.from}
                 end={searchParams?.end}

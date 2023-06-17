@@ -125,9 +125,13 @@ export const ActiveProposal = async (props: {
                 </div>
             </td>
             <td className='hidden lg:table-cell'>
-                {loading && (
-                    <div className='text-end'>
-                        <div className='flex w-full flex-col items-center'>
+                <div className='text-end'>
+                    <div className='flex w-full flex-col items-center'>
+                        {props.proposal.voted == 'not-connected' ? (
+                            <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
+                                Connect wallet to see your vote status
+                            </div>
+                        ) : loading ? (
                             <Image
                                 loading='eager'
                                 priority={true}
@@ -136,44 +140,40 @@ export const ActiveProposal = async (props: {
                                 width={32}
                                 height={32}
                             />
-                        </div>
-                    </div>
-                )}
-                {!loading && (
-                    <div className='text-end'>
-                        {props.proposal.voted == 'true' && (
-                            <div className='flex w-full flex-col items-center'>
-                                <Image
-                                    loading='eager'
-                                    priority={true}
-                                    src='/assets/Icon/Voted.svg'
-                                    alt='voted'
-                                    width={32}
-                                    height={32}
-                                />
-                                <div className='text-[18px]'>Voted</div>
-                            </div>
-                        )}
-                        {props.proposal.voted == 'false' && (
-                            <div className='flex w-full flex-col items-center'>
-                                <Image
-                                    loading='eager'
-                                    priority={true}
-                                    src='/assets/Icon/NotVotedYet.svg'
-                                    alt='voted'
-                                    width={32}
-                                    height={32}
-                                />
-                                <div className='text-[18px]'>Not Voted Yet</div>
-                            </div>
-                        )}
-                        {props.proposal.voted == 'not-connected' && (
-                            <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
-                                Connect wallet to see your vote status
+                        ) : (
+                            <div>
+                                {props.proposal.voted == 'true' && (
+                                    <div className='flex w-full flex-col items-center'>
+                                        <Image
+                                            loading='eager'
+                                            priority={true}
+                                            src='/assets/Icon/Voted.svg'
+                                            alt='voted'
+                                            width={32}
+                                            height={32}
+                                        />
+                                        <div className='text-[18px]'>Voted</div>
+                                    </div>
+                                )}
+                                {props.proposal.voted == 'false' && (
+                                    <div className='flex w-full flex-col items-center'>
+                                        <Image
+                                            loading='eager'
+                                            priority={true}
+                                            src='/assets/Icon/NotVotedYet.svg'
+                                            alt='voted'
+                                            width={32}
+                                            height={32}
+                                        />
+                                        <div className='text-[18px]'>
+                                            Not Voted Yet
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
-                )}
+                </div>
             </td>
         </tr>
     )

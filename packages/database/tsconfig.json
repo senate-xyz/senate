@@ -1,11 +1,19 @@
 {
-    "extends": "@senate/config/ts/node.json",
-    "include": ["src", "src/**/*", "src/**/*.ts", "src/**/*.json"],
-    "exclude": ["node_modules", "dist"],
-    "compilerOptions": {
-        "composite": true,
-        "declarationMap": true,
-        "resolveJsonModule": true,
-        "allowJs": true
-    }
+  "extends": "@senate/config/ts/node.json",
+  "include": [
+    "src",
+    "src/**/*",
+    "src/**/*.ts",
+    "src/**/*.json"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "declarationMap": true,
+    "resolveJsonModule": true,
+    "allowJs": true
+  }
 }

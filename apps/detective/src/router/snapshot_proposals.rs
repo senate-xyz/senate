@@ -2,11 +2,14 @@ use std::time::UNIX_EPOCH;
 
 use anyhow::{Context, Result};
 use chrono::{Datelike, Duration, TimeZone, Utc};
+use opentelemetry::propagation::TextMapPropagator;
 use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime};
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use rocket::serde::json::Json;
 use serde::Deserialize;
+use tracing::{debug_span, info_span, instrument, span, trace_span, Instrument, Level, Span};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
     prisma::{dao, daohandler, proposal, ProposalState},
@@ -23,19 +26,11 @@ struct GraphQLResponseInner {
     proposals: Vec<GraphQLProposal>,
 }
 
-#[allow(dead_code)]
-#[derive(Debug, Clone, Deserialize)]
-struct GraphQLSpace {
-    id: String,
-    name: String,
-}
-
-#[allow(dead_code)]
 #[derive(Debug, Clone, Deserialize)]
 struct GraphQLProposal {
     id: String,
     title: String,
-    body: String,
+
     choices: Vec<String>,
     scores: Vec<f64>,
     scores_total: f64,
@@ -46,7 +41,6 @@ struct GraphQLProposal {
     quorum: f64,
     link: String,
     state: String,
-    space: GraphQLSpace,
 }
 
 #[derive(Debug, Deserialize)]
@@ -59,97 +53,103 @@ pub async fn update_snapshot_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>,
 ) -> Json<ProposalsResponse<'a>> {
-    let dao_handler = ctx
-        .db
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-        .exec()
-        .await
-        .expect("bad prisma result")
-        .expect("daoHandlerId not found");
+    let root_span = info_span!("update_snapshot_proposals");
 
-    let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
-        Ok(data) => data,
-        Err(_) => panic!("{:?} decoder not found", data.daoHandlerId),
-    };
+    let carrier: std::collections::HashMap<String, String> =
+        serde_json::from_value(data.trace.clone()).unwrap_or_default();
+    let propagator = opentelemetry::sdk::propagation::TraceContextPropagator::new();
+    let parent_context = propagator.extract(&carrier);
 
-    let old_index = match dao_handler.snapshotindex {
-        Some(data) => data.timestamp(),
-        None => 0,
-    };
+    root_span.set_parent(parent_context.clone());
 
-    let graphql_query = format!(
-        r#"
-        {{
-            proposals (
-                first: 1000,
-                where: {{
-                    space: {:?},
-                    created_gte: {}
-                }},
-                orderBy: "created",
-                orderDirection: asc
-            )
-            {{
-                id
-                title
-                body
-                choices
-                scores
-                scores_total
-                scores_state
-                created
-                start
-                end
-                quorum
-                link
-                state
-                space
+    async move {
+        let dao_handler = ctx
+            .db
+            .daohandler()
+            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .exec()
+            .instrument(debug_span!("get_dao_handler"))
+            .await
+            .expect("bad prisma result")
+            .expect("daoHandlerId not found");
+
+        let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
+            Ok(data) => data,
+            Err(_) => panic!("{:?} decoder not found", data.daoHandlerId),
+        };
+
+        let old_index = match dao_handler.snapshotindex {
+            Some(data) => data.timestamp(),
+            None => 0,
+        };
+
+        let graphql_query = format!(
+            r#"
                 {{
-                    id
-                    name
+                    proposals (
+                        first: {:?},
+                        where: {{
+                            space: {:?},
+                            created_gte: {}
+                        }},
+                        orderBy: "created",
+                        orderDirection: asc
+                    )
+                    {{
+                        id
+                        title
+                        choices
+                        scores
+                        scores_total
+                        scores_state
+                        created
+                        start
+                        end
+                        quorum
+                        link
+                        state
+                    }}
                 }}
-            }}
-        }}
-    "#,
-        decoder.space, old_index
-    );
+            "#,
+            data.refreshspeed, decoder.space, old_index
+        );
 
-    match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
-        Ok(_) => {
-            info!("snapshot proposals update - {:#?}", data.daoHandlerId);
-            Json(ProposalsResponse {
+        debug!(
+            "{:?} {:?} {:?} {:?}",
+            dao_handler, decoder, old_index, graphql_query
+        );
+
+        match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
+            Ok(_) => Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,
                 response: "ok",
-            })
-        }
-        Err(e) => {
-            warn!("snapshot proposals update - {:#?}", e);
-
-            Json(ProposalsResponse {
-                daoHandlerId: data.daoHandlerId,
-                response: "nok",
-            })
+            }),
+            Err(e) => {
+                warn!("{:?}", e);
+                Json(ProposalsResponse {
+                    daoHandlerId: data.daoHandlerId,
+                    response: "nok",
+                })
+            }
         }
     }
+    .instrument(root_span)
+    .await
 }
 
+#[instrument(skip(ctx), level = "debug")]
 async fn update_proposals(
     graphql_query: String,
     ctx: &Ctx,
     dao_handler: daohandler::Data,
     old_index: i64,
 ) -> Result<()> {
-    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
-
-    let http_client = ClientBuilder::new(reqwest::Client::new())
-        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
-        .build();
-
-    let graphql_response = http_client
+    let graphql_response = ctx
+        .http_client
         .get("https://hub.snapshot.org/graphql")
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()
+        .instrument(debug_span!("get_graphql_response"))
         .await?;
 
     let response_data: GraphQLResponse = graphql_response
@@ -172,7 +172,13 @@ async fn update_proposals(
                 match proposal.state.as_str() {
                     "active" => ProposalState::Active,
                     "pending" => ProposalState::Pending,
-                    "closed" => ProposalState::Executed,
+                    "closed" => {
+                        if proposal.scores_state == "final" {
+                            ProposalState::Executed
+                        } else {
+                            ProposalState::Hidden
+                        }
+                    }
                     _ => ProposalState::Unknown,
                 },
                 DateTime::from_utc(
@@ -216,10 +222,14 @@ async fn update_proposals(
         )
     });
 
-    ctx.db
+    let updated = ctx
+        .db
         ._batch(upserts)
+        .instrument(debug_span!("upsert_proposals"))
         .await
         .context("failed to upsert proposals")?;
+
+    debug!("{:?}", updated);
 
     let open_proposals: Vec<&GraphQLProposal> = proposals
         .iter()
@@ -252,27 +262,32 @@ async fn update_proposals(
         new_index = old_index;
     }
 
+    debug!(
+        "{:?} {:?} {:?}",
+        open_proposals, closed_proposals, new_index
+    );
+
     let uptodate = old_index - new_index < 60 * 60;
 
-    let _ = ctx
-        .db
-        .daohandler()
-        .update(
-            daohandler::id::equals(dao_handler.id),
-            vec![
-                daohandler::snapshotindex::set(Some(
-                    DateTime::from_utc(
+    if new_index * 1000 != dao_handler.snapshotindex.unwrap().timestamp() {
+        ctx.db
+            .daohandler()
+            .update(
+                daohandler::id::equals(dao_handler.id),
+                vec![
+                    daohandler::snapshotindex::set(Some(DateTime::from_utc(
                         NaiveDateTime::from_timestamp_millis(new_index * 1000)
                             .expect("can not create snapshotindex"),
                         FixedOffset::east_opt(0).unwrap(),
-                    ) - Duration::from(Duration::minutes(60)),
-                )),
-                daohandler::uptodate::set(uptodate),
-            ],
-        )
-        .exec()
-        .await
-        .context("failed to update daohandler")?;
+                    ))),
+                    daohandler::uptodate::set(uptodate),
+                ],
+            )
+            .exec()
+            .instrument(debug_span!("update_snapshotindex"))
+            .await
+            .context("failed to update daohandler")?;
+    }
 
     Ok(())
 }

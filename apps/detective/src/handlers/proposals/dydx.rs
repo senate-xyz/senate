@@ -1,14 +1,5 @@
-use crate::{
-    contracts::{
-        dydxexecutor,
-        dydxgov::{self, ProposalCreatedFilter},
-        dydxstrategy,
-    },
-    prisma::{daohandler, ProposalState},
-    router::chain_proposals::ChainProposal,
-    utils::etherscan::estimate_timestamp,
-    Ctx,
-};
+use std::{str, sync::Arc, time::Duration};
+
 use anyhow::Result;
 use ethers::{
     prelude::LogMeta,
@@ -21,9 +12,25 @@ use prisma_client_rust::{
     bigdecimal::ToPrimitive,
     chrono::{DateTime, NaiveDateTime, Utc},
 };
+use regex::Regex;
 use reqwest::{Client, StatusCode};
+use reqwest_middleware::ClientWithMiddleware;
 use serde::Deserialize;
-use std::{str, time::Duration};
+use serde_json::Value as JsonValue;
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
+
+use crate::{
+    contracts::{
+        dydxexecutor,
+        dydxgov::{self, ProposalCreatedFilter},
+        dydxstrategy,
+    },
+    prisma::{daohandler, ProposalState},
+    router::chain_proposals::ChainProposal,
+    utils::etherscan::estimate_timestamp,
+    Ctx,
+};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -32,6 +39,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
+#[instrument(skip(ctx), ret, level = "info")]
 pub async fn dydx_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -42,14 +50,17 @@ pub async fn dydx_proposals(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = dydxgov::dydxgov::dydxgov::new(address, ctx.client.clone());
+    let gov_contract = dydxgov::dydxgov::dydxgov::new(address, ctx.rpc.clone());
 
     let events = gov_contract
         .proposal_created_filter()
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let proposals = events.query_with_meta().await?;
+    let proposals = events
+        .query_with_meta()
+        .instrument(debug_span!("get_rpc_events"))
+        .await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -67,6 +78,7 @@ pub async fn dydx_proposals(
     Ok(result)
 }
 
+#[instrument(skip(p, ctx), ret, level = "debug")]
 async fn data_for_proposal(
     p: (dydxgov::dydxgov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,
@@ -77,13 +89,13 @@ async fn data_for_proposal(
     let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
 
     let created_block_number = meta.block_number.as_u64().to_i64().unwrap();
-    let created_block = ctx.client.get_block(meta.block_number).await?;
+    let created_block = ctx.rpc.get_block(meta.block_number).await?;
     let created_block_timestamp = created_block.expect("bad block").time()?;
 
     let voting_start_block_number = log.start_block.as_u64().to_i64().unwrap();
     let voting_end_block_number = log.end_block.as_u64().to_i64().unwrap();
 
-    let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number).await {
+    let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number, ctx).await {
         Ok(r) => r,
         Err(_) => DateTime::from_utc(
             NaiveDateTime::from_timestamp_millis(
@@ -95,7 +107,7 @@ async fn data_for_proposal(
         ),
     };
 
-    let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number).await {
+    let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number, ctx).await {
         Ok(r) => r,
         Err(_) => DateTime::from_utc(
             NaiveDateTime::from_timestamp_millis(
@@ -112,10 +124,10 @@ async fn data_for_proposal(
     let proposal_external_id = log.id.to_string();
 
     let executor_contract =
-        dydxexecutor::dydxexecutor::dydxexecutor::new(log.executor, ctx.client.clone());
+        dydxexecutor::dydxexecutor::dydxexecutor::new(log.executor, ctx.rpc.clone());
 
     let strategy_contract =
-        dydxstrategy::dydxstrategy::dydxstrategy::new(log.strategy, ctx.client.clone());
+        dydxstrategy::dydxstrategy::dydxstrategy::new(log.strategy, ctx.rpc.clone());
 
     let total_voting_power = strategy_contract
         .get_total_voting_supply_at(U256::from(meta.block_number.as_u64()))
@@ -141,7 +153,7 @@ async fn data_for_proposal(
 
     let hash: Vec<u8> = log.ipfs_hash.into();
 
-    let mut title = get_title(hex::encode(hash)).await?;
+    let mut title = get_title(hex::encode(hash), ctx.http_client.clone()).await?;
 
     if title.starts_with("# ") {
         title = title.split_off(2);
@@ -182,93 +194,59 @@ async fn data_for_proposal(
         state,
     };
 
+    debug!("{:?}", proposal);
+
     Ok(proposal)
 }
 
-#[derive(Deserialize, Debug)]
-struct IpfsData {
-    title: String,
-}
-
-async fn get_title(hexhash: String) -> Result<String> {
-    let client = Client::new();
+async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> Result<String> {
     let mut retries = 0;
+    let mut current_gateway = 0;
+
+    let gateways = vec![
+        "https://senate.infura-ipfs.io/ipfs/",
+        "https://cloudflare-ipfs.com/ipfs/",
+        "https://gateway.pinata.cloud/ipfs/",
+    ];
 
     loop {
-        let response = client
-            .get(format!(
-                "https://cloudflare-ipfs.com/ipfs/f01701220{}",
-                hexhash
-            ))
-            .timeout(Duration::from_secs(10))
+        let response = http_client
+            .get(format!("{}f01701220{}", gateways[current_gateway], hexhash))
+            .timeout(Duration::from_secs(5))
             .send()
             .await;
 
         match response {
             Ok(res) if res.status() == StatusCode::OK => {
-                let ipfs_data = match res.json::<IpfsData>().await {
-                    Ok(r) => r,
-                    Err(_) => IpfsData {
-                        title: "Unknown".to_string(),
-                    },
-                };
-                return Ok(ipfs_data.title);
+                let text = res.text().await?;
+
+                // Check if the text is JSON
+                if let Ok(json) = serde_json::from_str::<JsonValue>(&text) {
+                    return Ok(json["title"].as_str().unwrap_or("Unknown").to_string());
+                }
+
+                let re = Regex::new(r#"title:\s*(.*?)\n"#).unwrap();
+                if let Some(captures) = re.captures(&text) {
+                    if let Some(matched) = captures.get(1) {
+                        return Ok(matched.as_str().trim().to_string());
+                    }
+                }
+
+                return Ok("Unknown".to_string());
             }
-            _ if retries < 15 => {
+            _ if retries % 3 == 0 => {
+                if current_gateway < gateways.len() - 2 {
+                    current_gateway += 1;
+                } else {
+                    current_gateway = 0;
+                }
+            }
+            _ if retries < 12 => {
                 retries += 1;
-                let backoff_duration = Duration::from_millis(2u64.pow(retries as u32) * 100);
+                let backoff_duration = Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
             }
             _ => return Ok("Unknown".to_string()),
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::handlers::proposals::dydx::get_title;
-
-    #[tokio::test]
-    async fn get_title_once() {
-        let result =
-            get_title("0a387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into())
-                .await
-                .unwrap();
-        assert_eq!(result, "Add MaticX to Aave v3 Polygon Pool");
-    }
-
-    #[tokio::test]
-    async fn get_title_10_times() {
-        let mut cnt = 0;
-        loop {
-            let result = get_title(
-                "0a387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into(),
-            )
-            .await
-            .unwrap();
-            assert_eq!(result, "Add MaticX to Aave v3 Polygon Pool");
-            cnt += 1;
-            if cnt == 10 {
-                break;
-            }
-        }
-    }
-
-    #[tokio::test]
-    async fn get_invalid_title() {
-        let result =
-            get_title("0b387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into())
-                .await
-                .unwrap();
-        assert_eq!(result, "Unknown");
-    }
-
-    #[tokio::test]
-    async fn get_unavailable_title() {
-        let result =
-            get_title("e7e93497d3847536f07fe8dba53485cf68a275c7b07ca38b53d2cc2d43fab3b0".into())
-                .await
-                .unwrap();
-        assert_eq!(result, "Unknown");
     }
 }

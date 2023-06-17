@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { trpc } from '../../../../../server/trpcClient'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const Telegram = () => {
     const [getTelegramNotifications, setTelegramNotifications] = useState(false)
@@ -39,7 +40,7 @@ const Telegram = () => {
         trpc.accountSettings.updateTelegramReminders.useMutation()
 
     const onEnter = () => {
-        setTelegramChatId.mutate({ chatid: currentChatId })
+        setTelegramChatId.mutate({ chatid: parseInt(currentChatId) })
     }
 
     return (
@@ -79,6 +80,14 @@ const Telegram = () => {
 
             {getTelegramNotifications && (
                 <div className='flex flex-col gap-4'>
+                    <Link
+                        className='text-[18px] font-light text-white underline'
+                        href={'https://t.me/senatesecretarybot'}
+                        target='_blank'
+                    >
+                        Open a telegram chat
+                    </Link>
+
                     <div className='flex flex-col gap-2'>
                         <div className='text-[18px] font-light text-white'>
                             Telegram ChatId
@@ -131,16 +140,13 @@ const Telegram = () => {
                 </div>
             )}
             {setTelegramChatId.error && (
-                <input
-                    className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
-                    value={currentChatId}
-                    onChange={(e) => {
-                        setCurrentChatId(String(e.target.value))
-                    }}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') onEnter()
-                    }}
-                />
+                <div className='flex flex-col text-white'>
+                    {JSON.parse(setTelegramChatId.error.message).map(
+                        (err: Error) => (
+                            <div>{err.message}</div>
+                        )
+                    )}
+                </div>
             )}
         </div>
     )

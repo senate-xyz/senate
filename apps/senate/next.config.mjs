@@ -17,19 +17,14 @@ const config = {
             'docs.synthetix.io'
         ]
     },
-    webpack: (config, { isServer }) => {
-        if (!isServer) {
-            config.resolve = {
-                ...config.resolve,
-                fallback: {
-                    net: false,
-                    tls: false,
-                    fs: false
-                }
-            }
-        }
 
-        return config
+    async rewrites() {
+        return [
+            {
+                source: '/ingest/:path*',
+                destination: 'https://app.posthog.com/:path*'
+            }
+        ]
     }
 }
 export default config

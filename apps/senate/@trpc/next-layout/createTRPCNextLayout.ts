@@ -1,4 +1,4 @@
-import type { DehydratedState } from '@tanstack/react-query'
+import type {DehydratedState} from '@tanstack/react-query'
 import type {
     AnyProcedure,
     AnyQueryProcedure,
@@ -10,10 +10,10 @@ import type {
     MaybePromise,
     ProcedureRouterRecord
 } from '@trpc/server'
-import { createRecursiveProxy } from '@trpc/server/shared'
-import { getRequestStorage } from './localStorage'
+import {createRecursiveProxy} from '@trpc/server/shared'
+import {getRequestStorage} from './localStorage'
 
-import { dehydrate, QueryClient } from '@tanstack/query-core'
+import {dehydrate, QueryClient} from '@tanstack/query-core'
 
 interface CreateTRPCNextLayoutOptions<TRouter extends AnyRouter> {
     router: TRouter
@@ -27,13 +27,13 @@ interface CreateTRPCNextLayoutOptions<TRouter extends AnyRouter> {
 export type DecorateProcedure<TProcedure extends AnyProcedure> =
     TProcedure extends AnyQueryProcedure
         ? {
-              fetch(
-                  input: inferProcedureInput<TProcedure>
-              ): Promise<inferProcedureOutput<TProcedure>>
-              fetchInfinite(
-                  input: inferProcedureInput<TProcedure>
-              ): Promise<inferProcedureOutput<TProcedure>>
-          }
+            fetch(
+                input: inferProcedureInput<TProcedure>
+            ): Promise<inferProcedureOutput<TProcedure>>
+            fetchInfinite(
+                input: inferProcedureInput<TProcedure>
+            ): Promise<inferProcedureOutput<TProcedure>>
+        }
         : never
 
 type OmitNever<TType> = Pick<
@@ -51,12 +51,12 @@ export type DecoratedProcedureRecord<
 > = OmitNever<{
     [TKey in keyof TProcedures]: TProcedures[TKey] extends AnyRouter
         ? DecoratedProcedureRecord<
-              TProcedures[TKey]['_def']['record'],
-              `${TPath}${TKey & string}.`
-          >
+            TProcedures[TKey]['_def']['record'],
+            `${TPath}${TKey & string}.`
+        >
         : TProcedures[TKey] extends AnyQueryProcedure
-        ? DecorateProcedure<TProcedures[TKey]>
-        : never
+            ? DecorateProcedure<TProcedures[TKey]>
+            : never
 }>
 
 type CreateTRPCNextLayout<TRouter extends AnyRouter> = DecoratedProcedureRecord<
@@ -88,6 +88,7 @@ export function createTRPCNextLayout<TRouter extends AnyRouter>(
         }
         return requestStorage._trpc
     }
+
     const transformer = opts.transformer ?? {
         serialize: (v) => v,
         deserialize: (v) => v
@@ -97,7 +98,7 @@ export function createTRPCNextLayout<TRouter extends AnyRouter>(
         const lastPart = path.pop()
         const state = getState()
         const ctx = await state.context
-        const { queryClient } = state
+        const {queryClient} = state
 
         if (lastPart === 'dehydrate' && path.length === 0) {
             if (queryClient.isFetching()) {

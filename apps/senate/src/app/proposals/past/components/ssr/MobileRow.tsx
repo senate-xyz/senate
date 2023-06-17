@@ -295,9 +295,14 @@ export const MobilePastProposal = async (props: {
                     `}
                         </div>
                     </div>
-                    {loading && (
-                        <div className='p-2'>
-                            <div className='flex w-full flex-col items-center'>
+
+                    <div className='self-end p-2'>
+                        <div className='flex w-full flex-col items-center'>
+                            {props.proposal.voted == 'not-connected' ? (
+                                <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
+                                    Connect wallet to see your vote status
+                                </div>
+                            ) : loading ? (
                                 <Image
                                     loading='eager'
                                     priority={true}
@@ -306,42 +311,36 @@ export const MobilePastProposal = async (props: {
                                     width={32}
                                     height={32}
                                 />
-                            </div>
-                        </div>
-                    )}
-                    {!loading && (
-                        <div className='p-2'>
-                            {props.proposal.voted == 'true' && (
-                                <div className='flex w-full flex-col items-center'>
-                                    <Image
-                                        loading='eager'
-                                        priority={true}
-                                        src='/assets/Icon/Voted.svg'
-                                        alt='voted'
-                                        width={32}
-                                        height={32}
-                                    />
-                                </div>
-                            )}
-                            {props.proposal.voted == 'false' && (
-                                <div className='flex w-full flex-col items-center'>
-                                    <Image
-                                        loading='eager'
-                                        priority={true}
-                                        src='/assets/Icon/NotVotedYet.svg'
-                                        alt='voted'
-                                        width={32}
-                                        height={32}
-                                    />
-                                </div>
-                            )}
-                            {props.proposal.voted == 'not-connected' && (
-                                <div className='p-2 text-center text-[17px] leading-[26px] text-white'>
-                                    Connect wallet to see your vote status
+                            ) : (
+                                <div>
+                                    {props.proposal.voted == 'true' && (
+                                        <div className='flex w-full flex-col items-center'>
+                                            <Image
+                                                loading='eager'
+                                                priority={true}
+                                                src='/assets/Icon/Voted.svg'
+                                                alt='voted'
+                                                width={32}
+                                                height={32}
+                                            />
+                                        </div>
+                                    )}
+                                    {props.proposal.voted == 'false' && (
+                                        <div className='flex w-full flex-col items-center'>
+                                            <Image
+                                                loading='eager'
+                                                priority={true}
+                                                src='/assets/Icon/DidntVote.svg'
+                                                alt='voted'
+                                                width={32}
+                                                height={32}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </div>

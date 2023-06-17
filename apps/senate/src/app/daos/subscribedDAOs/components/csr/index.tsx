@@ -13,7 +13,6 @@ export const SubscribedDAO = (props: {
     bgColor: string | undefined
     daoHandlers: string[]
     activeProposals: number
-    notificationsEnabled: boolean
 }) => {
     const [imgSrc, setImgSrc] = useState(
         props.daoPicture
@@ -90,7 +89,7 @@ export const SubscribedDAO = (props: {
                                     { daoId: props.daoId },
                                     {
                                         onSuccess: () => {
-                                            router.refresh()
+                                            if (router) router.refresh()
                                             setShowMenu(false)
                                         }
                                     }

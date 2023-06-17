@@ -1,12 +1,12 @@
 import inquirer from 'inquirer'
 
 import {
-    PrismaClient as PrismaNewClient,
-    Prisma as PrismaNew
+    Prisma as PrismaNew,
+    PrismaClient as PrismaNewClient
 } from '../prisma/new/generated/client'
 import {
-    PrismaClient as PrismaOldClient,
-    Prisma as PrismaOld
+    Prisma as PrismaOld,
+    PrismaClient as PrismaOldClient
 } from '../prisma/old/generated/client'
 import fs from 'fs'
 

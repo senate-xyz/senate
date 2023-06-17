@@ -1,8 +1,12 @@
-import { router, privateProcedure } from '../trpc'
+import { privateProcedure, router } from '../trpc'
 import { z } from 'zod'
-import { prisma } from '@senate/database'
+import { MagicUserState, prisma } from '@senate/database'
 import { ServerClient } from 'postmark'
-import { MagicUserState } from '@senate/database'
+import { PostHog } from 'posthog-node'
+
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
+    host: `${process.env.NEXT_PUBLIC_WEB_URL}/ingest`
+})
 
 export const accountSettingsRouter = router({
     setEmailAndEnableBulletin: privateProcedure
@@ -14,6 +18,8 @@ export const accountSettingsRouter = router({
         .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
+            const challengeCode = Math.random().toString(36).substring(2)
+
             const user = await prisma.user.upsert({
                 where: {
                     address: String(username)
@@ -22,6 +28,9 @@ export const accountSettingsRouter = router({
                     address: String(username),
                     email: input.email,
                     emaildailybulletin: true,
+                    emailquorumwarning: true,
+                    verifiedemail: false,
+                    challengecode: challengeCode,
                     voters: {
                         connectOrCreate: {
                             where: {
@@ -33,7 +42,48 @@ export const accountSettingsRouter = router({
                         }
                     }
                 },
-                update: { email: input.email, emaildailybulletin: true }
+                update: {
+                    email: input.email,
+                    emaildailybulletin: true,
+                    emailquorumwarning: true,
+                    verifiedemail: false,
+                    challengecode: challengeCode
+                }
+            })
+
+            const emailClient = new ServerClient(
+                process.env.POSTMARK_TOKEN ?? 'Missing Token'
+            )
+
+            await emailClient.sendEmailWithTemplate({
+                From: 'info@senatelabs.xyz',
+                To: String(user.email),
+                TemplateAlias: 'senate-confirm',
+                TemplateModel: {
+                    todaysDate: new Date().toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    }),
+                    url: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
+                }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: 'enable_bulletin',
+                properties: {
+                    email: input.email
+                }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: 'update_email',
+                properties: {
+                    email: input.email
+                }
             })
 
             return user
@@ -112,11 +162,27 @@ export const accountSettingsRouter = router({
                     })
                 }
 
-            await emailClient.sendEmail({
+            await emailClient.sendEmailWithTemplate({
                 From: 'info@senatelabs.xyz',
                 To: String(user.email),
-                Subject: 'Confirm your email',
-                TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
+                TemplateAlias: 'senate-confirm',
+                TemplateModel: {
+                    todaysDate: new Date().toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    }),
+                    url: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
+                }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: 'update_email',
+                properties: {
+                    email: input.email
+                }
             })
 
             return user
@@ -137,11 +203,19 @@ export const accountSettingsRouter = router({
             data: { challengecode: challengeCode, verifiedemail: false }
         })
 
-        await emailClient.sendEmail({
+        emailClient.sendEmailWithTemplate({
             From: 'info@senatelabs.xyz',
             To: String(user.email),
-            Subject: 'Confirm your email',
-            TextBody: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
+            TemplateAlias: 'senate-confirm',
+            TemplateModel: {
+                todaysDate: new Date().toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                url: `${process.env.NEXT_PUBLIC_WEB_URL}/verify/verify-email/${challengeCode}`
+            }
         })
 
         return user
@@ -160,7 +234,15 @@ export const accountSettingsRouter = router({
                 where: {
                     address: String(username)
                 },
-                data: { emaildailybulletin: input.val }
+                data: {
+                    emaildailybulletin: input.val,
+                    emailquorumwarning: input.val
+                }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val ? 'enable_bulletin' : 'disable_bulletin'
             })
 
             return user
@@ -182,6 +264,13 @@ export const accountSettingsRouter = router({
                 data: { emptydailybulletin: input.val }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val
+                    ? 'enable_empty_bulletin'
+                    : 'disable_empty_bulletin'
+            })
+
             return user
         }),
 
@@ -199,6 +288,13 @@ export const accountSettingsRouter = router({
                     address: String(username)
                 },
                 data: { emailquorumwarning: input.val }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val
+                    ? 'enable_quorum_emails'
+                    : 'disable_quorum_email'
             })
 
             return user
@@ -257,6 +353,11 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val ? 'enable_discord' : 'disable_discord'
+            })
+
             return user
         }),
 
@@ -279,13 +380,20 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val
+                    ? 'enable_discord_reminders'
+                    : 'disable_discord_reminders'
+            })
+
             return user
         }),
 
     setDiscordWebhook: privateProcedure
         .input(
             z.object({
-                url: z.string().url()
+                url: z.string().url().includes('discord.com/api/webhooks/')
             })
         )
         .mutation(async ({ input, ctx }) => {
@@ -298,6 +406,14 @@ export const accountSettingsRouter = router({
 
                 data: {
                     discordwebhook: input.url
+                }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: 'set_discord_webhook',
+                properties: {
+                    webhook: input.url
                 }
             })
 
@@ -323,6 +439,11 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val ? 'enable_telegram' : 'disable_telegram'
+            })
+
             return user
         }),
 
@@ -345,13 +466,20 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: input.val
+                    ? 'enable_telegram_reminders'
+                    : 'disable_telegram_reminders'
+            })
+
             return user
         }),
 
     setTelegramChatId: privateProcedure
         .input(
             z.object({
-                chatid: z.string()
+                chatid: z.number().int()
             })
         )
         .mutation(async ({ input, ctx }) => {
@@ -363,7 +491,15 @@ export const accountSettingsRouter = router({
                 },
 
                 data: {
-                    telegramchatid: input.chatid
+                    telegramchatid: input.chatid.toString()
+                }
+            })
+
+            posthog.capture({
+                distinctId: user.address,
+                event: 'set_telegram_chatid',
+                properties: {
+                    chatid: input.chatid
                 }
             })
 
@@ -428,7 +564,7 @@ export const accountSettingsRouter = router({
         .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
-            const user = await prisma.user.findFirst({
+            const user = await prisma.user.findFirstOrThrow({
                 where: {
                     address: {
                         equals: String(username)
@@ -454,6 +590,14 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: 'add_proxy',
+                properties: {
+                    proxy: input.address
+                }
+            })
+
             return result
         }),
 
@@ -466,7 +610,7 @@ export const accountSettingsRouter = router({
         .mutation(async ({ input, ctx }) => {
             const username = await ctx.user.name
 
-            const user = await prisma.user.findFirst({
+            const user = await prisma.user.findFirstOrThrow({
                 where: {
                     address: {
                         equals: String(username)
@@ -487,6 +631,14 @@ export const accountSettingsRouter = router({
                 }
             })
 
+            posthog.capture({
+                distinctId: user.address,
+                event: 'remove_proxy',
+                properties: {
+                    proxy: input.address
+                }
+            })
+
             return result
         }),
 
@@ -502,5 +654,20 @@ export const accountSettingsRouter = router({
         })
 
         return user
+    }),
+
+    deleteUser: privateProcedure.mutation(async ({ ctx }) => {
+        const username = await ctx.user.name
+
+        const user = await prisma.user.findFirst({
+            where: {
+                address: {
+                    equals: String(username)
+                }
+            }
+        })
+        await prisma.user.delete({
+            where: { id: user?.id }
+        })
     })
 })

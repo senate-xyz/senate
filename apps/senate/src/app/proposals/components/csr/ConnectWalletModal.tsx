@@ -1,7 +1,7 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import WalletConnect from '../../../components/csr/WalletConnect'
 
@@ -21,7 +21,9 @@ const ConnectWalletModal = () => {
             {show && (
                 <div className='absolute flex h-full w-full scale-x-[1.025] flex-col items-center backdrop-blur'>
                     <div className='mt-32'>
-                        <WalletConnect />
+                        <Suspense fallback={<></>}>
+                            <WalletConnect />
+                        </Suspense>
                     </div>
                 </div>
             )}

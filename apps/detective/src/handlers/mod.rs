@@ -9,6 +9,7 @@ pub mod proposals {
     pub mod maker_poll;
     pub mod uniswap;
 }
+
 pub mod votes {
     pub mod aave;
     pub mod compound;

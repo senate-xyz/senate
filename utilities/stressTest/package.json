@@ -1,37 +1,37 @@
 {
-    "name": "@senate/stress-test",
-    "version": "1.0.0",
-    "author": "Senate",
-    "private": true,
-    "license": "GNU GPLv3",
-    "main": "./dist/index",
-    "typings": "./dist/index",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
-    "files": [
-        "dist/**"
-    ],
-    "scripts": {
-        "build": "tsup",
-        "start": "node dist/index",
-        "dev": "tsup && node dist/index",
-        "clean": "rimraf .turbo node_modules dist yarn-error.log",
-        "lint": "eslint src",
-        "lint:fix": "eslint src --fix",
-        "prettier": "prettier src --check",
-        "prettier:fix": "prettier src --write",
-        "update": "ncu -u"
-    },
-    "dependencies": {
-        "@senate/config": "*",
-        "@senate/database": "*",
-        "@types/prompt-sync": "^4.2.0",
-        "axios": "^1.4.0",
-        "ethers": "6.4.0",
-        "prompt-sync": "^4.2.0"
-    },
-    "devDependencies": {
-        "tsup": "^6.7.0",
-        "typescript": "^5.0.4"
-    }
+  "name": "@senate/stress-test",
+  "version": "1.0.0",
+  "author": "Senate",
+  "private": true,
+  "license": "GNU GPLv3",
+  "main": "./dist/index",
+  "typings": "./dist/index",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "start": "node dist/index",
+    "dev": "tsup && node dist/index",
+    "clean": "rimraf .turbo node_modules dist yarn-error.log",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "prettier": "prettier src --check",
+    "prettier:fix": "prettier src --write",
+    "update": "ncu -u"
+  },
+  "dependencies": {
+    "@senate/config": "*",
+    "@senate/database": "*",
+    "@types/prompt-sync": "^4.2.0",
+    "axios": "^1.4.0",
+    "ethers": "6.6.0",
+    "prompt-sync": "^4.2.0"
+  },
+  "devDependencies": {
+    "tsup": "^7.0.0",
+    "typescript": "^5.1.3"
+  }
 }

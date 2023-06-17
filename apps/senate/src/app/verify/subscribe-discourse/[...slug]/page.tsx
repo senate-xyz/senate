@@ -22,7 +22,7 @@ const verifyUser = async (dao: string, challenge: string) => {
 
     const subscribedao = await prisma.dao.findFirstOrThrow({
         where: {
-            name: { equals: dao, mode: 'insensitive' }
+            name: { equals: dao }
         }
     })
 

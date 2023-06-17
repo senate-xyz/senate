@@ -2,7 +2,7 @@
 
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
 import { trpc } from '../../../../../server/trpcClient'
 import { useRouter } from 'next/navigation'
@@ -43,11 +43,15 @@ export const VerifyButton = (props: { challenge: string }) => {
                 },
                 {
                     onSuccess: () => {
-                        router.push('/daos')
+                        if (router) router.push('/daos?connect')
                     }
                 }
             )
     }, [signedMessage])
 
-    return <ConnectButton showBalance={false} />
+    return (
+        <Suspense fallback={<></>}>
+            <ConnectButton showBalance={false} />
+        </Suspense>
+    )
 }

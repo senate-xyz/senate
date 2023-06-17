@@ -1,3 +1,14 @@
+use std::str;
+
+use anyhow::Result;
+use chrono::{DateTime, NaiveDateTime, Utc};
+use ethers::{prelude::LogMeta, providers::Middleware, types::Address};
+use futures::stream::{FuturesUnordered, StreamExt};
+use prisma_client_rust::bigdecimal::ToPrimitive;
+use serde::Deserialize;
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
+
 use crate::{
     contracts::{uniswapgov, uniswapgov::ProposalCreatedFilter},
     prisma::{daohandler, ProposalState},
@@ -5,13 +16,6 @@ use crate::{
     utils::etherscan::estimate_timestamp,
     Ctx,
 };
-use anyhow::Result;
-use chrono::{DateTime, NaiveDateTime, Utc};
-use ethers::{prelude::LogMeta, providers::Middleware, types::Address};
-use futures::stream::{FuturesUnordered, StreamExt};
-use prisma_client_rust::bigdecimal::ToPrimitive;
-use serde::Deserialize;
-use std::str;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -20,6 +24,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
+#[instrument(skip(ctx), level = "info")]
 pub async fn uniswap_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -30,14 +35,17 @@ pub async fn uniswap_proposals(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = uniswapgov::uniswapgov::uniswapgov::new(address, ctx.client.clone());
+    let gov_contract = uniswapgov::uniswapgov::uniswapgov::new(address, ctx.rpc.clone());
 
     let events = gov_contract
         .proposal_created_filter()
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let proposals = events.query_with_meta().await?;
+    let proposals = events
+        .query_with_meta()
+        .instrument(debug_span!("get_rpc_events"))
+        .await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -55,6 +63,7 @@ pub async fn uniswap_proposals(
     Ok(result)
 }
 
+#[instrument(skip(p, ctx), ret, level = "debug")]
 async fn data_for_proposal(
     p: (uniswapgov::uniswapgov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,
@@ -67,13 +76,13 @@ async fn data_for_proposal(
     let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
 
     let created_block_number = meta.block_number.as_u64().to_i64().unwrap();
-    let created_block = ctx.client.get_block(meta.block_number).await?;
+    let created_block = ctx.rpc.get_block(meta.block_number).await?;
     let created_block_timestamp = created_block.expect("bad block").time()?;
 
     let voting_start_block_number = log.start_block.as_u64().to_i64().unwrap();
     let voting_end_block_number = log.end_block.as_u64().to_i64().unwrap();
 
-    let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number).await {
+    let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number, ctx).await {
         Ok(r) => r,
         Err(_) => DateTime::from_utc(
             NaiveDateTime::from_timestamp_millis(
@@ -85,7 +94,7 @@ async fn data_for_proposal(
         ),
     };
 
-    let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number).await {
+    let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number, ctx).await {
         Ok(r) => r,
         Err(_) => DateTime::from_utc(
             NaiveDateTime::from_timestamp_millis(
@@ -168,6 +177,8 @@ async fn data_for_proposal(
         url: proposal_url,
         state,
     };
+
+    debug!("{:?}", proposal);
 
     Ok(proposal)
 }
