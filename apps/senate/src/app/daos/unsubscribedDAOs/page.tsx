@@ -100,7 +100,7 @@ export default async function UnsubscribedDAOs() {
             {unsubscribedDAOs.length > 0 && (
                 <main>
                     <p className='mb-4 w-full text-[36px] font-bold leading-[36px] text-white'>
-                        DAOs you can subscribe to
+                        Organisations you can subscribe to
                     </p>
 
                     <Suspense>
