@@ -35,8 +35,6 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
 
     let http_client = Client::builder().build().unwrap();
 
-    println!("{:?}", entry);
-
     task::spawn(
         async move {
             let span = tracing::Span::current();
@@ -52,6 +50,8 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                 .position(|r| r.dao_handler_id == entry.handler_id)
                 .expect("DaoHandler not found in refresh status array");
             let dao_handler = daos_refresh_status.get_mut(dao_handler_position).unwrap();
+
+            println!("{:?} {:?}", entry.refresh_type, dao_handler);
 
             let response = http_client
                 .post(&post_url)

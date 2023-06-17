@@ -34,8 +34,6 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
 
     let http_client = Client::builder().build().unwrap();
 
-    println!("{:?}", entry);
-
     task::spawn({
         async move {
             let span = tracing::Span::current();
@@ -56,6 +54,8 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                 .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "voters": entry.voters, "refreshspeed": dao_handler_r.votersrefreshspeed,  "trace": trace }))
                 .send()
                 .await;
+
+            println!("{:?} {:?}", entry.refresh_type, dao_handler);
 
             match response {
                 Ok(res) => {
