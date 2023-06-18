@@ -46,12 +46,12 @@ const connectors = connectorsForWallets([
     groupName: "Recommended",
     wallets: [
       metaMaskWallet({
-        projectId: "1e1557e162e490215d974e20dcf93cef",
+        projectId: process.env.NEXT_PUBLIC_WALLERCONNECTID ?? "",
         chains: chains,
       }),
       injectedWallet({ chains }),
       walletConnectWallet({
-        projectId: "1e1557e162e490215d974e20dcf93cef",
+        projectId: process.env.NEXT_PUBLIC_WALLERCONNECTID ?? "",
         chains,
       }),
     ],
@@ -65,7 +65,7 @@ const connectors = connectorsForWallets([
         chains,
       }),
       ledgerWallet({
-        projectId: "1e1557e162e490215d974e20dcf93cef",
+        projectId: process.env.NEXT_PUBLIC_WALLERCONNECTID ?? "",
         chains,
       }),
       rabbyWallet({
