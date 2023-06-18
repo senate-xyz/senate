@@ -46,7 +46,7 @@ pub fn setup() {
     opentelemetry::global::set_text_map_propagator(TraceContextPropagator::new());
 
     let filter_str = format!("{}={}", app_name, debug_level);
-    let env_filter = EnvFilter::try_new(filter_str).unwrap_or_else(|_| EnvFilter::new("debug"));
+    let env_filter = EnvFilter::try_new(filter_str).unwrap_or_else(|_| EnvFilter::new("info"));
 
     let mut map = MetadataMap::with_capacity(3);
 
@@ -65,10 +65,10 @@ pub fn setup() {
                 .with_endpoint("https://tempo-prod-08-prod-eu-west-3.grafana.net:443")
                 .with_metadata(map),
         )
-        .with_trace_config(
-            trace::config()
-                .with_resource(Resource::new(vec![KeyValue::new("service.name", app_name)])),
-        )
+        .with_trace_config(trace::config().with_resource(Resource::new(vec![
+            KeyValue::new("service.name", app_name),
+            KeyValue::new("service.namespace", exec_env.clone()),
+        ])))
         .install_batch(opentelemetry::runtime::Tokio)
         .unwrap();
 
