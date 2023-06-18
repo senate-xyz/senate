@@ -65,7 +65,7 @@ const connectors = connectorsForWallets([
         chains,
       }),
       ledgerWallet({
-        projectId: "Senate",
+        projectId: "1e1557e162e490215d974e20dcf93cef",
         chains,
       }),
       rabbyWallet({

@@ -49,6 +49,7 @@ const WalletConnect = () => {
 
     if (
       session.status == "authenticated" &&
+      account.isConnected &&
       acceptedTerms.isSuccess &&
       acceptedTermsTimestamp.isSuccess
     ) {
@@ -57,7 +58,11 @@ const WalletConnect = () => {
         disconnectForTerms();
       }
     }
-  }, [acceptedTerms.isFetched, acceptedTermsTimestamp.isFetched]);
+  }, [
+    acceptedTerms.isFetched,
+    acceptedTermsTimestamp.isFetched,
+    account.isConnected,
+  ]);
 
   if (process.env.OUTOFSERVICE === "true") redirect("/outofservice");
   // const [cookie] = useCookies(['hasSeenLanding'])
