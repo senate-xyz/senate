@@ -33,16 +33,6 @@ import { PostHogProvider } from "posthog-js/react";
 import { getWebInstrumentations, initializeFaro } from "@grafana/faro-web-sdk";
 import { TracingInstrumentation } from "@grafana/faro-web-tracing";
 
-var faro = initializeFaro({
-  url: "https://faro-collector-prod-eu-west-3.grafana.net/collect/a50f821c64ac545d40b5a05022855dc3",
-  app: {
-    name: "web",
-    version: "1.0.0",
-    environment: process.env.NEXT_PUBLIC_EXEC_ENV,
-  },
-  instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
-});
-
 const { chains, publicClient } = configureChains(
   [mainnet],
   [
@@ -132,6 +122,16 @@ const Disclaimer: DisclaimerComponent = () => (
 
 // Check that PostHog is client-side (used to handle Next.js SSR)
 if (typeof window !== "undefined") {
+  initializeFaro({
+    url: "https://faro-collector-prod-eu-west-3.grafana.net/collect/a50f821c64ac545d40b5a05022855dc3",
+    app: {
+      name: "web",
+      version: "1.0.0",
+      environment: process.env.NEXT_PUBLIC_EXEC_ENV,
+    },
+    instrumentations: [...getWebInstrumentations()],
+  });
+
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
     api_host: `${process.env.NEXT_PUBLIC_WEB_URL || ""}/ingest`,
     // Enable debug mode in development
