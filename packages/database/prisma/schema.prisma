@@ -79,7 +79,7 @@ model dao {
   subscriptions subscription[]
   votes         vote[]
 
-  quorumwarningemail Boolean @default(false)
+  quorumwarningemailsupport Boolean @default(false)
 
   createdat DateTime @default(now())
   updatedat DateTime @updatedAt
