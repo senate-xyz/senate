@@ -1,5 +1,5 @@
 use anyhow::Result;
-use tracing::{debug, instrument};
+use tracing::{debug, event, instrument, Level};
 
 use crate::prisma::{voter, voterhandler, PrismaClient, RefreshStatus};
 
@@ -39,7 +39,7 @@ pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
                 .exec()
                 .await?;
 
-            debug!("created {:?} votehandlers", result);
+            event!(Level::DEBUG, "created {:?} votehandlers", result);
         }
     }
     Ok(())

@@ -63,7 +63,7 @@ pub async fn uniswap_proposals(
     Ok(result)
 }
 
-#[instrument(skip(p, ctx), ret, level = "debug")]
+#[instrument(skip(p, ctx, decoder, gov_contract), ret, level = "debug")]
 async fn data_for_proposal(
     p: (uniswapgov::uniswapgov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,
@@ -177,8 +177,6 @@ async fn data_for_proposal(
         url: proposal_url,
         state,
     };
-
-    debug!("{:?}", proposal);
 
     Ok(proposal)
 }
