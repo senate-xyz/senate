@@ -124,7 +124,7 @@ pub async fn makerexecutive_votes(
         .collect())
 }
 
-#[instrument(skip(ctx), level = "debug")]
+#[instrument(skip(ctx, spell_addresses), level = "debug")]
 async fn get_votes_for_voter(
     spell_addresses: Vec<String>,
     dao_handler: daohandler::Data,

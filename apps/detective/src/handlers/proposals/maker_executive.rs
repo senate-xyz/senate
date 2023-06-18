@@ -39,7 +39,7 @@ const VOTE_MULTIPLE_ACTIONS_TOPIC: &str =
 const VOTE_SINGLE_ACTION_TOPIC: &str =
     "0xa69beaba00000000000000000000000000000000000000000000000000000000";
 
-#[instrument(skip(ctx), ret, level = "info")]
+#[instrument(skip(ctx), level = "info")]
 pub async fn maker_executive_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
