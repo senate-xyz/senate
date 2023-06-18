@@ -63,7 +63,6 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
             match response {
                 Ok(res) => {
                     let data = res.json::<ProposalsResponse>().await;
-                    
                     match data {
                         Ok(data) => {
                             event!(Level::DEBUG, "{:?}", data);
