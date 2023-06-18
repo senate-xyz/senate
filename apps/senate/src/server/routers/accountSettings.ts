@@ -1,4 +1,4 @@
-import { privateProcedure, router } from "../trpc";
+import { privateProcedure, publicProcedure, router } from "../trpc";
 import { z } from "zod";
 import { MagicUserState, prisma } from "@senate/database";
 import { ServerClient } from "postmark";
@@ -472,7 +472,9 @@ export const accountSettingsRouter = router({
       return user;
     }),
 
-  getAcceptedTerms: privateProcedure.query(async ({ ctx }) => {
+  getAcceptedTerms: publicProcedure.query(async ({ ctx }) => {
+    if (!ctx.user) return false;
+
     const username = ctx.user.name;
 
     const user = await prisma.user.findFirst({
@@ -486,8 +488,10 @@ export const accountSettingsRouter = router({
     return user?.acceptedterms;
   }),
 
-  getAcceptedTermsTimestamp: privateProcedure.query(async ({ ctx }) => {
-    const username = ctx.user.name;
+  getAcceptedTermsTimestamp: publicProcedure.query(async ({ ctx }) => {
+    if (!ctx.user) return false;
+
+    const username = ctx.user?.name;
 
     const user = await prisma.user.findFirst({
       where: {
