@@ -362,53 +362,54 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
         .await
         .unwrap();
 
-    let proposals_ending_no_quorum: Vec<_> = proposals_ending_soon
+    let proposals_to_send_notifications: Vec<_> = proposals_ending_soon
         .iter()
-        .filter(|&p| p.quorum.as_f64().unwrap() > p.scorestotal.as_f64().unwrap())
+        .filter(|&p| {
+            p.quorum.as_f64().unwrap() > p.scorestotal.as_f64().unwrap()
+                && p.dao.quorumwarningemailsupport
+        })
         .collect();
 
-    for proposal in proposals_ending_no_quorum.iter() {
-        if proposal.dao.quorumwarningemail {
-            let subscriptions = db
-                .subscription()
-                .find_many(vec![subscription::daoid::equals(
-                    proposal.daoid.to_string(),
-                )])
-                .include(subscription::include!({
-                    user
-                    dao
-                }))
-                .exec()
-                .instrument(debug_span!("get_subscriptions"))
+    for proposal in proposals_to_send_notifications.iter() {
+        let subscriptions = db
+            .subscription()
+            .find_many(vec![subscription::daoid::equals(
+                proposal.daoid.to_string(),
+            )])
+            .include(subscription::include!({
+                user
+                dao
+            }))
+            .exec()
+            .instrument(debug_span!("get_subscriptions"))
+            .await
+            .unwrap();
+
+        let subscriptions_with_email: Vec<_> = subscriptions
+            .iter()
+            .filter(|s| {
+                s.user.verifiedaddress
+                    && s.user.verifiedemail
+                    && !s.user.email.clone().unwrap().is_empty()
+            })
+            .collect();
+
+        for sub in subscriptions_with_email.iter() {
+            let voted = get_vote(sub.userid.clone(), proposal.id.clone(), db)
                 .await
                 .unwrap();
-
-            let subscriptions_with_email: Vec<_> = subscriptions
-                .iter()
-                .filter(|s| {
-                    s.user.verifiedaddress
-                        && s.user.verifiedemail
-                        && !s.user.email.clone().unwrap().is_empty()
-                })
-                .collect();
-
-            for sub in subscriptions_with_email.iter() {
-                let voted = get_vote(sub.userid.clone(), proposal.id.clone(), db)
+            if !voted {
+                db.notification()
+                    .create_many(vec![notification::create_unchecked(
+                        sub.userid.to_string(),
+                        NotificationType::QuorumNotReachedEmail,
+                        vec![notification::proposalid::set(proposal.id.clone().into())],
+                    )])
+                    .skip_duplicates()
+                    .exec()
+                    .instrument(debug_span!("create_notifications"))
                     .await
                     .unwrap();
-                if sub.dao.quorumwarningemail && !voted {
-                    db.notification()
-                        .create_many(vec![notification::create_unchecked(
-                            sub.userid.to_string(),
-                            NotificationType::QuorumNotReachedEmail,
-                            vec![notification::proposalid::set(proposal.id.clone().into())],
-                        )])
-                        .skip_duplicates()
-                        .exec()
-                        .instrument(debug_span!("create_notifications"))
-                        .await
-                        .unwrap();
-                }
             }
         }
     }
