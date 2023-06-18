@@ -513,7 +513,7 @@ async fn get_ended_proposals(
         .proposal()
         .find_many(vec![
             proposal::timeend::lte(Utc::now().into()),
-            proposal::timeend::gt((Utc::now() - Duration::days(1)).into()),
+            proposal::timeend::gte((Utc::now() - Duration::days(1)).into()),
             proposal::daoid::in_vec(
                 user.subscriptions
                     .clone()
@@ -522,7 +522,6 @@ async fn get_ended_proposals(
                     .collect(),
             ),
             proposal::state::not(ProposalState::Canceled),
-            proposal::scorestotal::gt(json!(0)),
         ])
         .order_by(proposal::timeend::order(Direction::Desc))
         .include(proposal_with_dao::include())
