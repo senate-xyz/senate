@@ -102,7 +102,7 @@
             <td class="proposal-name">
               <mj-raw><a href="{{url}}">{{proposalName}}</a></mj-raw>
             </td>
-            <td>
+            <td style="text-align: center">
               <div
                 style="
                   display: flex;
@@ -230,7 +230,7 @@
             <td class="proposal-name">
               <mj-raw><a href="{{url}}">{{proposalName}}</a></mj-raw>
             </td>
-            <td>
+            <td style="text-align: center">
               <div
                 style="
                   display: flex;

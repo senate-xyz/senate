@@ -30,6 +30,18 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
+import { getWebInstrumentations, initializeFaro } from "@grafana/faro-web-sdk";
+import { TracingInstrumentation } from "@grafana/faro-web-tracing";
+
+var faro = initializeFaro({
+  url: "https://faro-collector-prod-eu-west-3.grafana.net/collect/a50f821c64ac545d40b5a05022855dc3",
+  app: {
+    name: "web",
+    version: "1.0.0",
+    environment: process.env.NEXT_PUBLIC_EXEC_ENV,
+  },
+  instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
+});
 
 const { chains, publicClient } = configureChains(
   [mainnet],
@@ -44,12 +56,12 @@ const connectors = connectorsForWallets([
     groupName: "Recommended",
     wallets: [
       metaMaskWallet({
-        projectId: "ba2ea900f1a01f07f3f489619d9451b3",
+        projectId: "1e1557e162e490215d974e20dcf93cef",
         chains: chains,
       }),
       injectedWallet({ chains }),
       walletConnectWallet({
-        projectId: "ba2ea900f1a01f07f3f489619d9451b3",
+        projectId: "1e1557e162e490215d974e20dcf93cef",
         chains,
       }),
     ],
