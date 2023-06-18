@@ -6,7 +6,7 @@ use prisma_client_rust::{
     operator::{and, or},
     Direction,
 };
-use tracing::{debug, debug_span, instrument, Instrument};
+use tracing::{debug, debug_span, event, instrument, Instrument, Level};
 
 use prisma::{daohandler, PrismaClient};
 
@@ -17,7 +17,7 @@ use crate::{
     RefreshEntry, RefreshType,
 };
 
-#[instrument(skip(client), ret, level = "info")]
+#[instrument(skip_all, level = "info")]
 pub async fn produce_snapshot_votes_queue(
     client: &PrismaClient,
     config: &Config,
@@ -109,7 +109,10 @@ pub async fn produce_snapshot_votes_queue(
         for vhr in &mut *voter_handlers_r {
             vhr.refresh_status = prisma::RefreshStatus::Pending;
             vhr.last_refresh = Utc::now();
+            event!(Level::DEBUG, "{:?}", vhr);
         }
+
+        event!(Level::DEBUG, "{:?}", items);
 
         refresh_queue.extend(items)
     }

@@ -74,7 +74,7 @@ pub async fn maker_poll_proposals(
     Ok(result)
 }
 
-#[instrument(skip(p, ctx), ret, level = "debug")]
+#[instrument(skip(p, ctx, decoder), ret, level = "debug")]
 async fn data_for_proposal(
     p: (makerpollcreate::makerpollcreate::PollCreatedFilter, LogMeta),
     ctx: &Ctx,
@@ -157,8 +157,6 @@ async fn data_for_proposal(
             ProposalState::Active
         },
     };
-
-    debug!("{:?}", proposal);
 
     Ok(proposal)
 }

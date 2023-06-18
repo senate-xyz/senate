@@ -10,7 +10,9 @@ use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use rocket::serde::json::Json;
 use serde::{Deserialize, Deserializer};
 use serde_json::Value;
-use tracing::{debug_span, info_span, instrument, span, trace_span, Instrument, Level, Span};
+use tracing::{
+    debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
+};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
@@ -73,6 +75,7 @@ pub async fn update_snapshot_votes<'a>(
     root_span.set_parent(parent_context.clone());
 
     async move {
+        event!(Level::DEBUG, "{:?}", data);
         let dao_handler = ctx
             .db
             .daohandler()
@@ -149,9 +152,13 @@ pub async fn update_snapshot_votes<'a>(
             search_from_timestamp
         );
 
-        debug!(
+        event!(
+            Level::DEBUG,
             "{:?} {:?} {:?} {:?}",
-            dao_handler, decoder, search_from_timestamp, graphql_query,
+            dao_handler,
+            decoder,
+            search_from_timestamp,
+            graphql_query,
         );
 
         let response = match update_votes(
@@ -191,7 +198,7 @@ pub async fn update_snapshot_votes<'a>(
     .await
 }
 
-#[instrument(skip(ctx, voter_handlers), level = "debug")]
+#[instrument(skip(ctx, voter_handlers, graphql_query), level = "debug")]
 async fn update_votes(
     graphql_query: String,
     search_from_timestamp: i64,
@@ -285,7 +292,7 @@ async fn update_refresh_statuses(
         uptodate = true;
     }
 
-    debug!("{:?} {:?}", search_to_timestamp, new_index);
+    event!(Level::DEBUG, "{:?} {:?}", search_to_timestamp, new_index);
 
     let updated = ctx
         .db
@@ -316,12 +323,12 @@ async fn update_refresh_statuses(
         .instrument(debug_span!("update_snapshotindex"))
         .await?;
 
-    debug!("{:?} ", updated);
+    event!(Level::DEBUG, "{:?} ", updated);
 
     Ok(())
 }
 
-#[instrument(skip(ctx, votes), level = "debug")]
+#[instrument(skip(ctx, votes, p), level = "debug")]
 async fn update_votes_for_proposal(
     votes: Vec<GraphQLVote>,
     p: GraphQLProposal,
@@ -376,6 +383,8 @@ async fn create_old_votes(
     dao_handler: daohandler::Data,
 ) -> Result<bool> {
     for old_vote in votes_for_proposal {
+        event!(Level::DEBUG, "{:?}", old_vote);
+
         let exists = ctx
             .db
             .vote()
@@ -408,6 +417,7 @@ async fn create_old_votes(
                         )))],
                     )
                     .exec()
+                    .instrument(debug_span!("create_vote"))
                     .await
                     .unwrap();
             }
@@ -424,12 +434,14 @@ async fn update_or_create_current_votes(
     proposal_id: String,
     dao_handler: daohandler::Data,
 ) -> Result<()> {
-    for v in votes_for_proposal {
+    for vote in votes_for_proposal {
+        event!(Level::DEBUG, "{:?}", vote);
+
         let existing = ctx
             .db
             .vote()
             .find_unique(vote::voteraddress_daoid_proposalid(
-                v.voter.to_string(),
+                vote.voter.to_string(),
                 dao_handler.daoid.clone(),
                 proposal_id.clone(),
             ))
@@ -439,30 +451,31 @@ async fn update_or_create_current_votes(
 
         match existing {
             Some(existing) => {
-                if existing.choice != v.choice
-                    || existing.votingpower != v.vp
-                    || existing.reason != v.reason
+                if existing.choice != vote.choice
+                    || existing.votingpower != vote.vp
+                    || existing.reason != vote.reason
                 {
                     ctx.db
                         .vote()
                         .update(
                             vote::voteraddress_daoid_proposalid(
-                                v.voter.clone(),
+                                vote.voter.clone(),
                                 dao_handler.daoid.clone(),
                                 proposal_id.clone(),
                             ),
                             vec![
                                 vote::timecreated::set(Some(DateTime::from_utc(
-                                    NaiveDateTime::from_timestamp_millis(v.created * 1000)
+                                    NaiveDateTime::from_timestamp_millis(vote.created * 1000)
                                         .expect("bad created timestamp"),
                                     FixedOffset::east_opt(0).unwrap(),
                                 ))),
-                                vote::choice::set(v.choice.clone()),
-                                vote::votingpower::set(v.vp.into()),
-                                vote::reason::set(v.reason),
+                                vote::choice::set(vote.choice.clone()),
+                                vote::votingpower::set(vote.vp.into()),
+                                vote::reason::set(vote.reason),
                             ],
                         )
                         .exec()
+                        .instrument(debug_span!("update_vote"))
                         .await
                         .unwrap();
                 }
@@ -471,20 +484,21 @@ async fn update_or_create_current_votes(
                 ctx.db
                     .vote()
                     .create(
-                        v.choice.clone(),
-                        v.vp.into(),
-                        v.reason.clone(),
-                        voter::address::equals(v.voter.clone()),
+                        vote.choice.clone(),
+                        vote.vp.into(),
+                        vote.reason.clone(),
+                        voter::address::equals(vote.voter.clone()),
                         proposal::id::equals(proposal_id.clone()),
                         dao::id::equals(dao_handler.daoid.clone()),
                         daohandler::id::equals(dao_handler.id.clone()),
                         vec![vote::timecreated::set(Some(DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(v.created * 1000)
+                            NaiveDateTime::from_timestamp_millis(vote.created * 1000)
                                 .expect("bad created timestamp"),
                             FixedOffset::east_opt(0).unwrap(),
                         )))],
                     )
                     .exec()
+                    .instrument(debug_span!("create_vote"))
                     .await
                     .unwrap();
             }

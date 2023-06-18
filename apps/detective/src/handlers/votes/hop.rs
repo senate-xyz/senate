@@ -22,7 +22,7 @@ struct Decoder {
     address: String,
 }
 
-#[instrument(skip(ctx, voters), ret, level = "info")]
+#[instrument(skip(ctx, voters), level = "info")]
 pub async fn hop_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -72,8 +72,6 @@ pub async fn hop_votes(
         result.push(voteresult?);
     }
 
-    debug!("{:?}", result);
-
     Ok(result
         .iter()
         .map(|r| VoteResult {
@@ -84,7 +82,7 @@ pub async fn hop_votes(
         .collect())
 }
 
-#[instrument(skip(ctx, logs), ret, level = "debug")]
+#[instrument(skip(ctx, logs), level = "debug")]
 async fn get_votes_for_voter(
     logs: Vec<(VoteCastFilter, LogMeta)>,
     dao_handler: daohandler::Data,

@@ -6,7 +6,7 @@ use ethers::providers::{Http, Middleware, Provider};
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use reqwest::Client;
 use serde::Deserialize;
-use tracing::{debug_span, info, instrument, Instrument};
+use tracing::{debug_span, event, info, instrument, Instrument, Level};
 
 use crate::Context;
 
@@ -50,7 +50,7 @@ pub async fn estimate_timestamp(block_number: i64, ctx: &Context) -> Result<Date
             Utc,
         );
 
-        debug!("{:?}", result);
+        event!(Level::DEBUG, "{:?}", result);
         return Ok(result);
     }
 
@@ -88,7 +88,7 @@ pub async fn estimate_timestamp(block_number: i64, ctx: &Context) -> Result<Date
                     Err(_) => bail!("Unable to deserialize etherscan response."),
                 };
 
-                debug!("{:?}", data);
+                event!(Level::DEBUG, "{:?}", data);
                 return Ok(data);
             }
 
@@ -98,7 +98,7 @@ pub async fn estimate_timestamp(block_number: i64, ctx: &Context) -> Result<Date
                 tokio::time::sleep(backoff_duration).await;
             }
             _ => {
-                warn!("Could not get result");
+                event!(Level::WARN, "Could not get result");
                 return Ok(DateTime::from_utc(
                     NaiveDateTime::from_timestamp_millis(Utc::now().timestamp() * 1000)
                         .expect("bad timestamp"),
@@ -145,7 +145,7 @@ pub async fn estimate_block(timestamp: i64, ctx: &Context) -> Result<i64> {
                     Err(_) => i64::from(0),
                 };
 
-                debug!("{}", data);
+                event!(Level::DEBUG, "{}", data);
                 return Ok(data);
             }
 
@@ -155,7 +155,7 @@ pub async fn estimate_block(timestamp: i64, ctx: &Context) -> Result<i64> {
                 tokio::time::sleep(backoff_duration).await;
             }
             _ => {
-                warn!("Could not get result");
+                event!(Level::WARN, "Could not get result");
                 return Ok(i64::from(0));
             }
         }

@@ -63,9 +63,13 @@ async fn sanitize(
         .parse::<Address>()
         .expect("bad address");
 
-    debug!(
+    event!(
+        Level::DEBUG,
         "{:?} {:?} {:?} {:?}",
-        from_block, to_block, decoder, address
+        from_block,
+        to_block,
+        decoder,
+        address
     );
 
     let gov_contract =
@@ -81,8 +85,6 @@ async fn sanitize(
         .instrument(debug_span!("get_rpc_events"))
         .await
         .unwrap();
-
-    debug!("{:?}", withdrawn_proposals);
 
     for withdrawn_proposal in withdrawn_proposals {
         let proposal = ctx
@@ -116,9 +118,17 @@ async fn sanitize(
                 .await
                 .unwrap();
 
-            info!("Sanitized {} MakerPoll proposal", existing_proposal.name);
+            event!(
+                Level::INFO,
+                "Sanitized {} MakerPoll proposal",
+                existing_proposal.name
+            );
 
-            debug!("Sanitized MakerPoll proposal - {:?}", existing_proposal);
+            event!(
+                Level::DEBUG,
+                "Sanitized MakerPoll proposal - {:?}",
+                existing_proposal
+            );
         }
     }
 }

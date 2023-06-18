@@ -8,8 +8,8 @@ use prisma_client_rust::{
     chrono::{DateTime, NaiveDateTime, Utc},
 };
 use serde::Deserialize;
-use tracing::Instrument;
 use tracing::{debug_span, instrument};
+use tracing::{event, Instrument};
 
 use crate::{
     contracts::{compoundgov, compoundgov::ProposalCreatedFilter},
@@ -65,7 +65,7 @@ pub async fn compound_proposals(
     Ok(result)
 }
 
-#[instrument(skip(p, ctx), ret, level = "debug")]
+#[instrument(skip(p, ctx, decoder, gov_contract), ret, level = "debug")]
 async fn data_for_proposal(
     p: (compoundgov::compoundgov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,
@@ -175,8 +175,6 @@ async fn data_for_proposal(
         url: proposal_url,
         state,
     };
-
-    debug!("{:?}", proposal);
 
     Ok(proposal)
 }

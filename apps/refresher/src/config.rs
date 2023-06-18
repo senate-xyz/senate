@@ -56,7 +56,7 @@ lazy_static::lazy_static! {
     );
 }
 
-#[instrument(skip(client), level = "debug")]
+#[instrument(skip(client), ret, level = "debug")]
 async fn load_config_value(client: &PrismaClient, key: &str, default_value: u32) -> Result<u32> {
     if let Some(config_data) = client
         .config()
@@ -119,6 +119,5 @@ pub(crate) async fn load_config_from_db(client: &PrismaClient) -> Result<()> {
     config.batch_chain_votes = batch_chain_votes;
     config.batch_snapshot_votes = batch_snapshot_votes;
 
-    debug!("loaded config");
     Ok(())
 }

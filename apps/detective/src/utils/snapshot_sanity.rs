@@ -78,8 +78,6 @@ async fn sanitize(
         Err(_) => panic!("{:?} decoder not found", dao_handler.clone().id),
     };
 
-    debug!("{:?}", decoder);
-
     let graphql_query = format!(
         r#"
         {{
@@ -103,7 +101,7 @@ async fn sanitize(
         sanitize_to.timestamp()
     );
 
-    debug!("{}", graphql_query);
+    event!(Level::DEBUG, "{}", graphql_query);
 
     let graphql_response = ctx
         .http_client
@@ -115,8 +113,6 @@ async fn sanitize(
 
     let response_data: GraphQLResponse = graphql_response.unwrap().json().await.unwrap();
     let graph_proposals: Vec<GraphQLProposal> = response_data.data.proposals;
-
-    debug!("{:?}", graph_proposals);
 
     if database_proposals.len() > graph_proposals.len() {
         let graphql_proposal_ids: Vec<String> = graph_proposals
@@ -130,7 +126,7 @@ async fn sanitize(
             .filter(|proposal| !graphql_proposal_ids.contains(&proposal.externalid))
             .collect();
 
-        debug!("{:?}", proposals_to_delete);
+        event!(Level::DEBUG, "{:?}", proposals_to_delete);
 
         let _ = ctx
             .db
@@ -152,15 +148,18 @@ async fn sanitize(
             .instrument(debug_span!("delete_proposals"))
             .await;
 
-        info!(
+        event!(
+            Level::INFO,
             "Sanitized {} Snapshot proposals for {}",
             proposals_to_delete.len(),
             dao_handler.id
         );
 
-        debug!(
+        event!(
+            Level::DEBUG,
             "Sanitized Snapshot proposals for {:?} - {:?}",
-            dao_handler, proposals_to_delete,
+            dao_handler,
+            proposals_to_delete,
         );
     }
 }

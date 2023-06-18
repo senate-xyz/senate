@@ -20,12 +20,13 @@ use crate::{
 };
 
 #[allow(non_snake_case)]
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct ApiResponse {
     voter_address: String,
     success: bool,
 }
 
+#[instrument(skip_all, level = "info")]
 pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
     let detective_url = env::var("DETECTIVE_URL").expect("$DETECTIVE_URL is not set");
 
@@ -54,7 +55,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                 .send()
                 .await;
 
-            println!("{:?} {:?}", entry.refresh_type, dao_handler_r);
+            event!(Level::DEBUG, "{:?} {:?}", entry.refresh_type, dao_handler_r);
 
             match response {
                 Ok(res) => {
@@ -95,16 +96,18 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                                 {
                                     vh.refresh_status = prisma::RefreshStatus::Done;
                                     vh.last_refresh = Utc::now();
+                                    event!(Level::DEBUG, "ok: {:?}", vh);
                                 }
 
                                 if nok_voters_response.contains(&vh.voter_address)
                                 {
                                     vh.refresh_status = prisma::RefreshStatus::New;
                                     vh.last_refresh = Utc::now();
+                                    event!(Level::DEBUG, "nok: {:?}", vh);
                                 }
                             }
                         }
-                        Err(_) => {
+                        Err(e) => {
                             for vh in voter_refresh_status.iter_mut() {
                                 vh.refresh_status = prisma::RefreshStatus::New;
                                 vh.last_refresh = Utc::now();
@@ -113,10 +116,11 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                                 dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
                                 100,
                             );
+                            event!(Level::WARN, "{:?}", e);
                         }
                     }
                 }
-                Err(_) => {
+                Err(e) => {
                     for vh in voter_refresh_status.iter_mut() {
                         vh.refresh_status = prisma::RefreshStatus::New;
                         vh.last_refresh = Utc::now();
@@ -125,9 +129,10 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                         dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
                         100,
                     );
+                    event!(Level::WARN, "{:?}", e);
                 }
             }
-        }.instrument(info_span!("detective_request"))
+        }.instrument(info_span!("consume_chain_votes_async"))
     );
 
     Ok(())

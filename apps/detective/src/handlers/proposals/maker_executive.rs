@@ -98,7 +98,7 @@ pub async fn maker_executive_proposals(
     Ok(result)
 }
 
-#[instrument(skip(ctx), ret, level = "debug")]
+#[instrument(skip(ctx, decoder), ret, level = "debug")]
 async fn proposal(
     spell_address: &String,
     decoder: &Decoder,
@@ -172,8 +172,6 @@ async fn proposal(
         url: proposal_url,
         state,
     };
-
-    debug!("{:?}", proposal);
 
     Ok(proposal)
 }

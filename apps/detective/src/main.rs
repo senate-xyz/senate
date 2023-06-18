@@ -16,7 +16,7 @@ use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tracing::instrument;
+use tracing::{debug_span, event, instrument, Instrument, Level};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 use url::Url;
 
@@ -123,15 +123,18 @@ async fn rocket() -> _ {
         http_client: http_client.clone(),
     };
 
-    tokio::spawn(async move {
-        let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(5 * 60));
-        loop {
-            interval.tick().await;
-            info!("running sanity");
-            maker_polls_sanity_check(&context).await;
-            snapshot_sanity_check(&context).await;
+    tokio::spawn(
+        async move {
+            let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(5 * 60));
+            loop {
+                interval.tick().await;
+                event!(Level::INFO, "running sanity");
+                maker_polls_sanity_check(&context).await;
+                snapshot_sanity_check(&context).await;
+            }
         }
-    });
+        .instrument(debug_span!("sanity")),
+    );
 
     rocket::build()
         .manage(Context {

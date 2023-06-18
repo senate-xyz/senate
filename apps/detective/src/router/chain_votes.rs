@@ -7,7 +7,9 @@ use prisma_client_rust::Direction;
 use rocket::serde::json::Json;
 use serde::Deserialize;
 use serde_json::Value;
-use tracing::{debug_span, info_span, instrument, span, trace_span, Instrument, Level, Span};
+use tracing::{
+    debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
+};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
@@ -56,6 +58,7 @@ pub async fn update_chain_votes<'a>(
     root_span.set_parent(parent_context.clone());
 
     async move {
+        event!(Level::DEBUG, "{:?}", data);
         let dao_handler = ctx
             .db
             .daohandler()
@@ -133,9 +136,13 @@ pub async fn update_chain_votes<'a>(
             from_block = to_block;
         }
 
-        debug!(
+        event!(
+            Level::DEBUG,
             "{:?} {:?} {:?} {:?}",
-            dao_handler, batch_size, from_block, to_block
+            dao_handler,
+            batch_size,
+            from_block,
+            to_block
         );
 
         let result = get_results(ctx, &dao_handler, &from_block, &to_block, voters.clone()).await;
@@ -258,7 +265,16 @@ async fn insert_votes(
         .filter(|v| v.proposal_active)
         .collect();
 
+    event!(
+        Level::DEBUG,
+        "{:?} {:?}",
+        open_votes.len(),
+        closed_votes.len()
+    );
+
     for closed_vote in closed_votes {
+        event!(Level::DEBUG, "{:?}", closed_vote);
+
         let exists = ctx
             .db
             .vote()
@@ -287,6 +303,7 @@ async fn insert_votes(
                         vec![vote::blockcreated::set(closed_vote.block_created.into())],
                     )
                     .exec()
+                    .instrument(debug_span!("create_vote"))
                     .await
                     .unwrap();
             }
@@ -294,6 +311,8 @@ async fn insert_votes(
     }
 
     for open_vote in open_votes {
+        event!(Level::DEBUG, "{:?}", open_vote);
+
         let existing = ctx
             .db
             .vote()
@@ -327,6 +346,7 @@ async fn insert_votes(
                             ],
                         )
                         .exec()
+                        .instrument(debug_span!("update_vote"))
                         .await
                         .unwrap();
                 }
@@ -345,6 +365,7 @@ async fn insert_votes(
                         vec![],
                     )
                     .exec()
+                    .instrument(debug_span!("create_vote"))
                     .await
                     .unwrap();
             }
@@ -369,7 +390,7 @@ async fn insert_votes(
         uptodate = true;
     }
 
-    debug!("{:?} ", new_index);
+    event!(Level::DEBUG, "{:?} ", new_index);
 
     ctx.db
         .voterhandler()

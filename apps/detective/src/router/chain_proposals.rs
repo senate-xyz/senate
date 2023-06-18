@@ -7,7 +7,9 @@ use prisma_client_rust::chrono::{DateTime, FixedOffset, Utc};
 use reqwest::header::HeaderMap;
 use rocket::serde::json::Json;
 use serde_json::Value;
-use tracing::{debug_span, info_span, instrument, span, trace_span, Instrument, Level, Span};
+use tracing::{
+    debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
+};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::handlers::proposals::aave::aave_proposals;
@@ -55,6 +57,7 @@ pub async fn update_chain_proposals<'a>(
     root_span.set_parent(parent_context.clone());
 
     async move {
+        event!(Level::DEBUG, "{:?}", data);
         let dao_handler = ctx
             .db
             .daohandler()
@@ -92,9 +95,15 @@ pub async fn update_chain_proposals<'a>(
             to_block = current_block - 10;
         }
 
-        debug!(
+        event!(
+            Level::DEBUG,
             "{:?} {:?} {:?} {:?} {:?} {:?}",
-            dao_handler, min_block, batch_size, from_block, to_block, current_block
+            dao_handler,
+            min_block,
+            batch_size,
+            from_block,
+            to_block,
+            current_block
         );
 
         let result = get_results(ctx, from_block, to_block, dao_handler).await;
@@ -231,7 +240,7 @@ async fn insert_proposals(
         .await
         .expect("failed to insert proposals");
 
-    debug!("{:?}", updated);
+    event!(Level::DEBUG, "{:?}", updated);
 
     let open_proposals: Vec<ChainProposal> = proposals
         .iter()
@@ -254,7 +263,7 @@ async fn insert_proposals(
         to_block
     };
 
-    debug!("{:?} {:?}", open_proposals, new_index);
+    event!(Level::DEBUG, "{:?} {:?}", open_proposals.len(), new_index);
 
     let uptodate = dao_handler.chainindex.unwrap() - new_index < 1000;
 

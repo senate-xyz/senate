@@ -8,7 +8,9 @@ use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use rocket::serde::json::Json;
 use serde::Deserialize;
-use tracing::{debug_span, info_span, instrument, span, trace_span, Instrument, Level, Span};
+use tracing::{
+    debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
+};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
@@ -63,6 +65,7 @@ pub async fn update_snapshot_proposals<'a>(
     root_span.set_parent(parent_context.clone());
 
     async move {
+        event!(Level::DEBUG, "{:?}", data);
         let dao_handler = ctx
             .db
             .daohandler()
@@ -114,9 +117,13 @@ pub async fn update_snapshot_proposals<'a>(
             data.refreshspeed, decoder.space, old_index
         );
 
-        debug!(
+        event!(
+            Level::DEBUG,
             "{:?} {:?} {:?} {:?}",
-            dao_handler, decoder, old_index, graphql_query
+            dao_handler,
+            decoder,
+            old_index,
+            graphql_query
         );
 
         match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
@@ -262,9 +269,12 @@ async fn update_proposals(
         new_index = old_index;
     }
 
-    debug!(
+    event!(
+        Level::DEBUG,
         "{:?} {:?} {:?}",
-        open_proposals, closed_proposals, new_index
+        open_proposals.len(),
+        closed_proposals.len(),
+        new_index
     );
 
     let uptodate = old_index - new_index < 60 * 60;

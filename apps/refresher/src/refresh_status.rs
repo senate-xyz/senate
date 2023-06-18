@@ -3,10 +3,11 @@ use std::sync::Arc;
 use chrono::{DateTime, Utc};
 use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
+use tracing::{event, instrument, Level};
 
 use crate::prisma::{self, dao, voterhandler, DaoHandlerType, PrismaClient};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DaoHandlerRefreshStatus {
     pub dao_handler_id: String,
     pub refresh_status: prisma::RefreshStatus,
@@ -16,7 +17,7 @@ pub struct DaoHandlerRefreshStatus {
     pub votersrefreshspeed: i64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct VoterHandlerRefreshStatus {
     pub voter_address: String,
     pub dao_handler_id: String,
@@ -31,11 +32,13 @@ pub static DAOS_REFRESH_STATUS: Lazy<Arc<Mutex<Vec<DaoHandlerRefreshStatus>>>> =
 pub static VOTERS_REFRESH_STATUS: Lazy<Arc<Mutex<Vec<VoterHandlerRefreshStatus>>>> =
     Lazy::new(|| Arc::new(Mutex::new(Vec::new())));
 
+#[instrument(skip(client), level = "info")]
 pub async fn create_refresh_statuses(client: &PrismaClient) {
     create_daos_refresh_statuses(client).await;
     create_voters_refresh_statuses(client).await;
 }
 
+#[instrument(skip(client), level = "debug")]
 pub async fn create_daos_refresh_statuses(client: &PrismaClient) {
     let dao_handlers_count = client.daohandler().count(vec![]).exec().await.unwrap();
     let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
@@ -51,7 +54,7 @@ pub async fn create_daos_refresh_statuses(client: &PrismaClient) {
             .iter()
             .any(|refresh_status| refresh_status.dao_handler_id == daohandler.id)
         {
-            daos_refresh_status.push(DaoHandlerRefreshStatus {
+            let item = DaoHandlerRefreshStatus {
                 dao_handler_id: daohandler.clone().id,
                 refresh_status: prisma::RefreshStatus::New,
                 last_refresh: Utc::now(),
@@ -66,11 +69,14 @@ pub async fn create_daos_refresh_statuses(client: &PrismaClient) {
                 } else {
                     10000000
                 },
-            });
+            };
+            event!(Level::DEBUG, "{:?}", item.clone());
+            daos_refresh_status.push(item);
         }
     });
 }
 
+#[instrument(skip(client), level = "debug")]
 pub async fn create_voters_refresh_statuses(client: &PrismaClient) {
     let voter_handlers_count = client.voterhandler().count(vec![]).exec().await.unwrap();
 
@@ -93,13 +99,17 @@ pub async fn create_voters_refresh_statuses(client: &PrismaClient) {
             .iter()
             .any(|refresh_status| refresh_status.voter_handler_id == voterhandler.id)
         {
-            voters_refresh_status.push(VoterHandlerRefreshStatus {
+            let item = VoterHandlerRefreshStatus {
                 voter_handler_id: voterhandler.clone().id,
                 refresh_status: prisma::RefreshStatus::New,
                 last_refresh: Utc::now(),
                 dao_handler_id: voterhandler.clone().daohandlerid,
                 voter_address: voterhandler.clone().voter.address,
-            });
+            };
+
+            event!(Level::DEBUG, "{:?}", item.clone());
+
+            voters_refresh_status.push(item);
         }
     });
 }

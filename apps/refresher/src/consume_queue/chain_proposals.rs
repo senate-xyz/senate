@@ -21,7 +21,7 @@ use crate::{
     RefreshEntry,
 };
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[allow(non_snake_case)]
 struct ProposalsResponse {
     response: String,
@@ -51,7 +51,8 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                 .expect("DaoHandler not found in refresh status array");
             let dao_handler = daos_refresh_status.get_mut(dao_handler_position).unwrap();
 
-            println!("{:?} {:?}", entry.refresh_type, dao_handler);
+
+            event!(Level::DEBUG, "{:?} {:?}", entry.refresh_type, dao_handler);
 
             let response = http_client
                 .post(&post_url)
@@ -62,9 +63,10 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
             match response {
                 Ok(res) => {
                     let data = res.json::<ProposalsResponse>().await;
-
+                    
                     match data {
                         Ok(data) => {
+                            event!(Level::DEBUG, "{:?}", data);
                             match data.response.as_str() {
                                 "ok" => {
                                     dao_handler.refresh_status = prisma::RefreshStatus::Done;
@@ -94,8 +96,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                                 dao_handler.refreshspeed - (dao_handler.refreshspeed * 25 / 100),
                                 100,
                             );
-
-                            warn!("refresher error: {:#?}", e);
+                            event!(Level::WARN, "{:?}", e);
                         }
                     }
                 }
@@ -106,12 +107,11 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                         dao_handler.refreshspeed - (dao_handler.refreshspeed * 25 / 100),
                         100,
                     );
-
-                    warn!("refresher error: {:#?}", e);
+                    event!(Level::WARN, "{:?}", e);
                 }
             }
         }
-            .instrument(info_span!("detective_request"))
+        .instrument(info_span!("consume_chain_proposals_async"))
     );
 
     Ok(())
