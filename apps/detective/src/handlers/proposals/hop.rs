@@ -30,7 +30,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
-#[instrument(skip(ctx), ret, level = "info")]
+#[instrument(skip(ctx), level = "info")]
 pub async fn hop_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
