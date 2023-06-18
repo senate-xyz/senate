@@ -85,7 +85,7 @@ pub fn setup() {
     if env::consts::OS != "macos" {
         telemetry_agent =
             PyroscopeAgent::builder("https://profiles-prod-004.grafana.net", app_name)
-                .backend(pprof_backend(PprofConfig::new().sample_rate(10)))
+                .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
                 .basic_auth("491298", telemetry_key)
                 .tags([("env", exec_env.as_str())].to_vec())
                 .build()

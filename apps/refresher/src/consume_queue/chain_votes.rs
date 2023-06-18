@@ -96,13 +96,14 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                                 {
                                     vh.refresh_status = prisma::RefreshStatus::Done;
                                     vh.last_refresh = Utc::now();
+                                    event!(Level::DEBUG, "ok: {:?}", vh);
                                 }
 
                                 if nok_voters_response.contains(&vh.voter_address)
                                 {
                                     vh.refresh_status = prisma::RefreshStatus::New;
                                     vh.last_refresh = Utc::now();
-                                    event!(Level::WARN, "nok: {:?}", vh.voter_address);
+                                    event!(Level::DEBUG, "nok: {:?}", vh);
                                 }
                             }
                         }
