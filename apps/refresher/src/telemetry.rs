@@ -67,7 +67,7 @@ pub fn setup() {
         )
         .with_trace_config(trace::config().with_resource(Resource::new(vec![
             KeyValue::new("service.name", app_name),
-            KeyValue::new("service.namespace", exec_env.clone()),
+            KeyValue::new("service.env", exec_env.clone()),
         ])))
         .install_batch(opentelemetry::runtime::Tokio)
         .unwrap();
