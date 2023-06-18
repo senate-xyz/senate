@@ -109,9 +109,9 @@ pub async fn produce_snapshot_votes_queue(
         for vhr in &mut *voter_handlers_r {
             vhr.refresh_status = prisma::RefreshStatus::Pending;
             vhr.last_refresh = Utc::now();
-            event!(Level::DEBUG, "{:?}", vhr);
         }
 
+        event!(Level::DEBUG, "{:?}", voter_handlers_r);
         event!(Level::DEBUG, "{:?}", items);
 
         refresh_queue.extend(items)
