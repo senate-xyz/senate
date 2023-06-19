@@ -111,13 +111,13 @@ pub async fn update_chain_proposals<'a>(
         match result {
             Ok(_) => Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,
-                response: "ok",
+                success: true,
             }),
             Err(e) => {
                 warn!("{:?}", e);
                 Json(ProposalsResponse {
                     daoHandlerId: data.daoHandlerId,
-                    response: "nok",
+                    success: false,
                 })
             }
         }

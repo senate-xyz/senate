@@ -63,7 +63,7 @@ pub struct ProposalsRequest<'r> {
 #[serde(crate = "rocket::serde")]
 pub struct ProposalsResponse<'r> {
     daoHandlerId: &'r str,
-    response: &'static str,
+    success: bool,
 }
 
 #[allow(non_snake_case)]

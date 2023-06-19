@@ -24,7 +24,7 @@ use crate::{
 #[derive(Deserialize, Debug)]
 #[allow(non_snake_case)]
 struct ProposalsResponse {
-    response: String,
+    success: bool,
 }
 
 #[instrument(level = "info")]
@@ -66,8 +66,8 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                     match data {
                         Ok(data) => {
                             event!(Level::DEBUG, "{:?}", data);
-                            match data.response.as_str() {
-                                "ok" => {
+                            match data.success {
+                                true => {
                                     dao_handler.refresh_status = prisma::RefreshStatus::Done;
                                     dao_handler.last_refresh = Utc::now();
                                     dao_handler.refreshspeed = cmp::min(
@@ -76,7 +76,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                                         10000000,
                                     );
                                 }
-                                "nok" => {
+                                false => {
                                     dao_handler.refresh_status = prisma::RefreshStatus::New;
                                     dao_handler.last_refresh = Utc::now();
                                     dao_handler.refreshspeed = cmp::max(
@@ -85,7 +85,6 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                                         100,
                                     );
                                 }
-                                _ => panic!("Unexpected response"),
                             };
                         }
                         Err(e) => {
