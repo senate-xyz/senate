@@ -161,7 +161,10 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             },
             daoLogoUrl: format!(
                 "{}{}{}",
-                "https://senatelabs.xyz",
+                env::var_os("NEXT_PUBLIC_WEB_URL")
+                    .unwrap()
+                    .into_string()
+                    .unwrap(),
                 proposal.clone().unwrap().dao.picture,
                 "_medium.png"
             ),
