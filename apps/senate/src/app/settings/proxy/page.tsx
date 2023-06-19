@@ -22,13 +22,7 @@ export default function Home() {
 
   const onEnter = async () => {
     let resolvedAddress = proxyAddress;
-    if (
-      (
-        await provider.getEnsAddress({
-          name: proxyAddress,
-        })
-      )?.length
-    ) {
+    if (proxyAddress.includes(".eth")) {
       resolvedAddress = String(
         await provider.getEnsAddress({
           name: proxyAddress,
