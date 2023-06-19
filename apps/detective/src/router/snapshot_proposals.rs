@@ -171,77 +171,100 @@ async fn update_proposals(
 
     let proposals: Vec<GraphQLProposal> = response_data.data.proposals;
 
-    let upserts = proposals.clone().into_iter().map(|proposal| {
-        ctx.db.proposal().upsert(
-            proposal::externalid_daoid(proposal.id.to_string(), dao_handler.daoid.to_string()),
-            proposal::create(
-                proposal.title.clone(),
-                proposal.id.clone(),
-                proposal.choices.clone().into(),
-                proposal.scores.clone().into(),
-                proposal.scores_total.into(),
-                proposal.quorum.into(),
-                match proposal.state.as_str() {
-                    "active" => ProposalState::Active,
-                    "pending" => ProposalState::Pending,
-                    "closed" => {
-                        if proposal.scores_state == "final" {
-                            ProposalState::Executed
-                        } else {
-                            ProposalState::Hidden
-                        }
-                    }
-                    _ => ProposalState::Unknown,
-                },
-                DateTime::from_utc(
-                    NaiveDateTime::from_timestamp_millis(proposal.created * 1000)
-                        .expect("can not create timecreated"),
-                    FixedOffset::east_opt(0).unwrap(),
-                ),
-                DateTime::from_utc(
-                    NaiveDateTime::from_timestamp_millis(proposal.start * 1000)
-                        .expect("can not create timestart"),
-                    FixedOffset::east_opt(0).unwrap(),
-                ),
-                DateTime::from_utc(
-                    NaiveDateTime::from_timestamp_millis(proposal.end * 1000)
-                        .expect("can not create timeend"),
-                    FixedOffset::east_opt(0).unwrap(),
-                ),
-                proposal.link.clone(),
-                daohandler::id::equals(dao_handler.id.to_string()),
-                dao::id::equals(dao_handler.daoid.to_string()),
-                vec![],
-            ),
-            vec![
-                proposal::choices::set(proposal.choices.clone().into()),
-                proposal::scores::set(proposal.scores.clone().into()),
-                proposal::scorestotal::set(proposal.scores_total.into()),
-                proposal::quorum::set(proposal.quorum.into()),
-                proposal::state::set(match proposal.state.as_str() {
-                    "active" => ProposalState::Active,
-                    "pending" => ProposalState::Pending,
-                    "closed" => {
-                        if proposal.scores_state == "final" {
-                            ProposalState::Executed
-                        } else {
-                            ProposalState::Hidden
-                        }
-                    }
-                    _ => ProposalState::Unknown,
-                }),
-            ],
-        )
-    });
+    for proposal in proposals.clone() {
+        let existing = ctx
+            .db
+            .proposal()
+            .find_unique(proposal::externalid_daoid(
+                proposal.id.to_string(),
+                dao_handler.daoid.to_string(),
+            ))
+            .exec()
+            .await
+            .unwrap();
 
-    let updated = ctx
-        .db
-        ._batch(upserts)
-        .instrument(debug_span!("upsert_proposals"))
-        .await
-        .context("failed to upsert proposals")?;
-
-    debug!("{:?}", updated);
+        match existing {
+            Some(_) => {
+                ctx.db
+                    .proposal()
+                    .update(
+                        proposal::externalid_daoid(
+                            proposal.id.to_string(),
+                            dao_handler.daoid.to_string(),
+                        ),
+                        vec![
+                            proposal::choices::set(proposal.choices.clone().into()),
+                            proposal::scores::set(proposal.scores.clone().into()),
+                            proposal::scorestotal::set(proposal.scores_total.into()),
+                            proposal::quorum::set(proposal.quorum.into()),
+                            proposal::state::set(match proposal.state.as_str() {
+                                "active" => ProposalState::Active,
+                                "pending" => ProposalState::Pending,
+                                "closed" => {
+                                    if proposal.scores_state == "final" {
+                                        ProposalState::Executed
+                                    } else {
+                                        ProposalState::Hidden
+                                    }
+                                }
+                                _ => ProposalState::Unknown,
+                            }),
+                        ],
+                    )
+                    .exec()
+                    .instrument(debug_span!("update_proposal"))
+                    .await
+                    .unwrap();
+            }
+            None => {
+                ctx.db
+                    .proposal()
+                    .create_unchecked(
+                        proposal.title.clone(),
+                        proposal.id.clone(),
+                        proposal.choices.clone().into(),
+                        proposal.scores.clone().into(),
+                        proposal.scores_total.into(),
+                        proposal.quorum.into(),
+                        match proposal.state.as_str() {
+                            "active" => ProposalState::Active,
+                            "pending" => ProposalState::Pending,
+                            "closed" => {
+                                if proposal.scores_state == "final" {
+                                    ProposalState::Executed
+                                } else {
+                                    ProposalState::Hidden
+                                }
+                            }
+                            _ => ProposalState::Unknown,
+                        },
+                        DateTime::from_utc(
+                            NaiveDateTime::from_timestamp_millis(proposal.created * 1000)
+                                .expect("can not create timecreated"),
+                            FixedOffset::east_opt(0).unwrap(),
+                        ),
+                        DateTime::from_utc(
+                            NaiveDateTime::from_timestamp_millis(proposal.start * 1000)
+                                .expect("can not create timestart"),
+                            FixedOffset::east_opt(0).unwrap(),
+                        ),
+                        DateTime::from_utc(
+                            NaiveDateTime::from_timestamp_millis(proposal.end * 1000)
+                                .expect("can not create timeend"),
+                            FixedOffset::east_opt(0).unwrap(),
+                        ),
+                        proposal.link.clone(),
+                        dao_handler.id.to_string(),
+                        dao_handler.daoid.to_string(),
+                        vec![],
+                    )
+                    .exec()
+                    .instrument(debug_span!("create_proposal"))
+                    .await
+                    .unwrap();
+            }
+        }
+    }
 
     let open_proposals: Vec<&GraphQLProposal> = proposals
         .iter()
