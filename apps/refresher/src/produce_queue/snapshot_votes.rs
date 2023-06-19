@@ -111,8 +111,10 @@ pub async fn produce_snapshot_votes_queue(
             vhr.last_refresh = Utc::now();
         }
 
-        event!(Level::DEBUG, "{:?}", voter_handlers_r);
-        event!(Level::DEBUG, "{:?}", items);
+        if items.len() > 0 {
+            event!(Level::DEBUG, "{:?}", voter_handlers_r);
+            event!(Level::DEBUG, "{:?}", items);
+        }
 
         refresh_queue.extend(items)
     }
