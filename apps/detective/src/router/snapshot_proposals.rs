@@ -1,4 +1,4 @@
-use std::time::UNIX_EPOCH;
+use std::{env, time::UNIX_EPOCH};
 
 use anyhow::{Context, Result};
 use chrono::{Datelike, Duration, TimeZone, Utc};
@@ -151,9 +151,14 @@ async fn update_proposals(
     dao_handler: daohandler::Data,
     old_index: i64,
 ) -> Result<()> {
+    let snapshot_key = env::var("SNAPSHOT_API_KEY").expect("$SNAPSHOT_API_KEY is not set");
+
     let graphql_response = ctx
         .http_client
-        .get("https://hub.snapshot.org/graphql")
+        .get(format!(
+            "https://hub.snapshot.org/graphql?apiKey={}",
+            snapshot_key
+        ))
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()
         .instrument(debug_span!("get_graphql_response"))

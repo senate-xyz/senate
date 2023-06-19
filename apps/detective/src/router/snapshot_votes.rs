@@ -1,4 +1,4 @@
-use std::iter::once;
+use std::{env, iter::once};
 
 use anyhow::{bail, Context, Result};
 use chrono::Duration;
@@ -206,9 +206,14 @@ async fn update_votes(
     voter_handlers: Vec<voterhandler::Data>,
     ctx: &Ctx,
 ) -> Result<()> {
+    let snapshot_key = env::var("SNAPSHOT_API_KEY").expect("$SNAPSHOT_API_KEY is not set");
+
     let graphql_response = ctx
         .http_client
-        .get("https://hub.snapshot.org/graphql")
+        .get(format!(
+            "https://hub.snapshot.org/graphql?apiKey={}",
+            snapshot_key
+        ))
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()
         .instrument(debug_span!("get_graphql_response"))
