@@ -60,9 +60,10 @@ pub async fn produce_chain_proposals_queue(config: &Config) -> Result<Vec<Refres
         dhr.refresh_status = prisma::RefreshStatus::Pending;
         dhr.last_refresh = Utc::now();
     }
-
-    event!(Level::DEBUG, "{:?}", dao_handlers);
-    event!(Level::DEBUG, "{:?}", refresh_queue);
+    if refresh_queue.len() > 0 {
+        event!(Level::DEBUG, "{:?}", dao_handlers);
+        event!(Level::DEBUG, "{:?}", refresh_queue);
+    }
 
     Ok(refresh_queue)
 }
