@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{env, sync::Arc};
 
 use chrono::{Duration, Utc};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
@@ -102,10 +102,14 @@ async fn sanitize(
     );
 
     event!(Level::DEBUG, "{}", graphql_query);
+    let snapshot_key = env::var("SNAPSHOT_API_KEY").expect("$SNAPSHOT_API_KEY is not set");
 
     let graphql_response = ctx
         .http_client
-        .get("https://hub.snapshot.org/graphql")
+        .get(format!(
+            "https://hub.snapshot.org/graphql?apiKey={}",
+            snapshot_key
+        ))
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()
         .instrument(debug_span!("get_graphql_response"))
