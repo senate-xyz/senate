@@ -154,12 +154,6 @@ async fn main() {
         event!(Level::INFO, "spawned consumer_snapshot_proposals_task");
         loop {
             if let Ok(item) = rx_snapshot_proposals.recv_async().await {
-                event!(
-                    Level::INFO,
-                    "refresh consumer_snapshot_proposals_task: {:?}",
-                    item
-                );
-
                 tokio::spawn(async move {
                     match consume_snapshot_proposals(item).await {
                         Ok(_) => {}
@@ -178,12 +172,6 @@ async fn main() {
         event!(Level::INFO, "spawned consumer_chain_proposals_task");
         loop {
             if let Ok(item) = rx_chain_proposals.recv_async().await {
-                event!(
-                    Level::INFO,
-                    "refresh consumer_chain_proposals_task: {:?}",
-                    item
-                );
-
                 tokio::spawn(async move {
                     match consume_chain_proposals(item).await {
                         Ok(_) => {}
@@ -202,12 +190,6 @@ async fn main() {
         event!(Level::INFO, "spawned consumer_snapshot_votes_task");
         loop {
             if let Ok(item) = rx_snapshot_votes.recv_async().await {
-                event!(
-                    Level::INFO,
-                    "refresh consumer_snapshot_votes_task: {:?}",
-                    item
-                );
-
                 tokio::spawn(async move {
                     match consume_snapshot_votes(item).await {
                         Ok(_) => {}
@@ -226,8 +208,6 @@ async fn main() {
         event!(Level::INFO, "spawned consumer_chain_votes_task");
         loop {
             if let Ok(item) = rx_chain_votes.recv_async().await {
-                event!(Level::INFO, "refresh consumer_chain_votes_task: {:?}", item);
-
                 tokio::spawn(async move {
                     match consume_chain_votes(item).await {
                         Ok(_) => {}
