@@ -97,44 +97,24 @@ async fn main() {
             let _ = create_refresh_statuses(&producer_client_clone).await;
 
             if let Ok(queue) = produce_snapshot_proposals_queue(&config).await {
-                event!(
-                    Level::INFO,
-                    "refresh produce_snapshot_proposals_queue: {:?}",
-                    queue
-                );
                 for item in queue {
                     tx_snapshot_proposals.try_send(item).unwrap();
                 }
             }
 
             if let Ok(queue) = produce_chain_proposals_queue(&config).await {
-                event!(
-                    Level::INFO,
-                    "refresh produce_chain_proposals_queue: {:?}",
-                    queue
-                );
                 for item in queue {
                     tx_chain_proposals.try_send(item).unwrap();
                 }
             }
 
             if let Ok(queue) = produce_snapshot_votes_queue(&producer_client_clone, &config).await {
-                event!(
-                    Level::INFO,
-                    "refresh produce_snapshot_votes_queue: {:?}",
-                    queue
-                );
                 for item in queue {
                     tx_snapshot_votes.try_send(item).unwrap();
                 }
             }
 
             if let Ok(queue) = produce_chain_votes_queue(&producer_client_clone, &config).await {
-                event!(
-                    Level::INFO,
-                    "refresh produce_chain_votes_queue: {:?}",
-                    queue
-                );
                 for item in queue {
                     tx_chain_votes.try_send(item).unwrap();
                 }
