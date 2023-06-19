@@ -22,6 +22,7 @@ use prisma::PrismaClient;
 use crate::consume_queue::{
     chain_proposals::consume_chain_proposals, snapshot_proposals::consume_snapshot_proposals,
 };
+use crate::refresh_status::DAOS_REFRESH_STATUS;
 use crate::{
     consume_queue::{chain_votes::consume_chain_votes, snapshot_votes::consume_snapshot_votes},
     produce_queue::{
@@ -138,6 +139,10 @@ async fn main() {
                     tx_chain_votes.try_send(item).unwrap();
                 }
             }
+
+            let daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
+
+            event!(Level::DEBUG, "{:?}", daos_refresh_status);
 
             sleep(Duration::from_secs(1)).await;
         }
