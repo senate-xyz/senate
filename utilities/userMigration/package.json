@@ -27,8 +27,8 @@
   "devDependencies": {
     "@types/prettier": "^2.7.3",
     "@types/eslint": "^8.40.2",
-    "@typescript-eslint/eslint-plugin": "^5.59.11",
-    "@typescript-eslint/parser": "^5.59.11",
+    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "@typescript-eslint/parser": "^5.60.0",
     "prettier": "^2.8.8",
     "eslint": "^8.43.0",
     "@types/inquirer": "^9.0.3",

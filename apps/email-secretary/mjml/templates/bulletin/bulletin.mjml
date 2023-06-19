@@ -63,7 +63,7 @@
       <mj-column padding="0">
         <mj-table cellpadding="4px" padding="0">
           <tr style="border-bottom: 1px solid #ecedee">
-            <th width="50px" style="text-align: start">DAO</th>
+            <th width="50px" style="text-align: start">Org</th>
             <th width="30%" style="text-align: start">Proposal</th>
             <th
               style="
@@ -191,7 +191,7 @@
       <mj-column>
         <mj-table cellpadding="4px" padding="0">
           <tr style="border-bottom: 1px solid #ecedee">
-            <th width="50px" style="text-align: start">DAO</th>
+            <th width="50px" style="text-align: start">Org</th>
             <th width="30%" style="text-align: start">Proposal</th>
             <th
               style="
@@ -319,7 +319,7 @@
       <mj-column padding="0">
         <mj-table cellpadding="4px" padding="0">
           <tr style="border-bottom: 1px solid #ecedee">
-            <th width="50px" style="text-align: start">DAO</th>
+            <th width="50px" style="text-align: start">Org</th>
             <th width="40%" style="text-align: start">Proposal</th>
             <th
               style="
