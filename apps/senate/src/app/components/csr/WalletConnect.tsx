@@ -37,8 +37,10 @@ const WalletConnect = () => {
   useEffect(() => {
     if (account.isConnected && posthog) {
       posthog.identify(account.address);
+    } else if (session.data?.user?.name) {
+      posthog?.identify(session.data.user.name);
     }
-  }, [account.isConnected, posthog]);
+  }, [account.isConnected, session, posthog]);
 
   useEffect(() => {
     if (
