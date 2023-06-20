@@ -102,9 +102,19 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
             match proposal {
                 Some(proposal) => {
                     let short_url = format!(
-                        "{}{}",
+                        "{}/{}/{}/{}",
                         shortner_url,
+                        "d",
                         proposal
+                            .id
+                            .chars()
+                            .rev()
+                            .take(7)
+                            .collect::<Vec<char>>()
+                            .into_iter()
+                            .rev()
+                            .collect::<String>(),
+                        user.clone()
                             .id
                             .chars()
                             .rev()

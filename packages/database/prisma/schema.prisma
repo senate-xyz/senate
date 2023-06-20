@@ -229,6 +229,9 @@ model notification {
   telegramchatid    String?
   telegrammessageid String?
 
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
+
   @@unique([userid, proposalid, type])
   @@index(fields: [userid])
   @@index(fields: [type])
@@ -256,6 +259,7 @@ enum NotificationDispatchedState {
   THIRD_RETRY
   DISPATCHED
   DELETED
+  READ
   FAILED
 }
 

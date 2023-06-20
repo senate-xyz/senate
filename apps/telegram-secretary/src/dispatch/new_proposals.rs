@@ -72,9 +72,19 @@ pub async fn dispatch_new_proposal_notifications(
                 };
 
                 let short_url = format!(
-                    "{}{}",
+                    "{}/{}/{}/{}",
                     shortner_url,
+                    "d",
                     proposal
+                        .id
+                        .chars()
+                        .rev()
+                        .take(7)
+                        .collect::<Vec<char>>()
+                        .into_iter()
+                        .rev()
+                        .collect::<String>(),
+                    user.clone()
                         .id
                         .chars()
                         .rev()

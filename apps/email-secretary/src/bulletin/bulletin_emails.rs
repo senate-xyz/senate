@@ -341,9 +341,19 @@ async fn get_ending_soon_proposals(
             None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
         };
         let short_url = format!(
-            "{}{}",
+            "{}/{}/{}/{}",
             shortner_url,
+            "b",
             p.id.chars()
+                .rev()
+                .take(7)
+                .collect::<Vec<char>>()
+                .into_iter()
+                .rev()
+                .collect::<String>(),
+            user.clone()
+                .id
+                .chars()
                 .rev()
                 .take(7)
                 .collect::<Vec<char>>()
@@ -438,9 +448,19 @@ async fn get_new_proposals(
             None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
         };
         let short_url = format!(
-            "{}{}",
+            "{}/{}/{}/{}",
             shortner_url,
+            "b",
             p.id.chars()
+                .rev()
+                .take(7)
+                .collect::<Vec<char>>()
+                .into_iter()
+                .rev()
+                .collect::<String>(),
+            user.clone()
+                .id
+                .chars()
                 .rev()
                 .take(7)
                 .collect::<Vec<char>>()
@@ -536,9 +556,19 @@ async fn get_ended_proposals(
             None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
         };
         let short_url = format!(
-            "{}{}",
+            "{}/{}/{}/{}",
             shortner_url,
+            "b",
             p.id.chars()
+                .rev()
+                .take(7)
+                .collect::<Vec<char>>()
+                .into_iter()
+                .rev()
+                .collect::<String>(),
+            user.clone()
+                .id
+                .chars()
                 .rev()
                 .take(7)
                 .collect::<Vec<char>>()

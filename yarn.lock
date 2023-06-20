@@ -6331,7 +6331,7 @@ posthog-js@^1.68.1:
 
 posthog-node@^3.1.1:
   version "3.1.1"
-  resolved "https://registry.npmjs.org/posthog-node/-/posthog-node-3.1.1.tgz"
+  resolved "https://registry.yarnpkg.com/posthog-node/-/posthog-node-3.1.1.tgz#f92c44a871552c9bfb98bf4cc8fd326d36af6cbd"
   integrity sha512-OUSYcnLHbzvY/dxNsbUGoYuTZz5XNx48BkfiCkOIJZMFvot5VPQ0KWEjX+kzYxEwHeXbjW9plqsOVcYCYfidgg==
   dependencies:
     axios "^0.27.0"
