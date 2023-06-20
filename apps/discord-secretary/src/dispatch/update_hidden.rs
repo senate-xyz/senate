@@ -106,7 +106,6 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                     let short_url = format!(
                         "{}/{}/{}/{}",
                         shortner_url,
-                        "d",
                         proposal
                             .id
                             .chars()
@@ -116,6 +115,7 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                             .into_iter()
                             .rev()
                             .collect::<String>(),
+                        "d",
                         user.clone()
                             .id
                             .chars()

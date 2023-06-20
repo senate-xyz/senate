@@ -83,30 +83,19 @@ async function log(type: Type, proposalId: string, userId: string) {
   let user = await getUser(userId);
   let proposal = await getProposal(proposalId);
 
-  if (!user || !proposal) return;
-
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user ? user.address : "visitor",
     event: type,
     properties: {
-      proposalId: proposal.id,
-      proposalUrl: proposal.url,
-      dao: proposal.dao.name,
-    },
-  });
-
-  console.log({
-    distinctId: user.address,
-    event: type,
-    properties: {
-      proposalId: proposal.id,
-      proposalUrl: proposal.url,
-      dao: proposal.dao.name,
+      proposalId: proposal ? proposal.id : "unknown",
+      proposalUrl: proposal ? proposal.url : "unknown",
+      dao: proposal ? proposal.dao.name : "unknown",
     },
   });
 }
 
 enum Type {
+  WEB = "click_web",
   EMAIL_BULLETIN = "click_bulletin",
   EMAIL_QUORUM = "click_quorum",
   DISCORD = "click_discord",
@@ -115,10 +104,16 @@ enum Type {
 }
 
 export default async function Page({ params }: { params: { slug: string } }) {
-  if (params.slug.length != 3) redirect("https://senatelabs.xyz");
+  if (params.slug.length < 2) redirect("https://senatelabs.xyz");
+
+  let proposalId = await getProposalId(params.slug[0]);
 
   let type;
-  switch (params.slug[0]) {
+  switch (params.slug[1]) {
+    case "w": {
+      type = Type.WEB;
+      break;
+    }
     case "b": {
       type = Type.EMAIL_BULLETIN;
       break;
@@ -141,15 +136,14 @@ export default async function Page({ params }: { params: { slug: string } }) {
     }
   }
 
-  let proposalId = await getProposalId(params.slug[1]);
-  let userId = await getUserId(params.slug[2]);
+  let userId = params.slug[2];
 
   await log(type, proposalId, userId);
 
   const url = await getProposalUrl(proposalId);
 
-  // if (url) {
-  //   if (url.includes("snapshot")) redirect(url + "?app=senate");
-  //   else redirect(url);
-  // } else redirect("https://senatelabs.xyz");
+  if (url) {
+    if (url.includes("snapshot")) redirect(url + "?app=senate");
+    else redirect(url);
+  } else redirect("https://senatelabs.xyz");
 }

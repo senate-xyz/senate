@@ -72,7 +72,6 @@ pub async fn dispatch_ending_soon_notifications(
                 let short_url = format!(
                     "{}/{}/{}/{}",
                     shortner_url,
-                    "t",
                     proposal
                         .id
                         .chars()
@@ -82,6 +81,7 @@ pub async fn dispatch_ending_soon_notifications(
                         .into_iter()
                         .rev()
                         .collect::<String>(),
+                    "t",
                     user.clone()
                         .id
                         .chars()

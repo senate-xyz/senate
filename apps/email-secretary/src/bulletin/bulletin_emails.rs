@@ -343,7 +343,6 @@ async fn get_ending_soon_proposals(
         let short_url = format!(
             "{}/{}/{}/{}",
             shortner_url,
-            "b",
             p.id.chars()
                 .rev()
                 .take(7)
@@ -351,6 +350,7 @@ async fn get_ending_soon_proposals(
                 .into_iter()
                 .rev()
                 .collect::<String>(),
+            "b",
             user.clone()
                 .id
                 .chars()
@@ -450,7 +450,6 @@ async fn get_new_proposals(
         let short_url = format!(
             "{}/{}/{}/{}",
             shortner_url,
-            "b",
             p.id.chars()
                 .rev()
                 .take(7)
@@ -458,6 +457,7 @@ async fn get_new_proposals(
                 .into_iter()
                 .rev()
                 .collect::<String>(),
+            "b",
             user.clone()
                 .id
                 .chars()
@@ -558,7 +558,6 @@ async fn get_ended_proposals(
         let short_url = format!(
             "{}/{}/{}/{}",
             shortner_url,
-            "b",
             p.id.chars()
                 .rev()
                 .take(7)
@@ -566,6 +565,7 @@ async fn get_ended_proposals(
                 .into_iter()
                 .rev()
                 .collect::<String>(),
+            "b",
             user.clone()
                 .id
                 .chars()

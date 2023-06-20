@@ -90,15 +90,7 @@ export const PastProposal = async (props: {
         </div>
       </td>
       <td className="hidden cursor-pointer hover:underline lg:table-cell">
-        <a
-          href={
-            props.proposal.proposalLink.includes("snapshot.org")
-              ? props.proposal.proposalLink + "?app=senate"
-              : props.proposal.proposalLink
-          }
-          target="_blank"
-          rel="noreferrer"
-        >
+        <a href={props.proposal.proposalLink} target="_blank" rel="noreferrer">
           <div className="pr-5 text-[18px] font-normal">
             {props.proposal.proposalTitle}
           </div>

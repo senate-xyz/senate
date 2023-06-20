@@ -139,7 +139,6 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
         let short_url = format!(
             "{}/{}/{}/{}",
             shortner_url,
-            "q",
             proposal
                 .clone()
                 .unwrap()
@@ -151,6 +150,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 .into_iter()
                 .rev()
                 .collect::<String>(),
+            "q",
             user.clone()
                 .id
                 .chars()

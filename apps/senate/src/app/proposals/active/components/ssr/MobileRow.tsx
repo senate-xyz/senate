@@ -85,11 +85,7 @@ export const MobileActiveProposal = async (props: {
           </div>
           <div className="cursor-pointer self-center pb-5 hover:underline">
             <a
-              href={
-                props.proposal.proposalLink.includes("snapshot.org")
-                  ? props.proposal.proposalLink + "?app=senate"
-                  : props.proposal.proposalLink
-              }
+              href={props.proposal.proposalLink}
               target="_blank"
               rel="noreferrer"
             >
