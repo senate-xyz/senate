@@ -17,7 +17,6 @@ const config = {
       "docs.synthetix.io",
     ],
   },
-
   async rewrites() {
     return [
       {
@@ -26,7 +25,7 @@ const config = {
       },
       {
         source: "/login/:path*",
-        destination: "https://posthog.andreiv.com/login/:path*",
+        destination: "https://posthog.andreiv.com/login/",
       },
     ];
   },
