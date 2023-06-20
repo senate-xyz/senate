@@ -74,7 +74,7 @@ async function log(type: Type, proposalId: string, userId: string) {
   posthog.capture({
     distinctId: user
       ? user.address
-      : "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
+      : "visitor",
     event: type,
     properties: {
       proposalId: proposal ? proposal.id : "unknown",
