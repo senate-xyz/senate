@@ -13,7 +13,16 @@ const WalletConnect = () => {
   const posthog = usePostHog();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const account = useAccount();
+  const account = useAccount({
+    onConnect() {
+      if (posthog) posthog.identify(account.address);
+    },
+    onDisconnect() {
+      if (posthog) posthog.reset();
+      if (router) router.refresh();
+    },
+  });
+
   const session = useSession();
   const acceptedTerms = trpc.accountSettings.getAcceptedTerms.useQuery();
   const acceptedTermsTimestamp =
@@ -33,24 +42,6 @@ const WalletConnect = () => {
       activeConnector.on("change", handleConnectorUpdate);
     }
   }, [activeConnector]);
-
-  useEffect(() => {
-    if (account.isConnected && posthog) {
-      posthog.identify(account.address);
-    } else if (session.data?.user?.name) {
-      posthog?.identify(session.data.user.name);
-    }
-  }, [account.isConnected, session, posthog]);
-
-  useEffect(() => {
-    if (
-      posthog &&
-      (account.isDisconnected || session.status == "unauthenticated")
-    )
-      posthog.reset();
-
-    if (router) router.refresh();
-  }, [account.isConnected, account.isDisconnected, session.status, posthog]);
 
   useEffect(() => {
     const disconnectForTerms = async () => {
