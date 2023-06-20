@@ -339,7 +339,6 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                             NotificationDispatchedState::Dispatched => todo!(),
                             NotificationDispatchedState::Deleted => todo!(),
                             NotificationDispatchedState::Failed => todo!(),
-                            NotificationDispatchedState::Read => todo!(),
                         },
                     )
                     .exec()

@@ -283,7 +283,6 @@ enum NotificationDispatchedState {
   THIRD_RETRY
   DISPATCHED
   DELETED
-  READ
   FAILED
 }
 

@@ -224,7 +224,6 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                 NotificationDispatchedState::Dispatched => todo!(),
                 NotificationDispatchedState::Deleted => todo!(),
                 NotificationDispatchedState::Failed => todo!(),
-                NotificationDispatchedState::Read => todo!(),
             },
         };
 

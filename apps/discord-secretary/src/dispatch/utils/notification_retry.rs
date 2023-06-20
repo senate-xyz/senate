@@ -41,7 +41,6 @@ pub async fn update_notification_retry(
                 NotificationDispatchedState::Dispatched => todo!(),
                 NotificationDispatchedState::Deleted => todo!(),
                 NotificationDispatchedState::Failed => todo!(),
-                NotificationDispatchedState::Read => todo!(),
             },
         )
         .exec()
