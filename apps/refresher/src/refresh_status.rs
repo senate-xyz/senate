@@ -70,7 +70,7 @@ pub async fn create_daos_refresh_statuses(client: &PrismaClient) {
                     10000000
                 },
             };
-            event!(Level::DEBUG, "{:?}", item.clone());
+            event!(Level::DEBUG, "{:?}", item);
             daos_refresh_status.push(item);
         }
     });
@@ -107,7 +107,7 @@ pub async fn create_voters_refresh_statuses(client: &PrismaClient) {
                 voter_address: voterhandler.clone().voter.address,
             };
 
-            event!(Level::DEBUG, "{:?}", item.clone());
+            event!(Level::DEBUG, "{:?}", item);
 
             voters_refresh_status.push(item);
         }

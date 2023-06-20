@@ -562,9 +562,9 @@ export const accountSettingsRouter = router({
 
       posthog.capture({
         distinctId: user.address,
-        event: "add_proxy",
+        event: "add_voter",
         properties: {
-          proxy: input.address,
+          voter: input.address,
         },
       });
 
@@ -603,9 +603,9 @@ export const accountSettingsRouter = router({
 
       posthog.capture({
         distinctId: user.address,
-        event: "remove_proxy",
+        event: "remove_voter",
         properties: {
-          proxy: input.address,
+          voter: input.address,
         },
       });
 

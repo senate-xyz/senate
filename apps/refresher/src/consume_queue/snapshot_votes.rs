@@ -2,7 +2,6 @@ use std::{cmp, collections::HashMap, env, sync::Arc};
 
 use anyhow::Result;
 use log::warn;
-use opentelemetry::{propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator};
 use prisma_client_rust::chrono::{DateTime, Utc};
 use reqwest::{
     header::{HeaderName, HeaderValue},
@@ -11,7 +10,6 @@ use reqwest::{
 use serde::Deserialize;
 use tokio::task;
 use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level};
-use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
     prisma::{self, daohandler, PrismaClient},
@@ -36,12 +34,6 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
 
     task::spawn({
         async move {
-            let span = tracing::Span::current();
-            let context = span.context();
-            let propagator = TraceContextPropagator::new();
-            let mut trace = HashMap::new();
-            propagator.inject_context(&context, &mut trace);
-
             let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
             let mut voter_refresh_status = VOTERS_REFRESH_STATUS.lock().await;
             let dao_handler_position = daos_refresh_status
@@ -51,7 +43,7 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
             let dao_handler_r = daos_refresh_status.get_mut(dao_handler_position).unwrap();
             let response = http_client
                 .post(&post_url)
-                .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "voters": entry.voters, "refreshspeed": dao_handler_r.votersrefreshspeed,  "trace": trace }))
+                .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "voters": entry.voters, "refreshspeed": dao_handler_r.votersrefreshspeed}))
                 .send()
                 .await;
 

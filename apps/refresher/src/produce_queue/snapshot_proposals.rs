@@ -48,7 +48,7 @@ pub async fn produce_snapshot_proposals_queue(config: &Config) -> Result<Vec<Ref
         dhr.last_refresh = Utc::now();
     }
 
-    if refresh_queue.len() > 0 {
+    if !refresh_queue.is_empty() {
         event!(Level::DEBUG, "{:?}", dao_handlers);
         event!(Level::DEBUG, "{:?}", refresh_queue);
     }

@@ -13,13 +13,41 @@ const WalletConnect = () => {
   const posthog = usePostHog();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const account = useAccount();
   const session = useSession();
+  const account = useAccount({
+    onConnect() {
+      const disconnectForTerms = async () => {
+        await disconnect();
+      };
+
+      if (
+        session.status == "authenticated" &&
+        account.isConnected &&
+        acceptedTerms.isSuccess &&
+        acceptedTermsTimestamp.isSuccess &&
+        !(acceptedTerms.data && acceptedTermsTimestamp.data)
+      ) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        disconnectForTerms();
+      } else {
+        if (posthog) posthog.identify(account.address);
+      }
+    },
+    onDisconnect() {
+      if (posthog) posthog.reset();
+      if (router) router.refresh();
+    },
+  });
+
   const acceptedTerms = trpc.accountSettings.getAcceptedTerms.useQuery();
   const acceptedTermsTimestamp =
     trpc.accountSettings.getAcceptedTermsTimestamp.useQuery();
   const { connector: activeConnector } = useAccount();
   const { openConnectModal } = useConnectModal();
+
+  useEffect(() => {
+    if (router) router.refresh();
+  }, [session.status]);
 
   useEffect(() => {
     const handleConnectorUpdate = ({ account }) => {
@@ -34,41 +62,7 @@ const WalletConnect = () => {
     }
   }, [activeConnector]);
 
-  useEffect(() => {
-    if (account.isConnected && posthog) posthog.identify(account.address);
-  }, [account.isConnected, posthog]);
-
-  useEffect(() => {
-    if (router) router.refresh();
-  }, [account.isConnected, account.isDisconnected, session.status]);
-
-  useEffect(() => {
-    const disconnectForTerms = async () => {
-      await disconnect();
-    };
-
-    if (
-      session.status == "authenticated" &&
-      account.isConnected &&
-      acceptedTerms.isSuccess &&
-      acceptedTermsTimestamp.isSuccess
-    ) {
-      if (!(acceptedTerms.data && acceptedTermsTimestamp.data)) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        disconnectForTerms();
-      }
-    }
-  }, [
-    acceptedTerms.isFetched,
-    acceptedTermsTimestamp.isFetched,
-    account.isConnected,
-  ]);
-
   if (process.env.OUTOFSERVICE === "true") redirect("/outofservice");
-  // const [cookie] = useCookies(['hasSeenLanding'])
-  // useEffect(() => {
-  //     if (!cookie.hasSeenLanding && router) router.push('/landing')
-  // }, [cookie])
 
   const [modalOpened, setModalOpened] = useState(false);
 

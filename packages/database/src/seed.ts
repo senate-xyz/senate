@@ -30,7 +30,7 @@ const seedData = async () => {
           },
         ],
       },
-      quorumwarningemail: true,
+      quorumwarningemailsupport: true,
     },
   });
 
@@ -292,7 +292,7 @@ const seedData = async () => {
           },
         ],
       },
-      quorumwarningemail: true,
+      quorumwarningemailsupport: true,
     },
   });
 

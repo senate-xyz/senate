@@ -111,7 +111,7 @@ pub async fn produce_snapshot_votes_queue(
             vhr.last_refresh = Utc::now();
         }
 
-        if items.len() > 0 {
+        if !items.is_empty() {
             event!(Level::DEBUG, "{:?}", voter_handlers_r);
             event!(Level::DEBUG, "{:?}", items);
         }

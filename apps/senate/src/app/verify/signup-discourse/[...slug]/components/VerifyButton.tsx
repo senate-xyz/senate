@@ -6,10 +6,11 @@ import { Suspense, useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { trpc } from "../../../../../server/trpcClient";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 
 export const VerifyButton = (props: { challenge: string }) => {
   const router = useRouter();
-
+  const posthog = usePostHog();
   const message = `Welcome to Senate! \nchallenge: ${props.challenge}`;
   const [signPopup, setSignPopup] = useState(false);
   const { address, isConnected, connector: activeConnector } = useAccount();
@@ -27,10 +28,11 @@ export const VerifyButton = (props: { challenge: string }) => {
       isConnected &&
       !signPopup
     ) {
+      if (posthog) posthog.identify(address);
       setSignPopup(true);
       signMessage();
     }
-  }, [address, isConnected, activeConnector, signMessage]);
+  }, [posthog, address, isConnected, activeConnector, signMessage]);
 
   useEffect(() => {
     if (signedMessage)
@@ -47,7 +49,7 @@ export const VerifyButton = (props: { challenge: string }) => {
           },
         }
       );
-  }, [signedMessage]);
+  }, [signedMessage, posthog]);
 
   return (
     <Suspense fallback={<></>}>

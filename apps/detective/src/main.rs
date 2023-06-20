@@ -10,15 +10,11 @@ use std::{env, sync::Arc};
 
 use dotenv::dotenv;
 use ethers::providers::{Http, Provider};
-use pyroscope::PyroscopeAgent;
-use pyroscope_pprofrs::{pprof_backend, Pprof, PprofConfig};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tracing::{debug_span, event, instrument, Instrument, Level};
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
-use url::Url;
 
 use prisma::PrismaClient;
 use utils::{maker_polls_sanity::maker_polls_sanity_check, snapshot_sanity::snapshot_sanity_check};
@@ -32,7 +28,6 @@ pub mod contracts;
 pub mod handlers;
 pub mod prisma;
 mod router;
-pub mod telemetry;
 
 pub mod utils {
     pub mod etherscan;
@@ -55,7 +50,6 @@ pub type Ctx = rocket::State<Context>;
 pub struct ProposalsRequest<'r> {
     daoHandlerId: &'r str,
     refreshspeed: i64,
-    trace: Value,
 }
 
 #[allow(non_snake_case)]
@@ -73,7 +67,6 @@ pub struct VotesRequest<'r> {
     daoHandlerId: &'r str,
     voters: Vec<String>,
     refreshspeed: i64,
-    trace: Value,
 }
 
 #[derive(Serialize, Debug, Clone)]
@@ -96,8 +89,6 @@ fn health() -> &'static str {
 #[launch]
 async fn rocket() -> _ {
     dotenv().ok();
-
-    telemetry::setup();
 
     let rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
 

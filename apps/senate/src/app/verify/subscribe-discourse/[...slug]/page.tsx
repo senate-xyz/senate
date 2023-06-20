@@ -2,6 +2,11 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 import { prisma } from "@senate/database";
 import Link from "next/link";
+import { PostHog } from "posthog-node";
+
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
+  host: `${process.env.NEXT_PUBLIC_WEB_URL || ""}/ingest`,
+});
 
 const isValidChallenge = async (challenge: string) => {
   const user = await prisma.user.findFirst({
@@ -59,6 +64,27 @@ const verifyUser = async (dao: string, challenge: string) => {
       daoid: subscribedao?.id,
     },
     skipDuplicates: true,
+  });
+
+  let dao_name;
+  switch (dao) {
+    case "aave":
+      dao_name = "Aave";
+      break;
+    case "uniswap":
+      dao_name = "Uniswap";
+      break;
+    default:
+      dao_name = "Unknown";
+      break;
+  }
+
+  posthog.capture({
+    distinctId: user.address,
+    event: "subscribe_discourse",
+    properties: {
+      dao: dao_name,
+    },
   });
 };
 

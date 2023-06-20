@@ -1,8 +1,5 @@
 use anyhow::{bail, Result};
 use ethers::{providers::Middleware, types::U64};
-use opentelemetry::{
-    global, propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator,
-};
 use prisma_client_rust::chrono::{DateTime, FixedOffset, Utc};
 use reqwest::header::HeaderMap;
 use rocket::serde::json::Json;
@@ -10,7 +7,6 @@ use serde_json::Value;
 use tracing::{
     debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
 };
-use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::handlers::proposals::aave::aave_proposals;
 use crate::{
@@ -42,88 +38,76 @@ pub struct ChainProposal {
     pub(crate) state: ProposalState,
 }
 
+#[instrument(skip(ctx), ret, level = "info")]
 #[post("/chain_proposals", data = "<data>")]
 pub async fn update_chain_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>,
 ) -> Json<ProposalsResponse<'a>> {
-    let root_span = info_span!("update_chain_proposals");
+    event!(Level::DEBUG, "{:?}", data);
+    let dao_handler = ctx
+        .db
+        .daohandler()
+        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+        .exec()
+        .instrument(debug_span!("get_dao_handlers"))
+        .await
+        .expect("bad prisma result")
+        .expect("daoHandlerId not found");
 
-    let carrier: std::collections::HashMap<String, String> =
-        serde_json::from_value(data.trace.clone()).unwrap_or_default();
-    let propagator = opentelemetry::sdk::propagation::TraceContextPropagator::new();
-    let parent_context = propagator.extract(&carrier);
+    let min_block = dao_handler.chainindex;
+    let batch_size = data.refreshspeed;
 
-    root_span.set_parent(parent_context.clone());
+    let mut from_block = min_block.unwrap_or(0);
 
-    async move {
-        event!(Level::DEBUG, "{:?}", data);
-        let dao_handler = ctx
-            .db
-            .daohandler()
-            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-            .exec()
-            .instrument(debug_span!("get_dao_handlers"))
-            .await
-            .expect("bad prisma result")
-            .expect("daoHandlerId not found");
+    let current_block = ctx
+        .rpc
+        .get_block_number()
+        .instrument(debug_span!("get_current_block"))
+        .await
+        .unwrap_or(U64::from(from_block))
+        .as_u64() as i64;
 
-        let min_block = dao_handler.chainindex;
-        let batch_size = data.refreshspeed;
+    let mut to_block = if current_block - from_block > batch_size {
+        from_block + batch_size
+    } else {
+        current_block
+    };
 
-        let mut from_block = min_block.unwrap_or(0);
+    if from_block > current_block - 10 {
+        from_block = current_block - 10;
+    }
 
-        let current_block = ctx
-            .rpc
-            .get_block_number()
-            .instrument(debug_span!("get_current_block"))
-            .await
-            .unwrap_or(U64::from(from_block))
-            .as_u64() as i64;
+    if to_block > current_block - 10 {
+        to_block = current_block - 10;
+    }
 
-        let mut to_block = if current_block - from_block > batch_size {
-            from_block + batch_size
-        } else {
-            current_block
-        };
+    event!(
+        Level::DEBUG,
+        "{:?} {:?} {:?} {:?} {:?} {:?}",
+        dao_handler,
+        min_block,
+        batch_size,
+        from_block,
+        to_block,
+        current_block
+    );
 
-        if from_block > current_block - 10 {
-            from_block = current_block - 10;
-        }
+    let result = get_results(ctx, from_block, to_block, dao_handler).await;
 
-        if to_block > current_block - 10 {
-            to_block = current_block - 10;
-        }
-
-        event!(
-            Level::DEBUG,
-            "{:?} {:?} {:?} {:?} {:?} {:?}",
-            dao_handler,
-            min_block,
-            batch_size,
-            from_block,
-            to_block,
-            current_block
-        );
-
-        let result = get_results(ctx, from_block, to_block, dao_handler).await;
-
-        match result {
-            Ok(_) => Json(ProposalsResponse {
+    match result {
+        Ok(_) => Json(ProposalsResponse {
+            daoHandlerId: data.daoHandlerId,
+            success: true,
+        }),
+        Err(e) => {
+            warn!("{:?}", e);
+            Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,
-                success: true,
-            }),
-            Err(e) => {
-                warn!("{:?}", e);
-                Json(ProposalsResponse {
-                    daoHandlerId: data.daoHandlerId,
-                    success: false,
-                })
-            }
+                success: false,
+            })
         }
     }
-    .instrument(root_span)
-    .await
 }
 
 #[instrument(skip(ctx), level = "debug")]
