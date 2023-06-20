@@ -755,10 +755,10 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
-"@headlessui/react@1.7.15":
-  version "1.7.15"
-  resolved "https://registry.npmjs.org/@headlessui/react/-/react-1.7.15.tgz"
-  integrity sha512-OTO0XtoRQ6JPB1cKNFYBZv2Q0JMqMGNhYP1CjPvcJvjz8YGokz8oAj89HIYZGN0gZzn/4kk9iUpmMF4Q21Gsqw==
+"@headlessui/react@^0.0.0-insiders.0a9276d":
+  version "0.0.0-insiders.0a9276d"
+  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-0.0.0-insiders.0a9276d.tgz#5fb1df4ad85f47abcad28418d9bb5a5d088084cd"
+  integrity sha512-Eivu688N7sSlMcJ7QBXrFW0f3tWh2O+DB50j6v2s+IBY/uoKzu1ssia1DS/ioSx52EHqvUuzqqwoLCFizTugOg==
   dependencies:
     client-only "^0.0.1"
 

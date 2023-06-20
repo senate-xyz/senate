@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { trpc } from "../../../../../server/trpcClient";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import Image from "next/image";
-import { Dialog } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
+import Link from "next/link";
+import { useForceUpdate } from "framer-motion";
 
 const Discord = () => {
   const [edit, setEdit] = useState(false);
@@ -14,6 +16,7 @@ const Discord = () => {
   const [getDiscordReminders, setDiscordReminders] = useState(false);
   const [currentWebhook, setCurrentWebhook] = useState("");
   const [adminConfirmation, setAdminConfirmation] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const account = useAccount();
   const router = useRouter();
@@ -57,6 +60,7 @@ const Discord = () => {
 
   return (
     <div className="flex max-w-[800px] flex-col gap-4 bg-black p-4">
+      <VideoModal show={showModal} />
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-4">
           <Image
@@ -101,6 +105,7 @@ const Discord = () => {
                     className="flex h-[44px] w-[320px] cursor-pointer flex-col justify-center bg-white text-center text-black"
                     onClick={() => {
                       setAdminConfirmation(true);
+                      setShowModal(true);
                     }}
                   >
                     Yes, I'm a Discord server admin!
@@ -118,9 +123,37 @@ const Discord = () => {
                 </div>
               </div>
             ) : (
-              <div>
-                <div className="text-[18px] font-light text-white">
-                  Discord Webhook URL
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-row items-end gap-2">
+                  <div className="text-[18px] font-light text-white">
+                    Discord Webhook URL
+                  </div>
+                  {edit ? (
+                    <>
+                      <Link
+                        className="cursor-pointer text-[15px] font-light text-[#D9D9D9] underline"
+                        href={
+                          "https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"
+                        }
+                        target="_blank"
+                      >
+                        What is a Discord webhook
+                      </Link>
+                      <div
+                        className="cursor-pointer text-[15px] font-light text-[#D9D9D9] underline"
+                        onClick={() => {
+                          setShowModal(false);
+                          setTimeout(() => {
+                            setShowModal(true);
+                          }, 100);
+                        }}
+                      >
+                        How do I get a webhook URL?
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
                 </div>
                 {edit || !user.data.discordwebhook ? (
                   <div
@@ -135,6 +168,7 @@ const Discord = () => {
                       onKeyDown={(e) => {
                         if (e.key === "Enter") onEnter();
                       }}
+                      placeholder="https://discord.com/webhook/"
                     />
 
                     <div
@@ -153,9 +187,13 @@ const Discord = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className={`flex h-[46px] max-w-[382px] flex-col`}>
+                  <div className={`flex flex-col gap-1`}>
                     <div className="truncate text-[18px] font-light text-[#D9D9D9]">
-                      {currentWebhook}
+                      {
+                        currentWebhook.split("/")[
+                          currentWebhook.split("/").length - 1
+                        ]
+                      }
                     </div>
                     <div
                       className="cursor-pointer text-[15px] font-light text-[#ABABAB] underline"
@@ -204,5 +242,48 @@ const Discord = () => {
     </div>
   );
 };
+
+function VideoModal(props: { show: boolean }) {
+  let [isOpen, setIsOpen] = useState(props.show);
+
+  useEffect(() => {
+    setIsOpen(props.show);
+  }, [props.show]);
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  return (
+    <>
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-20" onClose={closeModal}>
+          <div className="op fixed inset-0 overflow-y-auto bg-[#1e1b207e]">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="align-middleshadow-xl w-full max-w-[1280px] transform overflow-hidden bg-black p-6 text-left transition-all">
+                  <iframe
+                    className="aspect-video w-full"
+                    src="/assets/Discord/discord_webhooks_high.mp4"
+                    allow="autoplay *; fullscreen *"
+                    allowFullScreen
+                  />
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+    </>
+  );
+}
 
 export default Discord;
