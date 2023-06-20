@@ -24,6 +24,10 @@ const config = {
         source: "/ingest/:path*",
         destination: "https://posthog.andreiv.com/:path*",
       },
+      {
+        source: "/login/:path*",
+        destination: "https://posthog.andreiv.com/login/:path*",
+      },
     ];
   },
 };
