@@ -71,6 +71,9 @@ async function log(type: Type, proposalId: string, userId: string) {
   let user = await getUser(userId);
   let proposal = await getProposal(proposalId);
 
+  if (user) posthog.identify({ distinctId: user.address });
+  else posthog.identify({ distinctId: "visitor" });
+
   posthog.capture({
     distinctId: user ? user.address : "visitor",
     event: type,
