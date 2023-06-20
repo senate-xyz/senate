@@ -35,12 +35,20 @@ const WalletConnect = () => {
   }, [activeConnector]);
 
   useEffect(() => {
-    if (account.isConnected && posthog) posthog.identify(account.address);
+    if (account.isConnected && posthog) {
+      posthog.identify(account.address);
+    }
   }, [account.isConnected, posthog]);
 
   useEffect(() => {
+    if (
+      posthog &&
+      (account.isDisconnected || session.status == "unauthenticated")
+    )
+      posthog.reset();
+
     if (router) router.refresh();
-  }, [account.isConnected, account.isDisconnected, session.status]);
+  }, [account.isConnected, account.isDisconnected, session.status, posthog]);
 
   useEffect(() => {
     const disconnectForTerms = async () => {

@@ -2,10 +2,14 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { MagicUserState, prisma } from "@senate/database";
 import { z } from "zod";
 import { ServerClient } from "postmark";
+import { PostHog } from "posthog-node";
 
 const emailClient = new ServerClient(
   process.env.POSTMARK_TOKEN ?? "Missing Token"
 );
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
+  host: `${process.env.NEXT_PUBLIC_WEB_URL || ""}/ingest`,
+});
 
 export default async function handler(
   req: NextApiRequest,

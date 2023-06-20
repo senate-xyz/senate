@@ -45,8 +45,11 @@ export function authOptions(
           });
 
           if (result.success) {
-            const existingUser = await prisma.user.findFirst({
+            const existingUser = await prisma.user.findUnique({
               where: { address: siwe.address },
+              include: {
+                _count: true,
+              },
             });
 
             if (!existingUser) {
@@ -70,6 +73,21 @@ export function authOptions(
                 },
               });
             } else {
+              posthog.identify({
+                distinctId: siwe.address,
+                properties: {
+                  email: existingUser.email,
+                  subscriptions: existingUser._count.subscriptions,
+                  notifications: existingUser._count.notifications,
+                  emaildailybulletin: existingUser.emaildailybulletin,
+                  emptydailybulletin: existingUser.emptydailybulletin,
+                  discordnotifications: existingUser.discordnotifications,
+                  telegramnotifications: existingUser.telegramnotifications,
+                  lastactive: existingUser.lastactive,
+                  sessioncount: existingUser.sessioncount,
+                },
+              });
+
               await prisma.user.update({
                 where: {
                   address: siwe.address,

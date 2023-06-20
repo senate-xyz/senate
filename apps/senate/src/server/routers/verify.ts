@@ -2,6 +2,11 @@ import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 import { prisma } from "@senate/database";
 import { verifyMessage } from "viem";
+import { PostHog } from "posthog-node";
+
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
+  host: `${process.env.NEXT_PUBLIC_WEB_URL || ""}/ingest`,
+});
 
 export const verifyRouter = router({
   userOfChallenge: publicProcedure
@@ -132,6 +137,19 @@ export const verifyRouter = router({
           },
         });
 
+        posthog.capture({
+          distinctId: addressUser.address,
+          event: "subscribe_discourse",
+          properties: {
+            dao:
+              emailUser.isaaveuser == "VERIFICATION"
+                ? "Aave"
+                : emailUser.isuniswapuser == "VERIFICATION"
+                ? "Uniswap"
+                : "Unknown",
+          },
+        });
+
         await prisma.user.deleteMany({
           where: { id: emailUser.id },
         });
@@ -191,6 +209,19 @@ export const verifyRouter = router({
               daoid: uniswap.id,
             },
             skipDuplicates: true,
+          });
+
+          posthog.capture({
+            distinctId: newUser.address,
+            event: "signup_discourse",
+            properties: {
+              dao:
+                newUser.isaaveuser == "VERIFICATION"
+                  ? "Aave"
+                  : newUser.isuniswapuser == "VERIFICATION"
+                  ? "Uniswap"
+                  : "Unknown",
+            },
           });
         }
       }
