@@ -5,6 +5,7 @@ import { trpc } from "../../../../../server/trpcClient";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import Image from "next/image";
+import { Dialog } from "@headlessui/react";
 
 const Discord = () => {
   const [edit, setEdit] = useState(false);
@@ -12,6 +13,7 @@ const Discord = () => {
   const [getDiscordNotifications, setDiscordNotifications] = useState(false);
   const [getDiscordReminders, setDiscordReminders] = useState(false);
   const [currentWebhook, setCurrentWebhook] = useState("");
+  const [adminConfirmation, setAdminConfirmation] = useState(false);
 
   const account = useAccount();
   const router = useRouter();
@@ -37,8 +39,8 @@ const Discord = () => {
   const updateDiscordNotifications =
     trpc.accountSettings.updateDiscordNotifications.useMutation();
 
-  const updateDiscordReminders =
-    trpc.accountSettings.updateDiscordReminders.useMutation();
+  // const updateDiscordReminders =
+  //   trpc.accountSettings.updateDiscordReminders.useMutation();
 
   const onEnter = () => {
     setDiscordWebhook.mutate(
@@ -91,73 +93,100 @@ const Discord = () => {
       {getDiscordNotifications && (
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <div className="text-[18px] font-light text-white">
-              Discord webhook
-            </div>
-            {edit || !user.data.discordwebhook ? (
-              <div
-                className={`flex h-[46px] max-w-[382px] flex-row items-center`}
-              >
-                <input
-                  className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
-                  value={currentWebhook}
-                  onChange={(e) => {
-                    setCurrentWebhook(String(e.target.value));
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") onEnter();
-                  }}
-                />
-
-                <div
-                  className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
-                    user.data.discordwebhook?.includes("https")
-                      ? user.data.discordwebhook == currentWebhook
-                        ? "bg-[#ABABAB] hover:bg-[#999999]"
-                        : "bg-white hover:bg-[#e5e5e5]"
-                      : currentWebhook.length
-                      ? "bg-white hover:bg-[#e5e5e5]"
-                      : "bg-[#ABABAB] hover:bg-[#999999]"
-                  } text-center`}
-                  onClick={() => onEnter()}
-                >
-                  Save
+            {!user.data.discordwebhook && !adminConfirmation ? (
+              <div className="flex flex-col gap-2 text-white">
+                Are you an admin in a Discord server?
+                <div className="flex flex-row gap-8">
+                  <div
+                    className="flex h-[44px] w-[320px] cursor-pointer flex-col justify-center bg-white text-center text-black"
+                    onClick={() => {
+                      setAdminConfirmation(true);
+                    }}
+                  >
+                    Yes, I'm a Discord server admin!
+                  </div>
+                  <div
+                    className="flex h-[44px] w-[120px] cursor-pointer flex-col justify-center bg-black text-center text-white underline"
+                    onClick={() => {
+                      updateDiscordNotifications.mutate({
+                        val: false,
+                      });
+                    }}
+                  >
+                    No, I'm not.
+                  </div>
                 </div>
               </div>
             ) : (
-              <div className={`flex h-[46px] max-w-[382px] flex-col`}>
-                <div className="truncate text-[18px] font-light text-[#D9D9D9]">
-                  {currentWebhook}
+              <div>
+                <div className="text-[18px] font-light text-white">
+                  Discord Webhook URL
                 </div>
-                <div
-                  className="cursor-pointer text-[15px] font-light text-[#ABABAB] underline"
-                  onClick={() => {
-                    setEdit(true);
-                  }}
-                >
-                  Change Webhook
-                </div>
+                {edit || !user.data.discordwebhook ? (
+                  <div
+                    className={`flex h-[46px] max-w-[382px] flex-row items-center`}
+                  >
+                    <input
+                      className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
+                      value={currentWebhook}
+                      onChange={(e) => {
+                        setCurrentWebhook(String(e.target.value));
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") onEnter();
+                      }}
+                    />
+
+                    <div
+                      className={`flex h-full w-[72px] cursor-pointer flex-col justify-center ${
+                        user.data.discordwebhook?.includes("https")
+                          ? user.data.discordwebhook == currentWebhook
+                            ? "bg-[#ABABAB] hover:bg-[#999999]"
+                            : "bg-white hover:bg-[#e5e5e5]"
+                          : currentWebhook.length
+                          ? "bg-white hover:bg-[#e5e5e5]"
+                          : "bg-[#ABABAB] hover:bg-[#999999]"
+                      } text-center`}
+                      onClick={() => onEnter()}
+                    >
+                      Save
+                    </div>
+                  </div>
+                ) : (
+                  <div className={`flex h-[46px] max-w-[382px] flex-col`}>
+                    <div className="truncate text-[18px] font-light text-[#D9D9D9]">
+                      {currentWebhook}
+                    </div>
+                    <div
+                      className="cursor-pointer text-[15px] font-light text-[#ABABAB] underline"
+                      onClick={() => {
+                        setEdit(true);
+                      }}
+                    >
+                      Change Webhook
+                    </div>
+                  </div>
+                )}
+                {/* <div className="flex max-w-[382px] flex-row items-center justify-between gap-4">
+                  <div className="font-[18px] leading-[23px] text-white">
+                    Ending soon reminders
+                  </div>
+                  <label className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500">
+                    <input
+                      type="checkbox"
+                      checked={getDiscordReminders}
+                      onChange={(e) => {
+                        updateDiscordReminders.mutate({
+                          val: e.target.checked,
+                        });
+                      }}
+                      className="peer sr-only"
+                    />
+                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
+                  </label>
+                </div> */}
               </div>
             )}
-          </div>
-
-          <div className="flex max-w-[382px] flex-row items-center justify-between gap-4">
-            <div className="font-[18px] leading-[23px] text-white">
-              Ending soon reminders
-            </div>
-            <label className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500">
-              <input
-                type="checkbox"
-                checked={getDiscordReminders}
-                onChange={(e) => {
-                  updateDiscordReminders.mutate({
-                    val: e.target.checked,
-                  });
-                }}
-                className="peer sr-only"
-              />
-              <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
-            </label>
           </div>
         </div>
       )}
