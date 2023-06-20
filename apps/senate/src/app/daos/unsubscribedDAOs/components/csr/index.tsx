@@ -58,12 +58,12 @@ export const UnsubscribedDAO = (props: {
         },
         {
           onSuccess: () => {
-            if (router) router.refresh();
             removeCookie("subscribe");
+            if (router) router.refresh();
           },
           onError: () => {
-            if (router) router.refresh();
             removeCookie("subscribe");
+            if (router) router.refresh();
           },
         }
       );
