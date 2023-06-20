@@ -137,11 +137,21 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
         };
         let short_url = format!(
-            "{}{}",
+            "{}/{}/{}/{}",
             shortner_url,
             proposal
                 .clone()
                 .unwrap()
+                .id
+                .chars()
+                .rev()
+                .take(7)
+                .collect::<Vec<char>>()
+                .into_iter()
+                .rev()
+                .collect::<String>(),
+            "q",
+            user.clone()
                 .id
                 .chars()
                 .rev()
@@ -329,6 +339,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                             NotificationDispatchedState::Dispatched => todo!(),
                             NotificationDispatchedState::Deleted => todo!(),
                             NotificationDispatchedState::Failed => todo!(),
+                            NotificationDispatchedState::Read => todo!(),
                         },
                     )
                     .exec()

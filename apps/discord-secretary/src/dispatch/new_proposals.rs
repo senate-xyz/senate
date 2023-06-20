@@ -82,9 +82,19 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                 };
 
                 let short_url = format!(
-                    "{}{}",
+                    "{}/{}/{}/{}",
                     shortner_url,
                     proposal
+                        .id
+                        .chars()
+                        .rev()
+                        .take(7)
+                        .collect::<Vec<char>>()
+                        .into_iter()
+                        .rev()
+                        .collect::<String>(),
+                    "d",
+                    user.clone()
                         .id
                         .chars()
                         .rev()
@@ -167,6 +177,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                         NotificationDispatchedState::Dispatched => todo!(),
                         NotificationDispatchedState::Deleted => todo!(),
                         NotificationDispatchedState::Failed => todo!(),
+                        NotificationDispatchedState::Read => todo!(),
                     },
                 };
 

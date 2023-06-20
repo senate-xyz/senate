@@ -341,9 +341,19 @@ async fn get_ending_soon_proposals(
             None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
         };
         let short_url = format!(
-            "{}{}",
+            "{}/{}/{}/{}",
             shortner_url,
             p.id.chars()
+                .rev()
+                .take(7)
+                .collect::<Vec<char>>()
+                .into_iter()
+                .rev()
+                .collect::<String>(),
+            "b",
+            user.clone()
+                .id
+                .chars()
                 .rev()
                 .take(7)
                 .collect::<Vec<char>>()
@@ -438,9 +448,19 @@ async fn get_new_proposals(
             None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
         };
         let short_url = format!(
-            "{}{}",
+            "{}/{}/{}/{}",
             shortner_url,
             p.id.chars()
+                .rev()
+                .take(7)
+                .collect::<Vec<char>>()
+                .into_iter()
+                .rev()
+                .collect::<String>(),
+            "b",
+            user.clone()
+                .id
+                .chars()
                 .rev()
                 .take(7)
                 .collect::<Vec<char>>()
@@ -536,9 +556,19 @@ async fn get_ended_proposals(
             None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
         };
         let short_url = format!(
-            "{}{}",
+            "{}/{}/{}/{}",
             shortner_url,
             p.id.chars()
+                .rev()
+                .take(7)
+                .collect::<Vec<char>>()
+                .into_iter()
+                .rev()
+                .collect::<String>(),
+            "b",
+            user.clone()
+                .id
+                .chars()
                 .rev()
                 .take(7)
                 .collect::<Vec<char>>()
@@ -547,15 +577,15 @@ async fn get_ended_proposals(
                 .collect::<String>()
         );
 
-        let (result_index, max_score) = p
-            .scores
-            .as_array()
-            .unwrap()
-            .iter()
-            .map(|score| score.as_f64().unwrap())
-            .enumerate()
-            .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
-            .unwrap_or((100, 0.0));
+        let (result_index, max_score) = match p.scores.as_array() {
+            Some(scores) => scores
+                .iter()
+                .map(|score| score.as_f64().unwrap())
+                .enumerate()
+                .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
+                .unwrap_or((100, 0.0)),
+            None => (0, p.scores.as_f64().unwrap()),
+        };
 
         EndedProposals {
             daoLogoUrl: format!(

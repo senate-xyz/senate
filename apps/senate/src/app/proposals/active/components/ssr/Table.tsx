@@ -7,6 +7,7 @@ import { authOptions } from "../../../../../pages/api/auth/[...nextauth]";
 import "server-only";
 import { MobileActiveProposal } from "./MobileRow";
 import { ActiveProposal } from "./DesktopRow";
+import { Proposal } from "@senate/database";
 
 extend(relativeTime);
 
@@ -146,7 +147,7 @@ const getProposals = async (
       },
     },
   });
-
+  "adsa".slice();
   const result =
     // eslint-disable-next-line @typescript-eslint/require-await
     userProposals.map(async (proposal) => {
@@ -157,7 +158,9 @@ const getProposals = async (
         daoPicture: proposal.dao.picture,
         proposalTitle: proposal.name,
         state: proposal.state,
-        proposalLink: proposal.url,
+        proposalLink: `${
+          process.env.NEXT_PUBLIC_URL_SHORTNER
+        }${proposal.id.slice(-6)}/w/${user ? user.id.slice(-6) : ""}`,
         timeEnd: proposal.timeend,
         voted: user
           ? String(proposal.votes.map((vote: Vote) => vote.choice).length > 0)
