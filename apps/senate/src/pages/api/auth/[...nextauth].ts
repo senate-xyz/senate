@@ -49,6 +49,13 @@ export function authOptions(
               where: { address: siwe.address },
               include: {
                 _count: true,
+                subscriptions: {
+                  select: {
+                    dao: {
+                      select: { name: true },
+                    },
+                  },
+                },
               },
             });
 
@@ -77,7 +84,9 @@ export function authOptions(
                 distinctId: siwe.address,
                 properties: {
                   email: existingUser.email,
-                  subscriptions: existingUser._count.subscriptions,
+                  subscriptions: existingUser.subscriptions.map(
+                    (s) => s.dao.name
+                  ),
                   notifications: existingUser._count.notifications,
                   emaildailybulletin: existingUser.emaildailybulletin,
                   emptydailybulletin: existingUser.emptydailybulletin,
