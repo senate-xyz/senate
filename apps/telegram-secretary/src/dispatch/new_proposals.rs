@@ -155,6 +155,7 @@ pub async fn dispatch_new_proposal_notifications(
                         NotificationDispatchedState::Dispatched => todo!(),
                         NotificationDispatchedState::Deleted => todo!(),
                         NotificationDispatchedState::Failed => todo!(),
+                        NotificationDispatchedState::Read => todo!(),
                     },
                 };
 

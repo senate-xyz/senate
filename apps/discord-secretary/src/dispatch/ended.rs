@@ -251,6 +251,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 NotificationDispatchedState::Dispatched => todo!(),
                                 NotificationDispatchedState::Deleted => todo!(),
                                 NotificationDispatchedState::Failed => todo!(),
+                                NotificationDispatchedState::Read => todo!(),
                             },
                         };
 
@@ -362,6 +363,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             NotificationDispatchedState::Dispatched => todo!(),
                             NotificationDispatchedState::Deleted => todo!(),
                             NotificationDispatchedState::Failed => todo!(),
+                            NotificationDispatchedState::Read => todo!(),
                         },
                     };
 

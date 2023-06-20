@@ -172,6 +172,7 @@ pub async fn dispatch_ending_soon_notifications(
                         NotificationDispatchedState::Dispatched => todo!(),
                         NotificationDispatchedState::Deleted => todo!(),
                         NotificationDispatchedState::Failed => todo!(),
+                        NotificationDispatchedState::Read => todo!(),
                     },
                 };
 

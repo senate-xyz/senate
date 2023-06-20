@@ -21,18 +21,6 @@ async function getProposalId(slug: string) {
   return proposal ? proposal.id : "";
 }
 
-async function getUserId(slug: string) {
-  const user = await prisma.user.findFirst({
-    where: {
-      id: {
-        endsWith: slug,
-      },
-    },
-  });
-
-  return user ? user.id : "";
-}
-
 async function getUser(slug: string) {
   const user = await prisma.user.findFirst({
     where: {

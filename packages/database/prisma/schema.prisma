@@ -230,7 +230,7 @@ model notification {
   telegrammessageid String?
 
   createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
+  updatedat DateTime @default(now()) @updatedAt
 
   @@unique([userid, proposalid, type])
   @@index(fields: [userid])
