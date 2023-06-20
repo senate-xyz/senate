@@ -1,5 +1,4 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import { backOff, type IBackOffOptions } from "exponential-backoff";
 
 export type { JsonArray, JsonValue } from "type-fest";
 
@@ -59,60 +58,10 @@ export type UserWithSubscriptionsAndVotingAddresses = Prisma.userGetPayload<{
   };
 }>;
 
-export const Serializable = Prisma.TransactionIsolationLevel.Serializable;
-
-function RetryTransactions(options?: Partial<IBackOffOptions>) {
-  return Prisma.defineExtension((prisma) =>
-    prisma.$extends({
-      client: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        $transaction(...args: any) {
-          return backOff(
-            // eslint-disable-next-line prefer-spread, @typescript-eslint/no-unsafe-argument
-            () => prisma.$transaction.apply(prisma, args),
-            {
-              retry: (e) => {
-                // Retry the transaction only if the error was due to a write conflict or deadlock
-                // See: https://www.prisma.io/docs/reference/api-reference/error-reference#p2034
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                return e.code === "P2034" || e.code === "P1001";
-              },
-              ...options,
-            }
-          );
-        },
-      } as { $transaction: (typeof prisma)["$transaction"] },
-    })
-  );
-}
-
-const extendedPrismaClient = () => {
-  const prisma = new PrismaClient();
-
-  const extendedPrisma = prisma.$extends(
-    RetryTransactions({
-      jitter: "full",
-      numOfAttempts: 5,
-    })
-  );
-
-  return extendedPrisma;
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
 };
 
-export type ExtendedPrismaClient = ReturnType<typeof extendedPrismaClient>;
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
 
-/**
- * Instantiate prisma client for Next.js:
- * https://www.prisma.io/docs/support/help-articles/nextjs-prisma-client-dev-practices#solution
- */
-
-declare global {
-  // eslint-disable-next-line no-var
-  var prisma: ExtendedPrismaClient | undefined;
-}
-
-export const prisma = global.prisma || extendedPrismaClient();
-
-if (process.env.NODE_ENV !== "production") {
-  global.prisma = prisma;
-}
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

@@ -2,9 +2,7 @@ use std::{cmp, collections::HashMap, env, sync::Arc};
 
 use anyhow::Result;
 use log::warn;
-use opentelemetry::{
-    global, propagation::TextMapPropagator, sdk::propagation::TraceContextPropagator,
-};
+
 use prisma_client_rust::chrono::Utc;
 use reqwest::{
     header::{HeaderName, HeaderValue},
@@ -13,7 +11,6 @@ use reqwest::{
 use serde::Deserialize;
 use tokio::task;
 use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level, Span};
-use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
     prisma::{self, daohandler, PrismaClient},
@@ -37,13 +34,6 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
 
     task::spawn(
         async move {
-            let span = tracing::Span::current();
-            let context = span.context();
-            let propagator = TraceContextPropagator::new();
-            let mut trace = HashMap::new();
-            propagator.inject_context(&context, &mut trace);
-
-
             let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
             let dao_handler_position = daos_refresh_status
                 .iter()
@@ -56,7 +46,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
 
             let response = http_client
                 .post(&post_url)
-                .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "refreshspeed":dao_handler.refreshspeed, "trace": trace}))
+                .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "refreshspeed":dao_handler.refreshspeed}))
                 .send()
                 .await;
 

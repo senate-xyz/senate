@@ -30,8 +30,6 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
-import { getWebInstrumentations, initializeFaro } from "@grafana/faro-web-sdk";
-import { TracingInstrumentation } from "@grafana/faro-web-tracing";
 
 const { chains, publicClient } = configureChains(
   [mainnet],
@@ -121,16 +119,6 @@ const Disclaimer: DisclaimerComponent = () => (
 );
 
 if (typeof window !== "undefined") {
-  initializeFaro({
-    url: "https://faro-collector-prod-eu-west-3.grafana.net/collect/a50f821c64ac545d40b5a05022855dc3",
-    app: {
-      name: "web",
-      version: "1.0.0",
-      environment: process.env.NEXT_PUBLIC_EXEC_ENV,
-    },
-    instrumentations: [...getWebInstrumentations()],
-  });
-
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
     api_host: `${process.env.NEXT_PUBLIC_WEB_URL || ""}/ingest`,
     opt_in_site_apps: true,

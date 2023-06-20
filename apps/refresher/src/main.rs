@@ -7,8 +7,6 @@ use std::{env, sync::Arc, time::Duration};
 use dotenv::dotenv;
 use flume as _;
 use log::{info, warn};
-use pyroscope::PyroscopeAgent;
-use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 use reqwest as _;
 use serde_json as _;
 use tokio::time::sleep;
@@ -41,7 +39,6 @@ mod refresh_status;
 
 pub mod config;
 pub mod handlers;
-pub mod telemetry;
 
 #[derive(Debug)]
 enum RefreshType {
@@ -62,8 +59,6 @@ pub struct RefreshEntry {
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-
-    telemetry::setup();
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
     let config = *CONFIG.read().unwrap();

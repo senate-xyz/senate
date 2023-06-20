@@ -5,9 +5,7 @@
 use std::{env, sync::Arc};
 
 use dotenv::dotenv;
-use log::info;
-use pyroscope::PyroscopeAgent;
-use pyroscope_pprofrs::{pprof_backend, PprofConfig};
+use log::{debug, info};
 use teloxide::{
     adaptors::{throttle::Limits, DefaultParseMode, Throttle},
     prelude::*,
@@ -16,7 +14,6 @@ use teloxide::{
 };
 use tokio::time::sleep;
 use tokio::try_join;
-use tracing::debug;
 
 use crate::{
     dispatch::{
@@ -40,16 +37,12 @@ mod utils {
     pub mod vote;
 }
 
-pub mod telemetry;
-
 #[tokio::main]
 async fn main() {
     //sleep to make sure old deployment api connection is closed
-    //sleep(std::time::Duration::from_secs(60)).await;
+    sleep(std::time::Duration::from_secs(60)).await;
 
     dotenv().ok();
-
-    telemetry::setup();
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
     let bot = Bot::from_env()

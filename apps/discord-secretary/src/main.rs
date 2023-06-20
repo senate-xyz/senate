@@ -5,8 +5,6 @@
 use std::{env, sync::Arc};
 
 use dotenv::dotenv;
-use pyroscope::PyroscopeAgent;
-use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 use tokio::time::sleep;
 use tokio::try_join;
 use tracing::{debug, info};
@@ -34,13 +32,9 @@ mod utils {
     pub mod vote;
 }
 
-pub mod telemetry;
-
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-
-    telemetry::setup();
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
 

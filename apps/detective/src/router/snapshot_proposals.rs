@@ -2,7 +2,6 @@ use std::{env, time::UNIX_EPOCH};
 
 use anyhow::{Context, Result};
 use chrono::{Datelike, Duration, TimeZone, Utc};
-use opentelemetry::propagation::TextMapPropagator;
 use prisma_client_rust::chrono::{DateTime, FixedOffset, NaiveDateTime};
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
@@ -11,7 +10,6 @@ use serde::Deserialize;
 use tracing::{
     debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
 };
-use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
     prisma::{dao, daohandler, proposal, ProposalState},
@@ -50,44 +48,35 @@ struct Decoder {
     space: String,
 }
 
+#[instrument(skip(ctx), ret, level = "info")]
 #[post("/snapshot_proposals", data = "<data>")]
 pub async fn update_snapshot_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>,
 ) -> Json<ProposalsResponse<'a>> {
-    let root_span = info_span!("update_snapshot_proposals");
+    event!(Level::DEBUG, "{:?}", data);
+    let dao_handler = ctx
+        .db
+        .daohandler()
+        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+        .exec()
+        .instrument(debug_span!("get_dao_handler"))
+        .await
+        .expect("bad prisma result")
+        .expect("daoHandlerId not found");
 
-    let carrier: std::collections::HashMap<String, String> =
-        serde_json::from_value(data.trace.clone()).unwrap_or_default();
-    let propagator = opentelemetry::sdk::propagation::TraceContextPropagator::new();
-    let parent_context = propagator.extract(&carrier);
+    let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
+        Ok(data) => data,
+        Err(_) => panic!("{:?} decoder not found", data.daoHandlerId),
+    };
 
-    root_span.set_parent(parent_context.clone());
+    let old_index = match dao_handler.snapshotindex {
+        Some(data) => data.timestamp(),
+        None => 0,
+    };
 
-    async move {
-        event!(Level::DEBUG, "{:?}", data);
-        let dao_handler = ctx
-            .db
-            .daohandler()
-            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-            .exec()
-            .instrument(debug_span!("get_dao_handler"))
-            .await
-            .expect("bad prisma result")
-            .expect("daoHandlerId not found");
-
-        let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
-            Ok(data) => data,
-            Err(_) => panic!("{:?} decoder not found", data.daoHandlerId),
-        };
-
-        let old_index = match dao_handler.snapshotindex {
-            Some(data) => data.timestamp(),
-            None => 0,
-        };
-
-        let graphql_query = format!(
-            r#"
+    let graphql_query = format!(
+        r#"
                 {{
                     proposals (
                         first: {:?},
@@ -114,34 +103,31 @@ pub async fn update_snapshot_proposals<'a>(
                     }}
                 }}
             "#,
-            data.refreshspeed, decoder.space, old_index
-        );
+        data.refreshspeed, decoder.space, old_index
+    );
 
-        event!(
-            Level::DEBUG,
-            "{:?} {:?} {:?} {:?}",
-            dao_handler,
-            decoder,
-            old_index,
-            graphql_query
-        );
+    event!(
+        Level::DEBUG,
+        "{:?} {:?} {:?} {:?}",
+        dao_handler,
+        decoder,
+        old_index,
+        graphql_query
+    );
 
-        match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
-            Ok(_) => Json(ProposalsResponse {
+    match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
+        Ok(_) => Json(ProposalsResponse {
+            daoHandlerId: data.daoHandlerId,
+            success: true,
+        }),
+        Err(e) => {
+            warn!("{:?}", e);
+            Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,
-                success: true,
-            }),
-            Err(e) => {
-                warn!("{:?}", e);
-                Json(ProposalsResponse {
-                    daoHandlerId: data.daoHandlerId,
-                    success: false,
-                })
-            }
+                success: false,
+            })
         }
     }
-    .instrument(root_span)
-    .await
 }
 
 #[instrument(skip(ctx), level = "debug")]

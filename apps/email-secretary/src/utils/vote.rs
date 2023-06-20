@@ -33,7 +33,7 @@ pub async fn get_vote(
             .await
             .unwrap();
 
-        if let Some(_) = vote {
+        if vote.is_some() {
             voted = true
         }
     }

@@ -163,7 +163,7 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                                         } else {
                                             "on-chain"
                                         },
-                                        format!("{}", proposal.timeend.format("%B %e").to_string())
+                                        proposal.timeend.format("%B %e")
                                     ))
                                     .field("", message_content, false)
                                     .url(short_url)

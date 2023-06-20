@@ -22,9 +22,7 @@
     "update": "ncu -u"
   },
   "dependencies": {
-    "@grafana/faro-web-sdk": "^1.1.0",
-    "@grafana/faro-web-tracing": "^1.1.0",
-    "@headlessui/react": "^0.0.0-insiders.0a9276d",
+    "@headlessui/react": "^1.7.15",
     "@rainbow-me/rainbowkit": "1.0.2",
     "@rainbow-me/rainbowkit-siwe-next-auth": "0.2.0",
     "@senate/database": "*",
@@ -41,7 +39,7 @@
     "framer-motion": "10.12.16",
     "next": "13.4.6",
     "next-auth": "4.22.1",
-    "posthog-js": "^1.68.1",
+    "posthog-js": "^1.68.2",
     "posthog-node": "^3.1.1",
     "postmark": "3.0.18",
     "react": "18.2.0",
