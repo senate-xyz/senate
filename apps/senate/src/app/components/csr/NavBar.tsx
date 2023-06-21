@@ -24,8 +24,8 @@ export const NavBar = () => {
       </Link>
 
       <div className="flex flex-col gap-5">
-        <Link href={`/daos`}>
-          {pathname?.includes("daos") ? (
+        <Link href={`/orgs`}>
+          {pathname?.includes("orgs") ? (
             <div className="flex flex-col items-center">
               <Image
                 loading="eager"

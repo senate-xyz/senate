@@ -78,7 +78,7 @@ export const Header = (props: { title: string }) => {
               <div className="flex flex-row justify-between">
                 <Menu.Item>
                   {({}) => (
-                    <a href="/daos">
+                    <a href="/orgs">
                       <Image
                         loading="eager"
                         priority={true}
@@ -109,7 +109,7 @@ export const Header = (props: { title: string }) => {
               <Menu.Item>
                 {({ active }) => (
                   <div className="relative flex flex-row items-center pl-6 pt-8">
-                    {pathname?.includes("daos") ? (
+                    {pathname?.includes("orgs") ? (
                       <Image
                         loading="eager"
                         priority={true}
@@ -131,9 +131,9 @@ export const Header = (props: { title: string }) => {
                     <a
                       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                       className={`${active && "w-full"}`}
-                      href="/daos"
+                      href="/orgs"
                     >
-                      DAOs
+                      Orgs
                     </a>
                   </div>
                 )}
