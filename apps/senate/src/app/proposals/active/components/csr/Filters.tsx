@@ -93,13 +93,13 @@ export const Filters = (props: {
             {session.status === "authenticated" && account.address ? (
               <>
                 <option key="any" value="any">
-                  All Subscribed DAOs
+                  All Subscribed Organisations
                 </option>
               </>
             ) : (
               <>
                 <option key="any" value="any">
-                  All DAOs
+                  All Organisations
                 </option>
               </>
             )}

@@ -94,8 +94,8 @@ const UserEmail = () => {
 
       <div className="max-w-[610px] text-[15px] text-white">
         Receive a daily email at 8:00am UTC, providing updates on past, new, and
-        soon-ending proposals from all the DAOs you follow on Senate. This
-        ensures you won&apos;t forget to vote.
+        soon-ending proposals from all the organisations you follow on Senate.
+        This ensures you won&apos;t forget to vote.
       </div>
       {getDailyEmails && (
         <div className="flex flex-col gap-4">

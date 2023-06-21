@@ -74,8 +74,8 @@ const Telegram = () => {
 
       <div className="max-w-[610px] text-[15px] text-white">
         Receive instant notifications in your Telegram group chat about
-        proposals from all DAOs you follow on Senate. This will help ensure that
-        you and your team always remember to vote.
+        proposals from all organisations you follow on Senate. This will help
+        ensure that you and your team always remember to vote.
       </div>
 
       {getTelegramNotifications && (
