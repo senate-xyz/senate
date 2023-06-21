@@ -7,24 +7,24 @@ import { useSession } from "next-auth/react";
 
 const endOptions: { name: string; time: number }[] = [
   {
-    name: "Any day",
-    time: 365,
-  },
-  {
-    name: "7 days",
-    time: 7,
-  },
-  {
-    name: "5 days",
-    time: 5,
+    name: "24 hours",
+    time: 1,
   },
   {
     name: "3 days",
     time: 3,
   },
   {
-    name: "24 hours",
-    time: 1,
+    name: "5 days",
+    time: 5,
+  },
+  {
+    name: "7 days",
+    time: 7,
+  },
+  {
+    name: "Any day",
+    time: 365,
   },
 ];
 

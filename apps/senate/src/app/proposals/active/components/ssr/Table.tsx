@@ -28,6 +28,9 @@ const getProposals = async (
     },
     include: {
       voters: true,
+      subscriptions: {
+        include: { dao: { select: { name: true } } },
+      },
     },
   });
 
@@ -67,15 +70,6 @@ const getProposals = async (
       break;
   }
 
-  const userSubscriptions = await prisma.subscription.findMany({
-    where: {
-      userid: user?.id,
-    },
-    include: {
-      dao: true,
-    },
-  });
-
   // eslint-disable-next-line @typescript-eslint/await-thenable
   const dao = await (
     await prisma.dao.findMany({})
@@ -93,7 +87,7 @@ const getProposals = async (
             name:
               from == "any"
                 ? {
-                    in: userSubscriptions.map((sub) => sub.dao.name),
+                    in: user?.subscriptions.map((sub) => sub.dao.name),
                   }
                 : {
                     equals: String(dao?.name),
@@ -147,7 +141,7 @@ const getProposals = async (
       },
     },
   });
-  "adsa".slice();
+
   const result =
     // eslint-disable-next-line @typescript-eslint/require-await
     userProposals.map(async (proposal) => {
