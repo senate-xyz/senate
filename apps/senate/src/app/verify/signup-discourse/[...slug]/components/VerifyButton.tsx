@@ -45,7 +45,7 @@ export const VerifyButton = (props: { challenge: string }) => {
         },
         {
           onSuccess: () => {
-            if (router) router.push("/daos?connect");
+            if (router) router.push("/orgs?connect");
           },
         }
       );

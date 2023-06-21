@@ -96,7 +96,7 @@ export default async function Page({ params }) {
     return (
       <div className="flex w-full flex-col items-center gap-4 pt-32">
         <p className="text-3xl font-bold text-white">Invalid challenge</p>
-        <Link className="text-xl font-thin text-white underline" href="/daos">
+        <Link className="text-xl font-thin text-white underline" href="/orgs">
           Go back home
         </Link>
       </div>
@@ -110,7 +110,7 @@ export default async function Page({ params }) {
         <p className="text-3xl font-bold text-white">
           Thank you for verifying your email address.
         </p>
-        <Link className="text-xl font-thin text-white underline" href="/daos">
+        <Link className="text-xl font-thin text-white underline" href="/orgs">
           Go back home
         </Link>
       </div>

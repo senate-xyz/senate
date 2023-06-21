@@ -40,7 +40,7 @@ const Home = () => {
         onSuccess: () => {
           setSuccess(true);
           setError(false);
-          if (router) router.push("/daos");
+          if (router) router.push("/orgs");
         },
         onError: () => {
           setError(true);
@@ -60,7 +60,7 @@ const Home = () => {
           <div
             className="absolute right-5 top-5 cursor-pointer"
             onClick={() => {
-              router.push("/daos");
+              router.push("/orgs");
             }}
           >
             <Image
