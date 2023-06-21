@@ -90,13 +90,20 @@
             <th width="50px" style="text-align: start">Org</th>
             <th width="30%" style="text-align: start">Proposal</th>
             <th style="
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                justify-content: center;
+              text-align: center;
+              vertical-align: middle;
               ">
-              Ending in
-              <img width="24px" src="https://www.senatelabs.xyz/assets/Icon/SortDiscendingWhite.svg" alt="Ending Icon" />
+
+              <table cellspacing="0" cellpadding="0">
+                <tr>
+                  <td>
+                    <b style="margin: 0px 0px; font-size: 13px; line-height: 22px;">Ending in</b>
+                  </td>
+                  <td>
+                    <img width="18px" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
+                  </td>
+              </table>
+
             </th>
             <th style="text-align: center">Vote Status</th>
           </tr>
@@ -183,13 +190,18 @@
             <th width="50px" style="text-align: start">Org</th>
             <th width="30%" style="text-align: start">Proposal</th>
             <th style="
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                justify-content: center;
+              text-align: center;
+              vertical-align: middle;
               ">
-              Ending in
-              <img width="24px" src="https://www.senatelabs.xyz/assets/Icon/SortDiscendingWhite.svg" alt="Ending Icon" />
+              <table cellspacing="0" cellpadding="0">
+                <tr>
+                  <td>
+                    <b style="margin: 0px 0px; font-size: 13px; line-height: 22px;">Ending in</b>
+                  </td>
+                  <td>
+                    <img width="18px" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
+                  </td>
+              </table>
             </th>
             <th style="text-align: center">Vote Status</th>
           </tr>
@@ -274,13 +286,18 @@
             <th width="50px" style="text-align: start">Org</th>
             <th width="40%" style="text-align: start">Proposal</th>
             <th style="
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                justify-content: center;
+              text-align: center;
+              vertical-align: middle;
               ">
-              Ended on
-              <img width="24px" src="https://www.senatelabs.xyz/assets/Icon/SortDiscendingWhite.svg" alt="Ending Icon" />
+              <table cellspacing="0" cellpadding="0">
+                <tr>
+                  <td>
+                    <b style="margin: 0px 0px; font-size: 13px; line-height: 22px;">Ended on</b>
+                  </td>
+                  <td>
+                    <img width="18px" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
+                  </td>
+              </table>
             </th>
             <th style="text-align: center">Vote Status</th>
           </tr>
