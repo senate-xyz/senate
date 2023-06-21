@@ -221,6 +221,7 @@ model notification {
   dispatchstatus NotificationDispatchedState @default(NOT_DISPATCHED)
 
   emailmessageid String?
+  emailtemplate  String?
 
   discordmessagelink String?
   discordmessageid   String?

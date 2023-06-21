@@ -1,5 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { MagicUserState, prisma } from "@senate/database";
+import { MagicUserState, NotificationType, prisma } from "@senate/database";
 import { z } from "zod";
 import { ServerClient } from "postmark";
 import { PostHog } from "posthog-node";
@@ -35,6 +35,8 @@ export default async function handler(
         event: "postmark_delivery",
         properties: {
           message: MessageID,
+          template: notification.emailtemplate,
+          type: notification.type,
           data: req.body,
         },
       });
@@ -45,6 +47,8 @@ export default async function handler(
         event: "postmark_bounce",
         properties: {
           message: MessageID,
+          template: notification.emailtemplate,
+          type: notification.type,
           data: req.body,
         },
       });
@@ -55,6 +59,8 @@ export default async function handler(
         event: "postmark_spamcomplaint",
         properties: {
           message: MessageID,
+          template: notification.emailtemplate,
+          type: notification.type,
           data: req.body,
         },
       });
@@ -65,6 +71,8 @@ export default async function handler(
         event: "postmark_open",
         properties: {
           message: MessageID,
+          template: notification.emailtemplate,
+          type: notification.type,
           data: req.body,
         },
       });
@@ -75,6 +83,8 @@ export default async function handler(
         event: "postmark_click",
         properties: {
           message: MessageID,
+          template: notification.emailtemplate,
+          type: notification.type,
           data: req.body,
         },
       });
@@ -85,6 +95,8 @@ export default async function handler(
         event: "postmark_subscriptionchange",
         properties: {
           message: MessageID,
+          template: notification.emailtemplate,
+          type: notification.type,
           data: req.body,
         },
       });

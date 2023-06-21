@@ -229,6 +229,7 @@ async fn send_bulletin(
                     vec![
                         notification::dispatchstatus::set(NotificationDispatchedState::Dispatched),
                         notification::emailmessageid::set(postmark_result.clone().MessageID.into()),
+                        notification::emailtemplate::set(bulletin_template.to_string().into()),
                     ],
                 )])
                 .skip_duplicates()
