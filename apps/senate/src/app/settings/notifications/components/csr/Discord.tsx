@@ -81,6 +81,7 @@ const Discord = () => {
               updateDiscordNotifications.mutate({
                 val: e.target.checked,
               });
+              if (!e.target.checked) setAdminConfirmation(false);
             }}
             className="peer sr-only"
           />
