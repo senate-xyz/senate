@@ -59,7 +59,7 @@ const Home = () => {
                 <span className="bg-[#5EF413] font-semibold text-black">
                   off-chain and on-chain proposals
                 </span>{" "}
-                from your favorite DAOs with ease.
+                from your favorite organisations with ease.
               </div>
 
               <div className="mb-8 w-full text-center text-[24px] font-light text-white lg:w-[447px]">

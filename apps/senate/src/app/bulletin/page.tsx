@@ -110,7 +110,7 @@ const Home = () => {
             </div>
             <div className="mt-4 text-[15px] font-normal text-white lg:w-[420px]">
               Senate works best with your email address, so we can notify you of
-              new proposals from the DAOs you follow.
+              new proposals from the organisations you follow.
             </div>
             <div className="text-[15px] font-normal text-white lg:w-[420px]">
               Everyday, at 8:00 am UTC.

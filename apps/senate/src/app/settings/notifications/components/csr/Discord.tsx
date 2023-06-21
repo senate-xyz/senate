@@ -91,8 +91,8 @@ const Discord = () => {
 
       <div className="max-w-[610px] text-[15px] text-white">
         Receive instant notifications in your Discord server about proposals
-        from all DAOs you follow on Senate. This will help ensure that you and
-        your team always remember to vote.
+        from all organisations you follow on Senate. This will help ensure that
+        you and your team always remember to vote.
       </div>
 
       {getDiscordNotifications && (
