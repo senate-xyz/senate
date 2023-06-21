@@ -637,6 +637,7 @@ async fn get_ended_proposals(
             hiddenResult: p.state == ProposalState::Hidden,
             result: if p.scorestotal.as_f64() > p.quorum.as_f64()
                 && p.state != ProposalState::Hidden
+                && p.dao.name != "MakerDAO"
             {
                 Some(NormalResult {
                     choiceName: p.choices.as_array().unwrap()[result_index].to_string(),
