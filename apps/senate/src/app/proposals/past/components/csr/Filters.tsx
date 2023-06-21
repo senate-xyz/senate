@@ -7,20 +7,20 @@ import { useSession } from "next-auth/react";
 
 const endOptions: { name: string; time: number }[] = [
   {
-    name: "Last 90 days",
-    time: 90,
-  },
-  {
-    name: "Last 30 days",
-    time: 30,
+    name: "Last 24 hours",
+    time: 1,
   },
   {
     name: "Last 7 days",
     time: 7,
   },
   {
-    name: "Last 24 hours",
-    time: 1,
+    name: "Last 30 days",
+    time: 30,
+  },
+  {
+    name: "Last 90 days",
+    time: 90,
   },
 ];
 
