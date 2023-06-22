@@ -2,6 +2,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 import { prisma } from "@senate/database";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 const isValidChallenge = async (challenge: string) => {
   const user = await prisma.user.findFirst({
@@ -23,6 +24,8 @@ const verifyUser = async (challenge: string) => {
       verifiedemail: true,
     },
   });
+
+  redirect("/orgs");
 };
 
 export default async function Page({ params }) {

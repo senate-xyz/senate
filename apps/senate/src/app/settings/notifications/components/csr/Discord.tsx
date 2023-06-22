@@ -7,26 +7,23 @@ import { useAccount } from "wagmi";
 import Image from "next/image";
 import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
-import { useForceUpdate } from "framer-motion";
 
 const Discord = () => {
   const [edit, setEdit] = useState(false);
+  const [whatIs, setWhatIs] = useState(false);
+  const [adminConfirmation, setAdminConfirmation] = useState(false);
 
   const [getDiscordNotifications, setDiscordNotifications] = useState(false);
   const [getDiscordReminders, setDiscordReminders] = useState(false);
   const [currentWebhook, setCurrentWebhook] = useState("");
-  const [adminConfirmation, setAdminConfirmation] = useState(false);
+
   const [showModal, setShowModal] = useState(false);
 
   const account = useAccount();
   const router = useRouter();
   const user = trpc.accountSettings.getUser.useQuery();
-  const setDiscordWebhook =
-    trpc.accountSettings.setDiscordWebhook.useMutation();
-
-  useEffect(() => {
-    setCurrentWebhook(String(user.data?.discordwebhook));
-  }, [user.data]);
+  const enableDiscordAndSetWebhook =
+    trpc.accountSettings.updateDiscordNotificationsAndSetWebhook.useMutation();
 
   useEffect(() => {
     if (!account.isConnected && router) router.push("/settings/account");
@@ -36,18 +33,14 @@ const Discord = () => {
     if (user.data) {
       setDiscordNotifications(user.data.discordnotifications);
       setDiscordReminders(user.data.discordreminders);
+      setCurrentWebhook(String(user.data?.discordwebhook));
     }
-  }, [user.data]);
-
-  const updateDiscordNotifications =
-    trpc.accountSettings.updateDiscordNotifications.useMutation();
-
-  // const updateDiscordReminders =
-  //   trpc.accountSettings.updateDiscordReminders.useMutation();
+  }, []);
 
   const onEnter = () => {
-    setDiscordWebhook.mutate(
-      { url: currentWebhook },
+    setWhatIs(false);
+    enableDiscordAndSetWebhook.mutate(
+      { val: true, url: currentWebhook },
       {
         onSuccess: () => {
           setEdit(false);
@@ -78,10 +71,8 @@ const Discord = () => {
             type="checkbox"
             checked={getDiscordNotifications}
             onChange={(e) => {
-              updateDiscordNotifications.mutate({
-                val: e.target.checked,
-              });
-              if (!e.target.checked) setAdminConfirmation(false);
+              setDiscordNotifications(e.target.checked);
+              setAdminConfirmation(e.target.checked);
             }}
             className="peer sr-only"
           />
@@ -98,14 +89,16 @@ const Discord = () => {
       {getDiscordNotifications && (
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            {!user.data.discordwebhook && !adminConfirmation ? (
+            {adminConfirmation ? (
               <div className="flex flex-col gap-2 text-white">
                 Are you an admin in a Discord server?
                 <div className="flex flex-row gap-8">
                   <div
                     className="flex h-[44px] w-[320px] cursor-pointer flex-col justify-center bg-white text-center text-black"
                     onClick={() => {
-                      setAdminConfirmation(true);
+                      setAdminConfirmation(false);
+                      setEdit(true);
+                      setWhatIs(true);
                       setShowModal(true);
                     }}
                   >
@@ -114,9 +107,7 @@ const Discord = () => {
                   <div
                     className="flex h-[44px] w-[120px] cursor-pointer flex-col justify-center bg-black text-center text-white underline"
                     onClick={() => {
-                      updateDiscordNotifications.mutate({
-                        val: false,
-                      });
+                      setDiscordNotifications(true);
                     }}
                   >
                     No, I'm not.
@@ -129,34 +120,8 @@ const Discord = () => {
                   <div className="text-[18px] font-light text-white">
                     Discord Webhook URL
                   </div>
-                  {edit ? (
-                    <>
-                      <Link
-                        className="cursor-pointer text-[15px] font-light text-[#D9D9D9] underline"
-                        href={
-                          "https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"
-                        }
-                        target="_blank"
-                      >
-                        What is a Discord webhook
-                      </Link>
-                      <div
-                        className="cursor-pointer text-[15px] font-light text-[#D9D9D9] underline"
-                        onClick={() => {
-                          setShowModal(false);
-                          setTimeout(() => {
-                            setShowModal(true);
-                          }, 100);
-                        }}
-                      >
-                        How do I get a webhook URL?
-                      </div>
-                    </>
-                  ) : (
-                    <></>
-                  )}
                 </div>
-                {edit || !user.data.discordwebhook ? (
+                {edit ? (
                   <div
                     className={`flex h-[46px] max-w-[382px] flex-row items-center`}
                   >
@@ -196,16 +161,20 @@ const Discord = () => {
                         ]
                       }
                     </div>
-                    <div
-                      className="cursor-pointer text-[15px] font-light text-[#ABABAB] underline"
-                      onClick={() => {
-                        setEdit(true);
-                      }}
-                    >
-                      Change Webhook
+                    <div>
+                      <div
+                        className="w-fit cursor-pointer text-[15px] font-light text-[#ABABAB] underline"
+                        onClick={() => {
+                          setEdit(true);
+                          setWhatIs(true);
+                        }}
+                      >
+                        Change Webhook
+                      </div>
                     </div>
                   </div>
                 )}
+
                 {/* <div className="flex max-w-[382px] flex-row items-center justify-between gap-4">
                   <div className="font-[18px] leading-[23px] text-white">
                     Ending soon reminders
@@ -226,17 +195,45 @@ const Discord = () => {
                 </div> */}
               </div>
             )}
+            {whatIs ? (
+              <div className="flex flex-row gap-2">
+                <Link
+                  className="cursor-pointer text-[15px] font-light text-[#D9D9D9] underline"
+                  href={
+                    "https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"
+                  }
+                  target="_blank"
+                >
+                  What is a Discord webhook?
+                </Link>
+                <div
+                  className="cursor-pointer text-[15px] font-light text-[#D9D9D9] underline"
+                  onClick={() => {
+                    setShowModal(false);
+                    setTimeout(() => {
+                      setShowModal(true);
+                    }, 100);
+                  }}
+                >
+                  How do I get a webhook URL?
+                </div>
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       )}
-      {setDiscordWebhook.error && (
+      {enableDiscordAndSetWebhook.error && (
         <div className="flex flex-col text-white">
           {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            JSON.parse(setDiscordWebhook.error.message).map((err: Error) => (
-              // eslint-disable-next-line react/jsx-key
-              <div>{err.message}</div>
-            ))
+            JSON.parse(enableDiscordAndSetWebhook.error.message).map(
+              (err: Error) => (
+                // eslint-disable-next-line react/jsx-key
+                <div>{err.message}</div>
+              )
+            )
           }
         </div>
       )}

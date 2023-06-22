@@ -386,6 +386,43 @@ export const accountSettingsRouter = router({
       return user;
     }),
 
+  updateDiscordNotificationsAndSetWebhook: privateProcedure
+    .input(
+      z.object({
+        val: z.boolean(),
+        url: z.string().url().includes("discord.com/api/webhooks/"),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const username = ctx.user.name;
+
+      const user = await prisma.user.update({
+        where: {
+          address: String(username),
+        },
+
+        data: {
+          discordnotifications: input.val,
+          discordwebhook: input.url,
+        },
+      });
+
+      posthog.capture({
+        distinctId: user.address,
+        event: input.val ? "enable_discord" : "disable_discord",
+      });
+
+      posthog.capture({
+        distinctId: user.address,
+        event: "set_discord_webhook",
+        properties: {
+          webhook: input.url,
+        },
+      });
+
+      return user;
+    }),
+
   updateTelegramNotifications: privateProcedure
     .input(
       z.object({
