@@ -5,8 +5,7 @@
   "license": "GNU GPLv3",
   "workspaces": [
     "apps/*",
-    "packages/*",
-    "utilities/*"
+    "packages/*"
   ],
   "prisma": {
     "schema": "packages/database/prisma/schema.prisma",

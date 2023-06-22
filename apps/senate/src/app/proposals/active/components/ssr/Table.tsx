@@ -7,7 +7,6 @@ import { authOptions } from "../../../../../pages/api/auth/[...nextauth]";
 import "server-only";
 import { MobileActiveProposal } from "./MobileRow";
 import { ActiveProposal } from "./DesktopRow";
-import { Proposal } from "@senate/database";
 
 extend(relativeTime);
 
@@ -70,10 +69,7 @@ const getProposals = async (
       break;
   }
 
-  // eslint-disable-next-line @typescript-eslint/await-thenable
-  const dao = await (
-    await prisma.dao.findMany({})
-  ).filter(
+  const dao = (await prisma.dao.findMany({})).filter(
     (dao) =>
       dao.name.toLowerCase().replace(" ", "") ==
       from.toLowerCase().replace(" ", "")
@@ -153,7 +149,7 @@ const getProposals = async (
         proposalTitle: proposal.name,
         state: proposal.state,
         proposalLink: `${
-          process.env.NEXT_PUBLIC_URL_SHORTNER
+          process.env.NEXT_PUBLIC_URL_SHORTNER || ""
         }${proposal.id.slice(-6)}/w/${user ? user.id.slice(-6) : ""}`,
         timeEnd: proposal.timeend,
         voted: user

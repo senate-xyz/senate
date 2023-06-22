@@ -19,7 +19,7 @@ const Home = () => {
   const [cookie, setCookie] = useCookies(["hasSeenLanding"]);
   useEffect(() => {
     if (cookie.hasSeenLanding && router) router.push("/");
-  }, [cookie]);
+  }, [cookie, router]);
 
   return (
     <div>

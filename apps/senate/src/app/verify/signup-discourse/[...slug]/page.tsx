@@ -16,7 +16,6 @@ const isValidChallenge = async (challenge: string) => {
 };
 
 export default async function Page({ params }) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const validChallenge = await isValidChallenge(String(params.slug[1]));
 
   if (!validChallenge)

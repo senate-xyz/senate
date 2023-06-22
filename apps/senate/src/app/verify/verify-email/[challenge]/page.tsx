@@ -28,8 +28,11 @@ const verifyUser = async (challenge: string) => {
   redirect("/orgs");
 };
 
-export default async function Page({ params }) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+export default async function Page({
+  params,
+}: {
+  params: { challenge: string };
+}) {
   const validChallenge = await isValidChallenge(String(params.challenge));
 
   if (!validChallenge)
@@ -42,7 +45,6 @@ export default async function Page({ params }) {
       </div>
     );
   else {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     await verifyUser(String(params.challenge));
 
     return (

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-page-custom-font */
 import "@rainbow-me/rainbowkit/styles.css";
 
 import "../styles/globals.css";

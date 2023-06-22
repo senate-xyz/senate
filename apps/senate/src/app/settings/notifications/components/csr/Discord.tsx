@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { trpc } from "../../../../../server/trpcClient";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
@@ -14,7 +14,7 @@ const Discord = () => {
   const [adminConfirmation, setAdminConfirmation] = useState(false);
 
   const [getDiscordNotifications, setDiscordNotifications] = useState(false);
-  const [getDiscordReminders, setDiscordReminders] = useState(false);
+  const [, setDiscordReminders] = useState(false);
   const [currentWebhook, setCurrentWebhook] = useState("");
 
   const [showModal, setShowModal] = useState(false);
@@ -27,7 +27,7 @@ const Discord = () => {
 
   useEffect(() => {
     if (!account.isConnected && router) router.push("/settings/account");
-  }, [account]);
+  }, [account, router]);
 
   useEffect(() => {
     if (user.data) {
@@ -35,6 +35,7 @@ const Discord = () => {
       setDiscordReminders(user.data.discordreminders);
       setCurrentWebhook(String(user.data?.discordwebhook));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onEnter = () => {
@@ -102,7 +103,7 @@ const Discord = () => {
                       setShowModal(true);
                     }}
                   >
-                    Yes, I'm a Discord server admin!
+                    Yes, I&apos;m a Discord server admin!
                   </div>
                   <div
                     className="flex h-[44px] w-[120px] cursor-pointer flex-col justify-center bg-black text-center text-white underline"
@@ -110,7 +111,7 @@ const Discord = () => {
                       setDiscordNotifications(true);
                     }}
                   >
-                    No, I'm not.
+                    No, I&apos;m not.
                   </div>
                 </div>
               </div>
@@ -226,15 +227,7 @@ const Discord = () => {
       )}
       {enableDiscordAndSetWebhook.error && (
         <div className="flex flex-col text-white">
-          {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            JSON.parse(enableDiscordAndSetWebhook.error.message).map(
-              (err: Error) => (
-                // eslint-disable-next-line react/jsx-key
-                <div>{err.message}</div>
-              )
-            )
-          }
+          <div>{enableDiscordAndSetWebhook.error.message}</div>
         </div>
       )}
     </div>
@@ -242,7 +235,7 @@ const Discord = () => {
 };
 
 function VideoModal(props: { show: boolean }) {
-  let [isOpen, setIsOpen] = useState(props.show);
+  const [isOpen, setIsOpen] = useState(props.show);
 
   useEffect(() => {
     setIsOpen(props.show);

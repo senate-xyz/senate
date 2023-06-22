@@ -80,8 +80,6 @@ export function createTRPCNextLayout<TRouter extends AnyRouter>(
       };
     }>();
     requestStorage._trpc = requestStorage._trpc ?? {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
       cache: Object.create(null),
       context: opts.createContext(),
       queryClient: new QueryClient(),

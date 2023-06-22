@@ -3,7 +3,7 @@
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/ban-types */
-import type {AsyncLocalStorage} from "async_hooks";
+import type { AsyncLocalStorage } from "async_hooks";
 
 // https://github.com/vercel/next.js/blob/canary/packages/next/client/components/request-async-storage.ts
 export const asyncStorage: AsyncLocalStorage<any> | {} =

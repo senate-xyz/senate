@@ -102,7 +102,6 @@ async function getSnapshotVotesCount(
         },
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       const votesCount = res.data.data.votes.length;
       result.set(voter, votesCount);
     } catch (err) {
@@ -170,7 +169,6 @@ async function getSnapshotVoters(space: string): Promise<Array<string>> {
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
     results = res.data.data.votes.map((vote: any) => vote.voter);
   } catch (err) {
     console.log(err);

@@ -31,7 +31,7 @@ const Home = () => {
 
   useEffect(() => {
     if (user.isFetched) setNewEmail(user.data?.email ?? "");
-  }, [user.data?.email]);
+  }, [user]);
 
   const onEnter = () => {
     setEmail.mutate(

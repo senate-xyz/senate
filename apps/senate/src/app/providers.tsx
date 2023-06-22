@@ -120,7 +120,7 @@ const Disclaimer: DisclaimerComponent = () => (
 
 if (typeof window !== "undefined") {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
-    api_host: `${process.env.NEXT_PUBLIC_WEB_URL || ""}/ingest`,
+    api_host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
     opt_in_site_apps: true,
     loaded: (posthog) => {
       if (process.env.NODE_ENV === "development") posthog.debug();

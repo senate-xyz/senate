@@ -205,14 +205,13 @@ const Proxy = (props: { address: string }) => {
   const provider = usePublicClient();
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    (async () => {
+    void (async () => {
       const ens = await provider.getEnsName({
         address: props.address as `0x${string}`,
       });
       setName(ens ?? props.address);
     })();
-  }, [props.address]);
+  }, [props.address, provider]);
 
   return (
     <option key={props.address} value={props.address}>

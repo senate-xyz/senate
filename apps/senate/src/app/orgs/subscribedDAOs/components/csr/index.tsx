@@ -10,7 +10,7 @@ export const SubscribedDAO = (props: {
   daoId: string;
   daoName: string;
   daoPicture: string;
-  bgColor: string | undefined;
+  bgColor: string;
   daoHandlers: string[];
   activeProposals: number;
 }) => {
@@ -83,8 +83,7 @@ export const SubscribedDAO = (props: {
 
             <div
               className="w-full cursor-pointer px-4 pb-4 text-center text-[15px] font-thin text-white underline"
-              // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/require-await
-              onClick={async () => {
+              onClick={() => {
                 unsubscribe.mutate(
                   { daoId: props.daoId },
                   {
@@ -103,7 +102,6 @@ export const SubscribedDAO = (props: {
       ) : (
         <div
           style={{
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             backgroundImage: `linear-gradient(45deg, ${props.bgColor}40 15%, ${props.bgColor}10)`,
             filter: "saturate(5)",
           }}
@@ -214,10 +212,7 @@ export const SubscribedDAO = (props: {
             >
               {props.activeProposals ? (
                 <Link href={`/proposals/active?from=${props.daoName}`}>
-                  {
-                    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-                    props.activeProposals + " Active Proposals"
-                  }
+                  {`${props.activeProposals} Active Proposals`}
                 </Link>
               ) : (
                 "No Active Proposals"

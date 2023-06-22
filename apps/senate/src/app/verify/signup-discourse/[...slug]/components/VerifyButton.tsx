@@ -32,7 +32,7 @@ export const VerifyButton = (props: { challenge: string }) => {
       setSignPopup(true);
       signMessage();
     }
-  }, [posthog, address, isConnected, activeConnector, signMessage]);
+  }, [posthog, address, isConnected, activeConnector, signMessage, signPopup]);
 
   useEffect(() => {
     if (signedMessage)
@@ -49,7 +49,7 @@ export const VerifyButton = (props: { challenge: string }) => {
           },
         }
       );
-  }, [signedMessage, posthog]);
+  }, [address, message, props.challenge, router, signedMessage, verify]);
 
   return (
     <Suspense fallback={<></>}>

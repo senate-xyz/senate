@@ -18,7 +18,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!account.isConnected) if (router) router.push("/settings/account");
-  }, [account]);
+  }, [account, router]);
 
   const onEnter = async () => {
     let resolvedAddress = proxyAddress;
@@ -34,8 +34,7 @@ export default function Home() {
       { address: resolvedAddress },
       {
         onSuccess() {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          voters.refetch();
+          void voters.refetch();
           setProxyAddress("");
         },
       }
@@ -70,9 +69,7 @@ export default function Home() {
             value={proxyAddress}
             onChange={(e) => setProxyAddress(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter")
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                onEnter();
+              if (e.key === "Enter") void onEnter();
             }}
             placeholder="Paste a new proxy address here (or ENS)"
           />
@@ -82,8 +79,7 @@ export default function Home() {
               proxyAddress.length ? "bg-white" : "bg-[#ABABAB]"
             } text-center`}
             onClick={() => {
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              onEnter();
+              void onEnter();
             }}
           >
             Add
@@ -91,25 +87,13 @@ export default function Home() {
         </div>
         {addVoter.error && (
           <div className="flex flex-col text-white">
-            {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-              JSON.parse(addVoter.error.message).map((err: Error) => (
-                // eslint-disable-next-line react/jsx-key
-                <div>{err.message}</div>
-              ))
-            }
+            {<div>{addVoter.error.message}</div>}
           </div>
         )}
 
         {voters.error && (
           <div className="flex flex-col text-white">
-            {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-              JSON.parse(voters.error.message).map((err: Error) => (
-                // eslint-disable-next-line react/jsx-key
-                <div>{err.message}</div>
-              ))
-            }
+            {<div>{voters.error.message}</div>}
           </div>
         )}
       </div>
@@ -122,15 +106,14 @@ const Voter = ({ address }: { address: string }) => {
   const [voterEns, setVoterEns] = useState("");
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    (async () => {
+    void (async () => {
       const ens = await provider.getEnsName({
         address: address as `0x${string}`,
       });
 
       setVoterEns(ens ?? "");
     })();
-  }, [address]);
+  }, [address, provider]);
 
   const removeVoter = trpc.accountSettings.removeVoter.useMutation();
 

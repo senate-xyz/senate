@@ -13,7 +13,7 @@ export const UnsubscribedDAO = (props: {
   daoId: string;
   daoName: string;
   daoPicture: string;
-  bgColor: string | undefined;
+  bgColor: string;
   daoHandlers: string[];
 }) => {
   const [imgSrc, setImgSrc] = useState(
@@ -53,8 +53,7 @@ export const UnsubscribedDAO = (props: {
     ) {
       subscribe.mutate(
         {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          daoId: cookie.subscribe,
+          daoId: cookie.subscribe as string,
         },
         {
           onSuccess: () => {
@@ -68,13 +67,13 @@ export const UnsubscribedDAO = (props: {
         }
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cookie.subscribe, session]);
 
   return (
     <div className="h-[320px] w-[240px]">
       <div
         style={{
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           backgroundImage: `linear-gradient(45deg, ${props.bgColor}40 15%, ${props.bgColor}10)`,
           filter: "saturate(5)",
         }}

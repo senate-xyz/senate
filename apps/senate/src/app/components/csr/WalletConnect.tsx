@@ -27,8 +27,7 @@ const WalletConnect = () => {
         acceptedTermsTimestamp.isSuccess &&
         !(acceptedTerms.data && acceptedTermsTimestamp.data)
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        disconnectForTerms();
+        void disconnectForTerms();
       } else {
         if (posthog) posthog.identify(account.address);
       }
@@ -47,13 +46,12 @@ const WalletConnect = () => {
 
   useEffect(() => {
     if (router) router.refresh();
-  }, [session.status]);
+  }, [router, session.status]);
 
   useEffect(() => {
     const handleConnectorUpdate = ({ account }) => {
       if (account) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        signOut();
+        void signOut();
       }
     };
 
@@ -76,7 +74,7 @@ const WalletConnect = () => {
       setModalOpened(true);
       openConnectModal();
     }
-  }, [openConnectModal, searchParams, account]);
+  }, [openConnectModal, searchParams, account, modalOpened]);
 
   return (
     <div>

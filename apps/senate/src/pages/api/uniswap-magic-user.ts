@@ -7,15 +7,17 @@ const emailClient = new ServerClient(
   process.env.POSTMARK_TOKEN ?? "Missing Token"
 );
 
+interface ResponseBody {
+  email: string;
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  const email = req.body.email;
+  const { email } = req.body as ResponseBody;
 
   const existingUser = await prisma.user.findFirst({
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     where: { email: email },
   });
 
@@ -53,7 +55,7 @@ export default async function handler(
             day: "numeric",
           }),
           url: `${
-            process.env.NEXT_PUBLIC_WEB_URL || ""
+            process.env.NEXT_PUBLIC_WEB_URL ?? ""
           }/verify/subscribe-discourse/uniswap/${challengeCode}`,
         },
       });
@@ -86,13 +88,12 @@ export default async function handler(
             day: "numeric",
           }),
           url: `${
-            process.env.NEXT_PUBLIC_WEB_URL || ""
+            process.env.NEXT_PUBLIC_WEB_URL ?? ""
           }/verify/verify-email/${challengeCode}`,
         },
       });
 
       res.status(200).json({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         email: email,
         result: "failed",
       });
@@ -103,7 +104,6 @@ export default async function handler(
     try {
       schema.parse(email);
     } catch {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       res.status(500).json({ email: email, result: "failed" });
       return;
     }
@@ -112,7 +112,6 @@ export default async function handler(
 
     const newUser = await prisma.user.create({
       data: {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         email: email,
         verifiedemail: false,
         isuniswapuser: MagicUserState.VERIFICATION,
@@ -134,7 +133,7 @@ export default async function handler(
           day: "numeric",
         }),
         url: `${
-          process.env.NEXT_PUBLIC_WEB_URL || ""
+          process.env.NEXT_PUBLIC_WEB_URL ?? ""
         }/verify/signup-discourse/uniswap/${challengeCode}`,
       },
     });

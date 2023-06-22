@@ -43,14 +43,11 @@ async function main() {
         },
       },
     ])
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     .then(async (answers: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (answers.run === "export") {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
         await exportUsers(answers.file);
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
         await importUsers(answers.file);
       }
     });
@@ -96,7 +93,6 @@ const importUsers = async (fromFile: string) => {
 
   const rawdata = fs.readFileSync(`./data/${fromFile}.json`);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const users: OldUserType[] = JSON.parse(rawdata.toString());
 
   for (const user of users) {

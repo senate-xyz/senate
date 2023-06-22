@@ -7,7 +7,7 @@ import { prisma } from "@senate/database";
 import { PostHog } from "posthog-node";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
-  host: `${process.env.NEXT_PUBLIC_WEB_URL || ""}/ingest`,
+  host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
 });
 
 export function authOptions(
@@ -31,9 +31,10 @@ export function authOptions(
       },
       async authorize(credentials) {
         try {
-          const siwe = new SiweMessage(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            JSON.parse(credentials?.message || "{}")
+          if (!credentials) return { id: "" };
+
+          const siwe: SiweMessage = new SiweMessage(
+            JSON.parse(credentials.message) as Partial<SiweMessage>
           );
 
           const nextAuthUrl = new URL(process.env.NEXTAUTH_URL ?? "");
@@ -135,7 +136,7 @@ export function authOptions(
       maxAge: 14400,
     },
     callbacks: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/require-await
+      // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-explicit-any
       async session({ session, token }: { session: any; token: any }) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         session.address = token.sub;
@@ -192,8 +193,7 @@ export function authOptions(
             },
           });
       },
-      // eslint-disable-next-line @typescript-eslint/require-await
-      async signOut() {
+      signOut() {
         res?.setHeader("Set-Cookie", [
           `WebsiteToken=deleted; Max-Age=0`,
           `AnotherCookieName=deleted; Max-Age=0`,

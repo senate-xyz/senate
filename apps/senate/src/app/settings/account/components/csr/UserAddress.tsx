@@ -13,12 +13,11 @@ const UserAddress = () => {
 
   useEffect(() => {
     if (session.status === "authenticated" && account.address) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      provider.getEnsName({ address: account.address }).then((ens) => {
+      void provider.getEnsName({ address: account.address }).then((ens) => {
         setEns(ens ?? "");
       });
     }
-  }, [account.address]);
+  }, [account.address, provider, session.status]);
 
   return (
     <div>

@@ -53,8 +53,7 @@ export default async function SubscribedDAOs() {
   const backgroundColors = await Promise.all(
     subscriptions.map(async (sub) => {
       const color = await getAverageColor(
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-        process.env.NEXT_PUBLIC_WEB_URL + sub.dao.picture + ".svg",
+        `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${sub.dao.picture}.svg`,
         {
           mode: "precision",
           algorithm: "sqrt",
@@ -90,7 +89,7 @@ export default async function SubscribedDAOs() {
                     daoPicture={sub.dao.picture}
                     bgColor={
                       backgroundColors.find((dao) => dao?.daoId == sub.id)
-                        ?.color
+                        ?.color || "#000000"
                     }
                     daoHandlers={sub.dao.handlers.map(
                       (handler) => handler.type
