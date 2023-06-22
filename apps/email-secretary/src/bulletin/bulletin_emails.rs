@@ -1,4 +1,4 @@
-use std::{cmp::Ordering, env, sync::Arc};
+use std::{cmp::Ordering, collections::HashMap, env, sync::Arc};
 
 use anyhow::Result;
 use chrono::{Duration, Utc};
@@ -31,6 +31,7 @@ struct EmailBody {
     From: String,
     TemplateAlias: String,
     TemplateModel: BulletinData,
+    Headers: HashMap<String, String>,
 }
 
 #[allow(non_snake_case)]
@@ -189,11 +190,14 @@ async fn send_bulletin(
 
     let user_email = user.email.unwrap();
 
+    let exec_env = env::var("EXEC_ENV").expect("$EXEC_ENV is not set");
+
     let content = &EmailBody {
         To: user_email,
         From: "info@senatelabs.xyz".to_string(),
         TemplateAlias: bulletin_template.to_string(),
         TemplateModel: user_data.clone(),
+        Headers: HashMap::from([("environment".to_string(), exec_env)]),
     };
 
     debug!("{:?}", content);

@@ -1,4 +1,4 @@
-use std::{env, sync::Arc};
+use std::{collections::HashMap, env, sync::Arc};
 
 use anyhow::bail;
 use chrono::{Duration, Utc};
@@ -27,6 +27,7 @@ struct EmailBody {
     From: String,
     TemplateAlias: String,
     TemplateModel: QuorumWarningData,
+    Headers: HashMap<String, String>,
 }
 
 #[allow(non_snake_case)]
@@ -235,11 +236,14 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             },
         };
 
+        let exec_env = env::var("EXEC_ENV").expect("$EXEC_ENV is not set");
+
         let content = &EmailBody {
             To: user.email.unwrap(),
             From: "info@senatelabs.xyz".to_string(),
             TemplateAlias: quorum_template.to_string(),
             TemplateModel: data.clone(),
+            Headers: HashMap::from([("environment".to_string(), exec_env)]),
         };
 
         debug!("{:?}", content);
