@@ -2,7 +2,7 @@ use std::{env, sync::Arc, time::Duration};
 
 use serenity::{http::Http, model::webhook::Webhook};
 use tokio::time::sleep;
-use tracing::{debug_span, instrument, Instrument};
+use tracing::{debug_span, instrument, warn, Instrument};
 
 use crate::{
     dispatch::new_proposals,
@@ -200,31 +200,34 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                     notification::discordmessageid::set(msg.clone().unwrap().id.to_string().into()),
                 ]
             }
-            Err(_) => match notification.dispatchstatus {
-                NotificationDispatchedState::NotDispatched => {
-                    vec![notification::dispatchstatus::set(
-                        NotificationDispatchedState::FirstRetry,
-                    )]
+            Err(e) => {
+                warn!("{:?}", e);
+                match notification.dispatchstatus {
+                    NotificationDispatchedState::NotDispatched => {
+                        vec![notification::dispatchstatus::set(
+                            NotificationDispatchedState::FirstRetry,
+                        )]
+                    }
+                    NotificationDispatchedState::FirstRetry => {
+                        vec![notification::dispatchstatus::set(
+                            NotificationDispatchedState::SecondRetry,
+                        )]
+                    }
+                    NotificationDispatchedState::SecondRetry => {
+                        vec![notification::dispatchstatus::set(
+                            NotificationDispatchedState::ThirdRetry,
+                        )]
+                    }
+                    NotificationDispatchedState::ThirdRetry => {
+                        vec![notification::dispatchstatus::set(
+                            NotificationDispatchedState::Failed,
+                        )]
+                    }
+                    NotificationDispatchedState::Dispatched => todo!(),
+                    NotificationDispatchedState::Deleted => todo!(),
+                    NotificationDispatchedState::Failed => todo!(),
                 }
-                NotificationDispatchedState::FirstRetry => {
-                    vec![notification::dispatchstatus::set(
-                        NotificationDispatchedState::SecondRetry,
-                    )]
-                }
-                NotificationDispatchedState::SecondRetry => {
-                    vec![notification::dispatchstatus::set(
-                        NotificationDispatchedState::ThirdRetry,
-                    )]
-                }
-                NotificationDispatchedState::ThirdRetry => {
-                    vec![notification::dispatchstatus::set(
-                        NotificationDispatchedState::Failed,
-                    )]
-                }
-                NotificationDispatchedState::Dispatched => todo!(),
-                NotificationDispatchedState::Deleted => todo!(),
-                NotificationDispatchedState::Failed => todo!(),
-            },
+            }
         };
 
         client
