@@ -110,11 +110,11 @@
 
           <mj-raw>{{#each . }}</mj-raw>
           <tr style="border-bottom: 1px solid #ecedee">
-            <td width="48px">
-
+            <td width="48px" style="vertical-align:top;">
               <table cellspacing="0" cellpadding="0">
                 <tr>
-                  <td> <img width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+                  <td>
+                    <img style="vertical-align:bottom;" width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
                   </td>
                 </tr>
                 <tr>
@@ -123,10 +123,9 @@
                   </td>
                 </tr>
               </table>
-
             </td>
 
-            <td class="proposal-name">
+            <td class="proposal-name" style="vertical-align:top;">
               <a href="{{url}}">{{proposalName}}</a>
             </td>
             <td style="text-align: center">
@@ -208,10 +207,11 @@
 
           <mj-raw>{{#each . }}</mj-raw>
           <tr style="border-bottom: 1px solid #ecedee">
-            <td width="48px">
+            <td width="48px" style="vertical-align:top;">
               <table cellspacing="0" cellpadding="0">
                 <tr>
-                  <td> <img width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+                  <td>
+                    <img style="vertical-align:bottom;" width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
                   </td>
                 </tr>
                 <tr>
@@ -222,7 +222,7 @@
               </table>
             </td>
 
-            <td class="proposal-name">
+            <td class="proposal-name" style="vertical-align:top;">
               <a href="{{url}}">{{proposalName}}</a>
             </td>
             <td style="text-align: center">
@@ -304,10 +304,11 @@
 
           <mj-raw>{{#each . }}</mj-raw>
           <tr style="border-bottom: 1px solid #ecedee">
-            <td width="48px">
+            <td width="48px" style="vertical-align:top;">
               <table cellspacing="0" cellpadding="0">
                 <tr>
-                  <td> <img width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+                  <td>
+                    <img style="vertical-align:bottom;" width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
                   </td>
                 </tr>
                 <tr>
@@ -318,7 +319,7 @@
               </table>
             </td>
 
-            <td class="proposal-name">
+            <td class="proposal-name" style="vertical-align:top;">
               <a href="{{url}}">{{proposalName}}</a>
             </td>
             <td style="text-align: center; padding:0px">

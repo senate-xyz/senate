@@ -120,7 +120,7 @@
                 background-color: white;
                 border: 1px solid #e4e4e4;
               ">
-              <img style="background-color: red" src="{{countdownUrl}}" alt="Countdown" />
+              <img src="{{countdownUrl}}" alt="Countdown" />
             </td>
           </tr>
           <tr>
@@ -157,7 +157,7 @@
                 background-color: white;
                 border: 1px solid #e4e4e4;
               ">
-              <img style="background-color: red" src="{{countdownUrl}}" alt="Countdown" />
+              <img src="{{countdownUrl}}" alt="Countdown" />
             </td>
           </tr>
 
