@@ -3,53 +3,77 @@
     <mj-attributes>
       <mj-all font-family="Arial" />
     </mj-attributes>
-    <mj-style
-      >@media only screen and (min-width: 480px) { .desktop-version { display:
-      block !important; } .mobile-version { display: none !important; } } @media
-      only screen and (max-width: 479px) { .desktop-version { display: none
-      !important; } .mobile-version { display: block !important; } }</mj-style
-    >
     <mj-style>
-      @media only screen and (min-width: 480px) { .results-width {
-      min-width:180px; max-width:180px;} }
+      @media only screen and (min-width: 480px) {
+        .desktop-version {
+          display:
+            block !important;
+        }
+
+        .mobile-version {
+          display: none !important;
+        }
+      }
+
+      @media only screen and (max-width: 479px) {
+        .desktop-version {
+          display: none !important;
+        }
+
+        .mobile-version {
+          display: block !important;
+        }
+      }
     </mj-style>
     <mj-style>
-      @media only screen and (max-width: 479px) { .results-width {
-      min-width:100px; max-width:100px; } }
+      @media only screen and (min-width: 480px) {
+        .results-width {
+          min-width: 180px;
+          max-width: 180px;
+        }
+      }
+    </mj-style>
+    <mj-style>
+      @media only screen and (max-width: 479px) {
+        .results-width {
+          min-width: 100px;
+          max-width: 100px;
+        }
+      }
     </mj-style>
 
-    <mj-style inline="inline"
-      >.card-background { border: 5px solid black; max-width: 680px;
-      display:flex; align-items:center;}
+    <mj-style inline="inline">
+      .card-background {
+        border: 5px solid black;
+        max-width: 680px;
+        display: flex;
+        align-items: center;
+      }
     </mj-style>
   </mj-head>
   <mj-body background-color="white">
+
+    <mj-raw>{{#env}}</mj-raw>
+    <mj-section padding="8px 0px" background-color="red">
+      <mj-column>
+        <mj-text padding="12px" align="left" font-size="30px" color="#000" font-family="sans-serif" font-weight="bold">
+          This email is coming from {{env}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-raw>{{/env}}</mj-raw>
+
     <mj-section padding="10px 0" background-color="white">
       <mj-column width="100%">
-        <mj-text
-          align="left"
-          font-size="13px"
-          color="#555555"
-          font-family="sans-serif"
-        >
+        <mj-text align="left" font-size="13px" color="#555555" font-family="sans-serif">
           Hey senator!
         </mj-text>
 
-        <mj-text
-          align="left"
-          font-size="13px"
-          color="#555555"
-          font-family="sans-serif"
-        >
+        <mj-text align="left" font-size="13px" color="#555555" font-family="sans-serif">
           In order to become a Senate user, we need you to confirm you email
           address and wallet by signing a message.
         </mj-text>
-        <mj-text
-          align="left"
-          font-size="13px"
-          color="#555555"
-          font-family="sans-serif"
-        >
+        <mj-text align="left" font-size="13px" color="#555555" font-family="sans-serif">
           Please do so by clicking the link below.
         </mj-text>
       </mj-column>
@@ -57,16 +81,7 @@
 
     <mj-section>
       <mj-column>
-        <mj-button
-          padding="0px 0px 0px 0px"
-          height="80px"
-          font-weight="700"
-          font-size="28px"
-          line-height="34px"
-          background-color="black"
-          color="white"
-          href="{{url}}"
-        >
+        <mj-button padding="0px 0px 0px 0px" height="80px" font-weight="700" font-size="28px" line-height="34px" background-color="black" color="white" href="{{url}}">
           Confirm email
         </mj-button>
       </mj-column>
@@ -74,16 +89,11 @@
 
     <mj-section>
       <mj-column>
-        <mj-text
-          align="left"
-          font-size="13px"
-          color="#555555"
-          font-family="sans-serif"
-        >
+        <mj-text align="left" font-size="13px" color="#555555" font-family="sans-serif">
           If the button does not work, here's a direct link to it:
         </mj-text>
-        <mj-text
-          ><mj-raw><a href="{{url}}">{{url}}</a></mj-raw>
+        <mj-text>
+          <mj-raw><a href="{{url}}">{{url}}</a></mj-raw>
         </mj-text>
       </mj-column>
     </mj-section>

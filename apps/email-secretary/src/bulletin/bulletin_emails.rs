@@ -31,7 +31,6 @@ struct EmailBody {
     From: String,
     TemplateAlias: String,
     TemplateModel: BulletinData,
-    Headers: HashMap<String, String>,
 }
 
 #[allow(non_snake_case)]
@@ -41,6 +40,7 @@ struct BulletinData {
     endingSoonProposals: Vec<EndingSoonProposals>,
     newProposals: Vec<NewProposals>,
     endedProposals: Vec<EndedProposals>,
+    env: Option<Value>,
 }
 
 #[allow(non_snake_case)]
@@ -190,14 +190,11 @@ async fn send_bulletin(
 
     let user_email = user.email.unwrap();
 
-    let exec_env = env::var("EXEC_ENV").expect("$EXEC_ENV is not set");
-
     let content = &EmailBody {
         To: user_email,
         From: "info@senatelabs.xyz".to_string(),
         TemplateAlias: bulletin_template.to_string(),
         TemplateModel: user_data.clone(),
-        Headers: HashMap::from([("environment".to_string(), exec_env)]),
     };
 
     debug!("{:?}", content);
@@ -303,12 +300,18 @@ async fn get_user_bulletin_data(
     let ending_soon_proposals = get_ending_soon_proposals(user.clone(), db).await?;
     let new_proposals = get_new_proposals(user.clone(), db).await?;
     let ended_proposals = get_ended_proposals(user.clone(), db).await?;
+    let exec_env = env::var("EXEC_ENV").expect("$EXEC_ENV is not set");
 
     Ok(BulletinData {
         todaysDate: Utc::now().format("%A, %B %e, %Y").to_string(),
         endingSoonProposals: ending_soon_proposals,
         newProposals: new_proposals,
         endedProposals: ended_proposals,
+        env: if exec_env == "prod" {
+            None
+        } else {
+            Some(json!({ "env": exec_env }))
+        },
     })
 }
 
