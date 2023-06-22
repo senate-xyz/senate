@@ -27,8 +27,7 @@ const WalletConnect = () => {
         acceptedTermsTimestamp.isSuccess &&
         !(acceptedTerms.data && acceptedTermsTimestamp.data)
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        disconnectForTerms();
+        void disconnectForTerms();
       } else {
         if (posthog) posthog.identify(account.address);
       }
@@ -52,8 +51,7 @@ const WalletConnect = () => {
   useEffect(() => {
     const handleConnectorUpdate = ({ account }) => {
       if (account) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        signOut();
+        void signOut();
       }
     };
 
@@ -76,8 +74,7 @@ const WalletConnect = () => {
       setModalOpened(true);
       openConnectModal();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openConnectModal, searchParams, account]);
+  }, [openConnectModal, searchParams, account, modalOpened]);
 
   return (
     <div>

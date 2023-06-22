@@ -32,8 +32,7 @@ export const VerifyButton = (props: { challenge: string }) => {
       setSignPopup(true);
       signMessage();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [posthog, address, isConnected, activeConnector, signMessage]);
+  }, [posthog, address, isConnected, activeConnector, signMessage, signPopup]);
 
   useEffect(() => {
     if (signedMessage)
@@ -50,8 +49,7 @@ export const VerifyButton = (props: { challenge: string }) => {
           },
         }
       );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signedMessage, posthog]);
+  }, [address, message, props.challenge, router, signedMessage, verify]);
 
   return (
     <Suspense fallback={<></>}>

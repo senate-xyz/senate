@@ -4,7 +4,7 @@ import { prisma } from "@senate/database";
 import { PostHog } from "posthog-node";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
-  host: `${process.env.NEXT_PUBLIC_WEB_URL || ""}/ingest`,
+  host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
 });
 
 export const subscriptionsRouter = router({

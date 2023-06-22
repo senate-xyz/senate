@@ -5,7 +5,7 @@ import { verifyMessage } from "viem";
 import { PostHog } from "posthog-node";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
-  host: `${process.env.NEXT_PUBLIC_WEB_URL || ""}/ingest`,
+  host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
 });
 
 export const verifyRouter = router({
@@ -58,12 +58,12 @@ export const verifyRouter = router({
       if (challengeMatch[0] != input.challenge)
         throw new Error("Challenge does not match");
 
-      const valid = verifyMessage({
+      const valid = await verifyMessage({
         address: input.address as `0x${string}`,
         message: input.message,
         signature: input.signature as `0x${string}`,
       });
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+
       if (!valid) throw new Error("Signature does not match");
 
       const addressUser = await prisma.user.findFirst({

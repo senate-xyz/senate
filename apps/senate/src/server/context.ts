@@ -4,7 +4,6 @@ import type * as trpcNext from "@trpc/server/adapters/next";
 import { getServerSession, type User } from "next-auth";
 import { authOptions } from "../pages/api/auth/[...nextauth]";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface CreateContextOptions {
   user: User | null;
   rsc: boolean;

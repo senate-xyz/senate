@@ -128,11 +128,7 @@ export const Header = (props: { title: string }) => {
                         alt={"Senate logo"}
                       />
                     )}
-                    <a
-                      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                      className={`${active && "w-full"}`}
-                      href="/orgs"
-                    >
+                    <a className={`${active ? "w-full" : ""}`} href="/orgs">
                       Orgs
                     </a>
                   </div>
@@ -162,8 +158,7 @@ export const Header = (props: { title: string }) => {
                       />
                     )}
                     <a
-                      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                      className={`${active && "w-full"}`}
+                      className={`${active ? "w-full" : ""}`}
                       href="/proposals/active"
                     >
                       Proposals
@@ -195,8 +190,7 @@ export const Header = (props: { title: string }) => {
                       />
                     )}
                     <a
-                      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                      className={`${active && "w-full"}`}
+                      className={`${active ? "w-full" : ""}`}
                       href="/settings/account"
                     >
                       Settings

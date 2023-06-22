@@ -27,8 +27,7 @@ const Testing = () => {
           onClick={() => {
             deleteUser.mutate(void 0, {
               onSuccess: () => {
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                signOut();
+                void signOut();
               },
             });
           }}

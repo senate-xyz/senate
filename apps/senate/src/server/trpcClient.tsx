@@ -6,8 +6,6 @@ import { useState } from "react";
 import superjson from "superjson";
 import type { AppRouter } from "./routers/_app";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
 export const trpc = createTRPCReact<AppRouter>({
   unstable_overrides: {
     useMutation: {

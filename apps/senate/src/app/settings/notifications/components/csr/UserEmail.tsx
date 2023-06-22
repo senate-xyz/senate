@@ -174,13 +174,7 @@ const UserEmail = () => {
 
             {setEmail.error && (
               <div className="flex flex-col text-white">
-                {
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                  JSON.parse(setEmail.error.message).map((err: Error) => (
-                    // eslint-disable-next-line react/jsx-key
-                    <div>{err.message}</div>
-                  ))
-                }
+                <div>{setEmail.error.message}</div>
               </div>
             )}
           </div>

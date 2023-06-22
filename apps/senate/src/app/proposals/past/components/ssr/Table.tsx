@@ -74,10 +74,7 @@ const getProposals = async (
       break;
   }
 
-  // eslint-disable-next-line @typescript-eslint/await-thenable
-  const dao = await (
-    await prisma.dao.findMany({})
-  ).filter(
+  const dao = (await prisma.dao.findMany({})).filter(
     (dao) =>
       dao.name.toLowerCase().replace(" ", "") ==
       from.toLowerCase().replace(" ", "")

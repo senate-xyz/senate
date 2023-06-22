@@ -5,7 +5,7 @@ import Link from "next/link";
 import { PostHog } from "posthog-node";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
-  host: `${process.env.NEXT_PUBLIC_WEB_URL || ""}/ingest`,
+  host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
 });
 
 const isValidChallenge = async (challenge: string) => {
@@ -88,8 +88,7 @@ const verifyUser = async (dao: string, challenge: string) => {
   });
 };
 
-export default async function Page({ params }) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+export default async function Page({ params }: { params: { slug: string[] } }) {
   const validChallenge = await isValidChallenge(String(params.slug[1]));
 
   if (!validChallenge)
@@ -102,7 +101,6 @@ export default async function Page({ params }) {
       </div>
     );
   else {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     await verifyUser(String(params.slug[0]), String(params.slug[1]));
 
     return (

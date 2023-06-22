@@ -22,28 +22,22 @@ export const MobilePastProposal = async (props: {
 }) => {
   const loading = !(await isUpToDate(props.proposal.daoHandlerId));
   const daoPicture = await fetch(
-    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-    process.env.NEXT_PUBLIC_WEB_URL + props.proposal.daoPicture + ".svg"
+    `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${props.proposal.daoPicture}.svg`
   )
     .then((res) => {
       if (res.ok)
-        return (
-          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-          process.env.NEXT_PUBLIC_WEB_URL + props.proposal.daoPicture + ".svg"
-        );
+        return `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${
+          props.proposal.daoPicture
+        }.svg`;
       else
-        return (
-          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-          process.env.NEXT_PUBLIC_WEB_URL +
-          "/assets/Project_Icons/placeholder_medium.png"
-        );
+        return `${
+          process.env.NEXT_PUBLIC_WEB_URL ?? ""
+        }/assets/Project_Icons/placeholder_medium.png.svg`;
     })
     .catch(() => {
-      return (
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-        process.env.NEXT_PUBLIC_WEB_URL +
-        "/assets/Project_Icons/placeholder_medium.png"
-      );
+      return `${
+        process.env.NEXT_PUBLIC_WEB_URL ?? ""
+      }/assets/Project_Icons/placeholder_medium.png.svg`;
     });
 
   return (
