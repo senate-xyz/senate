@@ -78,14 +78,19 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
         let http = Http::new("");
 
-        let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
-            .await
-            .ok();
+        let webhook_response = Webhook::from_url(&http, user.discordwebhook.as_str()).await;
 
-        if webhook.is_none() {
-            update_notification_retry(client, notification).await;
+        let webhook;
 
-            continue;
+        match webhook_response {
+            Ok(w) => {
+                webhook = w;
+            }
+            Err(e) => {
+                warn!("{:?}", e);
+                update_notification_retry(client, notification).await;
+                continue;
+            }
         }
 
         match new_notification {
@@ -159,7 +164,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
                         webhook
                             .clone()
-                            .unwrap()
                             .edit_message(&http, MessageId::from(initial_message_id), |w| {
                                 w.embeds(vec![Embed::fake(|e| {
                                     e.title(proposal.name)
@@ -193,7 +197,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
                         let message = webhook
                             .clone()
-                            .unwrap()
                             .execute(&http, true, |w| {
                                 w.content(format!(
                                     "🗳️ **{}** {} proposal {} **just ended.** ☑️",
@@ -277,7 +280,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                     None => {
                         webhook
                             .clone()
-                            .unwrap()
                             .delete_message(&http, MessageId::from(initial_message_id))
                             .await
                             .ok();
@@ -307,7 +309,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                 if let Some(proposal) = proposal {
                     let message = webhook
                         .clone()
-                        .unwrap()
                         .execute(&http, true, |w| {
                             w.content(format!(
                                 "🗳️ **{}** {} proposal {} **just ended.** ☑️",

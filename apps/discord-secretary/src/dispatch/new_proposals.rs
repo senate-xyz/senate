@@ -49,14 +49,19 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
 
         let http = Http::new("");
 
-        let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
-            .await
-            .ok();
+        let webhook_response = Webhook::from_url(&http, user.discordwebhook.as_str()).await;
 
-        if webhook.is_none() {
-            update_notification_retry(client, notification).await;
+        let webhook;
 
-            continue;
+        match webhook_response {
+            Ok(w) => {
+                webhook = w;
+            }
+            Err(e) => {
+                warn!("{:?}", e);
+                update_notification_retry(client, notification).await;
+                continue;
+            }
         }
 
         let proposal = client
@@ -107,7 +112,6 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
 
                 let message = webhook
                     .clone()
-                    .unwrap()
                     .execute(&http, true, |w| {
                         w.embeds(vec![Embed::fake(|e| {
                             e.title(proposal.name)
