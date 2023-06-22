@@ -6,7 +6,7 @@ use serenity::{
     utils::Colour,
 };
 use tokio::time::sleep;
-use tracing::{debug_span, instrument, Instrument};
+use tracing::{debug_span, instrument, warn, Instrument};
 
 use crate::{
     prisma::{
@@ -153,31 +153,34 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                             ),
                         ]
                     }
-                    Err(_) => match notification.dispatchstatus {
-                        NotificationDispatchedState::NotDispatched => {
-                            vec![notification::dispatchstatus::set(
-                                NotificationDispatchedState::FirstRetry,
-                            )]
+                    Err(e) => {
+                        warn!("{:?}", e);
+                        match notification.dispatchstatus {
+                            NotificationDispatchedState::NotDispatched => {
+                                vec![notification::dispatchstatus::set(
+                                    NotificationDispatchedState::FirstRetry,
+                                )]
+                            }
+                            NotificationDispatchedState::FirstRetry => {
+                                vec![notification::dispatchstatus::set(
+                                    NotificationDispatchedState::SecondRetry,
+                                )]
+                            }
+                            NotificationDispatchedState::SecondRetry => {
+                                vec![notification::dispatchstatus::set(
+                                    NotificationDispatchedState::ThirdRetry,
+                                )]
+                            }
+                            NotificationDispatchedState::ThirdRetry => {
+                                vec![notification::dispatchstatus::set(
+                                    NotificationDispatchedState::Failed,
+                                )]
+                            }
+                            NotificationDispatchedState::Dispatched => todo!(),
+                            NotificationDispatchedState::Deleted => todo!(),
+                            NotificationDispatchedState::Failed => todo!(),
                         }
-                        NotificationDispatchedState::FirstRetry => {
-                            vec![notification::dispatchstatus::set(
-                                NotificationDispatchedState::SecondRetry,
-                            )]
-                        }
-                        NotificationDispatchedState::SecondRetry => {
-                            vec![notification::dispatchstatus::set(
-                                NotificationDispatchedState::ThirdRetry,
-                            )]
-                        }
-                        NotificationDispatchedState::ThirdRetry => {
-                            vec![notification::dispatchstatus::set(
-                                NotificationDispatchedState::Failed,
-                            )]
-                        }
-                        NotificationDispatchedState::Dispatched => todo!(),
-                        NotificationDispatchedState::Deleted => todo!(),
-                        NotificationDispatchedState::Failed => todo!(),
-                    },
+                    }
                 };
 
                 client

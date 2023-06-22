@@ -8,7 +8,7 @@ use prisma_client_rust::bigdecimal::ToPrimitive;
 use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use tokio::task::spawn_blocking;
-use tracing::{debug, debug_span, instrument, Instrument};
+use tracing::{debug, debug_span, instrument, warn, Instrument};
 
 use crate::{
     prisma::{
@@ -307,9 +307,11 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                     }
                 }
             }
-            Err(_) => {
+            Err(e) => {
                 posthog_event = posthog_rs::Event::new("fail_quorum_email", user.address.as_str());
                 posthog_event.insert_prop("type", quorum_template).unwrap();
+
+                warn!("{:?}", e);
 
                 db.notification()
                     .update_many(
