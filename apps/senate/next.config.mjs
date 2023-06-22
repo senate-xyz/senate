@@ -17,6 +17,15 @@ const config = {
       "docs.synthetix.io",
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/daos",
+        destination: "/orgs",
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {
