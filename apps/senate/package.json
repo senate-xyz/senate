@@ -17,8 +17,8 @@
     "clean": "rimraf .next .turbo node_modules dist yarn-error.log",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "prettier": "prettier --check",
-    "prettier:fix": "prettier --write",
+    "prettier": "prettier --check .",
+    "prettier:fix": "prettier --write .",
     "update": "ncu -u"
   },
   "dependencies": {
@@ -28,9 +28,9 @@
     "@senate/database": "*",
     "@tanstack/query-core": "4.29.15",
     "@tanstack/react-query": "4.29.15",
-    "@trpc/client": "10.31.0",
-    "@trpc/react-query": "10.31.0",
-    "@trpc/server": "10.31.0",
+    "@trpc/client": "10.32.0",
+    "@trpc/react-query": "10.32.0",
+    "@trpc/server": "10.32.0",
     "cookie": "0.5.0",
     "core-js": "3.31.0",
     "dayjs": "1.11.8",

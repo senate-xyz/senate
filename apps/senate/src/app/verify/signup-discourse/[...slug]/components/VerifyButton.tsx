@@ -32,6 +32,7 @@ export const VerifyButton = (props: { challenge: string }) => {
       setSignPopup(true);
       signMessage();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posthog, address, isConnected, activeConnector, signMessage]);
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export const VerifyButton = (props: { challenge: string }) => {
           },
         }
       );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signedMessage, posthog]);
 
   return (

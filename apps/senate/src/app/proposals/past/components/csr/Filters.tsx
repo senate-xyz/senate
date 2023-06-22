@@ -208,7 +208,7 @@ const Proxy = (props: { address: string }) => {
       });
       setName(ens ?? props.address);
     })();
-  }, [props.address]);
+  }, [props.address, provider]);
 
   return (
     <option key={props.address} value={props.address}>

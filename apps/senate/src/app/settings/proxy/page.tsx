@@ -18,7 +18,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!account.isConnected) if (router) router.push("/settings/account");
-  }, [account]);
+  }, [account, router]);
 
   const onEnter = async () => {
     let resolvedAddress = proxyAddress;
@@ -130,6 +130,7 @@ const Voter = ({ address }: { address: string }) => {
 
       setVoterEns(ens ?? "");
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
 
   const removeVoter = trpc.accountSettings.removeVoter.useMutation();

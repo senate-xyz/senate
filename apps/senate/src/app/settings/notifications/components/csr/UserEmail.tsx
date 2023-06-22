@@ -31,7 +31,7 @@ const UserEmail = () => {
 
   useEffect(() => {
     if (!account.isConnected && router) router.push("/settings/account");
-  }, [account]);
+  }, [account, router]);
 
   useEffect(() => {
     if (user.data) {

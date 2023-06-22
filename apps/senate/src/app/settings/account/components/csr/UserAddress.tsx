@@ -18,7 +18,7 @@ const UserAddress = () => {
         setEns(ens ?? "");
       });
     }
-  }, [account.address]);
+  }, [account.address, provider, session.status]);
 
   return (
     <div>

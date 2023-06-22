@@ -80,18 +80,13 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
 
             let webhook_response = Webhook::from_url(&http, user.discordwebhook.as_str()).await;
 
-            let webhook;
-
-            match webhook_response {
-                Ok(w) => {
-                    webhook = w;
-                }
+            let webhook = match webhook_response {
+                Ok(w) => w,
                 Err(e) => {
                     warn!("{:?}", e);
-
                     continue;
                 }
-            }
+            };
 
             let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
                 Some(v) => v.into_string().unwrap(),

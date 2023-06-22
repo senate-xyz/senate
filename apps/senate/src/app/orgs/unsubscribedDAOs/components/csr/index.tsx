@@ -68,6 +68,7 @@ export const UnsubscribedDAO = (props: {
         }
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cookie.subscribe, session]);
 
   return (

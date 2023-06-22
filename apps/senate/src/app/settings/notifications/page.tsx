@@ -20,7 +20,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!account.isConnected) if (router) router.push("/settings/account");
-  }, [account]);
+  }, [account, router]);
 
   return (
     <div className="flex min-h-screen flex-col gap-10">

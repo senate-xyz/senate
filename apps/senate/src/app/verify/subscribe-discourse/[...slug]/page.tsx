@@ -66,7 +66,7 @@ const verifyUser = async (dao: string, challenge: string) => {
     skipDuplicates: true,
   });
 
-  let dao_name;
+  let dao_name: string;
   switch (dao) {
     case "aave":
       dao_name = "Aave";

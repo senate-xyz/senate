@@ -68,13 +68,11 @@ async function getProposalUrl(slug: string) {
 }
 
 async function log(type: Type, proposalId: string, userId: string) {
-  let user = await getUser(userId);
-  let proposal = await getProposal(proposalId);
+  const user = await getUser(userId);
+  const proposal = await getProposal(proposalId);
 
   posthog.capture({
-    distinctId: user
-      ? user.address
-      : "visitor",
+    distinctId: user ? user.address : "visitor",
     event: type,
     properties: {
       proposalId: proposal ? proposal.id : "unknown",
@@ -96,7 +94,7 @@ enum Type {
 export default async function Page({ params }: { params: { slug: string } }) {
   if (params.slug.length < 2) redirect("https://senatelabs.xyz");
 
-  let proposalId = await getProposalId(params.slug[0]);
+  const proposalId = await getProposalId(params.slug[0]);
 
   let type;
   switch (params.slug[1]) {
@@ -126,7 +124,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
     }
   }
 
-  let userId = params.slug[2];
+  const userId = params.slug[2];
 
   await log(type, proposalId, userId);
 

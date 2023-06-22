@@ -182,7 +182,7 @@ const getProposals = async (
         proposalTitle: proposal.name,
         state: proposal.state,
         proposalLink: `${
-          process.env.NEXT_PUBLIC_URL_SHORTNER
+          process.env.NEXT_PUBLIC_URL_SHORTNER || ""
         }${proposal.id.slice(-6)}/w/${user ? user.id.slice(-6) : ""}`,
         timeEnd: proposal.timeend,
         voted: user

@@ -62,18 +62,14 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
 
         let webhook_response = Webhook::from_url(&http, user.discordwebhook.as_str()).await;
 
-        let webhook;
-
-        match webhook_response {
-            Ok(w) => {
-                webhook = w;
-            }
+        let webhook = match webhook_response {
+            Ok(w) => w,
             Err(e) => {
                 warn!("{:?}", e);
                 update_notification_retry(client, notification).await;
                 continue;
             }
-        }
+        };
 
         let proposal = client
             .proposal()

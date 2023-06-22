@@ -47,7 +47,7 @@ const WalletConnect = () => {
 
   useEffect(() => {
     if (router) router.refresh();
-  }, [session.status]);
+  }, [router, session.status]);
 
   useEffect(() => {
     const handleConnectorUpdate = ({ account }) => {
@@ -76,6 +76,7 @@ const WalletConnect = () => {
       setModalOpened(true);
       openConnectModal();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openConnectModal, searchParams, account]);
 
   return (

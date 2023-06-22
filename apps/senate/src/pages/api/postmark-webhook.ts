@@ -1,7 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { MagicUserState, NotificationType, prisma } from "@senate/database";
-import { z } from "zod";
-import { ServerClient } from "postmark";
+import { prisma } from "@senate/database";
 import { PostHog } from "posthog-node";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
@@ -13,7 +11,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  const { RecordType, MessageID } = req.body;
+  const { RecordType, MessageID }: { RecordType: string; MessageID: string } =
+    req.body;
 
   const notification = await prisma.notification.findFirst({
     where: { emailmessageid: MessageID },
@@ -37,6 +36,7 @@ export default async function handler(
           message: MessageID,
           template: notification.emailtemplate,
           type: notification.type,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           data: req.body,
         },
       });
@@ -49,6 +49,7 @@ export default async function handler(
           message: MessageID,
           template: notification.emailtemplate,
           type: notification.type,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           data: req.body,
         },
       });
@@ -61,6 +62,7 @@ export default async function handler(
           message: MessageID,
           template: notification.emailtemplate,
           type: notification.type,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           data: req.body,
         },
       });
@@ -73,6 +75,7 @@ export default async function handler(
           message: MessageID,
           template: notification.emailtemplate,
           type: notification.type,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           data: req.body,
         },
       });
@@ -85,6 +88,7 @@ export default async function handler(
           message: MessageID,
           template: notification.emailtemplate,
           type: notification.type,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           data: req.body,
         },
       });
@@ -97,6 +101,7 @@ export default async function handler(
           message: MessageID,
           template: notification.emailtemplate,
           type: notification.type,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           data: req.body,
         },
       });
