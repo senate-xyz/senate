@@ -90,6 +90,11 @@ fn health() -> &'static str {
 async fn rocket() -> _ {
     dotenv().ok();
 
+    tracing_subscriber::fmt()
+        .pretty()
+        .with_max_level(tracing::Level::INFO)
+        .init();
+
     let rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
 
     let provider = Provider::<Http>::try_from(rpc_url).unwrap();
