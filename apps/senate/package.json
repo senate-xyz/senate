@@ -39,7 +39,7 @@
     "framer-motion": "10.12.16",
     "next": "13.4.7",
     "next-auth": "4.22.1",
-    "posthog-js": "^1.68.3",
+    "posthog-js": "^1.68.4",
     "posthog-node": "^3.1.1",
     "postmark": "3.0.18",
     "react": "18.2.0",
