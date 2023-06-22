@@ -55,6 +55,17 @@
     </mj-style>
   </mj-head>
   <mj-body background-color="white">
+
+    <mj-raw>{{#env}}</mj-raw>
+    <mj-section padding="8px 0px" background-color="red">
+      <mj-column>
+        <mj-text padding="12px" align="left" font-size="30px" color="#000" font-family="sans-serif" font-weight="bold">
+          This email is coming from {{env}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-raw>{{/env}}</mj-raw>
+
     <mj-section padding="10px 0px" background-color="white">
       <mj-column width="100%">
         <mj-text align="left" font-size="13px" color="#555555" font-family="sans-serif">

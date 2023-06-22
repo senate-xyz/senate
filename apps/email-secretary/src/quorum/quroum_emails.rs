@@ -27,7 +27,6 @@ struct EmailBody {
     From: String,
     TemplateAlias: String,
     TemplateModel: QuorumWarningData,
-    Headers: HashMap<String, String>,
 }
 
 #[allow(non_snake_case)]
@@ -41,6 +40,7 @@ struct QuorumWarningData {
     voteUrl: String,
     currentQuorum: String,
     requiredQuroum: String,
+    env: Option<String>,
 }
 
 #[allow(non_snake_case)]
@@ -163,6 +163,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 .collect::<String>()
         );
 
+        let exec_env = env::var("EXEC_ENV").expect("$EXEC_ENV is not set");
         let data = QuorumWarningData {
             daoName: proposal.clone().unwrap().dao.name,
             chain: if proposal.clone().unwrap().daohandler.r#type == DaoHandlerType::Snapshot {
@@ -234,16 +235,18 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                     / 1000000000000000000)
                     .to_formatted_string(&Locale::en)
             },
+            env: if exec_env == "prod" {
+                None
+            } else {
+                Some(exec_env)
+            },
         };
-
-        let exec_env = env::var("EXEC_ENV").expect("$EXEC_ENV is not set");
 
         let content = &EmailBody {
             To: user.email.unwrap(),
             From: "info@senatelabs.xyz".to_string(),
             TemplateAlias: quorum_template.to_string(),
             TemplateModel: data.clone(),
-            Headers: HashMap::from([("environment".to_string(), exec_env)]),
         };
 
         debug!("{:?}", content);
