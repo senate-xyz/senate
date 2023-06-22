@@ -37,6 +37,11 @@ pub mod utils {
 async fn main() {
     dotenv().ok();
 
+    tracing_subscriber::fmt()
+        .pretty()
+        .with_max_level(tracing::Level::INFO)
+        .init();
+
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
 
     let client_for_bulletin: Arc<PrismaClient> = Arc::clone(&client);

@@ -19,3 +19,4 @@ serde = "1.0.164"
 teloxide = { version = "0.12.2", features = ["macros", "throttle"] }
 tokio = { version = "1.28.2", features = ["full"] }
 tracing = "0.1.37"
+tracing-subscriber = "0.3.17"
