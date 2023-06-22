@@ -40,7 +40,7 @@ struct BulletinData {
     endingSoonProposals: Vec<EndingSoonProposals>,
     newProposals: Vec<NewProposals>,
     endedProposals: Vec<EndedProposals>,
-    env: Option<String>,
+    env: Option<Value>,
 }
 
 #[allow(non_snake_case)]
@@ -190,8 +190,6 @@ async fn send_bulletin(
 
     let user_email = user.email.unwrap();
 
-    let exec_env = env::var("EXEC_ENV").expect("$EXEC_ENV is not set");
-
     let content = &EmailBody {
         To: user_email,
         From: "info@senatelabs.xyz".to_string(),
@@ -312,7 +310,7 @@ async fn get_user_bulletin_data(
         env: if exec_env == "prod" {
             None
         } else {
-            Some(exec_env)
+            Some(json!({ "env": exec_env }))
         },
     })
 }

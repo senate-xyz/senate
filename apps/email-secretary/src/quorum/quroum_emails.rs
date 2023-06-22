@@ -7,6 +7,7 @@ use num_format::{Locale, ToFormattedString};
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 use tokio::task::spawn_blocking;
 use tracing::{debug, debug_span, instrument, warn, Instrument};
 
@@ -40,7 +41,7 @@ struct QuorumWarningData {
     voteUrl: String,
     currentQuorum: String,
     requiredQuroum: String,
-    env: Option<String>,
+    env: Option<Value>,
 }
 
 #[allow(non_snake_case)]
@@ -238,7 +239,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             env: if exec_env == "prod" {
                 None
             } else {
-                Some(exec_env)
+                Some(json!({ "env": exec_env }))
             },
         };
 
