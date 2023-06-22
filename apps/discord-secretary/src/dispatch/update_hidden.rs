@@ -10,7 +10,7 @@ use serenity::{
     utils::Colour,
 };
 use tokio::time::sleep;
-use tracing::{debug_span, instrument, Instrument};
+use tracing::{debug_span, instrument, warn, Instrument};
 
 use crate::{
     prisma::{
@@ -78,12 +78,18 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
 
             let http = Http::new("");
 
-            let webhook = Webhook::from_url(&http, user.discordwebhook.as_str())
-                .await
-                .ok();
+            let webhook_response = Webhook::from_url(&http, user.discordwebhook.as_str()).await;
 
-            if webhook.is_none() {
-                continue;
+            let webhook;
+
+            match webhook_response {
+                Ok(w) => {
+                    webhook = w;
+                }
+                Err(e) => {
+                    warn!("{:?}", e);
+                    continue;
+                }
             }
 
             match proposal {
@@ -151,7 +157,6 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
 
                     webhook
                         .clone()
-                        .unwrap()
                         .edit_message(&http, MessageId::from(initial_message_id), |w| {
                             w.embeds(vec![Embed::fake(|e| {
                                 e.title(proposal.name)
@@ -186,7 +191,6 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                 None => {
                     webhook
                         .clone()
-                        .unwrap()
                         .delete_message(&http, MessageId::from(initial_message_id))
                         .await
                         .ok();
