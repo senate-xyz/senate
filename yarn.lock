@@ -815,10 +815,10 @@
     "@json-rpc-tools/types" "^1.7.6"
     "@pedrouid/environment" "^1.0.1"
 
-"@ledgerhq/connect-kit-loader@^1.0.1":
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/@ledgerhq/connect-kit-loader/-/connect-kit-loader-1.0.2.tgz"
-  integrity sha512-TQ21IjcZOw/scqypaVFY3jHVqI7X7Hta3qN/us6FvTol3AY06UmrhhXGww0E9xHmAbdX241ddwXEiMBSQZFr9g==
+"@ledgerhq/connect-kit-loader@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/connect-kit-loader/-/connect-kit-loader-1.1.0.tgz#10343b78ef13436818bf3453568a559c0eeb9d48"
+  integrity sha512-HUy12FEczoWY2FPubnsm1uOA8tkVWc0j90i47suThV3C9NL2xx69ZAIEU3Ytzs2bwLek9S1Q2S1VQJvA+3Ygkg==
 
 "@lit-labs/ssr-dom-shim@^1.0.0", "@lit-labs/ssr-dom-shim@^1.1.0":
   version "1.1.1"
@@ -1089,10 +1089,10 @@
     picocolors "^1.0.0"
     tslib "^2.5.0"
 
-"@prisma/client@4.16.0":
-  version "4.16.0"
-  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-4.16.0.tgz#1526414d69bb0db5efff0c8b0b99db65b11c6da4"
-  integrity sha512-CBD+5IdZPiavhLkQokvsz1uz4r9ppixaqY/ajybWs4WXNnsDVMBKEqN3BiPzpSo79jiy22VKj/67pqt4VwIg9w==
+"@prisma/client@4.16.1":
+  version "4.16.1"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-4.16.1.tgz#030bf59ee51f223bae2a8e7c49827528756cf03a"
+  integrity sha512-CoDHu7Bt+NuDo40ijoeHP79EHtECsPBTy3yte5Yo3op8TqXt/kV0OT5OrsWewKvQGKFMHhYQ+ePed3zzjYdGAw==
   dependencies:
     "@prisma/engines-version" "4.16.0-66.b20ead4d3ab9e78ac112966e242ded703f4a052c"
 
@@ -1130,10 +1130,10 @@
   resolved "https://registry.yarnpkg.com/@prisma/engines-version/-/engines-version-4.16.0-66.b20ead4d3ab9e78ac112966e242ded703f4a052c.tgz#54fd17f9a9080e13e2f75613fd35afb7875e3715"
   integrity sha512-tMWAF/qF00fbUH1HB4Yjmz6bjh7fzkb7Y3NRoUfMlHu6V+O45MGvqwYxqwBjn1BIUXkl3r04W351D4qdJjrgvA==
 
-"@prisma/engines@4.16.0":
-  version "4.16.0"
-  resolved "https://registry.yarnpkg.com/@prisma/engines/-/engines-4.16.0.tgz#08725453510cb1eda77c06c63354129352abf7b0"
-  integrity sha512-M6XoMRXnqL0rqZGQS8ZpNiHYG4G1fKBdoqW/oBtHnr1in5UYgerZqal3CXchmd6OBD/770PE9dtjQuqcilZJUA==
+"@prisma/engines@4.16.1":
+  version "4.16.1"
+  resolved "https://registry.yarnpkg.com/@prisma/engines/-/engines-4.16.1.tgz#ee487620dc5135fd175ac7494b1c60c9f12c1e4b"
+  integrity sha512-gpZG0kGGxfemgvK/LghHdBIz+crHkZjzszja94xp4oytpsXrgt/Ice82MvPsWMleVIniKuARrowtsIsim0PFJQ==
 
 "@prisma/engines@4.6.1":
   version "4.6.1"
@@ -1240,10 +1240,10 @@
   resolved "https://registry.npmjs.org/@rainbow-me/rainbowkit-siwe-next-auth/-/rainbowkit-siwe-next-auth-0.2.0.tgz"
   integrity sha512-U0GPPc5tRhNSLgdLb4sU6eha7qxIJmfNbUmcGeQGh7IR/jw3xFdYYKYaHcEG8rB09/yfEMQodwJiV+vrjta6zQ==
 
-"@rainbow-me/rainbowkit@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbowkit/-/rainbowkit-1.0.2.tgz#d6113ffe95c7af0ef03a8c0dcf227862e7730136"
-  integrity sha512-CIcEekBBlYiqg2oNS7LZqqN882OfJ0T1ORe4c46dscSuMCaX9sdbviQR1m8LoA4KocSCzSxOPAnfoVN8eC/HNA==
+"@rainbow-me/rainbowkit@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbowkit/-/rainbowkit-1.0.3.tgz#578f49a588a89dfb653083324f4d5c57e217a80a"
+  integrity sha512-42rqgv22V0S1c5ukjVYuNlQxenzAqGBJBdIOTp+nryw92JL5C5jJT/FJgFsObZzjK/2rGIy0SbP7WgbWRVuROw==
   dependencies:
     "@vanilla-extract/css" "1.9.1"
     "@vanilla-extract/dynamic" "2.0.2"
@@ -1693,10 +1693,10 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/react@18.2.13":
-  version "18.2.13"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.13.tgz#a98c09bde8b18f80021935b11d2d29ef5f4dcb2f"
-  integrity sha512-vJ+zElvi/Zn9cVXB5slX2xL8PZodPCwPRDpittQdw43JR2AJ5k3vKdgJJyneV/cYgIbLQUwXa9JVDvUZXGba+Q==
+"@types/react@18.2.14":
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.14.tgz#fa7a6fecf1ce35ca94e74874f70c56ce88f7a127"
+  integrity sha512-A0zjq+QN/O0Kpe30hA1GidzyFjatVvrpIvWLxD+xv67Vt91TWWgco9IvrJBkeyHm1trGaFS/FSGqPlhyeZRm0g==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -1896,13 +1896,18 @@
   resolved "https://registry.yarnpkg.com/@wagmi/chains/-/chains-1.2.0.tgz#d59eaa70ec51a5fdcd113975926992acfb17ab12"
   integrity sha512-dmDRipsE54JfyudOBkuhEexqQWcrZqxn/qiujG8SBzMh/az/AH5xlJSA+j1CPWTx9+QofSMF3B7A4gb6XRmSaQ==
 
-"@wagmi/connectors@2.3.0":
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/@wagmi/connectors/-/connectors-2.3.0.tgz#344b4263bb32584838bcd7290421026bb5859be9"
-  integrity sha512-PXYiJrNwmfW7ZbyjW3SRhhTWrxJlThbOLZJ6+vwlgTwC0k5Qd8mfVxDfMKrjxYYGHK7j6d6mAdsk4iJgfE1Dhw==
+"@wagmi/chains@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@wagmi/chains/-/chains-1.3.0.tgz#a17438d44abe98fdf1ec3a91df115c6bfaed39c0"
+  integrity sha512-7tyr1irTZQpA4/4HoIiJP3XYZuJIZuWiZ1V1j5WEG3cjm8TXIlMEzO0N+hT/cZKw4/UtF2EukvB8GkDWa2S77w==
+
+"@wagmi/connectors@2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@wagmi/connectors/-/connectors-2.4.0.tgz#a2b43ef08e6c68b214fc8374a95a1014984e7f79"
+  integrity sha512-v9h2B3g84uOnZeVEVW+dCw0nASGl31tVtzGtzkm3C8irpA+dCmTVSHe4oEHxA6FIuABsI5egKXkWVxdE0/jLzg==
   dependencies:
     "@coinbase/wallet-sdk" "^3.6.6"
-    "@ledgerhq/connect-kit-loader" "^1.0.1"
+    "@ledgerhq/connect-kit-loader" "^1.1.0"
     "@safe-global/safe-apps-provider" "^0.15.2"
     "@safe-global/safe-apps-sdk" "^7.9.0"
     "@walletconnect/ethereum-provider" "2.8.1"
@@ -1911,13 +1916,13 @@
     abitype "0.8.7"
     eventemitter3 "^4.0.7"
 
-"@wagmi/core@1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-1.2.1.tgz#9f93b529cb82995489c2c11eb7330dcdba0db84c"
-  integrity sha512-t09se2nJfb9sp4UIYbqCkhzBqkNCJLsDBkaLtHFj9eS99wJ5Gtsui4hLPEuT6wTjLb5oF898KCr04721aJiNJw==
+"@wagmi/core@1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-1.2.2.tgz#42b861dc1262d2e8ff61bfbaef3d6eed77cbbf2c"
+  integrity sha512-iwg72KYJ1XV8PVsVg3rF1I6K8IwcF4zksLs4drP1a0f7wWjWXcfwmmq+nuRkkr1OQp2rQYF2lwmAlqoElcA4uw==
   dependencies:
-    "@wagmi/chains" "1.2.0"
-    "@wagmi/connectors" "2.3.0"
+    "@wagmi/chains" "1.3.0"
+    "@wagmi/connectors" "2.4.0"
     abitype "0.8.7"
     eventemitter3 "^4.0.7"
     zustand "^4.3.1"
@@ -3855,10 +3860,10 @@ eth-rpc-errors@^4.0.2:
   dependencies:
     fast-safe-stringify "^2.0.6"
 
-ethers@6.6.0, ethers@^6.6.0:
-  version "6.6.0"
-  resolved "https://registry.npmjs.org/ethers/-/ethers-6.6.0.tgz"
-  integrity sha512-7D2U+n8eZYmh592VZqap9vBu50jN7YUDHqAmwBYTMntmUKC9RVgcqcFbd+3DTCOQ1jMyK6QHv1usbcfgiGaHOA==
+ethers@6.6.1, ethers@^6.6.1:
+  version "6.6.1"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.6.1.tgz#c3c80cdc10190fa5457d5eced25aa16940e73f6b"
+  integrity sha512-bjNPf/EU4l1jQlAslOmOlyHqjOnM0W7LRPuSf0Kt0tYV4RpUEZsdGWDhvFXfogIhfzXJ/v2tPz4HqXwBt5T8mA==
   dependencies:
     "@adraffy/ens-normalize" "1.9.2"
     "@noble/hashes" "1.1.2"
@@ -4150,10 +4155,10 @@ fraction.js@^4.2.0:
   resolved "https://registry.npmjs.org/fraction.js/-/fraction.js-4.2.0.tgz"
   integrity sha512-MhLuK+2gUcnZe8ZHlaaINnQLl0xRIGRfcGk2yl8xoQAfHrSsL3rYu6FCmBdkdbhc9EPlwyGHewaRsvwRMJtAlA==
 
-framer-motion@10.12.16:
-  version "10.12.16"
-  resolved "https://registry.npmjs.org/framer-motion/-/framer-motion-10.12.16.tgz"
-  integrity sha512-w/SfWEIWJkYSgRHYBmln7EhcNo31ao8Xexol8lGXf1pR/tlnBtf1HcxoUmEiEh6pacB4/geku5ami53AAQWHMQ==
+framer-motion@10.12.17:
+  version "10.12.17"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.12.17.tgz#0e891aaddbe6049267c413449945af95585cbc87"
+  integrity sha512-IR+aAYntsyu6ofyxqQV4QYotmOqzcuKxhqNpfc3DXJjNWOPpOeSyH0A+In3IEBu49Yx/+PNht+YMeZSdCNaYbw==
   dependencies:
     tslib "^2.4.0"
   optionalDependencies:
@@ -6057,12 +6062,12 @@ prisma-dbml-generator@^0.10.0:
     "@prisma/generator-helper" "4.6.1"
     "@prisma/internals" "4.6.1"
 
-prisma@4.16.0:
-  version "4.16.0"
-  resolved "https://registry.yarnpkg.com/prisma/-/prisma-4.16.0.tgz#e8cb9b4074640f673c407d7edf17e52f38442291"
-  integrity sha512-kSCwbTm3LCephyGfZMJYqBXpPJXdJStg5xwfzeFmR5C05zfkOURK9pQpJF6uUQvFWm3lI9ZMSNkObmFkAPnB+g==
+prisma@4.16.1:
+  version "4.16.1"
+  resolved "https://registry.yarnpkg.com/prisma/-/prisma-4.16.1.tgz#c6d723a4326138a72489098a6c39a698a670fbbf"
+  integrity sha512-C2Xm7yxHxjFjjscBEW4tmoraPHH/Vyu/A0XABdbaFtoiOZARsxvOM7rwc2iZ0qVxbh0bGBGBWZUSXO/52/nHBQ==
   dependencies:
-    "@prisma/engines" "4.16.0"
+    "@prisma/engines" "4.16.1"
 
 process-nextick-args@~2.0.0:
   version "2.0.1"
@@ -7027,10 +7032,10 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://registry.npmjs.org/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
-swr@2.1.5:
-  version "2.1.5"
-  resolved "https://registry.npmjs.org/swr/-/swr-2.1.5.tgz"
-  integrity sha512-/OhfZMcEpuz77KavXST5q6XE9nrOBOVcBLWjMT+oAE/kQHyE3PASrevXCtQDZ8aamntOfFkbVJp7Il9tNBQWrw==
+swr@2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/swr/-/swr-2.2.0.tgz#575c6ac1bec087847f4c86a39ccbc0043c834d6a"
+  integrity sha512-AjqHOv2lAhkuUdIiBu9xbuettzAzWXmCEcLONNKJRba87WAefz8Ca9d6ds/SzrPc235n1IxWYdhJ2zF3MNUaoQ==
   dependencies:
     use-sync-external-store "^1.2.0"
 
@@ -7294,47 +7299,47 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
-turbo-darwin-64@1.10.4:
-  version "1.10.4"
-  resolved "https://registry.yarnpkg.com/turbo-darwin-64/-/turbo-darwin-64-1.10.4.tgz#ee902a1ded21c2dae1deb24b940ec31d07ec9c46"
-  integrity sha512-oAILq0QZUvOxYZU71SXRsL7DFpqZutPl9CX7+rD48tReHrmhcm3HMeuAFY0S5FD/9fKub04UfAQwVtJSlhvISg==
+turbo-darwin-64@1.10.6:
+  version "1.10.6"
+  resolved "https://registry.yarnpkg.com/turbo-darwin-64/-/turbo-darwin-64-1.10.6.tgz#0473a8d95347614dbb5f19d1b0fd8daa554739cf"
+  integrity sha512-s2Gc7i9Ud+H9GDcrGJjPIyscJfzDGQ6il4Sl2snfvwngJs4/TaqKuBoX3HNt/7F4NiFRs7ZhlLV1/Yu9zGBRhw==
 
-turbo-darwin-arm64@1.10.4:
-  version "1.10.4"
-  resolved "https://registry.yarnpkg.com/turbo-darwin-arm64/-/turbo-darwin-arm64-1.10.4.tgz#015cecf7224fa66cc823c0795792b9600b183779"
-  integrity sha512-N0XPFLXsZRLE6gKDa5MREpPQp0drOz9PrADaaMXTlspxWS/tmmxyH+ZQ/uGqKC/0mqsNIhZuSFsEVZe1PGaqxw==
+turbo-darwin-arm64@1.10.6:
+  version "1.10.6"
+  resolved "https://registry.yarnpkg.com/turbo-darwin-arm64/-/turbo-darwin-arm64-1.10.6.tgz#2f1f43f83866e44b86f0e7c5073a0954ee2d8ea5"
+  integrity sha512-tgl70t5PBLyRcNTdP9N6NjvdvQ5LUk8Z60JGUhBhnc+oCOdA4pltrDJNPyel3tQAXXt1dDpl8pp9vUrbwoVyGg==
 
-turbo-linux-64@1.10.4:
-  version "1.10.4"
-  resolved "https://registry.yarnpkg.com/turbo-linux-64/-/turbo-linux-64-1.10.4.tgz#9e70ac014e764268180f1f93dfc8e7c3d004fa66"
-  integrity sha512-S8ZVNCPnrBU+GMKKUWcgg4MaTOdL1reOU1XQtDiHfEPskXjLE+10vr65xJJQb6CqO8ARFXUlFSAUfxZRX6WVNA==
+turbo-linux-64@1.10.6:
+  version "1.10.6"
+  resolved "https://registry.yarnpkg.com/turbo-linux-64/-/turbo-linux-64-1.10.6.tgz#ca9f035803e2cef802f11be2fb793df4b3857b07"
+  integrity sha512-h7eyAA3xtAVpamcYJYUwe0xm0LWdbv7/I7QiM09AZ67TTNpyUgqW8giFN3h793BHEQ2Rcnk9FNkpIbjWBbyamg==
 
-turbo-linux-arm64@1.10.4:
-  version "1.10.4"
-  resolved "https://registry.yarnpkg.com/turbo-linux-arm64/-/turbo-linux-arm64-1.10.4.tgz#c81f9b7a03259ab17cc21514d146695a4a414272"
-  integrity sha512-/C6vpo7kd2ae6dR0iZyRuvfjijuixidhwLzV026A+/1gmAMRXYkslBfgOGfoOquHmvqjCeDVTsMWwCY2NRQqtw==
+turbo-linux-arm64@1.10.6:
+  version "1.10.6"
+  resolved "https://registry.yarnpkg.com/turbo-linux-arm64/-/turbo-linux-arm64-1.10.6.tgz#f2400fcf4d5b996190a580bb60f199b784a4b0d7"
+  integrity sha512-8cZhOeLqu3QZ27yLd6bw4FNaB8y5pLdWeRLJeiWHkIb/cptKnRKJFP+keBJzJi8ovaMqdBpabrxiBRN2lhau5Q==
 
-turbo-windows-64@1.10.4:
-  version "1.10.4"
-  resolved "https://registry.yarnpkg.com/turbo-windows-64/-/turbo-windows-64-1.10.4.tgz#fc35c9cdf48411224c67c3ac03f237be591d7e5a"
-  integrity sha512-fh6X/fJl9gNTu3r7zMmwCychxMlpQMFn32bpioPNIBxrTHCbQYeGSQuw2XWa/RswgNzCY3Xo34emYAKu9btrsw==
+turbo-windows-64@1.10.6:
+  version "1.10.6"
+  resolved "https://registry.yarnpkg.com/turbo-windows-64/-/turbo-windows-64-1.10.6.tgz#d8eaed239a96ad2d151d3e5e3281eb694ecaea15"
+  integrity sha512-qx5jcfCJodN1Mh0KtSVQau7pK8CxDvtif7+joPHI2HbQPAADgdUl0LHfA5tFHh6aWgfvhxbvIXqJd6v7Mqkj9g==
 
-turbo-windows-arm64@1.10.4:
-  version "1.10.4"
-  resolved "https://registry.yarnpkg.com/turbo-windows-arm64/-/turbo-windows-arm64-1.10.4.tgz#baa18ba2b8843983d68a9c9a5fce040f13c23b1b"
-  integrity sha512-KzcKGl+bjwaSkxMNTutuoIM+xPuTBA13zJiC2vFM7fQ6XYM0/ZmUekfoxpMnWgSav8vlTk5tRYaPniLcVzLnTQ==
+turbo-windows-arm64@1.10.6:
+  version "1.10.6"
+  resolved "https://registry.yarnpkg.com/turbo-windows-arm64/-/turbo-windows-arm64-1.10.6.tgz#1e43480584106568df196d0d10964a4eae9b5752"
+  integrity sha512-vTQaRG3/s2XTreOBr6J9HKFtjzusvwGQg0GtuW2+9Z7fizdzP8MuhaDbN6FhKHcWC81PQPD61TBIKTVTsYOEZg==
 
-turbo@^1.10.4:
-  version "1.10.4"
-  resolved "https://registry.yarnpkg.com/turbo/-/turbo-1.10.4.tgz#f7e268203ea3278230d27cdf318b6abb628dd0af"
-  integrity sha512-EVBt762wVGyZAXtp1UWQptRG2N/9TThUJ1tRawvt/pmB62VmdzgDuz80SQYXK5U5yKEID6OJdqAzq8HnIQVA6g==
+turbo@^1.10.6:
+  version "1.10.6"
+  resolved "https://registry.yarnpkg.com/turbo/-/turbo-1.10.6.tgz#021c410d1598bb2c75090cb97e152953de5e2759"
+  integrity sha512-0/wbjw4HvmPP1abVWHTdeFRfCA9cn5oxCPP5bDixagLzvDgGWE3xfdlsyGmq779Ekr9vjtDPgC2Y4JlXEhyryw==
   optionalDependencies:
-    turbo-darwin-64 "1.10.4"
-    turbo-darwin-arm64 "1.10.4"
-    turbo-linux-64 "1.10.4"
-    turbo-linux-arm64 "1.10.4"
-    turbo-windows-64 "1.10.4"
-    turbo-windows-arm64 "1.10.4"
+    turbo-darwin-64 "1.10.6"
+    turbo-darwin-arm64 "1.10.6"
+    turbo-linux-64 "1.10.6"
+    turbo-linux-arm64 "1.10.6"
+    turbo-windows-64 "1.10.6"
+    turbo-windows-arm64 "1.10.6"
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
@@ -7540,10 +7545,10 @@ valtio@1.10.5:
     proxy-compare "2.5.1"
     use-sync-external-store "1.2.0"
 
-viem@1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-1.1.4.tgz#21be6d235fb387a391d4abdbbf95cd93bd066ffb"
-  integrity sha512-3bJkS60Sw6Rf6a2ydKDnDxAI0PTZK0yGoyux2nqPSBoXBL+w9hXPNcnm8Uf6FlKce5sQadVRfi2n6MrgzablxA==
+viem@1.1.7:
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-1.1.7.tgz#bbaf2dffc878d855d994afaac37ab6aa264a43d3"
+  integrity sha512-3lBDRS0ejb4Eo9c/S+RBadwIHNK1RS0ffW7HkSt3pMtzl4nis1aF1tHrU6yqI+yCWqAPl36a48qGD4mEhxPuDw==
   dependencies:
     "@adraffy/ens-normalize" "1.9.0"
     "@noble/curves" "1.0.0"
@@ -7555,15 +7560,15 @@ viem@1.1.4:
     isomorphic-ws "5.0.0"
     ws "8.12.0"
 
-wagmi@1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-1.2.1.tgz#6100ac5027f1cb71645673bec2e26b1d225ce2d2"
-  integrity sha512-lPV4+ktMYEjjPnQAY6YLy5wjJJVVboX4YzEqhL/xQrl0rwQBkOU8q17BVnOOn26LVGfAeeyBp2elSaebTLQQzA==
+wagmi@1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-1.2.2.tgz#772fd7bf79f8bc80c5b61524e7d3beea2d76e628"
+  integrity sha512-HSqxb/Dejx0kSvGIxZKy3WzPFVHaG7FC0X8O3c2bq7Y+dP4gR8TIOKjywNzvE4eL1wg9xcTgAbiLedrFWwCERg==
   dependencies:
     "@tanstack/query-sync-storage-persister" "^4.27.1"
     "@tanstack/react-query" "^4.28.0"
     "@tanstack/react-query-persist-client" "^4.28.0"
-    "@wagmi/core" "1.2.1"
+    "@wagmi/core" "1.2.2"
     abitype "0.8.7"
     use-sync-external-store "^1.2.0"
 

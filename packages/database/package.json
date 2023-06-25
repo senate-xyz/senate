@@ -24,8 +24,8 @@
     "update": "ncu -u"
   },
   "dependencies": {
-    "@prisma/client": "4.16.0",
-    "ethers": "^6.6.0",
+    "@prisma/client": "4.16.1",
+    "ethers": "^6.6.1",
     "type-fest": "^3.12.0"
   },
   "devDependencies": {
@@ -35,7 +35,7 @@
     "@typescript-eslint/parser": "^5.60.0",
     "eslint": "^8.43.0",
     "prettier": "^2.8.8",
-    "prisma": "4.16.0",
+    "prisma": "4.16.1",
     "prisma-dbml-generator": "^0.10.0",
     "tsup": "^7.0.0",
     "typescript": "^5.1.3"
