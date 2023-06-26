@@ -1,28 +1,39 @@
 {
-    "name": "@senate/user-migration",
-    "version": "1.0.0",
-    "author": "Senate",
-    "private": true,
-    "license": "GNU GPLv3",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "scripts": {
-        "build": "tsup",
-        "start": "node dist/index",
-        "dev": "tsup && node dist/index",
-        "clean": "rimraf .turbo node_modules dist",
-        "generate": "prisma generate --schema prisma/new/schema.prisma && prisma generate --schema prisma/old/schema.prisma"
-    },
-    "dependencies": {
-        "@prisma/client": "^4.12.0",
-        "@types/prompt-sync": "^4.2.0",
-        "inquirer": "8.2.5",
-        "prisma": "^4.12.0"
-    },
-    "devDependencies": {
-        "@types/inquirer": "^9.0.3",
-        "rimraf": "^4.4.1",
-        "tsup": "^6.7.0",
-        "typescript": "^5.0.4"
-    }
+  "name": "@senate/user-migration",
+  "version": "1.0.0",
+  "author": "Senate",
+  "private": true,
+  "license": "GNU GPLv3",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "yarn generate && tsup",
+    "start": "node dist/index",
+    "dev": "tsup && node dist/index",
+    "clean": "rimraf .turbo node_modules dist yarn-error.log",
+    "generate": "prisma generate --schema prisma/new/schema.prisma && prisma generate --schema prisma/old/schema.prisma",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "prettier": "prettier --check",
+    "prettier:fix": "prettier --write",
+    "update": "ncu -u"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.16.0",
+    "@types/prompt-sync": "^4.2.0",
+    "inquirer": "^8.0.0",
+    "prisma": "^4.16.0"
+  },
+  "devDependencies": {
+    "@types/prettier": "^2.7.3",
+    "@types/eslint": "^8.40.2",
+    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "@typescript-eslint/parser": "^5.60.0",
+    "prettier": "^2.8.8",
+    "eslint": "^8.43.0",
+    "@types/inquirer": "^9.0.3",
+    "rimraf": "^5.0.1",
+    "tsup": "^7.0.0",
+    "typescript": "^5.1.3"
+  }
 }

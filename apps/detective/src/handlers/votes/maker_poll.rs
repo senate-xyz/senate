@@ -1,20 +1,23 @@
+use std::str::FromStr;
+
+use anyhow::{bail, Result};
+use ethers::{
+    prelude::LogMeta,
+    types::{Address, H160, H256},
+};
+use futures::stream::{FuturesUnordered, StreamExt};
+use num_bigint::BigInt;
+use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
+use serde::Deserialize;
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
+
 use crate::{
     contracts::makerpollvote::{self, VotedFilter},
     prisma::{daohandler, proposal},
     router::chain_votes::{Vote, VoteResult},
     Ctx,
 };
-use anyhow::{bail, Result};
-use ethers::{
-    prelude::LogMeta,
-    types::{Address, H160, H256},
-};
-
-use futures::stream::{FuturesUnordered, StreamExt};
-use num_bigint::BigInt;
-use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
-use serde::Deserialize;
-use std::str::FromStr;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -22,6 +25,7 @@ struct Decoder {
     address_vote: String,
 }
 
+#[instrument(skip(ctx, voters), level = "info")]
 pub async fn makerpoll_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -36,8 +40,7 @@ pub async fn makerpoll_votes(
         .parse::<Address>()
         .expect("bad address");
 
-    let gov_contract =
-        makerpollvote::makerpollvote::makerpollvote::new(address, ctx.client.clone());
+    let gov_contract = makerpollvote::makerpollvote::makerpollvote::new(address, ctx.rpc.clone());
 
     let voters_addresses: Vec<H256> = voters
         .clone()
@@ -51,7 +54,10 @@ pub async fn makerpoll_votes(
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let logs = events.query_with_meta().await?;
+    let logs = events
+        .query_with_meta()
+        .instrument(debug_span!("get_rpc_events"))
+        .await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -82,6 +88,7 @@ pub async fn makerpoll_votes(
         .collect())
 }
 
+#[instrument(skip(ctx, logs), level = "debug")]
 async fn get_votes_for_voter(
     logs: Vec<(VotedFilter, LogMeta)>,
     dao_handler: daohandler::Data,
@@ -146,6 +153,7 @@ async fn get_votes_for_voter(
 
 //I have no idea how this works but this is the reverse of what mkr does here
 //https://github.com/makerdao/governance-portal-v2/blob/efeaa159a86748646af136f34c807b2dc9a2c401/modules/polling/api/victory_conditions/__tests__/instantRunoff.spec.ts#L13
+
 async fn get_options(raw_option: String) -> Result<Vec<u8>> {
     pub enum Endian {
         Big,

@@ -2,8 +2,11 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "DOCKERFILE",
-    "dockerfilePath": "apps/refresher/Dockerfile",
-    "watchPatterns": ["apps/refresher"]
+    "dockerfilePath": "Dockerfile.refresher",
+    "watchPatterns": [
+      "apps/refresher",
+      "packages/database"
+    ]
   },
   "deploy": {
     "numReplicas": 1,

@@ -2,93 +2,132 @@
   "$schema": "https://turborepo.org/schema.json",
   "pipeline": {
     "build": {
-      "dependsOn": ["^build:db", "^build:axiom"],
+      "dependsOn": [
+        "^build:db"
+      ],
       "cache": false
     },
-
     "build:senate": {
-      "dependsOn": ["^build:db", "^build:axiom"],
+      "dependsOn": [
+        "^build:db"
+      ],
       "cache": false
     },
-
-    "build:bulletin": {
-      "dependsOn": ["^build:db", "^build:axiom"],
+    "build:shortie": {
+      "dependsOn": [
+        "^build:db"
+      ],
       "cache": false
     },
-
-    "build:sanity": {
-      "dependsOn": ["^build:db", "^build:axiom"],
+    "build:detective": {
+      "dependsOn": [
+        "^db:generate"
+      ],
       "cache": false
     },
-
+    "build:refresher": {
+      "dependsOn": [
+        "^db:generate"
+      ],
+      "cache": false
+    },
+    "build:email-secretary": {
+      "dependsOn": [
+        "^db:generate"
+      ],
+      "cache": false
+    },
+    "build:discord-secretary": {
+      "dependsOn": [
+        "^db:generate"
+      ],
+      "cache": false
+    },
+    "build:telegram-secretary": {
+      "dependsOn": [
+        "^db:generate"
+      ],
+      "cache": false
+    },
     "build:db": {
       "cache": false,
-      "dependsOn": ["^db:generate", "^build:axiom"]
+      "dependsOn": [
+        "^db:generate"
+      ]
     },
-    "db:push": { "cache": false },
-    "db:seed": { "cache": false },
-    "db:generate": {},
-
-    "build:axiom": { "cache": false },
-
+    "db:push": {
+      "cache": false
+    },
+    "db:seed": {
+      "cache": false
+    },
+    "db:generate": {
+      "cache": false
+    },
     "*": {
       "env": [
         "NODE_ENV",
         "EXEC_ENV",
         "PORT",
-
         "DATABASE_URL",
-
-        "AXIOM_TOKEN",
-        "AXIOM_ORG_ID",
-        "AXIOM_DATASET",
-
         "ALCHEMY_NODE_URL",
         "ARBITRUM_NODE_URL",
         "IPFS_GATEWAY_URL",
         "ETHERSCAN_API_KEY",
         "ARBISCAN_API_KEY",
-
         "NEXT_PUBLIC_WEB_URL",
         "NEXT_PUBLIC_ALCHEMY_KEY",
         "NEXTAUTH_SECRET",
         "OUTOFSERVICE",
-
         "DETECTIVE_URL",
-
-        "BULLETIN_ENABLE",
-        "BULLETIN_CRON_INTERVAL",
         "POSTMARK_TOKEN",
-        "VOTING_COUNTDOWN_TOKEN",
-        "TEST_EMAIL",
-        "BULLETIN_BCC_EMAILS"
+        "VOTING_COUNTDOWN_TOKEN"
       ]
     },
     "start": {},
     "start:senate": {},
-    "start:bulletin": {},
-    "start:sanity": {},
-
-    "dev": { "dependsOn": ["^db:generate", "^build:db", "^build:axiom"] },
+    "start:shortie": {},
+    "dev": {
+      "dependsOn": [
+        "^db:generate",
+        "^build:db"
+      ]
+    },
     "dev:senate": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+      "dependsOn": [
+        "^db:generate",
+        "^build:db"
+      ]
     },
     "dev:bulletin": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+      "dependsOn": [
+        "^db:generate",
+        "^build:db"
+      ]
     },
-    "dev:sanity": {
-      "dependsOn": ["^db:generate", "^build:db", "^build:axiom"]
+    "test:web": {
+      "cache": false
     },
-
-    "test:web": { "cache": false },
-    "test:e2e": { "cache": false },
-
-    "lint": { "cache": false },
-    "lint:fix": { "cache": false },
-
-    "prettier": { "cache": false },
-    "prettier:fix": { "cache": false },
-
-    "clean": { "cache": false }
+    "test:e2e": {
+      "cache": false
+    },
+    "lint": {
+      "cache": false
+    },
+    "lint:fix": {
+      "cache": false
+    },
+    "prettier": {
+      "cache": false
+    },
+    "prettier:fix": {
+      "cache": false
+    },
+    "clean": {
+      "cache": false
+    },
+    "update": {
+      "cache": false
+    }
   }
 }

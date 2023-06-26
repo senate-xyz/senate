@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/apps/detective/prisma-cli/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/detective/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/discord-secretary/prisma-cli/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/discord-secretary/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/email-secretary/prisma-cli/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/email-secretary/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/refresher/prisma-cli/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/refresher/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/telegram-secretary/prisma-cli/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/telegram-secretary/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/detective/target" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/discord-secretary/target" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/email-secretary/target" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/refresher/target" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/telegram-secretary/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

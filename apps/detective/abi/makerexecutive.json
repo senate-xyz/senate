@@ -1,9 +1,21 @@
 [
   {
     "inputs": [
-      { "internalType": "contract DSToken", "name": "GOV", "type": "address" },
-      { "internalType": "contract DSToken", "name": "IOU", "type": "address" },
-      { "internalType": "uint256", "name": "MAX_YAYS", "type": "uint256" }
+      {
+        "internalType": "contract DSToken",
+        "name": "GOV",
+        "type": "address"
+      },
+      {
+        "internalType": "contract DSToken",
+        "name": "IOU",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "MAX_YAYS",
+        "type": "uint256"
+      }
     ],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -96,7 +108,11 @@
     "inputs": [],
     "name": "GOV",
     "outputs": [
-      { "internalType": "contract DSToken", "name": "", "type": "address" }
+      {
+        "internalType": "contract DSToken",
+        "name": "",
+        "type": "address"
+      }
     ],
     "payable": false,
     "stateMutability": "view",
@@ -107,7 +123,11 @@
     "inputs": [],
     "name": "IOU",
     "outputs": [
-      { "internalType": "contract DSToken", "name": "", "type": "address" }
+      {
+        "internalType": "contract DSToken",
+        "name": "",
+        "type": "address"
+      }
     ],
     "payable": false,
     "stateMutability": "view",
@@ -117,16 +137,34 @@
     "constant": true,
     "inputs": [],
     "name": "MAX_YAYS",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "approvals",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
@@ -136,7 +174,11 @@
     "inputs": [],
     "name": "authority",
     "outputs": [
-      { "internalType": "contract DSAuthority", "name": "", "type": "address" }
+      {
+        "internalType": "contract DSAuthority",
+        "name": "",
+        "type": "address"
+      }
     ],
     "payable": false,
     "stateMutability": "view",
@@ -145,21 +187,51 @@
   {
     "constant": true,
     "inputs": [
-      { "internalType": "address", "name": "caller", "type": "address" },
-      { "internalType": "address", "name": "code", "type": "address" },
-      { "internalType": "bytes4", "name": "sig", "type": "bytes4" }
+      {
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "code",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes4",
+        "name": "sig",
+        "type": "bytes4"
+      }
     ],
     "name": "canCall",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "deposits",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
@@ -167,11 +239,19 @@
   {
     "constant": false,
     "inputs": [
-      { "internalType": "address[]", "name": "yays", "type": "address[]" }
+      {
+        "internalType": "address[]",
+        "name": "yays",
+        "type": "address[]"
+      }
     ],
     "name": "etch",
     "outputs": [
-      { "internalType": "bytes32", "name": "slate", "type": "bytes32" }
+      {
+        "internalType": "bytes32",
+        "name": "slate",
+        "type": "bytes32"
+      }
     ],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -179,7 +259,13 @@
   },
   {
     "constant": false,
-    "inputs": [{ "internalType": "uint256", "name": "wad", "type": "uint256" }],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "wad",
+        "type": "uint256"
+      }
+    ],
     "name": "free",
     "outputs": [],
     "payable": false,
@@ -189,20 +275,25 @@
   {
     "constant": true,
     "inputs": [
-      { "internalType": "address", "name": "code", "type": "address" },
-      { "internalType": "bytes4", "name": "sig", "type": "bytes4" }
+      {
+        "internalType": "address",
+        "name": "code",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes4",
+        "name": "sig",
+        "type": "bytes4"
+      }
     ],
     "name": "getCapabilityRoles",
-    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [{ "internalType": "address", "name": "who", "type": "address" }],
-    "name": "getUserRoles",
-    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
@@ -210,11 +301,46 @@
   {
     "constant": true,
     "inputs": [
-      { "internalType": "address", "name": "who", "type": "address" },
-      { "internalType": "uint8", "name": "role", "type": "uint8" }
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      }
+    ],
+    "name": "getUserRoles",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "internalType": "uint8",
+        "name": "role",
+        "type": "uint8"
+      }
     ],
     "name": "hasUserRole",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
@@ -223,7 +349,13 @@
     "constant": true,
     "inputs": [],
     "name": "hat",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
@@ -231,29 +363,67 @@
   {
     "constant": true,
     "inputs": [
-      { "internalType": "address", "name": "code", "type": "address" },
-      { "internalType": "bytes4", "name": "sig", "type": "bytes4" }
+      {
+        "internalType": "address",
+        "name": "code",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes4",
+        "name": "sig",
+        "type": "bytes4"
+      }
     ],
     "name": "isCapabilityPublic",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [{ "internalType": "address", "name": "who", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      }
+    ],
     "name": "isUserRoot",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "last",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
@@ -270,7 +440,11 @@
   {
     "constant": false,
     "inputs": [
-      { "internalType": "address", "name": "whom", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "whom",
+        "type": "address"
+      }
     ],
     "name": "lift",
     "outputs": [],
@@ -282,14 +456,26 @@
     "constant": true,
     "inputs": [],
     "name": "live",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
     "constant": false,
-    "inputs": [{ "internalType": "uint256", "name": "wad", "type": "uint256" }],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "wad",
+        "type": "uint256"
+      }
+    ],
     "name": "lock",
     "outputs": [],
     "payable": false,
@@ -300,7 +486,13 @@
     "constant": true,
     "inputs": [],
     "name": "owner",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
@@ -323,7 +515,11 @@
   {
     "constant": false,
     "inputs": [
-      { "internalType": "address", "name": "owner_", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "owner_",
+        "type": "address"
+      }
     ],
     "name": "setOwner",
     "outputs": [],
@@ -334,9 +530,21 @@
   {
     "constant": false,
     "inputs": [
-      { "internalType": "address", "name": "code", "type": "address" },
-      { "internalType": "bytes4", "name": "sig", "type": "bytes4" },
-      { "internalType": "bool", "name": "enabled", "type": "bool" }
+      {
+        "internalType": "address",
+        "name": "code",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes4",
+        "name": "sig",
+        "type": "bytes4"
+      },
+      {
+        "internalType": "bool",
+        "name": "enabled",
+        "type": "bool"
+      }
     ],
     "name": "setPublicCapability",
     "outputs": [],
@@ -347,10 +555,26 @@
   {
     "constant": false,
     "inputs": [
-      { "internalType": "uint8", "name": "role", "type": "uint8" },
-      { "internalType": "address", "name": "code", "type": "address" },
-      { "internalType": "bytes4", "name": "sig", "type": "bytes4" },
-      { "internalType": "bool", "name": "enabled", "type": "bool" }
+      {
+        "internalType": "uint8",
+        "name": "role",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "code",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes4",
+        "name": "sig",
+        "type": "bytes4"
+      },
+      {
+        "internalType": "bool",
+        "name": "enabled",
+        "type": "bool"
+      }
     ],
     "name": "setRoleCapability",
     "outputs": [],
@@ -361,8 +585,16 @@
   {
     "constant": false,
     "inputs": [
-      { "internalType": "address", "name": "who", "type": "address" },
-      { "internalType": "bool", "name": "enabled", "type": "bool" }
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "enabled",
+        "type": "bool"
+      }
     ],
     "name": "setRootUser",
     "outputs": [],
@@ -373,9 +605,21 @@
   {
     "constant": false,
     "inputs": [
-      { "internalType": "address", "name": "who", "type": "address" },
-      { "internalType": "uint8", "name": "role", "type": "uint8" },
-      { "internalType": "bool", "name": "enabled", "type": "bool" }
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "internalType": "uint8",
+        "name": "role",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bool",
+        "name": "enabled",
+        "type": "bool"
+      }
     ],
     "name": "setUserRole",
     "outputs": [],
@@ -386,11 +630,25 @@
   {
     "constant": true,
     "inputs": [
-      { "internalType": "bytes32", "name": "", "type": "bytes32" },
-      { "internalType": "uint256", "name": "", "type": "uint256" }
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
     ],
     "name": "slates",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
@@ -398,7 +656,11 @@
   {
     "constant": false,
     "inputs": [
-      { "internalType": "bytes32", "name": "slate", "type": "bytes32" }
+      {
+        "internalType": "bytes32",
+        "name": "slate",
+        "type": "bytes32"
+      }
     ],
     "name": "vote",
     "outputs": [],
@@ -409,19 +671,41 @@
   {
     "constant": false,
     "inputs": [
-      { "internalType": "address[]", "name": "yays", "type": "address[]" }
+      {
+        "internalType": "address[]",
+        "name": "yays",
+        "type": "address[]"
+      }
     ],
     "name": "vote",
-    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "votes",
-    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"

@@ -1,0 +1,554 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial" />
+    </mj-attributes>
+    <mj-style>
+      @media only screen and (min-width: 480px) {
+        .results-width {
+          width: 180px;
+          min-width: 180px;
+          max-width: 180px;
+        }
+      }
+    </mj-style>
+    <mj-style>
+      @media only screen and (max-width: 479px) {
+        .results-width {
+          width: 120px;
+          min-width: 120px;
+          max-width: 120px;
+        }
+      }
+    </mj-style>
+
+    <mj-style>
+      @media only screen and (min-width: 480px) {
+        .countdown-width {
+          min-width: 180px;
+          max-width: 180px;
+          max-height: 50px;
+        }
+      }
+    </mj-style>
+    <mj-style>
+      @media only screen and (max-width: 479px) {
+        .countdown-width {
+          min-width: 100px;
+          max-width: 100px;
+          max-height: 50px;
+        }
+      }
+    </mj-style>
+
+    <mj-style>
+      @media only screen and (min-width: 480px) {
+        .proposal-name {
+          font-size:
+            15px;
+          text-align: start;
+          vertical-align: top;
+        }
+      }
+    </mj-style>
+    <mj-style>
+      @media only screen and (max-width: 479px) {
+        .proposal-name {
+          font-size:
+            12px;
+          text-align: start;
+          vertical-align: top;
+        }
+      }
+    </mj-style>
+    <mj-style>
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="white">
+
+    <mj-raw>{{#env}}</mj-raw>
+    <mj-section padding="8px 0px" background-color="red">
+      <mj-column>
+        <mj-text padding="12px" align="left" font-size="30px" color="#000" font-family="sans-serif" font-weight="bold">
+          This email is coming from {{env}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-raw>{{/env}}</mj-raw>
+
+    <mj-section padding="8px 0px" background-color="white">
+      <mj-column>
+        <mj-text padding="4px" align="left" font-size="30px" color="#000" font-family="sans-serif" font-weight="bold">
+          Proposals Ending Soon
+        </mj-text>
+
+        <mj-text padding="4px" align="left" font-size="13px" color="#555555" font-family="sans-serif">
+          The voting on these proposals is going to end in the next 72 hours.
+          You might want to act on them soon.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-raw>{{#endingSoonProposals}}</mj-raw>
+    <mj-section background-color="white" padding="0">
+      <mj-column padding="0">
+        <mj-table cellpadding="4px" padding="0">
+          <tr style="border-bottom: 1px solid #ecedee">
+            <th width="50px" style="text-align: start">Org</th>
+            <th width="30%" style="text-align: start">Proposal</th>
+            <th style="
+              text-align: center;
+              vertical-align: middle;
+              ">
+
+              <table cellspacing="0" cellpadding="0">
+                <tr>
+                  <td>
+                    <b style="margin: 0px 0px; font-size: 13px; line-height: 22px;">Ending in</b>
+                  </td>
+                  <td>
+                    <img width="18px" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
+                  </td>
+              </table>
+
+            </th>
+            <th style="text-align: center">Vote Status</th>
+          </tr>
+
+          <mj-raw>{{#each . }}</mj-raw>
+          <tr style="border-bottom: 1px solid #ecedee">
+            <td width="48px" style="vertical-align:top;">
+              <table cellspacing="0" cellpadding="0">
+                <tr>
+                  <td>
+                    <img style="vertical-align:bottom;" width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
+                  </td>
+                </tr>
+              </table>
+            </td>
+
+            <td class="proposal-name" style="vertical-align:top;">
+              <a href="{{url}}">{{proposalName}}</a>
+            </td>
+            <td style="text-align: center">
+              <table style="text-align:center;">
+                <tr>
+                  <td> <img class="countdown-width" src="{{countdownUrl}}" alt="Countdown" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    {{countdownString}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+
+            <td style="
+                text-align: center;
+              ">
+              <img style="width: 32px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
+              <br />
+              <mj-text style="font-size: 11px; font-weight: 700">
+                <mj-raw>{{voteStatus}}</mj-raw>
+              </mj-text>
+            </td>
+          </tr>
+          <mj-raw>{{/each}}</mj-raw>
+        </mj-table>
+      </mj-column>
+    </mj-section>
+    <mj-raw> {{/endingSoonProposals}}</mj-raw>
+
+    <mj-raw> {{^ endingSoonProposals}}</mj-raw>
+    <mj-section padding="0">
+      <mj-column background-color="black" padding="30px 30px 30px 30px">
+        <mj-text align="center" font-size="15px" font-family="sans-serif" color="white">
+          No ending soon proposals today
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-raw> {{/endingSoonProposals}}</mj-raw>
+
+    <mj-section padding="8px 0px" background-color="white">
+      <mj-column>
+        <mj-text padding="24px 4px 4px 4px" align="left" font-size="30px" color="#000" font-family="sans-serif" font-weight="bold">
+          New Proposals
+        </mj-text>
+
+        <mj-text padding="4px" align="left" font-size="13px" color="#555555" font-family="sans-serif">
+          These are the proposals that were created in the last 24 hours. You
+          might want to check them out.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-raw>{{#newProposals}}</mj-raw>
+    <mj-section background-color="white" padding="0">
+      <mj-column>
+        <mj-table cellpadding="4px" padding="0">
+          <tr style="border-bottom: 1px solid #ecedee">
+            <th width="50px" style="text-align: start">Org</th>
+            <th width="30%" style="text-align: start">Proposal</th>
+            <th style="
+              text-align: center;
+              vertical-align: middle;
+              ">
+              <table cellspacing="0" cellpadding="0">
+                <tr>
+                  <td>
+                    <b style="margin: 0px 0px; font-size: 13px; line-height: 22px;">Ending in</b>
+                  </td>
+                  <td>
+                    <img width="18px" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
+                  </td>
+              </table>
+            </th>
+            <th style="text-align: center">Vote Status</th>
+          </tr>
+
+          <mj-raw>{{#each . }}</mj-raw>
+          <tr style="border-bottom: 1px solid #ecedee">
+            <td width="48px" style="vertical-align:top;">
+              <table cellspacing="0" cellpadding="0">
+                <tr>
+                  <td>
+                    <img style="vertical-align:bottom;" width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
+                  </td>
+                </tr>
+              </table>
+            </td>
+
+            <td class="proposal-name" style="vertical-align:top;">
+              <a href="{{url}}">{{proposalName}}</a>
+            </td>
+            <td style="text-align: center">
+              <table style="text-align:center;">
+                <tr>
+                  <td> <img class="countdown-width" src="{{countdownUrl}}" alt="Countdown" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    {{countdownString}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+
+            <td style="
+                text-align: center;
+              ">
+              <img style="width: 32px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
+              <br />
+              <mj-text style="font-size: 11px; font-weight: 700">
+                <mj-raw>{{voteStatus}}</mj-raw>
+              </mj-text>
+            </td>
+          </tr>
+          <mj-raw>{{/each}}</mj-raw>
+        </mj-table>
+      </mj-column>
+    </mj-section>
+    <mj-raw> {{/newProposals}}</mj-raw>
+
+    <mj-raw> {{^ newProposals}}</mj-raw>
+    <mj-section padding="0">
+      <mj-column background-color="black" padding="30px 30px 30px 30px">
+        <mj-text align="center" font-size="15px" font-family="sans-serif" color="white">
+          No new proposals today
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-raw> {{/newProposals}}</mj-raw>
+
+    <mj-section padding="8px 0px" background-color="white">
+      <mj-column>
+        <mj-text padding="24px 4px 4px 4px" align="left" font-size="30px" color="#000" font-family="sans-serif" font-weight="bold">
+          Past Proposals
+        </mj-text>
+
+        <mj-text padding="4px" align="left" font-size="13px" color="#555555" font-family="sans-serif">
+          These are the proposals that ended in the last 24 hours. You might
+          want to check them out.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-raw>{{#endedProposals}}</mj-raw>
+    <mj-section background-color="white" padding="0">
+      <mj-column padding="0">
+        <mj-table cellpadding="4px" padding="0">
+          <tr style="border-bottom: 1px solid #ecedee">
+            <th width="50px" style="text-align: start">Org</th>
+            <th width="40%" style="text-align: start">Proposal</th>
+            <th style="
+              text-align: center;
+              vertical-align: middle;
+              ">
+              <table cellspacing="0" cellpadding="0">
+                <tr>
+                  <td>
+                    <b style="margin: 0px 0px; font-size: 13px; line-height: 22px;">Ended on</b>
+                  </td>
+                  <td>
+                    <img width="18px" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
+                  </td>
+              </table>
+            </th>
+            <th style="text-align: center">Vote Status</th>
+          </tr>
+
+          <mj-raw>{{#each . }}</mj-raw>
+          <tr style="border-bottom: 1px solid #ecedee">
+            <td width="48px" style="vertical-align:top;">
+              <table cellspacing="0" cellpadding="0">
+                <tr>
+                  <td>
+                    <img style="vertical-align:bottom;" width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
+                  </td>
+                </tr>
+              </table>
+            </td>
+
+            <td class="proposal-name" style="vertical-align:top;">
+              <a href="{{url}}">{{proposalName}}</a>
+            </td>
+            <td style="text-align: center; padding:0px">
+
+              <mj-raw>{{#hiddenResult}}</mj-raw>
+
+
+              <table cellpadding="0px" padding="0px">
+                <tr style="align-items: center;" class="result-width">
+                  <td>
+                    <img style="
+                            width: 22px;
+                            height: 22px;
+                            background-color: #ededed;
+                            padding: 2px;
+                          " src="https://www.senatelabs.xyz/assets/Emails/hidden.png" />
+                  </td>
+                  <td>
+                    <p style="
+                            padding: 0px;
+                            font-size: 18px;
+                            font-weight: 600;
+                            font-family: sans-serif;
+                            padding-left: 3px;
+                            margin: 0px;
+                          ">
+                      Hidden Result
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <table cellpadding="0px" padding="0px" class="result-width">
+                <tr class="result-width">
+                  <td class="result-width" style="width:180px;">
+                    <div class="results-width" style="
+                            background-color: gray;
+                            width: 100%;
+                            height: 20px;
+                            position: relative;
+                          ">
+                      <div style="
+                              background-color: black;
+                              width: 0%;
+                              height: 100%;
+                            ">
+                        <div style="
+                                color: white;
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                                font-size: 14px;
+                              ">
+                          ??
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+
+              <mj-raw>{{/hiddenResult}}</mj-raw>
+
+              <mj-raw>{{#result}}</mj-raw>
+
+              <table cellpadding="0px" padding="0px">
+                <tr style="align-items: center;" class="result-width">
+                  <td>
+                    <img style="
+                            width: 22px;
+                            height: 22px;
+                            background-color: #ededed;
+                            padding: 2px;
+                          " src="https://www.senatelabs.xyz/assets/Emails/check.png" />
+                  </td>
+                  <td>
+                    <p style="
+                            font-size: 18px;
+                            font-weight: 600;
+                            font-family: sans-serif;
+                            padding-left: 3px;
+                             margin: 0px;
+                          ">
+                      {{choiceName}}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <table cellpadding="0px" padding="0px" class="result-width">
+                <tr class="result-width">
+                  <td class="result-width" style="width:180px;">
+                    <div class="results-width" style="
+                            background-color: gray;
+                            width: 100%;
+                            height: 20px;
+                            position: relative;
+                          ">
+                      <div style="
+                            background-color: black;
+                            width: {{choicePercentage}}%;
+                            height: 100%;
+                          ">
+                        <div style="
+                                color: white;
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                                font-size: 14px;
+                              ">
+                          {{choicePercentage}}%
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <mj-raw>{{/result}}</mj-raw>
+
+              <mj-raw>{{#noqorum}}</mj-raw>
+
+              <table cellpadding="0px" padding="0px">
+                <tr style="align-items: center;" class="result-width">
+                  <td>
+                    <img style="
+                            width: 22px;
+                            height: 22px;
+                            background-color: #ededed;
+                            padding: 2px;
+                          " src="https://www.senatelabs.xyz/assets/Emails/cross.png" />
+                  </td>
+                  <td>
+                    <p style="
+                            font-size: 18px;
+                            font-weight: 600;
+                            font-family: sans-serif;
+                            padding-left: 3px;
+                            margin: 0px;
+                          ">
+                      No Quorum
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <mj-raw>{{/noqorum}}</mj-raw>
+
+              <mj-raw>{{#makerResult}}</mj-raw>
+
+              <table cellpadding="0px" padding="0px">
+                <tr style="align-items: center;" class="result-width">
+                  <td>
+                    <img style="
+                            width: 22px;
+                            height: 22px;
+                            background-color: #ededed;
+                            padding: 2px;
+                          " src="https://www.senatelabs.xyz/assets/Emails/check.png" />
+                  </td>
+                  <td>
+                    <p style="
+                            font-size: 18px;
+                            font-weight: 600;
+                            font-family: sans-serif;
+                            padding-left: 3px;
+                            margin: 0px;
+                          ">
+                      {{choiceName}}
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td style="align-items: center;">
+                    <p style="font-size: 18px;
+                            font-weight: 600;
+                            font-family: sans-serif;
+                            margin: 0px;">
+                      with {{mkrAmount}} MKR
+                    </p>
+                  </td>
+
+                </tr>
+              </table>
+
+              <mj-raw>{{/makerResult}}</mj-raw>
+              <mj-raw>{{countdownString}}</mj-raw>
+
+            </td>
+
+            <td style="
+                text-align: center;
+              ">
+              <img style="width: 32px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
+              <br />
+              <mj-text style="font-size: 11px; font-weight: 700">
+                <mj-raw>{{voteStatus}}</mj-raw>
+              </mj-text>
+            </td>
+          </tr>
+          <mj-raw>{{/each}}</mj-raw>
+        </mj-table>
+      </mj-column>
+    </mj-section>
+    <mj-raw> {{/endedProposals}}</mj-raw>
+
+    <mj-raw> {{^ endedProposals}}</mj-raw>
+    <mj-section padding="0">
+      <mj-column background-color="black" padding="30px 30px 30px 30px">
+        <mj-text align="center" font-size="15px" font-family="sans-serif" color="white">
+          No proposals ended in the last 24 hours
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-raw> {{/endedProposals}}</mj-raw>
+  </mj-body>
+</mjml>

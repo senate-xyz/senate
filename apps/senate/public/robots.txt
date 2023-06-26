@@ -1,0 +1,9 @@
+//robots.txt
+
+# Block all crawlers for /verify
+User-agent: *
+Disallow: /verify
+
+# Allow all crawlers
+User-agent: *
+Allow: /

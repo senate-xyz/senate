@@ -1,18 +1,20 @@
+use anyhow::{bail, Result};
+use ethers::{
+    prelude::LogMeta,
+    types::{Address, H160, H256},
+};
+use futures::stream::{FuturesUnordered, StreamExt};
+use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
+use serde::Deserialize;
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
+
 use crate::{
     contracts::ensgov::{self, VoteCastFilter},
     prisma::{daohandler, proposal},
     router::chain_votes::{Vote, VoteResult},
     Ctx,
 };
-use anyhow::{bail, Result};
-use ethers::{
-    prelude::LogMeta,
-    types::{Address, H160, H256},
-};
-
-use futures::stream::{FuturesUnordered, StreamExt};
-use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
-use serde::Deserialize;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -20,6 +22,7 @@ struct Decoder {
     address: String,
 }
 
+#[instrument(skip(ctx, voters), level = "info")]
 pub async fn ens_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -31,7 +34,7 @@ pub async fn ens_votes(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = ensgov::ensgov::ensgov::new(address, ctx.client.clone());
+    let gov_contract = ensgov::ensgov::ensgov::new(address, ctx.rpc.clone());
 
     let voters_addresses: Vec<H256> = voters
         .clone()
@@ -45,7 +48,10 @@ pub async fn ens_votes(
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let logs = events.query_with_meta().await?;
+    let logs = events
+        .query_with_meta()
+        .instrument(debug_span!("get_rpc_events"))
+        .await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -76,6 +82,7 @@ pub async fn ens_votes(
         .collect())
 }
 
+#[instrument(skip(ctx, logs), level = "debug")]
 async fn get_votes_for_voter(
     logs: Vec<(VoteCastFilter, LogMeta)>,
     dao_handler: daohandler::Data,

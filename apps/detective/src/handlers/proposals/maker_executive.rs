@@ -1,11 +1,5 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, sync::Arc};
 
-use crate::{
-    contracts::{makerexecutive, makerexecutive::LogNoteFilter},
-    prisma::{daohandler, ProposalState},
-    router::chain_proposals::ChainProposal,
-    Ctx,
-};
 use anyhow::{Context, Result};
 use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use ethers::{
@@ -20,8 +14,18 @@ use reqwest::{
     header::{ACCEPT, USER_AGENT},
     Client,
 };
+use reqwest_middleware::ClientWithMiddleware;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
+
+use crate::{
+    contracts::{makerexecutive, makerexecutive::LogNoteFilter},
+    prisma::{daohandler, ProposalState},
+    router::chain_proposals::ChainProposal,
+    Ctx,
+};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -35,6 +39,7 @@ const VOTE_MULTIPLE_ACTIONS_TOPIC: &str =
 const VOTE_SINGLE_ACTION_TOPIC: &str =
     "0xa69beaba00000000000000000000000000000000000000000000000000000000";
 
+#[instrument(skip(ctx), level = "info")]
 pub async fn maker_executive_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -46,7 +51,7 @@ pub async fn maker_executive_proposals(
     let address = decoder.address.parse::<Address>().expect("bad address");
 
     let gov_contract =
-        makerexecutive::makerexecutive::makerexecutive::new(address, ctx.client.clone());
+        makerexecutive::makerexecutive::makerexecutive::new(address, ctx.rpc.clone());
 
     let single_spell_events = gov_contract
         .log_note_filter()
@@ -54,7 +59,10 @@ pub async fn maker_executive_proposals(
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let single_spell_logs = single_spell_events.query_with_meta().await?;
+    let single_spell_logs = single_spell_events
+        .query_with_meta()
+        .instrument(debug_span!("get_rpc_events"))
+        .await?;
 
     let multi_spell_events = gov_contract
         .log_note_filter()
@@ -62,7 +70,10 @@ pub async fn maker_executive_proposals(
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let multi_spell_logs = multi_spell_events.query_with_meta().await?;
+    let multi_spell_logs = multi_spell_events
+        .query_with_meta()
+        .instrument(debug_span!("get_rpc_events"))
+        .await?;
 
     let single_spells = get_single_spell_addresses(single_spell_logs, gov_contract.clone()).await?;
     let multi_spells = get_multi_spell_addresses(multi_spell_logs, gov_contract.clone()).await?;
@@ -76,7 +87,7 @@ pub async fn maker_executive_proposals(
     let mut futures = FuturesUnordered::new();
 
     for p in spell_addresses.iter() {
-        futures.push(async { proposal(p, &decoder, dao_handler).await });
+        futures.push(async { proposal(p, &decoder, dao_handler, ctx).await });
     }
 
     let mut result = Vec::new();
@@ -87,14 +98,16 @@ pub async fn maker_executive_proposals(
     Ok(result)
 }
 
+#[instrument(skip(ctx, decoder), ret, level = "debug")]
 async fn proposal(
     spell_address: &String,
     decoder: &Decoder,
     dao_handler: &daohandler::Data,
+    ctx: &Ctx,
 ) -> Result<ChainProposal> {
     let proposal_url = format!("{}{}", decoder.proposalUrl, spell_address);
 
-    let proposal_data = get_proposal_data(spell_address.clone()).await?;
+    let proposal_data = get_proposal_data(spell_address.clone(), ctx.http_client.clone()).await?;
 
     let title = proposal_data.title.clone();
 
@@ -118,7 +131,7 @@ async fn proposal(
     let scores = &proposal_data.spellData.mkrSupport.clone();
     let scores_total = &proposal_data.spellData.mkrSupport.clone();
 
-    let block_created = get_proposal_block(created_timestamp).await?;
+    let block_created = get_proposal_block(created_timestamp, ctx.http_client.clone()).await?;
 
     let state = if proposal_data.spellData.hasBeenCast {
         ProposalState::Executed
@@ -168,12 +181,14 @@ struct TimeData {
     height: Value,
 }
 
-async fn get_proposal_block(time: DateTime<Utc>) -> Result<TimeData> {
-    let client = Client::new();
+async fn get_proposal_block(
+    time: DateTime<Utc>,
+    http_client: Arc<ClientWithMiddleware>,
+) -> Result<TimeData> {
     let mut retries = 0;
 
     loop {
-        let response = client
+        let response = http_client
             .get(format!(
                 "https://coins.llama.fi/block/ethereum/{}",
                 time.timestamp()
@@ -219,6 +234,7 @@ struct SpellData {
     hasBeenCast: bool,
     hasBeenScheduled: bool,
 }
+
 #[allow(non_snake_case)]
 #[derive(Deserialize, Serialize, PartialEq, Debug, Clone)]
 struct ProposalData {
@@ -228,12 +244,14 @@ struct ProposalData {
     date: String,
 }
 
-async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
-    let client = Client::new();
+async fn get_proposal_data(
+    spell_address: String,
+    http_client: Arc<ClientWithMiddleware>,
+) -> Result<ProposalData> {
     let mut retries = 0;
 
     loop {
-        let response = client
+        let response = http_client
             .get(format!(
                 "https://vote.makerdao.com/api/executive/{}",
                 spell_address
@@ -296,6 +314,7 @@ async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
 
 //this takes out the first 4 bytes because that's the method being called
 //after that, it builds a vec of 32 byte chunks for as long as the input is
+
 fn extract_desired_bytes(bytes: &[u8]) -> Vec<[u8; 32]> {
     let mut iterration = 0;
 

@@ -1,21 +1,24 @@
-use crate::{
-    contracts::makerpollvotearbitrum::{self, VotedFilter},
-    prisma::{daohandler, proposal},
-    router::chain_votes::{Vote, VoteResult},
-    Ctx,
-};
+use std::{env, str::FromStr, sync::Arc};
+
 use anyhow::{bail, Result};
 use ethers::{
     prelude::LogMeta,
     providers::{Http, Middleware, Provider},
     types::{Address, U64},
 };
-
 use futures::stream::{FuturesUnordered, StreamExt};
 use num_bigint::BigInt;
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
 use serde::Deserialize;
-use std::{env, str::FromStr, sync::Arc};
+use tracing::Instrument;
+use tracing::{debug_span, instrument};
+
+use crate::{
+    contracts::makerpollvotearbitrum::{self, VotedFilter},
+    prisma::{daohandler, proposal},
+    router::chain_votes::{Vote, VoteResult},
+    Ctx,
+};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -23,16 +26,14 @@ struct Decoder {
     address_vote: String,
 }
 
+#[instrument(skip(ctx, voters), level = "info")]
 pub async fn makerpollarbitrum_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
     from_block: &i64,
     voters: Vec<String>,
 ) -> Result<Vec<VoteResult>> {
-    let rpc_url = match env::var_os("ARBITRUM_NODE_URL") {
-        Some(v) => v.into_string().unwrap(),
-        None => panic!("$ARBITRUM_NODE_URL is not set"),
-    };
+    let rpc_url = env::var("ARBITRUM_NODE_URL").expect("$ARBITRUM_NODE_URL is not set");
 
     let provider = Provider::<Http>::try_from(rpc_url).unwrap();
     let client = Arc::new(provider);
@@ -60,7 +61,10 @@ pub async fn makerpollarbitrum_votes(
         .from_block(*from_block)
         .to_block(to_block);
 
-    let logs = events.query_with_meta().await?;
+    let logs = events
+        .query_with_meta()
+        .instrument(debug_span!("get_rpc_events"))
+        .await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -91,6 +95,7 @@ pub async fn makerpollarbitrum_votes(
         .collect())
 }
 
+#[instrument(skip(ctx, logs), level = "debug")]
 async fn get_votes_for_voter(
     logs: Vec<(VotedFilter, LogMeta)>,
     dao_handler: daohandler::Data,
@@ -157,6 +162,7 @@ async fn get_votes_for_voter(
 
 //I have no idea how this works but this is the reverse of what mkr does here
 //https://github.com/makerdao/governance-portal-v2/blob/efeaa159a86748646af136f34c807b2dc9a2c401/modules/polling/api/victory_conditions/__tests__/instantRunoff.spec.ts#L13
+
 async fn get_options(raw_option: String) -> Result<Vec<u8>> {
     pub enum Endian {
         Big,

@@ -13,32 +13,28 @@
       "path": "../apps/refresher"
     },
     {
-      "name": "🦀 @senate/discord-butler",
-      "path": "../apps/discord-butler"
+      "name": "🦀 @senate/email-secretary",
+      "path": "../apps/email-secretary"
     },
     {
-      "name": "🚀 @senate/bulletin",
-      "path": "../apps/bulletin"
+      "name": "🦀 @senate/discord-secretary",
+      "path": "../apps/discord-secretary"
     },
     {
-      "name": "🚀 @senate/sanity",
-      "path": "../apps/sanity"
+      "name": "🦀 @senate/telegram-secretary",
+      "path": "../apps/telegram-secretary"
     },
     {
       "name": "🌐 @senate/senate",
       "path": "../apps/senate"
     },
     {
-      "name": "⚙️ @senate/config",
-      "path": "../packages/config"
+      "name": "🌐 @senate/shortie",
+      "path": "../apps/shortie"
     },
     {
       "name": "📦 @senate/database",
       "path": "../packages/database"
-    },
-    {
-      "name": "📦 @senate/axiom",
-      "path": "../packages/axiom"
     },
     {
       "name": "🛠️ @senate/stressTest",
@@ -47,25 +43,51 @@
     {
       "name": "🛠️ @senate/userMigration",
       "path": "../utilities/userMigration"
+    },
+    {
+      "name": "🛠️ @senate/postmark_data",
+      "path": "../utilities/postmark_data"
     }
   ],
   "settings": {
-    "editor.codeActionsOnSave": {
-      "source.fixAll": true,
-      "source.fixAll.eslint": true
+    "[css]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "editor.formatOnSave": true,
-    "editor.formatOnType": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "typescript.tsdk": "📂 root/node_modules/typescript/lib",
+    "[html]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[jsonc]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[rust]": {
+      "editor.defaultFormatter": "rust-lang.rust-analyzer"
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
     "[prisma]": {
       "editor.defaultFormatter": "Prisma.prisma"
     },
+    "editor.bracketPairColorization.enabled": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.guides.bracketPairs": "active",
+    "editor.inlineSuggest.enabled": true,
+    "eslint.packageManager": "yarn",
     "rust-analyzer.rustfmt.rangeFormatting.enable": true,
-    "[rust]": {
-      "editor.defaultFormatter": "rust-lang.rust-analyzer",
-      "editor.formatOnSave": true
-    }
+    "rust-analyzer.check.command": "check"
   },
   "extensions": {
     "recommendations": [
@@ -75,7 +97,12 @@
       "Prisma.prisma",
       "bradlc.vscode-tailwindcss",
       "VisualStudioExptTeam.vscodeintellicode",
-      "VisualStudioExptTeam.intellicode-api-usage-examples"
+      "VisualStudioExptTeam.intellicode-api-usage-examples",
+      "usernamehw.errorlens",
+      "rust-lang.rust-analyzer",
+      "tamasfe.even-better-toml",
+      "serayuzgur.crates",
+      "attilabuti.vscode-mjml"
     ]
   }
 }

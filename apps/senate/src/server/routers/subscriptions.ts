@@ -1,105 +1,107 @@
-import { router, privateProcedure } from '../trpc'
-import { z } from 'zod'
-import { prisma } from '@senate/database'
+import { privateProcedure, router } from "../trpc";
+import { z } from "zod";
+import { prisma } from "@senate/database";
+import { PostHog } from "posthog-node";
+
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
+  host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
+  disableGeoip: true,
+});
 
 export const subscriptionsRouter = router({
-    subscribe: privateProcedure
-        .input(
-            z.object({
-                daoId: z.string(),
-                notificationsEnabled: z.boolean()
-            })
-        )
-        .mutation(async ({ input, ctx }) => {
-            const username = await ctx.user.name
+  subscribe: privateProcedure
+    .input(
+      z.object({
+        daoId: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const username = ctx.user.name;
 
-            const user = await prisma.user.findFirstOrThrow({
-                where: {
-                    name: {
-                        equals: String(username)
-                    }
-                }
-            })
+      const user = await prisma.user.findFirstOrThrow({
+        where: {
+          address: {
+            equals: String(username),
+          },
+        },
+      });
 
-            const result = await prisma.subscription.upsert({
-                where: {
-                    userid_daoid: {
-                        userid: user.id,
-                        daoid: input.daoId
-                    }
-                },
-                update: {
-                    notificationsenabled: input.notificationsEnabled
-                },
-                create: {
-                    userid: user.id,
-                    daoid: input.daoId,
-                    notificationsenabled: input.notificationsEnabled
-                }
-            })
+      const result = await prisma.subscription.upsert({
+        where: {
+          userid_daoid: {
+            userid: user.id,
+            daoid: input.daoId,
+          },
+        },
+        update: {
+          userid: user.id,
+          daoid: input.daoId,
+        },
+        create: {
+          userid: user.id,
+          daoid: input.daoId,
+        },
+      });
 
-            return result
-        }),
+      const dao = await prisma.dao.findFirst({
+        where: { id: input.daoId },
+      });
 
-    unsubscribe: privateProcedure
-        .input(
-            z.object({
-                daoId: z.string()
-            })
-        )
-        .mutation(async ({ input, ctx }) => {
-            const username = await ctx.user.name
+      posthog.capture({
+        distinctId: user.address,
+        event: "subscribe",
+        properties: {
+          dao: dao?.name,
+          props: {
+            app: "web-backend",
+          },
+        },
+      });
 
-            const user = await prisma.user.findFirstOrThrow({
-                where: {
-                    name: {
-                        equals: String(username)
-                    }
-                }
-            })
+      return result;
+    }),
 
-            const result = await prisma.subscription.delete({
-                where: {
-                    userid_daoid: {
-                        userid: user?.id,
-                        daoid: input.daoId
-                    }
-                }
-            })
+  unsubscribe: privateProcedure
+    .input(
+      z.object({
+        daoId: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const username = ctx.user.name;
 
-            return result
-        }),
+      const user = await prisma.user.findFirstOrThrow({
+        where: {
+          address: {
+            equals: String(username),
+          },
+        },
+      });
 
-    updateSubscription: privateProcedure
-        .input(
-            z.object({
-                daoId: z.string(),
-                notificationsEnabled: z.boolean()
-            })
-        )
-        .mutation(async ({ input, ctx }) => {
-            const username = await ctx.user.name
+      const result = await prisma.subscription.delete({
+        where: {
+          userid_daoid: {
+            userid: user?.id,
+            daoid: input.daoId,
+          },
+        },
+      });
 
-            const user = await prisma.user.findFirstOrThrow({
-                where: {
-                    name: {
-                        equals: String(username)
-                    }
-                }
-            })
+      const dao = await prisma.dao.findFirst({
+        where: { id: input.daoId },
+      });
 
-            const result = await prisma.subscription.update({
-                where: {
-                    userid_daoid: {
-                        userid: user.id,
-                        daoid: input.daoId
-                    }
-                },
-                data: {
-                    notificationsenabled: input.notificationsEnabled
-                }
-            })
+      posthog.capture({
+        distinctId: user.address,
+        event: "unsubscribe",
+        properties: {
+          dao: dao?.name,
+          props: {
+            app: "web-backend",
+          },
+        },
+      });
 
-            return result
-        })
-})
+      return result;
+    }),
+});

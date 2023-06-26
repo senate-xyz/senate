@@ -1,63 +1,49 @@
-'use client'
+"use client";
 
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-
-import { useAccount } from 'wagmi'
-import { trpc } from '../../../server/trpcClient'
-import UserEmail from './components/csr/UserEmail'
+import { redirect, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useAccount } from "wagmi";
+import UserEmail from "./components/csr/UserEmail";
+import IsUniswapUser from "./components/csr/IsUniswapUser";
+import IsAaveUser from "./components/csr/IsAaveUser";
+import Discord from "./components/csr/Discord";
+import Telegram from "./components/csr/Telegram";
+import { trpc } from "../../../server/trpcClient";
 
 export default function Home() {
-    const account = useAccount()
-    const router = useRouter()
-    const user = trpc.accountSettings.getUser.useQuery()
+  const featureFlags = trpc.public.featureFlags.useQuery();
 
-    const [getDailyEmails, setDailyEmails] = useState(false)
+  if (process.env.OUTOFSERVICE === "true") redirect("/outofservice");
 
-    useEffect(() => {
-        if (!account.isConnected) router.push('/settings/account')
-    }, [account])
+  const account = useAccount();
+  const router = useRouter();
 
-    useEffect(() => {
-        if (user.data) setDailyEmails(user.data.dailybulletin)
-    }, [user.data])
+  useEffect(() => {
+    if (!account.isConnected) if (router) router.push("/settings/account");
+  }, [account, router]);
 
-    const updateNotifications =
-        trpc.accountSettings.updateDailyEmails.useMutation()
-
-    return (
-        <div className='flex min-h-screen flex-col gap-12'>
-            <div className='flex flex-col gap-4'>
-                <div className='text-[24px] font-light leading-[30px] text-white'>
-                    Your Notifications
-                </div>
-
-                <div className='text-[18px] font-light leading-[23px] text-white'>
-                    If you wish to, we will send you a daily email with the
-                    Proposals for the DAOs you are subscribed to.
-                </div>
-            </div>
-
-            <div className='flex flex-row items-center gap-4'>
-                <div className='font-[18px] leading-[23px] text-white'>
-                    Receive Senate Daily Bulletin Email
-                </div>
-                <label className='relative inline-flex cursor-pointer items-center bg-gray-400'>
-                    <input
-                        type='checkbox'
-                        checked={getDailyEmails}
-                        onChange={(e) => {
-                            updateNotifications.mutate({
-                                dailyBulletin: e.target.checked
-                            })
-                        }}
-                        className='peer sr-only'
-                    />
-                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
-                </label>
-            </div>
-
-            {getDailyEmails && <UserEmail />}
+  return (
+    <div className="flex min-h-screen flex-col gap-10">
+      <div className="flex flex-col gap-4">
+        <div className="text-[24px] font-light leading-[30px] text-white">
+          Your Notifications
         </div>
-    )
+
+        <div className="max-w-[580px] text-[18px] text-white">
+          Here&apos;s the place to pick and choose which Senate notifications
+          you want, and how you want them to reach you.
+        </div>
+      </div>
+
+      {featureFlags.data?.includes("email_settings") && <UserEmail />}
+      {featureFlags.data?.includes("discord_settings") && <Discord />}
+      {featureFlags.data?.includes("telegram_settings") && <Telegram />}
+      {featureFlags.data?.includes("magic_user_settings") && (
+        <div className="flex flex-row gap-8">
+          <IsAaveUser />
+          <IsUniswapUser />
+        </div>
+      )}
+    </div>
+  );
 }

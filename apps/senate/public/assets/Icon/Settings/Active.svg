@@ -1,14 +1,17 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M16 10.9994H48V12.9994H16V10.9994ZM16 20.9994H48V22.9994H16V20.9994ZM48 30.9994H16V32.9994H48V30.9994ZM16 40.9994H48V42.9994H16V40.9994ZM48 50.9994H16V52.9994H48V50.9994Z" fill="url(#paint0_linear_439_111)"/>
-<rect x="19" y="47.9988" width="4" height="8" fill="white"/>
-<rect x="41" y="37.9994" width="4" height="8" fill="white"/>
-<rect x="30" y="27.9994" width="4" height="8" fill="white"/>
-<rect x="19" y="18.0004" width="4" height="8" fill="white"/>
-<rect x="41" y="7.99939" width="4" height="8" fill="white"/>
-<defs>
-<linearGradient id="paint0_linear_439_111" x1="48" y1="10.9994" x2="16" y2="52.9994" gradientUnits="userSpaceOnUse">
-<stop stop-color="white" stop-opacity="0.67"/>
-<stop offset="1" stop-color="white" stop-opacity="0.33"/>
-</linearGradient>
-</defs>
+    <path fill-rule="evenodd" clip-rule="evenodd"
+          d="M16 10.9994H48V12.9994H16V10.9994ZM16 20.9994H48V22.9994H16V20.9994ZM48 30.9994H16V32.9994H48V30.9994ZM16 40.9994H48V42.9994H16V40.9994ZM48 50.9994H16V52.9994H48V50.9994Z"
+          fill="url(#paint0_linear_439_111)"/>
+    <rect x="19" y="47.9988" width="4" height="8" fill="white"/>
+    <rect x="41" y="37.9994" width="4" height="8" fill="white"/>
+    <rect x="30" y="27.9994" width="4" height="8" fill="white"/>
+    <rect x="19" y="18.0004" width="4" height="8" fill="white"/>
+    <rect x="41" y="7.99939" width="4" height="8" fill="white"/>
+    <defs>
+        <linearGradient id="paint0_linear_439_111" x1="48" y1="10.9994" x2="16" y2="52.9994"
+                        gradientUnits="userSpaceOnUse">
+            <stop stop-color="white" stop-opacity="0.67"/>
+            <stop offset="1" stop-color="white" stop-opacity="0.33"/>
+        </linearGradient>
+    </defs>
 </svg>

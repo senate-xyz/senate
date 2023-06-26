@@ -1,14 +1,5 @@
-use crate::{
-    contracts::{
-        aaveexecutor,
-        aavegov::{self, ProposalCreatedFilter},
-        aavestrategy,
-    },
-    prisma::{daohandler, ProposalState},
-    router::chain_proposals::ChainProposal,
-    utils::etherscan::estimate_timestamp,
-    Ctx,
-};
+use std::{str, sync::Arc, time::Duration};
+
 use anyhow::Result;
 use ethers::{
     prelude::LogMeta,
@@ -21,9 +12,25 @@ use prisma_client_rust::{
     bigdecimal::ToPrimitive,
     chrono::{DateTime, NaiveDateTime, Utc},
 };
+use regex::Regex;
 use reqwest::{Client, StatusCode};
+use reqwest_middleware::ClientWithMiddleware;
 use serde::Deserialize;
-use std::{str, time::Duration};
+use serde_json::Value as JsonValue;
+use tracing::{debug_span, instrument};
+use tracing::{event, Instrument};
+
+use crate::{
+    contracts::{
+        aaveexecutor,
+        aavegov::{self, ProposalCreatedFilter},
+        aavestrategy,
+    },
+    prisma::{daohandler, ProposalState},
+    router::chain_proposals::ChainProposal,
+    utils::etherscan::estimate_timestamp,
+    Ctx,
+};
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
@@ -32,6 +39,7 @@ struct Decoder {
     proposalUrl: String,
 }
 
+#[instrument(skip(ctx), level = "info")]
 pub async fn aave_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -42,14 +50,17 @@ pub async fn aave_proposals(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = aavegov::aavegov::aavegov::new(address, ctx.client.clone());
+    let gov_contract = aavegov::aavegov::aavegov::new(address, ctx.rpc.clone());
 
     let events = gov_contract
         .proposal_created_filter()
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let proposals = events.query_with_meta().await?;
+    let proposals = events
+        .query_with_meta()
+        .instrument(debug_span!("get_rpc_events"))
+        .await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -67,6 +78,7 @@ pub async fn aave_proposals(
     Ok(result)
 }
 
+#[instrument(skip(p, ctx, decoder, gov_contract), ret, level = "debug")]
 async fn data_for_proposal(
     p: (aavegov::aavegov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,
@@ -77,13 +89,13 @@ async fn data_for_proposal(
     let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
 
     let created_block_number = meta.block_number.as_u64().to_i64().unwrap();
-    let created_block = ctx.client.get_block(meta.block_number).await?;
+    let created_block = ctx.rpc.get_block(meta.block_number).await?;
     let created_block_timestamp = created_block.expect("bad block").time()?;
 
     let voting_start_block_number = log.start_block.as_u64().to_i64().unwrap();
     let voting_end_block_number = log.end_block.as_u64().to_i64().unwrap();
 
-    let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number).await {
+    let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number, ctx).await {
         Ok(r) => r,
         Err(_) => DateTime::from_utc(
             NaiveDateTime::from_timestamp_millis(
@@ -95,7 +107,7 @@ async fn data_for_proposal(
         ),
     };
 
-    let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number).await {
+    let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number, ctx).await {
         Ok(r) => r,
         Err(_) => DateTime::from_utc(
             NaiveDateTime::from_timestamp_millis(
@@ -112,10 +124,10 @@ async fn data_for_proposal(
     let proposal_external_id = log.id.to_string();
 
     let executor_contract =
-        aaveexecutor::aaveexecutor::aaveexecutor::new(log.executor, ctx.client.clone());
+        aaveexecutor::aaveexecutor::aaveexecutor::new(log.executor, ctx.rpc.clone());
 
     let strategy_contract =
-        aavestrategy::aavestrategy::aavestrategy::new(log.strategy, ctx.client.clone());
+        aavestrategy::aavestrategy::aavestrategy::new(log.strategy, ctx.rpc.clone());
 
     let total_voting_power = strategy_contract
         .get_total_voting_supply_at(U256::from(meta.block_number.as_u64()))
@@ -141,7 +153,7 @@ async fn data_for_proposal(
 
     let hash: Vec<u8> = log.ipfs_hash.into();
 
-    let mut title = get_title(hex::encode(hash)).await?;
+    let mut title = get_title(hex::encode(hash), ctx.http_client.clone()).await?;
 
     if title.starts_with("# ") {
         title = title.split_off(2);
@@ -185,36 +197,49 @@ async fn data_for_proposal(
     Ok(proposal)
 }
 
-#[derive(Deserialize, Debug)]
-struct IpfsData {
-    title: String,
-}
-
-async fn get_title(hexhash: String) -> Result<String> {
-    let client = Client::new();
+async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> Result<String> {
     let mut retries = 0;
+    let mut current_gateway = 0;
+
+    let gateways = vec![
+        "https://senate.infura-ipfs.io/ipfs/",
+        "https://cloudflare-ipfs.com/ipfs/",
+        "https://gateway.pinata.cloud/ipfs/",
+    ];
 
     loop {
-        let response = client
-            .get(format!(
-                "https://cloudflare-ipfs.com/ipfs/f01701220{}",
-                hexhash
-            ))
-            .timeout(Duration::from_secs(10))
+        let response = http_client
+            .get(format!("{}f01701220{}", gateways[current_gateway], hexhash))
+            .timeout(Duration::from_secs(5))
             .send()
             .await;
 
         match response {
             Ok(res) if res.status() == StatusCode::OK => {
-                let ipfs_data = match res.json::<IpfsData>().await {
-                    Ok(r) => r,
-                    Err(_) => IpfsData {
-                        title: "Unknown".to_string(),
-                    },
-                };
-                return Ok(ipfs_data.title);
+                let text = res.text().await?;
+
+                // Check if the text is JSON
+                if let Ok(json) = serde_json::from_str::<JsonValue>(&text) {
+                    return Ok(json["title"].as_str().unwrap_or("Unknown").to_string());
+                }
+
+                let re = Regex::new(r#"title:\s*(.*?)\n"#).unwrap();
+                if let Some(captures) = re.captures(&text) {
+                    if let Some(matched) = captures.get(1) {
+                        return Ok(matched.as_str().trim().to_string());
+                    }
+                }
+
+                return Ok("Unknown".to_string());
             }
-            _ if retries < 15 => {
+            _ if retries % 3 == 0 => {
+                if current_gateway < gateways.len() - 2 {
+                    current_gateway += 1;
+                } else {
+                    current_gateway = 0;
+                }
+            }
+            _ if retries < 12 => {
                 retries += 1;
                 let backoff_duration = Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
@@ -226,49 +251,72 @@ async fn get_title(hexhash: String) -> Result<String> {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
+    use reqwest_middleware::ClientBuilder;
+    use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
+
     use crate::handlers::proposals::aave::get_title;
 
     #[tokio::test]
-    async fn get_title_once() {
-        let result =
-            get_title("0a387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into())
-                .await
-                .unwrap();
-        assert_eq!(result, "Add MaticX to Aave v3 Polygon Pool");
-    }
+    async fn get_markdown_title() {
+        let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
 
-    #[tokio::test]
-    async fn get_title_10_times() {
-        let mut cnt = 0;
-        loop {
-            let result = get_title(
-                "0a387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into(),
-            )
-            .await
-            .unwrap();
-            assert_eq!(result, "Add MaticX to Aave v3 Polygon Pool");
-            cnt += 1;
-            if cnt == 10 {
-                break;
-            }
-        }
-    }
+        let http_client = Arc::new(
+            ClientBuilder::new(reqwest::Client::new())
+                .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+                .build(),
+        );
 
-    #[tokio::test]
-    async fn get_invalid_title() {
-        let result =
-            get_title("0b387fa966f5616423bea53801a843496b1eac5cab5e6bc9426c0958e6496e77".into())
-                .await
-                .unwrap();
+        let result = get_title(
+            "f76d79693a81a1c0acd23c6ee151369752142b0d832daeaef9a4dd9f8c4bc7ce".into(),
+            http_client.clone(),
+        )
+        .await
+        .unwrap();
+        assert_eq!(result, "Polygon Supply Cap Update");
+
+        let result = get_title(
+            "12f2d9c91e4e23ae4009ab9ef5862ee0ae79498937b66252213221f04a5d5b32".into(),
+            http_client.clone(),
+        )
+        .await
+        .unwrap();
+        assert_eq!(result, "Add 1INCH to Aave v2 market");
+
+        let result = get_title(
+            "e7e93497d3847536f07fe8dba53485cf68a275c7b07ca38b53d2cc2d43fab3b0".into(),
+            http_client.clone(),
+        )
+        .await
+        .unwrap();
+        assert_eq!(result, "Unknown");
+
+        let result = get_title("deadbeef".into(), http_client).await.unwrap();
         assert_eq!(result, "Unknown");
     }
 
     #[tokio::test]
-    async fn get_unavailable_title() {
-        let result =
-            get_title("e7e93497d3847536f07fe8dba53485cf68a275c7b07ca38b53d2cc2d43fab3b0".into())
-                .await
-                .unwrap();
+    async fn get_json_title() {
+        let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+
+        let http_client = Arc::new(
+            ClientBuilder::new(reqwest::Client::new())
+                .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+                .build(),
+        );
+
+        let result = get_title(
+            "8d4f6f42043d8db567d5e733762bb84a6f507997a779a66b2d17fdf9de403c13".into(),
+            http_client.clone(),
+        )
+        .await
+        .unwrap();
+        assert_eq!(result, "Add rETH to Arbitrum Aave v3");
+
+        let result = get_title("deadbeef".into(), http_client.clone())
+            .await
+            .unwrap();
         assert_eq!(result, "Unknown");
     }
 }

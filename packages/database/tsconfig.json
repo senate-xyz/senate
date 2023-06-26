@@ -1,11 +1,38 @@
 {
-    "extends": "@senate/config/ts/node.json",
-    "include": ["src", "src/**/*", "src/**/*.ts", "src/**/*.json"],
-    "exclude": ["node_modules", "dist"],
-    "compilerOptions": {
-        "composite": true,
-        "declarationMap": true,
-        "resolveJsonModule": true,
-        "allowJs": true
-    }
+  "include": [
+    "src",
+    "src/**/*",
+    "src/**/*.ts",
+    "src/**/*.json",
+    ".eslintrc.cjs",
+    "prettier.config.cjs"
+  ],
+  "exclude": ["node_modules", "dist"],
+  "compilerOptions": {
+    "composite": true,
+    "declarationMap": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "noEmit": true,
+    "declaration": true,
+    "removeComments": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "verbatimModuleSyntax": true,
+    "checkJs": true
+  }
 }
