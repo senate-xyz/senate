@@ -92,22 +92,22 @@ export const accountSettingsRouter = router({
       );
       const username = ctx.user.name;
 
-      const existingTempUser = await prisma.user.findFirst({
-        where: {
-          email: input.email,
-        },
-        select: {
-          isaaveuser: true,
-          isuniswapuser: true,
-          subscriptions: true,
-        },
-      });
+      // const existingTempUser = await prisma.user.findFirst({
+      //   where: {
+      //     email: input.email,
+      //   },
+      //   select: {
+      //     isaaveuser: true,
+      //     isuniswapuser: true,
+      //     subscriptions: true,
+      //   },
+      // });
 
-      if (existingTempUser) {
-        await prisma.user.deleteMany({
-          where: { email: input.email },
-        });
-      }
+      // if (existingTempUser) {
+      //   await prisma.user.deleteMany({
+      //     where: { email: input.email },
+      //   });
+      // }
 
       const challengeCode = Math.random().toString(36).substring(2);
 
@@ -119,21 +119,21 @@ export const accountSettingsRouter = router({
           email: input.email,
           verifiedemail: false,
           challengecode: challengeCode,
-          isaaveuser: existingTempUser?.isaaveuser,
-          isuniswapuser: existingTempUser?.isuniswapuser,
+          // isaaveuser: existingTempUser?.isaaveuser,
+          // isuniswapuser: existingTempUser?.isuniswapuser,
         },
       });
 
-      if (existingTempUser)
-        for (const sub of existingTempUser.subscriptions) {
-          await prisma.subscription.createMany({
-            data: {
-              userid: user.id,
-              daoid: String(sub.daoid),
-            },
-            skipDuplicates: true,
-          });
-        }
+      // if (existingTempUser)
+      //   for (const sub of existingTempUser.subscriptions) {
+      //     await prisma.subscription.createMany({
+      //       data: {
+      //         userid: user.id,
+      //         daoid: String(sub.daoid),
+      //       },
+      //       skipDuplicates: true,
+      //     });
+      //   }
 
       await emailClient.sendEmailWithTemplate({
         From: "info@senatelabs.xyz",
