@@ -30,11 +30,11 @@ const config = {
     return [
       {
         source: "/ingest/:path*",
-        destination: "https://posthog.andreiv.com/:path*",
+        destination: "https://app.posthog.com/:path*",
       },
       {
         source: "/login/:path*",
-        destination: "https://posthog.andreiv.com/login/",
+        destination: "https://app.posthog.com/login/",
       },
     ];
   },
