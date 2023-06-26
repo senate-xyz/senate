@@ -96,57 +96,82 @@ const importUsers = async (fromFile: string) => {
   const users: OldUserType[] = JSON.parse(rawdata.toString());
 
   for (const user of users) {
-    const newUser = await newPrisma.user.upsert({
+    let newUser;
+    const existingUser = await newPrisma.user.findFirst({
       where: {
         address: user.name,
       },
-      create: {
-        address: user.name,
-        email: user.email,
-        verifiedemail: user.email.length > 0 ? true : false,
-        verifiedaddress: true,
-        acceptedterms: false,
-        acceptedtermstimestamp: "",
-        lastactive: user.lastactive,
-        sessioncount: user.sessioncount,
-        emaildailybulletin: user.dailybulletin,
-        voters: {
-          connectOrCreate: user.voters.map((voter) => ({
-            where: {
-              address: voter.address,
-            },
-            create: {
-              address: voter.address,
-            },
-          })),
-        },
-        createdat: user.createdat,
-        updatedat: user.updatedat,
-      },
-      update: {
-        address: user.name,
-        email: user.email,
-        verifiedemail: user.email.length > 0 ? true : false,
-        verifiedaddress: true,
-        acceptedterms: false,
-        acceptedtermstimestamp: "",
-        lastactive: user.lastactive,
-        sessioncount: user.sessioncount,
-        emaildailybulletin: user.dailybulletin,
-        voters: {
-          connectOrCreate: user.voters.map((voter) => ({
-            where: {
-              address: voter.address,
-            },
-            create: {
-              address: voter.address,
-            },
-          })),
-        },
-        createdat: user.createdat,
-        updatedat: user.updatedat,
-      },
     });
+
+    if (existingUser) {
+      newUser = await newPrisma.user.update({
+        where: {
+          address: user.name,
+        },
+        data: {
+          address: user.name,
+          email: user.email,
+          verifiedemail: user.email.length > 0 ? true : false,
+          verifiedaddress: true,
+          acceptedterms: false,
+          acceptedtermstimestamp: new Date(0),
+          lastactive: user.lastactive,
+          sessioncount: user.sessioncount,
+          emaildailybulletin: user.dailybulletin,
+          createdat: user.createdat,
+          updatedat: user.updatedat,
+        },
+      });
+    } else {
+      newUser = await newPrisma.user.create({
+        data: {
+          address: user.name,
+          email: user.email,
+          verifiedemail: user.email.length > 0 ? true : false,
+          verifiedaddress: true,
+          acceptedterms: false,
+          acceptedtermstimestamp: new Date(0),
+          lastactive: user.lastactive,
+          sessioncount: user.sessioncount,
+          emaildailybulletin: user.dailybulletin,
+          createdat: user.createdat,
+          updatedat: user.updatedat,
+        },
+      });
+    }
+
+    for (let v of user.voters) {
+      let existingVoter = await newPrisma.voter.findFirst({
+        where: { address: v.address },
+      });
+
+      if (!existingVoter) {
+        let nv = await newPrisma.voter.create({
+          data: {
+            address: v.address,
+          },
+        });
+        await newPrisma.user.update({
+          where: {
+            address: user.name,
+          },
+          data: {
+            voters: { connect: { id: nv.id } },
+          },
+        });
+      } else {
+        await newPrisma.user.update({
+          where: {
+            address: user.name,
+          },
+          data: {
+            voters: { connect: { id: existingVoter.id } },
+          },
+        });
+      }
+    }
+
+    console.log(`Created: ${newUser.address}`);
 
     for (const subscription of user.subscriptions) {
       const dao = await newPrisma.dao.findFirst({
@@ -154,27 +179,22 @@ const importUsers = async (fromFile: string) => {
           name: subscription.dao.name,
         },
       });
-      await newPrisma.subscription.upsert({
+
+      const existingSub = newPrisma.subscription.findFirst({
         where: {
-          userid_daoid: {
-            userid: newUser.id,
-            daoid: dao.id,
-          },
+          userid: newUser.id,
+          daoid: dao.id,
         },
-        create: {
-          dao: {
-            connect: {
-              name: dao.name,
-            },
-          },
-          user: {
-            connect: {
-              id: newUser.id,
-            },
-          },
-        },
-        update: {},
       });
+
+      if (!existingSub) {
+        await newPrisma.subscription.create({
+          data: {
+            dao: { connect: { name: dao.name } },
+            user: { connect: { id: newUser.id } },
+          },
+        });
+      }
     }
   }
 
