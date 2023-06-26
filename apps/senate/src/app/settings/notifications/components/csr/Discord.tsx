@@ -9,6 +9,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
 
 const Discord = () => {
+  const [initialLoad, setInitialLoad] = useState(true);
   const [edit, setEdit] = useState(false);
   const [whatIs, setWhatIs] = useState(false);
   const [adminConfirmation, setAdminConfirmation] = useState(false);
@@ -33,13 +34,14 @@ const Discord = () => {
   }, [account, router]);
 
   useEffect(() => {
-    if (user.data) {
+    if (user.data && initialLoad) {
+      setInitialLoad(false);
       setDiscordNotifications(user.data.discordnotifications);
       setDiscordReminders(user.data.discordreminders);
       setCurrentWebhook(String(user.data?.discordwebhook));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user.data]);
 
   const onEnter = () => {
     setWhatIs(false);

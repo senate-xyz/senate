@@ -131,7 +131,7 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                         .clone()
                         .edit_message(&http, MessageId::from(initial_message_id), |w| {
                             w.embeds(vec![Embed::fake(|e| {
-                                e.title(proposal.name)
+                                e.title(proposal.clone().name)
                                     .description(format!(
                                         "**{}** {} proposal ending **<t:{}:R>**",
                                         proposal.dao.name,
