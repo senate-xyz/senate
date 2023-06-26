@@ -183,20 +183,6 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                         .instrument(debug_span!("edit_message"))
                         .await
                         .ok();
-
-                    let mut event = posthog_rs::Event::new(
-                        "discord_hidden_notification",
-                        user.address.as_str(),
-                    );
-                    event.insert_prop("proposal", proposal.name).unwrap();
-                    event.insert_prop("dao", proposal.dao.name).unwrap();
-
-                    let _ = posthog_rs::client(
-                        env::var("NEXT_PUBLIC_POSTHOG_KEY")
-                            .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
-                            .as_str(),
-                    )
-                    .capture(event);
                 }
                 None => {
                     webhook
