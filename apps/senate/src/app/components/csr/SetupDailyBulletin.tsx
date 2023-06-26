@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
@@ -7,12 +8,14 @@ import { useAccount } from "wagmi";
 const SetupDailyBulletin = () => {
   const router = useRouter();
   const account = useAccount();
+  const session = useSession();
 
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (account.isConnected) setVisible(true);
-  }, [account]);
+    if (account.isConnected && session.status == "authenticated")
+      setVisible(true);
+  }, [account, session]);
 
   if (visible && router)
     return (
