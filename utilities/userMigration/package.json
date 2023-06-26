@@ -21,7 +21,7 @@
   "dependencies": {
     "@prisma/client": "^4.16.0",
     "@types/prompt-sync": "^4.2.0",
-    "inquirer": "9.2.7",
+    "inquirer": "^8.0.0",
     "prisma": "^4.16.0"
   },
   "devDependencies": {
