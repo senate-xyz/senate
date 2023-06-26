@@ -25,7 +25,7 @@ const WalletConnect = () => {
         account.isConnected &&
         acceptedTerms.isSuccess &&
         acceptedTermsTimestamp.isSuccess &&
-        !(acceptedTerms.data && acceptedTermsTimestamp.data)
+        !acceptedTerms.data
       ) {
         void disconnectForTerms();
       } else {
