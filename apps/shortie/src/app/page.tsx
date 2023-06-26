@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function Home() {
-  return <div />;
+  redirect("https://www.senatelabs.xyz/proposals/active");
 }
