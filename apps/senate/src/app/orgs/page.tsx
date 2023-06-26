@@ -3,7 +3,7 @@ import SubscribedDAOs from "./subscribedDAOs/page";
 import UnsubscribedDAOs from "./unsubscribedDAOs/page";
 
 export const metadata: Metadata = {
-  title: "Senate - DAOs",
+  title: "Senate - Orgs",
   icons: "/assets/Senate_Logo/64/Black.svg",
 };
 
