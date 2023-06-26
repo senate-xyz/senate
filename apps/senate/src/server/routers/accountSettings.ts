@@ -390,7 +390,7 @@ export const accountSettingsRouter = router({
     .input(
       z.object({
         val: z.boolean(),
-        url: z.string().url().includes("discord.com/api/webhooks/"),
+        url: z.nullable(z.string().url().includes("discord.com/api/webhooks/")),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -403,7 +403,7 @@ export const accountSettingsRouter = router({
 
         data: {
           discordnotifications: input.val,
-          discordwebhook: input.url,
+          discordwebhook: input.url ?? "",
         },
       });
 

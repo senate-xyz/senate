@@ -14,7 +14,7 @@ const Discord = () => {
   const [adminConfirmation, setAdminConfirmation] = useState(false);
 
   const [getDiscordNotifications, setDiscordNotifications] = useState(false);
-  const [, setDiscordReminders] = useState(false);
+  const [getDiscordReminders, setDiscordReminders] = useState(false);
   const [currentWebhook, setCurrentWebhook] = useState("");
 
   const [showModal, setShowModal] = useState(false);
@@ -24,6 +24,9 @@ const Discord = () => {
   const user = trpc.accountSettings.getUser.useQuery();
   const enableDiscordAndSetWebhook =
     trpc.accountSettings.updateDiscordNotificationsAndSetWebhook.useMutation();
+
+  const updateDiscordReminders =
+    trpc.accountSettings.updateDiscordReminders.useMutation();
 
   useEffect(() => {
     if (!account.isConnected && router) router.push("/settings/account");
@@ -74,6 +77,16 @@ const Discord = () => {
             onChange={(e) => {
               setDiscordNotifications(e.target.checked);
               setAdminConfirmation(e.target.checked);
+              if (!e.target.checked) {
+                enableDiscordAndSetWebhook.mutate(
+                  { val: false, url: null },
+                  {
+                    onSuccess: () => {
+                      setCurrentWebhook("");
+                    },
+                  }
+                );
+              }
             }}
             className="peer sr-only"
           />
@@ -173,27 +186,27 @@ const Discord = () => {
                         Change Webhook
                       </div>
                     </div>
+                    <div className="flex max-w-[382px] flex-row items-center justify-between gap-4 pt-4">
+                      <div className="font-[18px] leading-[23px] text-white">
+                        Ending soon reminders
+                      </div>
+                      <label className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500">
+                        <input
+                          type="checkbox"
+                          checked={getDiscordReminders}
+                          onChange={(e) => {
+                            setDiscordReminders(e.target.checked);
+                            updateDiscordReminders.mutate({
+                              val: e.target.checked,
+                            });
+                          }}
+                          className="peer sr-only"
+                        />
+                        <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
+                      </label>
+                    </div>
                   </div>
                 )}
-
-                {/* <div className="flex max-w-[382px] flex-row items-center justify-between gap-4">
-                  <div className="font-[18px] leading-[23px] text-white">
-                    Ending soon reminders
-                  </div>
-                  <label className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500">
-                    <input
-                      type="checkbox"
-                      checked={getDiscordReminders}
-                      onChange={(e) => {
-                        updateDiscordReminders.mutate({
-                          val: e.target.checked,
-                        });
-                      }}
-                      className="peer sr-only"
-                    />
-                    <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
-                  </label>
-                </div> */}
               </div>
             )}
             {whatIs ? (
