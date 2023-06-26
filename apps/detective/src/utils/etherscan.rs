@@ -5,6 +5,8 @@ use chrono::{DateTime, NaiveDateTime, Utc};
 use ethers::providers::{Http, Middleware, Provider};
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use reqwest::Client;
+use reqwest_middleware::ClientBuilder;
+use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
 use tracing::{debug_span, event, info, instrument, Instrument, Level};
 
@@ -56,8 +58,13 @@ pub async fn estimate_timestamp(block_number: i64, ctx: &Context) -> Result<Date
 
     let mut retries = 0;
 
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+    let http_client = ClientBuilder::new(reqwest::Client::new())
+        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build();
+
     loop {
-        let response = ctx.http_client
+        let response = http_client
             .get(format!(
                 "https://api.etherscan.io/api?module=block&action=getblockcountdown&blockno={}&apikey={}",
                 block_number, etherscan_api_key
@@ -126,8 +133,13 @@ pub async fn estimate_block(timestamp: i64, ctx: &Context) -> Result<i64> {
 
     let mut retries = 0;
 
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+    let http_client = ClientBuilder::new(reqwest::Client::new())
+        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build();
+
     loop {
-        let response = ctx.http_client
+        let response = http_client
             .get(format!(
                 "https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp={}&closest=before&apikey={}",
                 timestamp, etherscan_api_key

@@ -14,7 +14,8 @@ use prisma_client_rust::{
 };
 use regex::Regex;
 use reqwest::{Client, StatusCode};
-use reqwest_middleware::ClientWithMiddleware;
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
 use serde_json::Value as JsonValue;
 use tracing::Instrument;
@@ -153,7 +154,7 @@ async fn data_for_proposal(
 
     let hash: Vec<u8> = log.ipfs_hash.into();
 
-    let mut title = get_title(hex::encode(hash), ctx.http_client.clone()).await?;
+    let mut title = get_title(hex::encode(hash)).await?;
 
     if title.starts_with("# ") {
         title = title.split_off(2);
@@ -197,7 +198,7 @@ async fn data_for_proposal(
     Ok(proposal)
 }
 
-async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> Result<String> {
+async fn get_title(hexhash: String) -> Result<String> {
     let mut retries = 0;
     let mut current_gateway = 0;
 
@@ -206,6 +207,11 @@ async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> R
         "https://cloudflare-ipfs.com/ipfs/",
         "https://gateway.pinata.cloud/ipfs/",
     ];
+
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+    let http_client = ClientBuilder::new(reqwest::Client::new())
+        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build();
 
     loop {
         let response = http_client
