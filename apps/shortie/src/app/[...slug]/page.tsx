@@ -78,17 +78,20 @@ async function log(type: Type, proposalId: string, userId: string) {
       proposalId: proposal ? proposal.id : "unknown",
       proposalUrl: proposal ? proposal.url : "unknown",
       dao: proposal ? proposal.dao.name : "unknown",
+      props: {
+        app: "shortie",
+      },
     },
   });
 }
 
 enum Type {
-  WEB = "click_web",
-  EMAIL_BULLETIN = "click_bulletin",
-  EMAIL_QUORUM = "click_quorum",
-  DISCORD = "click_discord",
-  TELEGRAM = "click_telegram",
-  UNKNOWN = "click_unknown",
+  WEB = "web_frontend_click",
+  EMAIL_BULLETIN = "email_bulletin_click",
+  EMAIL_QUORUM = "email_quorum_click",
+  DISCORD = "discord_click",
+  TELEGRAM = "telegram_click",
+  UNKNOWN = "unknown_click",
 }
 
 export default async function Page({ params }: { params: { slug: string } }) {
