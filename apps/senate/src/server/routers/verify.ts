@@ -140,7 +140,7 @@ export const verifyRouter = router({
 
         posthog.capture({
           distinctId: addressUser.address,
-          event: "subscribe_discourse",
+          event: "discourse_subscribe",
           properties: {
             dao:
               emailUser.isaaveuser == "VERIFICATION"
@@ -148,6 +148,7 @@ export const verifyRouter = router({
                 : emailUser.isuniswapuser == "VERIFICATION"
                 ? "Uniswap"
                 : "Unknown",
+            $lib: "web-backend",
           },
         });
 
@@ -214,7 +215,7 @@ export const verifyRouter = router({
 
           posthog.capture({
             distinctId: newUser.address,
-            event: "signup_discourse",
+            event: "discourse_signup",
             properties: {
               dao:
                 newUser.isaaveuser == "VERIFICATION"
@@ -222,6 +223,7 @@ export const verifyRouter = router({
                   : newUser.isuniswapuser == "VERIFICATION"
                   ? "Uniswap"
                   : "Unknown",
+              $lib: "web-backend",
             },
           });
         }

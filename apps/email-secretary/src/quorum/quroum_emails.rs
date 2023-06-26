@@ -18,7 +18,7 @@ use crate::{
         proposal, subscription, user, DaoHandlerType, MagicUserState, NotificationDispatchedState,
         NotificationType,
     },
-    utils::{countdown::countdown_gif, vote::get_vote},
+    utils::{countdown::countdown_gif, posthog::posthog_quorum_event, vote::get_vote},
 };
 
 #[allow(non_snake_case)]
@@ -271,17 +271,11 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             .instrument(debug_span!("send_email"))
             .await;
 
-        let mut posthog_event;
-
         match response {
             Ok(response) => {
                 let result: Result<PostmarkResult, reqwest::Error> = response.json().await;
                 match result {
                     Ok(postmark_result) => {
-                        posthog_event =
-                            posthog_rs::Event::new("sent_quorum_email", user.address.as_str());
-                        posthog_event.insert_prop("type", quorum_template).unwrap();
-
                         db.notification()
                             .update_many(
                                 vec![
@@ -307,17 +301,49 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                             .instrument(debug_span!("update_notification"))
                             .await
                             .unwrap();
+
+                        spawn_blocking(move || {
+                            posthog_quorum_event(
+                                "email_quorum_sent",
+                                user.address,
+                                quorum_template,
+                                proposal.clone().unwrap().name,
+                                proposal.clone().unwrap().dao.name,
+                                postmark_result.clone().MessageID.as_str(),
+                            );
+                        })
+                        .await
+                        .unwrap();
                     }
                     Err(_) => {
-                        posthog_event =
-                            posthog_rs::Event::new("sent_quorum_email", user.address.as_str());
-                        posthog_event.insert_prop("type", quorum_template).unwrap();
+                        spawn_blocking(move || {
+                            posthog_quorum_event(
+                                "email_quorum_fail",
+                                user.address,
+                                quorum_template,
+                                proposal.clone().unwrap().name,
+                                proposal.clone().unwrap().dao.name,
+                                "",
+                            );
+                        })
+                        .await
+                        .unwrap();
                     }
                 }
             }
             Err(e) => {
-                posthog_event = posthog_rs::Event::new("fail_quorum_email", user.address.as_str());
-                posthog_event.insert_prop("type", quorum_template).unwrap();
+                spawn_blocking(move || {
+                    posthog_quorum_event(
+                        "email_quorum_fail",
+                        user.address,
+                        quorum_template,
+                        proposal.clone().unwrap().name,
+                        proposal.clone().unwrap().dao.name,
+                        "",
+                    );
+                })
+                .await
+                .unwrap();
 
                 warn!("{:?}", e);
 
@@ -360,17 +386,6 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                     .unwrap();
             }
         };
-
-        spawn_blocking(move || {
-            let _ = posthog_rs::client(
-                env::var("NEXT_PUBLIC_POSTHOG_KEY")
-                    .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
-                    .as_str(),
-            )
-            .capture(posthog_event);
-        })
-        .await
-        .unwrap();
     }
 }
 
