@@ -131,7 +131,7 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                         .clone()
                         .edit_message(&http, MessageId::from(initial_message_id), |w| {
                             w.embeds(vec![Embed::fake(|e| {
-                                e.title(proposal.name)
+                                e.title(proposal.clone().name)
                                     .description(format!(
                                         "**{}** {} proposal ending **<t:{}:R>**",
                                         proposal.dao.name,
@@ -158,6 +158,20 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) {
                         .instrument(debug_span!("edit_message"))
                         .await
                         .ok();
+
+                    let mut event = posthog_rs::Event::new(
+                        "discord_active_notification",
+                        user.address.as_str(),
+                    );
+                    event.insert_prop("proposal", proposal.name).unwrap();
+                    event.insert_prop("dao", proposal.dao.name).unwrap();
+
+                    let _ = posthog_rs::client(
+                        env::var("NEXT_PUBLIC_POSTHOG_KEY")
+                            .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
+                            .as_str(),
+                    )
+                    .capture(event);
                 }
                 None => {
                     webhook
