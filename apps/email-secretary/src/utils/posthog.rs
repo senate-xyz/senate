@@ -5,8 +5,7 @@ pub fn posthog_bulletin_event(event: &str, user: String, r#type: &str, message_i
     event.insert_prop("type", message_id).unwrap();
     event.insert_prop("messageid", r#type).unwrap();
 
-    event.insert_prop("$lib", "email-secretary").unwrap();
-    event.insert_prop("$geoip_disable", true).unwrap();
+    event.insert_prop("app", "email-secretary").unwrap();
 
     let _ = posthog_rs::client(
         env::var("NEXT_PUBLIC_POSTHOG_KEY")
@@ -30,8 +29,7 @@ pub fn posthog_quorum_event(
     event.insert_prop("proposal", proposal_name).unwrap();
     event.insert_prop("dao", dao_name).unwrap();
 
-    event.insert_prop("$lib", "email-secretary").unwrap();
-    event.insert_prop("$geoip_disable", true).unwrap();
+    event.insert_prop("app", "email-secretary").unwrap();
 
     let _ = posthog_rs::client(
         env::var("NEXT_PUBLIC_POSTHOG_KEY")

@@ -125,7 +125,6 @@ if (typeof window !== "undefined") {
     loaded: (posthog) => {
       if (process.env.NODE_ENV === "development") posthog.debug();
     },
-    name: "web-frontend",
   });
 }
 
@@ -141,6 +140,9 @@ function HogProvider({ children }) {
       }
       posthog.capture("$pageview", {
         $current_url: url,
+        props: {
+          app: "web-frontend",
+        },
       });
     }
   }, [pathname, searchParams]);

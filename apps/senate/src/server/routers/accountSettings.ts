@@ -60,7 +60,9 @@ export const accountSettingsRouter = router({
         event: "email_bulletin_enable",
         properties: {
           email: input.email,
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -69,7 +71,9 @@ export const accountSettingsRouter = router({
         event: "email_update",
         properties: {
           email: input.email,
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -153,7 +157,9 @@ export const accountSettingsRouter = router({
         event: "email_update",
         properties: {
           email: input.email,
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -218,7 +224,9 @@ export const accountSettingsRouter = router({
         distinctId: user.address,
         event: input.val ? "email_bulletin_enable" : "email_bulletin_disable",
         properties: {
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -247,7 +255,9 @@ export const accountSettingsRouter = router({
           ? "email_bulletin_empty_enable"
           : "email_bulletin_empty_disable",
         properties: {
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -274,7 +284,9 @@ export const accountSettingsRouter = router({
         distinctId: user.address,
         event: input.val ? "email_quorum_enable" : "email_quorum_disable",
         properties: {
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -338,7 +350,9 @@ export const accountSettingsRouter = router({
         distinctId: user.address,
         event: input.val ? "discord_enable" : "discord_disable",
         properties: {
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -370,7 +384,9 @@ export const accountSettingsRouter = router({
           ? "discord_reminders_enable"
           : "discord_reminders_disable",
         properties: {
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -401,7 +417,9 @@ export const accountSettingsRouter = router({
         event: "discord_webhook_set",
         properties: {
           webhook: input.url,
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -433,7 +451,9 @@ export const accountSettingsRouter = router({
         distinctId: user.address,
         event: input.val ? "discord_enable" : "discord_disable",
         properties: {
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -443,7 +463,9 @@ export const accountSettingsRouter = router({
           event: "discord_webhook_sets",
           properties: {
             webhook: input.url,
-            $lib: "web-backend",
+            props: {
+              app: "web-backend",
+            },
           },
         });
 
@@ -473,7 +495,9 @@ export const accountSettingsRouter = router({
         distinctId: user.address,
         event: input.val ? "telegram_enable" : "telegram_disable",
         properties: {
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -505,7 +529,9 @@ export const accountSettingsRouter = router({
           ? "telegram_reminders_enable"
           : "telegram_reminders_disable",
         properties: {
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -536,7 +562,9 @@ export const accountSettingsRouter = router({
         event: "telegram_chatid_set",
         properties: {
           chatid: input.chatid,
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -636,7 +664,9 @@ export const accountSettingsRouter = router({
         event: "add_voter",
         properties: {
           voter: input.address,
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -678,7 +708,9 @@ export const accountSettingsRouter = router({
         event: "remove_voter",
         properties: {
           voter: input.address,
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 

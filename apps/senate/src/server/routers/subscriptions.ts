@@ -52,7 +52,9 @@ export const subscriptionsRouter = router({
         event: "subscribe",
         properties: {
           dao: dao?.name,
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -94,7 +96,9 @@ export const subscriptionsRouter = router({
         event: "unsubscribe",
         properties: {
           dao: dao?.name,
-          $lib: "web-backend",
+          props: {
+            app: "web-backend",
+          },
         },
       });
 

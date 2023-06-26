@@ -148,7 +148,9 @@ export const verifyRouter = router({
                 : emailUser.isuniswapuser == "VERIFICATION"
                 ? "Uniswap"
                 : "Unknown",
-            $lib: "web-backend",
+            props: {
+              app: "web-backend",
+            },
           },
         });
 
@@ -223,7 +225,9 @@ export const verifyRouter = router({
                   : newUser.isuniswapuser == "VERIFICATION"
                   ? "Uniswap"
                   : "Unknown",
-              $lib: "web-backend",
+              props: {
+                app: "web-backend",
+              },
             },
           });
         }
