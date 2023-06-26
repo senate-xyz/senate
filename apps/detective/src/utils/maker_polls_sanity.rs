@@ -51,10 +51,8 @@ async fn sanitize(
     sanitize_to: chrono::DateTime<Utc>,
     ctx: &Context,
 ) {
-    let from_block = estimate_block(sanitize_from.timestamp(), ctx)
-        .await
-        .unwrap();
-    let to_block = estimate_block(sanitize_to.timestamp(), ctx).await.unwrap();
+    let from_block = estimate_block(sanitize_from.timestamp()).await.unwrap();
+    let to_block = estimate_block(sanitize_to.timestamp()).await.unwrap();
 
     let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder).unwrap();
 

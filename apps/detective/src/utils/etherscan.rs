@@ -29,8 +29,8 @@ pub struct EstimateTimestamp {
     result: EstimateTimestampResult,
 }
 
-#[instrument(skip(ctx), ret, level = "info")]
-pub async fn estimate_timestamp(block_number: i64, ctx: &Context) -> Result<DateTime<Utc>> {
+#[instrument(ret, level = "info")]
+pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
     let etherscan_api_key = env::var("ETHERSCAN_API_KEY").expect("$ETHERSCAN_API_KEY is not set");
     let rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
 
@@ -124,8 +124,8 @@ pub struct EstimateBlock {
     result: String,
 }
 
-#[instrument(skip(ctx), ret, level = "info")]
-pub async fn estimate_block(timestamp: i64, ctx: &Context) -> Result<i64> {
+#[instrument(ret, level = "info")]
+pub async fn estimate_block(timestamp: i64) -> Result<i64> {
     let etherscan_api_key = match env::var_os("ETHERSCAN_API_KEY") {
         Some(v) => v.into_string().unwrap(),
         None => panic!("$ETHERSCAN_API_KEY is not set"),
