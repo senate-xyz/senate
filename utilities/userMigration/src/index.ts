@@ -118,6 +118,7 @@ const importUsers = async (fromFile: string) => {
           lastactive: user.lastactive,
           sessioncount: user.sessioncount,
           emaildailybulletin: user.dailybulletin,
+          emailquorumwarning: true,
           createdat: user.createdat,
           updatedat: user.updatedat,
         },
@@ -134,6 +135,7 @@ const importUsers = async (fromFile: string) => {
           lastactive: user.lastactive,
           sessioncount: user.sessioncount,
           emaildailybulletin: user.dailybulletin,
+          emailquorumwarning: true,
           createdat: user.createdat,
           updatedat: user.updatedat,
         },
@@ -180,7 +182,7 @@ const importUsers = async (fromFile: string) => {
         },
       });
 
-      const existingSub = newPrisma.subscription.findFirst({
+      const existingSub = await newPrisma.subscription.findFirst({
         where: {
           userid: newUser.id,
           daoid: dao.id,
@@ -190,7 +192,7 @@ const importUsers = async (fromFile: string) => {
       if (!existingSub) {
         await newPrisma.subscription.create({
           data: {
-            dao: { connect: { name: dao.name } },
+            dao: { connect: { id: dao.id } },
             user: { connect: { id: newUser.id } },
           },
         });
