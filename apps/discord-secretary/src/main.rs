@@ -29,6 +29,7 @@ mod generate;
 pub mod prisma;
 
 mod utils {
+    pub mod posthog;
     pub mod vote;
 }
 

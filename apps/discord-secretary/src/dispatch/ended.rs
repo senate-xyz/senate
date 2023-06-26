@@ -17,7 +17,7 @@ use crate::{
         self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
         NotificationType, PrismaClient,
     },
-    utils::vote::get_vote,
+    utils::{posthog::posthog_event, vote::get_vote},
 };
 
 use super::utils::notification_retry::update_notification_retry;
@@ -214,19 +214,12 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
                         let update_data = match message {
                             Ok(msg) => {
-                                let mut event = posthog_rs::Event::new(
+                                posthog_event(
                                     "discord_ended_notification",
-                                    user.address.as_str(),
+                                    user.address,
+                                    proposal.name,
+                                    proposal.dao.name,
                                 );
-                                event.insert_prop("proposal", proposal.name).unwrap();
-                                event.insert_prop("dao", proposal.dao.name).unwrap();
-
-                                let _ = posthog_rs::client(
-                                    env::var("NEXT_PUBLIC_POSTHOG_KEY")
-                                        .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
-                                        .as_str(),
-                                )
-                                .capture(event);
 
                                 vec![
                                     notification::dispatchstatus::set(
@@ -243,19 +236,12 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             Err(e) => {
                                 warn!("{:?}", e);
 
-                                let mut event = posthog_rs::Event::new(
+                                posthog_event(
                                     "discord_ended_notification_fail",
-                                    user.address.as_str(),
+                                    user.address,
+                                    proposal.name,
+                                    proposal.dao.name,
                                 );
-                                event.insert_prop("proposal", proposal.name).unwrap();
-                                event.insert_prop("dao", proposal.dao.name).unwrap();
-
-                                let _ = posthog_rs::client(
-                                    env::var("NEXT_PUBLIC_POSTHOG_KEY")
-                                        .expect("$NEXT_PUBLIC_POSTHOG_KEY is not set")
-                                        .as_str(),
-                                )
-                                .capture(event);
 
                                 match notification.dispatchstatus {
                                     NotificationDispatchedState::NotDispatched => {
