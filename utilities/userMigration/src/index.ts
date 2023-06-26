@@ -53,7 +53,7 @@ async function main() {
     });
 }
 
-export type OldUserType = PrismaOld.UserGetPayload<{
+export type OldUserType = PrismaOld.userGetPayload<{
   include: {
     subscriptions: { include: { dao: true } };
     voters: true;
@@ -98,17 +98,18 @@ const importUsers = async (fromFile: string) => {
   for (const user of users) {
     const newUser = await newPrisma.user.upsert({
       where: {
-        name: user.name,
+        address: user.name,
       },
       create: {
-        name: user.name,
+        address: user.name,
         email: user.email,
-        newuser: user.newUser,
-        acceptedterms: user.acceptedTerms,
-        acceptedtermstimestamp: user.acceptedTermsTimestamp,
-        lastactive: user.lastActive,
-        sessioncount: user.sessionCount,
-        dailybulletin: user.dailyBulletin,
+        verifiedemail: user.email.length > 0 ? true : false,
+        verifiedaddress: true,
+        acceptedterms: false,
+        acceptedtermstimestamp: "",
+        lastactive: user.lastactive,
+        sessioncount: user.sessioncount,
+        emaildailybulletin: user.dailybulletin,
         voters: {
           connectOrCreate: user.voters.map((voter) => ({
             where: {
@@ -119,16 +120,19 @@ const importUsers = async (fromFile: string) => {
             },
           })),
         },
+        createdat: user.createdat,
+        updatedat: user.updatedat,
       },
       update: {
-        name: user.name,
+        address: user.name,
         email: user.email,
-        newuser: user.newUser,
-        acceptedterms: user.acceptedTerms,
-        acceptedtermstimestamp: user.acceptedTermsTimestamp,
-        lastactive: user.lastActive,
-        sessioncount: user.sessionCount,
-        dailybulletin: user.dailyBulletin,
+        verifiedemail: user.email.length > 0 ? true : false,
+        verifiedaddress: true,
+        acceptedterms: false,
+        acceptedtermstimestamp: "",
+        lastactive: user.lastactive,
+        sessioncount: user.sessioncount,
+        emaildailybulletin: user.dailybulletin,
         voters: {
           connectOrCreate: user.voters.map((voter) => ({
             where: {
@@ -139,6 +143,8 @@ const importUsers = async (fromFile: string) => {
             },
           })),
         },
+        createdat: user.createdat,
+        updatedat: user.updatedat,
       },
     });
 

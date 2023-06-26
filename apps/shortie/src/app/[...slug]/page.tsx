@@ -133,5 +133,5 @@ export default async function Page({ params }: { params: { slug: string } }) {
   if (url) {
     if (url.includes("snapshot")) redirect(url + "?app=senate");
     else redirect(url);
-  } else redirect("https://senatelabs.xyz");
+  } else redirect("https://senatelabs.xyz/proposals/active");
 }
