@@ -24,7 +24,7 @@ model user {
 
   emaildailybulletin Boolean @default(false)
   emptydailybulletin Boolean @default(false)
-  emailquorumwarning Boolean @default(false)
+  emailquorumwarning Boolean @default(true)
 
   discordnotifications Boolean @default(false)
   discordreminders     Boolean @default(true)
