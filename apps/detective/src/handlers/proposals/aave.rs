@@ -14,7 +14,8 @@ use prisma_client_rust::{
 };
 use regex::Regex;
 use reqwest::{Client, StatusCode};
-use reqwest_middleware::ClientWithMiddleware;
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
 use serde_json::Value as JsonValue;
 use tracing::{debug_span, instrument};
@@ -153,7 +154,7 @@ async fn data_for_proposal(
 
     let hash: Vec<u8> = log.ipfs_hash.into();
 
-    let mut title = get_title(hex::encode(hash), ctx.http_client.clone()).await?;
+    let mut title = get_title(hex::encode(hash)).await?;
 
     if title.starts_with("# ") {
         title = title.split_off(2);
@@ -197,7 +198,7 @@ async fn data_for_proposal(
     Ok(proposal)
 }
 
-async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> Result<String> {
+async fn get_title(hexhash: String) -> Result<String> {
     let mut retries = 0;
     let mut current_gateway = 0;
 
@@ -206,6 +207,11 @@ async fn get_title(hexhash: String, http_client: Arc<ClientWithMiddleware>) -> R
         "https://cloudflare-ipfs.com/ipfs/",
         "https://gateway.pinata.cloud/ipfs/",
     ];
+
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+    let http_client = ClientBuilder::new(reqwest::Client::new())
+        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build();
 
     loop {
         let response = http_client
@@ -260,63 +266,37 @@ mod tests {
 
     #[tokio::test]
     async fn get_markdown_title() {
-        let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
-
-        let http_client = Arc::new(
-            ClientBuilder::new(reqwest::Client::new())
-                .with(RetryTransientMiddleware::new_with_policy(retry_policy))
-                .build(),
-        );
-
-        let result = get_title(
-            "f76d79693a81a1c0acd23c6ee151369752142b0d832daeaef9a4dd9f8c4bc7ce".into(),
-            http_client.clone(),
-        )
-        .await
-        .unwrap();
+        let result =
+            get_title("f76d79693a81a1c0acd23c6ee151369752142b0d832daeaef9a4dd9f8c4bc7ce".into())
+                .await
+                .unwrap();
         assert_eq!(result, "Polygon Supply Cap Update");
 
-        let result = get_title(
-            "12f2d9c91e4e23ae4009ab9ef5862ee0ae79498937b66252213221f04a5d5b32".into(),
-            http_client.clone(),
-        )
-        .await
-        .unwrap();
+        let result =
+            get_title("12f2d9c91e4e23ae4009ab9ef5862ee0ae79498937b66252213221f04a5d5b32".into())
+                .await
+                .unwrap();
         assert_eq!(result, "Add 1INCH to Aave v2 market");
 
-        let result = get_title(
-            "e7e93497d3847536f07fe8dba53485cf68a275c7b07ca38b53d2cc2d43fab3b0".into(),
-            http_client.clone(),
-        )
-        .await
-        .unwrap();
+        let result =
+            get_title("e7e93497d3847536f07fe8dba53485cf68a275c7b07ca38b53d2cc2d43fab3b0".into())
+                .await
+                .unwrap();
         assert_eq!(result, "Unknown");
 
-        let result = get_title("deadbeef".into(), http_client).await.unwrap();
+        let result = get_title("deadbeef".into()).await.unwrap();
         assert_eq!(result, "Unknown");
     }
 
     #[tokio::test]
     async fn get_json_title() {
-        let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
-
-        let http_client = Arc::new(
-            ClientBuilder::new(reqwest::Client::new())
-                .with(RetryTransientMiddleware::new_with_policy(retry_policy))
-                .build(),
-        );
-
-        let result = get_title(
-            "8d4f6f42043d8db567d5e733762bb84a6f507997a779a66b2d17fdf9de403c13".into(),
-            http_client.clone(),
-        )
-        .await
-        .unwrap();
+        let result =
+            get_title("8d4f6f42043d8db567d5e733762bb84a6f507997a779a66b2d17fdf9de403c13".into())
+                .await
+                .unwrap();
         assert_eq!(result, "Add rETH to Arbitrum Aave v3");
 
-        let result = get_title("deadbeef".into(), http_client.clone())
-            .await
-            .unwrap();
+        let result = get_title("deadbeef".into()).await.unwrap();
         assert_eq!(result, "Unknown");
     }
 }

@@ -14,7 +14,8 @@ use reqwest::{
     header::{ACCEPT, USER_AGENT},
     Client,
 };
-use reqwest_middleware::ClientWithMiddleware;
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tracing::Instrument;
@@ -107,7 +108,7 @@ async fn proposal(
 ) -> Result<ChainProposal> {
     let proposal_url = format!("{}{}", decoder.proposalUrl, spell_address);
 
-    let proposal_data = get_proposal_data(spell_address.clone(), ctx.http_client.clone()).await?;
+    let proposal_data = get_proposal_data(spell_address.clone()).await?;
 
     let title = proposal_data.title.clone();
 
@@ -131,7 +132,7 @@ async fn proposal(
     let scores = &proposal_data.spellData.mkrSupport.clone();
     let scores_total = &proposal_data.spellData.mkrSupport.clone();
 
-    let block_created = get_proposal_block(created_timestamp, ctx.http_client.clone()).await?;
+    let block_created = get_proposal_block(created_timestamp).await?;
 
     let state = if proposal_data.spellData.hasBeenCast {
         ProposalState::Executed
@@ -181,11 +182,13 @@ struct TimeData {
     height: Value,
 }
 
-async fn get_proposal_block(
-    time: DateTime<Utc>,
-    http_client: Arc<ClientWithMiddleware>,
-) -> Result<TimeData> {
+async fn get_proposal_block(time: DateTime<Utc>) -> Result<TimeData> {
     let mut retries = 0;
+
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+    let http_client = ClientBuilder::new(reqwest::Client::new())
+        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build();
 
     loop {
         let response = http_client
@@ -244,11 +247,13 @@ struct ProposalData {
     date: String,
 }
 
-async fn get_proposal_data(
-    spell_address: String,
-    http_client: Arc<ClientWithMiddleware>,
-) -> Result<ProposalData> {
+async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
     let mut retries = 0;
+
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+    let http_client = ClientBuilder::new(reqwest::Client::new())
+        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build();
 
     loop {
         let response = http_client

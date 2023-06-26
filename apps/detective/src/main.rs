@@ -39,7 +39,6 @@ pub mod utils {
 pub struct Context {
     pub db: Arc<PrismaClient>,
     pub rpc: Arc<Provider<Http>>,
-    pub http_client: Arc<ClientWithMiddleware>,
 }
 
 pub type Ctx = rocket::State<Context>;
@@ -105,18 +104,9 @@ async fn rocket() -> _ {
             .expect("Failed to create Prisma client"),
     );
 
-    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
-
-    let http_client = Arc::new(
-        ClientBuilder::new(reqwest::Client::new())
-            .with(RetryTransientMiddleware::new_with_policy(retry_policy))
-            .build(),
-    );
-
     let context = Context {
         db: db.clone(),
         rpc: rpc.clone(),
-        http_client: http_client.clone(),
     };
 
     tokio::spawn(
@@ -133,11 +123,7 @@ async fn rocket() -> _ {
     );
 
     rocket::build()
-        .manage(Context {
-            db,
-            rpc,
-            http_client,
-        })
+        .manage(Context { db, rpc })
         .mount("/", routes![index])
         .mount("/health", routes![health])
         .mount(

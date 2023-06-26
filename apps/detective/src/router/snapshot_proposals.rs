@@ -139,8 +139,12 @@ async fn update_proposals(
 ) -> Result<()> {
     let snapshot_key = env::var("SNAPSHOT_API_KEY").expect("$SNAPSHOT_API_KEY is not set");
 
-    let graphql_response = ctx
-        .http_client
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+    let http_client = ClientBuilder::new(reqwest::Client::new())
+        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build();
+
+    let graphql_response = http_client
         .get(format!(
             "https://hub.snapshot.org/graphql?apiKey={}",
             snapshot_key

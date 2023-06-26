@@ -13,7 +13,8 @@ use reqwest::{
     header::{ACCEPT, USER_AGENT},
     Client, StatusCode,
 };
-use reqwest_middleware::ClientWithMiddleware;
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tracing::Instrument;
@@ -110,9 +111,7 @@ async fn data_for_proposal(
     let mut scores_total: f64 = 0.0;
     let quorum: u128 = 0;
 
-    let mut results_data = get_results_data(log.poll_id.to_string(), ctx.http_client.clone())
-        .await?
-        .results;
+    let mut results_data = get_results_data(log.poll_id.to_string()).await?.results;
 
     results_data.sort_by(|a, b| {
         a.optionId
@@ -175,11 +174,13 @@ struct ResultsData {
 }
 
 #[instrument]
-async fn get_results_data(
-    poll_id: String,
-    http_client: Arc<ClientWithMiddleware>,
-) -> Result<ResultsData> {
+async fn get_results_data(poll_id: String) -> Result<ResultsData> {
     let mut retries = 0;
+
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+    let http_client = ClientBuilder::new(reqwest::Client::new())
+        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build();
 
     loop {
         let response = http_client
