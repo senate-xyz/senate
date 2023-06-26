@@ -42,6 +42,9 @@ export default async function handler(
           template: notification.emailtemplate,
           type: notification.type,
           data: req.body as RequestBody,
+          props: {
+            app: "postmark",
+          },
         },
       });
       break;
@@ -54,6 +57,9 @@ export default async function handler(
           template: notification.emailtemplate,
           type: notification.type,
           data: req.body as RequestBody,
+          props: {
+            app: "postmark",
+          },
         },
       });
       break;
@@ -66,6 +72,9 @@ export default async function handler(
           template: notification.emailtemplate,
           type: notification.type,
           data: req.body as RequestBody,
+          props: {
+            app: "postmark",
+          },
         },
       });
       break;
@@ -78,6 +87,9 @@ export default async function handler(
           template: notification.emailtemplate,
           type: notification.type,
           data: req.body as RequestBody,
+          props: {
+            app: "postmark",
+          },
         },
       });
       break;
@@ -90,6 +102,9 @@ export default async function handler(
           template: notification.emailtemplate,
           type: notification.type,
           data: req.body as RequestBody,
+          props: {
+            app: "postmark",
+          },
         },
       });
       break;
@@ -102,6 +117,9 @@ export default async function handler(
           template: notification.emailtemplate,
           type: notification.type,
           data: req.body as RequestBody,
+          props: {
+            app: "postmark",
+          },
         },
       });
       break;
