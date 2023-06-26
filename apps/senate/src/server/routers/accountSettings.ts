@@ -412,13 +412,14 @@ export const accountSettingsRouter = router({
         event: input.val ? "enable_discord" : "disable_discord",
       });
 
-      posthog.capture({
-        distinctId: user.address,
-        event: "set_discord_webhook",
-        properties: {
-          webhook: input.url,
-        },
-      });
+      if (input.val)
+        posthog.capture({
+          distinctId: user.address,
+          event: "set_discord_webhook",
+          properties: {
+            webhook: input.url,
+          },
+        });
 
       return user;
     }),
