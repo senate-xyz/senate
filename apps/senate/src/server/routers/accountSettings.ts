@@ -6,6 +6,7 @@ import { PostHog } from "posthog-node";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
+  disableGeoip: true,
 });
 
 export const accountSettingsRouter = router({
@@ -56,17 +57,23 @@ export const accountSettingsRouter = router({
 
       posthog.capture({
         distinctId: user.address,
-        event: "enable_bulletin",
+        event: "email_bulletin_enable",
         properties: {
           email: input.email,
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
       posthog.capture({
         distinctId: user.address,
-        event: "update_email",
+        event: "email_update",
         properties: {
           email: input.email,
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -147,9 +154,12 @@ export const accountSettingsRouter = router({
 
       posthog.capture({
         distinctId: user.address,
-        event: "update_email",
+        event: "email_update",
         properties: {
           email: input.email,
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -212,7 +222,12 @@ export const accountSettingsRouter = router({
 
       posthog.capture({
         distinctId: user.address,
-        event: input.val ? "enable_bulletin" : "disable_bulletin",
+        event: input.val ? "email_bulletin_enable" : "email_bulletin_disable",
+        properties: {
+          props: {
+            app: "web-backend",
+          },
+        },
       });
 
       return user;
@@ -236,7 +251,14 @@ export const accountSettingsRouter = router({
 
       posthog.capture({
         distinctId: user.address,
-        event: input.val ? "enable_empty_bulletin" : "disable_empty_bulletin",
+        event: input.val
+          ? "email_bulletin_empty_enable"
+          : "email_bulletin_empty_disable",
+        properties: {
+          props: {
+            app: "web-backend",
+          },
+        },
       });
 
       return user;
@@ -260,7 +282,12 @@ export const accountSettingsRouter = router({
 
       posthog.capture({
         distinctId: user.address,
-        event: input.val ? "enable_quorum_emails" : "disable_quorum_email",
+        event: input.val ? "email_quorum_enable" : "email_quorum_disable",
+        properties: {
+          props: {
+            app: "web-backend",
+          },
+        },
       });
 
       return user;
@@ -321,7 +348,12 @@ export const accountSettingsRouter = router({
 
       posthog.capture({
         distinctId: user.address,
-        event: input.val ? "enable_discord" : "disable_discord",
+        event: input.val ? "discord_enable" : "discord_disable",
+        properties: {
+          props: {
+            app: "web-backend",
+          },
+        },
       });
 
       return user;
@@ -349,8 +381,13 @@ export const accountSettingsRouter = router({
       posthog.capture({
         distinctId: user.address,
         event: input.val
-          ? "enable_discord_reminders"
-          : "disable_discord_reminders",
+          ? "discord_reminders_enable"
+          : "discord_reminders_disable",
+        properties: {
+          props: {
+            app: "web-backend",
+          },
+        },
       });
 
       return user;
@@ -377,9 +414,12 @@ export const accountSettingsRouter = router({
 
       posthog.capture({
         distinctId: user.address,
-        event: "set_discord_webhook",
+        event: "discord_webhook_set",
         properties: {
           webhook: input.url,
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -409,16 +449,25 @@ export const accountSettingsRouter = router({
 
       posthog.capture({
         distinctId: user.address,
-        event: input.val ? "enable_discord" : "disable_discord",
-      });
-
-      posthog.capture({
-        distinctId: user.address,
-        event: "set_discord_webhook",
+        event: input.val ? "discord_enable" : "discord_disable",
         properties: {
-          webhook: input.url,
+          props: {
+            app: "web-backend",
+          },
         },
       });
+
+      if (input.val)
+        posthog.capture({
+          distinctId: user.address,
+          event: "discord_webhook_sets",
+          properties: {
+            webhook: input.url,
+            props: {
+              app: "web-backend",
+            },
+          },
+        });
 
       return user;
     }),
@@ -444,7 +493,12 @@ export const accountSettingsRouter = router({
 
       posthog.capture({
         distinctId: user.address,
-        event: input.val ? "enable_telegram" : "disable_telegram",
+        event: input.val ? "telegram_enable" : "telegram_disable",
+        properties: {
+          props: {
+            app: "web-backend",
+          },
+        },
       });
 
       return user;
@@ -472,8 +526,13 @@ export const accountSettingsRouter = router({
       posthog.capture({
         distinctId: user.address,
         event: input.val
-          ? "enable_telegram_reminders"
-          : "disable_telegram_reminders",
+          ? "telegram_reminders_enable"
+          : "telegram_reminders_disable",
+        properties: {
+          props: {
+            app: "web-backend",
+          },
+        },
       });
 
       return user;
@@ -500,9 +559,12 @@ export const accountSettingsRouter = router({
 
       posthog.capture({
         distinctId: user.address,
-        event: "set_telegram_chatid",
+        event: "telegram_chatid_set",
         properties: {
           chatid: input.chatid,
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -602,6 +664,9 @@ export const accountSettingsRouter = router({
         event: "add_voter",
         properties: {
           voter: input.address,
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -643,6 +708,9 @@ export const accountSettingsRouter = router({
         event: "remove_voter",
         properties: {
           voter: input.address,
+          props: {
+            app: "web-backend",
+          },
         },
       });
 

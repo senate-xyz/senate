@@ -140,6 +140,9 @@ function HogProvider({ children }) {
       }
       posthog.capture("$pageview", {
         $current_url: url,
+        props: {
+          app: "web-frontend",
+        },
       });
     }
   }, [pathname, searchParams]);

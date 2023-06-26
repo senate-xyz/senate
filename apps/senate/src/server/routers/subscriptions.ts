@@ -5,6 +5,7 @@ import { PostHog } from "posthog-node";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
+  disableGeoip: true,
 });
 
 export const subscriptionsRouter = router({
@@ -51,6 +52,9 @@ export const subscriptionsRouter = router({
         event: "subscribe",
         properties: {
           dao: dao?.name,
+          props: {
+            app: "web-backend",
+          },
         },
       });
 
@@ -92,6 +96,9 @@ export const subscriptionsRouter = router({
         event: "unsubscribe",
         properties: {
           dao: dao?.name,
+          props: {
+            app: "web-backend",
+          },
         },
       });
 

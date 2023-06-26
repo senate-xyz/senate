@@ -30,6 +30,7 @@ pub mod quorum {
 
 pub mod utils {
     pub mod countdown;
+    pub mod posthog;
     pub mod vote;
 }
 

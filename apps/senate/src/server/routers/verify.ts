@@ -6,6 +6,7 @@ import { PostHog } from "posthog-node";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
+  disableGeoip: true,
 });
 
 export const verifyRouter = router({
@@ -139,7 +140,7 @@ export const verifyRouter = router({
 
         posthog.capture({
           distinctId: addressUser.address,
-          event: "subscribe_discourse",
+          event: "discourse_subscribe",
           properties: {
             dao:
               emailUser.isaaveuser == "VERIFICATION"
@@ -147,6 +148,9 @@ export const verifyRouter = router({
                 : emailUser.isuniswapuser == "VERIFICATION"
                 ? "Uniswap"
                 : "Unknown",
+            props: {
+              app: "web-backend",
+            },
           },
         });
 
@@ -213,7 +217,7 @@ export const verifyRouter = router({
 
           posthog.capture({
             distinctId: newUser.address,
-            event: "signup_discourse",
+            event: "discourse_signup",
             properties: {
               dao:
                 newUser.isaaveuser == "VERIFICATION"
@@ -221,6 +225,9 @@ export const verifyRouter = router({
                   : newUser.isuniswapuser == "VERIFICATION"
                   ? "Uniswap"
                   : "Unknown",
+              props: {
+                app: "web-backend",
+              },
             },
           });
         }
