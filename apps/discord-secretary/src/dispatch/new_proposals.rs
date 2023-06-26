@@ -106,6 +106,16 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                         .collect::<String>()
                 );
 
+                let image = if user.discordincludevotes {
+                    if voted {
+                        "https://www.senatelabs.xyz/assets/Discord/active-vote2x.png"
+                    } else {
+                        "https://www.senatelabs.xyz/assets/Discord/active-no-vote2x.png"
+                    }
+                } else {
+                    "https://www.senatelabs.xyz/assets/Discord/placeholder-vote2x.png"
+                };
+
                 let message = webhook
                     .clone()
                     .execute(&http, true, |w| {
@@ -127,11 +137,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                                     "https://www.senatelabs.xyz/{}_medium.png",
                                     proposal.dao.picture
                                 ))
-                                .image(if voted {
-                                    "https://www.senatelabs.xyz/assets/Discord/active-vote2x.png"
-                                } else {
-                                    "https://www.senatelabs.xyz/assets/Discord/active-no-vote2x.png"
-                                })
+                                .image(image)
                         })])
                         .username("Senate Secretary")
                         .avatar_url("https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif")

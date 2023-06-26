@@ -151,6 +151,16 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                         "❌ No Quorum".to_string()
                     };
 
+                    let image = if user.discordincludevotes {
+                        if voted {
+                            "https://www.senatelabs.xyz/assets/Discord/past-vote2x.png"
+                        } else {
+                            "https://www.senatelabs.xyz/assets/Discord/past-no-vote2x.png"
+                        }
+                    } else {
+                        "https://www.senatelabs.xyz/assets/Discord/placeholder-vote2x.png"
+                    };
+
                     webhook
                         .clone()
                         .edit_message(&http, MessageId::from(initial_message_id), |w| {
@@ -173,11 +183,7 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                                         "https://www.senatelabs.xyz/{}_medium.png",
                                         proposal.dao.picture
                                     ))
-                                    .image(if voted {
-                                        "https://www.senatelabs.xyz/assets/Discord/past-vote2x.png"
-                                    } else {
-                                        "https://www.senatelabs.xyz/assets/Discord/past-no-vote2x.png"
-                                    })
+                                    .image(image)
                             })])
                         })
                         .instrument(debug_span!("edit_message"))
