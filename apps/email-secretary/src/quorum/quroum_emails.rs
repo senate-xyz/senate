@@ -431,6 +431,7 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             .filter(|s| {
                 s.user.verifiedaddress
                     && s.user.verifiedemail
+                    && s.user.emailquorumwarning
                     && !s.user.email.clone().unwrap().is_empty()
             })
             .collect();
