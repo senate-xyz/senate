@@ -34,20 +34,13 @@ pub static COUNTDOWN_CACHE: Lazy<Arc<Mutex<Vec<CountdownCache>>>> =
 pub async fn countdown_gif(end_time: DateTime<Utc>, with_days: bool) -> Result<String> {
     let mut countdown_cache = COUNTDOWN_CACHE.lock().await;
 
-    info!("countdown");
-    info!("countdown cache size: {:?}", countdown_cache.len());
+    countdown_cache.retain(|c| c.end_time >= Utc::now() - chrono::Duration::hours(1));
 
-    if countdown_cache
+    if let Some(cache_entry) = countdown_cache
         .iter()
         .find(|c| c.end_time == end_time && c.with_days == with_days)
-        .is_some()
     {
-        return Ok(countdown_cache
-            .iter()
-            .find(|c| c.end_time == end_time && c.with_days == with_days)
-            .unwrap()
-            .url
-            .clone());
+        return Ok(cache_entry.url.clone());
     }
 
     let retry_policy = ExponentialBackoff::builder().build_with_max_retries(10);
