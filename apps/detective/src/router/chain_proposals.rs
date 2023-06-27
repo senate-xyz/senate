@@ -285,7 +285,10 @@ async fn insert_proposals(
 
     let uptodate = dao_handler.chainindex.unwrap() - new_index < 1000;
 
-    if new_index != dao_handler.chainindex.unwrap() || uptodate != dao_handler.uptodate {
+    if (new_index > dao_handler.chainindex.unwrap()
+        && new_index - dao_handler.chainindex.unwrap() > 1000)
+        || uptodate != dao_handler.uptodate
+    {
         ctx.db
             .daohandler()
             .update(
