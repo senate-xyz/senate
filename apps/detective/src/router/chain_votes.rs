@@ -227,8 +227,9 @@ async fn get_results(
             Ok(ok_v)
         }
         DaoHandlerType::MakerPollArbitrum => {
-            let r = makerpollarbitrum_votes(ctx, dao_handler, from_block, voters.clone()).await?;
-            let ok_v = insert_votes(r, to_block, ctx, dao_handler, voter_handlers).await?;
+            let (r, arbitrum_to_block) =
+                makerpollarbitrum_votes(ctx, dao_handler, from_block, voters.clone()).await?;
+            let ok_v = insert_votes(r, arbitrum_to_block, ctx, dao_handler, voter_handlers).await?;
             Ok(ok_v)
         }
         DaoHandlerType::Snapshot => bail!("not implemented"),

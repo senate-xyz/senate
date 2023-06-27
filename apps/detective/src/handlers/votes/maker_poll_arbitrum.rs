@@ -32,7 +32,7 @@ pub async fn makerpollarbitrum_votes(
     dao_handler: &daohandler::Data,
     from_block: i64,
     voters: Vec<String>,
-) -> Result<Vec<VoteResult>> {
+) -> Result<(Vec<VoteResult>, i64)> {
     let rpc_url = env::var("ARBITRUM_NODE_URL").expect("$ARBITRUM_NODE_URL is not set");
 
     let provider = Provider::<Http>::try_from(rpc_url).unwrap();
@@ -85,14 +85,17 @@ pub async fn makerpollarbitrum_votes(
         result.push(voteresult?);
     }
 
-    Ok(result
-        .iter()
-        .map(|r| VoteResult {
-            voter_address: r.voter_address.clone(),
-            success: true,
-            votes: r.votes.clone(),
-        })
-        .collect())
+    Ok((
+        result
+            .iter()
+            .map(|r| VoteResult {
+                voter_address: r.voter_address.clone(),
+                success: true,
+                votes: r.votes.clone(),
+            })
+            .collect(),
+        to_block,
+    ))
 }
 
 #[instrument(skip(ctx, logs), level = "debug")]
