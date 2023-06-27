@@ -243,7 +243,7 @@ async fn send_bulletin(
                     "email_bulletin_sent",
                     user.address,
                     bulletin_template,
-                    postmark_result.clone().MessageID.as_str(),
+                    postmark_result.MessageID.as_str(),
                 );
             })
             .await

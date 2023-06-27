@@ -309,7 +309,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                                 quorum_template,
                                 proposal.clone().unwrap().name,
                                 proposal.clone().unwrap().dao.name,
-                                postmark_result.clone().MessageID.as_str(),
+                                postmark_result.MessageID.as_str(),
                             );
                         })
                         .await
@@ -322,7 +322,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                                 user.address,
                                 quorum_template,
                                 proposal.clone().unwrap().name,
-                                proposal.clone().unwrap().dao.name,
+                                proposal.unwrap().dao.name,
                                 "",
                             );
                         })
@@ -338,7 +338,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                         user.address,
                         quorum_template,
                         proposal.clone().unwrap().name,
-                        proposal.clone().unwrap().dao.name,
+                        proposal.unwrap().dao.name,
                         "",
                     );
                 })
