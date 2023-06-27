@@ -931,6 +931,7 @@ dependencies = [
  "futures",
  "log",
  "num-format",
+ "once_cell",
  "posthog-rs",
  "prisma-client-rust",
  "pyroscope",
