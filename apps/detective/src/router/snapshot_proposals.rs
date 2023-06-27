@@ -289,7 +289,13 @@ async fn update_proposals(
 
     let uptodate = old_index - new_index < 60 * 60;
 
-    if new_index * 1000 != dao_handler.snapshotindex.unwrap().timestamp()
+    let new_index_date: DateTime<FixedOffset> = DateTime::from_utc(
+        NaiveDateTime::from_timestamp_millis(new_index * 1000).expect("bad new_index timestamp"),
+        FixedOffset::east_opt(0).unwrap(),
+    );
+
+    if (new_index_date > dao_handler.snapshotindex.unwrap()
+        && new_index_date - dao_handler.snapshotindex.unwrap() > Duration::hours(1))
         || uptodate != dao_handler.uptodate
     {
         ctx.db
