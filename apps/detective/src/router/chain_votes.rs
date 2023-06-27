@@ -342,9 +342,7 @@ async fn insert_votes(
 
     let daochainindex = dao_handler.chainindex.unwrap();
 
-    use crate::prisma::DaoHandlerType::MakerPollArbitrum;
-
-    let new_index = if dao_handler.r#type == MakerPollArbitrum || daochainindex > to_block {
+    let mut new_index = if daochainindex > to_block {
         to_block
     } else {
         daochainindex
@@ -352,10 +350,13 @@ async fn insert_votes(
 
     let mut uptodate = false;
 
-    if (daochainindex - new_index < 1000 && dao_handler.uptodate)
-        || dao_handler.r#type == MakerPollArbitrum
-    {
+    if (daochainindex - new_index < 1000 && dao_handler.uptodate) {
         uptodate = true;
+    }
+
+    if dao_handler.r#type == DaoHandlerType::MakerPollArbitrum {
+        uptodate = true;
+        new_index = to_block;
     }
 
     event!(Level::DEBUG, "{:?} ", new_index);
