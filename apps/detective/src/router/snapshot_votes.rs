@@ -408,18 +408,15 @@ async fn update_refresh_statuses(
         uptodate = true;
     }
 
-    let new_index_date = Some(
-        DateTime::from_utc(
-            NaiveDateTime::from_timestamp_millis(new_index * 1000)
-                .expect("bad new_index timestamp"),
-            FixedOffset::east_opt(0).unwrap(),
-        ) - Duration::minutes(60),
+    let new_index_date: DateTime<FixedOffset> = DateTime::from_utc(
+        NaiveDateTime::from_timestamp_millis(new_index * 1000).expect("bad new_index timestamp"),
+        FixedOffset::east_opt(0).unwrap(),
     );
 
     event!(Level::DEBUG, "{:?} {:?}", search_to_timestamp, new_index);
 
     for voter_handler in voter_handlers {
-        if voter_handler.snapshotindex.unwrap() != new_index_date.unwrap()
+        if new_index_date.timestamp() > voter_handler.snapshotindex.unwrap().timestamp()
             || uptodate != voter_handler.uptodate
         {
             ctx.db
@@ -427,7 +424,7 @@ async fn update_refresh_statuses(
                 .update(
                     voterhandler::voterid_daohandlerid(voter_handler.id, dao_handler.clone().id),
                     vec![
-                        voterhandler::snapshotindex::set(new_index_date),
+                        voterhandler::snapshotindex::set(new_index_date.into()),
                         voterhandler::uptodate::set(uptodate),
                     ],
                 )
