@@ -341,7 +341,7 @@ async fn insert_votes(
                         dao_handler.clone().id,
                     ),
                     vec![
-                        voterhandler::chainindex::set(Some(new_index)),
+                        voterhandler::chainindex::set(new_index.into()),
                         voterhandler::uptodate::set(uptodate),
                     ],
                 )
