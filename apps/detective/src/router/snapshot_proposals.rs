@@ -289,7 +289,9 @@ async fn update_proposals(
 
     let uptodate = old_index - new_index < 60 * 60;
 
-    if new_index * 1000 != dao_handler.snapshotindex.unwrap().timestamp() {
+    if new_index * 1000 != dao_handler.snapshotindex.unwrap().timestamp()
+        || uptodate != dao_handler.uptodate
+    {
         ctx.db
             .daohandler()
             .update(

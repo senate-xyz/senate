@@ -332,7 +332,7 @@ async fn insert_votes(
     event!(Level::DEBUG, "{:?} ", new_index);
 
     for voter_handler in voter_handlers {
-        if voter_handler.chainindex.unwrap() != new_index {
+        if voter_handler.chainindex.unwrap() != new_index || uptodate != voter_handler.uptodate {
             ctx.db
                 .voterhandler()
                 .update(

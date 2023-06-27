@@ -419,7 +419,9 @@ async fn update_refresh_statuses(
     event!(Level::DEBUG, "{:?} {:?}", search_to_timestamp, new_index);
 
     for voter_handler in voter_handlers {
-        if voter_handler.snapshotindex.unwrap() != new_index_date.unwrap() {
+        if voter_handler.snapshotindex.unwrap() != new_index_date.unwrap()
+            || uptodate != voter_handler.uptodate
+        {
             ctx.db
                 .voterhandler()
                 .update(
