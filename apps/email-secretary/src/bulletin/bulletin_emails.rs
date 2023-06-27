@@ -8,7 +8,7 @@ use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::task::spawn_blocking;
-use tracing::{debug_span, instrument, Instrument};
+use tracing::{debug_span, instrument, warn, Instrument};
 
 use crate::{
     prisma::{
@@ -137,7 +137,7 @@ pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
 }
 
 #[instrument(skip(db), level = "info")]
-pub async fn send_bulletin_emails(db: &Arc<prisma::PrismaClient>) {
+pub async fn send_bulletin_emails(db: Arc<prisma::PrismaClient>) {
     let users = db
         .user()
         .find_many(vec![
@@ -152,7 +152,7 @@ pub async fn send_bulletin_emails(db: &Arc<prisma::PrismaClient>) {
         .unwrap();
 
     for user in users {
-        send_bulletin(user, db).await.unwrap();
+        send_bulletin(user, &db).await.unwrap();
     }
 }
 
@@ -249,7 +249,9 @@ async fn send_bulletin(
             .await
             .unwrap();
         }
-        Err(_) => {
+        Err(e) => {
+            warn!("{:?}", e);
+
             db.notification()
                 .create_many(vec![notification::create_unchecked(
                     user.id,
