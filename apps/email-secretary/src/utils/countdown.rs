@@ -34,6 +34,7 @@ pub static COUNTDOWN_CACHE: Lazy<Arc<Mutex<Vec<CountdownCache>>>> =
 pub async fn countdown_gif(end_time: DateTime<Utc>, with_days: bool) -> Result<String> {
     let mut countdown_cache = COUNTDOWN_CACHE.lock().await;
 
+    info!("countdown");
     info!("countdown cache size: {:?}", countdown_cache.len());
 
     if countdown_cache
