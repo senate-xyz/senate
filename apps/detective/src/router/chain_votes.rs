@@ -120,7 +120,7 @@ pub async fn update_chain_votes<'a>(
         from_block = first_proposal_block;
     }
 
-    let to_block = if current_block - from_block > batch_size {
+    let mut to_block = if current_block - from_block > batch_size {
         from_block + batch_size
     } else {
         current_block
@@ -144,7 +144,7 @@ pub async fn update_chain_votes<'a>(
             .unwrap_or(U64::from(0))
             .as_u64() as i64;
 
-        let to_block = if current_block - from_block > batch_size {
+        to_block = if current_block - from_block > batch_size {
             from_block + batch_size
         } else {
             current_block

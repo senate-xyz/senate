@@ -35,9 +35,8 @@ pub async fn makerpollarbitrum_votes(
     voters: Vec<String>,
 ) -> Result<Vec<VoteResult>> {
     let rpc_url = env::var("ARBITRUM_NODE_URL").expect("$ARBITRUM_NODE_URL is not set");
-
     let provider = Provider::<Http>::try_from(rpc_url).unwrap();
-    let client = Arc::new(provider);
+    let rpc = Arc::new(provider);
 
     let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder)?;
 
@@ -48,7 +47,7 @@ pub async fn makerpollarbitrum_votes(
 
     let gov_contract = makerpollvotearbitrum::makerpollvotearbitrum::makerpollvotearbitrum::new(
         address,
-        client.clone(),
+        rpc.clone(),
     );
 
     let events = gov_contract
