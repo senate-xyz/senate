@@ -8,7 +8,7 @@ use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::{sync::Semaphore, task::spawn_blocking};
-use tracing::{debug_span, instrument, warn, Instrument};
+use tracing::{debug_span, info, instrument, warn, Instrument};
 
 use crate::{
     prisma::{
@@ -163,6 +163,7 @@ pub async fn send_bulletin_emails(db: Arc<prisma::PrismaClient>) {
             .expect("Failed to acquire permit");
 
         tasks.push(tokio::spawn(async move {
+            info!("sending bulletin to {:?}", user.clone().email.unwrap());
             send_bulletin(user, &db).await.unwrap();
             drop(permit);
         }));
@@ -205,7 +206,7 @@ async fn send_bulletin(
     let user_email = user.email.unwrap();
 
     let content = &EmailBody {
-        To: user_email,
+        To: user_email.clone(),
         From: "info@senatelabs.xyz".to_string(),
         TemplateAlias: bulletin_template.to_string(),
         TemplateModel: user_data.clone(),
@@ -237,6 +238,7 @@ async fn send_bulletin(
 
     match result {
         Ok(postmark_result) => {
+            info!("sent bulletin to {:?}", user_email);
             db.notification()
                 .create_many(vec![notification::create_unchecked(
                     user.id,
