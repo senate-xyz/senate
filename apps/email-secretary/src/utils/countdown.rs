@@ -2,10 +2,13 @@ use std::env;
 
 use anyhow::{bail, Result};
 use chrono::{DateTime, Duration, Utc};
+use reqwest::{Client, StatusCode};
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
 use serde_json::json;
 use tokio::time::sleep;
-use tracing::instrument;
+use tracing::{instrument, warn};
 
 #[derive(Deserialize, Debug)]
 struct CountdownResponse {
@@ -19,9 +22,12 @@ struct Message {
 
 #[instrument(ret, level = "debug")]
 pub async fn countdown_gif(end_time: DateTime<Utc>, with_days: bool) -> Result<String> {
-    let client = reqwest::Client::new();
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
+    let http_client = ClientBuilder::new(reqwest::Client::new())
+        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build();
+
     let token = env::var("VOTING_COUNTDOWN_TOKEN")?;
-    let mut retries = 10;
 
     let end_time_string = end_time.format("%Y-%m-%d %H:%M:%S").to_string();
 
@@ -29,7 +35,7 @@ pub async fn countdown_gif(end_time: DateTime<Utc>, with_days: bool) -> Result<S
 
     let more_than_one_day = end_time.signed_duration_since(Utc::now()) > Duration::days(1);
     loop {
-        match client
+        match http_client
             .post(url)
             .header(reqwest::header::CONTENT_TYPE, "application/json")
             .header(reqwest::header::ACCEPT, "application/json")
@@ -75,12 +81,8 @@ pub async fn countdown_gif(end_time: DateTime<Utc>, with_days: bool) -> Result<S
                     break;
                 }
             }
-            Err(_) => {
-                retries -= 1;
-                if retries == 0 {
-                    bail!("Max retries exceeded");
-                }
-                sleep(std::time::Duration::from_secs(60)).await;
+            Err(e) => {
+                warn!("countdown api err: {:?}", e);
             }
         }
     }

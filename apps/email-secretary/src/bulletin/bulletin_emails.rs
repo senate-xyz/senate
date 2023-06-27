@@ -170,6 +170,8 @@ pub async fn send_bulletin_emails(db: Arc<prisma::PrismaClient>) {
     }
 
     futures::future::join_all(tasks).await;
+
+    info!("sent all bulletin emails");
 }
 
 #[instrument(skip_all, fields(user = user.id), ret, level = "info")]
