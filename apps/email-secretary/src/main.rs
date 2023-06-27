@@ -47,18 +47,17 @@ async fn main() {
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
 
     let client_for_bulletin: Arc<PrismaClient> = Arc::clone(&client);
-    let bulletin_task = tokio::task::spawn(async move {
-        info!("started bulletin_task");
 
-        let mut scheduler = AsyncScheduler::with_tz(chrono::Utc);
-        scheduler
-            .every(1_u32.day())
-            .at("9:20 am")
-            .run(move || send_bulletin_emails(client_for_bulletin.clone()));
+    let mut scheduler = AsyncScheduler::with_tz(chrono::Utc);
+    scheduler
+        .every(1_u32.day())
+        .at("9:40 am")
+        .run(move || send_bulletin_emails(client_for_bulletin.clone()));
 
+    tokio::spawn(async move {
         loop {
             scheduler.run_pending().await;
-            tokio::time::sleep(Duration::from_millis(10)).await;
+            tokio::time::sleep(Duration::from_millis(100)).await;
         }
     });
 
@@ -83,5 +82,5 @@ async fn main() {
         }
     });
 
-    try_join!(bulletin_task, triggered_bulletin_task, quroum_task).unwrap();
+    try_join!(triggered_bulletin_task, quroum_task).unwrap();
 }
