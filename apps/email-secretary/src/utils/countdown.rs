@@ -96,8 +96,8 @@ pub async fn countdown_gif(end_time: DateTime<Utc>, with_days: bool) -> Result<S
                         Some(message) => match &message.src {
                             Some(src) => {
                                 countdown_cache.push(CountdownCache {
-                                    end_time: end_time,
-                                    with_days: with_days,
+                                    end_time,
+                                    with_days,
                                     url: src.to_string(),
                                 });
                                 return Ok(src.to_string());
