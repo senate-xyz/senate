@@ -66,6 +66,8 @@ pub async fn create_daos_refresh_statuses(client: &PrismaClient) {
                 },
                 votersrefreshspeed: if daohandler.r#type == DaoHandlerType::Snapshot {
                     1000
+                } else if daohandler.r#type == DaoHandlerType::MakerPollArbitrum {
+                    100000000
                 } else {
                     10000000
                 },
