@@ -336,7 +336,10 @@ async fn insert_votes(
             ctx.db
                 .voterhandler()
                 .update(
-                    voterhandler::voterid_daohandlerid(voter_handler.id, dao_handler.clone().id),
+                    voterhandler::voterid_daohandlerid(
+                        voter_handler.voterid,
+                        dao_handler.clone().id,
+                    ),
                     vec![
                         voterhandler::chainindex::set(Some(new_index)),
                         voterhandler::uptodate::set(uptodate),

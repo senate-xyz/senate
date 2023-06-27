@@ -422,7 +422,10 @@ async fn update_refresh_statuses(
             ctx.db
                 .voterhandler()
                 .update(
-                    voterhandler::voterid_daohandlerid(voter_handler.id, dao_handler.clone().id),
+                    voterhandler::voterid_daohandlerid(
+                        voter_handler.voterid,
+                        dao_handler.clone().id,
+                    ),
                     vec![
                         voterhandler::snapshotindex::set(new_index_date.into()),
                         voterhandler::uptodate::set(uptodate),
