@@ -52,6 +52,7 @@ enum RefreshType {
 #[derive(Debug)]
 pub struct RefreshEntry {
     handler_id: String,
+    handler_type: prisma::DaoHandlerType,
     refresh_type: RefreshType,
     voters: Vec<String>,
 }

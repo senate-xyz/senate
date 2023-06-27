@@ -5,6 +5,7 @@
 use std::{env, sync::Arc, time::Duration};
 
 use chrono::{Timelike, Utc};
+use clokwerk::{AsyncScheduler, Job, TimeUnits};
 use dotenv::dotenv;
 use log::info;
 use pyroscope::PyroscopeAgent;
@@ -46,17 +47,26 @@ async fn main() {
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
 
     let client_for_bulletin: Arc<PrismaClient> = Arc::clone(&client);
-    let bulletin_task = tokio::task::spawn(async move {
-        info!("started bulletin_task");
+
+    let mut scheduler = AsyncScheduler::with_tz(chrono::Utc);
+    scheduler
+        .every(1_u32.day())
+        .at("8:00 am")
+        .run(move || send_bulletin_emails(client_for_bulletin.clone()));
+
+    tokio::spawn(async move {
         loop {
-            debug!("loop bulletin_task");
-            send_triggered_emails(&client_for_bulletin).await;
+            scheduler.run_pending().await;
+            tokio::time::sleep(Duration::from_millis(100)).await;
+        }
+    });
 
-            let now = Utc::now();
-            if now.hour() == 8 && now.minute() == 0 {
-                send_bulletin_emails(&client_for_bulletin).await;
-            }
-
+    let client_for_triggered_bulletin: Arc<PrismaClient> = Arc::clone(&client);
+    let triggered_bulletin_task = tokio::task::spawn(async move {
+        info!("started triggered_bulletin_task");
+        loop {
+            debug!("loop triggered_bulletin_task");
+            send_triggered_emails(&client_for_triggered_bulletin).await;
             sleep(Duration::from_secs(60)).await;
         }
     });
@@ -72,5 +82,5 @@ async fn main() {
         }
     });
 
-    try_join!(bulletin_task, quroum_task).unwrap();
+    try_join!(triggered_bulletin_task, quroum_task).unwrap();
 }

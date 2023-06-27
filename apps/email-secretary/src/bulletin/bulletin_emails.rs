@@ -7,8 +7,8 @@ use prisma_client_rust::{serde_json::Value, Direction};
 use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use tokio::task::spawn_blocking;
-use tracing::{debug_span, instrument, Instrument};
+use tokio::{sync::Semaphore, task::spawn_blocking};
+use tracing::{debug_span, info, instrument, warn, Instrument};
 
 use crate::{
     prisma::{
@@ -137,7 +137,7 @@ pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
 }
 
 #[instrument(skip(db), level = "info")]
-pub async fn send_bulletin_emails(db: &Arc<prisma::PrismaClient>) {
+pub async fn send_bulletin_emails(db: Arc<prisma::PrismaClient>) {
     let users = db
         .user()
         .find_many(vec![
@@ -151,9 +151,27 @@ pub async fn send_bulletin_emails(db: &Arc<prisma::PrismaClient>) {
         .await
         .unwrap();
 
+    let mut tasks = Vec::new();
+    let semaphore = Arc::new(Semaphore::new(10));
+
     for user in users {
-        send_bulletin(user, db).await.unwrap();
+        let db = Arc::clone(&db);
+        let semaphore = Arc::clone(&semaphore);
+        let permit = semaphore
+            .acquire_owned()
+            .await
+            .expect("Failed to acquire permit");
+
+        tasks.push(tokio::spawn(async move {
+            info!("sending bulletin to {:?}", user.clone().email.unwrap());
+            send_bulletin(user, &db).await.unwrap();
+            drop(permit);
+        }));
     }
+
+    futures::future::join_all(tasks).await;
+
+    info!("sent all bulletin emails");
 }
 
 #[instrument(skip_all, fields(user = user.id), ret, level = "info")]
@@ -190,7 +208,7 @@ async fn send_bulletin(
     let user_email = user.email.unwrap();
 
     let content = &EmailBody {
-        To: user_email,
+        To: user_email.clone(),
         From: "info@senatelabs.xyz".to_string(),
         TemplateAlias: bulletin_template.to_string(),
         TemplateModel: user_data.clone(),
@@ -222,6 +240,7 @@ async fn send_bulletin(
 
     match result {
         Ok(postmark_result) => {
+            info!("sent bulletin to {:?}", user_email);
             db.notification()
                 .create_many(vec![notification::create_unchecked(
                     user.id,
@@ -243,13 +262,15 @@ async fn send_bulletin(
                     "email_bulletin_sent",
                     user.address,
                     bulletin_template,
-                    postmark_result.clone().MessageID.as_str(),
+                    postmark_result.MessageID.as_str(),
                 );
             })
             .await
             .unwrap();
         }
-        Err(_) => {
+        Err(e) => {
+            warn!("{:?}", e);
+
             db.notification()
                 .create_many(vec![notification::create_unchecked(
                     user.id,

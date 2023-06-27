@@ -58,6 +58,8 @@ struct Decoder {
     space: String,
 }
 
+voterhandler::include!(voterhandler_with_voter { voter });
+
 #[instrument(skip(ctx), ret, level = "info")]
 #[post("/snapshot_votes", data = "<data>")]
 pub async fn update_snapshot_votes<'a>(
@@ -89,6 +91,7 @@ pub async fn update_snapshot_votes<'a>(
                 data.daoHandlerId.to_string(),
             )]),
         ])
+        .include(voterhandler_with_voter::include())
         .exec()
         .instrument(debug_span!("get_voter_handlers"))
         .await
@@ -189,7 +192,7 @@ async fn update_votes(
     graphql_query: String,
     search_from_timestamp: i64,
     dao_handler: daohandler::Data,
-    voter_handlers: Vec<voterhandler::Data>,
+    voter_handlers: Vec<voterhandler_with_voter::Data>,
     ctx: &Ctx,
 ) -> Result<()> {
     let snapshot_key = env::var("SNAPSHOT_API_KEY").expect("$SNAPSHOT_API_KEY is not set");
@@ -228,7 +231,7 @@ async fn update_votes(
         .collect();
 
     for p in proposals {
-        update_votes_for_proposal(votes.clone(), p, dao_handler.clone(), ctx).await?;
+        upsert_votes_for_proposal(votes.clone(), p, dao_handler.clone(), ctx).await?;
     }
 
     update_refresh_statuses(
@@ -243,88 +246,8 @@ async fn update_votes(
     Ok(())
 }
 
-#[instrument(skip(ctx, votes, voter_handlers), level = "debug")]
-async fn update_refresh_statuses(
-    votes: Vec<GraphQLVote>,
-    search_from_timestamp: i64,
-    dao_handler: daohandler::Data,
-    voter_handlers: Vec<voterhandler::Data>,
-    ctx: &Ctx,
-) -> Result<()> {
-    let search_to_timestamp = votes
-        .clone()
-        .into_iter()
-        .map(|vote| vote.created)
-        .chain(once(search_from_timestamp))
-        .max()
-        .expect("bad search_to_timestamp");
-
-    let mut new_index = vec![
-        search_to_timestamp,
-        dao_handler
-            .snapshotindex
-            .expect("bad snapshotindex")
-            .timestamp(),
-    ]
-    .into_iter()
-    .min()
-    .expect("bad new_index");
-
-    if search_to_timestamp == search_from_timestamp || votes.is_empty() {
-        new_index = Utc::now().timestamp();
-    }
-
-    let mut uptodate = false;
-
-    if (search_to_timestamp - dao_handler.snapshotindex.unwrap().timestamp() < 10 * 60 * 60
-        && dao_handler.uptodate)
-        || votes.len() < 100
-    {
-        uptodate = true;
-    }
-
-    if search_to_timestamp > dao_handler.snapshotindex.unwrap().timestamp() {
-        uptodate = true;
-    }
-
-    event!(Level::DEBUG, "{:?} {:?}", search_to_timestamp, new_index);
-
-    let updated = ctx
-        .db
-        .voterhandler()
-        .update_many(
-            vec![
-                voterhandler::id::in_vec(
-                    voter_handlers
-                        .clone()
-                        .iter()
-                        .map(|vh| vh.id.clone())
-                        .collect(),
-                ),
-                voterhandler::daohandlerid::equals(dao_handler.id.clone()),
-            ],
-            vec![
-                voterhandler::snapshotindex::set(Some(
-                    DateTime::from_utc(
-                        NaiveDateTime::from_timestamp_millis(new_index * 1000)
-                            .expect("bad new_index timestamp"),
-                        FixedOffset::east_opt(0).unwrap(),
-                    ) - Duration::minutes(60),
-                )),
-                voterhandler::uptodate::set(uptodate),
-            ],
-        )
-        .exec()
-        .instrument(debug_span!("update_snapshotindex"))
-        .await?;
-
-    event!(Level::DEBUG, "{:?} ", updated);
-
-    Ok(())
-}
-
 #[instrument(skip(ctx, votes, p), level = "debug")]
-async fn update_votes_for_proposal(
+async fn upsert_votes_for_proposal(
     votes: Vec<GraphQLVote>,
     p: GraphQLProposal,
     dao_handler: daohandler::Data,
@@ -349,18 +272,8 @@ async fn update_votes_for_proposal(
                     .cloned()
                     .collect();
 
-                if proposal.timeend < Utc::now() {
-                    create_old_votes(ctx, votes_for_proposal, proposal.id, dao_handler.clone())
-                        .await?;
-                } else {
-                    update_or_create_current_votes(
-                        ctx,
-                        votes_for_proposal,
-                        proposal.id,
-                        dao_handler.clone(),
-                    )
+                update_or_create_votes(ctx, votes_for_proposal, proposal.id, dao_handler.clone())
                     .await?;
-                }
 
                 Ok(())
             }
@@ -371,59 +284,7 @@ async fn update_votes_for_proposal(
 }
 
 #[instrument(skip(ctx, votes_for_proposal), level = "debug")]
-async fn create_old_votes(
-    ctx: &Ctx,
-    votes_for_proposal: Vec<GraphQLVote>,
-    proposal_id: String,
-    dao_handler: daohandler::Data,
-) -> Result<bool> {
-    for old_vote in votes_for_proposal {
-        event!(Level::DEBUG, "{:?}", old_vote);
-
-        let exists = ctx
-            .db
-            .vote()
-            .find_unique(vote::voteraddress_daoid_proposalid(
-                old_vote.voter.to_string(),
-                dao_handler.daoid.clone(),
-                proposal_id.clone(),
-            ))
-            .exec()
-            .await
-            .unwrap();
-
-        match exists {
-            Some(_) => {}
-            None => {
-                ctx.db
-                    .vote()
-                    .create_unchecked(
-                        old_vote.choice.clone(),
-                        old_vote.vp.into(),
-                        old_vote.reason.clone(),
-                        old_vote.voter.clone(),
-                        proposal_id.clone(),
-                        dao_handler.daoid.clone(),
-                        dao_handler.id.clone(),
-                        vec![vote::timecreated::set(Some(DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(old_vote.created * 1000)
-                                .expect("bad created timestamp"),
-                            FixedOffset::east_opt(0).unwrap(),
-                        )))],
-                    )
-                    .exec()
-                    .instrument(debug_span!("create_vote"))
-                    .await
-                    .unwrap();
-            }
-        }
-    }
-
-    Ok(true)
-}
-
-#[instrument(skip(ctx, votes_for_proposal), level = "debug")]
-async fn update_or_create_current_votes(
+async fn update_or_create_votes(
     ctx: &Ctx,
     votes_for_proposal: Vec<GraphQLVote>,
     proposal_id: String,
@@ -497,6 +358,83 @@ async fn update_or_create_current_votes(
                     .await
                     .unwrap();
             }
+        }
+    }
+
+    Ok(())
+}
+
+#[instrument(skip(ctx, votes, voter_handlers), level = "debug")]
+async fn update_refresh_statuses(
+    votes: Vec<GraphQLVote>,
+    search_from_timestamp: i64,
+    dao_handler: daohandler::Data,
+    voter_handlers: Vec<voterhandler_with_voter::Data>,
+    ctx: &Ctx,
+) -> Result<()> {
+    let search_to_timestamp = votes
+        .clone()
+        .into_iter()
+        .map(|vote| vote.created)
+        .chain(once(search_from_timestamp))
+        .max()
+        .expect("bad search_to_timestamp");
+
+    let mut new_index = vec![
+        search_to_timestamp,
+        dao_handler
+            .snapshotindex
+            .expect("bad snapshotindex")
+            .timestamp(),
+    ]
+    .into_iter()
+    .min()
+    .expect("bad new_index");
+
+    if search_to_timestamp == search_from_timestamp || votes.is_empty() {
+        new_index = Utc::now().timestamp();
+    }
+
+    let mut uptodate = false;
+
+    if (search_to_timestamp - dao_handler.snapshotindex.unwrap().timestamp() < 10 * 60 * 60
+        && dao_handler.uptodate)
+        || votes.len() < 100
+    {
+        uptodate = true;
+    }
+
+    if search_to_timestamp > dao_handler.snapshotindex.unwrap().timestamp() {
+        uptodate = true;
+    }
+
+    let new_index_date: DateTime<FixedOffset> = DateTime::from_utc(
+        NaiveDateTime::from_timestamp_millis(new_index * 1000).expect("bad new_index timestamp"),
+        FixedOffset::east_opt(0).unwrap(),
+    );
+
+    event!(Level::DEBUG, "{:?} {:?}", search_to_timestamp, new_index);
+
+    for voter_handler in voter_handlers {
+        if (new_index_date > voter_handler.snapshotindex.unwrap()
+            && new_index_date - voter_handler.snapshotindex.unwrap() > Duration::hours(1))
+            || uptodate != voter_handler.uptodate
+        {
+            ctx.db
+                .voterhandler()
+                .update(
+                    voterhandler::voterid_daohandlerid(
+                        voter_handler.voterid,
+                        dao_handler.clone().id,
+                    ),
+                    vec![
+                        voterhandler::snapshotindex::set(new_index_date.into()),
+                        voterhandler::uptodate::set(uptodate),
+                    ],
+                )
+                .exec()
+                .instrument(debug_span!("update_snapshotindex"))
+                .await?;
         }
     }
 

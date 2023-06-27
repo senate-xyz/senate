@@ -175,56 +175,90 @@ async fn insert_proposals(
     ctx: &Ctx,
     dao_handler: daohandler::Data,
 ) {
-    let upserts = proposals.clone().into_iter().map(|p| {
-        ctx.db.proposal().upsert(
-            proposal::externalid_daoid(p.external_id.to_string(), dao_handler.daoid.to_string()),
-            proposal::create(
-                p.name.clone(),
-                p.external_id.clone(),
-                p.choices.clone(),
-                p.scores.clone(),
-                p.scores_total.clone(),
-                p.quorum.clone(),
-                p.state,
-                p.time_created
-                    .with_timezone(&FixedOffset::east_opt(0).unwrap()),
-                p.time_start
-                    .with_timezone(&FixedOffset::east_opt(0).unwrap()),
-                p.time_end.with_timezone(&FixedOffset::east_opt(0).unwrap()),
-                p.clone().url,
-                daohandler::id::equals(dao_handler.id.to_string()),
-                dao::id::equals(dao_handler.daoid.to_string()),
-                vec![proposal::blockcreated::set(p.block_created.into())],
-            ),
-            {
-                let mut update_v = Vec::new();
+    for proposal in proposals.clone() {
+        let existing = ctx
+            .db
+            .proposal()
+            .find_unique(proposal::externalid_daoid(
+                proposal.external_id.to_string(),
+                dao_handler.daoid.to_string(),
+            ))
+            .exec()
+            .await
+            .unwrap();
 
-                if p.name != "Unknown" {
-                    update_v.push(proposal::name::set(p.name.clone()));
+        match existing {
+            Some(existing) => {
+                if proposal.state != existing.state || proposal.scores_total != existing.scorestotal
+                {
+                    ctx.db
+                        .proposal()
+                        .update(
+                            proposal::externalid_daoid(
+                                proposal.external_id.to_string(),
+                                dao_handler.daoid.to_string(),
+                            ),
+                            {
+                                let mut update_v = Vec::new();
+
+                                if proposal.name != "Unknown" {
+                                    update_v.push(proposal::name::set(proposal.name.clone()));
+                                }
+
+                                update_v.push(proposal::choices::set(proposal.choices.clone()));
+                                update_v.push(proposal::scores::set(proposal.scores.clone()));
+                                update_v.push(proposal::scorestotal::set(
+                                    proposal.clone().scores_total,
+                                ));
+                                update_v.push(proposal::quorum::set(proposal.quorum));
+                                update_v.push(proposal::state::set(proposal.state));
+                                update_v.push(proposal::timeend::set(
+                                    proposal
+                                        .time_end
+                                        .with_timezone(&FixedOffset::east_opt(0).unwrap()),
+                                ));
+
+                                update_v
+                            },
+                        )
+                        .exec()
+                        .instrument(debug_span!("update_proposal"))
+                        .await
+                        .unwrap();
                 }
-
-                update_v.push(proposal::choices::set(p.choices.clone()));
-                update_v.push(proposal::scores::set(p.scores.clone()));
-                update_v.push(proposal::scorestotal::set(p.clone().scores_total));
-                update_v.push(proposal::quorum::set(p.quorum));
-                update_v.push(proposal::state::set(p.state));
-                update_v.push(proposal::timeend::set(
-                    p.time_end.with_timezone(&FixedOffset::east_opt(0).unwrap()),
-                ));
-
-                update_v
-            },
-        )
-    });
-
-    let updated = ctx
-        .db
-        ._batch(upserts)
-        .instrument(debug_span!("upsert_proposals"))
-        .await
-        .expect("failed to insert proposals");
-
-    event!(Level::DEBUG, "{:?}", updated);
+            }
+            None => {
+                ctx.db
+                    .proposal()
+                    .create_unchecked(
+                        proposal.name.clone(),
+                        proposal.external_id.clone(),
+                        proposal.choices.clone(),
+                        proposal.scores.clone(),
+                        proposal.scores_total.clone(),
+                        proposal.quorum.clone(),
+                        proposal.state,
+                        proposal
+                            .time_created
+                            .with_timezone(&FixedOffset::east_opt(0).unwrap()),
+                        proposal
+                            .time_start
+                            .with_timezone(&FixedOffset::east_opt(0).unwrap()),
+                        proposal
+                            .time_end
+                            .with_timezone(&FixedOffset::east_opt(0).unwrap()),
+                        proposal.clone().url,
+                        dao_handler.id.to_string(),
+                        dao_handler.daoid.to_string(),
+                        vec![proposal::blockcreated::set(proposal.block_created.into())],
+                    )
+                    .exec()
+                    .instrument(debug_span!("create_proposal"))
+                    .await
+                    .unwrap();
+            }
+        }
+    }
 
     let open_proposals: Vec<ChainProposal> = proposals
         .iter()
@@ -251,7 +285,10 @@ async fn insert_proposals(
 
     let uptodate = dao_handler.chainindex.unwrap() - new_index < 1000;
 
-    if new_index != dao_handler.chainindex.unwrap() {
+    if (new_index > dao_handler.chainindex.unwrap()
+        && new_index - dao_handler.chainindex.unwrap() > 1000)
+        || uptodate != dao_handler.uptodate
+    {
         ctx.db
             .daohandler()
             .update(
