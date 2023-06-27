@@ -127,7 +127,7 @@ pub async fn update_chain_votes<'a>(
     };
 
     if from_block > to_block {
-        from_block = to_block;
+        from_block = to_block - 10;
     }
 
     if dao_handler.r#type == DaoHandlerType::MakerPollArbitrum {
@@ -151,7 +151,7 @@ pub async fn update_chain_votes<'a>(
         };
 
         if from_block > to_block {
-            from_block = to_block;
+            from_block = to_block - 10;
         }
     }
 
