@@ -1,4 +1,4 @@
-use std::{cmp, ops::Div};
+use std::{cmp, env, ops::Div, sync::Arc};
 
 use crate::{
     handlers::votes::{
@@ -11,7 +11,10 @@ use crate::{
     Ctx, VotesRequest, VotesResponse,
 };
 use anyhow::{bail, Context, Result};
-use ethers::{providers::Middleware, types::U64};
+use ethers::{
+    providers::{Http, Middleware, Provider},
+    types::U64,
+};
 use prisma_client_rust::Direction;
 use rocket::serde::json::Json;
 use serde::Deserialize;
@@ -101,7 +104,7 @@ pub async fn update_chain_votes<'a>(
         .unwrap_or_default()
         .unwrap_or(0);
 
-    let current_block = ctx
+    let mut current_block = ctx
         .rpc
         .get_block_number()
         .instrument(debug_span!("get_current_block"))
@@ -125,6 +128,31 @@ pub async fn update_chain_votes<'a>(
 
     if from_block > to_block {
         from_block = to_block;
+    }
+
+    if dao_handler.r#type == DaoHandlerType::MakerPollArbitrum {
+        let rpc_url = env::var("ARBITRUM_NODE_URL").expect("$ARBITRUM_NODE_URL is not set");
+        let provider = Provider::<Http>::try_from(rpc_url).unwrap();
+        let rpc = Arc::new(provider);
+
+        from_block = cmp::max(oldest_vote_block, 0);
+
+        current_block = rpc
+            .get_block_number()
+            .instrument(debug_span!("get_current_block"))
+            .await
+            .unwrap_or(U64::from(0))
+            .as_u64() as i64;
+
+        let to_block = if current_block - from_block > batch_size {
+            from_block + batch_size
+        } else {
+            current_block
+        };
+
+        if from_block > to_block {
+            from_block = to_block;
+        }
     }
 
     event!(
@@ -227,9 +255,9 @@ async fn get_results(
             Ok(ok_v)
         }
         DaoHandlerType::MakerPollArbitrum => {
-            let (r, arbitrum_to_block) =
-                makerpollarbitrum_votes(ctx, dao_handler, from_block, voters.clone()).await?;
-            let ok_v = insert_votes(r, arbitrum_to_block, ctx, dao_handler, voter_handlers).await?;
+            let r = makerpollarbitrum_votes(ctx, dao_handler, from_block, to_block, voters.clone())
+                .await?;
+            let ok_v = insert_votes(r, to_block, ctx, dao_handler, voter_handlers).await?;
             Ok(ok_v)
         }
         DaoHandlerType::Snapshot => bail!("not implemented"),
