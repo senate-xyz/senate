@@ -7,7 +7,7 @@ use prisma_client_rust::{serde_json::Value, Direction};
 use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use tokio::task::spawn_blocking;
+use tokio::{sync::Semaphore, task::spawn_blocking};
 use tracing::{debug_span, instrument, warn, Instrument};
 
 use crate::{
@@ -151,9 +151,24 @@ pub async fn send_bulletin_emails(db: Arc<prisma::PrismaClient>) {
         .await
         .unwrap();
 
+    let mut tasks = Vec::new();
+    let semaphore = Arc::new(Semaphore::new(10));
+
     for user in users {
-        send_bulletin(user, &db).await.unwrap();
+        let db = Arc::clone(&db);
+        let semaphore = Arc::clone(&semaphore);
+        let permit = semaphore
+            .acquire_owned()
+            .await
+            .expect("Failed to acquire permit");
+
+        tasks.push(tokio::spawn(async move {
+            send_bulletin(user, &db).await.unwrap();
+            drop(permit);
+        }));
     }
+
+    futures::future::join_all(tasks).await;
 }
 
 #[instrument(skip_all, fields(user = user.id), ret, level = "info")]
