@@ -114,6 +114,7 @@ pub async fn produce_chain_votes_queue(
                     Some(RefreshEntry {
                         handler_id: dao_handler.dao_handler_id.clone(),
                         refresh_type: RefreshType::Daochainvotes,
+                        handler_type: dao_handler.r#type,
                         voters: bucket_vh
                             .iter()
                             .map(|vhandler| vhandler.voter.address.clone())

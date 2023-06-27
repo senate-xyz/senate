@@ -96,6 +96,7 @@ pub async fn produce_snapshot_votes_queue(
                 } else {
                     Some(RefreshEntry {
                         handler_id: dao_handler.dao_handler_id.clone(),
+                        handler_type: dao_handler.r#type,
                         refresh_type: RefreshType::Daosnapshotvotes,
                         voters: bucket_vh
                             .iter()
