@@ -38,6 +38,7 @@ pub async fn produce_snapshot_proposals_queue(config: &Config) -> Result<Vec<Ref
         .iter()
         .map(|dao_handler| RefreshEntry {
             handler_id: dao_handler.dao_handler_id.clone(),
+            handler_type: dao_handler.r#type,
             refresh_type: RefreshType::Daosnapshotproposals,
             voters: vec![],
         })

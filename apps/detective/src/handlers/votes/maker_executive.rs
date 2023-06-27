@@ -35,8 +35,8 @@ const VOTE_SINGLE_ACTION_TOPIC: &str =
 pub async fn makerexecutive_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
-    from_block: &i64,
-    to_block: &i64,
+    from_block: i64,
+    to_block: i64,
     voters: Vec<String>,
 ) -> Result<Vec<VoteResult>> {
     let voters_addresses: Vec<H256> = voters
@@ -56,8 +56,8 @@ pub async fn makerexecutive_votes(
         .log_note_filter()
         .topic0(vec![VOTE_SINGLE_ACTION_TOPIC.parse::<H256>()?])
         .topic1(voters_addresses.clone())
-        .from_block(*from_block)
-        .to_block(*to_block);
+        .from_block(from_block)
+        .to_block(to_block);
 
     let single_spell_logs = single_spell_events
         .query_with_meta()
@@ -68,8 +68,8 @@ pub async fn makerexecutive_votes(
         .log_note_filter()
         .topic0(vec![VOTE_MULTIPLE_ACTIONS_TOPIC.parse::<H256>()?])
         .topic1(voters_addresses.clone())
-        .from_block(*from_block)
-        .to_block(*to_block);
+        .from_block(from_block)
+        .to_block(to_block);
 
     let multi_spell_logs = multi_spell_events
         .query_with_meta()

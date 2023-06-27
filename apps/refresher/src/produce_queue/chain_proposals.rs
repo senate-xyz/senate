@@ -51,6 +51,7 @@ pub async fn produce_chain_proposals_queue(config: &Config) -> Result<Vec<Refres
         .iter()
         .map(|dao_handler| RefreshEntry {
             handler_id: dao_handler.dao_handler_id.clone(),
+            handler_type: dao_handler.r#type,
             refresh_type: RefreshType::Daochainproposals,
             voters: vec![],
         })

@@ -889,9 +889,60 @@ const seedVoters = async () => {
   );
 };
 
+async function testUsers() {
+  const testUsers = [
+    "0xDA01692B980e2487aa7D07FC563E574c8643C7B1",
+    "0xDA0b0a3DdEE008B4CA7D83e8566378453b8a00Aa",
+    "0xDA0203f5793369B13389EcD6369Bbfe3f852F7C6",
+    "0xDA023c798d469275A8bd630f00ec675be239Bc0F",
+    "0xDA0444a461111FCf610AA0aABb3d8Db623b59F73",
+    "0xDA0DafF0F269704977597d16B56A8c7D6BaACE72",
+    "0xDA038a772C71e5681661f033438465df0C3845d0",
+    "0xDA067d0fCA5A1019A79E6f815df9fD7D7997f757",
+    "0xDA018cE09209aDF1173EaaC1B373cB532143EF31",
+    "0xDA056a1d1B10a052349d85c6428432e0D02d439B",
+    "0xDA0e49351b00A7930a2d0E693d8a2A8Ae1F5a168",
+    "0xDA04751FdB834aE0f55913c691Fa2efB78EA9698",
+    "0xDA0D82A44F5A457ab0a37fd067a06596190e1187",
+    "0xDA02Bd4E342514121bdDBEA1243087FD810BcE79",
+    "0xDA05123Ff6D8a2f6EAa3aecfcF468FE08e3289B5",
+    "0xDA0B3A8230b13A0E6A09B280Fb4389A574E63d6b",
+    "0xDA04617111DDc010350460cc8e45504aa67E8fe7",
+    "0xDA002cAaAe082B519CfD26636AD703D20E43D3a0",
+    "0xDA0C3eAc0A0D4bcF50aDEe9b2a68D1c5F5CF1191",
+    "0xDA0245E3Cd5A9A12F8c4E39142dcC48CB0E4095D",
+  ];
+
+  for (const testUser of testUsers) {
+    const user = await prisma.user.create({
+      data: {
+        address: testUser,
+        email: `${testUser}@andreiv.com`,
+        verifiedemail: true,
+        verifiedaddress: true,
+        emaildailybulletin: true,
+        emptydailybulletin: false,
+      },
+    });
+    const alldaos = await prisma.dao.findMany({});
+
+    await prisma.subscription.createMany({
+      data: alldaos.map((dao) => {
+        return {
+          userid: user.id,
+          daoid: dao.id,
+        };
+      }),
+      skipDuplicates: true,
+    });
+  }
+}
+
 async function main() {
-  await seedData();
-  await seedVoters();
+  //  await seedData();
+  //  await seedVoters();
+
+  await testUsers();
 }
 
 void main();

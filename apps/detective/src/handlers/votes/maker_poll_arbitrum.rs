@@ -30,19 +30,14 @@ struct Decoder {
 pub async fn makerpollarbitrum_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
-    from_block: &i64,
+    from_block: i64,
+    to_block: i64,
     voters: Vec<String>,
 ) -> Result<Vec<VoteResult>> {
     let rpc_url = env::var("ARBITRUM_NODE_URL").expect("$ARBITRUM_NODE_URL is not set");
 
     let provider = Provider::<Http>::try_from(rpc_url).unwrap();
     let client = Arc::new(provider);
-
-    let to_block = client
-        .get_block_number()
-        .await
-        .unwrap_or(U64::from(0))
-        .as_u64() as i64;
 
     let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder)?;
 
@@ -58,7 +53,7 @@ pub async fn makerpollarbitrum_votes(
 
     let events = gov_contract
         .event::<makerpollvotearbitrum::VotedFilter>()
-        .from_block(*from_block)
+        .from_block(from_block)
         .to_block(to_block);
 
     let logs = events

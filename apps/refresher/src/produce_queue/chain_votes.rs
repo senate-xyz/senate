@@ -86,7 +86,7 @@ pub async fn produce_chain_votes_queue(
             .collect();
 
         let domain_limit = if dao_handler.r#type == prisma::DaoHandlerType::MakerPollArbitrum {
-            100_000_000
+            200_000_000
         } else {
             20_000_000
         };
@@ -114,6 +114,7 @@ pub async fn produce_chain_votes_queue(
                     Some(RefreshEntry {
                         handler_id: dao_handler.dao_handler_id.clone(),
                         refresh_type: RefreshType::Daochainvotes,
+                        handler_type: dao_handler.r#type,
                         voters: bucket_vh
                             .iter()
                             .map(|vhandler| vhandler.voter.address.clone())

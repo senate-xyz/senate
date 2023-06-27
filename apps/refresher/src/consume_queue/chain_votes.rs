@@ -73,6 +73,15 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                                         + (dao_handler_r.votersrefreshspeed * 10 / 100),
                                     1000000000,
                                 );
+
+                                if entry.handler_type == prisma::DaoHandlerType::MakerPollArbitrum
+                                {
+                                    dao_handler_r.votersrefreshspeed = cmp::min(
+                                        dao_handler_r.votersrefreshspeed
+                                            + (dao_handler_r.votersrefreshspeed * 10 / 100),
+                                        10000000000,
+                                    );
+                                }
                             }
 
                             if !nok_voters_response.is_empty() {
