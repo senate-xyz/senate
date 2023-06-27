@@ -50,8 +50,7 @@ async fn main() {
 
     let mut scheduler = AsyncScheduler::with_tz(chrono::Utc);
     scheduler
-        .every(1_u32.day())
-        .at("12:25 pm")
+        .every(10_u32.minute())
         .run(move || send_bulletin_emails(client_for_bulletin.clone()));
 
     tokio::spawn(async move {
