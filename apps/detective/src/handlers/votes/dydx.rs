@@ -28,8 +28,8 @@ struct Decoder {
 pub async fn dydx_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
-    from_block: &i64,
-    to_block: &i64,
+    from_block: i64,
+    to_block: i64,
     voters: Vec<String>,
 ) -> Result<Vec<VoteResult>> {
     let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder)?;
@@ -47,8 +47,8 @@ pub async fn dydx_votes(
     let events = gov_contract
         .event::<dydxgov::VoteEmittedFilter>()
         .topic1(voters_addresses)
-        .from_block(*from_block)
-        .to_block(*to_block);
+        .from_block(from_block)
+        .to_block(to_block);
 
     let logs = events
         .query_with_meta()

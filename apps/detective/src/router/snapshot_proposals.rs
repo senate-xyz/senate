@@ -162,6 +162,18 @@ async fn update_proposals(
     let proposals: Vec<GraphQLProposal> = response_data.data.proposals;
 
     for proposal in proposals.clone() {
+        let state = match proposal.state.as_str() {
+            "active" => ProposalState::Active,
+            "pending" => ProposalState::Pending,
+            "closed" => {
+                if proposal.scores_state == "final" {
+                    ProposalState::Executed
+                } else {
+                    ProposalState::Hidden
+                }
+            }
+            _ => ProposalState::Unknown,
+        };
         let existing = ctx
             .db
             .proposal()
@@ -174,37 +186,28 @@ async fn update_proposals(
             .unwrap();
 
         match existing {
-            Some(_) => {
-                ctx.db
-                    .proposal()
-                    .update(
-                        proposal::externalid_daoid(
-                            proposal.id.to_string(),
-                            dao_handler.daoid.to_string(),
-                        ),
-                        vec![
-                            proposal::choices::set(proposal.choices.clone().into()),
-                            proposal::scores::set(proposal.scores.clone().into()),
-                            proposal::scorestotal::set(proposal.scores_total.into()),
-                            proposal::quorum::set(proposal.quorum.into()),
-                            proposal::state::set(match proposal.state.as_str() {
-                                "active" => ProposalState::Active,
-                                "pending" => ProposalState::Pending,
-                                "closed" => {
-                                    if proposal.scores_state == "final" {
-                                        ProposalState::Executed
-                                    } else {
-                                        ProposalState::Hidden
-                                    }
-                                }
-                                _ => ProposalState::Unknown,
-                            }),
-                        ],
-                    )
-                    .exec()
-                    .instrument(debug_span!("update_proposal"))
-                    .await
-                    .unwrap();
+            Some(existing) => {
+                if state != existing.state || proposal.scores_total != existing.scorestotal {
+                    ctx.db
+                        .proposal()
+                        .update(
+                            proposal::externalid_daoid(
+                                proposal.id.to_string(),
+                                dao_handler.daoid.to_string(),
+                            ),
+                            vec![
+                                proposal::choices::set(proposal.choices.clone().into()),
+                                proposal::scores::set(proposal.scores.clone().into()),
+                                proposal::scorestotal::set(proposal.scores_total.into()),
+                                proposal::quorum::set(proposal.quorum.into()),
+                                proposal::state::set(state),
+                            ],
+                        )
+                        .exec()
+                        .instrument(debug_span!("update_proposal"))
+                        .await
+                        .unwrap();
+                }
             }
             None => {
                 ctx.db
@@ -216,18 +219,7 @@ async fn update_proposals(
                         proposal.scores.clone().into(),
                         proposal.scores_total.into(),
                         proposal.quorum.into(),
-                        match proposal.state.as_str() {
-                            "active" => ProposalState::Active,
-                            "pending" => ProposalState::Pending,
-                            "closed" => {
-                                if proposal.scores_state == "final" {
-                                    ProposalState::Executed
-                                } else {
-                                    ProposalState::Hidden
-                                }
-                            }
-                            _ => ProposalState::Unknown,
-                        },
+                        state,
                         DateTime::from_utc(
                             NaiveDateTime::from_timestamp_millis(proposal.created * 1000)
                                 .expect("can not create timecreated"),
