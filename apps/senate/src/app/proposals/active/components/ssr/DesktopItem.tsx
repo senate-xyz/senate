@@ -1,11 +1,10 @@
-import { isUpToDate } from "./Table";
 import Image from "next/image";
 import dayjs, { extend } from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 extend(relativeTime);
 
-export const ActiveProposal = async (props: {
+export const DesktopItem = (props: {
   proposal: {
     daoName: string;
     daoHandlerId: string;
@@ -15,40 +14,23 @@ export const ActiveProposal = async (props: {
     state: string;
     proposalLink: string;
     timeEnd: Date;
-    voted: string;
   };
 }) => {
-  const loading = !(await isUpToDate(props.proposal.daoHandlerId));
-  const daoPicture = await fetch(
-    `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${props.proposal.daoPicture}.svg`
-  )
-    .then((res) => {
-      if (res.ok)
-        return `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${
-          props.proposal.daoPicture
-        }.svg`;
-      else
-        return `${
-          process.env.NEXT_PUBLIC_WEB_URL ?? ""
-        }/assets/Project_Icons/placeholder_medium.png.svg`;
-    })
-    .catch(() => {
-      return `${
-        process.env.NEXT_PUBLIC_WEB_URL ?? ""
-      }/assets/Project_Icons/placeholder_medium.png.svg`;
-    });
+  const loading = true;
 
   return (
-    <tr className="h-[96px] w-full items-center justify-evenly bg-[#121212] text-[#EDEDED] ">
-      <td className="hidden lg:table-cell">
-        <div className="m-[12px] flex w-max flex-row items-center gap-[8px]">
+    <div className="flex h-[96px] w-full flex-row justify-between bg-[#121212] text-[#EDEDED]">
+      <div className="flex flex-row items-center">
+        <div className="m-[12px] flex flex-row items-center gap-[8px]">
           <div className="border border-b-2 border-l-0 border-r-2 border-t-0">
             <Image
               loading="eager"
               priority={true}
               width={64}
               height={64}
-              src={daoPicture}
+              src={`${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${
+                props.proposal.daoPicture
+              }.svg`}
               alt={props.proposal.daoName}
             />
           </div>
@@ -80,16 +62,21 @@ export const ActiveProposal = async (props: {
             </div>
           </div>
         </div>
-      </td>
-      <td className="hidden cursor-pointer hover:underline lg:table-cell">
-        <a href={props.proposal.proposalLink} target="_blank" rel="noreferrer">
-          <div className="pr-5 text-[18px] font-normal">
-            {props.proposal.proposalTitle}
-          </div>
-        </a>
-      </td>
-      <td className="hidden lg:table-cell">
-        <div className="flex flex-col justify-between gap-2">
+        <div className="max-w-[336px] cursor-pointer hover:underline">
+          <a
+            href={props.proposal.proposalLink}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <div className="pr-5 text-[18px] font-normal">
+              {props.proposal.proposalTitle}
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div className="flex flex-row items-center">
+        <div className="flex w-[250px] flex-col justify-between gap-2">
           <div className="text-[21px] font-semibold leading-[26px]">
             {dayjs(props.proposal.timeEnd).fromNow()}
           </div>
@@ -113,11 +100,10 @@ export const ActiveProposal = async (props: {
                     `}
           </div>
         </div>
-      </td>
-      <td className="hidden lg:table-cell">
-        <div className="text-end">
-          <div className="flex w-full flex-col items-center">
-            {props.proposal.voted == "not-connected" ? (
+
+        <div className="w-[200px] text-end">
+          <div className="flex flex-col items-center">
+            {props.proposal.proposalTitle == "not-connected" ? (
               <div className="p-2 text-center text-[17px] leading-[26px] text-white">
                 Connect wallet to see your vote status
               </div>
@@ -132,7 +118,7 @@ export const ActiveProposal = async (props: {
               />
             ) : (
               <div>
-                {props.proposal.voted == "true" && (
+                {props.proposal.proposalTitle == "true" && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"
@@ -145,7 +131,7 @@ export const ActiveProposal = async (props: {
                     <div className="text-[18px]">Voted</div>
                   </div>
                 )}
-                {props.proposal.voted == "false" && (
+                {props.proposal.proposalTitle == "false" && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"
@@ -162,7 +148,7 @@ export const ActiveProposal = async (props: {
             )}
           </div>
         </div>
-      </td>
-    </tr>
+      </div>
+    </div>
   );
 };

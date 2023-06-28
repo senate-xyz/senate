@@ -1,7 +1,7 @@
 import { ProposalState, type Vote, prisma } from "@senate/database";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../pages/api/auth/[...nextauth]";
-import { Filters } from "./components/csr/Filters";
+import { Filters } from "./components/Filters";
 import { Suspense } from "react";
 import { type Metadata } from "next";
 import Items from "./components/Items";
@@ -189,17 +189,7 @@ async function fetchItems(
     },
     include: {
       dao: true,
-      daohandler: true,
-      votes: {
-        where: {
-          voteraddress: {
-            in:
-              proxy == "any"
-                ? user?.voters.map((voter) => voter.address)
-                : [proxy],
-          },
-        },
-      },
+      daohandler: { select: { type: true } },
     },
     skip: page,
     take: 1,
@@ -220,9 +210,6 @@ async function fetchItems(
           process.env.NEXT_PUBLIC_URL_SHORTNER || ""
         }${proposal.id.slice(-6)}/w/${user ? user.id.slice(-6) : ""}`,
         timeEnd: proposal.timeend,
-        voted: user
-          ? String(proposal.votes.map((vote: Vote) => vote.choice).length > 0)
-          : "not-connected",
       };
     }) ?? [];
 
@@ -242,7 +229,7 @@ export default async function Home({
   });
 
   return (
-    <div className="relative min-h-screen">
+    <div className="min-h-screen gap-2">
       <Suspense>
         <Filters subscriptions={subscripions} proxies={proxies} />
       </Suspense>
