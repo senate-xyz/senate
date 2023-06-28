@@ -46,6 +46,7 @@
     "react-cookie": "4.1.1",
     "react-dom": "18.2.0",
     "react-icons": "4.10.1",
+    "react-infinite-scroller": "^1.2.6",
     "react-query": "3.39.3",
     "server-only": "0.0.1",
     "siwe": "2.1.4",

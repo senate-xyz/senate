@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="flex flex-col gap-10 pt-8">
+    <div className="flex flex-col gap-4 pt-4">
       <div className="relative w-full overflow-hidden bg-[#262626] p-4 shadow hover:shadow-md">
         <div className="flex animate-pulse flex-col items-center gap-5 lg:flex-row">
           <div className="h-10 w-[280px] bg-[#545454]" />
