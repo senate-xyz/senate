@@ -1,4 +1,3 @@
-import { isUpToDate } from "./Table";
 import Image from "next/image";
 import dayjs, { extend } from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -18,7 +17,7 @@ export const MobileActiveProposal = async (props: {
     voted: string;
   };
 }) => {
-  const loading = !(await isUpToDate(props.proposal.daoHandlerId));
+  const loading = true;
 
   const daoPicture = await fetch(
     `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${props.proposal.daoPicture}.svg`
