@@ -19,7 +19,6 @@ type Item = {
 };
 
 type ItemsProps = {
-  initialItems: Item[];
   fetchItems: (
     from?: string,
     end?: number,
@@ -31,14 +30,10 @@ type ItemsProps = {
   searchParams?: { from: string; end: number; voted: string; proxy: string };
 };
 
-export default function Items({
-  initialItems,
-  fetchItems,
-  searchParams,
-}: ItemsProps) {
+export default function Items({ fetchItems, searchParams }: ItemsProps) {
   const fetching = useRef(false);
-  const [page, setPage] = useState(2);
-  const [pages, setPages] = useState([initialItems]);
+  const [page, setPage] = useState(0);
+  const [pages, setPages] = useState<Item[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const items = pages.flatMap((page) => page);
 
@@ -56,7 +51,8 @@ export default function Items({
         );
 
         setHasMore(data.length > 0);
-        setPages((prev) => [...prev, data]);
+        if (page == 0) setPages([...data]);
+        else setPages((prev) => [...prev, ...data]);
         setPage(page + 1);
       } finally {
         fetching.current = false;
@@ -65,20 +61,24 @@ export default function Items({
   };
 
   useEffect(() => {
-    setPage(2);
-    setPages([]);
+    setPage(0);
     setHasMore(true);
-  }, [initialItems]);
+  }, [searchParams]);
 
   return (
     <InfiniteScroll
-      pageStart={1}
       loadMore={loadMore}
       hasMore={hasMore}
       loader={
-        <span key={0} className="loader">
-          Loading ...
-        </span>
+        <div className="relative h-[96px] w-full overflow-hidden bg-[#262626] p-4 shadow hover:shadow-md">
+          <div className="flex w-full animate-pulse flex-row items-center gap-5">
+            <div className="h-[64px] w-[64px] bg-[#545454]" />
+            <div className="h-[32px] w-[64px] bg-[#545454]" />
+            <div className="flex h-[32px] grow bg-[#545454]" />
+            <div className="h-[32px] w-[250px] bg-[#545454]" />
+            <div className="h-10 w-10 rounded-full bg-[#545454]" />
+          </div>
+        </div>
       }
       element="main"
     >

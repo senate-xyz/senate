@@ -241,13 +241,6 @@ export default async function Home({
     return { id: subDAO.id, name: subDAO.name };
   });
 
-  const items = await fetchItems(
-    searchParams?.from ?? "any",
-    searchParams?.end ?? 365,
-    searchParams?.voted ?? "any",
-    searchParams?.proxy ?? "any"
-  );
-
   return (
     <div className="relative min-h-screen">
       <Suspense>
@@ -255,11 +248,7 @@ export default async function Home({
       </Suspense>
 
       <Suspense>
-        <Items
-          initialItems={items}
-          fetchItems={fetchItems}
-          searchParams={searchParams}
-        />
+        <Items fetchItems={fetchItems} searchParams={searchParams} />
       </Suspense>
     </div>
   );

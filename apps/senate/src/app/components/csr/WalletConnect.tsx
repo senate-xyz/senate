@@ -24,7 +24,6 @@ const WalletConnect = () => {
         session.status == "authenticated" &&
         account.isConnected &&
         acceptedTerms.isSuccess &&
-        acceptedTermsTimestamp.isSuccess &&
         !acceptedTerms.data
       ) {
         void disconnectForTerms();
@@ -39,8 +38,7 @@ const WalletConnect = () => {
   });
 
   const acceptedTerms = trpc.accountSettings.getAcceptedTerms.useQuery();
-  const acceptedTermsTimestamp =
-    trpc.accountSettings.getAcceptedTermsTimestamp.useQuery();
+
   const { connector: activeConnector } = useAccount();
   const { openConnectModal } = useConnectModal();
 
