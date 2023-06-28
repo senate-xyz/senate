@@ -16,6 +16,7 @@ export const UnsubscribedDAO = (props: {
   bgColor: string;
   daoHandlers: string[];
 }) => {
+  const [disabled, setDisabled] = useState(false);
   const [imgSrc, setImgSrc] = useState(
     props.daoPicture
       ? props.daoPicture + "_medium.png"
@@ -77,7 +78,11 @@ export const UnsubscribedDAO = (props: {
           backgroundImage: `linear-gradient(45deg, ${props.bgColor}40 15%, ${props.bgColor}10)`,
           filter: "saturate(5)",
         }}
-        className="relative flex h-full w-full flex-col rounded text-sm font-bold text-white shadow"
+        className={`relative flex h-full w-full flex-col rounded text-sm font-bold text-white shadow ${
+          disabled
+            ? "pointer-events-none animate-pulse opacity-25"
+            : "opacity-100"
+        }`}
       >
         <div className="flex grow flex-col items-center justify-end px-6 pb-6">
           <Image
@@ -163,21 +168,22 @@ export const UnsubscribedDAO = (props: {
         <button
           className="h-14 w-full bg-white text-xl font-bold text-black hover:bg-neutral-100 active:bg-neutral-300"
           onClick={() => {
-            account.isConnected && session.status == "authenticated"
-              ? subscribe.mutate(
-                  {
-                    daoId: props.daoId,
+            if (account.isConnected && session.status == "authenticated") {
+              setDisabled(true);
+              subscribe.mutate(
+                {
+                  daoId: props.daoId,
+                },
+                {
+                  onSuccess: () => {
+                    if (router) router.refresh();
                   },
-                  {
-                    onSuccess: () => {
-                      if (router) router.refresh();
-                    },
-                    onError: () => {
-                      if (router) router.refresh();
-                    },
-                  }
-                )
-              : connectAndSubscribe(props.daoId);
+                  onError: () => {
+                    if (router) router.refresh();
+                  },
+                }
+              );
+            } else connectAndSubscribe(props.daoId);
           }}
         >
           Subscribe

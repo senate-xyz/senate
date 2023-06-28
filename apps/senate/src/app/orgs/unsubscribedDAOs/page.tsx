@@ -6,7 +6,7 @@ import { authOptions } from "../../../pages/api/auth/[...nextauth]";
 import "server-only";
 import { Suspense } from "react";
 
-const getSubscribedDAOs = async () => {
+const getUnsubscribedDAOs = async () => {
   const session = await getServerSession(authOptions());
   const userAddress = session?.user?.name ?? "";
 
@@ -26,7 +26,7 @@ const getSubscribedDAOs = async () => {
   const daosList = await prisma.dao.findMany({
     where: {
       subscriptions: {
-        some: {
+        none: {
           user: { is: user },
         },
       },
@@ -46,37 +46,13 @@ const getSubscribedDAOs = async () => {
   return daosList;
 };
 
-const getAllDAOs = async () => {
-  const daosList = await prisma.dao.findMany({
-    where: {},
-    orderBy: {
-      name: "asc",
-    },
-    include: {
-      handlers: true,
-      subscriptions: {
-        take: 0, //needed in order to maintain type safety
-      },
-    },
-  });
-  return daosList;
-};
-
 export default async function UnsubscribedDAOs() {
-  const allDAOs = await getAllDAOs();
-  const subscribedDAOs = await getSubscribedDAOs();
-
-  const unsubscribedDAOs = allDAOs
-    .filter(
-      (dao) =>
-        !subscribedDAOs
-          .map((subscribedDAO) => subscribedDAO.name)
-          .includes(dao.name)
-    )
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const unsubscriptions = (await getUnsubscribedDAOs()).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
 
   const backgroundColors = await Promise.all(
-    unsubscribedDAOs.map(async (dao) => {
+    unsubscriptions.map(async (dao) => {
       const color = await getAverageColor(
         `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${dao.picture}.svg`,
         {
@@ -97,7 +73,7 @@ export default async function UnsubscribedDAOs() {
 
   return (
     <div>
-      {unsubscribedDAOs.length > 0 && (
+      {unsubscriptions.length > 0 && (
         <main>
           <p className="mb-4 w-full text-[36px] font-bold leading-[36px] text-white">
             Organisations you can subscribe to
@@ -105,10 +81,10 @@ export default async function UnsubscribedDAOs() {
 
           <Suspense>
             <div className="grid grid-cols-1  place-items-center gap-10 min-[650px]:grid-cols-2 min-[900px]:grid-cols-3 lg:place-items-start min-[1200px]:grid-cols-4 min-[1500px]:grid-cols-5 min-[1800px]:grid-cols-6 min-[2200px]:grid-cols-7 min-[2300px]:grid-cols-8 min-[2500px]:grid-cols-9 min-[3000px]:grid-cols-10">
-              {unsubscribedDAOs.map((unsubscribedDAO, index) => {
+              {unsubscriptions.map((unsubscribedDAO) => {
                 return (
                   <UnsubscribedDAO
-                    key={index}
+                    key={unsubscribedDAO.id}
                     daoId={unsubscribedDAO.id}
                     daoName={unsubscribedDAO.name}
                     daoPicture={unsubscribedDAO.picture}

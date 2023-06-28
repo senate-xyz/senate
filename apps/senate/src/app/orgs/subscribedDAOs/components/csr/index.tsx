@@ -14,6 +14,7 @@ export const SubscribedDAO = (props: {
   daoHandlers: string[];
   activeProposals: number;
 }) => {
+  const [disabled, setDisabled] = useState(false);
   const [imgSrc, setImgSrc] = useState(
     props.daoPicture
       ? props.daoPicture + "_medium.png"
@@ -29,21 +30,19 @@ export const SubscribedDAO = (props: {
   }, [props.daoPicture]);
 
   const [showMenu, setShowMenu] = useState(false);
-  // const [getDailyEmails, setDailyEmails] = useState(
-  //     props.notificationsEnabled
-  // )
 
   const router = useRouter();
 
   const unsubscribe = trpc.subscriptions.unsubscribe.useMutation();
-  // const updateDAO = trpc.subscriptions.updateSubscription.useMutation()
 
   return (
     <div className="h-[320px] w-[240px]">
       {showMenu ? (
         <div
           className={`relative flex h-full w-full flex-col rounded bg-black text-sm font-bold text-white shadow ${
-            unsubscribe.isLoading ? "opacity-50" : "opacity-100"
+            disabled
+              ? "pointer-events-none animate-pulse opacity-25"
+              : "opacity-100"
           }`}
         >
           <div className="flex h-full flex-col justify-between">
@@ -84,12 +83,15 @@ export const SubscribedDAO = (props: {
             <div
               className="w-full cursor-pointer px-4 pb-4 text-center text-[15px] font-thin text-white underline"
               onClick={() => {
+                setDisabled(true);
                 unsubscribe.mutate(
                   { daoId: props.daoId },
                   {
                     onSuccess: () => {
                       if (router) router.refresh();
-                      setShowMenu(false);
+                    },
+                    onError: () => {
+                      if (router) router.refresh();
                     },
                   }
                 );
