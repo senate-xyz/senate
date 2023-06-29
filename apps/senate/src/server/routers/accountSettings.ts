@@ -358,7 +358,7 @@ export const accountSettingsRouter = router({
 
       posthog.capture({
         distinctId: user.address,
-        event: user.discordincludevotes
+        event: user.discordreminders
           ? "discord_reminders_enable"
           : "discord_reminders_disable",
         properties: {
