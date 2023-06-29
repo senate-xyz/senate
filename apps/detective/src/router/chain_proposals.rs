@@ -189,7 +189,9 @@ async fn insert_proposals(
 
         match existing {
             Some(existing) => {
-                if proposal.state != existing.state || proposal.scores_total != existing.scorestotal
+                if proposal.state != existing.state
+                    || proposal.scores_total != existing.scorestotal
+                    || proposal.url != existing.url
                 {
                     ctx.db
                         .proposal()
