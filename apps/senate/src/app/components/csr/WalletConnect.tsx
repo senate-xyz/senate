@@ -5,8 +5,6 @@ import { signOut, useSession } from "next-auth/react";
 import { redirect, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { disconnect } from "@wagmi/core";
-import { trpc } from "../../../server/trpcClient";
 import { usePostHog } from "posthog-js/react";
 
 const WalletConnect = () => {
@@ -15,22 +13,8 @@ const WalletConnect = () => {
   const searchParams = useSearchParams();
   const session = useSession();
   const account = useAccount({
-    onConnect() {
-      const disconnectForTerms = async () => {
-        await disconnect();
-      };
-
-      if (
-        session.status == "authenticated" &&
-        account.isConnected &&
-        acceptedTerms.isSuccess &&
-        acceptedTermsTimestamp.isSuccess &&
-        !acceptedTerms.data
-      ) {
-        void disconnectForTerms();
-      } else {
-        if (posthog) posthog.identify(account.address);
-      }
+    onConnect({ address }) {
+      if (posthog) posthog.identify(address);
     },
     onDisconnect() {
       if (posthog) posthog.reset();
@@ -38,9 +22,6 @@ const WalletConnect = () => {
     },
   });
 
-  const acceptedTerms = trpc.accountSettings.getAcceptedTerms.useQuery();
-  const acceptedTermsTimestamp =
-    trpc.accountSettings.getAcceptedTermsTimestamp.useQuery();
   const { connector: activeConnector } = useAccount();
   const { openConnectModal } = useConnectModal();
 
