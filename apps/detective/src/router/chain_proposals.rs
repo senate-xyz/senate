@@ -189,7 +189,9 @@ async fn insert_proposals(
 
         match existing {
             Some(existing) => {
-                if proposal.state != existing.state || proposal.scores_total != existing.scorestotal
+                if proposal.state != existing.state
+                    || proposal.scores_total != existing.scorestotal
+                    || proposal.url != existing.url
                 {
                     ctx.db
                         .proposal()
@@ -205,6 +207,7 @@ async fn insert_proposals(
                                     update_v.push(proposal::name::set(proposal.name.clone()));
                                 }
 
+                                update_v.push(proposal::url::set(proposal.url.clone()));
                                 update_v.push(proposal::choices::set(proposal.choices.clone()));
                                 update_v.push(proposal::scores::set(proposal.scores.clone()));
                                 update_v.push(proposal::scorestotal::set(
