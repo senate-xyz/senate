@@ -63,7 +63,8 @@ export const Filters = (props: {
       setVoted(String(searchParams.get("voted") ?? "any"));
       setProxy(String(searchParams.get("proxy") ?? "any"));
     }
-  }, [searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (router)

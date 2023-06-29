@@ -1,10 +1,11 @@
 "use client";
 
 import { type ProposalState } from "@senate/database";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import InfiniteScroll from "react-infinite-scroller";
 import { DesktopItem } from "./ssr/DesktopItem";
+import { MobileRow } from "./ssr/MobileRow";
 
 type Item = {
   proposalId: string;
@@ -31,41 +32,34 @@ type ItemsProps = {
 };
 
 export default function Items({ fetchItems, searchParams }: ItemsProps) {
-  const fetching = useRef(false);
-  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
   const [hasMore, setHasMore] = useState(true);
 
   const loadMore = async () => {
-    if (!fetching.current) {
-      try {
-        fetching.current = true;
+    if (!loading) {
+      setLoading(true);
 
-        const data = await fetchItems(
-          searchParams?.from ?? "any",
-          searchParams?.end ?? 365,
-          searchParams?.voted ?? "any",
-          searchParams?.proxy ?? "any",
-          page
-        );
+      const data = await fetchItems(
+        searchParams?.from ?? "any",
+        searchParams?.end ?? 365,
+        searchParams?.voted ?? "any",
+        searchParams?.proxy ?? "any",
+        items.length
+      );
 
-        setItems((prev) => [...prev, ...data]);
-        if (!data.length) setHasMore(false);
-      } finally {
-        fetching.current = false;
-      }
+      setItems((prev) => [...prev, ...data.filter((d) => !prev.includes(d))]);
+
+      if (!data.length) setHasMore(false);
+
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (!items.length) setPage(0);
-    else setPage(page + 1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items]);
-
-  useEffect(() => {
     setItems([]);
-    setHasMore(true);
+    if (!hasMore) setHasMore(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   return (
@@ -106,7 +100,6 @@ export default function Items({ fetchItems, searchParams }: ItemsProps) {
       </div>
 
       <InfiniteScroll
-        pageStart={0}
         loadMore={loadMore}
         hasMore={hasMore}
         threshold={Infinity}
@@ -122,11 +115,13 @@ export default function Items({ fetchItems, searchParams }: ItemsProps) {
           </div>
         }
       >
-        {items.map((item, index) => (
-          <div key={index} className="pb-1">
-            <DesktopItem proposal={item} />
-          </div>
-        ))}
+        <ul>
+          {items.map((item, index) => (
+            <li className="pb-1" key={index}>
+              <DesktopItem proposal={item} />
+            </li>
+          ))}
+        </ul>
       </InfiniteScroll>
       {!hasMore && (
         <div className="w-full p-8 text-center text-white">

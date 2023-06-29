@@ -4,7 +4,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 
 extend(relativeTime);
 
-export const MobileActiveProposal = async (props: {
+export const MobileRow = async (props: {
   proposal: {
     daoHandlerId: string;
     daoName: string;
@@ -14,7 +14,6 @@ export const MobileActiveProposal = async (props: {
     state: string;
     proposalLink: string;
     timeEnd: Date;
-    voted: string;
   };
 }) => {
   const loading = true;
@@ -117,7 +116,7 @@ export const MobileActiveProposal = async (props: {
 
           <div className="self-end p-2">
             <div className="flex w-full flex-col items-center">
-              {props.proposal.voted == "not-connected" ? (
+              {props.proposal.proposalLink == "not-connected" ? (
                 <div className="p-2 text-center text-[17px] leading-[26px] text-white">
                   Connect wallet to see your vote status
                 </div>
@@ -132,7 +131,7 @@ export const MobileActiveProposal = async (props: {
                 />
               ) : (
                 <div>
-                  {props.proposal.voted == "true" && (
+                  {props.proposal.proposalLink == "true" && (
                     <div className="flex w-full flex-col items-center">
                       <Image
                         loading="eager"
@@ -144,7 +143,7 @@ export const MobileActiveProposal = async (props: {
                       />
                     </div>
                   )}
-                  {props.proposal.voted == "false" && (
+                  {props.proposal.proposalLink == "false" && (
                     <div className="flex w-full flex-col items-center">
                       <Image
                         loading="eager"
