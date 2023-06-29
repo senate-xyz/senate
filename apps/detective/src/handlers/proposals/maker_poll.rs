@@ -100,7 +100,11 @@ async fn data_for_proposal(
         Utc,
     );
 
-    let proposal_url = format!("{}{}", decoder.proposalUrl, log.poll_id.as_u128());
+    let proposal_url = format!(
+        "{}{}",
+        decoder.proposalUrl,
+        log.multi_hash.chars().take(9).collect::<String>()
+    );
 
     let proposal_external_id = log.poll_id.to_string();
 
