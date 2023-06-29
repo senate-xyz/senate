@@ -123,9 +123,7 @@ export async function fetchVote(proposalId: string, proxy: string) {
     },
   });
 
-  voterHandlers.map((vh) => {
-    if (!vh.uptodate) return VoteResult.LOADING;
-  });
+  if (voterHandlers.some((vh) => !vh.uptodate)) return VoteResult.LOADING;
 
   if (proposal.votes.map((vote: Vote) => vote.choice).length > 0)
     return VoteResult.VOTED;
