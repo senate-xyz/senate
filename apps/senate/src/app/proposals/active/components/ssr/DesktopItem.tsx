@@ -22,8 +22,9 @@ export const DesktopItem = (props: {
     <div className="flex h-[96px] w-full flex-row justify-between bg-[#121212] text-[#EDEDED]">
       <div className="flex flex-row items-center">
         <div className="m-[12px] flex w-[220px] flex-row items-center gap-[8px]">
-          <div className="border border-b-2 border-l-0 border-r-2 border-t-0">
+          <div className=" border border-b-2 border-l-0 border-r-2 border-t-0">
             <Image
+              className="min-w-[64px]"
               loading="eager"
               priority={true}
               width={64}
@@ -34,8 +35,8 @@ export const DesktopItem = (props: {
               alt={props.proposal.daoName}
             />
           </div>
-          <div className="flex flex-col gap-2 pl-2">
-            <div className="text-[24px] font-light leading-[30px]">
+          <div className="flex h-[64px] min-w-[150px] flex-col gap-2 pl-2">
+            <div className="whitespace-nowrap text-[24px] font-light leading-[30px]">
               {props.proposal.daoName}
             </div>
 
@@ -62,7 +63,7 @@ export const DesktopItem = (props: {
             </div>
           </div>
         </div>
-        <div className="max-w-[336px] cursor-pointer hover:underline">
+        <div className="cursor-pointer hover:underline">
           <a
             href={props.proposal.proposalLink}
             target="_blank"

@@ -192,7 +192,7 @@ async function fetchItems(
       daohandler: { select: { type: true } },
     },
     skip: page,
-    take: 1,
+    take: 5,
   });
 
   const result =

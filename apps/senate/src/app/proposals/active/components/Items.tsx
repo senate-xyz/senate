@@ -102,7 +102,7 @@ export default function Items({ fetchItems, searchParams }: ItemsProps) {
       <InfiniteScroll
         loadMore={loadMore}
         hasMore={hasMore}
-        threshold={Infinity}
+        threshold={1024}
         loader={
           <div className="relative h-[96px] w-full overflow-hidden bg-[#262626] p-4 shadow hover:shadow-md">
             <div className="flex w-full animate-pulse flex-row items-center gap-5">
