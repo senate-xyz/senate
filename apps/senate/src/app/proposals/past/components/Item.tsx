@@ -4,8 +4,7 @@ import Image from "next/image";
 import dayjs, { extend } from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { type Item } from "./Items";
-import { Suspense, useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { Suspense } from "react";
 
 extend(relativeTime);
 
@@ -21,28 +20,6 @@ export default function Item(props: {
   proxy: string;
   fetchVote: (proposalId: string, proxy: string) => Promise<string>;
 }) {
-  const session = useSession();
-
-  const [vote, setVote] = useState(VoteResult.LOADING);
-
-  useEffect(() => {
-    async function fetch() {
-      await props
-        .fetchVote(props.proposal.proposalId, props.proxy)
-        .then((vote) => setVote(vote as VoteResult));
-    }
-
-    if (session.status == "authenticated") {
-      setVote(VoteResult.LOADING);
-    } else {
-      setVote(VoteResult.NOT_CONNECTED);
-    }
-
-    void fetch();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session.status]);
-
   return (
     <div>
       <div className="hidden h-[96px] w-full flex-row justify-between bg-[#121212] text-[#EDEDED] lg:flex">
@@ -278,12 +255,12 @@ export default function Item(props: {
           <div className="w-[200px] text-end">
             <Suspense>
               <div className="flex flex-col items-center">
-                {vote == VoteResult.NOT_CONNECTED && (
+                {props.proposal.voteResult == VoteResult.NOT_CONNECTED && (
                   <div className="p-2 text-center text-[17px] leading-[26px] text-white">
                     Connect wallet to see your vote status
                   </div>
                 )}
-                {vote == VoteResult.LOADING && (
+                {props.proposal.voteResult == VoteResult.LOADING && (
                   <Image
                     loading="eager"
                     priority={true}
@@ -293,7 +270,7 @@ export default function Item(props: {
                     height={32}
                   />
                 )}
-                {vote == VoteResult.VOTED && (
+                {props.proposal.voteResult == VoteResult.VOTED && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"
@@ -306,7 +283,7 @@ export default function Item(props: {
                     <div className="text-[18px]">Voted</div>
                   </div>
                 )}
-                {vote == VoteResult.NOT_VOTED && (
+                {props.proposal.voteResult == VoteResult.NOT_VOTED && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"
@@ -405,13 +382,13 @@ export default function Item(props: {
 
             <div className="self-end p-2">
               <div className="flex w-full flex-col items-center">
-                {vote == VoteResult.NOT_CONNECTED && (
+                {props.proposal.voteResult == VoteResult.NOT_CONNECTED && (
                   <div className="p-2 text-center text-[17px] leading-[26px] text-white">
                     Connect wallet to see your vote status
                   </div>
                 )}
 
-                {vote == VoteResult.LOADING && (
+                {props.proposal.voteResult == VoteResult.LOADING && (
                   <Image
                     loading="eager"
                     priority={true}
@@ -422,7 +399,7 @@ export default function Item(props: {
                   />
                 )}
 
-                {vote == VoteResult.VOTED && (
+                {props.proposal.voteResult == VoteResult.VOTED && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"
@@ -435,7 +412,7 @@ export default function Item(props: {
                   </div>
                 )}
 
-                {vote == VoteResult.NOT_VOTED && (
+                {props.proposal.voteResult == VoteResult.NOT_VOTED && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"

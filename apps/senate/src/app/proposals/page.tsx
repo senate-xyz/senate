@@ -1,4 +1,9 @@
-import { prisma, type Vote, ProposalState, JsonArray } from "@senate/database";
+import {
+  prisma,
+  type Vote,
+  ProposalState,
+  type JsonArray,
+} from "@senate/database";
 import { type Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
@@ -274,6 +279,8 @@ export async function fetchItems(
         highestScoreChoice = String(proposal.choices[highestScoreIndex]);
       }
 
+      const voteResult = await fetchVote(proposal.id, proxy);
+
       return {
         proposalId: proposal.id,
         daoName: proposal.dao.name,
@@ -291,6 +298,7 @@ export async function fetchItems(
         highestScore: highestScore,
         scoresTotal: parseFloat(proposal.scorestotal?.toString() ?? "0.0"),
         passedQuorum: Number(proposal.quorum) < Number(proposal.scorestotal),
+        voteResult: voteResult,
       };
     }) ?? [];
 

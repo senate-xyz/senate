@@ -6,6 +6,13 @@ import Image from "next/image";
 import InfiniteScroll from "react-infinite-scroller";
 import Item from "./Item";
 
+enum VoteResult {
+  NOT_CONNECTED = "NOT_CONNECTED",
+  LOADING = "LOADING",
+  VOTED = "VOTED",
+  NOT_VOTED = "NOT_VOTED",
+}
+
 export type Item = {
   proposalId: string;
   daoName: string;
@@ -16,6 +23,7 @@ export type Item = {
   state: ProposalState;
   proposalLink: string;
   timeEnd: Date;
+  voteResult: VoteResult;
 };
 
 type ItemsProps = {
