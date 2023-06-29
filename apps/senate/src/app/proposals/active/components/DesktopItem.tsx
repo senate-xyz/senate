@@ -4,8 +4,8 @@ import Image from "next/image";
 import dayjs, { extend } from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { type Item } from "./Items";
-
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 extend(relativeTime);
 
@@ -21,7 +21,8 @@ export default function DesktopItem(props: {
   proxy: string;
   fetchVote: (proposalId: string, proxy: string) => Promise<string>;
 }) {
-  const loading = true;
+  const session = useSession();
+
   const [vote, setVote] = useState(VoteResult.LOADING);
 
   useEffect(() => {
@@ -33,9 +34,16 @@ export default function DesktopItem(props: {
 
       setVote(vote as VoteResult);
     }
-    void fetch();
+
+    if (session.status == "authenticated") {
+      setVote(VoteResult.LOADING);
+      void fetch();
+    } else {
+      setVote(VoteResult.NOT_CONNECTED);
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [session]);
 
   return (
     <div className="flex h-[96px] w-full flex-row justify-between bg-[#121212] text-[#EDEDED]">
