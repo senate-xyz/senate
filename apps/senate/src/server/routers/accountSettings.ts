@@ -356,6 +356,18 @@ export const accountSettingsRouter = router({
         },
       });
 
+      posthog.capture({
+        distinctId: user.address,
+        event: user.discordincludevotes
+          ? "discord_reminders_enable"
+          : "discord_reminders_disable",
+        properties: {
+          props: {
+            app: "web-backend",
+          },
+        },
+      });
+
       return user;
     }),
 
