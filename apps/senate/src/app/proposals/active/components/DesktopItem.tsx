@@ -43,7 +43,7 @@ export default function DesktopItem(props: {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session]);
+  }, [session.status]);
 
   return (
     <div className="flex h-[96px] w-full flex-row justify-between bg-[#121212] text-[#EDEDED]">
