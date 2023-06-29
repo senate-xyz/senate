@@ -103,10 +103,157 @@ export default function Item(props: {
         </div>
 
         <div className="flex flex-row items-center">
-          <div className="flex w-[250px] flex-col justify-between gap-2">
-            <div className="text-[21px] font-semibold leading-[26px]">
-              {dayjs(props.proposal.timeEnd).fromNow()}
-            </div>
+          <div className="flex w-[340px] flex-col justify-between gap-2">
+            {props.proposal.daoHandlerType == "MAKER_EXECUTIVE" && (
+              <div className="text-[21px] leading-[26px] text-white">
+                <div className="mb-1 flex flex-row gap-2">
+                  {(props.proposal.state == "EXECUTED" ||
+                    props.proposal.state == "QUEUED") && (
+                    <div className="flex flex-row gap-2">
+                      <div className="h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]">
+                        <Image
+                          loading="eager"
+                          priority={true}
+                          width={22}
+                          height={22}
+                          src={"/assets/Icon/Check.svg"}
+                          alt="off-chain"
+                        />
+                      </div>
+
+                      <div>Passed</div>
+                    </div>
+                  )}
+                  {props.proposal.state == "EXPIRED" && (
+                    <div className="flex flex-row gap-2">
+                      <div className="h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]">
+                        <Image
+                          loading="eager"
+                          priority={true}
+                          width={22}
+                          height={22}
+                          src={"/assets/Icon/NoCheck.svg"}
+                          alt="off-chain"
+                        />
+                      </div>
+
+                      <div>Did not pass</div>
+                    </div>
+                  )}
+                </div>
+                <div className="text-[18px] leading-[26px] text-white">
+                  with{" "}
+                  {(props.proposal.scoresTotal / 1000000000000000000).toFixed(
+                    2
+                  )}{" "}
+                  MKR
+                </div>
+              </div>
+            )}
+            {props.proposal.daoHandlerType != "MAKER_EXECUTIVE" &&
+              props.proposal.highestScoreChoice != "undefined" &&
+              props.proposal.state != "HIDDEN" &&
+              props.proposal.passedQuorum && (
+                <div className="w-[340px]">
+                  <div className="flex flex-row gap-2">
+                    <div className="flex h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]">
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        width={22}
+                        height={22}
+                        src={"/assets/Icon/Check.svg"}
+                        alt="off-chain"
+                      />
+                    </div>
+                    <div className="truncate text-[21px] leading-[26px] text-white">
+                      {props.proposal.highestScoreChoice}
+                    </div>
+                  </div>
+                  <div className="mt-1 bg-[#262626]">
+                    <div
+                      style={{
+                        width: `${(
+                          (props.proposal.highestScore /
+                            props.proposal.scoresTotal) *
+                          100
+                        ).toFixed(0)}%`,
+                      }}
+                      className={`h-full bg-[#EDEDED]`}
+                    >
+                      <div className="px-2 text-black">
+                        {(
+                          (props.proposal.highestScore /
+                            props.proposal.scoresTotal) *
+                          100
+                        ).toFixed(2)}
+                        %
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            {props.proposal.daoHandlerType != "MAKER_EXECUTIVE" &&
+              props.proposal.highestScoreChoice != "undefined" &&
+              props.proposal.state != "HIDDEN" &&
+              !props.proposal.passedQuorum && (
+                <div>
+                  <div className="flex flex-row gap-2">
+                    <div className="flex h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]">
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        width={22}
+                        height={22}
+                        src={"/assets/Icon/NoCheck.svg"}
+                        alt="off-chain"
+                      />
+                    </div>
+                    <div className="text-[21px] leading-[26px] text-white">
+                      No Quorum
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            {props.proposal.state == "HIDDEN" && (
+              <div>
+                <div className="flex flex-row gap-2">
+                  <div className="flex h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]">
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      width={22}
+                      height={22}
+                      src={"/assets/Icon/Hidden.svg"}
+                      alt="off-chain"
+                    />
+                  </div>
+
+                  <div className="text-[21px] leading-[26px] text-white">
+                    Hidden results
+                  </div>
+                </div>
+                <div className="mt-1 w-[340px] bg-[#262626]">
+                  <div
+                    style={{
+                      width: "100%",
+                    }}
+                    className={`h-full bg-[#EDEDED]`}
+                  >
+                    <div className="px-2 text-black">??</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {props.proposal.daoHandlerType != "MAKER_EXECUTIVE" &&
+              props.proposal.highestScoreChoice == "undefined" && (
+                <div className="text-[17px] leading-[26px] text-white">
+                  Unable to fetch results data
+                </div>
+              )}
             <div className="text-[15px] font-normal leading-[19px]">
               {`on ${new Date(props.proposal.timeEnd).toLocaleDateString(
                 "en-US",
@@ -164,12 +311,12 @@ export default function Item(props: {
                     <Image
                       loading="eager"
                       priority={true}
-                      src="/assets/Icon/NotVotedYet.svg"
+                      src="/assets/Icon/DidntVote.svg"
                       alt="voted"
                       width={32}
                       height={32}
                     />
-                    <div className="text-[18px]">Not Voted Yet</div>
+                    <div className="text-[18px]">Didn’t Vote</div>
                   </div>
                 )}
               </div>

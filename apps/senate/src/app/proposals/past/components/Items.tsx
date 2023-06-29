@@ -16,6 +16,11 @@ export type Item = {
   state: ProposalState;
   proposalLink: string;
   timeEnd: Date;
+  daoHandlerType: string;
+  highestScoreChoice: string;
+  highestScore: number;
+  scoresTotal: number;
+  passedQuorum: boolean;
 };
 
 type ItemsProps = {
@@ -45,7 +50,7 @@ export default function Items({
       setLoading(true);
 
       const data = await fetchItems(
-        true,
+        false,
         items.length,
         searchParams?.from ?? "any",
         searchParams?.end ?? 365,
@@ -86,9 +91,9 @@ export default function Items({
           </div>
         </div>
         <div className="flex flex-row items-center">
-          <div className="w-[250px] items-center font-normal">
+          <div className="w-[340px] items-center font-normal">
             <div className="flex gap-1">
-              <div>Ends in</div>
+              <div>Ended on</div>
               <Image
                 loading="eager"
                 priority={true}
