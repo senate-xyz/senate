@@ -69,7 +69,7 @@ export const Filters = (props: {
         searchParams.get("proxy") != proxy
       )
         router.push(
-          `/proposals/past?from=${from}&end=${end}&voted=${voted}&proxy=${proxy}`
+          `/proposals/active?from=${from}&end=${end}&voted=${voted}&proxy=${proxy}`
         );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [from, end, voted, router, proxy]);
