@@ -7,14 +7,16 @@ pub use makerpollvote::*;
     clippy::upper_case_acronyms,
     clippy::type_complexity,
     dead_code,
-    non_camel_case_types,
+    non_camel_case_types
 )]
 pub mod makerpollvote {
     #[rustfmt::skip]
     const __ABI: &str = "[\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"creator\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"blockCreated\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"uint256\",\n        \"name\": \"pollId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"startDate\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"endDate\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string\",\n        \"name\": \"multiHash\",\n        \"type\": \"string\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string\",\n        \"name\": \"url\",\n        \"type\": \"string\"\n      }\n    ],\n    \"name\": \"PollCreated\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"creator\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"blockWithdrawn\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"pollId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"PollWithdrawn\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"voter\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"uint256\",\n        \"name\": \"pollId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"uint256\",\n        \"name\": \"optionId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"Voted\",\n    \"type\": \"event\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"startDate\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"endDate\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"string\",\n        \"name\": \"multiHash\",\n        \"type\": \"string\"\n      },\n      {\n        \"internalType\": \"string\",\n        \"name\": \"url\",\n        \"type\": \"string\"\n      }\n    ],\n    \"name\": \"createPoll\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"npoll\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256[]\",\n        \"name\": \"pollIds\",\n        \"type\": \"uint256[]\"\n      },\n      {\n        \"internalType\": \"uint256[]\",\n        \"name\": \"optionIds\",\n        \"type\": \"uint256[]\"\n      }\n    ],\n    \"name\": \"vote\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"pollId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"optionId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"vote\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"pollId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"withdrawPoll\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256[]\",\n        \"name\": \"pollIds\",\n        \"type\": \"uint256[]\"\n      }\n    ],\n    \"name\": \"withdrawPoll\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  }\n]\n";
     ///The parsed JSON ABI of the contract.
-    pub static MAKERPOLLVOTE_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> = ::ethers::contract::Lazy::new(||
-    ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid"));
+    pub static MAKERPOLLVOTE_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> =
+        ::ethers::contract::Lazy::new(|| {
+            ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid")
+        });
     pub struct makerpollvote<M>(::ethers::contract::Contract<M>);
     impl<M> ::core::clone::Clone for makerpollvote<M> {
         fn clone(&self) -> Self {
@@ -34,7 +36,9 @@ pub mod makerpollvote {
     }
     impl<M> ::core::fmt::Debug for makerpollvote<M> {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-            f.debug_tuple(stringify!(makerpollvote)).field(&self.address()).finish()
+            f.debug_tuple(stringify!(makerpollvote))
+                .field(&self.address())
+                .finish()
         }
     }
     impl<M: ::ethers::providers::Middleware> makerpollvote<M> {
@@ -44,13 +48,11 @@ pub mod makerpollvote {
             address: T,
             client: ::std::sync::Arc<M>,
         ) -> Self {
-            Self(
-                ::ethers::contract::Contract::new(
-                    address.into(),
-                    MAKERPOLLVOTE_ABI.clone(),
-                    client,
-                ),
-            )
+            Self(::ethers::contract::Contract::new(
+                address.into(),
+                MAKERPOLLVOTE_ABI.clone(),
+                client,
+            ))
         }
         ///Calls the contract's `createPoll` (0xd54a8176) function
         pub fn create_poll(
@@ -61,10 +63,7 @@ pub mod makerpollvote {
             url: ::std::string::String,
         ) -> ::ethers::contract::builders::ContractCall<M, ()> {
             self.0
-                .method_hash(
-                    [213, 74, 129, 118],
-                    (start_date, end_date, multi_hash, url),
-                )
+                .method_hash([213, 74, 129, 118], (start_date, end_date, multi_hash, url))
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `npoll` (0xd35f19d7) function
@@ -116,21 +115,15 @@ pub mod makerpollvote {
         ///Gets the contract's `PollCreated` event
         pub fn poll_created_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            PollCreatedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, PollCreatedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `PollWithdrawn` event
         pub fn poll_withdrawn_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            PollWithdrawnFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, PollWithdrawnFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `Voted` event
@@ -142,16 +135,15 @@ pub mod makerpollvote {
         /// Returns an `Event` builder for all the events of this contract.
         pub fn events(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            makerpollvoteEvents,
-        > {
-            self.0.event_with_filter(::core::default::Default::default())
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, makerpollvoteEvents>
+        {
+            self.0
+                .event_with_filter(::core::default::Default::default())
         }
     }
     impl<M: ::ethers::providers::Middleware> From<::ethers::contract::Contract<M>>
-    for makerpollvote<M> {
+        for makerpollvote<M>
+    {
         fn from(contract: ::ethers::contract::Contract<M>) -> Self {
             Self::new(contract.address(), contract.client())
         }
@@ -164,7 +156,7 @@ pub mod makerpollvote {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(
         name = "PollCreated",
@@ -189,7 +181,7 @@ pub mod makerpollvote {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "PollWithdrawn", abi = "PollWithdrawn(address,uint256,uint256)")]
     pub struct PollWithdrawnFilter {
@@ -206,7 +198,7 @@ pub mod makerpollvote {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "Voted", abi = "Voted(address,uint256,uint256)")]
     pub struct VotedFilter {
@@ -244,9 +236,7 @@ pub mod makerpollvote {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
             match self {
                 Self::PollCreatedFilter(element) => ::core::fmt::Display::fmt(element, f),
-                Self::PollWithdrawnFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::PollWithdrawnFilter(element) => ::core::fmt::Display::fmt(element, f),
                 Self::VotedFilter(element) => ::core::fmt::Display::fmt(element, f),
             }
         }
@@ -275,7 +265,7 @@ pub mod makerpollvote {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "createPoll", abi = "createPoll(uint256,uint256,string,string)")]
     pub struct CreatePollCall {
@@ -293,7 +283,7 @@ pub mod makerpollvote {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "npoll", abi = "npoll()")]
     pub struct NpollCall;
@@ -306,7 +296,7 @@ pub mod makerpollvote {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "vote", abi = "vote(uint256[],uint256[])")]
     pub struct VoteCall {
@@ -322,7 +312,7 @@ pub mod makerpollvote {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "vote", abi = "vote(uint256,uint256)")]
     pub struct VoteWithPollIdAndOptionIdCall {
@@ -338,7 +328,7 @@ pub mod makerpollvote {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "withdrawPoll", abi = "withdrawPoll(uint256)")]
     pub struct WithdrawPollCall {
@@ -353,7 +343,7 @@ pub mod makerpollvote {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "withdrawPoll", abi = "withdrawPoll(uint256[])")]
     pub struct WithdrawPollWithPollIdsCall {
@@ -374,32 +364,27 @@ pub mod makerpollvote {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <CreatePollCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CreatePollCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::CreatePoll(decoded));
             }
-            if let Ok(decoded)
-                = <NpollCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <NpollCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Npoll(decoded));
             }
-            if let Ok(decoded)
-                = <VoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Vote(decoded));
             }
-            if let Ok(decoded)
-                = <VoteWithPollIdAndOptionIdCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <VoteWithPollIdAndOptionIdCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::VoteWithPollIdAndOptionId(decoded));
             }
-            if let Ok(decoded)
-                = <WithdrawPollCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <WithdrawPollCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::WithdrawPoll(decoded));
             }
-            if let Ok(decoded)
-                = <WithdrawPollWithPollIdsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <WithdrawPollWithPollIdsCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::WithdrawPollWithPollIds(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())
@@ -408,17 +393,13 @@ pub mod makerpollvote {
     impl ::ethers::core::abi::AbiEncode for makerpollvoteCalls {
         fn encode(self) -> Vec<u8> {
             match self {
-                Self::CreatePoll(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::CreatePoll(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Npoll(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Vote(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::VoteWithPollIdAndOptionId(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::WithdrawPoll(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::WithdrawPoll(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::WithdrawPollWithPollIds(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
@@ -431,13 +412,9 @@ pub mod makerpollvote {
                 Self::CreatePoll(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Npoll(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Vote(element) => ::core::fmt::Display::fmt(element, f),
-                Self::VoteWithPollIdAndOptionId(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::VoteWithPollIdAndOptionId(element) => ::core::fmt::Display::fmt(element, f),
                 Self::WithdrawPoll(element) => ::core::fmt::Display::fmt(element, f),
-                Self::WithdrawPollWithPollIds(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::WithdrawPollWithPollIds(element) => ::core::fmt::Display::fmt(element, f),
             }
         }
     }
@@ -480,7 +457,7 @@ pub mod makerpollvote {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct NpollReturn(pub ::ethers::core::types::U256);
 }

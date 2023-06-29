@@ -7,14 +7,16 @@ pub use dydxgov::*;
     clippy::upper_case_acronyms,
     clippy::type_complexity,
     dead_code,
-    non_camel_case_types,
+    non_camel_case_types
 )]
 pub mod dydxgov {
     #[rustfmt::skip]
     const __ABI: &str = "[\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"governanceStrategy\",\n        \"type\": \"address\"\n      },\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"votingDelay\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"address\",\n        \"name\": \"addExecutorAdmin\",\n        \"type\": \"address\"\n      }\n    ],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"constructor\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"executor\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"ExecutorAuthorized\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"executor\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"ExecutorUnauthorized\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"newStrategy\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"initiatorChange\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"GovernanceStrategyChanged\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalCanceled\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"creator\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"contract IExecutorWithTimelock\",\n        \"name\": \"executor\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address[]\",\n        \"name\": \"targets\",\n        \"type\": \"address[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256[]\",\n        \"name\": \"values\",\n        \"type\": \"uint256[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string[]\",\n        \"name\": \"signatures\",\n        \"type\": \"string[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"bytes[]\",\n        \"name\": \"calldatas\",\n        \"type\": \"bytes[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"bool[]\",\n        \"name\": \"withDelegatecalls\",\n        \"type\": \"bool[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"startBlock\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"endBlock\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"strategy\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"bytes32\",\n        \"name\": \"ipfsHash\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"name\": \"ProposalCreated\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"initiatorExecution\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"ProposalExecuted\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"executionTime\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"initiatorQueueing\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"ProposalQueued\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"bytes32\",\n        \"name\": \"role\",\n        \"type\": \"bytes32\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"bytes32\",\n        \"name\": \"previousAdminRole\",\n        \"type\": \"bytes32\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"bytes32\",\n        \"name\": \"newAdminRole\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"name\": \"RoleAdminChanged\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"bytes32\",\n        \"name\": \"role\",\n        \"type\": \"bytes32\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"account\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"sender\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"RoleGranted\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"bytes32\",\n        \"name\": \"role\",\n        \"type\": \"bytes32\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"account\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"sender\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"RoleRevoked\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"id\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"voter\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"bool\",\n        \"name\": \"support\",\n        \"type\": \"bool\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"votingPower\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"VoteEmitted\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"newVotingDelay\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"initiatorChange\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"VotingDelayChanged\",\n    \"type\": \"event\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"ADD_EXECUTOR_ROLE\",\n    \"outputs\": [\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"DEFAULT_ADMIN_ROLE\",\n    \"outputs\": [\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"DOMAIN_TYPEHASH\",\n    \"outputs\": [\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"EIP712_DOMAIN_NAME\",\n    \"outputs\": [\n      {\n        \"internalType\": \"string\",\n        \"name\": \"\",\n        \"type\": \"string\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"OWNER_ROLE\",\n    \"outputs\": [\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"VOTE_EMITTED_TYPEHASH\",\n    \"outputs\": [\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address[]\",\n        \"name\": \"executors\",\n        \"type\": \"address[]\"\n      }\n    ],\n    \"name\": \"authorizeExecutors\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"cancel\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"contract IExecutorWithTimelock\",\n        \"name\": \"executor\",\n        \"type\": \"address\"\n      },\n      {\n        \"internalType\": \"address[]\",\n        \"name\": \"targets\",\n        \"type\": \"address[]\"\n      },\n      {\n        \"internalType\": \"uint256[]\",\n        \"name\": \"values\",\n        \"type\": \"uint256[]\"\n      },\n      {\n        \"internalType\": \"string[]\",\n        \"name\": \"signatures\",\n        \"type\": \"string[]\"\n      },\n      {\n        \"internalType\": \"bytes[]\",\n        \"name\": \"calldatas\",\n        \"type\": \"bytes[]\"\n      },\n      {\n        \"internalType\": \"bool[]\",\n        \"name\": \"withDelegatecalls\",\n        \"type\": \"bool[]\"\n      },\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"ipfsHash\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"name\": \"create\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"execute\",\n    \"outputs\": [],\n    \"stateMutability\": \"payable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"getGovernanceStrategy\",\n    \"outputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"\",\n        \"type\": \"address\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"getProposalById\",\n    \"outputs\": [\n      {\n        \"components\": [\n          {\n            \"internalType\": \"uint256\",\n            \"name\": \"id\",\n            \"type\": \"uint256\"\n          },\n          {\n            \"internalType\": \"address\",\n            \"name\": \"creator\",\n            \"type\": \"address\"\n          },\n          {\n            \"internalType\": \"contract IExecutorWithTimelock\",\n            \"name\": \"executor\",\n            \"type\": \"address\"\n          },\n          {\n            \"internalType\": \"address[]\",\n            \"name\": \"targets\",\n            \"type\": \"address[]\"\n          },\n          {\n            \"internalType\": \"uint256[]\",\n            \"name\": \"values\",\n            \"type\": \"uint256[]\"\n          },\n          {\n            \"internalType\": \"string[]\",\n            \"name\": \"signatures\",\n            \"type\": \"string[]\"\n          },\n          {\n            \"internalType\": \"bytes[]\",\n            \"name\": \"calldatas\",\n            \"type\": \"bytes[]\"\n          },\n          {\n            \"internalType\": \"bool[]\",\n            \"name\": \"withDelegatecalls\",\n            \"type\": \"bool[]\"\n          },\n          {\n            \"internalType\": \"uint256\",\n            \"name\": \"startBlock\",\n            \"type\": \"uint256\"\n          },\n          {\n            \"internalType\": \"uint256\",\n            \"name\": \"endBlock\",\n            \"type\": \"uint256\"\n          },\n          {\n            \"internalType\": \"uint256\",\n            \"name\": \"executionTime\",\n            \"type\": \"uint256\"\n          },\n          {\n            \"internalType\": \"uint256\",\n            \"name\": \"forVotes\",\n            \"type\": \"uint256\"\n          },\n          {\n            \"internalType\": \"uint256\",\n            \"name\": \"againstVotes\",\n            \"type\": \"uint256\"\n          },\n          {\n            \"internalType\": \"bool\",\n            \"name\": \"executed\",\n            \"type\": \"bool\"\n          },\n          {\n            \"internalType\": \"bool\",\n            \"name\": \"canceled\",\n            \"type\": \"bool\"\n          },\n          {\n            \"internalType\": \"address\",\n            \"name\": \"strategy\",\n            \"type\": \"address\"\n          },\n          {\n            \"internalType\": \"bytes32\",\n            \"name\": \"ipfsHash\",\n            \"type\": \"bytes32\"\n          }\n        ],\n        \"internalType\": \"struct IDydxGovernor.ProposalWithoutVotes\",\n        \"name\": \"\",\n        \"type\": \"tuple\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"getProposalState\",\n    \"outputs\": [\n      {\n        \"internalType\": \"enum IDydxGovernor.ProposalState\",\n        \"name\": \"\",\n        \"type\": \"uint8\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"getProposalsCount\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"role\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"name\": \"getRoleAdmin\",\n    \"outputs\": [\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"address\",\n        \"name\": \"voter\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"getVoteOnProposal\",\n    \"outputs\": [\n      {\n        \"components\": [\n          {\n            \"internalType\": \"bool\",\n            \"name\": \"support\",\n            \"type\": \"bool\"\n          },\n          {\n            \"internalType\": \"uint248\",\n            \"name\": \"votingPower\",\n            \"type\": \"uint248\"\n          }\n        ],\n        \"internalType\": \"struct IDydxGovernor.Vote\",\n        \"name\": \"\",\n        \"type\": \"tuple\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"getVotingDelay\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"role\",\n        \"type\": \"bytes32\"\n      },\n      {\n        \"internalType\": \"address\",\n        \"name\": \"account\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"grantRole\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"role\",\n        \"type\": \"bytes32\"\n      },\n      {\n        \"internalType\": \"address\",\n        \"name\": \"account\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"hasRole\",\n    \"outputs\": [\n      {\n        \"internalType\": \"bool\",\n        \"name\": \"\",\n        \"type\": \"bool\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"executor\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"isExecutorAuthorized\",\n    \"outputs\": [\n      {\n        \"internalType\": \"bool\",\n        \"name\": \"\",\n        \"type\": \"bool\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"queue\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"role\",\n        \"type\": \"bytes32\"\n      },\n      {\n        \"internalType\": \"address\",\n        \"name\": \"account\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"renounceRole\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"role\",\n        \"type\": \"bytes32\"\n      },\n      {\n        \"internalType\": \"address\",\n        \"name\": \"account\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"revokeRole\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"governanceStrategy\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"setGovernanceStrategy\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"votingDelay\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"setVotingDelay\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"bool\",\n        \"name\": \"support\",\n        \"type\": \"bool\"\n      }\n    ],\n    \"name\": \"submitVote\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"bool\",\n        \"name\": \"support\",\n        \"type\": \"bool\"\n      },\n      {\n        \"internalType\": \"uint8\",\n        \"name\": \"v\",\n        \"type\": \"uint8\"\n      },\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"r\",\n        \"type\": \"bytes32\"\n      },\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"s\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"name\": \"submitVoteBySignature\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"bytes4\",\n        \"name\": \"interfaceId\",\n        \"type\": \"bytes4\"\n      }\n    ],\n    \"name\": \"supportsInterface\",\n    \"outputs\": [\n      {\n        \"internalType\": \"bool\",\n        \"name\": \"\",\n        \"type\": \"bool\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address[]\",\n        \"name\": \"executors\",\n        \"type\": \"address[]\"\n      }\n    ],\n    \"name\": \"unauthorizeExecutors\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  }\n]\n";
     ///The parsed JSON ABI of the contract.
-    pub static DYDXGOV_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> = ::ethers::contract::Lazy::new(||
-    ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid"));
+    pub static DYDXGOV_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> =
+        ::ethers::contract::Lazy::new(|| {
+            ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid")
+        });
     pub struct dydxgov<M>(::ethers::contract::Contract<M>);
     impl<M> ::core::clone::Clone for dydxgov<M> {
         fn clone(&self) -> Self {
@@ -34,7 +36,9 @@ pub mod dydxgov {
     }
     impl<M> ::core::fmt::Debug for dydxgov<M> {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-            f.debug_tuple(stringify!(dydxgov)).field(&self.address()).finish()
+            f.debug_tuple(stringify!(dydxgov))
+                .field(&self.address())
+                .finish()
         }
     }
     impl<M: ::ethers::providers::Middleware> dydxgov<M> {
@@ -44,18 +48,14 @@ pub mod dydxgov {
             address: T,
             client: ::std::sync::Arc<M>,
         ) -> Self {
-            Self(
-                ::ethers::contract::Contract::new(
-                    address.into(),
-                    DYDXGOV_ABI.clone(),
-                    client,
-                ),
-            )
+            Self(::ethers::contract::Contract::new(
+                address.into(),
+                DYDXGOV_ABI.clone(),
+                client,
+            ))
         }
         ///Calls the contract's `ADD_EXECUTOR_ROLE` (0x19567757) function
-        pub fn add_executor_role(
-            &self,
-        ) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
+        pub fn add_executor_role(&self) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
             self.0
                 .method_hash([25, 86, 119, 87], ())
                 .expect("method not found (this should never happen)")
@@ -69,9 +69,7 @@ pub mod dydxgov {
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `DOMAIN_TYPEHASH` (0x20606b70) function
-        pub fn domain_typehash(
-            &self,
-        ) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
+        pub fn domain_typehash(&self) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
             self.0
                 .method_hash([32, 96, 107, 112], ())
                 .expect("method not found (this should never happen)")
@@ -85,9 +83,7 @@ pub mod dydxgov {
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `OWNER_ROLE` (0xe58378bb) function
-        pub fn owner_role(
-            &self,
-        ) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
+        pub fn owner_role(&self) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
             self.0
                 .method_hash([229, 131, 120, 187], ())
                 .expect("method not found (this should never happen)")
@@ -156,10 +152,7 @@ pub mod dydxgov {
         ///Calls the contract's `getGovernanceStrategy` (0x06be3e8e) function
         pub fn get_governance_strategy(
             &self,
-        ) -> ::ethers::contract::builders::ContractCall<
-            M,
-            ::ethers::core::types::Address,
-        > {
+        ) -> ::ethers::contract::builders::ContractCall<M, ::ethers::core::types::Address> {
             self.0
                 .method_hash([6, 190, 62, 142], ())
                 .expect("method not found (this should never happen)")
@@ -337,21 +330,15 @@ pub mod dydxgov {
         ///Gets the contract's `ExecutorAuthorized` event
         pub fn executor_authorized_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ExecutorAuthorizedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ExecutorAuthorizedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ExecutorUnauthorized` event
         pub fn executor_unauthorized_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ExecutorUnauthorizedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ExecutorUnauthorizedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `GovernanceStrategyChanged` event
@@ -367,102 +354,75 @@ pub mod dydxgov {
         ///Gets the contract's `ProposalCanceled` event
         pub fn proposal_canceled_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalCanceledFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalCanceledFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ProposalCreated` event
         pub fn proposal_created_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalCreatedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalCreatedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ProposalExecuted` event
         pub fn proposal_executed_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalExecutedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalExecutedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ProposalQueued` event
         pub fn proposal_queued_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalQueuedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalQueuedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `RoleAdminChanged` event
         pub fn role_admin_changed_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            RoleAdminChangedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, RoleAdminChangedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `RoleGranted` event
         pub fn role_granted_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            RoleGrantedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, RoleGrantedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `RoleRevoked` event
         pub fn role_revoked_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            RoleRevokedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, RoleRevokedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `VoteEmitted` event
         pub fn vote_emitted_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            VoteEmittedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, VoteEmittedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `VotingDelayChanged` event
         pub fn voting_delay_changed_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            VotingDelayChangedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, VotingDelayChangedFilter>
+        {
             self.0.event()
         }
         /// Returns an `Event` builder for all the events of this contract.
         pub fn events(
             &self,
         ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, dydxgovEvents> {
-            self.0.event_with_filter(::core::default::Default::default())
+            self.0
+                .event_with_filter(::core::default::Default::default())
         }
     }
-    impl<M: ::ethers::providers::Middleware> From<::ethers::contract::Contract<M>>
-    for dydxgov<M> {
+    impl<M: ::ethers::providers::Middleware> From<::ethers::contract::Contract<M>> for dydxgov<M> {
         fn from(contract: ::ethers::contract::Contract<M>) -> Self {
             Self::new(contract.address(), contract.client())
         }
@@ -475,7 +435,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ExecutorAuthorized", abi = "ExecutorAuthorized(address)")]
     pub struct ExecutorAuthorizedFilter {
@@ -489,7 +449,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ExecutorUnauthorized", abi = "ExecutorUnauthorized(address)")]
     pub struct ExecutorUnauthorizedFilter {
@@ -503,7 +463,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(
         name = "GovernanceStrategyChanged",
@@ -523,7 +483,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ProposalCanceled", abi = "ProposalCanceled(uint256)")]
     pub struct ProposalCanceledFilter {
@@ -537,7 +497,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(
         name = "ProposalCreated",
@@ -567,7 +527,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ProposalExecuted", abi = "ProposalExecuted(uint256,address)")]
     pub struct ProposalExecutedFilter {
@@ -583,9 +543,12 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
-    #[ethevent(name = "ProposalQueued", abi = "ProposalQueued(uint256,uint256,address)")]
+    #[ethevent(
+        name = "ProposalQueued",
+        abi = "ProposalQueued(uint256,uint256,address)"
+    )]
     pub struct ProposalQueuedFilter {
         pub id: ::ethers::core::types::U256,
         pub execution_time: ::ethers::core::types::U256,
@@ -600,7 +563,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(
         name = "RoleAdminChanged",
@@ -622,7 +585,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "RoleGranted", abi = "RoleGranted(bytes32,address,address)")]
     pub struct RoleGrantedFilter {
@@ -641,7 +604,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "RoleRevoked", abi = "RoleRevoked(bytes32,address,address)")]
     pub struct RoleRevokedFilter {
@@ -660,9 +623,12 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
-    #[ethevent(name = "VoteEmitted", abi = "VoteEmitted(uint256,address,bool,uint256)")]
+    #[ethevent(
+        name = "VoteEmitted",
+        abi = "VoteEmitted(uint256,address,bool,uint256)"
+    )]
     pub struct VoteEmittedFilter {
         pub id: ::ethers::core::types::U256,
         #[ethevent(indexed)]
@@ -678,9 +644,12 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
-    #[ethevent(name = "VotingDelayChanged", abi = "VotingDelayChanged(uint256,address)")]
+    #[ethevent(
+        name = "VotingDelayChanged",
+        abi = "VotingDelayChanged(uint256,address)"
+    )]
     pub struct VotingDelayChangedFilter {
         pub new_voting_delay: ::ethers::core::types::U256,
         #[ethevent(indexed)]
@@ -748,36 +717,20 @@ pub mod dydxgov {
     impl ::core::fmt::Display for dydxgovEvents {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
             match self {
-                Self::ExecutorAuthorizedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ExecutorUnauthorizedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::ExecutorAuthorizedFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ExecutorUnauthorizedFilter(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GovernanceStrategyChangedFilter(element) => {
                     ::core::fmt::Display::fmt(element, f)
                 }
-                Self::ProposalCanceledFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ProposalCreatedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ProposalExecutedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ProposalQueuedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::RoleAdminChangedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::ProposalCanceledFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ProposalCreatedFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ProposalExecutedFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ProposalQueuedFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::RoleAdminChangedFilter(element) => ::core::fmt::Display::fmt(element, f),
                 Self::RoleGrantedFilter(element) => ::core::fmt::Display::fmt(element, f),
                 Self::RoleRevokedFilter(element) => ::core::fmt::Display::fmt(element, f),
                 Self::VoteEmittedFilter(element) => ::core::fmt::Display::fmt(element, f),
-                Self::VotingDelayChangedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::VotingDelayChangedFilter(element) => ::core::fmt::Display::fmt(element, f),
             }
         }
     }
@@ -850,7 +803,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "ADD_EXECUTOR_ROLE", abi = "ADD_EXECUTOR_ROLE()")]
     pub struct AddExecutorRoleCall;
@@ -863,7 +816,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "DEFAULT_ADMIN_ROLE", abi = "DEFAULT_ADMIN_ROLE()")]
     pub struct DefaultAdminRoleCall;
@@ -876,7 +829,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "DOMAIN_TYPEHASH", abi = "DOMAIN_TYPEHASH()")]
     pub struct DomainTypehashCall;
@@ -889,7 +842,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "EIP712_DOMAIN_NAME", abi = "EIP712_DOMAIN_NAME()")]
     pub struct Eip712DomainNameCall;
@@ -902,7 +855,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "OWNER_ROLE", abi = "OWNER_ROLE()")]
     pub struct OwnerRoleCall;
@@ -915,7 +868,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "VOTE_EMITTED_TYPEHASH", abi = "VOTE_EMITTED_TYPEHASH()")]
     pub struct VoteEmittedTypehashCall;
@@ -928,7 +881,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "authorizeExecutors", abi = "authorizeExecutors(address[])")]
     pub struct AuthorizeExecutorsCall {
@@ -943,7 +896,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "cancel", abi = "cancel(uint256)")]
     pub struct CancelCall {
@@ -958,7 +911,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(
         name = "create",
@@ -982,7 +935,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "execute", abi = "execute(uint256)")]
     pub struct ExecuteCall {
@@ -997,7 +950,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getGovernanceStrategy", abi = "getGovernanceStrategy()")]
     pub struct GetGovernanceStrategyCall;
@@ -1010,7 +963,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getProposalById", abi = "getProposalById(uint256)")]
     pub struct GetProposalByIdCall {
@@ -1025,7 +978,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getProposalState", abi = "getProposalState(uint256)")]
     pub struct GetProposalStateCall {
@@ -1040,7 +993,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getProposalsCount", abi = "getProposalsCount()")]
     pub struct GetProposalsCountCall;
@@ -1053,7 +1006,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getRoleAdmin", abi = "getRoleAdmin(bytes32)")]
     pub struct GetRoleAdminCall {
@@ -1068,7 +1021,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getVoteOnProposal", abi = "getVoteOnProposal(uint256,address)")]
     pub struct GetVoteOnProposalCall {
@@ -1084,7 +1037,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getVotingDelay", abi = "getVotingDelay()")]
     pub struct GetVotingDelayCall;
@@ -1097,7 +1050,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "grantRole", abi = "grantRole(bytes32,address)")]
     pub struct GrantRoleCall {
@@ -1113,7 +1066,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "hasRole", abi = "hasRole(bytes32,address)")]
     pub struct HasRoleCall {
@@ -1129,7 +1082,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "isExecutorAuthorized", abi = "isExecutorAuthorized(address)")]
     pub struct IsExecutorAuthorizedCall {
@@ -1144,7 +1097,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "queue", abi = "queue(uint256)")]
     pub struct QueueCall {
@@ -1159,7 +1112,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "renounceRole", abi = "renounceRole(bytes32,address)")]
     pub struct RenounceRoleCall {
@@ -1175,7 +1128,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "revokeRole", abi = "revokeRole(bytes32,address)")]
     pub struct RevokeRoleCall {
@@ -1191,7 +1144,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "setGovernanceStrategy", abi = "setGovernanceStrategy(address)")]
     pub struct SetGovernanceStrategyCall {
@@ -1206,7 +1159,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "setVotingDelay", abi = "setVotingDelay(uint256)")]
     pub struct SetVotingDelayCall {
@@ -1221,7 +1174,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "submitVote", abi = "submitVote(uint256,bool)")]
     pub struct SubmitVoteCall {
@@ -1237,7 +1190,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(
         name = "submitVoteBySignature",
@@ -1259,7 +1212,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "supportsInterface", abi = "supportsInterface(bytes4)")]
     pub struct SupportsInterfaceCall {
@@ -1274,7 +1227,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "unauthorizeExecutors", abi = "unauthorizeExecutors(address[])")]
     pub struct UnauthorizeExecutorsCall {
@@ -1318,146 +1271,129 @@ pub mod dydxgov {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <AddExecutorRoleCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <AddExecutorRoleCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::AddExecutorRole(decoded));
             }
-            if let Ok(decoded)
-                = <DefaultAdminRoleCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <DefaultAdminRoleCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::DefaultAdminRole(decoded));
             }
-            if let Ok(decoded)
-                = <DomainTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <DomainTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::DomainTypehash(decoded));
             }
-            if let Ok(decoded)
-                = <Eip712DomainNameCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <Eip712DomainNameCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::Eip712DomainName(decoded));
             }
-            if let Ok(decoded)
-                = <OwnerRoleCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <OwnerRoleCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::OwnerRole(decoded));
             }
-            if let Ok(decoded)
-                = <VoteEmittedTypehashCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <VoteEmittedTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::VoteEmittedTypehash(decoded));
             }
-            if let Ok(decoded)
-                = <AuthorizeExecutorsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <AuthorizeExecutorsCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::AuthorizeExecutors(decoded));
             }
-            if let Ok(decoded)
-                = <CancelCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CancelCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Cancel(decoded));
             }
-            if let Ok(decoded)
-                = <CreateCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CreateCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Create(decoded));
             }
-            if let Ok(decoded)
-                = <ExecuteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ExecuteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Execute(decoded));
             }
-            if let Ok(decoded)
-                = <GetGovernanceStrategyCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <GetGovernanceStrategyCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::GetGovernanceStrategy(decoded));
             }
-            if let Ok(decoded)
-                = <GetProposalByIdCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <GetProposalByIdCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::GetProposalById(decoded));
             }
-            if let Ok(decoded)
-                = <GetProposalStateCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <GetProposalStateCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::GetProposalState(decoded));
             }
-            if let Ok(decoded)
-                = <GetProposalsCountCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <GetProposalsCountCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::GetProposalsCount(decoded));
             }
-            if let Ok(decoded)
-                = <GetRoleAdminCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetRoleAdminCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::GetRoleAdmin(decoded));
             }
-            if let Ok(decoded)
-                = <GetVoteOnProposalCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <GetVoteOnProposalCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::GetVoteOnProposal(decoded));
             }
-            if let Ok(decoded)
-                = <GetVotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <GetVotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::GetVotingDelay(decoded));
             }
-            if let Ok(decoded)
-                = <GrantRoleCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GrantRoleCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::GrantRole(decoded));
             }
-            if let Ok(decoded)
-                = <HasRoleCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <HasRoleCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::HasRole(decoded));
             }
-            if let Ok(decoded)
-                = <IsExecutorAuthorizedCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <IsExecutorAuthorizedCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::IsExecutorAuthorized(decoded));
             }
-            if let Ok(decoded)
-                = <QueueCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <QueueCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Queue(decoded));
             }
-            if let Ok(decoded)
-                = <RenounceRoleCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <RenounceRoleCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::RenounceRole(decoded));
             }
-            if let Ok(decoded)
-                = <RevokeRoleCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <RevokeRoleCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::RevokeRole(decoded));
             }
-            if let Ok(decoded)
-                = <SetGovernanceStrategyCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <SetGovernanceStrategyCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::SetGovernanceStrategy(decoded));
             }
-            if let Ok(decoded)
-                = <SetVotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <SetVotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::SetVotingDelay(decoded));
             }
-            if let Ok(decoded)
-                = <SubmitVoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <SubmitVoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::SubmitVote(decoded));
             }
-            if let Ok(decoded)
-                = <SubmitVoteBySignatureCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <SubmitVoteBySignatureCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::SubmitVoteBySignature(decoded));
             }
-            if let Ok(decoded)
-                = <SupportsInterfaceCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <SupportsInterfaceCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::SupportsInterface(decoded));
             }
-            if let Ok(decoded)
-                = <UnauthorizeExecutorsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <UnauthorizeExecutorsCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::UnauthorizeExecutors(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())
@@ -1466,21 +1402,11 @@ pub mod dydxgov {
     impl ::ethers::core::abi::AbiEncode for dydxgovCalls {
         fn encode(self) -> Vec<u8> {
             match self {
-                Self::AddExecutorRole(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::DefaultAdminRole(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::DomainTypehash(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::Eip712DomainName(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::OwnerRole(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::AddExecutorRole(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::DefaultAdminRole(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::DomainTypehash(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::Eip712DomainName(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::OwnerRole(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::VoteEmittedTypehash(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
@@ -1493,53 +1419,29 @@ pub mod dydxgov {
                 Self::GetGovernanceStrategy(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::GetProposalById(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::GetProposalState(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::GetProposalsCount(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::GetRoleAdmin(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::GetVoteOnProposal(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::GetVotingDelay(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::GrantRole(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::GetProposalById(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::GetProposalState(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::GetProposalsCount(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::GetRoleAdmin(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::GetVoteOnProposal(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::GetVotingDelay(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::GrantRole(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::HasRole(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::IsExecutorAuthorized(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
                 Self::Queue(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::RenounceRole(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::RevokeRole(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::RenounceRole(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::RevokeRole(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::SetGovernanceStrategy(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::SetVotingDelay(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::SubmitVote(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::SetVotingDelay(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::SubmitVote(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::SubmitVoteBySignature(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::SupportsInterface(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::SupportsInterface(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::UnauthorizeExecutors(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
@@ -1554,18 +1456,12 @@ pub mod dydxgov {
                 Self::DomainTypehash(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Eip712DomainName(element) => ::core::fmt::Display::fmt(element, f),
                 Self::OwnerRole(element) => ::core::fmt::Display::fmt(element, f),
-                Self::VoteEmittedTypehash(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::AuthorizeExecutors(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::VoteEmittedTypehash(element) => ::core::fmt::Display::fmt(element, f),
+                Self::AuthorizeExecutors(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Cancel(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Create(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Execute(element) => ::core::fmt::Display::fmt(element, f),
-                Self::GetGovernanceStrategy(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::GetGovernanceStrategy(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GetProposalById(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GetProposalState(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GetProposalsCount(element) => ::core::fmt::Display::fmt(element, f),
@@ -1574,24 +1470,16 @@ pub mod dydxgov {
                 Self::GetVotingDelay(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GrantRole(element) => ::core::fmt::Display::fmt(element, f),
                 Self::HasRole(element) => ::core::fmt::Display::fmt(element, f),
-                Self::IsExecutorAuthorized(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::IsExecutorAuthorized(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Queue(element) => ::core::fmt::Display::fmt(element, f),
                 Self::RenounceRole(element) => ::core::fmt::Display::fmt(element, f),
                 Self::RevokeRole(element) => ::core::fmt::Display::fmt(element, f),
-                Self::SetGovernanceStrategy(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::SetGovernanceStrategy(element) => ::core::fmt::Display::fmt(element, f),
                 Self::SetVotingDelay(element) => ::core::fmt::Display::fmt(element, f),
                 Self::SubmitVote(element) => ::core::fmt::Display::fmt(element, f),
-                Self::SubmitVoteBySignature(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::SubmitVoteBySignature(element) => ::core::fmt::Display::fmt(element, f),
                 Self::SupportsInterface(element) => ::core::fmt::Display::fmt(element, f),
-                Self::UnauthorizeExecutors(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::UnauthorizeExecutors(element) => ::core::fmt::Display::fmt(element, f),
             }
         }
     }
@@ -1749,7 +1637,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct AddExecutorRoleReturn(pub [u8; 32]);
     ///Container type for all return fields from the `DEFAULT_ADMIN_ROLE` function with signature `DEFAULT_ADMIN_ROLE()` and selector `0xa217fddf`
@@ -1761,7 +1649,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct DefaultAdminRoleReturn(pub [u8; 32]);
     ///Container type for all return fields from the `DOMAIN_TYPEHASH` function with signature `DOMAIN_TYPEHASH()` and selector `0x20606b70`
@@ -1773,7 +1661,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct DomainTypehashReturn(pub [u8; 32]);
     ///Container type for all return fields from the `EIP712_DOMAIN_NAME` function with signature `EIP712_DOMAIN_NAME()` and selector `0xfd070296`
@@ -1785,7 +1673,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct Eip712DomainNameReturn(pub ::std::string::String);
     ///Container type for all return fields from the `OWNER_ROLE` function with signature `OWNER_ROLE()` and selector `0xe58378bb`
@@ -1797,7 +1685,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct OwnerRoleReturn(pub [u8; 32]);
     ///Container type for all return fields from the `VOTE_EMITTED_TYPEHASH` function with signature `VOTE_EMITTED_TYPEHASH()` and selector `0x34b18c26`
@@ -1809,7 +1697,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct VoteEmittedTypehashReturn(pub [u8; 32]);
     ///Container type for all return fields from the `create` function with signature `create(address,address[],uint256[],string[],bytes[],bool[],bytes32)` and selector `0xf8741a9c`
@@ -1821,7 +1709,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct CreateReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `getGovernanceStrategy` function with signature `getGovernanceStrategy()` and selector `0x06be3e8e`
@@ -1833,7 +1721,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetGovernanceStrategyReturn(pub ::ethers::core::types::Address);
     ///Container type for all return fields from the `getProposalById` function with signature `getProposalById(uint256)` and selector `0x3656de21`
@@ -1845,7 +1733,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetProposalByIdReturn(pub ProposalWithoutVotes);
     ///Container type for all return fields from the `getProposalState` function with signature `getProposalState(uint256)` and selector `0x9080936f`
@@ -1857,7 +1745,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetProposalStateReturn(pub u8);
     ///Container type for all return fields from the `getProposalsCount` function with signature `getProposalsCount()` and selector `0x98e527d3`
@@ -1869,7 +1757,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetProposalsCountReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `getRoleAdmin` function with signature `getRoleAdmin(bytes32)` and selector `0x248a9ca3`
@@ -1881,7 +1769,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetRoleAdminReturn(pub [u8; 32]);
     ///Container type for all return fields from the `getVoteOnProposal` function with signature `getVoteOnProposal(uint256,address)` and selector `0x4185ff83`
@@ -1893,7 +1781,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetVoteOnProposalReturn(pub Vote);
     ///Container type for all return fields from the `getVotingDelay` function with signature `getVotingDelay()` and selector `0xa2b170b0`
@@ -1905,7 +1793,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetVotingDelayReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `hasRole` function with signature `hasRole(bytes32,address)` and selector `0x91d14854`
@@ -1917,7 +1805,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct HasRoleReturn(pub bool);
     ///Container type for all return fields from the `isExecutorAuthorized` function with signature `isExecutorAuthorized(address)` and selector `0x548b514e`
@@ -1929,7 +1817,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct IsExecutorAuthorizedReturn(pub bool);
     ///Container type for all return fields from the `supportsInterface` function with signature `supportsInterface(bytes4)` and selector `0x01ffc9a7`
@@ -1941,7 +1829,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct SupportsInterfaceReturn(pub bool);
     ///`ProposalWithoutVotes(uint256,address,address,address[],uint256[],string[],bytes[],bool[],uint256,uint256,uint256,uint256,uint256,bool,bool,address,bytes32)`
@@ -1953,7 +1841,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ProposalWithoutVotes {
         pub id: ::ethers::core::types::U256,
@@ -1983,7 +1871,7 @@ pub mod dydxgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct Vote {
         pub support: bool,

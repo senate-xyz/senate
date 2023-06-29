@@ -7,14 +7,16 @@ pub use hopgov::*;
     clippy::upper_case_acronyms,
     clippy::type_complexity,
     dead_code,
-    non_camel_case_types,
+    non_camel_case_types
 )]
 pub mod hopgov {
     #[rustfmt::skip]
     const __ABI: &str = "[\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"contract ERC20Votes\",\n        \"name\": \"_token\",\n        \"type\": \"address\"\n      },\n      {\n        \"internalType\": \"contract TimelockController\",\n        \"name\": \"_timelock\",\n        \"type\": \"address\"\n      }\n    ],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"constructor\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalCanceled\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"proposer\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address[]\",\n        \"name\": \"targets\",\n        \"type\": \"address[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256[]\",\n        \"name\": \"values\",\n        \"type\": \"uint256[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string[]\",\n        \"name\": \"signatures\",\n        \"type\": \"string[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"bytes[]\",\n        \"name\": \"calldatas\",\n        \"type\": \"bytes[]\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"startBlock\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"endBlock\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string\",\n        \"name\": \"description\",\n        \"type\": \"string\"\n      }\n    ],\n    \"name\": \"ProposalCreated\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalExecuted\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"eta\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"ProposalQueued\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"oldQuorumNumerator\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"newQuorumNumerator\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"QuorumNumeratorUpdated\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"oldTimelock\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"address\",\n        \"name\": \"newTimelock\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"TimelockChange\",\n    \"type\": \"event\"\n  },\n  {\n    \"anonymous\": false,\n    \"inputs\": [\n      {\n        \"indexed\": true,\n        \"internalType\": \"address\",\n        \"name\": \"voter\",\n        \"type\": \"address\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint8\",\n        \"name\": \"support\",\n        \"type\": \"uint8\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"uint256\",\n        \"name\": \"weight\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"indexed\": false,\n        \"internalType\": \"string\",\n        \"name\": \"reason\",\n        \"type\": \"string\"\n      }\n    ],\n    \"name\": \"VoteCast\",\n    \"type\": \"event\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"BALLOT_TYPEHASH\",\n    \"outputs\": [\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"COUNTING_MODE\",\n    \"outputs\": [\n      {\n        \"internalType\": \"string\",\n        \"name\": \"\",\n        \"type\": \"string\"\n      }\n    ],\n    \"stateMutability\": \"pure\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"uint8\",\n        \"name\": \"support\",\n        \"type\": \"uint8\"\n      }\n    ],\n    \"name\": \"castVote\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"uint8\",\n        \"name\": \"support\",\n        \"type\": \"uint8\"\n      },\n      {\n        \"internalType\": \"uint8\",\n        \"name\": \"v\",\n        \"type\": \"uint8\"\n      },\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"r\",\n        \"type\": \"bytes32\"\n      },\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"s\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"name\": \"castVoteBySig\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"uint8\",\n        \"name\": \"support\",\n        \"type\": \"uint8\"\n      },\n      {\n        \"internalType\": \"string\",\n        \"name\": \"reason\",\n        \"type\": \"string\"\n      }\n    ],\n    \"name\": \"castVoteWithReason\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address[]\",\n        \"name\": \"targets\",\n        \"type\": \"address[]\"\n      },\n      {\n        \"internalType\": \"uint256[]\",\n        \"name\": \"values\",\n        \"type\": \"uint256[]\"\n      },\n      {\n        \"internalType\": \"bytes[]\",\n        \"name\": \"calldatas\",\n        \"type\": \"bytes[]\"\n      },\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"descriptionHash\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"name\": \"execute\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"payable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"account\",\n        \"type\": \"address\"\n      },\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"blockNumber\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"getVotes\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"address\",\n        \"name\": \"account\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"hasVoted\",\n    \"outputs\": [\n      {\n        \"internalType\": \"bool\",\n        \"name\": \"\",\n        \"type\": \"bool\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address[]\",\n        \"name\": \"targets\",\n        \"type\": \"address[]\"\n      },\n      {\n        \"internalType\": \"uint256[]\",\n        \"name\": \"values\",\n        \"type\": \"uint256[]\"\n      },\n      {\n        \"internalType\": \"bytes[]\",\n        \"name\": \"calldatas\",\n        \"type\": \"bytes[]\"\n      },\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"descriptionHash\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"name\": \"hashProposal\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"pure\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"name\",\n    \"outputs\": [\n      {\n        \"internalType\": \"string\",\n        \"name\": \"\",\n        \"type\": \"string\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"proposalDeadline\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"proposalEta\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"proposalSnapshot\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"proposalThreshold\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"pure\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"proposalVotes\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"againstVotes\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"forVotes\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"abstainVotes\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address[]\",\n        \"name\": \"targets\",\n        \"type\": \"address[]\"\n      },\n      {\n        \"internalType\": \"uint256[]\",\n        \"name\": \"values\",\n        \"type\": \"uint256[]\"\n      },\n      {\n        \"internalType\": \"bytes[]\",\n        \"name\": \"calldatas\",\n        \"type\": \"bytes[]\"\n      },\n      {\n        \"internalType\": \"string\",\n        \"name\": \"description\",\n        \"type\": \"string\"\n      }\n    ],\n    \"name\": \"propose\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address[]\",\n        \"name\": \"targets\",\n        \"type\": \"address[]\"\n      },\n      {\n        \"internalType\": \"uint256[]\",\n        \"name\": \"values\",\n        \"type\": \"uint256[]\"\n      },\n      {\n        \"internalType\": \"bytes[]\",\n        \"name\": \"calldatas\",\n        \"type\": \"bytes[]\"\n      },\n      {\n        \"internalType\": \"bytes32\",\n        \"name\": \"descriptionHash\",\n        \"type\": \"bytes32\"\n      }\n    ],\n    \"name\": \"queue\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"blockNumber\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"quorum\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"quorumDenominator\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"pure\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"quorumNumerator\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"target\",\n        \"type\": \"address\"\n      },\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"value\",\n        \"type\": \"uint256\"\n      },\n      {\n        \"internalType\": \"bytes\",\n        \"name\": \"data\",\n        \"type\": \"bytes\"\n      }\n    ],\n    \"name\": \"relay\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"proposalId\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"state\",\n    \"outputs\": [\n      {\n        \"internalType\": \"enum IGovernor.ProposalState\",\n        \"name\": \"\",\n        \"type\": \"uint8\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"bytes4\",\n        \"name\": \"interfaceId\",\n        \"type\": \"bytes4\"\n      }\n    ],\n    \"name\": \"supportsInterface\",\n    \"outputs\": [\n      {\n        \"internalType\": \"bool\",\n        \"name\": \"\",\n        \"type\": \"bool\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"timelock\",\n    \"outputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"\",\n        \"type\": \"address\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"token\",\n    \"outputs\": [\n      {\n        \"internalType\": \"contract IVotes\",\n        \"name\": \"\",\n        \"type\": \"address\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"newQuorumNumerator\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"updateQuorumNumerator\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"contract TimelockController\",\n        \"name\": \"newTimelock\",\n        \"type\": \"address\"\n      }\n    ],\n    \"name\": \"updateTimelock\",\n    \"outputs\": [],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"version\",\n    \"outputs\": [\n      {\n        \"internalType\": \"string\",\n        \"name\": \"\",\n        \"type\": \"string\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"votingDelay\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"pure\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"votingPeriod\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"pure\",\n    \"type\": \"function\"\n  },\n  {\n    \"stateMutability\": \"payable\",\n    \"type\": \"receive\"\n  }\n]\n";
     ///The parsed JSON ABI of the contract.
-    pub static HOPGOV_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> = ::ethers::contract::Lazy::new(||
-    ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid"));
+    pub static HOPGOV_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> =
+        ::ethers::contract::Lazy::new(|| {
+            ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid")
+        });
     pub struct hopgov<M>(::ethers::contract::Contract<M>);
     impl<M> ::core::clone::Clone for hopgov<M> {
         fn clone(&self) -> Self {
@@ -34,7 +36,9 @@ pub mod hopgov {
     }
     impl<M> ::core::fmt::Debug for hopgov<M> {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-            f.debug_tuple(stringify!(hopgov)).field(&self.address()).finish()
+            f.debug_tuple(stringify!(hopgov))
+                .field(&self.address())
+                .finish()
         }
     }
     impl<M: ::ethers::providers::Middleware> hopgov<M> {
@@ -44,18 +48,14 @@ pub mod hopgov {
             address: T,
             client: ::std::sync::Arc<M>,
         ) -> Self {
-            Self(
-                ::ethers::contract::Contract::new(
-                    address.into(),
-                    HOPGOV_ABI.clone(),
-                    client,
-                ),
-            )
+            Self(::ethers::contract::Contract::new(
+                address.into(),
+                HOPGOV_ABI.clone(),
+                client,
+            ))
         }
         ///Calls the contract's `BALLOT_TYPEHASH` (0xdeaaa7cc) function
-        pub fn ballot_typehash(
-            &self,
-        ) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
+        pub fn ballot_typehash(&self) -> ::ethers::contract::builders::ContractCall<M, [u8; 32]> {
             self.0
                 .method_hash([222, 170, 167, 204], ())
                 .expect("method not found (this should never happen)")
@@ -153,9 +153,7 @@ pub mod hopgov {
                 .expect("method not found (this should never happen)")
         }
         ///Calls the contract's `name` (0x06fdde03) function
-        pub fn name(
-            &self,
-        ) -> ::ethers::contract::builders::ContractCall<M, ::std::string::String> {
+        pub fn name(&self) -> ::ethers::contract::builders::ContractCall<M, ::std::string::String> {
             self.0
                 .method_hash([6, 253, 222, 3], ())
                 .expect("method not found (this should never happen)")
@@ -298,10 +296,7 @@ pub mod hopgov {
         ///Calls the contract's `timelock` (0xd33219b4) function
         pub fn timelock(
             &self,
-        ) -> ::ethers::contract::builders::ContractCall<
-            M,
-            ::ethers::core::types::Address,
-        > {
+        ) -> ::ethers::contract::builders::ContractCall<M, ::ethers::core::types::Address> {
             self.0
                 .method_hash([211, 50, 25, 180], ())
                 .expect("method not found (this should never happen)")
@@ -309,10 +304,7 @@ pub mod hopgov {
         ///Calls the contract's `token` (0xfc0c546a) function
         pub fn token(
             &self,
-        ) -> ::ethers::contract::builders::ContractCall<
-            M,
-            ::ethers::core::types::Address,
-        > {
+        ) -> ::ethers::contract::builders::ContractCall<M, ::ethers::core::types::Address> {
             self.0
                 .method_hash([252, 12, 84, 106], ())
                 .expect("method not found (this should never happen)")
@@ -362,82 +354,60 @@ pub mod hopgov {
         ///Gets the contract's `ProposalCanceled` event
         pub fn proposal_canceled_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalCanceledFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalCanceledFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ProposalCreated` event
         pub fn proposal_created_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalCreatedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalCreatedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ProposalExecuted` event
         pub fn proposal_executed_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalExecutedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalExecutedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `ProposalQueued` event
         pub fn proposal_queued_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            ProposalQueuedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, ProposalQueuedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `QuorumNumeratorUpdated` event
         pub fn quorum_numerator_updated_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            QuorumNumeratorUpdatedFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, QuorumNumeratorUpdatedFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `TimelockChange` event
         pub fn timelock_change_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            TimelockChangeFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, TimelockChangeFilter>
+        {
             self.0.event()
         }
         ///Gets the contract's `VoteCast` event
         pub fn vote_cast_filter(
             &self,
-        ) -> ::ethers::contract::builders::Event<
-            ::std::sync::Arc<M>,
-            M,
-            VoteCastFilter,
-        > {
+        ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, VoteCastFilter> {
             self.0.event()
         }
         /// Returns an `Event` builder for all the events of this contract.
         pub fn events(
             &self,
         ) -> ::ethers::contract::builders::Event<::std::sync::Arc<M>, M, hopgovEvents> {
-            self.0.event_with_filter(::core::default::Default::default())
+            self.0
+                .event_with_filter(::core::default::Default::default())
         }
     }
-    impl<M: ::ethers::providers::Middleware> From<::ethers::contract::Contract<M>>
-    for hopgov<M> {
+    impl<M: ::ethers::providers::Middleware> From<::ethers::contract::Contract<M>> for hopgov<M> {
         fn from(contract: ::ethers::contract::Contract<M>) -> Self {
             Self::new(contract.address(), contract.client())
         }
@@ -450,7 +420,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ProposalCanceled", abi = "ProposalCanceled(uint256)")]
     pub struct ProposalCanceledFilter {
@@ -464,7 +434,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(
         name = "ProposalCreated",
@@ -489,7 +459,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ProposalExecuted", abi = "ProposalExecuted(uint256)")]
     pub struct ProposalExecutedFilter {
@@ -503,7 +473,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "ProposalQueued", abi = "ProposalQueued(uint256,uint256)")]
     pub struct ProposalQueuedFilter {
@@ -518,7 +488,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(
         name = "QuorumNumeratorUpdated",
@@ -536,7 +506,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(name = "TimelockChange", abi = "TimelockChange(address,address)")]
     pub struct TimelockChangeFilter {
@@ -551,7 +521,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethevent(
         name = "VoteCast",
@@ -607,24 +577,14 @@ pub mod hopgov {
     impl ::core::fmt::Display for hopgovEvents {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
             match self {
-                Self::ProposalCanceledFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ProposalCreatedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ProposalExecutedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
-                Self::ProposalQueuedFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::ProposalCanceledFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ProposalCreatedFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ProposalExecutedFilter(element) => ::core::fmt::Display::fmt(element, f),
+                Self::ProposalQueuedFilter(element) => ::core::fmt::Display::fmt(element, f),
                 Self::QuorumNumeratorUpdatedFilter(element) => {
                     ::core::fmt::Display::fmt(element, f)
                 }
-                Self::TimelockChangeFilter(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::TimelockChangeFilter(element) => ::core::fmt::Display::fmt(element, f),
                 Self::VoteCastFilter(element) => ::core::fmt::Display::fmt(element, f),
             }
         }
@@ -673,7 +633,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "BALLOT_TYPEHASH", abi = "BALLOT_TYPEHASH()")]
     pub struct BallotTypehashCall;
@@ -686,7 +646,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "COUNTING_MODE", abi = "COUNTING_MODE()")]
     pub struct CountingModeCall;
@@ -699,7 +659,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "castVote", abi = "castVote(uint256,uint8)")]
     pub struct CastVoteCall {
@@ -715,7 +675,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(
         name = "castVoteBySig",
@@ -737,7 +697,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(
         name = "castVoteWithReason",
@@ -757,7 +717,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "execute", abi = "execute(address[],uint256[],bytes[],bytes32)")]
     pub struct ExecuteCall {
@@ -775,7 +735,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "getVotes", abi = "getVotes(address,uint256)")]
     pub struct GetVotesCall {
@@ -791,7 +751,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "hasVoted", abi = "hasVoted(uint256,address)")]
     pub struct HasVotedCall {
@@ -807,7 +767,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(
         name = "hashProposal",
@@ -828,7 +788,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "name", abi = "name()")]
     pub struct NameCall;
@@ -841,7 +801,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "proposalDeadline", abi = "proposalDeadline(uint256)")]
     pub struct ProposalDeadlineCall {
@@ -856,7 +816,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "proposalEta", abi = "proposalEta(uint256)")]
     pub struct ProposalEtaCall {
@@ -871,7 +831,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "proposalSnapshot", abi = "proposalSnapshot(uint256)")]
     pub struct ProposalSnapshotCall {
@@ -886,7 +846,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "proposalThreshold", abi = "proposalThreshold()")]
     pub struct ProposalThresholdCall;
@@ -899,7 +859,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "proposalVotes", abi = "proposalVotes(uint256)")]
     pub struct ProposalVotesCall {
@@ -914,7 +874,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "propose", abi = "propose(address[],uint256[],bytes[],string)")]
     pub struct ProposeCall {
@@ -932,7 +892,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "queue", abi = "queue(address[],uint256[],bytes[],bytes32)")]
     pub struct QueueCall {
@@ -950,7 +910,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "quorum", abi = "quorum(uint256)")]
     pub struct QuorumCall {
@@ -965,7 +925,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "quorumDenominator", abi = "quorumDenominator()")]
     pub struct QuorumDenominatorCall;
@@ -978,7 +938,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "quorumNumerator", abi = "quorumNumerator()")]
     pub struct QuorumNumeratorCall;
@@ -991,7 +951,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "relay", abi = "relay(address,uint256,bytes)")]
     pub struct RelayCall {
@@ -1008,7 +968,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "state", abi = "state(uint256)")]
     pub struct StateCall {
@@ -1023,7 +983,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "supportsInterface", abi = "supportsInterface(bytes4)")]
     pub struct SupportsInterfaceCall {
@@ -1038,7 +998,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "timelock", abi = "timelock()")]
     pub struct TimelockCall;
@@ -1051,7 +1011,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "token", abi = "token()")]
     pub struct TokenCall;
@@ -1064,7 +1024,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "updateQuorumNumerator", abi = "updateQuorumNumerator(uint256)")]
     pub struct UpdateQuorumNumeratorCall {
@@ -1079,7 +1039,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "updateTimelock", abi = "updateTimelock(address)")]
     pub struct UpdateTimelockCall {
@@ -1094,7 +1054,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "version", abi = "version()")]
     pub struct VersionCall;
@@ -1107,7 +1067,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "votingDelay", abi = "votingDelay()")]
     pub struct VotingDelayCall;
@@ -1120,7 +1080,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     #[ethcall(name = "votingPeriod", abi = "votingPeriod()")]
     pub struct VotingPeriodCall;
@@ -1163,138 +1123,119 @@ pub mod hopgov {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <BallotTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <BallotTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::BallotTypehash(decoded));
             }
-            if let Ok(decoded)
-                = <CountingModeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CountingModeCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::CountingMode(decoded));
             }
-            if let Ok(decoded)
-                = <CastVoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CastVoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::CastVote(decoded));
             }
-            if let Ok(decoded)
-                = <CastVoteBySigCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CastVoteBySigCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::CastVoteBySig(decoded));
             }
-            if let Ok(decoded)
-                = <CastVoteWithReasonCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <CastVoteWithReasonCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::CastVoteWithReason(decoded));
             }
-            if let Ok(decoded)
-                = <ExecuteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ExecuteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Execute(decoded));
             }
-            if let Ok(decoded)
-                = <GetVotesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetVotesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::GetVotes(decoded));
             }
-            if let Ok(decoded)
-                = <HasVotedCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <HasVotedCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::HasVoted(decoded));
             }
-            if let Ok(decoded)
-                = <HashProposalCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <HashProposalCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::HashProposal(decoded));
             }
-            if let Ok(decoded)
-                = <NameCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <NameCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Name(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalDeadlineCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <ProposalDeadlineCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::ProposalDeadline(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalEtaCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ProposalEtaCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::ProposalEta(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalSnapshotCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <ProposalSnapshotCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::ProposalSnapshot(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalThresholdCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <ProposalThresholdCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::ProposalThreshold(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalVotesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ProposalVotesCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::ProposalVotes(decoded));
             }
-            if let Ok(decoded)
-                = <ProposeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ProposeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Propose(decoded));
             }
-            if let Ok(decoded)
-                = <QueueCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <QueueCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Queue(decoded));
             }
-            if let Ok(decoded)
-                = <QuorumCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <QuorumCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Quorum(decoded));
             }
-            if let Ok(decoded)
-                = <QuorumDenominatorCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <QuorumDenominatorCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::QuorumDenominator(decoded));
             }
-            if let Ok(decoded)
-                = <QuorumNumeratorCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <QuorumNumeratorCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::QuorumNumerator(decoded));
             }
-            if let Ok(decoded)
-                = <RelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <RelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Relay(decoded));
             }
-            if let Ok(decoded)
-                = <StateCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <StateCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::State(decoded));
             }
-            if let Ok(decoded)
-                = <SupportsInterfaceCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <SupportsInterfaceCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::SupportsInterface(decoded));
             }
-            if let Ok(decoded)
-                = <TimelockCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <TimelockCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Timelock(decoded));
             }
-            if let Ok(decoded)
-                = <TokenCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <TokenCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Token(decoded));
             }
-            if let Ok(decoded)
-                = <UpdateQuorumNumeratorCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) =
+                <UpdateQuorumNumeratorCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::UpdateQuorumNumerator(decoded));
             }
-            if let Ok(decoded)
-                = <UpdateTimelockCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) =
+                <UpdateTimelockCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::UpdateTimelock(decoded));
             }
-            if let Ok(decoded)
-                = <VersionCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VersionCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::Version(decoded));
             }
-            if let Ok(decoded)
-                = <VotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::VotingDelay(decoded));
             }
-            if let Ok(decoded)
-                = <VotingPeriodCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VotingPeriodCall as ::ethers::core::abi::AbiDecode>::decode(data)
+            {
                 return Ok(Self::VotingPeriod(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())
@@ -1303,78 +1244,40 @@ pub mod hopgov {
     impl ::ethers::core::abi::AbiEncode for hopgovCalls {
         fn encode(self) -> Vec<u8> {
             match self {
-                Self::BallotTypehash(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::CountingMode(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::CastVote(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::CastVoteBySig(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::BallotTypehash(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::CountingMode(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::CastVote(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::CastVoteBySig(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::CastVoteWithReason(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
                 Self::Execute(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::GetVotes(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::HasVoted(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::HashProposal(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::GetVotes(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::HasVoted(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::HashProposal(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Name(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::ProposalDeadline(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::ProposalEta(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::ProposalSnapshot(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::ProposalThreshold(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::ProposalVotes(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::ProposalDeadline(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::ProposalEta(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::ProposalSnapshot(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::ProposalThreshold(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::ProposalVotes(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Propose(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Queue(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Quorum(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::QuorumDenominator(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::QuorumNumerator(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::QuorumDenominator(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::QuorumNumerator(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Relay(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::State(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::SupportsInterface(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::Timelock(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::SupportsInterface(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::Timelock(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Token(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::UpdateQuorumNumerator(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::UpdateTimelock(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::UpdateTimelock(element) => ::ethers::core::abi::AbiEncode::encode(element),
                 Self::Version(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::VotingDelay(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
-                Self::VotingPeriod(element) => {
-                    ::ethers::core::abi::AbiEncode::encode(element)
-                }
+                Self::VotingDelay(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::VotingPeriod(element) => ::ethers::core::abi::AbiEncode::encode(element),
             }
         }
     }
@@ -1385,9 +1288,7 @@ pub mod hopgov {
                 Self::CountingMode(element) => ::core::fmt::Display::fmt(element, f),
                 Self::CastVote(element) => ::core::fmt::Display::fmt(element, f),
                 Self::CastVoteBySig(element) => ::core::fmt::Display::fmt(element, f),
-                Self::CastVoteWithReason(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::CastVoteWithReason(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Execute(element) => ::core::fmt::Display::fmt(element, f),
                 Self::GetVotes(element) => ::core::fmt::Display::fmt(element, f),
                 Self::HasVoted(element) => ::core::fmt::Display::fmt(element, f),
@@ -1408,9 +1309,7 @@ pub mod hopgov {
                 Self::SupportsInterface(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Timelock(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Token(element) => ::core::fmt::Display::fmt(element, f),
-                Self::UpdateQuorumNumerator(element) => {
-                    ::core::fmt::Display::fmt(element, f)
-                }
+                Self::UpdateQuorumNumerator(element) => ::core::fmt::Display::fmt(element, f),
                 Self::UpdateTimelock(element) => ::core::fmt::Display::fmt(element, f),
                 Self::Version(element) => ::core::fmt::Display::fmt(element, f),
                 Self::VotingDelay(element) => ::core::fmt::Display::fmt(element, f),
@@ -1577,7 +1476,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct BallotTypehashReturn(pub [u8; 32]);
     ///Container type for all return fields from the `COUNTING_MODE` function with signature `COUNTING_MODE()` and selector `0xdd4e2ba5`
@@ -1589,7 +1488,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct CountingModeReturn(pub ::std::string::String);
     ///Container type for all return fields from the `castVote` function with signature `castVote(uint256,uint8)` and selector `0x56781388`
@@ -1601,7 +1500,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct CastVoteReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `castVoteBySig` function with signature `castVoteBySig(uint256,uint8,uint8,bytes32,bytes32)` and selector `0x3bccf4fd`
@@ -1613,7 +1512,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct CastVoteBySigReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `castVoteWithReason` function with signature `castVoteWithReason(uint256,uint8,string)` and selector `0x7b3c71d3`
@@ -1625,7 +1524,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct CastVoteWithReasonReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `execute` function with signature `execute(address[],uint256[],bytes[],bytes32)` and selector `0x2656227d`
@@ -1637,7 +1536,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ExecuteReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `getVotes` function with signature `getVotes(address,uint256)` and selector `0xeb9019d4`
@@ -1649,7 +1548,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct GetVotesReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `hasVoted` function with signature `hasVoted(uint256,address)` and selector `0x43859632`
@@ -1661,7 +1560,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct HasVotedReturn(pub bool);
     ///Container type for all return fields from the `hashProposal` function with signature `hashProposal(address[],uint256[],bytes[],bytes32)` and selector `0xc59057e4`
@@ -1673,7 +1572,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct HashProposalReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `name` function with signature `name()` and selector `0x06fdde03`
@@ -1685,7 +1584,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct NameReturn(pub ::std::string::String);
     ///Container type for all return fields from the `proposalDeadline` function with signature `proposalDeadline(uint256)` and selector `0xc01f9e37`
@@ -1697,7 +1596,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ProposalDeadlineReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `proposalEta` function with signature `proposalEta(uint256)` and selector `0xab58fb8e`
@@ -1709,7 +1608,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ProposalEtaReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `proposalSnapshot` function with signature `proposalSnapshot(uint256)` and selector `0x2d63f693`
@@ -1721,7 +1620,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ProposalSnapshotReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `proposalThreshold` function with signature `proposalThreshold()` and selector `0xb58131b0`
@@ -1733,7 +1632,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ProposalThresholdReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `proposalVotes` function with signature `proposalVotes(uint256)` and selector `0x544ffc9c`
@@ -1745,7 +1644,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ProposalVotesReturn {
         pub against_votes: ::ethers::core::types::U256,
@@ -1761,7 +1660,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct ProposeReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `queue` function with signature `queue(address[],uint256[],bytes[],bytes32)` and selector `0x160cbed7`
@@ -1773,7 +1672,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct QueueReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `quorum` function with signature `quorum(uint256)` and selector `0xf8ce560a`
@@ -1785,7 +1684,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct QuorumReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `quorumDenominator` function with signature `quorumDenominator()` and selector `0x97c3d334`
@@ -1797,7 +1696,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct QuorumDenominatorReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `quorumNumerator` function with signature `quorumNumerator()` and selector `0xa7713a70`
@@ -1809,7 +1708,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct QuorumNumeratorReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `state` function with signature `state(uint256)` and selector `0x3e4f49e6`
@@ -1821,7 +1720,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct StateReturn(pub u8);
     ///Container type for all return fields from the `supportsInterface` function with signature `supportsInterface(bytes4)` and selector `0x01ffc9a7`
@@ -1833,7 +1732,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct SupportsInterfaceReturn(pub bool);
     ///Container type for all return fields from the `timelock` function with signature `timelock()` and selector `0xd33219b4`
@@ -1845,7 +1744,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct TimelockReturn(pub ::ethers::core::types::Address);
     ///Container type for all return fields from the `token` function with signature `token()` and selector `0xfc0c546a`
@@ -1857,7 +1756,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct TokenReturn(pub ::ethers::core::types::Address);
     ///Container type for all return fields from the `version` function with signature `version()` and selector `0x54fd4d50`
@@ -1869,7 +1768,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct VersionReturn(pub ::std::string::String);
     ///Container type for all return fields from the `votingDelay` function with signature `votingDelay()` and selector `0x3932abb1`
@@ -1881,7 +1780,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct VotingDelayReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `votingPeriod` function with signature `votingPeriod()` and selector `0x02a251a3`
@@ -1893,7 +1792,7 @@ pub mod hopgov {
         Debug,
         PartialEq,
         Eq,
-        Hash
+        Hash,
     )]
     pub struct VotingPeriodReturn(pub ::ethers::core::types::U256);
 }
