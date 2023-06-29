@@ -71,7 +71,65 @@ const getProxies = async () => {
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/require-await
+enum VoteResult {
+  NOT_CONNECTED = "NOT_CONNECTED",
+  LOADING = "LOADING",
+  VOTED = "VOTED",
+  NOT_VOTED = "NOT_VOTED",
+}
+
+async function fetchVote(proposalId: string, proxy: string) {
+  "use server";
+
+  const session = await getServerSession(authOptions());
+  const userAddress = session?.user?.name ?? "";
+
+  const user = await prisma.user.findFirst({
+    where: {
+      address: { equals: userAddress },
+    },
+    include: {
+      voters: true,
+    },
+  });
+
+  if (!user) return VoteResult.NOT_CONNECTED;
+
+  const proposal = await prisma.proposal.findFirst({
+    where: { id: proposalId },
+    include: {
+      votes: {
+        where: {
+          voteraddress: {
+            in:
+              proxy == "any"
+                ? user?.voters.map((voter) => voter.address)
+                : [proxy],
+          },
+        },
+      },
+    },
+  });
+
+  if (!proposal) return VoteResult.LOADING;
+
+  const voterHandlers = await prisma.voterhandler.findMany({
+    where: {
+      daohandlerid: { equals: proposal?.daohandlerid },
+      voter: { id: { in: user?.voters.map((v) => v.id) } },
+    },
+  });
+
+  voterHandlers.map((vh) => {
+    if (!vh.uptodate) return VoteResult.LOADING;
+  });
+
+  if (proposal.votes.map((vote: Vote) => vote.choice).length > 0)
+    return VoteResult.VOTED;
+
+  return VoteResult.NOT_VOTED;
+}
+
 async function fetchItems(
   from: string,
   end: number,
@@ -235,7 +293,11 @@ export default async function Home({
       </Suspense>
 
       <Suspense>
-        <Items fetchItems={fetchItems} searchParams={searchParams} />
+        <Items
+          fetchItems={fetchItems}
+          fetchVote={fetchVote}
+          searchParams={searchParams}
+        />
       </Suspense>
     </div>
   );

@@ -1,22 +1,41 @@
+"use client";
+
 import Image from "next/image";
 import dayjs, { extend } from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { type Item } from "./Items";
+
+import { useEffect, useState } from "react";
 
 extend(relativeTime);
 
-export const DesktopItem = (props: {
-  proposal: {
-    daoName: string;
-    daoHandlerId: string;
-    onchain: boolean;
-    daoPicture: string;
-    proposalTitle: string;
-    state: string;
-    proposalLink: string;
-    timeEnd: Date;
-  };
-}) => {
+enum VoteResult {
+  NOT_CONNECTED = "NOT_CONNECTED",
+  LOADING = "LOADING",
+  VOTED = "VOTED",
+  NOT_VOTED = "NOT_VOTED",
+}
+
+export default function DesktopItem(props: {
+  proposal: Item;
+  proxy: string;
+  fetchVote: (proposalId: string, proxy: string) => Promise<string>;
+}) {
   const loading = true;
+  const [vote, setVote] = useState(VoteResult.LOADING);
+
+  useEffect(() => {
+    async function fetch() {
+      const vote = await props.fetchVote(
+        props.proposal.proposalId,
+        props.proxy
+      );
+
+      setVote(vote as VoteResult);
+    }
+    void fetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex h-[96px] w-full flex-row justify-between bg-[#121212] text-[#EDEDED]">
@@ -104,11 +123,12 @@ export const DesktopItem = (props: {
 
         <div className="w-[200px] text-end">
           <div className="flex flex-col items-center">
-            {props.proposal.proposalTitle == "not-connected" ? (
+            {vote == VoteResult.NOT_CONNECTED && (
               <div className="p-2 text-center text-[17px] leading-[26px] text-white">
                 Connect wallet to see your vote status
               </div>
-            ) : loading ? (
+            )}
+            {vote == VoteResult.LOADING && (
               <Image
                 loading="eager"
                 priority={true}
@@ -117,34 +137,31 @@ export const DesktopItem = (props: {
                 width={32}
                 height={32}
               />
-            ) : (
-              <div>
-                {props.proposal.proposalTitle == "true" && (
-                  <div className="flex w-full flex-col items-center">
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      src="/assets/Icon/Voted.svg"
-                      alt="voted"
-                      width={32}
-                      height={32}
-                    />
-                    <div className="text-[18px]">Voted</div>
-                  </div>
-                )}
-                {props.proposal.proposalTitle == "false" && (
-                  <div className="flex w-full flex-col items-center">
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      src="/assets/Icon/NotVotedYet.svg"
-                      alt="voted"
-                      width={32}
-                      height={32}
-                    />
-                    <div className="text-[18px]">Not Voted Yet</div>
-                  </div>
-                )}
+            )}
+            {vote == VoteResult.VOTED && (
+              <div className="flex w-full flex-col items-center">
+                <Image
+                  loading="eager"
+                  priority={true}
+                  src="/assets/Icon/Voted.svg"
+                  alt="voted"
+                  width={32}
+                  height={32}
+                />
+                <div className="text-[18px]">Voted</div>
+              </div>
+            )}
+            {vote == VoteResult.NOT_VOTED && (
+              <div className="flex w-full flex-col items-center">
+                <Image
+                  loading="eager"
+                  priority={true}
+                  src="/assets/Icon/NotVotedYet.svg"
+                  alt="voted"
+                  width={32}
+                  height={32}
+                />
+                <div className="text-[18px]">Not Voted Yet</div>
               </div>
             )}
           </div>
@@ -152,4 +169,4 @@ export const DesktopItem = (props: {
       </div>
     </div>
   );
-};
+}

@@ -4,10 +4,9 @@ import { type ProposalState } from "@senate/database";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import InfiniteScroll from "react-infinite-scroller";
-import { DesktopItem } from "./ssr/DesktopItem";
-import { MobileRow } from "./ssr/MobileRow";
+import DesktopItem from "./DesktopItem";
 
-type Item = {
+export type Item = {
   proposalId: string;
   daoName: string;
   daoHandlerId: string;
@@ -28,10 +27,15 @@ type ItemsProps = {
     skip?: number,
     take?: number
   ) => Promise<Item[]>;
+  fetchVote: (proposalId: string, proxy: string) => Promise<string>;
   searchParams?: { from: string; end: number; voted: string; proxy: string };
 };
 
-export default function Items({ fetchItems, searchParams }: ItemsProps) {
+export default function Items({
+  fetchItems,
+  fetchVote,
+  searchParams,
+}: ItemsProps) {
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -48,7 +52,8 @@ export default function Items({ fetchItems, searchParams }: ItemsProps) {
         items.length
       );
 
-      setItems((prev) => [...prev, ...data.filter((d) => !prev.includes(d))]);
+      if (data.length)
+        setItems((prev) => [...prev, ...data.filter((d) => !prev.includes(d))]);
 
       if (!data.length) setHasMore(false);
 
@@ -115,10 +120,14 @@ export default function Items({ fetchItems, searchParams }: ItemsProps) {
           </div>
         }
       >
-        <ul>
+        <ul className="pt-1">
           {items.map((item, index) => (
             <li className="pb-1" key={index}>
-              <DesktopItem proposal={item} />
+              <DesktopItem
+                proposal={item}
+                proxy={searchParams?.proxy ?? "any"}
+                fetchVote={fetchVote}
+              />
             </li>
           ))}
         </ul>
