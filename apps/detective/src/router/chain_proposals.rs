@@ -205,6 +205,7 @@ async fn insert_proposals(
                                     update_v.push(proposal::name::set(proposal.name.clone()));
                                 }
 
+                                update_v.push(proposal::url::set(proposal.url.clone()));
                                 update_v.push(proposal::choices::set(proposal.choices.clone()));
                                 update_v.push(proposal::scores::set(proposal.scores.clone()));
                                 update_v.push(proposal::scorestotal::set(
