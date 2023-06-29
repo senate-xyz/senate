@@ -27,11 +27,6 @@ const Home = () => {
   const router = useRouter();
 
   const setEmail = trpc.accountSettings.setEmailAndEnableBulletin.useMutation();
-  const user = trpc.accountSettings.getUser.useQuery();
-
-  useEffect(() => {
-    if (user.isFetched) setNewEmail(user.data?.email ?? "");
-  }, [user]);
 
   const onEnter = () => {
     setEmail.mutate(
