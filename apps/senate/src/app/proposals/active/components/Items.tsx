@@ -4,7 +4,7 @@ import { type ProposalState } from "@senate/database";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import InfiniteScroll from "react-infinite-scroller";
-import DesktopItem from "./DesktopItem";
+import DesktopItem from "./Item";
 
 export type Item = {
   proposalId: string;
@@ -69,7 +69,7 @@ export default function Items({
 
   return (
     <div className="pt-4">
-      <div className="flex h-[56px] flex-row items-center justify-between bg-black text-white">
+      <div className="hidden h-[56px] flex-row items-center justify-between bg-black text-white lg:flex">
         <div className="flex flex-row items-center">
           <div className="w-[240px] items-center pl-[16px]">
             <div className="flex gap-1">
