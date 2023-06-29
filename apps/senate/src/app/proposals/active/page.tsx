@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function Home({
   searchParams,
 }: {
-  searchParams?: { from: string; end: number; voted: string; proxy: string };
+  searchParams: { from: string; end: number; voted: string; proxy: string };
 }) {
   const subscribedDAOs = await getSubscribedDAOs();
   const proxies = await getProxies();
@@ -28,11 +28,16 @@ export default async function Home({
       </Suspense>
 
       <Suspense>
-        <Items
-          fetchItems={fetchItems}
-          fetchVote={fetchVote}
-          searchParams={searchParams}
-        />
+        {searchParams.end &&
+          searchParams.from &&
+          searchParams.proxy &&
+          searchParams.voted && (
+            <Items
+              fetchItems={fetchItems}
+              fetchVote={fetchVote}
+              searchParams={searchParams}
+            />
+          )}
       </Suspense>
     </div>
   );

@@ -30,10 +30,10 @@ type ItemsProps = {
   fetchItems: (
     active: boolean,
     page: number,
-    from?: string,
-    end?: number,
-    voted?: string,
-    proxy?: string
+    from: string,
+    end: number,
+    voted: string,
+    proxy: string
   ) => Promise<Item[]>;
   fetchVote: (proposalId: string, proxy: string) => Promise<string>;
   searchParams?: { from: string; end: number; voted: string; proxy: string };

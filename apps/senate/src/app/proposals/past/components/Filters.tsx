@@ -47,25 +47,27 @@ export const Filters = (props: {
   const account = useAccount();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [from, setFrom] = useState("any");
-  const [end, setEnd] = useState(30);
-  const [voted, setVoted] = useState("any");
-  const [proxy, setProxy] = useState("any");
+  const [from, setFrom] = useState(String(searchParams?.get("from") ?? "any"));
+  const [end, setEnd] = useState(Number(searchParams?.get("end") ?? 30));
+  const [voted, setVoted] = useState(
+    String(searchParams?.get("voted") ?? "any")
+  );
+  const [proxy, setProxy] = useState(
+    String(searchParams?.get("proxy") ?? "any")
+  );
 
   useEffect(() => {
-    if (searchParams) {
-      setFrom(String(searchParams.get("from") ?? "any"));
-      setEnd(Number(searchParams.get("end") ?? 30));
-      setVoted(String(searchParams.get("voted") ?? "any"));
-      setProxy(String(searchParams.get("proxy") ?? "any"));
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (router)
-      router.push(
-        `/proposals/past?from=${from}&end=${end}&voted=${voted}&proxy=${proxy}`
-      );
+    if (router && searchParams)
+      if (
+        searchParams.get("from") != from ||
+        searchParams.get("end") != String(end) ||
+        searchParams.get("voted") != voted ||
+        searchParams.get("proxy") != proxy
+      )
+        router.push(
+          `/proposals/past?from=${from}&end=${end}&voted=${voted}&proxy=${proxy}`
+        );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [from, end, voted, router, proxy]);
 
   return (
