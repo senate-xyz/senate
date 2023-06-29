@@ -21,7 +21,7 @@ export const DesktopItem = (props: {
   return (
     <div className="flex h-[96px] w-full flex-row justify-between bg-[#121212] text-[#EDEDED]">
       <div className="flex flex-row items-center">
-        <div className="m-[12px] flex flex-row items-center gap-[8px]">
+        <div className="m-[12px] flex w-[220px] flex-row items-center gap-[8px]">
           <div className="border border-b-2 border-l-0 border-r-2 border-t-0">
             <Image
               loading="eager"

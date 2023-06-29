@@ -66,7 +66,7 @@ export default function Items({ fetchItems, searchParams }: ItemsProps) {
     <div className="pt-4">
       <div className="flex h-[56px] flex-row items-center justify-between bg-black text-white">
         <div className="flex flex-row items-center">
-          <div className="w-[200px] items-center pl-[16px]">
+          <div className="w-[240px] items-center pl-[16px]">
             <div className="flex gap-1">
               <div>DAO</div>
             </div>
