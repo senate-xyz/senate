@@ -52,7 +52,7 @@ export const NavBar = () => {
           )}
         </Link>
 
-        <Link href={`/proposals/active?from=any&end=365&voted=any&proxy=any`}>
+        <Link href={`/proposals/active`}>
           {pathname?.includes("proposals") ? (
             <div className="flex flex-col items-center">
               <Image
