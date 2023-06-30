@@ -13,8 +13,13 @@ export const metadata: Metadata = {
 
 export const getSubscribedDAOs = async () => {
   "use server";
+
   const session = await getServerSession(authOptions());
-  const userAddress = session?.user?.name ?? "";
+
+  if (!session || !session.user || !session.user.name)
+    return { subscriptions: [], backgroundColors: [] };
+
+  const userAddress = session.user.name;
 
   const user = await prisma.user
     .findFirstOrThrow({
@@ -77,8 +82,48 @@ export const getSubscribedDAOs = async () => {
 
 export const getUnsubscribedDAOs = async () => {
   "use server";
+
   const session = await getServerSession(authOptions());
-  const userAddress = session?.user?.name ?? "";
+
+  if (!session || !session.user || !session.user.name) {
+    const daosList = (
+      await prisma.dao.findMany({
+        orderBy: {
+          id: "asc",
+        },
+        include: {
+          handlers: true,
+        },
+      })
+    ).sort((a, b) => a.name.localeCompare(b.name));
+
+    const backgroundColors = await Promise.all(
+      daosList.map(async (dao) => {
+        const color = await getAverageColor(
+          `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${dao.picture}.svg`,
+          {
+            mode: "precision",
+            algorithm: "sqrt",
+          }
+        )
+          .then((color) => color)
+          .catch(() => {
+            return { hex: "#5A5A5A" };
+          });
+        return {
+          daoId: dao.id,
+          color: `${color.hex}`,
+        };
+      })
+    );
+
+    return {
+      unsubscriptions: daosList,
+      backgroundColors: backgroundColors,
+    };
+  }
+
+  const userAddress = session.user.name;
 
   const user = await prisma.user
     .findFirstOrThrow({

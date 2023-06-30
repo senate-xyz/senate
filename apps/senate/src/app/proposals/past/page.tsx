@@ -1,5 +1,4 @@
 import { Filters } from "./components/Filters";
-import { Suspense } from "react";
 import { type Metadata } from "next";
 import { getSubscribedDAOs, getProxies, fetchItems, fetchVote } from "../page";
 import Items from "./components/Items";

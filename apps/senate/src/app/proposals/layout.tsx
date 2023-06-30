@@ -8,7 +8,8 @@ const userHasProxies = async () => {
   "use server";
 
   const session = await getServerSession(authOptions());
-  const userAddress = session?.user?.name ?? "";
+  if (!session || !session.user || !session.user.name) return true;
+  const userAddress = session.user.name;
 
   const result = await prisma.user.findFirstOrThrow({
     where: {

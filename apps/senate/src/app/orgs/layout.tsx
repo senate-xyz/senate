@@ -6,7 +6,8 @@ import SetupDailyBulletin from "./components/SetupDailyBulletin";
 
 const hasUserBulletin = async () => {
   const session = await getServerSession(authOptions());
-  const userAddress = session?.user?.name ?? "";
+  if (!session || !session.user || !session.user.name) return true;
+  const userAddress = session.user.name;
 
   const user = await prisma.user
     .findFirstOrThrow({
