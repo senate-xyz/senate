@@ -73,7 +73,7 @@ export const Filters = (props: {
           `/proposals/active?from=${from}&end=${end}&voted=${voted}&proxy=${proxy}`
         );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [from, end, voted, router, proxy]);
+  }, [from, end, voted, proxy]);
 
   return (
     <Suspense fallback={<LoadingFilters />}>
