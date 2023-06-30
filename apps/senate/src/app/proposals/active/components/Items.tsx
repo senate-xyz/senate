@@ -74,7 +74,7 @@ export default function Items({
   };
 
   useEffect(() => {
-    setItems([]);
+    if (items.length) setItems([]);
     if (!hasMore) setHasMore(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
