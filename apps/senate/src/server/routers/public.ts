@@ -10,11 +10,7 @@ export const publicRouter = router({
 
     return split;
   }),
-  allDAOs: publicProcedure.query(async () => {
-    const allDAOs = await prisma.dao.findMany({});
 
-    return allDAOs;
-  }),
   proposal: publicProcedure
     .input(
       z.object({
