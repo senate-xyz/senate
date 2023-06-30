@@ -24,25 +24,6 @@
 
     <mj-style>
       @media only screen and (min-width: 480px) {
-        .countdown-width {
-          min-width: 180px;
-          max-width: 180px;
-          max-height: 50px;
-        }
-      }
-    </mj-style>
-    <mj-style>
-      @media only screen and (max-width: 479px) {
-        .countdown-width {
-          min-width: 100px;
-          max-width: 100px;
-          max-height: 50px;
-        }
-      }
-    </mj-style>
-
-    <mj-style>
-      @media only screen and (min-width: 480px) {
         .proposal-name {
           font-size:
             15px;
@@ -69,7 +50,6 @@
     </mj-style>
   </mj-head>
   <mj-body background-color="white">
-
     <mj-raw>{{#env}}</mj-raw>
     <mj-section padding="8px 0px" background-color="red">
       <mj-column>
@@ -142,11 +122,12 @@
             <td style="text-align: center">
               <table style="text-align:center;">
                 <tr>
-                  <td> <img class="countdown-width" src="{{countdownUrl}}" alt="Countdown" />
+                  <td align="center">
+                    <img style="width:30vw !important; max-width:180px;" src="{{countdownUrl}}" alt="Countdown" />
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td style="font-size: 11px;">
                     {{countdownString}}
                   </td>
                 </tr>
@@ -239,11 +220,15 @@
             <td style="text-align: center">
               <table style="text-align:center;">
                 <tr>
-                  <td> <img class="countdown-width" src="{{countdownUrl}}" alt="Countdown" />
+                  <td align="center" class="mobile-only" style="display:none">
+                    <img style="width:100px !important;" src="{{countdownUrl}}" alt="Countdown" />
+                  </td>
+                  <td align="center" class="no-mobile">
+                    <img style="width:180px !important;" class="no-mobile" src="{{countdownUrl}}" alt="Countdown" />
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td style="font-size: 11px;">
                     {{countdownString}}
                   </td>
                 </tr>
