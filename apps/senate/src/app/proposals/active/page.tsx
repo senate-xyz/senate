@@ -1,5 +1,4 @@
 import { Filters } from "./components/Filters";
-import { Suspense } from "react";
 import { type Metadata } from "next";
 import Items from "./components/Items";
 import { fetchItems, fetchVote, getProxies, getSubscribedDAOs } from "../page";
@@ -23,22 +22,18 @@ export default async function Home({
 
   return (
     <div className="min-h-screen gap-2">
-      <Suspense>
-        <Filters subscriptions={subscripions} proxies={proxies} />
-      </Suspense>
+      <Filters subscriptions={subscripions} proxies={proxies} />
 
-      <Suspense>
-        {searchParams.end &&
-          searchParams.from &&
-          searchParams.proxy &&
-          searchParams.voted && (
-            <Items
-              fetchItems={fetchItems}
-              fetchVote={fetchVote}
-              searchParams={searchParams}
-            />
-          )}
-      </Suspense>
+      {searchParams.end &&
+        searchParams.from &&
+        searchParams.proxy &&
+        searchParams.voted && (
+          <Items
+            fetchItems={fetchItems}
+            fetchVote={fetchVote}
+            searchParams={searchParams}
+          />
+        )}
     </div>
   );
 }

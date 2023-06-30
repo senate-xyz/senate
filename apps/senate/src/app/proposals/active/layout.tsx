@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { Suspense } from "react";
-import Loading from "./loading";
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
   {
@@ -35,7 +33,7 @@ export default async function RootLayout({
           );
         })}
       </div>
-      <Suspense fallback={<Loading />}>{children}</Suspense>
+      {children}
     </div>
   );
 }

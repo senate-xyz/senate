@@ -7,16 +7,14 @@ pub use dydxstrategy::*;
     clippy::upper_case_acronyms,
     clippy::type_complexity,
     dead_code,
-    non_camel_case_types
+    non_camel_case_types,
 )]
 pub mod dydxstrategy {
     #[rustfmt::skip]
     const __ABI: &str = "[\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"dydxToken\",\n        \"type\": \"address\"\n      },\n      {\n        \"internalType\": \"address\",\n        \"name\": \"stakedDydxToken\",\n        \"type\": \"address\"\n      }\n    ],\n    \"stateMutability\": \"nonpayable\",\n    \"type\": \"constructor\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"DYDX_TOKEN\",\n    \"outputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"\",\n        \"type\": \"address\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [],\n    \"name\": \"STAKED_DYDX_TOKEN\",\n    \"outputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"\",\n        \"type\": \"address\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"user\",\n        \"type\": \"address\"\n      },\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"blockNumber\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"getPropositionPowerAt\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"blockNumber\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"getTotalPropositionSupplyAt\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"blockNumber\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"getTotalVotingSupplyAt\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  },\n  {\n    \"inputs\": [\n      {\n        \"internalType\": \"address\",\n        \"name\": \"user\",\n        \"type\": \"address\"\n      },\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"blockNumber\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"name\": \"getVotingPowerAt\",\n    \"outputs\": [\n      {\n        \"internalType\": \"uint256\",\n        \"name\": \"\",\n        \"type\": \"uint256\"\n      }\n    ],\n    \"stateMutability\": \"view\",\n    \"type\": \"function\"\n  }\n]\n";
     ///The parsed JSON ABI of the contract.
-    pub static DYDXSTRATEGY_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> =
-        ::ethers::contract::Lazy::new(|| {
-            ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid")
-        });
+    pub static DYDXSTRATEGY_ABI: ::ethers::contract::Lazy<::ethers::core::abi::Abi> = ::ethers::contract::Lazy::new(||
+    ::ethers::core::utils::__serde_json::from_str(__ABI).expect("ABI is always valid"));
     pub struct dydxstrategy<M>(::ethers::contract::Contract<M>);
     impl<M> ::core::clone::Clone for dydxstrategy<M> {
         fn clone(&self) -> Self {
@@ -36,9 +34,7 @@ pub mod dydxstrategy {
     }
     impl<M> ::core::fmt::Debug for dydxstrategy<M> {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-            f.debug_tuple(stringify!(dydxstrategy))
-                .field(&self.address())
-                .finish()
+            f.debug_tuple(stringify!(dydxstrategy)).field(&self.address()).finish()
         }
     }
     impl<M: ::ethers::providers::Middleware> dydxstrategy<M> {
@@ -48,16 +44,21 @@ pub mod dydxstrategy {
             address: T,
             client: ::std::sync::Arc<M>,
         ) -> Self {
-            Self(::ethers::contract::Contract::new(
-                address.into(),
-                DYDXSTRATEGY_ABI.clone(),
-                client,
-            ))
+            Self(
+                ::ethers::contract::Contract::new(
+                    address.into(),
+                    DYDXSTRATEGY_ABI.clone(),
+                    client,
+                ),
+            )
         }
         ///Calls the contract's `DYDX_TOKEN` (0x3257a4a1) function
         pub fn dydx_token(
             &self,
-        ) -> ::ethers::contract::builders::ContractCall<M, ::ethers::core::types::Address> {
+        ) -> ::ethers::contract::builders::ContractCall<
+            M,
+            ::ethers::core::types::Address,
+        > {
             self.0
                 .method_hash([50, 87, 164, 161], ())
                 .expect("method not found (this should never happen)")
@@ -65,7 +66,10 @@ pub mod dydxstrategy {
         ///Calls the contract's `STAKED_DYDX_TOKEN` (0x1d8e6f82) function
         pub fn staked_dydx_token(
             &self,
-        ) -> ::ethers::contract::builders::ContractCall<M, ::ethers::core::types::Address> {
+        ) -> ::ethers::contract::builders::ContractCall<
+            M,
+            ::ethers::core::types::Address,
+        > {
             self.0
                 .method_hash([29, 142, 111, 130], ())
                 .expect("method not found (this should never happen)")
@@ -109,7 +113,8 @@ pub mod dydxstrategy {
                 .expect("method not found (this should never happen)")
         }
     }
-    impl<M: ::ethers::providers::Middleware> From<::ethers::contract::Contract<M>> for dydxstrategy<M> {
+    impl<M: ::ethers::providers::Middleware> From<::ethers::contract::Contract<M>>
+    for dydxstrategy<M> {
         fn from(contract: ::ethers::contract::Contract<M>) -> Self {
             Self::new(contract.address(), contract.client())
         }
@@ -123,7 +128,7 @@ pub mod dydxstrategy {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(name = "DYDX_TOKEN", abi = "DYDX_TOKEN()")]
     pub struct DydxTokenCall;
@@ -136,7 +141,7 @@ pub mod dydxstrategy {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(name = "STAKED_DYDX_TOKEN", abi = "STAKED_DYDX_TOKEN()")]
     pub struct StakedDydxTokenCall;
@@ -149,7 +154,7 @@ pub mod dydxstrategy {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(
         name = "getPropositionPowerAt",
@@ -168,7 +173,7 @@ pub mod dydxstrategy {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(
         name = "getTotalPropositionSupplyAt",
@@ -186,12 +191,9 @@ pub mod dydxstrategy {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
-    #[ethcall(
-        name = "getTotalVotingSupplyAt",
-        abi = "getTotalVotingSupplyAt(uint256)"
-    )]
+    #[ethcall(name = "getTotalVotingSupplyAt", abi = "getTotalVotingSupplyAt(uint256)")]
     pub struct GetTotalVotingSupplyAtCall {
         pub block_number: ::ethers::core::types::U256,
     }
@@ -204,7 +206,7 @@ pub mod dydxstrategy {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     #[ethcall(name = "getVotingPowerAt", abi = "getVotingPowerAt(address,uint256)")]
     pub struct GetVotingPowerAtCall {
@@ -226,32 +228,36 @@ pub mod dydxstrategy {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded) = <DydxTokenCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded)
+                = <DydxTokenCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::DydxToken(decoded));
             }
-            if let Ok(decoded) =
-                <StakedDydxTokenCall as ::ethers::core::abi::AbiDecode>::decode(data)
-            {
+            if let Ok(decoded)
+                = <StakedDydxTokenCall as ::ethers::core::abi::AbiDecode>::decode(data) {
                 return Ok(Self::StakedDydxToken(decoded));
             }
-            if let Ok(decoded) =
-                <GetPropositionPowerAtCall as ::ethers::core::abi::AbiDecode>::decode(data)
-            {
+            if let Ok(decoded)
+                = <GetPropositionPowerAtCall as ::ethers::core::abi::AbiDecode>::decode(
+                    data,
+                ) {
                 return Ok(Self::GetPropositionPowerAt(decoded));
             }
-            if let Ok(decoded) =
-                <GetTotalPropositionSupplyAtCall as ::ethers::core::abi::AbiDecode>::decode(data)
-            {
+            if let Ok(decoded)
+                = <GetTotalPropositionSupplyAtCall as ::ethers::core::abi::AbiDecode>::decode(
+                    data,
+                ) {
                 return Ok(Self::GetTotalPropositionSupplyAt(decoded));
             }
-            if let Ok(decoded) =
-                <GetTotalVotingSupplyAtCall as ::ethers::core::abi::AbiDecode>::decode(data)
-            {
+            if let Ok(decoded)
+                = <GetTotalVotingSupplyAtCall as ::ethers::core::abi::AbiDecode>::decode(
+                    data,
+                ) {
                 return Ok(Self::GetTotalVotingSupplyAt(decoded));
             }
-            if let Ok(decoded) =
-                <GetVotingPowerAtCall as ::ethers::core::abi::AbiDecode>::decode(data)
-            {
+            if let Ok(decoded)
+                = <GetVotingPowerAtCall as ::ethers::core::abi::AbiDecode>::decode(
+                    data,
+                ) {
                 return Ok(Self::GetVotingPowerAt(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())
@@ -260,8 +266,12 @@ pub mod dydxstrategy {
     impl ::ethers::core::abi::AbiEncode for dydxstrategyCalls {
         fn encode(self) -> Vec<u8> {
             match self {
-                Self::DydxToken(element) => ::ethers::core::abi::AbiEncode::encode(element),
-                Self::StakedDydxToken(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::DydxToken(element) => {
+                    ::ethers::core::abi::AbiEncode::encode(element)
+                }
+                Self::StakedDydxToken(element) => {
+                    ::ethers::core::abi::AbiEncode::encode(element)
+                }
                 Self::GetPropositionPowerAt(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
@@ -271,7 +281,9 @@ pub mod dydxstrategy {
                 Self::GetTotalVotingSupplyAt(element) => {
                     ::ethers::core::abi::AbiEncode::encode(element)
                 }
-                Self::GetVotingPowerAt(element) => ::ethers::core::abi::AbiEncode::encode(element),
+                Self::GetVotingPowerAt(element) => {
+                    ::ethers::core::abi::AbiEncode::encode(element)
+                }
             }
         }
     }
@@ -280,9 +292,15 @@ pub mod dydxstrategy {
             match self {
                 Self::DydxToken(element) => ::core::fmt::Display::fmt(element, f),
                 Self::StakedDydxToken(element) => ::core::fmt::Display::fmt(element, f),
-                Self::GetPropositionPowerAt(element) => ::core::fmt::Display::fmt(element, f),
-                Self::GetTotalPropositionSupplyAt(element) => ::core::fmt::Display::fmt(element, f),
-                Self::GetTotalVotingSupplyAt(element) => ::core::fmt::Display::fmt(element, f),
+                Self::GetPropositionPowerAt(element) => {
+                    ::core::fmt::Display::fmt(element, f)
+                }
+                Self::GetTotalPropositionSupplyAt(element) => {
+                    ::core::fmt::Display::fmt(element, f)
+                }
+                Self::GetTotalVotingSupplyAt(element) => {
+                    ::core::fmt::Display::fmt(element, f)
+                }
                 Self::GetVotingPowerAt(element) => ::core::fmt::Display::fmt(element, f),
             }
         }
@@ -326,7 +344,7 @@ pub mod dydxstrategy {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     pub struct DydxTokenReturn(pub ::ethers::core::types::Address);
     ///Container type for all return fields from the `STAKED_DYDX_TOKEN` function with signature `STAKED_DYDX_TOKEN()` and selector `0x1d8e6f82`
@@ -338,7 +356,7 @@ pub mod dydxstrategy {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     pub struct StakedDydxTokenReturn(pub ::ethers::core::types::Address);
     ///Container type for all return fields from the `getPropositionPowerAt` function with signature `getPropositionPowerAt(address,uint256)` and selector `0xa1076e58`
@@ -350,7 +368,7 @@ pub mod dydxstrategy {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     pub struct GetPropositionPowerAtReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `getTotalPropositionSupplyAt` function with signature `getTotalPropositionSupplyAt(uint256)` and selector `0xf6b50203`
@@ -362,7 +380,7 @@ pub mod dydxstrategy {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     pub struct GetTotalPropositionSupplyAtReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `getTotalVotingSupplyAt` function with signature `getTotalVotingSupplyAt(uint256)` and selector `0x7a71f9d7`
@@ -374,7 +392,7 @@ pub mod dydxstrategy {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     pub struct GetTotalVotingSupplyAtReturn(pub ::ethers::core::types::U256);
     ///Container type for all return fields from the `getVotingPowerAt` function with signature `getVotingPowerAt(address,uint256)` and selector `0xeaeded5f`
@@ -386,7 +404,7 @@ pub mod dydxstrategy {
         Debug,
         PartialEq,
         Eq,
-        Hash,
+        Hash
     )]
     pub struct GetVotingPowerAtReturn(pub ::ethers::core::types::U256);
 }

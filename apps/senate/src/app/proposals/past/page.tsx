@@ -24,22 +24,18 @@ export default async function Home({
 
   return (
     <div className="relative min-h-screen">
-      <Suspense>
-        <Filters subscriptions={subscripions} proxies={proxies} />
-      </Suspense>
+      <Filters subscriptions={subscripions} proxies={proxies} />
 
-      <Suspense>
-        {searchParams.end &&
-          searchParams.from &&
-          searchParams.proxy &&
-          searchParams.voted && (
-            <Items
-              fetchItems={fetchItems}
-              fetchVote={fetchVote}
-              searchParams={searchParams}
-            />
-          )}
-      </Suspense>
+      {searchParams.end &&
+        searchParams.from &&
+        searchParams.proxy &&
+        searchParams.voted && (
+          <Items
+            fetchItems={fetchItems}
+            fetchVote={fetchVote}
+            searchParams={searchParams}
+          />
+        )}
     </div>
   );
 }
