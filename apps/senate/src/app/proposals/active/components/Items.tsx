@@ -96,7 +96,7 @@ export default function Items({
             </div>
           </div>
           <div className="flex flex-row items-center">
-            <div className="w-[250px] items-center font-normal">
+            <div className="w-[340px] items-center font-normal">
               <div className="flex gap-1">
                 <div>Ends in</div>
                 <Image

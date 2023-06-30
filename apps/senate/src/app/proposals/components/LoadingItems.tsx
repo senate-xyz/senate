@@ -7,7 +7,7 @@ export const LoadingItems = () => {
             <div className="h-[64px] w-[64px] bg-[#545454]" />
             <div className="h-[32px] w-[120px] bg-[#545454]" />
             <div className="flex h-[32px] grow bg-[#545454]" />
-            <div className="h-[32px] w-[250px] bg-[#545454]" />
+            <div className="h-[32px] w-[340px] bg-[#545454]" />
             <div className="px-[64px]">
               <div className="h-10 w-10 rounded-full bg-[#545454]" />
             </div>
@@ -18,7 +18,7 @@ export const LoadingItems = () => {
             <div className="h-[64px] w-[64px] bg-[#545454]" />
             <div className="h-[32px] w-[120px] bg-[#545454]" />
             <div className="flex h-[32px] grow bg-[#545454]" />
-            <div className="h-[32px] w-[250px] bg-[#545454]" />
+            <div className="h-[32px] w-[340px] bg-[#545454]" />
             <div className="px-[64px]">
               <div className="h-10 w-10 rounded-full bg-[#545454]" />
             </div>
@@ -29,7 +29,7 @@ export const LoadingItems = () => {
             <div className="h-[64px] w-[64px] bg-[#545454]" />
             <div className="h-[32px] w-[120px] bg-[#545454]" />
             <div className="flex h-[32px] grow bg-[#545454]" />
-            <div className="h-[32px] w-[250px] bg-[#545454]" />
+            <div className="h-[32px] w-[340px] bg-[#545454]" />
             <div className="px-[64px]">
               <div className="h-10 w-10 rounded-full bg-[#545454]" />
             </div>
@@ -40,7 +40,7 @@ export const LoadingItems = () => {
             <div className="h-[64px] w-[64px] bg-[#545454]" />
             <div className="h-[32px] w-[120px] bg-[#545454]" />
             <div className="flex h-[32px] grow bg-[#545454]" />
-            <div className="h-[32px] w-[250px] bg-[#545454]" />
+            <div className="h-[32px] w-[340px] bg-[#545454]" />
             <div className="px-[64px]">
               <div className="h-10 w-10 rounded-full bg-[#545454]" />
             </div>
@@ -51,7 +51,7 @@ export const LoadingItems = () => {
             <div className="h-[64px] w-[64px] bg-[#545454]" />
             <div className="h-[32px] w-[120px] bg-[#545454]" />
             <div className="flex h-[32px] grow bg-[#545454]" />
-            <div className="h-[32px] w-[250px] bg-[#545454]" />
+            <div className="h-[32px] w-[340px] bg-[#545454]" />
             <div className="px-[64px]">
               <div className="h-10 w-10 rounded-full bg-[#545454]" />
             </div>

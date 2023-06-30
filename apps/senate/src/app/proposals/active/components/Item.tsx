@@ -80,7 +80,7 @@ export default function Item(props: {
         </div>
 
         <div className="flex flex-row items-center">
-          <div className="flex w-[250px] flex-col justify-between gap-2">
+          <div className="flex w-[340px] flex-col justify-between gap-2">
             <div className="text-[21px] font-semibold leading-[26px]">
               {dayjs(props.proposal.timeEnd).fromNow()}
             </div>
