@@ -77,7 +77,12 @@ export default function Items({
     setItems([]);
     if (!hasMore) setHasMore(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, [
+    searchParams?.from,
+    searchParams?.end,
+    searchParams?.voted,
+    searchParams?.proxy,
+  ]);
 
   return (
     <Suspense fallback={<LoadingItems />}>
