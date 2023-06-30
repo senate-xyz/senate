@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Suspense } from "react";
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
   {
@@ -7,13 +6,13 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
     name: "Active Proposals",
     color:
       "text-[#808080] text-[36px] font-light cursor-pointer hover:text-[#8c8c8c]",
-    link: "/proposals/active?from=any&end=365&voted=any&proxy=any",
+    link: "/proposals/active",
   },
   {
     id: 1,
     name: "Past Proposals",
     color: "text-white text-[36px] font-bold cursor-pointer",
-    link: "/proposals/past?from=any&end=30&voted=any&proxy=any",
+    link: "/proposals/past",
   },
 ];
 
