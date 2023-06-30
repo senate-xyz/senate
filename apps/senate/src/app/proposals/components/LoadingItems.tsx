@@ -5,11 +5,9 @@ export const LoadingItems = () => {
         <div className="relative h-[96px] w-full overflow-hidden bg-[#262626] p-4 shadow hover:shadow-md">
           <div className="flex w-full animate-pulse flex-row items-center gap-5">
             <div className="h-[64px] w-[64px] bg-[#545454]" />
-            <div className="h-[32px] w-[64px] bg-[#545454]" />
+            <div className="h-[32px] w-[120px] bg-[#545454]" />
             <div className="flex h-[32px] grow bg-[#545454]" />
-            <div className="lg:rx-[64px]">
-              <div className="h-[32px] w-[340px] bg-[#545454]" />
-            </div>
+            <div className="h-[32px] w-[250px] bg-[#545454]" />
             <div className="px-[64px]">
               <div className="h-10 w-10 rounded-full bg-[#545454]" />
             </div>
@@ -18,11 +16,9 @@ export const LoadingItems = () => {
         <div className="relative h-[96px] w-full overflow-hidden bg-[#262626] p-4 shadow hover:shadow-md">
           <div className="flex w-full animate-pulse flex-row items-center gap-5">
             <div className="h-[64px] w-[64px] bg-[#545454]" />
-            <div className="h-[32px] w-[64px] bg-[#545454]" />
+            <div className="h-[32px] w-[120px] bg-[#545454]" />
             <div className="flex h-[32px] grow bg-[#545454]" />
-            <div className="lg:rx-[64px]">
-              <div className="h-[32px] w-[340px] bg-[#545454]" />
-            </div>
+            <div className="h-[32px] w-[250px] bg-[#545454]" />
             <div className="px-[64px]">
               <div className="h-10 w-10 rounded-full bg-[#545454]" />
             </div>
@@ -31,11 +27,9 @@ export const LoadingItems = () => {
         <div className="relative h-[96px] w-full overflow-hidden bg-[#262626] p-4 shadow hover:shadow-md">
           <div className="flex w-full animate-pulse flex-row items-center gap-5">
             <div className="h-[64px] w-[64px] bg-[#545454]" />
-            <div className="h-[32px] w-[64px] bg-[#545454]" />
+            <div className="h-[32px] w-[120px] bg-[#545454]" />
             <div className="flex h-[32px] grow bg-[#545454]" />
-            <div className="lg:rx-[64px]">
-              <div className="h-[32px] w-[340px] bg-[#545454]" />
-            </div>
+            <div className="h-[32px] w-[250px] bg-[#545454]" />
             <div className="px-[64px]">
               <div className="h-10 w-10 rounded-full bg-[#545454]" />
             </div>
@@ -44,11 +38,9 @@ export const LoadingItems = () => {
         <div className="relative h-[96px] w-full overflow-hidden bg-[#262626] p-4 shadow hover:shadow-md">
           <div className="flex w-full animate-pulse flex-row items-center gap-5">
             <div className="h-[64px] w-[64px] bg-[#545454]" />
-            <div className="h-[32px] w-[64px] bg-[#545454]" />
+            <div className="h-[32px] w-[120px] bg-[#545454]" />
             <div className="flex h-[32px] grow bg-[#545454]" />
-            <div className="lg:rx-[64px]">
-              <div className="h-[32px] w-[340px] bg-[#545454]" />
-            </div>
+            <div className="h-[32px] w-[250px] bg-[#545454]" />
             <div className="px-[64px]">
               <div className="h-10 w-10 rounded-full bg-[#545454]" />
             </div>
@@ -57,11 +49,9 @@ export const LoadingItems = () => {
         <div className="relative h-[96px] w-full overflow-hidden bg-[#262626] p-4 shadow hover:shadow-md">
           <div className="flex w-full animate-pulse flex-row items-center gap-5">
             <div className="h-[64px] w-[64px] bg-[#545454]" />
-            <div className="h-[32px] w-[64px] bg-[#545454]" />
+            <div className="h-[32px] w-[120px] bg-[#545454]" />
             <div className="flex h-[32px] grow bg-[#545454]" />
-            <div className="lg:rx-[64px]">
-              <div className="h-[32px] w-[340px] bg-[#545454]" />
-            </div>
+            <div className="h-[32px] w-[250px] bg-[#545454]" />
             <div className="px-[64px]">
               <div className="h-10 w-10 rounded-full bg-[#545454]" />
             </div>
@@ -79,7 +69,6 @@ export const LoadingItems = () => {
           </div>
           <div className="w-full overflow-hidden bg-[#262626] p-2 shadow hover:shadow-md">
             <div className="flex w-full animate-pulse flex-row items-center gap-5">
-              <div className="h-[22px] w-[22px] bg-[#545454]" />
               <div className="flex h-[24px] grow bg-[#545454]" />
             </div>
           </div>
@@ -97,7 +86,6 @@ export const LoadingItems = () => {
           </div>
           <div className="w-full overflow-hidden bg-[#262626] p-2 shadow hover:shadow-md">
             <div className="flex w-full animate-pulse flex-row items-center gap-5">
-              <div className="h-[22px] w-[22px] bg-[#545454]" />
               <div className="flex h-[24px] grow bg-[#545454]" />
             </div>
           </div>
@@ -115,7 +103,6 @@ export const LoadingItems = () => {
           </div>
           <div className="w-full overflow-hidden bg-[#262626] p-2 shadow hover:shadow-md">
             <div className="flex w-full animate-pulse flex-row items-center gap-5">
-              <div className="h-[22px] w-[22px] bg-[#545454]" />
               <div className="flex h-[24px] grow bg-[#545454]" />
             </div>
           </div>
@@ -133,7 +120,6 @@ export const LoadingItems = () => {
           </div>
           <div className="w-full overflow-hidden bg-[#262626] p-2 shadow hover:shadow-md">
             <div className="flex w-full animate-pulse flex-row items-center gap-5">
-              <div className="h-[22px] w-[22px] bg-[#545454]" />
               <div className="flex h-[24px] grow bg-[#545454]" />
             </div>
           </div>
@@ -151,7 +137,6 @@ export const LoadingItems = () => {
           </div>
           <div className="w-full overflow-hidden bg-[#262626] p-2 shadow hover:shadow-md">
             <div className="flex w-full animate-pulse flex-row items-center gap-5">
-              <div className="h-[22px] w-[22px] bg-[#545454]" />
               <div className="flex h-[24px] grow bg-[#545454]" />
             </div>
           </div>
