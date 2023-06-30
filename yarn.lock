@@ -7148,10 +7148,10 @@ valtio@1.10.6:
     proxy-compare "2.5.1"
     use-sync-external-store "1.2.0"
 
-viem@1.2.5:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-1.2.5.tgz#e9f80a57b80d8749624b4b31a98041549a25c5ad"
-  integrity sha512-AeQ1hiyPKXnWb/KTsxRLt7KZUmLgd6NTCe/GyQf+8TZO7ndXmSZf88swE+60v1bLT+FDUWXufKGJ2oNT129wXw==
+viem@1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-1.2.6.tgz#aa205be5eea4153623ad8cd732fb0477efc55e0f"
+  integrity sha512-3tWiUb0D8dbFj66rUGLg6TKJjH98ZziomkyCyI0evqJFYdNfiEG0K2Ns07MlOXZZF4sGe+a5Mj15DaDOwm7sgw==
   dependencies:
     "@adraffy/ens-normalize" "1.9.0"
     "@noble/curves" "1.0.0"
