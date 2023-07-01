@@ -22,70 +22,63 @@ enum VoteResult {
 
 export async function getSubscribedDAOs() {
   "use server";
-  const session = await getServerSession(authOptions());
-  const userAddress = session?.user?.name ?? "";
-  try {
-    const user = await prisma.user.findFirstOrThrow({
-      where: {
-        address: { equals: userAddress },
-      },
-      select: {
-        id: true,
-      },
-    });
 
-    const daosList = await prisma.dao.findMany({
-      where: {
-        subscriptions: {
-          some: {
-            user: { is: user },
-          },
+  const session = await getServerSession(authOptions());
+  if (!session || !session.user || !session.user.name) return [];
+  const userAddress = session.user.name;
+
+  const user = await prisma.user.findFirstOrThrow({
+    where: {
+      address: { equals: userAddress },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  const daosList = await prisma.dao.findMany({
+    where: {
+      subscriptions: {
+        some: {
+          user: { is: user },
         },
       },
-      orderBy: {
-        name: "asc",
-      },
-    });
-    return daosList;
-  } catch (e) {
-    const daosList = await prisma.dao.findMany({
-      where: {},
-      orderBy: {
-        name: "asc",
-      },
-    });
-    return daosList;
-  }
+    },
+    orderBy: {
+      name: "asc",
+    },
+  });
+  return daosList;
 }
 
 export async function getProxies() {
   "use server";
 
   const session = await getServerSession(authOptions());
-  const userAddress = session?.user?.name ?? "";
-  try {
-    const user = await prisma.user.findFirstOrThrow({
-      where: {
-        address: { equals: userAddress },
-      },
-      include: {
-        voters: true,
-      },
-    });
+  if (!session || !session.user || !session.user.name) return [];
+  const userAddress = session.user.name;
 
-    const proxies = user.voters.map((voter) => voter.address);
+  const user = await prisma.user.findFirstOrThrow({
+    where: {
+      address: { equals: userAddress },
+    },
+    include: {
+      voters: true,
+    },
+  });
 
-    return proxies;
-  } catch (e) {
-    return [];
-  }
+  const proxies = user.voters.map((voter) => voter.address);
+
+  return proxies;
 }
 
 export async function fetchVote(proposalId: string, proxy: string) {
   "use server";
 
   const session = await getServerSession(authOptions());
-  const userAddress = session?.user?.name ?? "";
+  if (!session || !session.user || !session.user.name)
+    return VoteResult.NOT_CONNECTED;
+  const userAddress = session.user.name;
 
   const user = await prisma.user.findFirst({
     where: {

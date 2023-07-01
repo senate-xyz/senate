@@ -1,23 +1,11 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
 
 const SetupDailyBulletin = () => {
   const router = useRouter();
-  const account = useAccount();
-  const session = useSession();
 
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    if (account.isConnected && session.status == "authenticated")
-      setVisible(true);
-  }, [account, session]);
-
-  if (visible && router)
+  if (router)
     return (
       <>
         <div className="flex w-full flex-col items-center justify-between gap-2 bg-[#FFF1BF] p-6 lg:flex-row">

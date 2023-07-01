@@ -583,38 +583,6 @@ export const accountSettingsRouter = router({
       return user;
     }),
 
-  getAcceptedTerms: publicProcedure.query(async ({ ctx }) => {
-    if (!ctx.user) return false;
-
-    const username = ctx.user.name;
-
-    const user = await prisma.user.findFirst({
-      where: {
-        address: {
-          equals: String(username),
-        },
-      },
-    });
-
-    return user?.acceptedterms;
-  }),
-
-  getAcceptedTermsTimestamp: publicProcedure.query(async ({ ctx }) => {
-    if (!ctx.user) return false;
-
-    const username = ctx.user?.name;
-
-    const user = await prisma.user.findFirst({
-      where: {
-        address: {
-          equals: String(username),
-        },
-      },
-    });
-
-    return user?.acceptedtermstimestamp;
-  }),
-
   voters: privateProcedure.query(async ({ ctx }) => {
     const username = ctx.user.name;
 

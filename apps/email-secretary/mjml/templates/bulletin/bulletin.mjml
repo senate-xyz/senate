@@ -220,11 +220,8 @@
             <td style="text-align: center">
               <table style="text-align:center;">
                 <tr>
-                  <td align="center" class="mobile-only" style="display:none">
-                    <img style="width:100px !important;" src="{{countdownUrl}}" alt="Countdown" />
-                  </td>
-                  <td align="center" class="no-mobile">
-                    <img style="width:180px !important;" class="no-mobile" src="{{countdownUrl}}" alt="Countdown" />
+                  <td align="center">
+                    <img style="width:30vw !important; max-width:180px;" src="{{countdownUrl}}" alt="Countdown" />
                   </td>
                 </tr>
                 <tr>
@@ -393,7 +390,7 @@
                             padding: 2px;
                           " src="https://www.senatelabs.xyz/assets/Emails/check.png" />
                   </td>
-                  <td>
+                  <td align="start">
                     <p style="
                             font-size: 18px;
                             font-weight: 600;
@@ -479,7 +476,7 @@
                             padding: 2px;
                           " src="https://www.senatelabs.xyz/assets/Emails/check.png" />
                   </td>
-                  <td>
+                  <td align="start">
                     <p style="
                             font-size: 18px;
                             font-weight: 600;

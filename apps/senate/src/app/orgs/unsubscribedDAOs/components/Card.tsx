@@ -1,13 +1,12 @@
 "use client";
 
+import { useEffect, useState, useTransition } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
 import { useAccount } from "wagmi";
-import { trpc } from "../../../../../server/trpcClient";
+import { subscribe } from "../actions";
+import { useCookies } from "react-cookie";
 
 export const UnsubscribedDAO = (props: {
   daoId: string;
@@ -16,7 +15,6 @@ export const UnsubscribedDAO = (props: {
   bgColor: string;
   daoHandlers: string[];
 }) => {
-  const [disabled, setDisabled] = useState(false);
   const [imgSrc, setImgSrc] = useState(
     props.daoPicture
       ? props.daoPicture + "_medium.png"
@@ -31,58 +29,32 @@ export const UnsubscribedDAO = (props: {
     );
   }, [props.daoPicture]);
 
-  const [cookie, setCookie, removeCookie] = useCookies(["subscribe"]);
-
   const account = useAccount();
   const session = useSession();
   const { openConnectModal } = useConnectModal();
-
-  const router = useRouter();
-  const subscribe = trpc.subscriptions.subscribe.useMutation();
 
   const connectAndSubscribe = (id: string) => {
     setCookie("subscribe", id);
     openConnectModal && openConnectModal();
   };
 
-  //automagically subscribe to the dao you tried to but weren't connected
-  useEffect(() => {
-    if (
-      cookie.subscribe &&
-      session.status == "authenticated" &&
-      subscribe.isIdle
-    ) {
-      subscribe.mutate(
-        {
-          daoId: cookie.subscribe as string,
-        },
-        {
-          onSuccess: () => {
-            removeCookie("subscribe");
-            if (router) router.refresh();
-          },
-          onError: () => {
-            removeCookie("subscribe");
-            if (router) router.refresh();
-          },
-        }
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cookie.subscribe, session]);
+  const [, setCookie] = useCookies(["subscribe"]);
+
+  const [, startTransition] = useTransition();
+  const [loading, setLoading] = useState(false);
 
   return (
-    <div className="h-[320px] w-[240px]">
+    <div
+      className={`h-[320px] w-[240px] ${
+        loading ? "pointer-events-none animate-pulse opacity-25" : "opacity-100"
+      }`}
+    >
       <div
         style={{
           backgroundImage: `linear-gradient(45deg, ${props.bgColor}40 15%, ${props.bgColor}10)`,
           filter: "saturate(5)",
         }}
-        className={`relative flex h-full w-full flex-col rounded text-sm font-bold text-white shadow ${
-          disabled
-            ? "pointer-events-none animate-pulse opacity-25"
-            : "opacity-100"
-        }`}
+        className={`relative flex h-full w-full flex-col rounded text-sm font-bold text-white shadow`}
       >
         <div className="flex grow flex-col items-center justify-end px-6 pb-6">
           <Image
@@ -169,20 +141,8 @@ export const UnsubscribedDAO = (props: {
           className="h-14 w-full bg-white text-xl font-bold text-black hover:bg-neutral-100 active:bg-neutral-300"
           onClick={() => {
             if (account.isConnected && session.status == "authenticated") {
-              setDisabled(true);
-              subscribe.mutate(
-                {
-                  daoId: props.daoId,
-                },
-                {
-                  onSuccess: () => {
-                    if (router) router.refresh();
-                  },
-                  onError: () => {
-                    if (router) router.refresh();
-                  },
-                }
-              );
+              startTransition(() => subscribe(props.daoId));
+              setLoading(true);
             } else connectAndSubscribe(props.daoId);
           }}
         >

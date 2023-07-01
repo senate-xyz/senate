@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { trpc } from "../../../../../server/trpcClient";
+import { unsubscribe } from "../actions";
 
 export const SubscribedDAO = (props: {
   daoId: string;
@@ -14,7 +13,6 @@ export const SubscribedDAO = (props: {
   daoHandlers: string[];
   activeProposals: number;
 }) => {
-  const [disabled, setDisabled] = useState(false);
   const [imgSrc, setImgSrc] = useState(
     props.daoPicture
       ? props.daoPicture + "_medium.png"
@@ -31,19 +29,18 @@ export const SubscribedDAO = (props: {
 
   const [showMenu, setShowMenu] = useState(false);
 
-  const router = useRouter();
-
-  const unsubscribe = trpc.subscriptions.unsubscribe.useMutation();
+  const [, startTransition] = useTransition();
+  const [loading, setLoading] = useState(false);
 
   return (
-    <div className="h-[320px] w-[240px]">
+    <div
+      className={`h-[320px] w-[240px] ${
+        loading ? "pointer-events-none animate-pulse opacity-25" : "opacity-100"
+      }`}
+    >
       {showMenu ? (
         <div
-          className={`relative flex h-full w-full flex-col rounded bg-black text-sm font-bold text-white shadow ${
-            disabled
-              ? "pointer-events-none animate-pulse opacity-25"
-              : "opacity-100"
-          }`}
+          className={`relative flex h-full w-full flex-col rounded bg-black text-sm font-bold text-white shadow`}
         >
           <div className="flex h-full flex-col justify-between">
             <div className="flex w-full flex-row items-start justify-between px-4 pt-4">
@@ -83,18 +80,8 @@ export const SubscribedDAO = (props: {
             <div
               className="w-full cursor-pointer px-4 pb-4 text-center text-[15px] font-thin text-white underline"
               onClick={() => {
-                setDisabled(true);
-                unsubscribe.mutate(
-                  { daoId: props.daoId },
-                  {
-                    onSuccess: () => {
-                      if (router) router.refresh();
-                    },
-                    onError: () => {
-                      if (router) router.refresh();
-                    },
-                  }
-                );
+                startTransition(() => unsubscribe(props.daoId));
+                setLoading(true);
               }}
             >
               Unsubscribe from {props.daoName}
