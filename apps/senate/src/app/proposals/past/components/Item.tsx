@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import dayjs, { extend } from "dayjs";
+import { extend } from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { type Item } from "./Items";
 import { Suspense } from "react";

@@ -3,7 +3,7 @@
 import "../../styles/globals.css";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Transition } from "@headlessui/react";
 import Head from "next/head";
