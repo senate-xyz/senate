@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useAccount } from "wagmi";
 import { subscribe } from "../actions";
+import { useCookies } from "react-cookie";
 
 export const UnsubscribedDAO = (props: {
   daoId: string;
@@ -32,9 +33,12 @@ export const UnsubscribedDAO = (props: {
   const session = useSession();
   const { openConnectModal } = useConnectModal();
 
-  const connectAndSubscribe = () => {
+  const connectAndSubscribe = (id: string) => {
+    setCookie("subscribe", id);
     openConnectModal && openConnectModal();
   };
+
+  const [, setCookie] = useCookies(["subscribe"]);
 
   const [, startTransition] = useTransition();
   const [loading, setLoading] = useState(false);
@@ -139,7 +143,7 @@ export const UnsubscribedDAO = (props: {
             if (account.isConnected && session.status == "authenticated") {
               startTransition(() => subscribe(props.daoId));
               setLoading(true);
-            } else connectAndSubscribe();
+            } else connectAndSubscribe(props.daoId);
           }}
         >
           Subscribe

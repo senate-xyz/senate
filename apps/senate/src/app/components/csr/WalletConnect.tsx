@@ -2,10 +2,12 @@
 
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { signOut, useSession } from "next-auth/react";
-import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { usePostHog } from "posthog-js/react";
+import { useCookies } from "react-cookie";
+import { subscribe } from "../../orgs/unsubscribedDAOs/actions";
 
 const WalletConnect = () => {
   const posthog = usePostHog();
@@ -41,8 +43,6 @@ const WalletConnect = () => {
     }
   }, [activeConnector]);
 
-  if (process.env.OUTOFSERVICE === "true") redirect("/outofservice");
-
   const [modalOpened, setModalOpened] = useState(false);
 
   useEffect(() => {
@@ -56,6 +56,18 @@ const WalletConnect = () => {
       openConnectModal();
     }
   }, [openConnectModal, searchParams, account, modalOpened]);
+
+  const [cookie, , removeCookie] = useCookies(["subscribe"]);
+
+  //automagically subscribe to the dao you tried to but weren't connected
+  useEffect(() => {
+    if (cookie.subscribe && session.status == "authenticated") {
+      void subscribe(cookie.subscribe as string).then(() => {
+        removeCookie("subscribe");
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookie.subscribe, session.status]);
 
   return (
     <div>
