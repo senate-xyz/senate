@@ -108,26 +108,26 @@ export const Header = (props: { title: string }) => {
 
               <Menu.Item>
                 <div className="relative flex flex-row items-center pl-6 pt-8">
-                  {pathname?.includes("orgs") ? (
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      src="/assets/Icon/DAOs/Active.svg"
-                      width={48}
-                      height={48}
-                      alt={"Senate logo"}
-                    />
-                  ) : (
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      src="/assets/Icon/DAOs/Inactive.svg"
-                      width={48}
-                      height={48}
-                      alt={"Senate logo"}
-                    />
-                  )}
-                  <a className={`w-full`} href="/orgs">
+                  <a className={`flex w-full flex-row`} href="/orgs">
+                    {pathname?.includes("orgs") ? (
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        src="/assets/Icon/DAOs/Active.svg"
+                        width={48}
+                        height={48}
+                        alt={"Senate logo"}
+                      />
+                    ) : (
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        src="/assets/Icon/DAOs/Inactive.svg"
+                        width={48}
+                        height={48}
+                        alt={"Senate logo"}
+                      />
+                    )}
                     Orgs
                   </a>
                 </div>
@@ -135,26 +135,29 @@ export const Header = (props: { title: string }) => {
 
               <Menu.Item>
                 <div className="relative flex flex-row items-center pl-6 pt-8">
-                  {pathname?.includes("proposals") ? (
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      src="/assets/Icon/Proposals/Active.svg"
-                      width={48}
-                      height={48}
-                      alt={"Senate logo"}
-                    />
-                  ) : (
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      src="/assets/Icon/Proposals/Inactive.svg"
-                      width={48}
-                      height={48}
-                      alt={"Senate logo"}
-                    />
-                  )}
-                  <a className={`w-full`} href="/proposals/active">
+                  <a
+                    className={`flex w-full flex-row`}
+                    href="/proposals/active"
+                  >
+                    {pathname?.includes("proposals") ? (
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        src="/assets/Icon/Proposals/Active.svg"
+                        width={48}
+                        height={48}
+                        alt={"Senate logo"}
+                      />
+                    ) : (
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        src="/assets/Icon/Proposals/Inactive.svg"
+                        width={48}
+                        height={48}
+                        alt={"Senate logo"}
+                      />
+                    )}
                     Proposals
                   </a>
                 </div>
@@ -162,26 +165,29 @@ export const Header = (props: { title: string }) => {
 
               <Menu.Item>
                 <div className="relative flex flex-row items-center pl-6 pt-8">
-                  {pathname?.includes("settings") ? (
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      src="/assets/Icon/Settings/Active.svg"
-                      width={48}
-                      height={48}
-                      alt={"Senate logo"}
-                    />
-                  ) : (
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      src="/assets/Icon/Settings/Inactive.svg"
-                      width={48}
-                      height={48}
-                      alt={"Senate logo"}
-                    />
-                  )}
-                  <a className={`w-full`} href="/settings/account">
+                  <a
+                    className={`flex w-full flex-row`}
+                    href="/settings/account"
+                  >
+                    {pathname?.includes("settings") ? (
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        src="/assets/Icon/Settings/Active.svg"
+                        width={48}
+                        height={48}
+                        alt={"Senate logo"}
+                      />
+                    ) : (
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        src="/assets/Icon/Settings/Inactive.svg"
+                        width={48}
+                        height={48}
+                        alt={"Senate logo"}
+                      />
+                    )}
                     Settings
                   </a>
                 </div>
