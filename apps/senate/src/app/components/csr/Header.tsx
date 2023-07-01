@@ -107,96 +107,84 @@ export const Header = (props: { title: string }) => {
               </div>
 
               <Menu.Item>
-                {({ active }) => (
-                  <div className="relative flex flex-row items-center pl-6 pt-8">
-                    {pathname?.includes("orgs") ? (
-                      <Image
-                        loading="eager"
-                        priority={true}
-                        src="/assets/Icon/DAOs/Active.svg"
-                        width={48}
-                        height={48}
-                        alt={"Senate logo"}
-                      />
-                    ) : (
-                      <Image
-                        loading="eager"
-                        priority={true}
-                        src="/assets/Icon/DAOs/Inactive.svg"
-                        width={48}
-                        height={48}
-                        alt={"Senate logo"}
-                      />
-                    )}
-                    <a className={`${active ? "w-full" : ""}`} href="/orgs">
-                      Orgs
-                    </a>
-                  </div>
-                )}
+                <div className="relative flex flex-row items-center pl-6 pt-8">
+                  {pathname?.includes("orgs") ? (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      src="/assets/Icon/DAOs/Active.svg"
+                      width={48}
+                      height={48}
+                      alt={"Senate logo"}
+                    />
+                  ) : (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      src="/assets/Icon/DAOs/Inactive.svg"
+                      width={48}
+                      height={48}
+                      alt={"Senate logo"}
+                    />
+                  )}
+                  <a className={`w-full`} href="/orgs">
+                    Orgs
+                  </a>
+                </div>
               </Menu.Item>
 
               <Menu.Item>
-                {({ active }) => (
-                  <div className="relative flex flex-row items-center pl-6 pt-8">
-                    {pathname?.includes("proposals") ? (
-                      <Image
-                        loading="eager"
-                        priority={true}
-                        src="/assets/Icon/Proposals/Active.svg"
-                        width={48}
-                        height={48}
-                        alt={"Senate logo"}
-                      />
-                    ) : (
-                      <Image
-                        loading="eager"
-                        priority={true}
-                        src="/assets/Icon/Proposals/Inactive.svg"
-                        width={48}
-                        height={48}
-                        alt={"Senate logo"}
-                      />
-                    )}
-                    <a
-                      className={`${active ? "w-full" : ""}`}
-                      href="/proposals/active"
-                    >
-                      Proposals
-                    </a>
-                  </div>
-                )}
+                <div className="relative flex flex-row items-center pl-6 pt-8">
+                  {pathname?.includes("proposals") ? (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      src="/assets/Icon/Proposals/Active.svg"
+                      width={48}
+                      height={48}
+                      alt={"Senate logo"}
+                    />
+                  ) : (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      src="/assets/Icon/Proposals/Inactive.svg"
+                      width={48}
+                      height={48}
+                      alt={"Senate logo"}
+                    />
+                  )}
+                  <a className={`w-full`} href="/proposals/active">
+                    Proposals
+                  </a>
+                </div>
               </Menu.Item>
 
               <Menu.Item>
-                {({ active }) => (
-                  <div className="relative flex flex-row items-center pl-6 pt-8">
-                    {pathname?.includes("settings") ? (
-                      <Image
-                        loading="eager"
-                        priority={true}
-                        src="/assets/Icon/Settings/Active.svg"
-                        width={48}
-                        height={48}
-                        alt={"Senate logo"}
-                      />
-                    ) : (
-                      <Image
-                        loading="eager"
-                        priority={true}
-                        src="/assets/Icon/Settings/Inactive.svg"
-                        width={48}
-                        height={48}
-                        alt={"Senate logo"}
-                      />
-                    )}
-                    <a
-                      className={`${active ? "w-full" : ""}`}
-                      href="/settings/account"
-                    >
-                      Settings
-                    </a>
-                  </div>
-                )}
+                <div className="relative flex flex-row items-center pl-6 pt-8">
+                  {pathname?.includes("settings") ? (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      src="/assets/Icon/Settings/Active.svg"
+                      width={48}
+                      height={48}
+                      alt={"Senate logo"}
+                    />
+                  ) : (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      src="/assets/Icon/Settings/Inactive.svg"
+                      width={48}
+                      height={48}
+                      alt={"Senate logo"}
+                    />
+                  )}
+                  <a className={`w-full`} href="/settings/account">
+                    Settings
+                  </a>
+                </div>
               </Menu.Item>
 
               <div className="flex w-full justify-center pt-8 text-[18px] font-normal">
