@@ -1,4 +1,4 @@
-import { type Unsubscribed } from "../page";
+import { type Unsubscribed } from "../actions";
 import { UnsubscribedDAO } from "./components/Card";
 import { Suspense } from "react";
 

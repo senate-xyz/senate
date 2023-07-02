@@ -1,4 +1,4 @@
-import { type Subscribed } from "../page";
+import { type Subscribed } from "../actions";
 import { SubscribedDAO } from "./components/Card";
 import { Suspense } from "react";
 

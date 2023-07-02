@@ -1,4 +1,10 @@
 import Link from "next/link";
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Senate - Active Proposals",
+  icons: "/assets/Senate_Logo/64/Black.svg",
+};
 
 const tabs: { id: number; name: string; color: string; link: string }[] = [
   {
