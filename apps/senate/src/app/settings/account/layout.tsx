@@ -1,12 +1,6 @@
-import { type Metadata } from "next";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { authOptions } from "../../../pages/api/auth/[...nextauth]";
-
-export const metadata: Metadata = {
-  title: "Senate - Account Settings",
-  icons: "/assets/Senate_Logo/64/Black.svg",
-};
 
 const defaultTab: { id: number; name: string; color: string; link: string } = {
   id: 0,

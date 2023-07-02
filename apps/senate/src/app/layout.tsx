@@ -4,6 +4,12 @@ import "@rainbow-me/rainbowkit/styles.css";
 import "../styles/globals.css";
 import { NavBar } from "./components/csr/NavBar";
 import RootProvider from "./providers";
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Senate ",
+  icons: "/assets/Senate_Logo/64/Black.svg",
+};
 
 export default function RootLayout({
   children,

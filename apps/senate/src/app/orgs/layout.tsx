@@ -3,12 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
 import { Header } from "../components/csr/Header";
 import SetupDailyBulletin from "./components/SetupDailyBulletin";
-import { type Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Senate - Orgs",
-  icons: "/assets/Senate_Logo/64/Black.svg",
-};
 
 const hasUserBulletin = async () => {
   const session = await getServerSession(authOptions());
