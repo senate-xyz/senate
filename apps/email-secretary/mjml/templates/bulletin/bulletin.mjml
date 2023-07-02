@@ -137,7 +137,7 @@
             <td style="
                 text-align: center;
               ">
-              <img style="width: 64px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
+              <img style="width: 82px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
               <br />
 
             </td>
@@ -233,7 +233,7 @@
             <td style="
                 text-align: center;
               ">
-              <img style="width: 64px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
+              <img style="width: 82px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
               <br />
 
             </td>
@@ -506,7 +506,7 @@
             <td style="
                 text-align: center;
               ">
-              <img style="width: 64px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
+              <img style="width: 82px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
               <br />
 
             </td>

@@ -50,7 +50,12 @@ export default async function handler(
     if (err) {
       res.status(500).send("Error loading image");
     } else {
-      res.writeHead(200, { "Content-Type": "image/png" });
+      res.writeHead(200, {
+        "Content-Type": "image/png",
+        "Cache-Control":
+          "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0",
+        Pragma: "no-cache",
+      });
       res.end(data, "binary");
     }
   });
