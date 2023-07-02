@@ -1,15 +1,6 @@
+import { type Unsubscribed } from "../page";
 import { UnsubscribedDAO } from "./components/Card";
 import { Suspense } from "react";
-
-type Unsubscribed = {
-  unsubscriptions: Array<{
-    id: string;
-    name: string;
-    picture: string;
-    handlers: Array<{ type: string }>;
-  }>;
-  backgroundColors: Array<{ color: string }>;
-};
 
 export default function UnsubscribedDAOs({
   unsubscribed,

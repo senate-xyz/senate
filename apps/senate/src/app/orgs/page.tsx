@@ -11,14 +11,37 @@ export const metadata: Metadata = {
   icons: "/assets/Senate_Logo/64/Black.svg",
 };
 
-export const getSubscriptions = async () => {
+export type Subscribed = {
+  subscriptions: Array<{
+    id: string;
+    name: string;
+    picture: string;
+    handlers: Array<{ type: string }>;
+    proposals: unknown[];
+  }>;
+  backgroundColors: Array<{ color: string }>;
+};
+
+export type Unsubscribed = {
+  unsubscriptions: Array<{
+    id: string;
+    name: string;
+    picture: string;
+    handlers: Array<{ type: string }>;
+  }>;
+  backgroundColors: Array<{ color: string }>;
+};
+
+const getSubscriptions = async () => {
+  "use server";
+
   const subscribed = await getSubscribedDAOs();
   const unsubscribed = await getUnsubscribedDAOs();
 
   return { subscribed, unsubscribed };
 };
 
-export const getSubscribedDAOs = async () => {
+const getSubscribedDAOs = async (): Promise<Subscribed> => {
   "use server";
 
   const session = await getServerSession(authOptions());
@@ -88,7 +111,7 @@ export const getSubscribedDAOs = async () => {
   };
 };
 
-export const getUnsubscribedDAOs = async () => {
+const getUnsubscribedDAOs = async (): Promise<Unsubscribed> => {
   "use server";
 
   const session = await getServerSession(authOptions());

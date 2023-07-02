@@ -1,16 +1,6 @@
+import { type Subscribed } from "../page";
 import { SubscribedDAO } from "./components/Card";
 import { Suspense } from "react";
-
-type Subscribed = {
-  subscriptions: Array<{
-    id: string;
-    name: string;
-    picture: string;
-    handlers: Array<{ type: string }>;
-    proposals: unknown[];
-  }>;
-  backgroundColors: Array<{ color: string }>;
-};
 
 export default function SubscribedDAOs({
   subscribed,
