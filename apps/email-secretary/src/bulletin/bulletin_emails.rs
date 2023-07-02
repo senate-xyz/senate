@@ -52,7 +52,6 @@ struct EndingSoonProposals {
     countdownUrl: String,
     countdownString: String,
     voteStatusIconUrl: String,
-    voteStatus: String,
 }
 
 #[allow(non_snake_case)]
@@ -65,7 +64,6 @@ struct NewProposals {
     countdownUrl: String,
     countdownString: String,
     voteStatusIconUrl: String,
-    voteStatus: String,
 }
 
 #[allow(non_snake_case)]
@@ -81,7 +79,6 @@ struct EndedProposals {
     makerResult: Option<MakerResult>,
     countdownString: String,
     voteStatusIconUrl: String,
-    voteStatus: String,
 }
 
 #[allow(non_snake_case)]
@@ -346,7 +343,6 @@ async fn get_ending_soon_proposals(
 
     let ending_proposals = futures::future::join_all(proposals.iter().map(|p| async {
         let countdown_url = countdown_gif(p.timeend.into(), true).await.unwrap();
-        let voted = get_vote(user.clone().id, p.clone().id, db).await.unwrap();
 
         let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
             Some(v) => v.into_string().unwrap(),
@@ -408,11 +404,6 @@ async fn get_ending_soon_proposals(
                 user.clone().email.unwrap(),
                 p.id
             ),
-            voteStatus: if voted {
-                "Voted".to_string()
-            } else {
-                "Not voted yet".to_string()
-            },
         }
     }))
     .await;
@@ -446,7 +437,7 @@ async fn get_new_proposals(
 
     let new_proposals = futures::future::join_all(proposals.iter().map(|p| async {
         let countdown_url = countdown_gif(p.timeend.into(), true).await.unwrap();
-        let voted = get_vote(user.clone().id, p.clone().id, db).await.unwrap();
+
         let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
             Some(v) => v.into_string().unwrap(),
             None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
@@ -508,11 +499,6 @@ async fn get_new_proposals(
                 user.clone().email.unwrap(),
                 p.id
             ),
-            voteStatus: if voted {
-                "Voted".to_string()
-            } else {
-                "Not voted yet".to_string()
-            },
         }
     }))
     .await;
@@ -546,7 +532,6 @@ async fn get_ended_proposals(
         .unwrap();
 
     let ended_proposals = futures::future::join_all(proposals.iter().map(|p| async {
-        let voted = get_vote(user.clone().id, p.clone().id, db).await.unwrap();
         let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
             Some(v) => v.into_string().unwrap(),
             None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
@@ -617,11 +602,6 @@ async fn get_ended_proposals(
                 user.clone().email.unwrap(),
                 p.id
             ),
-            voteStatus: if voted {
-                "Voted".to_string()
-            } else {
-                "Did not vote".to_string()
-            },
             hiddenResult: p.state == ProposalState::Hidden,
             result: if p.scorestotal.as_f64() > p.quorum.as_f64()
                 && p.state != ProposalState::Hidden

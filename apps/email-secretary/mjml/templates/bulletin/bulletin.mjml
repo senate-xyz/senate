@@ -139,9 +139,7 @@
               ">
               <img style="width: 32px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
               <br />
-              <mj-text style="font-size: 11px; font-weight: 700">
-                <mj-raw>{{voteStatus}}</mj-raw>
-              </mj-text>
+
             </td>
           </tr>
           <mj-raw>{{/each}}</mj-raw>
@@ -237,9 +235,7 @@
               ">
               <img style="width: 32px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
               <br />
-              <mj-text style="font-size: 11px; font-weight: 700">
-                <mj-raw>{{voteStatus}}</mj-raw>
-              </mj-text>
+
             </td>
           </tr>
           <mj-raw>{{/each}}</mj-raw>
@@ -512,9 +508,7 @@
               ">
               <img style="width: 32px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
               <br />
-              <mj-text style="font-size: 11px; font-weight: 700">
-                <mj-raw>{{voteStatus}}</mj-raw>
-              </mj-text>
+
             </td>
           </tr>
           <mj-raw>{{/each}}</mj-raw>
