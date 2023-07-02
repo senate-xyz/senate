@@ -396,14 +396,15 @@ async fn get_ending_soon_proposals(
             countdownUrl: countdown_url,
             countdownString: p.timeend.format("on %b %e, %Y at %H:%M UTC").to_string(),
             voteStatusIconUrl: format!(
-                "{}/api/vote/{}/{}?t={}",
+                "{}/api/vote/{}/{}/{}?t={}",
                 env::var_os("NEXT_PUBLIC_WEB_URL")
                     .unwrap()
                     .into_string()
                     .unwrap(),
                 user.clone().email.unwrap(),
                 p.id,
-                Utc::now().timestamp()
+                Utc::now().timestamp_micros(),
+                Utc::now().timestamp_micros()
             ),
         }
     }))
@@ -492,14 +493,15 @@ async fn get_new_proposals(
             countdownUrl: countdown_url,
             countdownString: p.timeend.format("on %b %e, %Y at %H:%M UTC").to_string(),
             voteStatusIconUrl: format!(
-                "{}/api/vote/{}/{}?t={}",
+                "{}/api/vote/{}/{}/{}?t={}",
                 env::var_os("NEXT_PUBLIC_WEB_URL")
                     .unwrap()
                     .into_string()
                     .unwrap(),
                 user.clone().email.unwrap(),
                 p.id,
-                Utc::now().timestamp()
+                Utc::now().timestamp_micros(),
+                Utc::now().timestamp_micros()
             ),
         }
     }))
@@ -596,14 +598,15 @@ async fn get_ended_proposals(
             proposalName: p.clone().name,
             countdownString: p.timeend.format("on %b %e, %Y at %H:%M UTC").to_string(),
             voteStatusIconUrl: format!(
-                "{}/api/vote/{}/{}?t={}",
+                "{}/api/vote/{}/{}/{}?t={}",
                 env::var_os("NEXT_PUBLIC_WEB_URL")
                     .unwrap()
                     .into_string()
                     .unwrap(),
                 user.clone().email.unwrap(),
                 p.id,
-                Utc::now().timestamp()
+                Utc::now().timestamp_micros(),
+                Utc::now().timestamp_micros()
             ),
             hiddenResult: p.state == ProposalState::Hidden,
             result: if p.scorestotal.as_f64() > p.quorum.as_f64()
