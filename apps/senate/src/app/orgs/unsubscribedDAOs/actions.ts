@@ -46,7 +46,7 @@ export async function subscribe(daoId: string) {
 
   posthog.capture({
     distinctId: user.address,
-    event: "unsubscribe",
+    event: "subscribe",
     properties: {
       dao: result.dao.name,
       props: {
