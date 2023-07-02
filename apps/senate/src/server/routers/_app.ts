@@ -5,7 +5,6 @@ import { publicProcedure, router } from "../trpc";
 import { accountSettingsRouter } from "./accountSettings";
 import { healthRouter } from "./health";
 import { publicRouter } from "./public";
-import { testingRouter } from "./testing";
 import { verifyRouter } from "./verify";
 
 export const appRouter = router({
@@ -13,7 +12,7 @@ export const appRouter = router({
   accountSettings: accountSettingsRouter,
   verify: verifyRouter,
   health: healthRouter,
-  testing: testingRouter,
+
   whoami: publicProcedure.query(({ ctx }) => {
     const user = ctx.user ?? null;
     return user;

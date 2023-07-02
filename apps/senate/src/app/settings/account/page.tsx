@@ -3,10 +3,10 @@
 import { useAccountModal } from "@rainbow-me/rainbowkit";
 import { useSession } from "next-auth/react";
 import { useAccount } from "wagmi";
-import NotConnected from "./components/csr/NotConnected";
-import UserAddress from "./components/csr/UserAddress";
+import NotConnected from "./components/NotConnected";
+import UserAddress from "./components/UserAddress";
 import Link from "next/link";
-import Testing from "./testing";
+import { Testing } from "./testing";
 
 export default function Home() {
   const account = useAccount();

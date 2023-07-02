@@ -1,23 +1,19 @@
-"use client";
+import {
+  deleteUser,
+  randomQA,
+  lastQA,
+  aaveQA,
+  uniswapQA,
+  deleteNotifs,
+  sendBulletin,
+} from "./actions";
+import { useFeatureFlagEnabled } from "posthog-js/react";
 
-import { signOut } from "next-auth/react";
-import { trpc } from "../../../server/trpcClient";
-
-const Testing = () => {
-  const featureFlags = trpc.public.featureFlags.useQuery();
-
-  const deleteUser = trpc.accountSettings.deleteUser.useMutation();
-  const randomQuorumAlert = trpc.testing.randomQuorumAlert.useMutation();
-  const lastQuorumAlert = trpc.testing.lastQuorumAlert.useMutation();
-  const lastAaveQuorumAlert = trpc.testing.lastAaveQuorumAlert.useMutation();
-  const lastUniswapQuorumAlert =
-    trpc.testing.lastUniswapQuorumAlert.useMutation();
-  const deleteDispatchedNotifications =
-    trpc.testing.deleteDispatchedNotifications.useMutation();
-  const sendBulletin = trpc.testing.sendBulletin.useMutation();
+export const Testing = () => {
+  const testingFlag = useFeatureFlagEnabled("testing-menu");
 
   return (
-    featureFlags.data?.includes("testing_stuff") && (
+    testingFlag && (
       <div className="flex max-w-[400px] flex-col gap-2 border border-red-400 p-2">
         <div className="font-bold text-white">Testing stuff</div>
         <div />
@@ -25,11 +21,7 @@ const Testing = () => {
         <div
           className="w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500"
           onClick={() => {
-            deleteUser.mutate(void 0, {
-              onSuccess: () => {
-                void signOut();
-              },
-            });
+            void deleteUser();
           }}
         >
           Delete my own user!
@@ -40,7 +32,7 @@ const Testing = () => {
         <div
           className="w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500"
           onClick={() => {
-            randomQuorumAlert.mutate();
+            void randomQA();
           }}
         >
           Send random quorum alert
@@ -48,7 +40,7 @@ const Testing = () => {
         <div
           className="w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500"
           onClick={() => {
-            lastQuorumAlert.mutate();
+            void lastQA();
           }}
         >
           Send last proposal quorum alert
@@ -56,7 +48,7 @@ const Testing = () => {
         <div
           className="w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500"
           onClick={() => {
-            lastAaveQuorumAlert.mutate();
+            void aaveQA();
           }}
         >
           Send last Aave proposal quorum alert
@@ -64,7 +56,7 @@ const Testing = () => {
         <div
           className="w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500"
           onClick={() => {
-            lastUniswapQuorumAlert.mutate();
+            void uniswapQA();
           }}
         >
           Send last Uniswap proposal quorum alert
@@ -82,7 +74,7 @@ const Testing = () => {
         <div
           className="w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500"
           onClick={() => {
-            deleteDispatchedNotifications.mutate();
+            void deleteNotifs();
           }}
         >
           Delete dispatched notifications
@@ -92,7 +84,7 @@ const Testing = () => {
         <div
           className="w-max cursor-pointer bg-red-400 p-2 text-white active:bg-red-500"
           onClick={() => {
-            sendBulletin.mutate();
+            void sendBulletin();
           }}
         >
           Send bulletin
@@ -101,5 +93,3 @@ const Testing = () => {
     )
   );
 };
-
-export default Testing;
