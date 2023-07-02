@@ -399,23 +399,15 @@ async fn get_ending_soon_proposals(
             proposalName: p.clone().name,
             countdownUrl: countdown_url,
             countdownString: p.timeend.format("on %b %e, %Y at %H:%M UTC").to_string(),
-            voteStatusIconUrl: if voted {
-                format!(
-                    "{}/assets/Emails/voted.png",
-                    env::var_os("NEXT_PUBLIC_WEB_URL")
-                        .unwrap()
-                        .into_string()
-                        .unwrap()
-                )
-            } else {
-                format!(
-                    "{}/assets/Emails/not-voted-yet.png",
-                    env::var_os("NEXT_PUBLIC_WEB_URL")
-                        .unwrap()
-                        .into_string()
-                        .unwrap()
-                )
-            },
+            voteStatusIconUrl: format!(
+                "{}/api/vote/{}/{}",
+                env::var_os("NEXT_PUBLIC_WEB_URL")
+                    .unwrap()
+                    .into_string()
+                    .unwrap(),
+                user.clone().email.unwrap(),
+                p.id
+            ),
             voteStatus: if voted {
                 "Voted".to_string()
             } else {
@@ -507,23 +499,15 @@ async fn get_new_proposals(
             proposalName: p.clone().name,
             countdownUrl: countdown_url,
             countdownString: p.timeend.format("on %b %e, %Y at %H:%M UTC").to_string(),
-            voteStatusIconUrl: if voted {
-                format!(
-                    "{}/assets/Emails/voted.png",
-                    env::var_os("NEXT_PUBLIC_WEB_URL")
-                        .unwrap()
-                        .into_string()
-                        .unwrap()
-                )
-            } else {
-                format!(
-                    "{}/assets/Emails/not-voted-yet.png",
-                    env::var_os("NEXT_PUBLIC_WEB_URL")
-                        .unwrap()
-                        .into_string()
-                        .unwrap()
-                )
-            },
+            voteStatusIconUrl: format!(
+                "{}/api/vote/{}/{}",
+                env::var_os("NEXT_PUBLIC_WEB_URL")
+                    .unwrap()
+                    .into_string()
+                    .unwrap(),
+                user.clone().email.unwrap(),
+                p.id
+            ),
             voteStatus: if voted {
                 "Voted".to_string()
             } else {
@@ -624,23 +608,15 @@ async fn get_ended_proposals(
             url: short_url,
             proposalName: p.clone().name,
             countdownString: p.timeend.format("on %b %e, %Y at %H:%M UTC").to_string(),
-            voteStatusIconUrl: if voted {
-                format!(
-                    "{}/assets/Emails/voted.png",
-                    env::var_os("NEXT_PUBLIC_WEB_URL")
-                        .unwrap()
-                        .into_string()
-                        .unwrap()
-                )
-            } else {
-                format!(
-                    "{}/assets/Emails/did-not-vote.png",
-                    env::var_os("NEXT_PUBLIC_WEB_URL")
-                        .unwrap()
-                        .into_string()
-                        .unwrap()
-                )
-            },
+            voteStatusIconUrl: format!(
+                "{}/api/vote/{}/{}",
+                env::var_os("NEXT_PUBLIC_WEB_URL")
+                    .unwrap()
+                    .into_string()
+                    .unwrap(),
+                user.clone().email.unwrap(),
+                p.id
+            ),
             voteStatus: if voted {
                 "Voted".to_string()
             } else {
