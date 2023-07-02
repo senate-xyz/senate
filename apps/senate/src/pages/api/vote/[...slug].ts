@@ -53,8 +53,10 @@ export default async function handler(
       res.writeHead(200, {
         "Content-Type": "image/png",
         "Cache-Control":
-          "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0",
+          "no-cache,no-store,must-revalidate,max-age=0,proxy-revalidate,no-transform,private",
         Pragma: "no-cache",
+        "CF-Cache-Status": "DYNAMIC",
+        Expires: -1,
       });
       res.end(data, "binary");
     }
