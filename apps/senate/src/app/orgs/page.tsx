@@ -11,6 +11,13 @@ export const metadata: Metadata = {
   icons: "/assets/Senate_Logo/64/Black.svg",
 };
 
+export const getSubscriptions = async () => {
+  const subscribed = await getSubscribedDAOs();
+  const unsubscribed = await getUnsubscribedDAOs();
+
+  return { subscribed, unsubscribed };
+};
+
 export const getSubscribedDAOs = async () => {
   "use server";
 
@@ -34,31 +41,32 @@ export const getSubscribedDAOs = async () => {
       return { id: "0" };
     });
 
-  const subscriptionsList = (
-    await prisma.subscription.findMany({
+  const daosList = (
+    await prisma.dao.findMany({
       where: {
-        userid: user.id,
-      },
-      include: {
-        dao: {
-          include: {
-            handlers: true,
-            proposals: { where: { timeend: { gt: new Date() } } },
+        subscriptions: {
+          some: {
+            userid: user.id,
           },
         },
       },
       orderBy: {
-        dao: {
-          name: "asc",
+        id: "asc",
+      },
+      include: {
+        handlers: { select: { type: true } },
+        proposals: {
+          where: { timeend: { gt: new Date() } },
+          select: { _count: true },
         },
       },
     })
-  ).sort((a, b) => a.dao.name.localeCompare(b.dao.name));
+  ).sort((a, b) => a.name.localeCompare(b.name));
 
   const backgroundColors = await Promise.all(
-    subscriptionsList.map(async (sub) => {
+    daosList.map(async (sub) => {
       const color = await getAverageColor(
-        `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${sub.dao.picture}.svg`,
+        `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${sub.picture}.svg`,
         {
           mode: "precision",
           algorithm: "sqrt",
@@ -75,7 +83,7 @@ export const getSubscribedDAOs = async () => {
   );
 
   return {
-    subscriptions: subscriptionsList,
+    subscriptions: daosList,
     backgroundColors: backgroundColors,
   };
 };
@@ -92,7 +100,7 @@ export const getUnsubscribedDAOs = async () => {
           id: "asc",
         },
         include: {
-          handlers: true,
+          handlers: { select: { type: true } },
         },
       })
     ).sort((a, b) => a.name.localeCompare(b.name));
@@ -151,12 +159,7 @@ export const getUnsubscribedDAOs = async () => {
         id: "asc",
       },
       include: {
-        handlers: true,
-        subscriptions: {
-          where: {
-            userid: { contains: user.id },
-          },
-        },
+        handlers: { select: { type: true } },
       },
     })
   ).sort((a, b) => a.name.localeCompare(b.name));
@@ -187,12 +190,13 @@ export const getUnsubscribedDAOs = async () => {
   };
 };
 
-// eslint-disable-next-line @typescript-eslint/require-await
 export default async function Home() {
+  const { subscribed, unsubscribed } = await getSubscriptions();
+
   return (
     <main className="flex w-full flex-col">
-      <SubscribedDAOs />
-      <UnsubscribedDAOs />
+      <SubscribedDAOs subscribed={subscribed} />
+      <UnsubscribedDAOs unsubscribed={unsubscribed} />
     </main>
   );
 }
