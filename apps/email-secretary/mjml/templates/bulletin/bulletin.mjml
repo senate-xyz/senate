@@ -92,7 +92,7 @@
                     <b style="margin: 0px 0px; font-size: 13px; line-height: 22px;">Ending in</b>
                   </td>
                   <td>
-                    <img width="18px" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
+                    <img width="18" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
                   </td>
               </table>
 
@@ -106,12 +106,12 @@
               <table cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
-                    <img style="vertical-align:bottom;" width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+                    <img style="vertical-align:bottom;" width="48" src="{{daoLogoUrl}}" alt="DAO Icon" />
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
+                    <img width="48" src="{{chainLogoUrl}}" alt="Chain Icon" />
                   </td>
                 </tr>
               </table>
@@ -138,7 +138,7 @@
             <td style="
                 text-align: center;
               ">
-              <img style="width: 82px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
+              <img width="82" src="{{voteStatusIconUrl}}" alt="Vote Status" />
               <br />
 
             </td>
@@ -190,7 +190,7 @@
                     <b style="margin: 0px 0px; font-size: 13px; line-height: 22px;">Ending in</b>
                   </td>
                   <td>
-                    <img width="18px" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
+                    <img width="18" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
                   </td>
               </table>
             </th>
@@ -203,12 +203,12 @@
               <table cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
-                    <img style="vertical-align:bottom;" width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+                    <img style="vertical-align:bottom;" width="48" src="{{daoLogoUrl}}" alt="DAO Icon" />
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
+                    <img width="48" src="{{chainLogoUrl}}" alt="Chain Icon" />
                   </td>
                 </tr>
               </table>
@@ -235,7 +235,7 @@
             <td style="
                 text-align: center;
               ">
-              <img style="width: 82px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
+              <img width="82" src="{{voteStatusIconUrl}}" alt="Vote Status" />
               <br />
 
             </td>
@@ -287,7 +287,7 @@
                     <b style="margin: 0px 0px; font-size: 13px; line-height: 22px;">Ended on</b>
                   </td>
                   <td>
-                    <img width="18px" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
+                    <img width="18" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
                   </td>
               </table>
             </th>
@@ -300,12 +300,12 @@
               <table cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
-                    <img style="vertical-align:bottom;" width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+                    <img style="vertical-align:bottom;" width="48" src="{{daoLogoUrl}}" alt="DAO Icon" />
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
+                    <img width="48" src="{{chainLogoUrl}}" alt="Chain Icon" />
                   </td>
                 </tr>
               </table>
@@ -322,9 +322,7 @@
               <table cellpadding="0px" padding="0px">
                 <tr style="align-items: center;" class="result-width">
                   <td>
-                    <img style="
-                            width: 22px;
-                            height: 22px;
+                    <img width="22" height="22" style="
                             background-color: #ededed;
                             padding: 2px;
                           " src="https://www.senatelabs.xyz/assets/Emails/hidden.png" />
@@ -382,9 +380,7 @@
               <table cellpadding="0px" padding="0px">
                 <tr style="align-items: center;" class="result-width">
                   <td>
-                    <img style="
-                            width: 22px;
-                            height: 22px;
+                    <img width="22" heigth="22" style="
                             background-color: #ededed;
                             padding: 2px;
                           " src="https://www.senatelabs.xyz/assets/Emails/check.png" />
@@ -440,9 +436,7 @@
               <table cellpadding="0px" padding="0px">
                 <tr style="align-items: center;" class="result-width">
                   <td>
-                    <img style="
-                            width: 22px;
-                            height: 22px;
+                    <img width="22" heigth="22" style="
                             background-color: #ededed;
                             padding: 2px;
                           " src="https://www.senatelabs.xyz/assets/Emails/cross.png" />
@@ -468,9 +462,7 @@
               <table cellpadding="0px" padding="0px">
                 <tr style="align-items: center;" class="result-width">
                   <td>
-                    <img style="
-                            width: 22px;
-                            height: 22px;
+                    <img width="22" heigth="22" style="
                             background-color: #ededed;
                             padding: 2px;
                           " src="https://www.senatelabs.xyz/assets/Emails/check.png" />
@@ -509,7 +501,7 @@
             <td style="
                 text-align: center;
               ">
-              <img style="width: 82px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
+              <img width="82" src="{{voteStatusIconUrl}}" alt="Vote Status" />
               <br />
 
             </td>

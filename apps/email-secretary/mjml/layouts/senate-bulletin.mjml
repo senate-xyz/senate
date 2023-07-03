@@ -70,7 +70,7 @@
           You can edit your notification settings <a href="https://senatelabs.xyz/settings/notifications" target="_blank">here</a>.
         </mj-text>
         <mj-text align="center" font-size="12px" font-family="sans-serif" color="#545454">
-          This daily digest is still a beta functionality, if you find something wrong in this email, just hit reply and please tell us about it. </mj-text>
+          This daily bulletin is still a beta functionality, if you find something wrong in this email, just hit reply and please tell us about it. </mj-text>
         <mj-text align="center" font-size="8px" font-family="sans-serif" color="#989898">
           Made with love by Senate Labs in 2023. This is where you can <a href="https://senatelabs.xyz/settings/notifications" target="_blank">unsubscribe</a>.
         </mj-text>
@@ -78,17 +78,17 @@
         <mj-table align="center">
           <tr>
             <a href="https://twitter.com/SenateLabs" target="_blank">
-              <img style="padding:2px;" width="24px" height="24px" src="https://www.senatelabs.xyz/assets/Emails/twitter.png" />
+              <img style="padding:2px;" width="24" height="24" src="https://www.senatelabs.xyz/assets/Emails/twitter.png" />
             </a>
           </tr>
           <tr>
             <a href="https://discord.gg/shtxfNqazd" target="_blank">
-              <img style="padding:2px;" style="padding:2px;" width="24px" height="24px" src="https://www.senatelabs.xyz/assets/Emails/discord.png" />
+              <img style="padding:2px;" style="padding:2px;" width="24" height="24" src="https://www.senatelabs.xyz/assets/Emails/discord.png" />
             </a>
           </tr>
           <tr>
             <a href="https://github.com/senate-xyz/senate" target="_blank">
-              <img style="padding:2px;" width="24px" height="24px" src="https://www.senatelabs.xyz/assets/Emails/github.png" />
+              <img style="padding:2px;" width="24" height="24" src="https://www.senatelabs.xyz/assets/Emails/github.png" />
             </a>
           </tr>
         </mj-table>
