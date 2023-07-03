@@ -23,6 +23,10 @@ const endOptions: { name: string; time: number }[] = [
     name: "Last 90 days",
     time: 90,
   },
+  {
+    name: "All time",
+    time: 365,
+  },
 ];
 
 const voteOptions: { id: string; name: string }[] = [
