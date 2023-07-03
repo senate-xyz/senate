@@ -1,3 +1,5 @@
+"use client";
+
 import {
   deleteUser,
   randomQA,
@@ -6,10 +8,10 @@ import {
   uniswapQA,
   deleteNotifs,
   sendBulletin,
-} from "./actions";
+} from "../actions";
 import { useFeatureFlagEnabled } from "posthog-js/react";
 
-export const Testing = () => {
+const Testing = () => {
   const testingFlag = useFeatureFlagEnabled("testing-menu");
 
   return (
@@ -93,3 +95,4 @@ export const Testing = () => {
     )
   );
 };
+export default Testing;

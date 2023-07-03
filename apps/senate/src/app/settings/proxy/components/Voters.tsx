@@ -3,27 +3,32 @@
 import { useEffect, useState, useTransition } from "react";
 import { usePublicClient } from "wagmi";
 import { Voter } from "./Voter";
-import {
-  addVoter,
-  removeVoter,
-  getVoters,
-  type Voter as VoterType,
-} from "../actions";
+import { addVoter, removeVoter, getVoters } from "../actions";
+import { DM_Mono } from "next/font/google";
+
+const dmmono = DM_Mono({
+  weight: "400",
+  subsets: ["latin"],
+});
+
+type Voter = {
+  address: string;
+};
 
 export const Voters = () => {
   const provider = usePublicClient();
   const [proxyAddress, setProxyAddress] = useState("");
-  const [isPending, startTransition] = useTransition();
-  const [voters, setVoters] = useState<Array<VoterType>>([]);
-
-  const fetchVoters = async () => {
-    const v = await getVoters();
-    setVoters(v);
-  };
+  const [, startTransition] = useTransition();
+  const [voters, setVoters] = useState<Voter[]>([]);
 
   useEffect(() => {
-    void fetchVoters();
-  }, [isPending]);
+    const fetchVoters = async () => {
+      const v = await getVoters();
+      setVoters(v);
+    };
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    fetchVoters();
+  }, []);
 
   const onEnter = async () => {
     let resolvedAddress = proxyAddress;
@@ -35,35 +40,40 @@ export const Voters = () => {
       );
     }
     startTransition(() =>
-      addVoter(resolvedAddress).then(() => {
+      addVoter(resolvedAddress).then(async () => {
         setProxyAddress("");
+        const v = await getVoters();
+        setVoters(v);
       })
     );
   };
 
   const remove = (address: string) => {
-    startTransition(() => removeVoter(address).then(() => void fetchVoters()));
+    startTransition(() =>
+      removeVoter(address).then(async () => {
+        const v = await getVoters();
+        setVoters(v);
+      })
+    );
   };
 
   return (
     <div>
       {voters.length > 0 ? (
-        <div className="mt-12 flex flex-col gap-6">
-          {voters.map((voter) => {
+        <div className="mb-8 flex flex-col gap-4">
+          {voters.map((voter, index) => {
             return (
-              <Voter
-                address={voter.address}
-                key={voter.address}
-                removeVoter={remove}
-              />
+              <Voter key={index} address={voter.address} removeVoter={remove} />
             );
           })}
         </div>
-      ) : null}
+      ) : (
+        <></>
+      )}
 
-      <div className="mt-12 flex h-[46px] flex-row items-center">
+      <div className="flex h-[46px] flex-row items-center">
         <input
-          className={`h-full w-full bg-[#D9D9D9] px-2 font-mono text-[18px] font-light leading-[23px] text-black lg:w-[480px]`}
+          className={`h-full w-full bg-[#D9D9D9] px-2 ${dmmono.className} text-[18px] font-light leading-[23px] text-black lg:w-[480px]`}
           value={proxyAddress}
           onChange={(e) => setProxyAddress(e.target.value)}
           onKeyDown={(e) => {

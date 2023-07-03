@@ -6,7 +6,7 @@ import { authOptions } from "../../../pages/api/auth/[...nextauth]";
 import { PostHog } from "posthog-node";
 import { revalidateTag } from "next/cache";
 
-export type Voter = {
+type Voter = {
   address: string;
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
 import UserEmail from "./components/csr/UserEmail";
@@ -11,8 +11,6 @@ import Telegram from "./components/csr/Telegram";
 import { trpc } from "../../../server/trpcClient";
 
 export default function Home() {
-  if (process.env.OUTOFSERVICE === "true") redirect("/outofservice");
-
   const account = useAccount();
   const router = useRouter();
 
