@@ -721,12 +721,6 @@ await prisma.dao.upsert({
             proposalUrl: "https://interestprotocol.io/#/proposal/",
           },
         },
-        {
-          type: DAOHandlerType.SNAPSHOT,
-          decoder: {
-            space: "comp-vote.eth",
-          },
-        },
       ],
     },
   },
