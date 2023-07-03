@@ -20,3 +20,4 @@ pub mod makerpollvote;
 pub mod makerpollvotearbitrum;
 pub mod shared_types;
 pub mod uniswapgov;
+pub mod zeroxtreasury;

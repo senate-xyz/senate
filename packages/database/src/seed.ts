@@ -698,6 +698,52 @@ const seedData = async () => {
     },
   });
 
+  await prisma.dao.upsert({
+    where: { name: "Rocket Pool" },
+    update: {},
+    create: {
+      name: "Rocket Pool",
+      picture: "/assets/Project_Icons/rocket-pool",
+      handlers: {
+        create: [
+          {
+            type: DAOHandlerType.SNAPSHOT,
+            decoder: {
+              space: "rocketpool-dao.eth",
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { name: "0x Protocol" },
+    update: {},
+    create: {
+      name: "0x Protocol",
+      picture: "/assets/Project_Icons/0x-protocol",
+      handlers: {
+        create: [
+          {
+            type: DAOHandlerType.SNAPSHOT,
+            decoder: {
+              space: "0xgov.eth",
+            },
+          },
+          {
+            type: DAOHandlerType.ZEROX_PROTOCOL_CHAIN,
+            chainindex: 12253225,
+            decoder: {
+              address: "0x0bB1810061C2f5b2088054eE184E6C79e1591101",
+              proposalUrl: "https://governance.0xprotocol.org/vote/proposal/",
+            },
+          },
+        ],
+      },
+    },
+  });
+
   console.log("Inserting seed user");
   const seedUser = await prisma.user.upsert({
     where: {

@@ -9,6 +9,7 @@ pub mod proposals {
     pub mod maker_executive;
     pub mod maker_poll;
     pub mod uniswap;
+    pub mod zeroxtreasury;
 }
 
 pub mod votes {
@@ -23,4 +24,5 @@ pub mod votes {
     pub mod maker_poll;
     pub mod maker_poll_arbitrum;
     pub mod uniswap;
+    pub mod zeroxtreasury;
 }

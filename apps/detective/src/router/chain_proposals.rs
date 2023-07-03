@@ -10,6 +10,7 @@ use tracing::{
 
 use crate::handlers::proposals::aave::aave_proposals;
 use crate::handlers::proposals::interest_protocol::interest_protocol_proposals;
+use crate::handlers::proposals::zeroxtreasury::zeroxtreasury_proposals;
 use crate::{
     handlers::proposals::{
         compound::compound_proposals, dydx::dydx_proposals, ens::ens_proposals,
@@ -166,6 +167,11 @@ async fn get_results(
         }
         DaoHandlerType::InterestProtocolChain => {
             let p = interest_protocol_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
+            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            Ok(())
+        }
+        DaoHandlerType::ZeroxProtocolChain => {
+            let p = zeroxtreasury_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
             insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
