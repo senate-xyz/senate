@@ -79,8 +79,9 @@
         <mj-table cellpadding="4px" padding="0">
           <tr style="border-bottom: 1px solid #ecedee">
             <th width="50px" style="text-align: start">Org</th>
-            <th width="30%" style="text-align: start">Proposal</th>
+            <th style="text-align: start">Proposal</th>
             <th style="
+              max-width:180px;
               text-align: center;
               vertical-align: middle;
               ">
@@ -96,7 +97,7 @@
               </table>
 
             </th>
-            <th style="text-align: center">Vote Status</th>
+            <th style="max-width:160px; text-align: center">Vote Status</th>
           </tr>
 
           <mj-raw>{{#each . }}</mj-raw>
@@ -177,8 +178,9 @@
         <mj-table cellpadding="4px" padding="0">
           <tr style="border-bottom: 1px solid #ecedee">
             <th width="50px" style="text-align: start">Org</th>
-            <th width="30%" style="text-align: start">Proposal</th>
+            <th style="text-align: start">Proposal</th>
             <th style="
+              max-width:180px;
               text-align: center;
               vertical-align: middle;
               ">
@@ -192,7 +194,7 @@
                   </td>
               </table>
             </th>
-            <th style="text-align: center">Vote Status</th>
+            <th style="max-width:160px; text-align: center">Vote Status</th>
           </tr>
 
           <mj-raw>{{#each . }}</mj-raw>
@@ -273,8 +275,9 @@
         <mj-table cellpadding="4px" padding="0">
           <tr style="border-bottom: 1px solid #ecedee">
             <th width="50px" style="text-align: start">Org</th>
-            <th width="40%" style="text-align: start">Proposal</th>
+            <th style="text-align: start">Proposal</th>
             <th style="
+              max-width:180px;
               text-align: center;
               vertical-align: middle;
               ">
@@ -288,7 +291,7 @@
                   </td>
               </table>
             </th>
-            <th style="text-align: center">Vote Status</th>
+            <th style="max-width:160px; text-align: center">Vote Status</th>
           </tr>
 
           <mj-raw>{{#each . }}</mj-raw>
@@ -392,7 +395,7 @@
                             font-weight: 600;
                             font-family: sans-serif;
                             padding-left: 3px;
-                             margin: 0px;
+                            margin: 0px;
                           ">
                       {{choiceName}}
                     </p>
