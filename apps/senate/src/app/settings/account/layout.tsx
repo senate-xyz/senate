@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { authOptions } from "../../../pages/api/auth/[...nextauth]";
 import { useSession } from "next-auth/react";
 import { useAccount } from "wagmi";
 
