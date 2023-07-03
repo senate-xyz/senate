@@ -25,7 +25,7 @@ const endOptions: { name: string; time: number }[] = [
   },
   {
     name: "All time",
-    time: 365,
+    time: 9999,
   },
 ];
 
