@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { Suspense, useEffect, useState, useTransition } from "react";
 import { usePublicClient } from "wagmi";
 import { Voter } from "./Voter";
 import { addVoter, removeVoter, getVoters } from "../actions";
@@ -11,23 +11,18 @@ const dmmono = DM_Mono({
   subsets: ["latin"],
 });
 
-type Voter = {
-  address: string;
-};
-
 export const Voters = () => {
   const provider = usePublicClient();
   const [proxyAddress, setProxyAddress] = useState("");
   const [, startTransition] = useTransition();
-  const [voters, setVoters] = useState<Voter[]>([]);
+  const [voters, setVoters] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchVoters = async () => {
       const v = await getVoters();
       setVoters(v);
     };
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    fetchVoters();
+    void fetchVoters();
   }, []);
 
   const onEnter = async () => {
@@ -59,17 +54,13 @@ export const Voters = () => {
 
   return (
     <div>
-      {voters.length > 0 ? (
+      <Suspense>
         <div className="mb-8 flex flex-col gap-4">
           {voters.map((voter, index) => {
-            return (
-              <Voter key={index} address={voter.address} removeVoter={remove} />
-            );
+            return <Voter key={index} address={voter} removeVoter={remove} />;
           })}
         </div>
-      ) : (
-        <></>
-      )}
+      </Suspense>
 
       <div className="flex h-[46px] flex-row items-center">
         <input

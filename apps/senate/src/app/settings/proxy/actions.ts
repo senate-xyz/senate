@@ -6,10 +6,6 @@ import { authOptions } from "../../../pages/api/auth/[...nextauth]";
 import { PostHog } from "posthog-node";
 import { revalidateTag } from "next/cache";
 
-type Voter = {
-  address: string;
-};
-
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
   disableGeoip: true,
@@ -130,9 +126,9 @@ export const getVoters = async () => {
     },
   });
 
-  const filteredVoters = user.voters.filter(
-    (voter) => voter.address !== userAddress
-  );
+  const filteredVoters = user.voters
+    .filter((voter) => voter.address !== userAddress)
+    .map((v) => v.address);
 
-  return filteredVoters as Array<Voter>;
+  return filteredVoters;
 };

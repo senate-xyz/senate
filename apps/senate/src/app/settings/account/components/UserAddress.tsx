@@ -3,8 +3,7 @@
 import { useAccountModal } from "@rainbow-me/rainbowkit";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useAccount, usePublicClient } from "wagmi";
+import { useAccount, useEnsName } from "wagmi";
 import NotConnected from "./NotConnected";
 import { DM_Mono } from "next/font/google";
 
@@ -16,18 +15,11 @@ const dmmono = DM_Mono({
 const UserAddress = () => {
   const session = useSession();
   const account = useAccount();
-  const provider = usePublicClient();
   const { openAccountModal } = useAccountModal();
 
-  const [ens, setEns] = useState("");
-
-  useEffect(() => {
-    if (session.status === "authenticated" && account.address) {
-      void provider.getEnsName({ address: account.address }).then((ens) => {
-        setEns(ens ?? "");
-      });
-    }
-  }, [account.address, provider, session.status]);
+  const { data } = useEnsName({
+    address: account.address as `0x${string}`,
+  });
 
   return (
     <div>
@@ -45,7 +37,7 @@ const UserAddress = () => {
               <div
                 className={`${dmmono.className} text-[18px] font-normal leading-[23px] text-white`}
               >
-                {ens}
+                {data}
               </div>
               <div
                 className={`break-all ${dmmono.className} text-[18px] font-light leading-[23px] text-[#ABABAB]`}
