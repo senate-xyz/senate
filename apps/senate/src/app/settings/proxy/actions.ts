@@ -111,6 +111,8 @@ export const removeVoter = async (address: string) => {
 export const getVoters = async () => {
   "use server";
 
+  revalidateTag("voters");
+
   const session = await getServerSession(authOptions());
 
   if (!session || !session.user || !session.user.name) return [];

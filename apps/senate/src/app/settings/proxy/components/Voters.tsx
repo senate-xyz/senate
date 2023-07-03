@@ -1,14 +1,29 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { usePublicClient } from "wagmi";
 import { Voter } from "./Voter";
-import { addVoter, type Voter as VoterType } from "../actions";
+import {
+  addVoter,
+  removeVoter,
+  getVoters,
+  type Voter as VoterType,
+} from "../actions";
 
-export const Voters = ({ voters }: { voters: Array<VoterType> }) => {
+export const Voters = () => {
   const provider = usePublicClient();
   const [proxyAddress, setProxyAddress] = useState("");
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
+  const [voters, setVoters] = useState<Array<VoterType>>([]);
+
+  const fetchVoters = async () => {
+    const v = await getVoters();
+    setVoters(v);
+  };
+
+  useEffect(() => {
+    void fetchVoters();
+  }, [isPending]);
 
   const onEnter = async () => {
     let resolvedAddress = proxyAddress;
@@ -20,8 +35,14 @@ export const Voters = ({ voters }: { voters: Array<VoterType> }) => {
       );
     }
     startTransition(() =>
-      addVoter(resolvedAddress).then(() => setProxyAddress(""))
+      addVoter(resolvedAddress).then(() => {
+        setProxyAddress("");
+      })
     );
+  };
+
+  const remove = (address: string) => {
+    startTransition(() => removeVoter(address).then(() => void fetchVoters()));
   };
 
   return (
@@ -29,7 +50,13 @@ export const Voters = ({ voters }: { voters: Array<VoterType> }) => {
       {voters.length > 0 ? (
         <div className="mt-12 flex flex-col gap-6">
           {voters.map((voter) => {
-            return <Voter address={voter.address} key={voter.address} />;
+            return (
+              <Voter
+                address={voter.address}
+                key={voter.address}
+                removeVoter={remove}
+              />
+            );
           })}
         </div>
       ) : null}

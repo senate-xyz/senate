@@ -1,8 +1,19 @@
-import { getVoters } from "./actions";
+"use client";
+
+import { redirect, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useAccount } from "wagmi";
 import { Voters } from "./components/Voters";
 
-export default async function Home() {
-  const voters = await getVoters();
+export default function Home() {
+  if (process.env.OUTOFSERVICE === "true") redirect("/outofservice");
+
+  const account = useAccount();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!account.isConnected) if (router) router.push("/settings/account");
+  }, [account, router]);
 
   return (
     <div className="flex min-h-screen flex-col gap-12">
@@ -16,7 +27,7 @@ export default async function Home() {
           can see the voting activity for those addresses as well.
         </div>
 
-        <Voters voters={voters} />
+        <Voters />
       </div>
     </div>
   );

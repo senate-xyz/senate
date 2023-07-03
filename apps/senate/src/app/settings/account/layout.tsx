@@ -1,6 +1,8 @@
-import { getServerSession } from "next-auth";
+"use client";
 import Link from "next/link";
 import { authOptions } from "../../../pages/api/auth/[...nextauth]";
+import { useSession } from "next-auth/react";
+import { useAccount } from "wagmi";
 
 const defaultTab: { id: number; name: string; color: string; link: string } = {
   id: 0,
@@ -32,18 +34,19 @@ const tabs: { id: number; name: string; color: string; link: string }[] = [
   },
 ];
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions());
+  const session = useSession();
+  const account = useAccount();
 
   return (
     <>
       <div className="flex grow flex-col bg-[#1E1B20]">
         <div className="flex w-full flex-row gap-10 overflow-x-auto overflow-y-hidden leading-[36px]">
-          {session?.user != null && session?.user != undefined ? (
+          {session?.status == "authenticated" && account.isConnected ? (
             tabs.map((tab) => {
               return (
                 <Link key={tab.id} className={tab.color} href={tab.link}>

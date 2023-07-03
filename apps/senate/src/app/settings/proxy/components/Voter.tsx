@@ -2,9 +2,14 @@
 
 import { useState, useEffect, useTransition } from "react";
 import { usePublicClient } from "wagmi";
-import { removeVoter } from "../actions";
 
-export const Voter = ({ address }: { address: string }) => {
+export const Voter = ({
+  address,
+  removeVoter,
+}: {
+  address: string;
+  removeVoter: (address: string) => void;
+}) => {
   const provider = usePublicClient();
   const [voterEns, setVoterEns] = useState("");
   const [, startTransition] = useTransition();
@@ -35,7 +40,9 @@ export const Voter = ({ address }: { address: string }) => {
 
       <button
         onClick={() => {
-          startTransition(() => removeVoter(address));
+          startTransition(() => {
+            void removeVoter(address);
+          });
         }}
         className="text-[18px] font-light text-white underline"
       >

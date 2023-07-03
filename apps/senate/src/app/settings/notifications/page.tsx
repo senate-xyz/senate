@@ -11,8 +11,6 @@ import Telegram from "./components/csr/Telegram";
 import { trpc } from "../../../server/trpcClient";
 
 export default function Home() {
-  const featureFlags = trpc.public.featureFlags.useQuery();
-
   if (process.env.OUTOFSERVICE === "true") redirect("/outofservice");
 
   const account = useAccount();
@@ -21,6 +19,8 @@ export default function Home() {
   useEffect(() => {
     if (!account.isConnected) if (router) router.push("/settings/account");
   }, [account, router]);
+
+  const featureFlags = trpc.public.featureFlags.useQuery();
 
   return (
     <div className="flex min-h-screen flex-col gap-10">
