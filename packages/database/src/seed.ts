@@ -961,10 +961,9 @@ async function testUsers() {
 }
 
 async function main() {
-  await seedData();
+  // await seedData();
   //  await seedVoters();
-
-  await testUsers();
+  // await testUsers();
 }
 
 void main();
