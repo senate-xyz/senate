@@ -30,6 +30,7 @@ pub async fn produce_chain_proposals_queue(config: &Config) -> Result<Vec<Refres
         prisma::DaoHandlerType::GitcoinChain,
         prisma::DaoHandlerType::HopChain,
         prisma::DaoHandlerType::DydxChain,
+        prisma::DaoHandlerType::InterestProtocolChain,
     ];
 
     let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;

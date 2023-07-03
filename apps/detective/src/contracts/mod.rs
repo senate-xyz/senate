@@ -13,6 +13,7 @@ pub mod dydxstrategy;
 pub mod ensgov;
 pub mod gitcoingov;
 pub mod hopgov;
+pub mod interestprotocolgov;
 pub mod makerexecutive;
 pub mod makerpollcreate;
 pub mod makerpollvote;

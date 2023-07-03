@@ -704,6 +704,34 @@ const seedData = async () => {
   });
 };
 
+await prisma.dao.upsert({
+  where: { name: "Interest Protocol" },
+  update: {},
+  create: {
+    name: "Interest Protocol",
+    picture: "/assets/Project_Icons/interest",
+    handlers: {
+      create: [
+        {
+          type: DAOHandlerType.INTEREST_PROTOCOL_CHAIN,
+          chainindex: 12006100,
+          decoder: {
+            address: "0x266d1020A84B9E8B0ed320831838152075F8C4cA",
+            proxyAddress: "0x6b91A0Ba78Acc4a8C7919f96c181a895D5b31563",
+            proposalUrl: "https://interestprotocol.io/#/proposal/",
+          },
+        },
+        {
+          type: DAOHandlerType.SNAPSHOT,
+          decoder: {
+            space: "comp-vote.eth",
+          },
+        },
+      ],
+    },
+  },
+});
+
 const seedVoters = async () => {
   const voters = [
     "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
@@ -939,7 +967,7 @@ async function testUsers() {
 }
 
 async function main() {
-  //  await seedData();
+  await seedData();
   //  await seedVoters();
 
   await testUsers();
