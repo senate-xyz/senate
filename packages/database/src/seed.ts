@@ -686,7 +686,7 @@ const seedData = async () => {
         create: [
           {
             type: DAOHandlerType.INTEREST_PROTOCOL_CHAIN,
-            chainindex: 12006100,
+            chainindex: 14936209,
             decoder: {
               address: "0x266d1020A84B9E8B0ed320831838152075F8C4cA",
               proxyAddress: "0x6b91A0Ba78Acc4a8C7919f96c181a895D5b31563",
