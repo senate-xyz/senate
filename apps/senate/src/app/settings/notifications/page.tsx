@@ -1,24 +1,12 @@
-"use client";
+import Discord from "./components/Discord";
+import Telegram from "./components/Telegram";
+import { MagicUser } from "./components/MagicUser";
+import { Email } from "./components/Email";
+import { bulletinEnabled, userEmail } from "./actions";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useAccount } from "wagmi";
-import UserEmail from "./components/csr/UserEmail";
-import IsUniswapUser from "./components/csr/IsUniswapUser";
-import IsAaveUser from "./components/csr/IsAaveUser";
-import Discord from "./components/csr/Discord";
-import Telegram from "./components/csr/Telegram";
-import { trpc } from "../../../server/trpcClient";
-
-export default function Home() {
-  const account = useAccount();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!account.isConnected) if (router) router.push("/settings/account");
-  }, [account, router]);
-
-  const featureFlags = trpc.public.featureFlags.useQuery();
+export default async function Home() {
+  const isBulletinEnabled = await bulletinEnabled();
+  const { email, verified, quorum, empty } = await userEmail();
 
   return (
     <div className="flex min-h-screen flex-col gap-10">
@@ -33,15 +21,20 @@ export default function Home() {
         </div>
       </div>
 
-      {featureFlags.data?.includes("email_settings") && <UserEmail />}
-      {featureFlags.data?.includes("discord_settings") && <Discord />}
-      {featureFlags.data?.includes("telegram_settings") && <Telegram />}
-      {featureFlags.data?.includes("magic_user_settings") && (
-        <div className="flex flex-row gap-8">
-          <IsAaveUser />
-          <IsUniswapUser />
-        </div>
-      )}
+      <Email
+        isBulletinEnabled={isBulletinEnabled}
+        email={email}
+        verified={verified}
+        quorum={quorum}
+        empty={empty}
+      />
+
+      <Discord />
+      <Telegram />
+
+      <div className="flex flex-row gap-8">
+        <MagicUser />
+      </div>
     </div>
   );
 }

@@ -3,12 +3,12 @@
 import "../../styles/globals.css";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Transition } from "@headlessui/react";
 import Head from "next/head";
-import { trpc } from "../../server/trpcClient";
 import RootProvider from "../providers";
+import { setEmailAndEnableBulletin } from "../settings/notifications/actions";
 
 const WrapperHome = () => {
   return (
@@ -26,22 +26,15 @@ const Home = () => {
   const [error, setError] = useState(false);
   const router = useRouter();
 
-  const setEmail = trpc.accountSettings.setEmailAndEnableBulletin.useMutation();
+  const [, startTransition] = useTransition();
 
   const onEnter = () => {
-    setEmail.mutate(
-      { email: newEmail },
-      {
-        onSuccess: () => {
+    startTransition(() =>
+      setEmailAndEnableBulletin(newEmail)
+        .then(() => {
           setSuccess(true);
-          setError(false);
-          if (router) router.push("/orgs");
-        },
-        onError: () => {
-          setError(true);
-          setSuccess(false);
-        },
-      }
+        })
+        .catch(() => setError(true))
     );
   };
 
