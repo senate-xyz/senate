@@ -396,6 +396,7 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
         .find_many(vec![
             proposal::timeend::gt(Utc::now().into()),
             proposal::timeend::lte((Utc::now() + Duration::hours(12)).into()),
+            proposal::state::not(prisma::ProposalState::Canceled),
         ])
         .include(proposal_with_dao::include())
         .exec()
