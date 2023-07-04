@@ -38,6 +38,7 @@ export const test = base.extend<{
       network: "mainnet",
       password: "Tester@1234",
       enableAdvancedSettings: true,
+      enableExperimentalSettings: true,
     });
     await use(context);
     await context.close();
