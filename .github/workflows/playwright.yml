@@ -33,11 +33,13 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        
+
       - name: Build
-        run: yarn db:generate && build:db && yarn build:senate
+        run: cd packages/database && yarn db:generate && build:db && cd .. && cd .. && yarn build:senate
+
       - name: Run Playwright tests
         run: npx playwright test
+
       - uses: actions/upload-artifact@v3
         if: always()
         with:
