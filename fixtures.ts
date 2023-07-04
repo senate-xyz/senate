@@ -24,6 +24,7 @@ export const test = base.extend<{
     if (process.env.HEADLESS_MODE) {
       browserArgs.push("--headless=new");
     }
+    console.log(browserArgs);
     // launch browser
     const context = await chromium.launchPersistentContext("", {
       headless: false,

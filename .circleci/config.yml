@@ -26,8 +26,9 @@ jobs:
       - run:
           name: Run test
           command: npx playwright test
+
       - store_test_results:
-          path: playwright-report/index.html
+          path: test-results
 
 workflows:
   run-test-workflow:
