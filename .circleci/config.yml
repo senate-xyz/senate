@@ -1,24 +1,31 @@
 version: 2.1
+
+orbs:
+  node: circleci/node@5.1.0
+
 jobs:
   run-test:
     docker:
       - image: mcr.microsoft.com/playwright:v1.34.0-jammy
-    # Steps to the job
     steps:
       - checkout
-      - run: npm i -g yarn
-      - run: yarn
-      - run: npx playwright install
-      - run: npx playwright install chrome
-      - run: yarn db:generate:node
-      - run: yarn build:db:node
-      - run: yarn build:senate
+      - node/install-packages:
+          pkg-manager: yarn
+          cache-version: v1
+      - run:
+          name: Install and build dependencies
+          command: |
+            npx playwright install
+            npx playwright install chrome
+            yarn db:generate:node
+            yarn build:db:node
+            yarn build:senate
       - run:
           name: Run test
           command: npx playwright test --reporter=html --project=chromium
       - store_test_results:
           path: playwright-report/index.html
-# Invoke jobs via workflows
+
 workflows:
   run-test-workflow:
     jobs:
