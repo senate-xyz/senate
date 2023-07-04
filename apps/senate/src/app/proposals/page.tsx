@@ -238,7 +238,7 @@ export async function fetchItems(
       daohandler: { select: { type: true } },
     },
     skip: page,
-    take: 5,
+    take: 20,
   });
 
   const result =
