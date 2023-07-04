@@ -39,6 +39,9 @@
     "update": "rustup update && ncu -u && turbo run update && yarn"
   },
   "devDependencies": {
+    "@playwright/test": "^1.35.1",
+    "@synthetixio/synpress": "^3.7.1",
+    "dotenv": "^16.3.1",
     "prettier": "^2.8.8",
     "tsx": "^3.12.7",
     "turbo": "^1.10.7"
