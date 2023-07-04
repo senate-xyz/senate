@@ -4,14 +4,9 @@ import {
   ProposalState,
   type JsonArray,
 } from "@senate/database";
-import { type Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
-
-export const metadata: Metadata = {
-  title: "Senate - Proposals",
-  icons: "/assets/Senate_Logo/64/Black.svg",
-};
+import { redirect } from "next/navigation";
 
 enum VoteResult {
   NOT_CONNECTED = "NOT_CONNECTED",
@@ -297,5 +292,5 @@ export async function fetchItems(
 }
 
 export default function Home() {
-  return <main></main>;
+  redirect("/proposals/active");
 }

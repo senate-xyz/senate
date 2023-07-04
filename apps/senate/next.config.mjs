@@ -26,15 +26,12 @@ const config = {
       },
     ];
   },
+
   async rewrites() {
     return [
       {
         source: "/ingest/:path*",
-        destination: "https://app.posthog.com/:path*",
-      },
-      {
-        source: "/login/:path*",
-        destination: "https://app.posthog.com/login/",
+        destination: "https://app.posthog.com/:path*/",
       },
     ];
   },

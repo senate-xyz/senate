@@ -1,12 +1,6 @@
 import { Filters } from "./components/Filters";
-import { type Metadata } from "next";
 import Items from "./components/Items";
 import { fetchItems, fetchVote, getProxies, getSubscribedDAOs } from "../page";
-
-export const metadata: Metadata = {
-  title: "Senate - Active Proposals",
-  icons: "/assets/Senate_Logo/64/Black.svg",
-};
 
 export default async function Home({
   searchParams,

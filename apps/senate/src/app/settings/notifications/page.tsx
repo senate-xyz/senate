@@ -1,26 +1,52 @@
-"use client";
+import Telegram from "./components/Telegram";
+import { MagicUser } from "./components/MagicUser";
+import { Email } from "./components/Email";
+import { getMagicUser, userDiscord, userEmail } from "./actions";
+import { Discord } from "./components/Discord";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../../pages/api/auth/[...nextauth]";
+import { PostHog } from "posthog-node";
 
-import { redirect, useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useAccount } from "wagmi";
-import UserEmail from "./components/csr/UserEmail";
-import IsUniswapUser from "./components/csr/IsUniswapUser";
-import IsAaveUser from "./components/csr/IsAaveUser";
-import Discord from "./components/csr/Discord";
-import Telegram from "./components/csr/Telegram";
-import { trpc } from "../../../server/trpcClient";
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
+  host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
+  disableGeoip: true,
+});
 
-export default function Home() {
-  const featureFlags = trpc.public.featureFlags.useQuery();
+export default async function Home() {
+  const session = await getServerSession(authOptions());
 
-  if (process.env.OUTOFSERVICE === "true") redirect("/outofservice");
+  const {
+    enabled: emailEnabled,
+    email: emailEmail,
+    verified: emailVerified,
+    quorum: emailQuorum,
+    empty: emailEmpty,
+  } = await userEmail();
 
-  const account = useAccount();
-  const router = useRouter();
+  const {
+    enabled: discordEnabled,
+    webhook: discordWebhook,
+    reminders: discordReminders,
+    includeVotes: discordIncludeVotes,
+  } = await userDiscord();
 
-  useEffect(() => {
-    if (!account.isConnected) if (router) router.push("/settings/account");
-  }, [account, router]);
+  const { aave: aaveMagicUser, uniswap: uniswapMagicUser } =
+    await getMagicUser();
+
+  const telegramFlag = await posthog.isFeatureEnabled(
+    "telegram-secretary",
+    session?.user?.name ?? ""
+  );
+
+  const discordFlag = await posthog.isFeatureEnabled(
+    "discord-secretary",
+    session?.user?.name ?? ""
+  );
+
+  const magicUserFlag = await posthog.isFeatureEnabled(
+    "magic-user-menu",
+    session?.user?.name ?? ""
+  );
 
   return (
     <div className="flex min-h-screen flex-col gap-10">
@@ -35,14 +61,27 @@ export default function Home() {
         </div>
       </div>
 
-      {featureFlags.data?.includes("email_settings") && <UserEmail />}
-      {featureFlags.data?.includes("discord_settings") && <Discord />}
-      {featureFlags.data?.includes("telegram_settings") && <Telegram />}
-      {featureFlags.data?.includes("magic_user_settings") && (
-        <div className="flex flex-row gap-8">
-          <IsAaveUser />
-          <IsUniswapUser />
-        </div>
+      <Email
+        enabled={emailEnabled}
+        email={emailEmail}
+        verified={emailVerified}
+        quorum={emailQuorum}
+        empty={emailEmpty}
+      />
+
+      {discordFlag && (
+        <Discord
+          enabled={discordEnabled}
+          webhook={discordWebhook}
+          reminders={discordReminders}
+          includeVotes={discordIncludeVotes}
+        />
+      )}
+
+      {telegramFlag && <Telegram />}
+
+      {magicUserFlag && (
+        <MagicUser aave={aaveMagicUser} uniswap={uniswapMagicUser} />
       )}
     </div>
   );

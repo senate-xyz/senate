@@ -676,6 +676,74 @@ const seedData = async () => {
     },
   });
 
+  await prisma.dao.upsert({
+    where: { name: "Interest Protocol" },
+    update: {},
+    create: {
+      name: "Interest Protocol",
+      picture: "/assets/Project_Icons/interest",
+      handlers: {
+        create: [
+          {
+            type: DAOHandlerType.INTEREST_PROTOCOL_CHAIN,
+            chainindex: 14936209,
+            decoder: {
+              address: "0x266d1020A84B9E8B0ed320831838152075F8C4cA",
+              proxyAddress: "0x6b91A0Ba78Acc4a8C7919f96c181a895D5b31563",
+              proposalUrl: "https://interestprotocol.io/#/proposal/",
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { name: "Rocket Pool" },
+    update: {},
+    create: {
+      name: "Rocket Pool",
+      picture: "/assets/Project_Icons/rocket-pool",
+      handlers: {
+        create: [
+          {
+            type: DAOHandlerType.SNAPSHOT,
+            decoder: {
+              space: "rocketpool-dao.eth",
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.dao.upsert({
+    where: { name: "0x Protocol" },
+    update: {},
+    create: {
+      name: "0x Protocol",
+      picture: "/assets/Project_Icons/0x-protocol",
+      handlers: {
+        create: [
+          {
+            type: DAOHandlerType.SNAPSHOT,
+            decoder: {
+              space: "0xgov.eth",
+            },
+          },
+          {
+            type: DAOHandlerType.ZEROX_PROTOCOL_CHAIN,
+            chainindex: 12253225,
+            decoder: {
+              address: "0x0bB1810061C2f5b2088054eE184E6C79e1591101",
+              proposalUrl: "https://governance.0xprotocol.org/vote/proposal/",
+            },
+          },
+        ],
+      },
+    },
+  });
+
   console.log("Inserting seed user");
   const seedUser = await prisma.user.upsert({
     where: {
@@ -939,10 +1007,9 @@ async function testUsers() {
 }
 
 async function main() {
-  //  await seedData();
+  // await seedData();
   //  await seedVoters();
-
-  await testUsers();
+  // await testUsers();
 }
 
 void main();

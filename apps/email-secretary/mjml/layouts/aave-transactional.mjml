@@ -46,8 +46,8 @@
       }
     </mj-style>
   </mj-head>
-  <mj-body width="680px" background-color="white">
-    <mj-section css-class="desktop-version"></mj-section>
+  <mj-body background-color="white">
+
     <mj-section padding="15px 0" css-class="aave-background mobile-version square-corners">
       <mj-group>
         <mj-column vertical-align="middle" width="20%">
@@ -60,6 +60,7 @@
       </mj-group>
     </mj-section>
 
+    <mj-section css-class="desktop-version" padding="15px 0px" />
     <mj-section css-class="aave-background desktop-version rounded-corners" padding="0px 0px">
       <mj-column width="15%" padding="30px 0px">
         <mj-image padding="0px" width="45px" height="67px" src="https://www.senatelabs.xyz/assets/Emails/aave-logo.png"></mj-image>
@@ -72,8 +73,8 @@
 
     <mj-raw> {{{ @content }}} </mj-raw>
 
-    <mj-section full-width="full-width">
-      <mj-column background-color="black" width="680px" padding="30px 30px 30px 30px">
+    <mj-section>
+      <mj-column background-color="black" padding="30px 30px 30px 30px">
         <mj-text align="center" font-size="15px" font-family="sans-serif" color="white">To keep up with all proposals from the organisations you are interested in,
           check out the Senate app, where you can follow the most important
           organisations, get notified when they launch new proposals and much

@@ -1,10 +1,13 @@
-import { getUnsubscribedDAOs } from "../page";
+import { type Unsubscribed } from "../actions";
 import { UnsubscribedDAO } from "./components/Card";
 import { Suspense } from "react";
 
-export default async function UnsubscribedDAOs() {
-  const { unsubscriptions, backgroundColors } = await getUnsubscribedDAOs();
-
+export default function UnsubscribedDAOs({
+  unsubscribed,
+}: {
+  unsubscribed: Unsubscribed;
+}) {
+  const { unsubscriptions, backgroundColors } = unsubscribed;
   return (
     <div>
       {unsubscriptions.length > 0 && (

@@ -26,9 +26,8 @@
       }
     </mj-style>
   </mj-head>
-  <mj-body width="720px" background-color="white">
-    <mj-section css-class="desktop-version" />
-    <mj-section padding="15px 0" background-color="black" css-class="mobile-version">
+  <mj-body background-color="white">
+    <mj-section padding="15px 0px" background-color="black" css-class="mobile-version">
       <mj-group>
         <mj-column vertical-align="middle" width="20%">
           <mj-image padding="0px 0px 0px 0px" width="48px" height="48px" src="https://www.senatelabs.xyz/assets/Senate_Logo/64/White.png"></mj-image>
@@ -44,7 +43,7 @@
       <mj-column width="64px" background-color="black">
         <mj-image padding="0 0 0 0" width="64px" height="64px" src="https://www.senatelabs.xyz/assets/Senate_Logo/64/White.png"></mj-image>
       </mj-column>
-      <mj-column width="80%">
+      <mj-column width="536px">
         <mj-text padding="5px 0px 0px 10px" font-size="36px" font-family="sans-serif" font-weight="600">Senate Daily Bulletin</mj-text>
         <mj-text padding="5px 0px 0px 10px" font-size="13px" color="#555555" font-family="sans-serif">{{todaysDate}}</mj-text>
       </mj-column>
@@ -52,8 +51,8 @@
 
     <mj-raw> {{{ @content }}} </mj-raw>
 
-    <mj-section full-width="full-width">
-      <mj-column background-color="black" width="680px" padding="30px 30px 30px 30px">
+    <mj-section>
+      <mj-column background-color="black" padding="30px 30px 30px 30px">
         <mj-text align="center" font-size="15px" font-family="sans-serif" color="white">To keep up with all proposals from the organisations you are interested in,
           check out the Senate app, where you can follow the most important
           organisations, get notified when they launch new proposals and much
@@ -63,5 +62,38 @@
         </mj-button>
       </mj-column>
     </mj-section>
+
+    <mj-section>
+      <mj-column width="70%">
+        <mj-text align="center" font-size="12px" font-family="sans-serif">
+          These are the proposals to the organisations you’re subscribed to on Senate.
+          You can edit your notification settings <a href="https://senatelabs.xyz/settings/notifications" target="_blank">here</a>.
+        </mj-text>
+        <mj-text align="center" font-size="12px" font-family="sans-serif" color="#545454">
+          This daily bulletin is still a beta functionality, if you find something wrong in this email, just hit reply and please tell us about it. </mj-text>
+        <mj-text align="center" font-size="8px" font-family="sans-serif" color="#989898">
+          Made with love by Senate Labs in 2023. This is where you can <a href="https://senatelabs.xyz/settings/notifications" target="_blank">unsubscribe</a>.
+        </mj-text>
+
+        <mj-table align="center">
+          <tr>
+            <a href="https://twitter.com/SenateLabs" target="_blank">
+              <img style="padding:2px;" width="24" height="24" src="https://www.senatelabs.xyz/assets/Emails/twitter.png" />
+            </a>
+          </tr>
+          <tr>
+            <a href="https://discord.gg/shtxfNqazd" target="_blank">
+              <img style="padding:2px;" style="padding:2px;" width="24" height="24" src="https://www.senatelabs.xyz/assets/Emails/discord.png" />
+            </a>
+          </tr>
+          <tr>
+            <a href="https://github.com/senate-xyz/senate" target="_blank">
+              <img style="padding:2px;" width="24" height="24" src="https://www.senatelabs.xyz/assets/Emails/github.png" />
+            </a>
+          </tr>
+        </mj-table>
+      </mj-column>
+    </mj-section>
+
   </mj-body>
 </mjml>

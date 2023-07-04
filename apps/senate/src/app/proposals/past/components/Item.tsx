@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import dayjs, { extend } from "dayjs";
+import { extend } from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { type Item } from "./Items";
 import { Suspense } from "react";
@@ -38,8 +38,8 @@ export default function Item(props: {
                 alt={props.proposal.daoName}
               />
             </div>
-            <div className="flex h-[64px] min-w-[150px] flex-col gap-2 pl-2">
-              <div className="whitespace-nowrap text-[24px] font-light leading-[30px]">
+            <div className="flex h-[70px] min-w-[150px] flex-col justify-between gap-1 pl-2">
+              <div className="text-[24px] font-light leading-[22px]">
                 {props.proposal.daoName}
               </div>
 

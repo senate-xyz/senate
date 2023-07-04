@@ -2,17 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { ContactIcons } from "../ssr/ContactIcons";
 
 export const NavBar = () => {
   const pathname = usePathname();
-
-  if (
-    process.env.OUTOFSERVICE === "true" &&
-    !pathname?.includes("outofservice")
-  )
-    redirect("/outofservice");
 
   return !pathname?.includes("verify") &&
     !pathname?.includes("bulletin") &&
