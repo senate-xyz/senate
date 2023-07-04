@@ -19,6 +19,10 @@ jobs:
             yarn db:generate:node
             yarn build:db:node
             yarn build:senate
+      - save_cache:
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+          paths:
+            - .apps/senate/.next/cache
       - run:
           name: Run test
           command: npx playwright test
