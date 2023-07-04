@@ -11,9 +11,7 @@
     "start": "cargo r",
     "start:discord-secretary": "cargo r",
     "clean": "cargo clean",
-    "lint": "cargo fmt",
     "lint:fix": "cargo clippy --fix --allow-dirty",
-    "prettier": "cargo fmt",
     "prettier:fix": "cargo fmt",
     "db:generate": "cargo generate",
     "update": "cargo update"

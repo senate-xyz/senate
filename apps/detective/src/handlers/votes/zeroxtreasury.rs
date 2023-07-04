@@ -129,11 +129,7 @@ async fn get_votes_for_voter(
             dao_id: dao_handler.clone().daoid.to_string(),
             proposal_id: proposal.id,
             dao_handler_id: dao_handler.clone().id.to_string(),
-            choice: if log.support {
-                1.into()
-            } else {
-                2.into()
-            },
+            choice: if log.support { 1.into() } else { 2.into() },
             reason: "".to_string(),
             voting_power: log.voting_power.as_u128().into(),
             proposal_active: proposal.timeend > Utc::now(),

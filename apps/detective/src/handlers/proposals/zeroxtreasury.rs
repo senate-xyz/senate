@@ -1,6 +1,7 @@
 use std::str;
 
 use anyhow::Result;
+use chrono::Duration;
 use ethers::{prelude::LogMeta, providers::Middleware, types::Address};
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{
@@ -82,15 +83,15 @@ async fn data_for_proposal(
     let created_block_timestamp = created_block.expect("bad block").time()?;
 
     let voting_start_block_number = created_block_number;
-    let voting_end_block_number = created_block_number
-        + gov_contract
-            .voting_period()
-            .call()
-            .await
-            .unwrap()
-            .as_u64()
-            .to_i64()
-            .unwrap();
+
+    let voting_period_seconds = gov_contract
+        .voting_period()
+        .call()
+        .await
+        .unwrap()
+        .as_u64()
+        .to_i64()
+        .unwrap();
 
     let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number).await {
         Ok(r) => r,
@@ -104,17 +105,7 @@ async fn data_for_proposal(
         ),
     };
 
-    let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number).await {
-        Ok(r) => r,
-        Err(_) => DateTime::from_utc(
-            NaiveDateTime::from_timestamp_millis(
-                created_block_timestamp.timestamp() * 1000
-                    + (voting_end_block_number - created_block_number) * 12 * 1000,
-            )
-            .expect("bad timestamp"),
-            Utc,
-        ),
-    };
+    let voting_ends_timestamp = voting_starts_timestamp + Duration::seconds(voting_period_seconds);
 
     let mut title = format!(
         "{:.120}",
@@ -150,9 +141,16 @@ async fn data_for_proposal(
 
     let proposal_state = onchain_proposal.5;
 
-    let state = match proposal_state {
-        false => ProposalState::Active,
-        true => ProposalState::Executed,
+    let state = if voting_ends_timestamp > Utc::now() {
+        match proposal_state {
+            false => ProposalState::Active,
+            true => ProposalState::Executed,
+        }
+    } else {
+        match proposal_state {
+            false => ProposalState::Defeated,
+            true => ProposalState::Executed,
+        }
     };
 
     let proposal = ChainProposal {
