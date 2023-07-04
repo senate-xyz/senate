@@ -14,21 +14,9 @@ jobs:
         with:
           node-version: 18
 
-      - name: Get installed Playwright version
-        id: playwright-version
-        run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package.json').dependencies['@playwright/test'])")" >> $GITHUB_ENV
-
-      - name: Cache playwright binaries
-        uses: actions/cache@v3
-        id: playwright-cache
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
-
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "{name}={dir::$(yarn cache dir)}" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v3
         id: yarn-cache
@@ -43,9 +31,21 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "::set-output name=version::$(yarn why --json @playwright/test | grep -h 'workspace:.' | jq --raw-output '.children[].locator' | sed -e 's/@playwright\/test@.*://')"
+
+      - uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: '~/.cache/ms-playwright'
+          key: '${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}'
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright's dependencies
         if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
 
       - name: Build
         run: cd packages/database && yarn db:generate && yarn build:db && cd .. && cd .. && yarn build:senate
@@ -54,6 +54,8 @@ jobs:
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }} 
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
           NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          NEXT_PUBLIC_WALLERCONNECTID: ${{ secrets.NEXT_PUBLIC_WALLERCONNECTID }}
+          NEXT_PUBLIC_ALCHEMY_KEY: ${{ secrets.NEXT_PUBLIC_ALCHEMY_KEY }}
 
       - name: Cache .next directory
         uses: actions/cache@v3
@@ -71,6 +73,8 @@ jobs:
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }} 
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
           NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          NEXT_PUBLIC_WALLERCONNECTID: ${{ secrets.NEXT_PUBLIC_WALLERCONNECTID }}
+          NEXT_PUBLIC_ALCHEMY_KEY: ${{ secrets.NEXT_PUBLIC_ALCHEMY_KEY }}
 
       - uses: actions/upload-artifact@v3
         if: always()
