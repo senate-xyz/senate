@@ -15,9 +15,9 @@ jobs:
       - run: yarn build:senate
       - run:
           name: Run test
-          command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml npx playwright test --reporter=junit --project=chromium
+          command: npx playwright test --reporter=html --project=chromium
       - store_test_results:
-          path: results.xml
+          path: playwright-report/index.html
 # Invoke jobs via workflows
 workflows:
   run-test-workflow:
