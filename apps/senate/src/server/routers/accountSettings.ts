@@ -1,6 +1,6 @@
 import { privateProcedure, router } from "../trpc";
 import { z } from "zod";
-import { MagicUserState, prisma } from "@senate/database";
+import { prisma } from "@senate/database";
 import { PostHog } from "posthog-node";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
