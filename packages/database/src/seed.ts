@@ -718,10 +718,10 @@ const seedData = async () => {
   });
 
   await prisma.dao.upsert({
-    where: { name: "0xProtocol" },
+    where: { name: "0x Protocol" },
     update: {},
     create: {
-      name: "0xProtocol",
+      name: "0x Protocol",
       picture: "/assets/Project_Icons/0x-protocol",
       handlers: {
         create: [

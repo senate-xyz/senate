@@ -129,7 +129,7 @@ async fn get_votes_for_voter(
             dao_id: dao_handler.clone().daoid.to_string(),
             proposal_id: proposal.id,
             dao_handler_id: dao_handler.clone().id.to_string(),
-            choice: if log.support == true {
+            choice: if log.support {
                 1.into()
             } else {
                 2.into()
