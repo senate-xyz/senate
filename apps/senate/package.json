@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.15",
-    "@playwright/test": "^1.35.1",
     "@rainbow-me/rainbowkit": "1.0.4",
     "@rainbow-me/rainbowkit-siwe-next-auth": "0.2.0",
     "@senate/database": "*",
@@ -57,7 +56,6 @@
     "zod": "3.21.4"
   },
   "devDependencies": {
-    "@synthetixio/synpress": "^3.7.0",
     "@types/eslint": "^8.40.2",
     "@types/node": "20.3.3",
     "@types/prettier": "^2.7.3",

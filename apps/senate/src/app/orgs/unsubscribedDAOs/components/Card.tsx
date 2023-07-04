@@ -76,62 +76,64 @@ export const UnsubscribedDAO = (props: {
             {props.daoName}
           </div>
           <div className="flex flex-row gap-4 pt-6 opacity-50">
-            {[
-              ...(props.daoHandlers.includes("SNAPSHOT") ? ["SNAPSHOT"] : []),
-              ...(props.daoHandlers.includes("MAKER_POLL")
-                ? ["MAKER_POLL"]
-                : []),
-              ...(props.daoHandlers.includes("MAKER_POLL_ARBITRUM")
-                ? ["MAKER_POLL_ARBITRUM"]
-                : []),
-              ...props.daoHandlers
-                .filter(
-                  (handler) =>
-                    handler !== "SNAPSHOT" &&
-                    handler !== "MAKER_POLL_ARBITRUM" &&
-                    handler !== "MAKER_POLL"
-                )
-                .sort((a, b) => a.localeCompare(b)),
-            ].map((handler, index: number) => {
-              switch (handler) {
-                case "SNAPSHOT":
-                  return (
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      key={index}
-                      width="24"
-                      height="24"
-                      src="/assets/Chain/Snapshot/On_Dark.svg"
-                      alt="snapshot proposals"
-                    />
-                  );
-                case "MAKER_POLL_ARBITRUM":
-                  return (
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      key={index}
-                      width="24"
-                      height="24"
-                      src="/assets/Chain/Arbitrum/On_Dark.svg"
-                      alt="chain proposals"
-                    />
-                  );
-                default:
-                  return (
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      key={index}
-                      width="24"
-                      height="24"
-                      src="/assets/Chain/Ethereum/On_Dark.svg"
-                      alt="chain proposals"
-                    />
-                  );
-              }
-            })}
+            {props.daoHandlers
+              .sort((a, b) => a.localeCompare(b))
+              .map((handler, index: number) => {
+                switch (handler) {
+                  case "SNAPSHOT":
+                    return (
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        key={index}
+                        width="24"
+                        height="24"
+                        src="/assets/Chain/Snapshot/On_Dark.svg"
+                        alt="snapshot proposals"
+                      />
+                    );
+                  case "AAVE_CHAIN":
+                  case "COMPOUND_CHAIN":
+                  case "UNISWAP_CHAIN":
+                  case "MAKER_POLL":
+                  case "MAKER_EXECUTIVE":
+                    return (
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        key={index}
+                        width="24"
+                        height="24"
+                        src="/assets/Chain/Ethereum/On_Dark.svg"
+                        alt="chain proposals"
+                      />
+                    );
+                  case "MAKER_POLL_ARBITRUM":
+                    return (
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        key={index}
+                        width="24"
+                        height="24"
+                        src="/assets/Chain/Arbitrum/On_Dark.svg"
+                        alt="chain proposals"
+                      />
+                    );
+                  default:
+                    return (
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        key={index}
+                        width="24"
+                        height="24"
+                        src="/assets/Chain/Ethereum/On_Dark.svg"
+                        alt="chain proposals"
+                      />
+                    );
+                }
+              })}
           </div>
         </div>
 
