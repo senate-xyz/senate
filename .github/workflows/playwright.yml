@@ -35,7 +35,7 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
 
       - name: Build
-        run: cd packages/database && yarn db:generate && build:db && cd .. && cd .. && yarn build:senate
+        run: cd packages/database && yarn db:generate && yarn build:db && cd .. && cd .. && yarn build:senate
 
       - name: Run Playwright tests
         run: npx playwright test
