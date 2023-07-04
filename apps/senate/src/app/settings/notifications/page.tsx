@@ -1,12 +1,52 @@
-import Discord from "./components/Discord";
 import Telegram from "./components/Telegram";
 import { MagicUser } from "./components/MagicUser";
 import { Email } from "./components/Email";
-import { bulletinEnabled, userEmail } from "./actions";
+import { getMagicUser, userDiscord, userEmail } from "./actions";
+import { Discord } from "./components/Discord";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../../pages/api/auth/[...nextauth]";
+import { PostHog } from "posthog-node";
+
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
+  host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
+  disableGeoip: true,
+});
 
 export default async function Home() {
-  const isBulletinEnabled = await bulletinEnabled();
-  const { email, verified, quorum, empty } = await userEmail();
+  const session = await getServerSession(authOptions());
+
+  const {
+    enabled: emailEnabled,
+    email: emailEmail,
+    verified: emailVerified,
+    quorum: emailQuorum,
+    empty: emailEmpty,
+  } = await userEmail();
+
+  const {
+    enabled: discordEnabled,
+    webhook: discordWebhook,
+    reminders: discordReminders,
+    includeVotes: discordIncludeVotes,
+  } = await userDiscord();
+
+  const { aave: aaveMagicUser, uniswap: uniswapMagicUser } =
+    await getMagicUser();
+
+  const telegramFlag = await posthog.isFeatureEnabled(
+    "telegram-secretary",
+    session?.user?.name ?? ""
+  );
+
+  const discordFlag = await posthog.isFeatureEnabled(
+    "discord-secretary",
+    session?.user?.name ?? ""
+  );
+
+  const magicUserFlag = await posthog.isFeatureEnabled(
+    "magic-user-menu",
+    session?.user?.name ?? ""
+  );
 
   return (
     <div className="flex min-h-screen flex-col gap-10">
@@ -22,19 +62,27 @@ export default async function Home() {
       </div>
 
       <Email
-        isBulletinEnabled={isBulletinEnabled}
-        email={email}
-        verified={verified}
-        quorum={quorum}
-        empty={empty}
+        enabled={emailEnabled}
+        email={emailEmail}
+        verified={emailVerified}
+        quorum={emailQuorum}
+        empty={emailEmpty}
       />
 
-      <Discord />
-      <Telegram />
+      {discordFlag && (
+        <Discord
+          enabled={discordEnabled}
+          webhook={discordWebhook}
+          reminders={discordReminders}
+          includeVotes={discordIncludeVotes}
+        />
+      )}
 
-      <div className="flex flex-row gap-8">
-        <MagicUser />
-      </div>
+      {telegramFlag && <Telegram />}
+
+      {magicUserFlag && (
+        <MagicUser aave={aaveMagicUser} uniswap={uniswapMagicUser} />
+      )}
     </div>
   );
 }

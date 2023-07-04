@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@senate/database";
+import { MagicUserState, prisma } from "@senate/database";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../pages/api/auth/[...nextauth]";
 import { PostHog } from "posthog-node";
@@ -13,10 +13,17 @@ const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   disableGeoip: true,
 });
 
-export const bulletinEnabled = async () => {
+export const userEmail = async () => {
   const session = await getServerSession(authOptions());
 
-  if (!session || !session.user || !session.user.name) return false;
+  if (!session || !session.user || !session.user.name)
+    return {
+      enabled: false,
+      email: "",
+      verified: true,
+      quorum: false,
+      empty: false,
+    };
   const userAddress = session.user.name;
 
   const user = await prisma.user.findFirstOrThrow({
@@ -25,10 +32,22 @@ export const bulletinEnabled = async () => {
         equals: userAddress,
       },
     },
-    select: { emaildailybulletin: true },
+    select: {
+      email: true,
+      verifiedemail: true,
+      emaildailybulletin: true,
+      emailquorumwarning: true,
+      emptydailybulletin: true,
+    },
   });
 
-  return user.emaildailybulletin;
+  return {
+    enabled: user.emaildailybulletin ?? false,
+    email: user.email ?? "",
+    verified: user.verifiedemail,
+    quorum: user.emailquorumwarning ?? false,
+    empty: user.emptydailybulletin ?? false,
+  };
 };
 
 export const setBulletin = async (value: boolean) => {
@@ -56,35 +75,6 @@ export const setBulletin = async (value: boolean) => {
       },
     },
   });
-};
-
-export const userEmail = async () => {
-  const session = await getServerSession(authOptions());
-
-  if (!session || !session.user || !session.user.name)
-    return { email: "", verified: true, quorum: false, empty: false };
-  const userAddress = session.user.name;
-
-  const user = await prisma.user.findFirstOrThrow({
-    where: {
-      address: {
-        equals: userAddress,
-      },
-    },
-    select: {
-      email: true,
-      verifiedemail: true,
-      emailquorumwarning: true,
-      emptydailybulletin: true,
-    },
-  });
-
-  return {
-    email: user.email ?? "",
-    verified: user.verifiedemail,
-    quorum: user.emailquorumwarning ?? false,
-    empty: user.emptydailybulletin ?? false,
-  };
 };
 
 export const setEmailAndEnableBulletin = async (input: string) => {
@@ -257,4 +247,216 @@ export const setEmptyEmails = async (value: boolean) => {
       },
     },
   });
+};
+
+export const userDiscord = async () => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name)
+    return {
+      enabled: false,
+      webhook: "",
+      reminders: false,
+      includeVotes: false,
+    };
+  const userAddress = session.user.name;
+
+  const user = await prisma.user.findFirstOrThrow({
+    where: {
+      address: {
+        equals: userAddress,
+      },
+    },
+    select: {
+      discordnotifications: true,
+      discordwebhook: true,
+      discordreminders: true,
+      discordincludevotes: true,
+    },
+  });
+
+  return {
+    enabled: user.discordnotifications ?? false,
+    webhook: user.discordwebhook ?? "",
+    reminders: user.discordreminders,
+    includeVotes: user.discordincludevotes ?? false,
+  };
+};
+
+export const setDiscord = async (value: boolean) => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name) return;
+  const userAddress = session.user.name;
+
+  const user = await prisma.user.update({
+    where: {
+      address: userAddress,
+    },
+    data: {
+      discordnotifications: value,
+    },
+  });
+
+  posthog.capture({
+    distinctId: user.address,
+    event: value ? "discord_enable" : "discord_disable",
+    properties: {
+      props: {
+        app: "web-backend",
+      },
+    },
+  });
+};
+
+export const setWebhookAndEnableDiscord = async (input: string) => {
+  const session = await getServerSession(authOptions());
+
+  const schema = z.coerce.string().includes("discord");
+
+  try {
+    schema.parse(input);
+  } catch {
+    return;
+  }
+
+  if (!session || !session.user || !session.user.name) return;
+  const userAddress = session.user.name;
+
+  revalidateTag("discord");
+
+  const user = await prisma.user.update({
+    where: {
+      address: userAddress,
+    },
+    data: {
+      discordnotifications: true,
+      discordwebhook: input,
+    },
+  });
+
+  posthog.capture({
+    distinctId: user.address,
+    event: "discord_webhook_sets",
+    properties: {
+      email: input,
+      props: {
+        app: "web-backend",
+      },
+    },
+  });
+
+  posthog.capture({
+    distinctId: user.address,
+    event: "discord_enable",
+    properties: {
+      email: input,
+      props: {
+        app: "web-backend",
+      },
+    },
+  });
+};
+
+export const setDiscordReminders = async (value: boolean) => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name) return;
+  const userAddress = session.user.name;
+
+  const user = await prisma.user.update({
+    where: {
+      address: userAddress,
+    },
+    data: { discordreminders: value },
+  });
+
+  posthog.capture({
+    distinctId: user.address,
+    event: value ? "discord_reminders_enable" : "discord_reminders_disable",
+    properties: {
+      props: {
+        app: "web-backend",
+      },
+    },
+  });
+};
+
+export const setDiscordIncludeVotes = async (value: boolean) => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name) return;
+  const userAddress = session.user.name;
+
+  const user = await prisma.user.update({
+    where: {
+      address: userAddress,
+    },
+    data: { discordincludevotes: value },
+  });
+
+  posthog.capture({
+    distinctId: user.address,
+    event: value ? "discord_votes_enable" : "discord_votes_disable",
+    properties: {
+      props: {
+        app: "web-backend",
+      },
+    },
+  });
+};
+
+export const setAaveMagicUser = async (value: boolean) => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name) return;
+  const userAddress = session.user.name;
+
+  await prisma.user.update({
+    where: {
+      address: userAddress,
+    },
+    data: {
+      isaaveuser: value ? MagicUserState.ENABLED : MagicUserState.DISABLED,
+    },
+  });
+};
+
+export const setUniswapMagicUser = async (value: boolean) => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name) return;
+  const userAddress = session.user.name;
+
+  await prisma.user.update({
+    where: {
+      address: userAddress,
+    },
+    data: {
+      isuniswapuser: value ? MagicUserState.ENABLED : MagicUserState.DISABLED,
+    },
+  });
+};
+
+export const getMagicUser = async () => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name)
+    return { aave: false, uniswap: false };
+  const userAddress = session.user.name;
+
+  const user = await prisma.user.findFirstOrThrow({
+    where: {
+      address: userAddress,
+    },
+    select: {
+      isaaveuser: true,
+      isuniswapuser: true,
+    },
+  });
+
+  return {
+    aave: user.isaaveuser == MagicUserState.ENABLED ? true : false,
+    uniswap: user.isuniswapuser == MagicUserState.ENABLED ? true : false,
+  };
 };

@@ -1,78 +1,67 @@
 "use client";
 
-import { useFeatureFlagEnabled } from "posthog-js/react";
-import { trpc } from "../../../../server/trpcClient";
+import { useState, useTransition } from "react";
+import { setAaveMagicUser, setUniswapMagicUser } from "../actions";
 
-export const MagicUser = () => {
-  const magicUserMenu = useFeatureFlagEnabled("magic-user-menu");
-
+export const MagicUser = (props: { aave: boolean; uniswap: boolean }) => {
   return (
-    <div>
-      {magicUserMenu && (
-        <div>
-          <IsAaveUser />
-          <IsUniswapUser />
-        </div>
-      )}
+    <div className="flex max-w-[800px] flex-col gap-4 bg-black p-4">
+      <IsAaveUser enabled={props.aave} />
+      <IsUniswapUser enabled={props.uniswap} />
     </div>
   );
 };
 
-const IsUniswapUser = () => {
-  const user = trpc.accountSettings.getUser.useQuery();
+const IsUniswapUser = ({ enabled }: { enabled: boolean }) => {
+  const [isEnabled, setIsEnabled] = useState(enabled);
+  const [, startTransition] = useTransition();
 
-  const disableUniswapUser =
-    trpc.accountSettings.disableUniswapUser.useMutation();
-
-  if (user.data?.isuniswapuser == "ENABLED")
-    return (
-      <div className="flex flex-col gap-2">
-        <div className="text-[18px] font-light text-white">
-          Uniswap magic user
-        </div>
-
-        <div className="flex flex-row items-center gap-4">
-          <label className="relative inline-flex cursor-pointer items-center bg-gray-400">
-            <input
-              type="checkbox"
-              checked={user.data?.isuniswapuser == "ENABLED"}
-              onChange={() => {
-                disableUniswapUser.mutate();
-              }}
-              className="peer sr-only"
-            />
-            <div className="bg-uniswap-gradient peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5  after:w-5 after:bg-black after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
-          </label>
-        </div>
+  return (
+    <div className="flex flex-row justify-between">
+      <div className="text-[18px] font-light text-white">
+        Uniswap magic user
       </div>
-    );
-  else return <></>;
+
+      <div className="flex flex-row items-center">
+        <label className="relative inline-flex cursor-pointer items-center bg-gray-400">
+          <input
+            type="checkbox"
+            checked={isEnabled}
+            onChange={(e) => {
+              setIsEnabled(e.target.checked);
+              startTransition(() => setUniswapMagicUser(e.target.checked));
+            }}
+            className="peer sr-only"
+          />
+          <div className="bg-uniswap-gradient peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5  after:w-5 after:bg-black after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+        </label>
+      </div>
+    </div>
+  );
 };
 
-const IsAaveUser = () => {
-  const user = trpc.accountSettings.getUser.useQuery();
+const IsAaveUser = ({ enabled }: { enabled: boolean }) => {
+  const [isEnabled, setIsEnabled] = useState(enabled);
+  const [, startTransition] = useTransition();
 
-  const disableAaveUser = trpc.accountSettings.disableAaveUser.useMutation();
+  return (
+    <div className="flex flex-row justify-between">
+      <div className="text-[18px] font-light text-white">Aave magic user</div>
 
-  if (user.data?.isaaveuser == "ENABLED")
-    return (
-      <div className="flex flex-col gap-2">
-        <div className="text-[18px] font-light text-white">Aave magic user</div>
-
-        <div className="flex flex-row items-center gap-4">
-          <label className="relative inline-flex cursor-pointer items-center bg-gray-400">
-            <input
-              type="checkbox"
-              checked={user.data?.isaaveuser == "ENABLED"}
-              onChange={() => {
-                disableAaveUser.mutate();
-              }}
-              className="peer sr-only"
-            />
-            <div className="bg-aave-gradient peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5  after:w-5 after:bg-black after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
-          </label>
-        </div>
+      <div className="flex flex-row items-center">
+        <label className="relative inline-flex cursor-pointer items-center bg-gray-400">
+          <input
+            type="checkbox"
+            checked={isEnabled}
+            onChange={(e) => {
+              setIsEnabled(e.target.checked);
+              startTransition(() => setAaveMagicUser(e.target.checked));
+            }}
+            className="peer sr-only"
+          />
+          <div className="bg-aave-gradient peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5  after:w-5 after:bg-black after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-700" />
+        </label>
       </div>
-    );
-  else return <></>;
+    </div>
+  );
 };

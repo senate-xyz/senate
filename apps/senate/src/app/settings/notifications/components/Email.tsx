@@ -12,15 +12,13 @@ import {
 } from "../actions";
 
 export const Email = (props: {
-  isBulletinEnabled: boolean;
+  enabled: boolean;
   email: string;
   verified: boolean;
   quorum: boolean;
   empty: boolean;
 }) => {
-  const [bulletinEnabled, setBulletinEnabled] = useState(
-    props.isBulletinEnabled
-  );
+  const [bulletinEnabled, setBulletinEnabled] = useState(props.enabled);
   const [, startTransition] = useTransition();
 
   return (
@@ -147,8 +145,8 @@ const Enabled = (props: {
         </div>
       )}
 
-      {extendedMenu && <EmptySettings empty={props.empty} />}
       <QuorumSetting quorum={props.quorum} />
+      {extendedMenu && <EmptySettings empty={props.empty} />}
     </div>
   );
 };
@@ -183,7 +181,7 @@ const EmptySettings = ({ empty }: { empty: boolean }) => {
   return (
     <div className="flex max-w-[382px] flex-row items-center justify-between gap-4">
       <div className="font-[18px] leading-[23px] text-white">
-        Get quorum alerts
+        Receive empty emails
       </div>
       <label className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500">
         <input
