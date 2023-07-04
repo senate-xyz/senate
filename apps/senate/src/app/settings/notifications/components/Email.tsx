@@ -145,8 +145,12 @@ const Enabled = (props: {
         </div>
       )}
 
-      <QuorumSetting quorum={props.quorum} />
-      {extendedMenu && <EmptySettings empty={props.empty} />}
+      {extendedMenu && (
+        <div className="flex flex-col gap-2">
+          <QuorumSetting quorum={props.quorum} />
+          <EmptySettings empty={props.empty} />
+        </div>
+      )}
     </div>
   );
 };
