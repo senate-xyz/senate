@@ -8,11 +8,13 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build:db": "tsup",
+    "build:db:node": "tsup",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "tsx src/seed.ts",
     "db:generate": "prisma generate",
+    "db:generate:node": "prisma generate",
     "prebuild": "npm run db:generate",
     "predev": "npm run db:generate",
     "studio": "prisma studio",

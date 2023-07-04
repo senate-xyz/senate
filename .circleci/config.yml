@@ -1,0 +1,25 @@
+version: 2.1
+jobs:
+  run-test:
+    docker:
+      - image: mcr.microsoft.com/playwright:v1.23.1-focal
+    # Steps to the job
+    steps:
+      - checkout
+      - run: npm i -D yarn
+      - run: npm i -D @playwright/test
+      - run: npx playwright install
+      - run: npx playwright install chrome
+      - run: yarn db:generate:node
+      - run: yarn build:db:node
+      - run: yarn build:senate
+      - run:
+          name: Run test
+          command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml npx playwright test --reporter=junit --project=chromium
+      - store_test_results:
+          path: results.xml
+# Invoke jobs via workflows
+workflows:
+  run-test-workflow:
+    jobs:
+      - run-test
