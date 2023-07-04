@@ -1,5 +1,9 @@
 version: 2.1
 
+macos:
+  xcode: 14.2.0
+resource_class: macos.m1.large.gen1
+
 orbs:
   node: circleci/node@5.1.0
 
@@ -13,10 +17,9 @@ jobs:
           pkg-manager: yarn
           cache-version: v1
       - run:
-          name: Install and build dependencies
+          name: Install and build
           command: |
-            npx playwright install
-            npx playwright install chrome
+            npx playwright install --with-deps chromium
             yarn db:generate:node
             yarn build:db:node
             yarn build:senate
