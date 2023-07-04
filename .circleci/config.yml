@@ -22,7 +22,7 @@ jobs:
             yarn build:senate
       - run:
           name: Run test
-          command: npx playwright test --reporter=html --project=chromium
+          command: npx playwright test
       - store_test_results:
           path: playwright-report/index.html
 
