@@ -35,5 +35,15 @@ const config = {
       },
     ];
   },
+  webpack(config) {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      tls: false,
+      net: false,
+    };
+
+    return config;
+  },
 };
 export default config;

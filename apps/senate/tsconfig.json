@@ -6,10 +6,10 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs",
-    "tests/e2e/support.ts",
-    ".next/types/**/*.ts",
     ".eslintrc.cjs",
-    "prettier.config.cjs"
+    "prettier.config.cjs",
+    ".next/types/**/*.ts",
+    "playwright.config.ts"
   ],
   "exclude": ["node_modules"],
   "compilerOptions": {
