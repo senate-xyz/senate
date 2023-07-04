@@ -39,4 +39,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-storybook-static
+tests/screenshots
+tests/videos
