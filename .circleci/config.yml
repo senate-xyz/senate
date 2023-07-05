@@ -43,13 +43,13 @@ jobs:
           command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit
 
       - discord/status:
-          failure_message: ":red_circle: ${CIRCLE_BRANCH} build **${CIRCLE_JOB}** failed."
-          success_message: ":tada: ${CIRCLE_BRANCH} build **${CIRCLE_JOB}** passed all tests."
+          failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
+          success_message: ":tada: ${CIRCLE_BRANCH} passed all tests."
           webhook: "${DISCORD_STATUS_WEBHOOK}"
           only_for_branches: "staging"
 
       - discord/status:
-          failure_message: ":red_circle: ${CIRCLE_BRANCH} build **${CIRCLE_JOB}** failed."
+          failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
           fail_only: true
           webhook: "${DISCORD_STATUS_WEBHOOK}"
           only_for_branches: "dev"
