@@ -4,7 +4,6 @@ jobs:
   run-test:
     docker:
       - image: mcr.microsoft.com/playwright
-        command: docker run --privileged
     steps:
       - checkout
       - run:
@@ -16,10 +15,7 @@ jobs:
             yarn db:generate:node
             yarn build:db:node
             yarn build:senate
-      - save_cache:
-          key: dependency-cache-{{ checksum "yarn.lock" }}
-          paths:
-            - .apps/senate/.next/cache
+
       - run:
           name: Run test
           command: DEBUG=pw:browser xvfb-run npx playwright test

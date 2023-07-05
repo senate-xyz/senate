@@ -1,6 +1,6 @@
-import { test, expect } from "../fixtures";
-import * as metamask from "@synthetixio/synpress/commands/metamask";
-//import { test } from "@playwright/test";
+//import { test, expect } from "../fixtures";
+//import * as metamask from "@synthetixio/synpress/commands/metamask";
+import { test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
