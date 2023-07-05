@@ -2,11 +2,12 @@ import { test as base, chromium, type BrowserContext } from "@playwright/test";
 import { initialSetup } from "@synthetixio/synpress/commands/metamask";
 import { prepareMetamask } from "@synthetixio/synpress/helpers";
 import { prisma } from "@senate/database";
-
+import dotenv from "dotenv";
 export const test = base.extend<{
   context: BrowserContext;
 }>({
   context: async ({}, use) => {
+    dotenv.config();
     // required for synpress
     global.expect = expect;
     // download metamask
