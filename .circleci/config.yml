@@ -37,8 +37,8 @@ jobs:
             yarn db:generate:node
             yarn build:db:node
             yarn build:senate
-      
-       run:
+
+      - run:
           name: Run frontend
           command: |
             yarn dev:senate
