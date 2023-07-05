@@ -20,10 +20,10 @@ export default defineConfig({
 
   webServer: [
     {
-      command: "yarn dev:senate",
+      command: "yarn start:senate",
       url: "http://localhost:3000",
       timeout: 60000,
-      reuseExistingServer: true,
+      reuseExistingServer: !process.env.CI,
     },
   ],
 
