@@ -113,7 +113,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                         "https://www.senatelabs.xyz/assets/Discord/active-no-vote2x.png"
                     }
                 } else {
-                    "https://www.senatelabs.xyz/assets/Discord/placeholder-vote2x.png"
+                    "https://www.senatelabs.xyz/assets/Discord/placeholder2x.png"
                 };
 
                 let message = webhook
