@@ -12,8 +12,8 @@ export const test = base.extend<{
     );
     // prepare browser args
     const browserArgs = [
-      `--disable-extensions-except=${metamaskPath}`,
-      `--load-extension=${metamaskPath}`,
+      // `--disable-extensions-except=${metamaskPath}`,
+      // `--load-extension=${metamaskPath}`,
       "--remote-debugging-port=9222",
       "--disable-dev-shm-usage",
       "--ipc=host",
