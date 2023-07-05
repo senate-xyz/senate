@@ -419,11 +419,11 @@ export default function Item(props: {
                               alt="off-chain"
                             />
                           </div>
-                          <div className="truncate text-[21px] leading-[26px] text-white">
+                          <div className="truncate text-[21px] leading-[26px] text-white w-[30vw]">
                             {props.proposal.highestScoreChoice}
                           </div>
                         </div>
-                        <div className="mt-1 bg-[#262626]">
+                        <div className="mt-1 bg-[#262626] w-[50vw]">
                           <div
                             style={{
                               width: `${(
@@ -468,7 +468,7 @@ export default function Item(props: {
               {props.proposal.state == "HIDDEN" && (
                 <div>
                   <div className="flex flex-row gap-2">
-                    <div className="flex h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]">
+                    <div className="flex h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9] ">
                       <Image
                         loading="eager"
                         priority={true}
@@ -483,7 +483,7 @@ export default function Item(props: {
                       Hidden Results
                     </div>
                   </div>
-                  <div className="mt-1 bg-[#262626]">
+                  <div className="mt-1 bg-[#262626] w-[50vw]">
                     <div
                       style={{
                         width: "100%",
