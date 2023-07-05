@@ -1,59 +1,29 @@
 version: 2.1
-orbs:
-  node: circleci/node@5.0.3
-
-executors:
-  macos-executor:
-    macos:
-      xcode: 13.4.1
-
-commands:
-  deps-command:
-    steps:
-      - checkout
-      - node/install:
-          install-yarn: true
-          node-version: "16"
-      - run:
-          name: Install Chrome
-          command: brew install google-chrome
-          no_output_timeout: 30m
-      - run:
-          name: Install deps
-          command: yarn
-          no_output_timeout: 30m
-
-  build-command:
-    steps:
-      - run:
-          name: Build
-          command: yarn build
-          no_output_timeout: 30m
-
-  test-command:
-    steps:
-      - run:
-          name: Test
-          command: yarn test:web
-          no_output_timeout: 30m
-
-  store-results-command:
-    steps:
-      - store_artifacts:
-          path: /Users/distiller/project/apps/web/tests/e2e/screenshots/
-      - store_artifacts:
-          path: /Users/distiller/project/apps/web/tests/e2e/videos/
 
 jobs:
-  synpress-e2e-job:
-    executor: macos-executor
+  run-test:
+    docker:
+      - image: mcr.microsoft.com/playwright
     steps:
-      - deps-command
-      - build-command
-      - test-command
-      - store-results-command
+      - checkout
+      - run:
+          name: Install and build
+          command: |
+            npm install -g yarn
+            yarn
+            npx playwright install --with-deps chromium
+            yarn db:generate:node
+            yarn build:db:node
+            yarn build:senate
+
+      - run:
+          name: Run test
+          command: DEBUG=pw:browser xvfb-run npx playwright test
+
+      - store_test_results:
+          path: test-results
 
 workflows:
-  synpress-e2e:
+  run-test-workflow:
     jobs:
-      - synpress-e2e-job
+      - run-test

@@ -21,6 +21,7 @@
     "build:discord-secretary": "turbo run build:discord-secretary",
     "build:telegram-secretary": "turbo run build:telegram-secretary",
     "build:db": "turbo run build:db",
+    "build:db:node": "turbo run build:db:node",
     "start": "turbo run start",
     "start:senate": "turbo run start:senate",
     "start:shortie": "turbo run start:shortie",
@@ -31,6 +32,7 @@
     "db:push": "turbo run db:push",
     "db:seed": "turbo run db:seed",
     "db:generate": "turbo run db:generate",
+    "db:generate:node": "turbo run db:generate:node",
     "clean": "turbo run clean && rimraf node_modules yarn-error.log",
     "prettier": "turbo run prettier",
     "prettier:fix": "turbo run prettier:fix",
@@ -39,6 +41,9 @@
     "update": "rustup update && ncu -u && turbo run update && yarn"
   },
   "devDependencies": {
+    "@playwright/test": "^1.35.1",
+    "@synthetixio/synpress": "^3.7.1",
+    "dotenv": "^16.3.1",
     "prettier": "^2.8.8",
     "tsx": "^3.12.7",
     "turbo": "^1.10.7"
