@@ -44,7 +44,7 @@ jobs:
 
       - run:
           name: Run Playwright tests
-          command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit
+          command: DEBUG=pw:browser,pw:api PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit
       - store_artifacts:
           path: results.xml
 
