@@ -7,6 +7,7 @@ export const test = base.extend<{
 }>({
   context: async ({}, use) => {
     // required for synpress
+    //@ts-ignore
     global.expect = expect;
     // download metamask
     const metamaskPath = await prepareMetamask(
@@ -17,23 +18,21 @@ export const test = base.extend<{
       `--disable-extensions-except=${metamaskPath}`,
       `--load-extension=${metamaskPath}`,
       "--remote-debugging-port=9222",
-      "--disable-dev-shm-usage",
-      "--ipc=host",
-      "--single-process",
-      "--disable-gpu",
     ];
-
-    console.log(browserArgs);
+    if (process.env.CI) {
+      browserArgs.push("--disable-gpu");
+    }
+    if (process.env.HEADLESS_MODE) {
+      browserArgs.push("--headless=new");
+    }
     // launch browser
-    const context = await chromium.launchPersistentContext(
-      "/tmp/test-user-data",
-      {
-        headless: false,
-        args: browserArgs,
-      }
-    );
+    const context = await chromium.launchPersistentContext("", {
+      headless: false,
+      args: browserArgs,
+    });
+    context.setDefaultTimeout(30000);
     // wait for metamask
-    await context.pages()[0].waitForTimeout(process.env.CI ? 10000 : 2000);
+    await context.pages()[0].waitForTimeout(3000);
     // setup metamask
     await initialSetup(chromium, {
       secretWordsOrPrivateKey:
