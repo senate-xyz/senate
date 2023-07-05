@@ -165,7 +165,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 "https://www.senatelabs.xyz/assets/Discord/past-no-vote2x.png"
                             }
                         } else {
-                            "https://www.senatelabs.xyz/assets/Discord/placeholder-vote2x.png"
+                            "https://www.senatelabs.xyz/assets/Discord/placeholder2x.png"
                         };
 
                         webhook
