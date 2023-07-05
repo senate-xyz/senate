@@ -44,7 +44,7 @@ jobs:
           NETWORK_NAME: ${{ secrets.NETWORK_NAME }}
 
       - name: Run Playwright tests
-        run: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit
+        run: DEBUG=synpress:*,pw:browser,pw:api,pw:install PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
