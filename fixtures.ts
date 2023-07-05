@@ -1,6 +1,7 @@
 import { test as base, chromium, type BrowserContext } from "@playwright/test";
 import { initialSetup } from "@synthetixio/synpress/commands/metamask";
 import { prepareMetamask } from "@synthetixio/synpress/helpers";
+import { prisma } from "@senate/database";
 
 export const test = base.extend<{
   context: BrowserContext;
@@ -42,6 +43,30 @@ export const test = base.extend<{
     });
     await use(context);
     await context.close();
+    await deleteTestUser();
   },
 });
+
+const deleteTestUser = async () => {
+  await prisma.subscription.deleteMany({
+    where: {
+      user: {
+        address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+      },
+    },
+  });
+
+  await prisma.notification.deleteMany({
+    where: {
+      user: {
+        address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+      },
+    },
+  });
+
+  await prisma.user.deleteMany({
+    where: { address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266" },
+  });
+};
+
 export const expect = test.expect;
