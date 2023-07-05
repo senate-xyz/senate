@@ -24,25 +24,6 @@
 
     <mj-style>
       @media only screen and (min-width: 480px) {
-        .countdown-width {
-          min-width: 180px;
-          max-width: 180px;
-          max-height: 50px;
-        }
-      }
-    </mj-style>
-    <mj-style>
-      @media only screen and (max-width: 479px) {
-        .countdown-width {
-          min-width: 100px;
-          max-width: 100px;
-          max-height: 50px;
-        }
-      }
-    </mj-style>
-
-    <mj-style>
-      @media only screen and (min-width: 480px) {
         .proposal-name {
           font-size:
             15px;
@@ -69,7 +50,6 @@
     </mj-style>
   </mj-head>
   <mj-body background-color="white">
-
     <mj-raw>{{#env}}</mj-raw>
     <mj-section padding="8px 0px" background-color="red">
       <mj-column>
@@ -99,8 +79,9 @@
         <mj-table cellpadding="4px" padding="0">
           <tr style="border-bottom: 1px solid #ecedee">
             <th width="50px" style="text-align: start">Org</th>
-            <th width="30%" style="text-align: start">Proposal</th>
+            <th style="text-align: start">Proposal</th>
             <th style="
+              max-width:180px;
               text-align: center;
               vertical-align: middle;
               ">
@@ -111,12 +92,12 @@
                     <b style="margin: 0px 0px; font-size: 13px; line-height: 22px;">Ending in</b>
                   </td>
                   <td>
-                    <img width="18px" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
+                    <img width="18" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
                   </td>
               </table>
 
             </th>
-            <th style="text-align: center">Vote Status</th>
+            <th style="max-width:160px; text-align: center">Vote Status</th>
           </tr>
 
           <mj-raw>{{#each . }}</mj-raw>
@@ -125,12 +106,12 @@
               <table cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
-                    <img style="vertical-align:bottom;" width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+                    <img style="vertical-align:bottom;" width="48" src="{{daoLogoUrl}}" alt="DAO Icon" />
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
+                    <img width="48" src="{{chainLogoUrl}}" alt="Chain Icon" />
                   </td>
                 </tr>
               </table>
@@ -142,11 +123,12 @@
             <td style="text-align: center">
               <table style="text-align:center;">
                 <tr>
-                  <td> <img class="countdown-width" src="{{countdownUrl}}" alt="Countdown" />
+                  <td align="center">
+                    <img style="width:30vw !important; max-width:180px;" src="{{countdownUrl}}" alt="Countdown" />
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td style="font-size: 11px;">
                     {{countdownString}}
                   </td>
                 </tr>
@@ -156,11 +138,9 @@
             <td style="
                 text-align: center;
               ">
-              <img style="width: 32px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
+              <img width="82" src="{{voteStatusIconUrl}}" alt="Vote Status" />
               <br />
-              <mj-text style="font-size: 11px; font-weight: 700">
-                <mj-raw>{{voteStatus}}</mj-raw>
-              </mj-text>
+
             </td>
           </tr>
           <mj-raw>{{/each}}</mj-raw>
@@ -198,8 +178,9 @@
         <mj-table cellpadding="4px" padding="0">
           <tr style="border-bottom: 1px solid #ecedee">
             <th width="50px" style="text-align: start">Org</th>
-            <th width="30%" style="text-align: start">Proposal</th>
+            <th style="text-align: start">Proposal</th>
             <th style="
+              max-width:180px;
               text-align: center;
               vertical-align: middle;
               ">
@@ -209,11 +190,11 @@
                     <b style="margin: 0px 0px; font-size: 13px; line-height: 22px;">Ending in</b>
                   </td>
                   <td>
-                    <img width="18px" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
+                    <img width="18" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
                   </td>
               </table>
             </th>
-            <th style="text-align: center">Vote Status</th>
+            <th style="max-width:160px; text-align: center">Vote Status</th>
           </tr>
 
           <mj-raw>{{#each . }}</mj-raw>
@@ -222,12 +203,12 @@
               <table cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
-                    <img style="vertical-align:bottom;" width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+                    <img style="vertical-align:bottom;" width="48" src="{{daoLogoUrl}}" alt="DAO Icon" />
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
+                    <img width="48" src="{{chainLogoUrl}}" alt="Chain Icon" />
                   </td>
                 </tr>
               </table>
@@ -239,11 +220,12 @@
             <td style="text-align: center">
               <table style="text-align:center;">
                 <tr>
-                  <td> <img class="countdown-width" src="{{countdownUrl}}" alt="Countdown" />
+                  <td align="center">
+                    <img style="width:30vw !important; max-width:180px;" src="{{countdownUrl}}" alt="Countdown" />
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td style="font-size: 11px;">
                     {{countdownString}}
                   </td>
                 </tr>
@@ -253,11 +235,9 @@
             <td style="
                 text-align: center;
               ">
-              <img style="width: 32px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
+              <img width="82" src="{{voteStatusIconUrl}}" alt="Vote Status" />
               <br />
-              <mj-text style="font-size: 11px; font-weight: 700">
-                <mj-raw>{{voteStatus}}</mj-raw>
-              </mj-text>
+
             </td>
           </tr>
           <mj-raw>{{/each}}</mj-raw>
@@ -295,8 +275,9 @@
         <mj-table cellpadding="4px" padding="0">
           <tr style="border-bottom: 1px solid #ecedee">
             <th width="50px" style="text-align: start">Org</th>
-            <th width="40%" style="text-align: start">Proposal</th>
+            <th style="text-align: start">Proposal</th>
             <th style="
+              max-width:180px;
               text-align: center;
               vertical-align: middle;
               ">
@@ -306,11 +287,11 @@
                     <b style="margin: 0px 0px; font-size: 13px; line-height: 22px;">Ended on</b>
                   </td>
                   <td>
-                    <img width="18px" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
+                    <img width="18" src="https://www.senatelabs.xyz/assets/Emails/chevron.png" alt="Ending Icon" />
                   </td>
               </table>
             </th>
-            <th style="text-align: center">Vote Status</th>
+            <th style="max-width:160px; text-align: center">Vote Status</th>
           </tr>
 
           <mj-raw>{{#each . }}</mj-raw>
@@ -319,12 +300,12 @@
               <table cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
-                    <img style="vertical-align:bottom;" width="48px" src="{{daoLogoUrl}}" alt="DAO Icon" />
+                    <img style="vertical-align:bottom;" width="48" src="{{daoLogoUrl}}" alt="DAO Icon" />
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <img width="48px" src="{{chainLogoUrl}}" alt="Chain Icon" />
+                    <img width="48" src="{{chainLogoUrl}}" alt="Chain Icon" />
                   </td>
                 </tr>
               </table>
@@ -341,9 +322,7 @@
               <table cellpadding="0px" padding="0px">
                 <tr style="align-items: center;" class="result-width">
                   <td>
-                    <img style="
-                            width: 22px;
-                            height: 22px;
+                    <img width="22" height="22" style="
                             background-color: #ededed;
                             padding: 2px;
                           " src="https://www.senatelabs.xyz/assets/Emails/hidden.png" />
@@ -401,20 +380,18 @@
               <table cellpadding="0px" padding="0px">
                 <tr style="align-items: center;" class="result-width">
                   <td>
-                    <img style="
-                            width: 22px;
-                            height: 22px;
+                    <img width="22" heigth="22" style="
                             background-color: #ededed;
                             padding: 2px;
                           " src="https://www.senatelabs.xyz/assets/Emails/check.png" />
                   </td>
-                  <td>
+                  <td align="start">
                     <p style="
                             font-size: 18px;
                             font-weight: 600;
                             font-family: sans-serif;
                             padding-left: 3px;
-                             margin: 0px;
+                            margin: 0px;
                           ">
                       {{choiceName}}
                     </p>
@@ -459,9 +436,7 @@
               <table cellpadding="0px" padding="0px">
                 <tr style="align-items: center;" class="result-width">
                   <td>
-                    <img style="
-                            width: 22px;
-                            height: 22px;
+                    <img width="22" heigth="22" style="
                             background-color: #ededed;
                             padding: 2px;
                           " src="https://www.senatelabs.xyz/assets/Emails/cross.png" />
@@ -487,14 +462,12 @@
               <table cellpadding="0px" padding="0px">
                 <tr style="align-items: center;" class="result-width">
                   <td>
-                    <img style="
-                            width: 22px;
-                            height: 22px;
+                    <img width="22" heigth="22" style="
                             background-color: #ededed;
                             padding: 2px;
                           " src="https://www.senatelabs.xyz/assets/Emails/check.png" />
                   </td>
-                  <td>
+                  <td align="start">
                     <p style="
                             font-size: 18px;
                             font-weight: 600;
@@ -528,11 +501,9 @@
             <td style="
                 text-align: center;
               ">
-              <img style="width: 32px" src="{{voteStatusIconUrl}}" alt="Vote Status" />
+              <img width="82" src="{{voteStatusIconUrl}}" alt="Vote Status" />
               <br />
-              <mj-text style="font-size: 11px; font-weight: 700">
-                <mj-raw>{{voteStatus}}</mj-raw>
-              </mj-text>
+
             </td>
           </tr>
           <mj-raw>{{/each}}</mj-raw>

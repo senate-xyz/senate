@@ -107,8 +107,8 @@ export const Header = (props: { title: string }) => {
               </div>
 
               <Menu.Item>
-                {({ active }) => (
-                  <div className="relative flex flex-row items-center pl-6 pt-8">
+                <div className="relative flex flex-row items-center pl-6 pt-8">
+                  <a className={`flex w-full flex-row`} href="/orgs">
                     {pathname?.includes("orgs") ? (
                       <Image
                         loading="eager"
@@ -128,16 +128,17 @@ export const Header = (props: { title: string }) => {
                         alt={"Senate logo"}
                       />
                     )}
-                    <a className={`${active ? "w-full" : ""}`} href="/orgs">
-                      Orgs
-                    </a>
-                  </div>
-                )}
+                    Orgs
+                  </a>
+                </div>
               </Menu.Item>
 
               <Menu.Item>
-                {({ active }) => (
-                  <div className="relative flex flex-row items-center pl-6 pt-8">
+                <div className="relative flex flex-row items-center pl-6 pt-8">
+                  <a
+                    className={`flex w-full flex-row`}
+                    href="/proposals/active"
+                  >
                     {pathname?.includes("proposals") ? (
                       <Image
                         loading="eager"
@@ -157,19 +158,17 @@ export const Header = (props: { title: string }) => {
                         alt={"Senate logo"}
                       />
                     )}
-                    <a
-                      className={`${active ? "w-full" : ""}`}
-                      href="/proposals/active"
-                    >
-                      Proposals
-                    </a>
-                  </div>
-                )}
+                    Proposals
+                  </a>
+                </div>
               </Menu.Item>
 
               <Menu.Item>
-                {({ active }) => (
-                  <div className="relative flex flex-row items-center pl-6 pt-8">
+                <div className="relative flex flex-row items-center pl-6 pt-8">
+                  <a
+                    className={`flex w-full flex-row`}
+                    href="/settings/account"
+                  >
                     {pathname?.includes("settings") ? (
                       <Image
                         loading="eager"
@@ -189,14 +188,9 @@ export const Header = (props: { title: string }) => {
                         alt={"Senate logo"}
                       />
                     )}
-                    <a
-                      className={`${active ? "w-full" : ""}`}
-                      href="/settings/account"
-                    >
-                      Settings
-                    </a>
-                  </div>
-                )}
+                    Settings
+                  </a>
+                </div>
               </Menu.Item>
 
               <div className="flex w-full justify-center pt-8 text-[18px] font-normal">

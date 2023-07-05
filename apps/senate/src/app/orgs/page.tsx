@@ -1,18 +1,14 @@
-import { type Metadata } from "next";
 import SubscribedDAOs from "./subscribedDAOs/page";
 import UnsubscribedDAOs from "./unsubscribedDAOs/page";
+import { getSubscriptions } from "./actions";
 
-export const metadata: Metadata = {
-  title: "Senate - Orgs",
-  icons: "/assets/Senate_Logo/64/Black.svg",
-};
-
-// eslint-disable-next-line @typescript-eslint/require-await
 export default async function Home() {
+  const { subscribed, unsubscribed } = await getSubscriptions();
+
   return (
     <main className="flex w-full flex-col">
-      <SubscribedDAOs />
-      <UnsubscribedDAOs />
+      <SubscribedDAOs subscribed={subscribed} />
+      <UnsubscribedDAOs unsubscribed={unsubscribed} />
     </main>
   );
 }

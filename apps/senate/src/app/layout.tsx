@@ -4,6 +4,12 @@ import "@rainbow-me/rainbowkit/styles.css";
 import "../styles/globals.css";
 import { NavBar } from "./components/csr/NavBar";
 import RootProvider from "./providers";
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Senate ",
+  icons: "/assets/Senate_Logo/64/Black.svg",
+};
 
 export default function RootLayout({
   children,
@@ -12,14 +18,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="bg-[#1E1B20]">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=DM+Mono&display=swap"
-          rel="stylesheet"
-        ></link>
-      </head>
       <body>
         <RootProvider>
           <div className="h-full min-h-screen w-full">

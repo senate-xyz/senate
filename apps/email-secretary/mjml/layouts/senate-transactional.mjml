@@ -26,8 +26,7 @@
       }
     </mj-style>
   </mj-head>
-  <mj-body width="720px" background-color="white">
-    <mj-section css-class="desktop-version" />
+  <mj-body background-color="white">
     <mj-section padding="15px 0" background-color="black" css-class="mobile-version">
       <mj-group>
         <mj-column vertical-align="middle" width="20%">
@@ -39,11 +38,12 @@
         </mj-column>
       </mj-group>
     </mj-section>
+
     <mj-section css-class="desktop-version">
       <mj-column width="64px" background-color="black">
         <mj-image padding="0 0 0 0" width="64px" height="64px" src="https://www.senatelabs.xyz/assets/Senate_Logo/64/White.png"></mj-image>
       </mj-column>
-      <mj-column width="80%">
+      <mj-column width="536px">
         <mj-text padding="5px 0px 0px 10px" font-size="36px" font-family="sans-serif" font-weight="600">Senate</mj-text>
         <mj-text padding="5px 0px 0px 10px" font-size="13px" color="#555555" font-family="sans-serif">{{todaysDate}}</mj-text>
       </mj-column>
@@ -51,8 +51,8 @@
 
     <mj-raw> {{{ @content }}} </mj-raw>
 
-    <mj-section full-width="full-width">
-      <mj-column background-color="black" width="680px" padding="30px 30px 30px 30px">
+    <mj-section>
+      <mj-column background-color="black" padding="30px 30px 30px 30px">
         <mj-text align="center" font-size="15px" font-family="sans-serif" color="white">To keep up with all proposals from the organisations you are interested in,
           check out the Senate app, where you can follow the most important
           organisations, get notified when they launch new proposals and much

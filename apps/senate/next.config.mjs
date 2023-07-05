@@ -1,7 +1,7 @@
 /** @type {import("next").NextConfig} */
 const config = {
   experimental: {
-    appDir: true,
+    serverActions: true,
   },
   reactStrictMode: true,
   swcMinify: true,
@@ -26,17 +26,24 @@ const config = {
       },
     ];
   },
+
   async rewrites() {
     return [
       {
         source: "/ingest/:path*",
-        destination: "https://app.posthog.com/:path*",
-      },
-      {
-        source: "/login/:path*",
-        destination: "https://app.posthog.com/login/",
+        destination: "https://app.posthog.com/:path*/",
       },
     ];
+  },
+  webpack(config) {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      tls: false,
+      net: false,
+    };
+
+    return config;
   },
 };
 export default config;

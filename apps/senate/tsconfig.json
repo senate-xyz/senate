@@ -6,13 +6,14 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs",
-    "tests/e2e/support.ts",
+    "tests/e2e/support.js",
     ".next/types/**/*.ts",
     ".eslintrc.cjs",
     "prettier.config.cjs"
   ],
   "exclude": ["node_modules"],
   "compilerOptions": {
+    "types": ["cypress"],
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,

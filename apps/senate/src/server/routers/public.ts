@@ -3,18 +3,6 @@ import { publicProcedure, router } from "../trpc";
 import { type JsonArray, prisma, type Vote } from "@senate/database";
 
 export const publicRouter = router({
-  featureFlags: publicProcedure.query(() => {
-    const flags = process.env.NEXT_PUBLIC_FEATURE_FLAGS;
-
-    const split = flags?.split(" ") ?? [];
-
-    return split;
-  }),
-  allDAOs: publicProcedure.query(async () => {
-    const allDAOs = await prisma.dao.findMany({});
-
-    return allDAOs;
-  }),
   proposal: publicProcedure
     .input(
       z.object({

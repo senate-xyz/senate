@@ -7,6 +7,7 @@ import { ContactIcons } from "../ssr/ContactIcons";
 
 export const NavBar = () => {
   const pathname = usePathname();
+
   return !pathname?.includes("verify") &&
     !pathname?.includes("bulletin") &&
     !pathname?.includes("landing") &&
@@ -52,7 +53,7 @@ export const NavBar = () => {
           )}
         </Link>
 
-        <Link href={`/proposals/active?from=any&end=365&voted=any&proxy=any`}>
+        <Link href={`/proposals/active`}>
           {pathname?.includes("proposals") ? (
             <div className="flex flex-col items-center">
               <Image

@@ -2,58 +2,40 @@
   "$schema": "https://turborepo.org/schema.json",
   "pipeline": {
     "build": {
-      "dependsOn": [
-        "^build:db"
-      ],
+      "dependsOn": ["^build:db"],
       "cache": false
     },
     "build:senate": {
-      "dependsOn": [
-        "^build:db"
-      ],
+      "dependsOn": ["^build:db"],
       "cache": false
     },
     "build:shortie": {
-      "dependsOn": [
-        "^build:db"
-      ],
+      "dependsOn": ["^build:db"],
       "cache": false
     },
     "build:detective": {
-      "dependsOn": [
-        "^db:generate"
-      ],
+      "dependsOn": ["^db:generate"],
       "cache": false
     },
     "build:refresher": {
-      "dependsOn": [
-        "^db:generate"
-      ],
+      "dependsOn": ["^db:generate"],
       "cache": false
     },
     "build:email-secretary": {
-      "dependsOn": [
-        "^db:generate"
-      ],
+      "dependsOn": ["^db:generate"],
       "cache": false
     },
     "build:discord-secretary": {
-      "dependsOn": [
-        "^db:generate"
-      ],
+      "dependsOn": ["^db:generate"],
       "cache": false
     },
     "build:telegram-secretary": {
-      "dependsOn": [
-        "^db:generate"
-      ],
+      "dependsOn": ["^db:generate"],
       "cache": false
     },
     "build:db": {
       "cache": false,
-      "dependsOn": [
-        "^db:generate"
-      ]
+      "dependsOn": ["^db:generate"]
     },
     "db:push": {
       "cache": false
@@ -63,6 +45,14 @@
     },
     "db:generate": {
       "cache": false
+    },
+
+    "db:generate:node": {
+      "cache": false
+    },
+    "build:db:node": {
+      "cache": false,
+      "dependsOn": ["^db:generate:node"]
     },
     "*": {
       "env": [
@@ -88,22 +78,13 @@
     "start:senate": {},
     "start:shortie": {},
     "dev": {
-      "dependsOn": [
-        "^db:generate",
-        "^build:db"
-      ]
+      "dependsOn": ["^db:generate", "^build:db"]
     },
     "dev:senate": {
-      "dependsOn": [
-        "^db:generate",
-        "^build:db"
-      ]
+      "dependsOn": ["^db:generate", "^build:db"]
     },
     "dev:bulletin": {
-      "dependsOn": [
-        "^db:generate",
-        "^build:db"
-      ]
+      "dependsOn": ["^db:generate", "^build:db"]
     },
     "test:web": {
       "cache": false

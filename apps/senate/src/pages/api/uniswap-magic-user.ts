@@ -7,7 +7,7 @@ const emailClient = new ServerClient(
   process.env.POSTMARK_TOKEN ?? "Missing Token"
 );
 
-interface ResponseBody {
+interface RequestBody {
   email: string;
 }
 
@@ -15,7 +15,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { email } = req.body as ResponseBody;
+  const { email } = req.body as RequestBody;
 
   const existingUser = await prisma.user.findFirst({
     where: { email: email },
