@@ -8,15 +8,7 @@ jobs:
   test:
     docker:
       - image: mcr.microsoft.com/playwright:v1.34.0-jammy
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-      NEXTAUTH_URL: ${NEXTAUTH_URL}
-      NEXT_PUBLIC_POSTHOG_KEY: ${NEXT_PUBLIC_POSTHOG_KEY}
-      NEXT_PUBLIC_WALLERCONNECTID: ${NEXT_PUBLIC_WALLERCONNECTID}
-      NEXT_PUBLIC_ALCHEMY_KEY: ${NEXT_PUBLIC_ALCHEMY_KEY}
-      SECRET_WORDS: ${SECRET_WORDS}
-      NETWORK_NAME: ${NETWORK_NAME}
+
     steps:
       - run:
           command: apt-get update && apt-get install -y dbus
