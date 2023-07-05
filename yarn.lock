@@ -2133,10 +2133,10 @@
   resolved "https://registry.npmjs.org/@wagmi/chains/-/chains-1.4.0.tgz"
   integrity sha512-9HwJrhcZ1TxyrCbE10y7s1eSiSiyfGam7AHIOLYExaOX+vpOZ+MNTt4orFEDbEpz1fxwJDPPI38lanAUix1OSA==
 
-"@wagmi/connectors@2.6.4":
-  version "2.6.4"
-  resolved "https://registry.yarnpkg.com/@wagmi/connectors/-/connectors-2.6.4.tgz#c2a0cae01d10758370dee404bd74d427cfae7c4a"
-  integrity sha512-UrgYRNR573uy5exaVDMUfsZrcAh5rj5wNxZB+uN/3O45gOVZFh0o63ZmAWIvouuQDBJPr9UP2pNegEvi4v13cg==
+"@wagmi/connectors@2.6.5":
+  version "2.6.5"
+  resolved "https://registry.yarnpkg.com/@wagmi/connectors/-/connectors-2.6.5.tgz#fffe51f445338711ae2d78a94213ca589ebee29f"
+  integrity sha512-klF31togMDd0qQqEcLl5cCGxjMbL0RRXQ8I1vxmEa3KdGzw6Z3ICVzX7/bDfnNEZcOW7BKyAnZDq7rCt5jTOiw==
   dependencies:
     "@coinbase/wallet-sdk" "^3.6.6"
     "@ledgerhq/connect-kit-loader" "^1.1.0"
@@ -2145,16 +2145,17 @@
     "@walletconnect/ethereum-provider" "2.8.6"
     "@walletconnect/legacy-provider" "^2.0.0"
     "@walletconnect/modal" "2.5.9"
+    "@walletconnect/utils" "2.8.6"
     abitype "0.8.7"
     eventemitter3 "^4.0.7"
 
-"@wagmi/core@1.3.5":
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-1.3.5.tgz#fcc661311b8b8534fa8c29f5f3abbef2572748be"
-  integrity sha512-4aFfXJThr5SldDdgoxAay8Yfyu7tzMtGQhN0/ZmL2OsVmimiW9dDUCi6o4WsFK/xGeBK+ntAYAtYc+ncQ7cFCQ==
+"@wagmi/core@1.3.6":
+  version "1.3.6"
+  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-1.3.6.tgz#5204716d0ab8b518c8f1eecef5176f551f804c28"
+  integrity sha512-TXv9ZlRR5aySfERFuWMuo+lKXC/CoqtxVJZVHPqhK1jY+nldMx3AvrWzzF4CccRaMYcVdvPFepvmxzq2A2VvWg==
   dependencies:
     "@wagmi/chains" "1.4.0"
-    "@wagmi/connectors" "2.6.4"
+    "@wagmi/connectors" "2.6.5"
     abitype "0.8.7"
     eventemitter3 "^4.0.7"
     zustand "^4.3.1"
@@ -8252,10 +8253,10 @@ postcss@8.4.24, postcss@^8.4.23, postcss@^8.4.24:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-posthog-js@^1.68.5:
-  version "1.68.5"
-  resolved "https://registry.npmjs.org/posthog-js/-/posthog-js-1.68.5.tgz"
-  integrity sha512-EqQuIX0k564T2fhmzQK2Gcb8s/XRhHTpk6JOeGtJV7lpMI8Hffe+gGjGHcqIc4RoOg3LjAGYNHj6XgN+QPggLg==
+posthog-js@^1.69.0:
+  version "1.69.0"
+  resolved "https://registry.yarnpkg.com/posthog-js/-/posthog-js-1.69.0.tgz#34d281d4c0810740c68b0cede637c795862ec3ab"
+  integrity sha512-VaeKxbwCBGG3cN1UdFOdb9DBnTHAT3ZoDVubUV3irr0kjB8jIQjWYlnBLkdg++RLPQwAFfsiAGam7EFvXJrZiw==
   dependencies:
     fflate "^0.4.1"
 
@@ -8319,10 +8320,10 @@ prettier-plugin-tailwindcss@^0.3.0:
   resolved "https://registry.npmjs.org/prettier-plugin-tailwindcss/-/prettier-plugin-tailwindcss-0.3.0.tgz"
   integrity sha512-009/Xqdy7UmkcTBpwlq7jsViDqXAYSOMLDrHAdTMlVZOrKfM2o9Ci7EMWTMZ7SkKBFTG04UM9F9iM2+4i6boDA==
 
-prettier@^2.8.8:
-  version "2.8.8"
-  resolved "https://registry.npmjs.org/prettier/-/prettier-2.8.8.tgz"
-  integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
+prettier@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.0.0.tgz#e7b19f691245a21d618c68bc54dc06122f6105ae"
+  integrity sha512-zBf5eHpwHOGPC47h0zrPyNn+eAEIdEzfywMoYn2XPi0P44Zp0tSq64rq0xAREh4auw2cJZHo9QUob+NqCQky4g==
 
 pretty-bytes@^5.6.0:
   version "5.6.0"
@@ -10474,15 +10475,15 @@ viem@^0.3.17:
     isomorphic-ws "5.0.0"
     ws "8.12.0"
 
-wagmi@1.3.6:
-  version "1.3.6"
-  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-1.3.6.tgz#b8f338852951842549c1ede66f10b8ecd53671d7"
-  integrity sha512-tALbTpRdhB7cVzXcJtVm1jmb3m7/zdL1wm4l4Z/pY58BOKHPTj3/Y0/NUxI3Aef1oRwrqQnq4bTXfnMFd11PqQ==
+wagmi@1.3.7:
+  version "1.3.7"
+  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-1.3.7.tgz#43478e14998db288e45ee258b9af79991e1f9f96"
+  integrity sha512-n4Qwby0QB8/JSGjc0gGn4MWZ0BT229agEg6saPGS6VswmPjJLdkLq9qxKn1JptXxPREmb/ZvwHxU++3Z+gQJVA==
   dependencies:
     "@tanstack/query-sync-storage-persister" "^4.27.1"
     "@tanstack/react-query" "^4.28.0"
     "@tanstack/react-query-persist-client" "^4.28.0"
-    "@wagmi/core" "1.3.5"
+    "@wagmi/core" "1.3.6"
     abitype "0.8.7"
     use-sync-external-store "^1.2.0"
 
