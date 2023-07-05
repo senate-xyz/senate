@@ -18,6 +18,8 @@ jobs:
       SECRET_WORDS: ${SECRET_WORDS}
       NETWORK_NAME: ${NETWORK_NAME}
     steps:
+      - run:
+        command: apt-get update && apt-get install -y dbus
       - checkout
       - node/install-packages:
           pkg-manager: yarn

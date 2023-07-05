@@ -1,5 +1,3 @@
-//import { test } from "../fixtures";
-//import * as metamask from "@synthetixio/synpress/commands/metamask";
 import { test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
