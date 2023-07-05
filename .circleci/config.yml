@@ -37,6 +37,11 @@ jobs:
             yarn db:generate:node
             yarn build:db:node
             yarn build:senate
+      
+       run:
+          name: Run frontend
+          command: |
+            yarn dev:senate
 
       - run:
           name: Run Playwright tests
