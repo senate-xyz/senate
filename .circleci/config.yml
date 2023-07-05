@@ -1,20 +1,16 @@
 version: 2.1
 
-orbs:
-  node: circleci/node@5.1.0
-
 jobs:
   run-test:
     docker:
       - image: mcr.microsoft.com/playwright
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
-          cache-version: v1
       - run:
           name: Install and build
           command: |
+            npm install -g yarn
+            yarn
             npx playwright install --with-deps chromium
             yarn db:generate:node
             yarn build:db:node
