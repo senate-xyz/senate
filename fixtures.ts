@@ -10,13 +10,13 @@ export const test = base.extend<{
     //@ts-ignore
     global.expect = expect;
     // download metamask
-    // const metamaskPath = await prepareMetamask(
-    //   process.env.METAMASK_VERSION || "10.25.0"
-    // );
+    const metamaskPath = await prepareMetamask(
+      process.env.METAMASK_VERSION || "10.25.0"
+    );
     // prepare browser args
     const browserArgs = [
-      // `--disable-extensions-except=${metamaskPath}`,
-      // `--load-extension=${metamaskPath}`,
+      `--disable-extensions-except=${metamaskPath}`,
+      `--load-extension=${metamaskPath}`,
       "--remote-debugging-port=9222",
     ];
     if (process.env.CI) {
@@ -33,15 +33,15 @@ export const test = base.extend<{
     context.setDefaultTimeout(30000);
     // wait for metamask
     await context.pages()[0].waitForTimeout(3000);
-    // setup metamask
-    // await initialSetup(chromium, {
-    //   secretWordsOrPrivateKey:
-    //     "test test test test test test test test test test test junk",
-    //   network: "mainnet",
-    //   password: "Tester@1234",
-    //   enableAdvancedSettings: true,
-    //   enableExperimentalSettings: true,
-    // });
+    //setup metamask
+    await initialSetup(chromium, {
+      secretWordsOrPrivateKey:
+        "test test test test test test test test test test test junk",
+      network: "mainnet",
+      password: "Tester@1234",
+      enableAdvancedSettings: true,
+      enableExperimentalSettings: true,
+    });
     await use(context);
     await context.close();
   },
