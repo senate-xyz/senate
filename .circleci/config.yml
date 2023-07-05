@@ -43,9 +43,10 @@ jobs:
           command: DEBUG=synpress:*,pw:browser,pw:api,pw:install PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit
 
       - discord/status:
-          failure_message: "**${CIRCLE_JOB}** failed."
-          success_message: "**${CIRCLE_JOB}** passed all tests."
+          failure_message: "${CIRCLE_BRANCH} build **${CIRCLE_JOB}** failed."
+          success_message: "${CIRCLE_BRANCH} build **${CIRCLE_JOB}** passed all tests."
           webhook: "${DISCORD_STATUS_WEBHOOK}"
+          only_for_branches: "main,staging"
 
       - store_test_results:
           path: results.xml
