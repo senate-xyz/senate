@@ -25,7 +25,7 @@ jobs:
             - .apps/senate/.next/cache
       - run:
           name: Run test
-          command: xvfb-run npx playwright test
+          command: DEBUG=pw:browser npx playwright test
 
       - store_test_results:
           path: test-results
