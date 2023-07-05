@@ -12,6 +12,7 @@
     "seed": "tsx packages/database/src/seed.ts"
   },
   "scripts": {
+    "prepare": "husky install",
     "build": "turbo run build",
     "build:senate": "turbo run build:senate",
     "build:shortie": "turbo run build:shortie",
@@ -41,9 +42,12 @@
     "update": "rustup update && ncu -u && turbo run update && yarn"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.6.6",
+    "@commitlint/config-conventional": "^17.6.6",
     "@playwright/test": "^1.35.1",
     "@synthetixio/synpress": "^3.7.1",
     "dotenv": "^16.3.1",
+    "husky": "^8.0.3",
     "prettier": "^3.0.0",
     "tsx": "^3.12.7",
     "turbo": "^1.10.7"
