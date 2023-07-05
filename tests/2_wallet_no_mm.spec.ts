@@ -5,5 +5,5 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("connects wallet using default metamask account", async ({ page }) => {
-  await page.getByText("Connect Wallet").click();
+  await page.click("#connectButton");
 });
