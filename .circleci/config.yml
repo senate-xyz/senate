@@ -23,7 +23,6 @@ jobs:
           pkg-manager: yarn
 
       - browser-tools/install-chrome
-      - browser-tools/install-chromedriver
 
       - run:
           name: Install Playwright's dependencies
