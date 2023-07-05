@@ -36,7 +36,6 @@ jobs:
       - run:
           name: Build
           command: |
-            yarn
             yarn db:generate:node
             yarn build:db:node
             yarn build:senate
