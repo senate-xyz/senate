@@ -34,14 +34,14 @@ export const test = base.extend<{
     // wait for metamask
     await context.pages()[0].waitForTimeout(3000);
     // setup metamask
-    await initialSetup(chromium, {
-      secretWordsOrPrivateKey:
-        "test test test test test test test test test test test junk",
-      network: "mainnet",
-      password: "Tester@1234",
-      enableAdvancedSettings: true,
-      enableExperimentalSettings: true,
-    });
+    // await initialSetup(chromium, {
+    //   secretWordsOrPrivateKey:
+    //     "test test test test test test test test test test test junk",
+    //   network: "mainnet",
+    //   password: "Tester@1234",
+    //   enableAdvancedSettings: true,
+    //   enableExperimentalSettings: true,
+    // });
     await use(context);
     await context.close();
   },
