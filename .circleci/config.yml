@@ -22,6 +22,9 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn
 
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
+
       - run:
           name: Install Playwright's dependencies
           command: npx playwright install --with-deps
@@ -39,7 +42,7 @@ jobs:
             yarn db:generate:node
             yarn build:db:node
             yarn build:senate
-      - browser-tools/install-browser-tools
+
       - run:
           name: Run Playwright tests
           command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit

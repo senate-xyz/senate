@@ -61,3 +61,11 @@ jobs:
           name: results
           path: results.xml
           retention-days: 30
+      
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    
+        with:
+          name: Tests                 
+          path: results.xml    
+          reporter: jest-junit      
