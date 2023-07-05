@@ -46,7 +46,13 @@ jobs:
           failure_message: ":red_circle: ${CIRCLE_BRANCH} build **${CIRCLE_JOB}** failed."
           success_message: ":tada: ${CIRCLE_BRANCH} build **${CIRCLE_JOB}** passed all tests."
           webhook: "${DISCORD_STATUS_WEBHOOK}"
-          only_for_branches: "main,staging"
+          only_for_branches: "staging"
+
+      - discord/status:
+          failure_message: ":red_circle: ${CIRCLE_BRANCH} build **${CIRCLE_JOB}** failed."
+          fail_only: true
+          webhook: "${DISCORD_STATUS_WEBHOOK}"
+          only_for_branches: "dev"
 
       - store_test_results:
           path: results.xml
