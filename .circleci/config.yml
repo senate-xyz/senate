@@ -21,9 +21,18 @@ jobs:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
+
       - run:
           name: Install Playwright's dependencies
           command: npx playwright install --with-deps
+
+      - run:
+          name: Install virtual display
+          command: |
+            sudo apt-get install --no-install-recommends -y \
+            fluxbox \
+            xvfb
+
       - run:
           name: Build
           command: |
