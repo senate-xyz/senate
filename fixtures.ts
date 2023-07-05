@@ -10,13 +10,13 @@ export const test = base.extend<{
     //@ts-ignore
     global.expect = expect;
     // download metamask
-    const metamaskPath = await prepareMetamask(
-      process.env.METAMASK_VERSION || "10.25.0"
-    );
+    // const metamaskPath = await prepareMetamask(
+    //   process.env.METAMASK_VERSION || "10.25.0"
+    // );
     // prepare browser args
     const browserArgs = [
-      `--disable-extensions-except=${metamaskPath}`,
-      `--load-extension=${metamaskPath}`,
+      // `--disable-extensions-except=${metamaskPath}`,
+      // `--load-extension=${metamaskPath}`,
       "--remote-debugging-port=9222",
     ];
     if (process.env.CI) {
