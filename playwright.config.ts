@@ -17,6 +17,7 @@ export default defineConfig({
     headless: false,
   },
   // start local web server before tests
+
   webServer: [
     {
       command: "yarn dev:senate",
