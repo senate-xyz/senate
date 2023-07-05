@@ -4,6 +4,7 @@ jobs:
   run-test:
     docker:
       - image: mcr.microsoft.com/playwright
+        command: docker run --privileged
     steps:
       - checkout
       - run:

@@ -23,9 +23,6 @@ export const test = base.extend<{
       "--disable-gpu",
     ];
 
-    if (process.env.HEADLESS_MODE) {
-      browserArgs.push("--headless=new");
-    }
     console.log(browserArgs);
     // launch browser
     const context = await chromium.launchPersistentContext(
