@@ -7,7 +7,7 @@ orbs:
 jobs:
   test:
     docker:
-      - image: cimg/node:18.0
+      - image: mcr.microsoft.com/playwright:v1.34.0-jammy
     environment:
       DATABASE_URL: ${DATABASE_URL}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
@@ -21,6 +21,8 @@ jobs:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
+
+      - run: npm i -D @playwright/test
 
       - run:
           name: Install Playwright's dependencies
@@ -42,10 +44,10 @@ jobs:
       - browser-tools/install-browser-tools
       - run:
           name: Run Playwright tests
-          command: xvfb-run --auto-servernum --server-num=1 npx playwright test
+          command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit
       - store_artifacts:
-          path: playwright-report/
-          destination: playwright-report
+          path: results.xml
+
 workflows:
   test_workflow:
     jobs:
