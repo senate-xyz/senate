@@ -22,8 +22,6 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn
 
-      - run: npm i -D @playwright/test
-
       - run:
           name: Install Playwright's dependencies
           command: npx playwright install --with-deps
@@ -38,6 +36,7 @@ jobs:
       - run:
           name: Build
           command: |
+            yarn
             yarn db:generate:node
             yarn build:db:node
             yarn build:senate
