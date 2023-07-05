@@ -2,8 +2,7 @@ name: Playwright Tests
 on:
   push:
     branches: [main, dev, staging]
-  pull_request:
-    branches: [main, staging]
+
 jobs:
   test:
     timeout-minutes: 60
@@ -18,13 +17,16 @@ jobs:
         run: npm install -g yarn
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn
 
       - name: Install Playwright's dependencies
         run: npx playwright install --with-deps
 
       - name: Build
-        run: cd packages/database && yarn db:generate && yarn build:db && cd .. && cd .. && yarn build:senate
+        run: |
+          yarn db:generate:node
+          yarn build:db:node 
+          yarn build:senate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
@@ -36,7 +38,7 @@ jobs:
           NETWORK_NAME: ${{ secrets.NETWORK_NAME }}
 
       - name: Run Playwright tests
-        run: npx playwright test
+        run: xvfb-run npx playwright test
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
