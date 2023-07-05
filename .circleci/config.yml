@@ -39,12 +39,6 @@ jobs:
             yarn build:senate
 
       - run:
-          name: Run frontend
-          command: |
-            yarn dev:senate
-          background: true
-
-      - run:
           name: Run Playwright tests
           command: DEBUG=synpress:*,pw:browser,pw:api,pw:install PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit
 
