@@ -28,10 +28,13 @@ export const test = base.extend<{
     }
     console.log(browserArgs);
     // launch browser
-    const context = await chromium.launchPersistentContext("", {
-      headless: false,
-      args: browserArgs,
-    });
+    const context = await chromium.launchPersistentContext(
+      "/tmp/test-user-data",
+      {
+        headless: false,
+        args: browserArgs,
+      }
+    );
     // wait for metamask
     await context.pages()[0].waitForTimeout(process.env.CI ? 10000 : 2000);
     // setup metamask
