@@ -40,7 +40,7 @@ jobs:
 
       - run:
           name: Run Playwright tests
-          command: DEBUG=synpress:*,pw:browser,pw:api,pw:install PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit
+          command: LAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit
 
       - discord/status:
           failure_message: ":red_circle: ${CIRCLE_BRANCH} build **${CIRCLE_JOB}** failed."
