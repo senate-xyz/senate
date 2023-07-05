@@ -6,8 +6,6 @@ export const test = base.extend<{
   context: BrowserContext;
 }>({
   context: async ({}, use) => {
-    // required for synpress
-    global.expect = expect;
     // download metamask
     const metamaskPath = await prepareMetamask(
       process.env.METAMASK_VERSION || "10.25.0"
@@ -35,16 +33,15 @@ export const test = base.extend<{
     // wait for metamask
     await context.pages()[0].waitForTimeout(process.env.CI ? 10000 : 2000);
     // setup metamask
-    await initialSetup(chromium, {
-      secretWordsOrPrivateKey:
-        "test test test test test test test test test test test junk",
-      network: "mainnet",
-      password: "Tester@1234",
-      enableAdvancedSettings: true,
-      enableExperimentalSettings: true,
-    });
+    // await initialSetup(chromium, {
+    //   secretWordsOrPrivateKey:
+    //     "test test test test test test test test test test test junk",
+    //   network: "mainnet",
+    //   password: "Tester@1234",
+    //   enableAdvancedSettings: true,
+    //   enableExperimentalSettings: true,
+    // });
     await use(context);
     await context.close();
   },
 });
-export const expect = test.expect;
