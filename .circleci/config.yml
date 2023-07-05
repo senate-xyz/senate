@@ -3,24 +3,22 @@ version: 2.1
 orbs:
   node: circleci/node@5.1.0
   browser-tools: circleci/browser-tools@1.4.1
+  discord: antonioned/discord@0.1.0
 
 jobs:
   test:
     docker:
-      - image: cimg/node:18.0
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-      NEXTAUTH_URL: ${NEXTAUTH_URL}
-      NEXT_PUBLIC_POSTHOG_KEY: ${NEXT_PUBLIC_POSTHOG_KEY}
-      NEXT_PUBLIC_WALLERCONNECTID: ${NEXT_PUBLIC_WALLERCONNECTID}
-      NEXT_PUBLIC_ALCHEMY_KEY: ${NEXT_PUBLIC_ALCHEMY_KEY}
-      SECRET_WORDS: ${SECRET_WORDS}
-      NETWORK_NAME: ${NETWORK_NAME}
+      - image: mcr.microsoft.com/playwright:v1.34.0-jammy
+
     steps:
+      - run:
+          command: apt-get update && apt-get install -y dbus
+
       - checkout
       - node/install-packages:
           pkg-manager: yarn
+
+      - browser-tools/install-chrome
 
       - run:
           name: Install Playwright's dependencies
@@ -29,7 +27,7 @@ jobs:
       - run:
           name: Install virtual display
           command: |
-            sudo apt-get install --no-install-recommends -y \
+            apt-get install --no-install-recommends -y \
             fluxbox \
             xvfb
 
@@ -39,13 +37,23 @@ jobs:
             yarn db:generate:node
             yarn build:db:node
             yarn build:senate
-      - browser-tools/install-browser-tools
+
       - run:
           name: Run Playwright tests
-          command: xvfb-run --auto-servernum --server-num=1 npx playwright test
+          command: DEBUG=synpress:*,pw:browser,pw:api,pw:install PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit
+
+      - discord/status:
+          failure_message: "${CIRCLE_BRANCH} build **${CIRCLE_JOB}** failed."
+          success_message: "${CIRCLE_BRANCH} build **${CIRCLE_JOB}** passed all tests."
+          webhook: "${DISCORD_STATUS_WEBHOOK}"
+          only_for_branches: "main,staging"
+
+      - store_test_results:
+          path: results.xml
+
       - store_artifacts:
-          path: playwright-report/
-          destination: playwright-report
+          path: results.xml
+
 workflows:
   test_workflow:
     jobs:

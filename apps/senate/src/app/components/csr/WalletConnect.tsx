@@ -70,7 +70,7 @@ const WalletConnect = () => {
   }, [cookie.subscribe, session.status]);
 
   return (
-    <div>
+    <div id="connectButton">
       <Suspense fallback={<></>}>
         <ConnectButton showBalance={false} />
       </Suspense>
