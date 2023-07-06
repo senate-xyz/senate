@@ -247,7 +247,7 @@ async fn send_bulletin(
                                 NotificationDispatchedState::Dispatched,
                             ),
                             notification::emailmessageid::set(
-                                postmark_result.clone().MessageID.into(),
+                                postmark_result.clone().MessageID,
                             ),
                             notification::emailtemplate::set(bulletin_template.to_string().into()),
                         ],

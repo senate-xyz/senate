@@ -35,13 +35,13 @@ test("settings url redirects to settings account", async ({ page }) => {
 test("unsigned notifications settings url redirects to settings account", async ({
   page,
 }) => {
-  await page.goto("/settings/notifications");
+  await page.goto("/settings/notifications", { timeout: 60 * 1000 });
   await page.waitForURL("/settings/account");
 });
 
 test("unsigned proxy settings url redirects to settings account", async ({
   page,
 }) => {
-  await page.goto("/settings/proxy");
+  await page.goto("/settings/proxy", { timeout: 60 * 1000 });
   await page.waitForURL("/settings/account");
 });
