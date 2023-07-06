@@ -11,12 +11,12 @@ test("orgs link", async ({ page }) => {
 
 test("proposals link", async ({ page }) => {
   await page.getByTestId("navbar").getByText("Proposals").click();
-  await expect(page).toHaveURL(
-    "http://localhost:3000/proposals/active?from=any&end=365&voted=any&proxy=any"
+  await page.waitForURL(
+    "/proposals/active?from=any&end=365&voted=any&proxy=any"
   );
 });
 
 test("settings link", async ({ page }) => {
   await page.getByTestId("navbar").getByText("Settings").click();
-  await expect(page).toHaveURL("/settings/account");
+  await page.waitForURL("/settings/account");
 });
