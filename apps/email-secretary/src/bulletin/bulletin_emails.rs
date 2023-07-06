@@ -96,7 +96,8 @@ struct MakerResult {
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct PostmarkResult {
-    MessageID: String,
+    Message: String,
+    MessageID: Option<String>,
 }
 
 #[instrument(skip(db), level = "info")]
@@ -235,33 +236,66 @@ async fn send_bulletin(
 
     match result {
         Ok(postmark_result) => {
-            info!("sent bulletin to {:?}", user_email);
-            db.notification()
-                .create_many(vec![notification::create_unchecked(
-                    user.id,
-                    NotificationType::BulletinEmail,
-                    vec![
-                        notification::dispatchstatus::set(NotificationDispatchedState::Dispatched),
-                        notification::emailmessageid::set(postmark_result.clone().MessageID.into()),
-                        notification::emailtemplate::set(bulletin_template.to_string().into()),
-                    ],
-                )])
-                .skip_duplicates()
-                .exec()
-                .instrument(debug_span!("create_notifications"))
+            if postmark_result.Message == "OK" {
+                info!("sent bulletin to {:?}", user_email);
+                db.notification()
+                    .create_many(vec![notification::create_unchecked(
+                        user.id,
+                        NotificationType::BulletinEmail,
+                        vec![
+                            notification::dispatchstatus::set(
+                                NotificationDispatchedState::Dispatched,
+                            ),
+                            notification::emailmessageid::set(
+                                postmark_result.clone().MessageID.into(),
+                            ),
+                            notification::emailtemplate::set(bulletin_template.to_string().into()),
+                        ],
+                    )])
+                    .skip_duplicates()
+                    .exec()
+                    .instrument(debug_span!("create_notifications"))
+                    .await
+                    .unwrap();
+
+                spawn_blocking(move || {
+                    posthog_bulletin_event(
+                        "email_bulletin_sent",
+                        user.address,
+                        bulletin_template,
+                        postmark_result.MessageID.unwrap().as_str(),
+                    );
+                })
                 .await
                 .unwrap();
+            } else {
+                warn!("{:?}", postmark_result.Message);
 
-            spawn_blocking(move || {
-                posthog_bulletin_event(
-                    "email_bulletin_sent",
-                    user.address,
-                    bulletin_template,
-                    postmark_result.MessageID.as_str(),
-                );
-            })
-            .await
-            .unwrap();
+                db.notification()
+                    .create_many(vec![notification::create_unchecked(
+                        user.id,
+                        NotificationType::BulletinEmail,
+                        vec![notification::dispatchstatus::set(
+                            NotificationDispatchedState::Failed,
+                        )],
+                    )])
+                    .skip_duplicates()
+                    .exec()
+                    .instrument(debug_span!("create_notifications"))
+                    .await
+                    .unwrap();
+
+                spawn_blocking(move || {
+                    posthog_bulletin_event(
+                        "email_bulletin_fail",
+                        user.address,
+                        "",
+                        postmark_result.Message.as_str(),
+                    );
+                })
+                .await
+                .unwrap();
+            }
         }
         Err(e) => {
             warn!("{:?}", e);
