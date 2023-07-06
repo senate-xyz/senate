@@ -20,3 +20,20 @@ test("settings link", async ({ page }) => {
   await page.getByTestId("navbar").getByText("Settings").click();
   await page.waitForURL("/settings/account");
 });
+
+test("twitter link", async ({ page }) => {
+  await page.getByTestId("navbar").getByAltText("twitter").click();
+  await page.waitForURL(
+    "https://twitter.com/i/flow/login?redirect_after_login=%2FSenateLabs"
+  );
+});
+
+test("discord link", async ({ page }) => {
+  await page.getByTestId("navbar").getByAltText("discord").click();
+  await page.waitForURL("https://discord.com/invite/shtxfNqazd");
+});
+
+test("github link", async ({ page }) => {
+  await page.getByTestId("navbar").getByAltText("github").click();
+  await page.waitForURL("https://github.com/senate-xyz/senate");
+});

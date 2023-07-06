@@ -36,14 +36,12 @@ test("unsigned proxy settings url redirects to settings account", async ({
   page,
 }) => {
   await page.goto("/settings/proxy");
-  await page.waitForTimeout(5000);
-  await expect(page).toHaveURL("/settings/account");
+  await page.waitForURL("/settings/account", { timeout: 5000 });
 });
 
 test("unsigned notifications settings url redirects to settings account", async ({
   page,
 }) => {
   await page.goto("/settings/notifications");
-  await page.waitForTimeout(5000);
-  await expect(page).toHaveURL("/settings/account");
+  await page.waitForURL("/settings/account", { timeout: 5000 });
 });
