@@ -9,7 +9,6 @@ jobs:
   test:
     docker:
       - image: mcr.microsoft.com/playwright:v1.34.0-jammy
-    resource_class: 2xlarge
 
     steps:
       - run:
