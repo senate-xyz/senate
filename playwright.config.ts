@@ -11,10 +11,15 @@ export default defineConfig({
   workers: 1,
   reporter: "html",
   use: {
+    viewport: {
+      width: 1440,
+      height: 820,
+    },
     actionTimeout: 0,
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
     headless: false,
+    testIdAttribute: "data-pw",
   },
   // start local web server before tests
 

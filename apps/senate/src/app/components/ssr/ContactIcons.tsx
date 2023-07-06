@@ -20,7 +20,7 @@ export const ContactIcons = () => {
           loading="eager"
           priority={true}
           src="/assets/Icon/DiscordWhite.svg"
-          alt="twitter"
+          alt="discord"
           width={24}
           height={24}
         />
@@ -31,7 +31,7 @@ export const ContactIcons = () => {
           loading="eager"
           priority={true}
           src="/assets/Icon/Github.svg"
-          alt="twitter"
+          alt="github"
           width={24}
           height={24}
         />

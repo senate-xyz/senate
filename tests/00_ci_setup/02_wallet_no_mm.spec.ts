@@ -4,7 +4,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/");
 });
 
-test("connects wallet using default metamask account", async ({ page }) => {
+test("wallet connect button works without metamask", async ({ page }) => {
   await page.getByText("Connect Wallet").click();
   await page.getByText("MetaMask").click();
   await expect(page.locator("body")).toContainText("Scan with MetaMask");

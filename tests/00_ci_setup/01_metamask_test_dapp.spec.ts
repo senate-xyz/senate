@@ -6,7 +6,9 @@ test.beforeEach(async ({ page }) => {
   await page.goto("https://metamask.github.io/test-dapp");
 });
 
-test("connect wallet using default metamask account", async ({ page }) => {
+test("connect wallet using default metamask account on https://metamask.github.io/test-dapp", async ({
+  page,
+}) => {
   await page.click("#connectButton");
   await metamask.acceptAccess();
   await expect(page.locator("#accounts")).toHaveText(
