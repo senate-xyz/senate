@@ -47,7 +47,8 @@ struct QuorumWarningData {
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct PostmarkResult {
-    MessageID: String,
+    Message: String,
+    MessageID: Option<String>,
 }
 
 prisma::proposal::include!(proposal_with_dao { dao });
@@ -276,46 +277,105 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 let result: Result<PostmarkResult, reqwest::Error> = response.json().await;
                 match result {
                     Ok(postmark_result) => {
-                        db.notification()
-                            .update_many(
-                                vec![
-                                    notification::userid::equals(notification.clone().userid),
-                                    notification::proposalid::equals(
-                                        notification.clone().proposalid,
-                                    ),
-                                    notification::r#type::equals(notification.clone().r#type),
-                                ],
-                                vec![
-                                    notification::dispatchstatus::set(
-                                        NotificationDispatchedState::Dispatched,
-                                    ),
-                                    notification::emailmessageid::set(
-                                        postmark_result.clone().MessageID.into(),
-                                    ),
-                                    notification::emailtemplate::set(
-                                        quorum_template.to_string().into(),
-                                    ),
-                                ],
-                            )
-                            .exec()
-                            .instrument(debug_span!("update_notification"))
+                        if postmark_result.Message == "OK" {
+                            db.notification()
+                                .update_many(
+                                    vec![
+                                        notification::userid::equals(notification.clone().userid),
+                                        notification::proposalid::equals(
+                                            notification.clone().proposalid,
+                                        ),
+                                        notification::r#type::equals(notification.clone().r#type),
+                                    ],
+                                    vec![
+                                        notification::dispatchstatus::set(
+                                            NotificationDispatchedState::Dispatched,
+                                        ),
+                                        notification::emailmessageid::set(
+                                            postmark_result.clone().MessageID.into(),
+                                        ),
+                                        notification::emailtemplate::set(
+                                            quorum_template.to_string().into(),
+                                        ),
+                                    ],
+                                )
+                                .exec()
+                                .instrument(debug_span!("update_notification"))
+                                .await
+                                .unwrap();
+
+                            spawn_blocking(move || {
+                                posthog_quorum_event(
+                                    "email_quorum_sent",
+                                    user.address,
+                                    quorum_template,
+                                    proposal.clone().unwrap().name,
+                                    proposal.clone().unwrap().dao.name,
+                                    postmark_result.MessageID.unwrap().as_str(),
+                                );
+                            })
+                            .await
+                            .unwrap();
+                        } else {
+                            warn!("{:?}", postmark_result.Message);
+
+                            spawn_blocking(move || {
+                                posthog_quorum_event(
+                                    "email_quorum_fail",
+                                    user.address,
+                                    quorum_template,
+                                    proposal.clone().unwrap().name,
+                                    proposal.unwrap().dao.name,
+                                    postmark_result.Message.as_str(),
+                                );
+                            })
                             .await
                             .unwrap();
 
-                        spawn_blocking(move || {
-                            posthog_quorum_event(
-                                "email_quorum_sent",
-                                user.address,
-                                quorum_template,
-                                proposal.clone().unwrap().name,
-                                proposal.clone().unwrap().dao.name,
-                                postmark_result.MessageID.as_str(),
-                            );
-                        })
-                        .await
-                        .unwrap();
+                            db.notification()
+                                .update_many(
+                                    vec![
+                                        notification::userid::equals(notification.clone().userid),
+                                        notification::proposalid::equals(
+                                            notification.clone().proposalid,
+                                        ),
+                                        notification::r#type::equals(notification.clone().r#type),
+                                    ],
+                                    match notification.dispatchstatus {
+                                        NotificationDispatchedState::NotDispatched => {
+                                            vec![notification::dispatchstatus::set(
+                                                NotificationDispatchedState::FirstRetry,
+                                            )]
+                                        }
+                                        NotificationDispatchedState::FirstRetry => {
+                                            vec![notification::dispatchstatus::set(
+                                                NotificationDispatchedState::SecondRetry,
+                                            )]
+                                        }
+                                        NotificationDispatchedState::SecondRetry => {
+                                            vec![notification::dispatchstatus::set(
+                                                NotificationDispatchedState::ThirdRetry,
+                                            )]
+                                        }
+                                        NotificationDispatchedState::ThirdRetry => {
+                                            vec![notification::dispatchstatus::set(
+                                                NotificationDispatchedState::Failed,
+                                            )]
+                                        }
+                                        NotificationDispatchedState::Dispatched => todo!(),
+                                        NotificationDispatchedState::Deleted => todo!(),
+                                        NotificationDispatchedState::Failed => todo!(),
+                                    },
+                                )
+                                .exec()
+                                .instrument(debug_span!("update_notification"))
+                                .await
+                                .unwrap();
+                        }
                     }
                     Err(e) => {
+                        warn!("{:?}", e);
+
                         spawn_blocking(move || {
                             posthog_quorum_event(
                                 "email_quorum_fail",
@@ -328,8 +388,6 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                         })
                         .await
                         .unwrap();
-
-                        warn!("{:?}", e);
 
                         db.notification()
                             .update_many(
@@ -374,6 +432,8 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 }
             }
             Err(e) => {
+                warn!("{:?}", e);
+
                 spawn_blocking(move || {
                     posthog_quorum_event(
                         "email_quorum_fail",
@@ -386,8 +446,6 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 })
                 .await
                 .unwrap();
-
-                warn!("{:?}", e);
 
                 db.notification()
                     .update_many(
