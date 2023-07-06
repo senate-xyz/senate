@@ -60,6 +60,9 @@ jobs:
       - store_artifacts:
           path: playwright-report/index.html
 
+      - store_artifacts:
+          path: test-results
+
 workflows:
   test_workflow:
     jobs:
