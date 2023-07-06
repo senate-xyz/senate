@@ -34,6 +34,7 @@ export const SubscribedDAO = (props: {
 
   return (
     <div
+      data-pw={props.daoName}
       className={`h-[320px] w-[240px] ${
         loading ? "pointer-events-none animate-pulse opacity-25" : "opacity-100"
       }`}
@@ -78,6 +79,7 @@ export const SubscribedDAO = (props: {
             </div>
 
             <div
+              data-pw="unsubscribe-button"
               className="w-full cursor-pointer px-4 pb-4 text-center text-[15px] font-thin text-white underline"
               onClick={() => {
                 startTransition(() => unsubscribe(props.daoId));
@@ -98,6 +100,7 @@ export const SubscribedDAO = (props: {
         >
           <div className="absolute flex w-full flex-col items-end pr-4 pt-4">
             <div
+              data-pw="menu-button"
               className="cursor-pointer"
               onClick={() => {
                 setShowMenu(true);

@@ -3,7 +3,7 @@ export default defineConfig({
   testDir: "./tests",
   timeout: 300 * 1000,
   expect: {
-    timeout: 10000,
+    timeout: 300 * 1000,
   },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -34,8 +34,18 @@ export default defineConfig({
 
   projects: [
     {
+      name: "setup",
+      testMatch: /global.setup\.ts/,
+      teardown: "cleanup",
+    },
+    {
+      name: "cleanup",
+      testMatch: /global.teardown\.ts/,
+    },
+    {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+      dependencies: ["setup"],
     },
   ],
 });

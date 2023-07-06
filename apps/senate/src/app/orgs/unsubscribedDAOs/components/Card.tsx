@@ -45,6 +45,7 @@ export const UnsubscribedDAO = (props: {
 
   return (
     <div
+      data-pw={props.daoName}
       className={`h-[320px] w-[240px] ${
         loading ? "pointer-events-none animate-pulse opacity-25" : "opacity-100"
       }`}
@@ -136,6 +137,7 @@ export const UnsubscribedDAO = (props: {
         </div>
 
         <button
+          data-pw="subscribe-button"
           className="h-14 w-full bg-white text-xl font-bold text-black hover:bg-neutral-100 active:bg-neutral-300"
           onClick={() => {
             if (account.isConnected && session.status == "authenticated") {
