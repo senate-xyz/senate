@@ -315,7 +315,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                         .await
                         .unwrap();
                     }
-                    Err(_) => {
+                    Err(e) => {
                         spawn_blocking(move || {
                             posthog_quorum_event(
                                 "email_quorum_fail",
@@ -328,6 +328,48 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                         })
                         .await
                         .unwrap();
+
+                        warn!("{:?}", e);
+
+                        db.notification()
+                            .update_many(
+                                vec![
+                                    notification::userid::equals(notification.clone().userid),
+                                    notification::proposalid::equals(
+                                        notification.clone().proposalid,
+                                    ),
+                                    notification::r#type::equals(notification.clone().r#type),
+                                ],
+                                match notification.dispatchstatus {
+                                    NotificationDispatchedState::NotDispatched => {
+                                        vec![notification::dispatchstatus::set(
+                                            NotificationDispatchedState::FirstRetry,
+                                        )]
+                                    }
+                                    NotificationDispatchedState::FirstRetry => {
+                                        vec![notification::dispatchstatus::set(
+                                            NotificationDispatchedState::SecondRetry,
+                                        )]
+                                    }
+                                    NotificationDispatchedState::SecondRetry => {
+                                        vec![notification::dispatchstatus::set(
+                                            NotificationDispatchedState::ThirdRetry,
+                                        )]
+                                    }
+                                    NotificationDispatchedState::ThirdRetry => {
+                                        vec![notification::dispatchstatus::set(
+                                            NotificationDispatchedState::Failed,
+                                        )]
+                                    }
+                                    NotificationDispatchedState::Dispatched => todo!(),
+                                    NotificationDispatchedState::Deleted => todo!(),
+                                    NotificationDispatchedState::Failed => todo!(),
+                                },
+                            )
+                            .exec()
+                            .instrument(debug_span!("update_notification"))
+                            .await
+                            .unwrap();
                     }
                 }
             }
