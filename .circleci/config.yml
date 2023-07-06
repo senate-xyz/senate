@@ -58,7 +58,7 @@ jobs:
           path: results.xml
 
       - store_artifacts:
-          path: playwright-report/results.html
+          path: playwright-report/index.html
 
 workflows:
   test_workflow:
