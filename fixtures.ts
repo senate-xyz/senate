@@ -1,7 +1,6 @@
 import { test as base, chromium, type BrowserContext } from "@playwright/test";
 import { initialSetup } from "@synthetixio/synpress/commands/metamask";
 import { prepareMetamask } from "@synthetixio/synpress/helpers";
-import { prisma } from "@senate/database";
 import dotenv from "dotenv";
 export const test = base.extend<{
   context: BrowserContext;
@@ -32,7 +31,6 @@ export const test = base.extend<{
       args: browserArgs,
     });
     // wait for metamask
-
     await context.pages()[0].waitForTimeout(3000);
     // setup metamask
     await initialSetup(chromium, {
@@ -44,31 +42,9 @@ export const test = base.extend<{
     });
     await context.pages()[0].close();
     await use(context);
-    await context.close();
-    await deleteTestUser();
+    if (!process.env.SERIAL_MODE) {
+      await context.close();
+    }
   },
 });
-
-const deleteTestUser = async () => {
-  await prisma.subscription.deleteMany({
-    where: {
-      user: {
-        address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
-      },
-    },
-  });
-
-  await prisma.notification.deleteMany({
-    where: {
-      user: {
-        address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
-      },
-    },
-  });
-
-  await prisma.user.deleteMany({
-    where: { address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266" },
-  });
-};
-
 export const expect = test.expect;
