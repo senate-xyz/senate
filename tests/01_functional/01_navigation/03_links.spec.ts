@@ -37,3 +37,8 @@ test("github link", async ({ page }) => {
   await page.getByTestId("navbar").getByAltText("github").click();
   await page.waitForURL("https://github.com/senate-xyz/senate");
 });
+
+test("logo link", async ({ page }) => {
+  await page.getByTestId("navbar").getByAltText("Senate logo").click();
+  await page.waitForURL("/");
+});
