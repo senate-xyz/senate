@@ -10,7 +10,9 @@ test("root url redirects to /orgs", async ({ page }) => {
 
 test("proposals url redirects to active proposals", async ({ page }) => {
   await page.goto("/proposals");
-  await expect(page).toHaveURL("/proposals/active");
+  await expect(page).toHaveURL(
+    "proposals/active?from=any&end=365&voted=any&proxy=any"
+  );
 });
 
 test("active proposals url redirects to filters", async ({ page }) => {

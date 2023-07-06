@@ -9,7 +9,10 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   workers: 1,
-  reporter: "html",
+  reporter: [
+    ["junit", { outputFile: "results.xml" }],
+    ["html", { outputFile: "results.html" }],
+  ],
   use: {
     viewport: {
       width: 1440,
@@ -38,5 +41,4 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  outputDir: "test-results",
 });

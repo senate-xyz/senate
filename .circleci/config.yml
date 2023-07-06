@@ -40,7 +40,7 @@ jobs:
 
       - run:
           name: Run Playwright tests
-          command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit
+          command: xvfb-run npx playwright test
 
       - discord/status:
           failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
@@ -58,7 +58,7 @@ jobs:
           path: results.xml
 
       - store_artifacts:
-          path: results.xml
+          path: results.html
 
 workflows:
   test_workflow:
