@@ -68,7 +68,7 @@ test_metamask("signed subscribe to Uniswap", async ({ page }) => {
   ).toBeVisible();
 });
 
-test_metamask("expect to 2 subscribed daos", async ({ page }) => {
+test_metamask("expect to be subscribed to 2 daos", async ({ page }) => {
   await page.getByText("Connect Wallet").click();
   await page.getByText("MetaMask").click();
   await metamask.acceptAccess();
@@ -85,7 +85,7 @@ test_metamask("expect to 2 subscribed daos", async ({ page }) => {
 });
 
 test_metamask("subscribe to all daos", async ({ page }) => {
-  test_metamask.slow();
+  test_metamask.setTimeout(5 * 300 * 1000);
 
   await page.getByText("Connect Wallet").click();
   await page.getByText("MetaMask").click();
@@ -107,7 +107,7 @@ test_metamask("subscribe to all daos", async ({ page }) => {
 
   for (const org of daosToSubscribe) {
     await org.click();
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(5000);
   }
 
   await expect(

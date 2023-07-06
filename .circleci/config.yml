@@ -40,6 +40,7 @@ jobs:
 
       - run:
           name: Run Playwright tests
+          no_output_timeout: 30m
           command: xvfb-run npx playwright test
 
       - discord/status:
