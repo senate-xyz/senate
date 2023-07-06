@@ -33,7 +33,7 @@ export const SubscribedDAO = (props: {
   const [loading, setLoading] = useState(false);
 
   return (
-    <div
+    <li
       data-testid={props.daoName}
       className={`h-[320px] w-[240px] ${
         loading ? "pointer-events-none animate-pulse opacity-25" : "opacity-100"
@@ -215,6 +215,6 @@ export const SubscribedDAO = (props: {
           </div>
         </div>
       )}
-    </div>
+    </li>
   );
 };
