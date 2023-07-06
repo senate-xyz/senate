@@ -9,7 +9,7 @@ export default function SubscribedDAOs({
 }) {
   const { subscriptions, backgroundColors } = subscribed;
   return (
-    <div data-pw="subscribed-list">
+    <div data-testid="subscribed-list">
       {subscriptions.length > 0 && (
         <main className="mb-10">
           <p className="mb-4 w-full text-[36px] font-bold leading-[36px] text-white">

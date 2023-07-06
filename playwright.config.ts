@@ -19,7 +19,6 @@ export default defineConfig({
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
     headless: false,
-    testIdAttribute: "data-pw",
   },
   // start local web server before tests
 

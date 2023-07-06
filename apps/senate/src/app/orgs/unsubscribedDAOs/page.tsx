@@ -9,7 +9,7 @@ export default function UnsubscribedDAOs({
 }) {
   const { unsubscriptions, backgroundColors } = unsubscribed;
   return (
-    <div data-pw="unsubscribed-list">
+    <div data-testid="unsubscribed-list">
       {unsubscriptions.length > 0 && (
         <main>
           <p className="mb-4 w-full text-[36px] font-bold leading-[36px] text-white">
