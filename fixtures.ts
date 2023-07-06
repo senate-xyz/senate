@@ -32,6 +32,7 @@ export const test = base.extend<{
       args: browserArgs,
     });
     // wait for metamask
+
     await context.pages()[0].waitForTimeout(3000);
     // setup metamask
     await initialSetup(chromium, {
@@ -39,9 +40,9 @@ export const test = base.extend<{
         "test test test test test test test test test test test junk",
       network: "mainnet",
       password: "Tester@1234",
-      enableAdvancedSettings: false,
-      enableExperimentalSettings: false,
+      enableAdvancedSettings: true,
     });
+    await context.pages()[0].close();
     await use(context);
     await context.close();
     await deleteTestUser();
