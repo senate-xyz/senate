@@ -1,4 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
+
+const port = 3000;
+const baseURL = `http://localhost:${port}`;
+
 export default defineConfig({
   testDir: "./tests",
   timeout: 60 * 1000,
@@ -11,22 +15,22 @@ export default defineConfig({
   workers: 1,
   reporter: [["list"], ["junit", { outputFile: "results.xml" }], ["html"]],
   use: {
+    baseURL,
     viewport: {
       width: 1440,
       height: 820,
     },
     actionTimeout: 0,
-    baseURL: "http://localhost:3000",
     trace: "retry-with-trace",
     headless: false,
   },
 
   webServer: [
     {
+      port,
       command: "yarn start:senate",
-      url: "http://localhost:3000",
       timeout: 60000,
-      reuseExistingServer: true,
+      reuseExistingServer: !process.env.CI,
     },
   ],
 
