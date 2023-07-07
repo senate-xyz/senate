@@ -6,6 +6,18 @@ orbs:
   discord: antonioned/discord@0.1.0
 
 jobs:
+  build:
+    docker:
+      - image: cimg/node:20.4.0
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: Build
+          command: |
+            yarn build:db:node
+            yarn build:senate
   setup_db:
     docker:
       - image: cimg/mysql:8.0
@@ -22,13 +34,12 @@ jobs:
           name: Database Setup
           command: |
             yarn db:generate:node
-            yarn build:db:node
             yarn db:push
             yarn db:seed
 
   run_senate:
     docker:
-      - image: mcr.microsoft.com/playwright:v1.34.0-jammy
+      - image: cimg/node:20.4.0
     environment:
       DATABASE_URL: mysql://root:root@localhost:3306/circleci
     steps:
@@ -64,7 +75,7 @@ jobs:
 
   notify:
     docker:
-      - image: circleci/node:latest
+      - image: cimg/node:20.4.0
     steps:
       - discord/status:
           failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
@@ -75,7 +86,10 @@ jobs:
 workflows:
   test_workflow:
     jobs:
-      - setup_db
+      - build
+      - setup_db:
+          requires:
+            - build
       - run_senate:
           requires:
             - setup_db
