@@ -8,13 +8,15 @@ orbs:
 jobs:
   test:
     docker:
-      - image: mcr.microsoft.com/playwright:v1.34.0-jammy
       - image: cimg/mysql:8.0
         environment:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: circleci
           MYSQL_USER: mysql
           MYSQL_PASSWORD: mysql
+
+      - image: mcr.microsoft.com/playwright:v1.34.0-jammy
+
     environment:
       DATABASE_URL: mysql://root:root@localhost:3306/circleci
 
@@ -44,6 +46,7 @@ jobs:
           command: |
             yarn db:generate:node
             yarn build:db:node
+            yarn db:push
             yarn db:seed
             yarn build:senate
 
