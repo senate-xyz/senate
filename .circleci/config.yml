@@ -34,13 +34,6 @@ jobs:
           command: npx playwright install --with-deps
 
       - run:
-          name: Install virtual display
-          command: |
-            apt-get install --no-install-recommends -y \
-            fluxbox \
-            xvfb
-
-      - run:
           name: Build
           command: |
             yarn db:generate:node
