@@ -39,8 +39,8 @@
     "lint:fix": "turbo run lint:fix",
     "update": "rustup update && ncu -u && turbo run update && yarn",
     "start-server": "yarn start:senate",
-    "test": "yarn playwright test",
-    "test:e2e": "start-server-and-test start-server http://localhost:3000 test"
+    "test:ci": "xvfb-run yarn playwright test",
+    "test:e2e:ci": "start-server-and-test start-server http://localhost:3000 test:ci"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.6",

@@ -30,7 +30,6 @@ export default defineConfig({
       port,
       command: "yarn start:senate",
       timeout: 60000,
-      reuseExistingServer: !process.env.CI,
     },
   ],
 
