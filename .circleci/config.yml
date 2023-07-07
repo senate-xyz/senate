@@ -8,7 +8,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/node:20.4.0
+      - image: cimg/node:18.16.0-browsers
     steps:
       - checkout
       - node/install-packages:
@@ -33,13 +33,12 @@ jobs:
       - run:
           name: Database Setup
           command: |
-            yarn db:generate:node
             yarn db:push
             yarn db:seed
 
   run_senate:
     docker:
-      - image: cimg/node:20.4.0
+      - image: cimg/node:18.16.0-browsers
     environment:
       DATABASE_URL: mysql://root:root@localhost:3306/circleci
     steps:
@@ -75,7 +74,7 @@ jobs:
 
   notify:
     docker:
-      - image: cimg/node:20.4.0
+      - image: cimg/node:18.16.0-browsers
     steps:
       - discord/status:
           failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
