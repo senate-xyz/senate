@@ -53,7 +53,7 @@ jobs:
       - run:
           name: Run Playwright tests
           no_output_timeout: 30m
-          command: xvfb-run yarn playwright test
+          command: xvfb-run yarn test:e2e
 
       - discord/status:
           failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
