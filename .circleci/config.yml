@@ -1,7 +1,6 @@
 version: 2.1
 
 orbs:
-  browser-tools: circleci/browser-tools@1.4.1
   discord: antonioned/discord@0.1.0
 
 jobs:
@@ -107,7 +106,6 @@ jobs:
           key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
-      - browser-tools/install-chrome
       - run:
           name: Install Playwright's dependencies
           command: npx playwright install --with-deps
