@@ -16,8 +16,6 @@ jobs:
           MYSQL_USER: mysql
           MYSQL_PASSWORD: mysql
 
-    resource_class: 2xlarge
-
     environment:
       DATABASE_URL: mysql://root:root@localhost:3306/circleci
 
