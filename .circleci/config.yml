@@ -1,109 +1,27 @@
 version: 2.1
-
 orbs:
+  node: circleci/node@5.1.0
+  browser-tools: circleci/browser-tools@1.4.1
   discord: antonioned/discord@0.1.0
-
 jobs:
-  build:
+  test:
     docker:
-      - image: cimg/node:18.16.0
-    steps:
-      - checkout
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Deps
-          command: |
-            yarn install --frozen-lockfile --cache-folder ~/.
-      - save_cache:
-          name: Save Yarn Package Cache
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
-      - run:
-          name: Build
-          command: |
-            yarn build:db:node
-            yarn build:senate
-
-  setup_db:
-    docker:
-      - image: cimg/node:18.16.0
-        environment:
-          DATABASE_URL: mysql://root:root@localhost:3306/circleci
+      - image: mcr.microsoft.com/playwright:v1.34.0-jammy
       - image: cimg/mysql:8.0
         environment:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: circleci
           MYSQL_USER: mysql
           MYSQL_PASSWORD: mysql
-          DATABASE_URL: mysql://root:root@localhost:3306/circleci
-    steps:
-      - checkout
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Deps
-          command: |
-            yarn install --frozen-lockfile --cache-folder ~/.
-      - save_cache:
-          name: Save Yarn Package Cache
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
-      - run:
-          name: Database Setup
-          command: |
-            yarn db:push
-            yarn db:seed
-
-  run_senate:
-    docker:
-      - image: cimg/node:18.16.0-browsers
     environment:
       DATABASE_URL: mysql://root:root@localhost:3306/circleci
     steps:
+      - run:
+          command: apt-get update && apt-get install -y dbus
       - checkout
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Deps
-          command: |
-            yarn install --frozen-lockfile --cache-folder ~/.
-      - save_cache:
-          name: Save Yarn Package Cache
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
-      - run:
-          name: Run Senate
-          command: yarn start:senate
-          background: true
-
-  run_tests:
-    docker:
-      - image: mcr.microsoft.com/playwright:v1.34.0-jammy
-    steps:
-      - checkout
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Deps
-          command: |
-            yarn install --frozen-lockfile --cache-folder ~/.
-      - save_cache:
-          name: Save Yarn Package Cache
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
+      - node/install-packages:
+          pkg-manager: yarn
+      - browser-tools/install-chrome
       - run:
           name: Install Playwright's dependencies
           command: npx playwright install --with-deps
@@ -114,33 +32,40 @@ jobs:
             fluxbox \
             xvfb
       - run:
+          name: Build
+          command: |
+            yarn db:generate:node
+            yarn build:db:node
+            yarn db:push
+            yarn db:seed
+            yarn build:senate
+      - run:
           name: Run Playwright tests
           no_output_timeout: 30m
           command: xvfb-run npx playwright test
-
-  notify:
-    docker:
-      - image: cimg/node:18.16.0-browsers
-    steps:
       - discord/status:
           failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
           success_message: ":tada: ${CIRCLE_BRANCH} passed all tests."
           webhook: "${DISCORD_STATUS_WEBHOOK}"
-          only_for_branches: "staging,dev"
-
+          only_for_branches: "staging"
+      - discord/status:
+          failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
+          fail_only: true
+          webhook: "${DISCORD_STATUS_WEBHOOK}"
+          only_for_branches: "dev"
+      - store_test_results:
+          path: results.xml
+      - store_artifacts:
+          path: playwright-report/index.html
+      - store_artifacts:
+          path: test-results
 workflows:
   test_workflow:
     jobs:
-      - build
-      - setup_db:
-          requires:
-            - build
-      - run_senate:
-          requires:
-            - setup_db
-      - run_tests:
-          requires:
-            - run_senate
-      - notify:
-          requires:
-            - run_tests
+      - test:
+          filters:
+            branches:
+              only:
+                - main
+                - dev
+                - staging
