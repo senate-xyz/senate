@@ -50,11 +50,6 @@ jobs:
             yarn build:senate
 
       - run:
-          name: Start
-          command: yarn start:senate
-          background: true
-
-      - run:
           name: Run Playwright tests
           no_output_timeout: 30m
           command: xvfb-run npx playwright test

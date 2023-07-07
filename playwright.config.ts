@@ -27,7 +27,7 @@ export default defineConfig({
       command: "yarn start:senate",
       url: "http://localhost:3000",
       timeout: 60000,
-      reuseExistingServer: true,
+      reuseExistingServer: !process.env.CI,
     },
   ],
 
