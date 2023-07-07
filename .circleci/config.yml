@@ -48,11 +48,10 @@ jobs:
             yarn db:push
             yarn db:seed
             yarn build:senate
-      
-        - run:
+
+      - run:
           name: Start
-          command: |
-            yarn start:senate
+          command: yarn start:senate
           background: true
 
       - run:
