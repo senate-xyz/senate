@@ -6,6 +6,7 @@ import { Discord } from "./components/Discord";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../pages/api/auth/[...nextauth]";
 import { PostHog } from "posthog-node";
+import { ClientComponent } from "./components/ClientComponent";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
@@ -50,6 +51,7 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-screen flex-col gap-10">
+      <ClientComponent/>
       <div className="flex flex-col gap-4">
         <div className="text-[24px] font-light leading-[30px] text-white">
           Your Notifications

@@ -292,7 +292,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                                             NotificationDispatchedState::Dispatched,
                                         ),
                                         notification::emailmessageid::set(
-                                            postmark_result.clone().MessageID.into(),
+                                            postmark_result.clone().MessageID,
                                         ),
                                         notification::emailtemplate::set(
                                             quorum_template.to_string().into(),

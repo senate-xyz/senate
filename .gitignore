@@ -133,3 +133,4 @@ packages/database/prisma/db.sqlite
 /playwright-report/
 /playwright/.cache/
 results.xml
+results.html

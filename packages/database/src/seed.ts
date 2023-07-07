@@ -953,7 +953,7 @@ const seedVoters = async () => {
     }),
     {
       isolationLevel: "ReadCommitted",
-    }
+    },
   );
 };
 
@@ -1007,9 +1007,9 @@ async function testUsers() {
 }
 
 async function main() {
-  // await seedData();
-  //  await seedVoters();
-  // await testUsers();
+  await seedData();
+  await seedVoters();
+  await testUsers();
 }
 
 void main();
