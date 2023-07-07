@@ -14,8 +14,6 @@ jobs:
     environment:
       DATABASE_URL: mysql://root:root@localhost:3306/circleci
     steps:
-      - run:
-          command: apt-get update && apt-get install -y dbus
       - checkout
 
       - restore_cache:
@@ -50,6 +48,12 @@ jobs:
             yarn db:push
             yarn db:seed
             yarn build:senate
+
+      - run:
+          name: Run Senate
+          command: |
+            yarn start:senate
+          background: true
 
       - run:
           name: Run Playwright tests

@@ -17,10 +17,9 @@ export default defineConfig({
     },
     actionTimeout: 0,
     baseURL: "http://localhost:3000",
-    trace: "on-first-retry",
+    trace: "retry-with-trace",
     headless: false,
   },
-  // start local web server before tests
 
   webServer: [
     {
