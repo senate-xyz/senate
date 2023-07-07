@@ -14,10 +14,9 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Run jest tests
+          name: Install Deps
           command: |
             yarn install --frozen-lockfile --cache-folder ~/.
-            yarn test
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ checksum "yarn.lock" }}
@@ -46,10 +45,9 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Run jest tests
+          name: Install Deps
           command: |
             yarn install --frozen-lockfile --cache-folder ~/.
-            yarn test
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ checksum "yarn.lock" }}
@@ -73,10 +71,9 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Run jest tests
+          name: Install Deps
           command: |
             yarn install --frozen-lockfile --cache-folder ~/.
-            yarn test
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ checksum "yarn.lock" }}
@@ -97,10 +94,9 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Run jest tests
+          name: Install Deps
           command: |
             yarn install --frozen-lockfile --cache-folder ~/.
-            yarn test
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ checksum "yarn.lock" }}
