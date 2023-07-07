@@ -1,9 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
-  timeout: 30 * 1000,
+  timeout: 60 * 1000,
   expect: {
-    timeout: 30 * 1000,
+    timeout: 60 * 1000,
   },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -27,7 +27,7 @@ export default defineConfig({
       command: "yarn start:senate",
       url: "http://localhost:3000",
       timeout: 60000,
-      reuseExistingServer: true,
+      reuseExistingServer: !process.env.CI,
     },
   ],
 

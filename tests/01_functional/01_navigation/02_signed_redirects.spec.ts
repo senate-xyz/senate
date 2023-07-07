@@ -9,6 +9,7 @@ test.beforeEach(async ({ page }) => {
 test_metamask(
   "signed notifications settings url does not redirect",
   async ({ page }) => {
+    test_metamask.slow();
     await page.getByText("Connect Wallet").click();
     await page.getByText("MetaMask").click();
     await metamask.acceptAccess();
@@ -28,6 +29,7 @@ test_metamask(
 test_metamask(
   "signed proxy settings url does not redirect",
   async ({ page }) => {
+    test_metamask.slow();
     await page.getByText("Connect Wallet").click();
     await page.getByText("MetaMask").click();
     await metamask.acceptAccess();

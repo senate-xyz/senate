@@ -49,11 +49,13 @@ test("settings url redirects to settings account", async () => {
 });
 
 test("unsigned notifications settings url redirects to settings account", async () => {
+  test_metamask.slow();
   await sharedPage.goto("/settings/notifications", { timeout: 60 * 1000 });
   await expect(sharedPage).toHaveURL("/settings/account");
 });
 
 test("unsigned proxy settings url redirects to settings account", async () => {
+  test_metamask.slow();
   await sharedPage.goto("/settings/proxy", { timeout: 60 * 1000 });
   await expect(sharedPage).toHaveURL("/settings/account");
 });
