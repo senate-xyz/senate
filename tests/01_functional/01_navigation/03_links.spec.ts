@@ -11,34 +11,34 @@ test("orgs navbar link", async ({ page }) => {
 
 test("proposals navbar link", async ({ page }) => {
   await page.getByTestId("navbar").getByText("Proposals").click();
-  await page.waitForURL(
+  await expect(page).toHaveURL(
     "/proposals/active?from=any&end=365&voted=any&proxy=any"
   );
 });
 
 test("settings navbar link", async ({ page }) => {
   await page.getByTestId("navbar").getByText("Settings").click();
-  await page.waitForURL("/settings/account");
+  await expect(page).toHaveURL("/settings/account");
 });
 
 test("twitter link", async ({ page }) => {
   await page.getByTestId("navbar").getByAltText("twitter").click();
-  await page.waitForURL(
+  await expect(page).toHaveURL(
     "https://twitter.com/i/flow/login?redirect_after_login=%2FSenateLabs"
   );
 });
 
 test("discord link", async ({ page }) => {
   await page.getByTestId("navbar").getByAltText("discord").click();
-  await page.waitForURL("https://discord.com/invite/shtxfNqazd");
+  await expect(page).toHaveURL("https://discord.com/invite/shtxfNqazd");
 });
 
 test("github link", async ({ page }) => {
   await page.getByTestId("navbar").getByAltText("github").click();
-  await page.waitForURL("https://github.com/senate-xyz/senate");
+  await expect(page).toHaveURL("https://github.com/senate-xyz/senate");
 });
 
 test("logo link", async ({ page }) => {
   await page.getByTestId("navbar").getByAltText("Senate logo").click();
-  await page.waitForURL("/");
+  await expect(page).toHaveURL("/");
 });
