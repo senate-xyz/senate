@@ -28,6 +28,7 @@ jobs:
           MYSQL_DATABASE: circleci
           MYSQL_USER: mysql
           MYSQL_PASSWORD: mysql
+          DATABASE_URL: mysql://root:root@localhost:3306/circleci
     steps:
       - checkout
       - node/install-packages:
