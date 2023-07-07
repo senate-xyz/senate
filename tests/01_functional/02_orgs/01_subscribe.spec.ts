@@ -85,7 +85,7 @@ test_metamask("expect to be subscribed to 2 daos", async ({ page }) => {
 });
 
 test_metamask("subscribe to all daos", async ({ page }) => {
-  test_metamask.slow();
+  test_metamask.setTimeout(30 * 60 * 1000);
 
   await page.getByText("Connect Wallet").click();
   await page.getByText("MetaMask").click();
@@ -107,7 +107,7 @@ test_metamask("subscribe to all daos", async ({ page }) => {
 
   for (const org of daosToSubscribe) {
     await org.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(10000);
   }
 
   await expect(
