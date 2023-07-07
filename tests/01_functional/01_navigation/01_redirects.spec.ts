@@ -16,6 +16,7 @@ test.afterAll(async () => {
 });
 
 test("root url redirects to /orgs", async () => {
+  await sharedPage.goto("/");
   await expect(sharedPage).toHaveURL("/orgs");
 });
 

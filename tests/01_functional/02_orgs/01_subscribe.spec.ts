@@ -102,17 +102,29 @@ test_metamask("subscribe to all daos", async ({ page }) => {
     await page.getByTestId("subscribed-list").getByRole("listitem")
   ).toHaveCount(2);
 
-  const numberOfDaos = await prisma.dao.count({});
-  const daosToSubscribe = await page.getByTestId("subscribe-button").all();
+  let currentCount = 2;
 
-  for (const org of daosToSubscribe) {
-    await org.click();
-    await page.waitForTimeout(10000);
+  const numberOfDaos = await prisma.dao.count({});
+
+  while (currentCount < numberOfDaos) {
+    await test.step(`Create subscription ${currentCount}`, async () => {
+      await page.getByTestId("subscribe-button").first().click();
+      currentCount++;
+      await expect(
+        await page.getByTestId("subscribed-list").getByRole("listitem")
+      ).toHaveCount(currentCount);
+    });
   }
 
   await expect(
     await page.getByTestId("subscribed-list").getByRole("listitem")
   ).toHaveCount(numberOfDaos);
+
+  const numberOfSubscriptions = await prisma.subscription.count({
+    where: { user: { address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" } },
+  });
+
+  await expect(numberOfSubscriptions).toBe(numberOfDaos);
 });
 
 test_metamask("expect to be subscribed to all daos", async ({ page }) => {
