@@ -6,82 +6,82 @@ orbs:
   discord: antonioned/discord@0.1.0
 
 jobs:
-  test:
+  setup_db:
     docker:
-      - image: mcr.microsoft.com/playwright:v1.34.0-jammy
       - image: cimg/mysql:8.0
         environment:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: circleci
           MYSQL_USER: mysql
           MYSQL_PASSWORD: mysql
-
-    environment:
-      DATABASE_URL: mysql://root:root@localhost:3306/circleci
-
     steps:
-      - run:
-          command: apt-get update && apt-get install -y dbus
-
       - checkout
       - node/install-packages:
           pkg-manager: yarn
+      - run:
+          name: Database Setup
+          command: |
+            yarn db:generate:node
+            yarn build:db:node
+            yarn db:push
+            yarn db:seed
 
+  run_senate:
+    docker:
+      - image: mcr.microsoft.com/playwright:v1.34.0-jammy
+    environment:
+      DATABASE_URL: mysql://root:root@localhost:3306/circleci
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: Run Senate
+          command: yarn start:senate
+          background: true
+
+  run_tests:
+    docker:
+      - image: mcr.microsoft.com/playwright:v1.34.0-jammy
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
       - browser-tools/install-chrome
-
       - run:
           name: Install Playwright's dependencies
           command: npx playwright install --with-deps
-
       - run:
           name: Install virtual display
           command: |
             apt-get install --no-install-recommends -y \
             fluxbox \
             xvfb
-
-      - run:
-          name: Build
-          command: |
-            yarn db:generate:node
-            yarn build:db:node
-            yarn db:push
-            yarn db:seed
-            yarn build:senate
-
       - run:
           name: Run Playwright tests
           no_output_timeout: 30m
           command: xvfb-run npx playwright test
 
+  notify:
+    docker:
+      - image: circleci/node:latest
+    steps:
       - discord/status:
           failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
           success_message: ":tada: ${CIRCLE_BRANCH} passed all tests."
           webhook: "${DISCORD_STATUS_WEBHOOK}"
-          only_for_branches: "staging"
-
-      - discord/status:
-          failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
-          fail_only: true
-          webhook: "${DISCORD_STATUS_WEBHOOK}"
-          only_for_branches: "dev"
-
-      - store_test_results:
-          path: results.xml
-
-      - store_artifacts:
-          path: playwright-report/index.html
-
-      - store_artifacts:
-          path: test-results
+          only_for_branches: "staging,dev"
 
 workflows:
   test_workflow:
     jobs:
-      - test:
-          filters:
-            branches:
-              only:
-                - main
-                - dev
-                - staging
+      - setup_db
+      - run_senate:
+          requires:
+            - setup_db
+      - run_tests:
+          requires:
+            - run_senate
+      - notify:
+          requires:
+            - run_tests
