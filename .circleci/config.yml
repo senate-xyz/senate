@@ -1,7 +1,5 @@
 version: 2.1
 orbs:
-  node: circleci/node@5.1.0
-  browser-tools: circleci/browser-tools@1.4.1
   discord: antonioned/discord@0.1.0
 jobs:
   test:
@@ -16,21 +14,32 @@ jobs:
     environment:
       DATABASE_URL: mysql://root:root@localhost:3306/circleci
     steps:
-      - run:
-          command: apt-get update && apt-get install -y dbus
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
-      - browser-tools/install-chrome
+
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+
       - run:
           name: Install Playwright's dependencies
           command: npx playwright install --with-deps
+
       - run:
           name: Install virtual display
           command: |
             apt-get install --no-install-recommends -y \
             fluxbox \
             xvfb
+
       - run:
           name: Build
           command: |
@@ -39,10 +48,20 @@ jobs:
             yarn db:push
             yarn db:seed
             yarn build:senate
+
+      - run:
+          environment:
+            DEBUG: true
+          name: Run Senate
+          command: |
+            yarn start:senate
+          background: true
+
       - run:
           name: Run Playwright tests
           no_output_timeout: 30m
           command: xvfb-run npx playwright test
+
       - discord/status:
           failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
           success_message: ":tada: ${CIRCLE_BRANCH} passed all tests."
@@ -59,6 +78,7 @@ jobs:
           path: playwright-report/index.html
       - store_artifacts:
           path: test-results
+
 workflows:
   test_workflow:
     jobs:
