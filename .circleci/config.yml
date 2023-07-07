@@ -50,6 +50,8 @@ jobs:
             yarn build:senate
 
       - run:
+          environment:
+            DEBUG: true
           name: Run Senate
           command: |
             yarn start:senate
