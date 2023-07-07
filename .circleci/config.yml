@@ -31,6 +31,8 @@ jobs:
   setup_db:
     docker:
       - image: cimg/node:18.16.0
+        environment:
+          DATABASE_URL: mysql://root:root@localhost:3306/circleci
       - image: cimg/mysql:8.0
         environment:
           MYSQL_ROOT_PASSWORD: root
