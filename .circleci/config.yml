@@ -43,14 +43,6 @@ jobs:
             yarn build:senate
 
       - run:
-          environment:
-            DEBUG: true
-          name: Run Senate
-          command: |
-            yarn start:senate
-          background: true
-
-      - run:
           name: Run Playwright tests
           no_output_timeout: 30m
           command: yarn test:e2e:ci
