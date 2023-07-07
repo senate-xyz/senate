@@ -8,7 +8,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/node:18.16.0-browsers
+      - image: cimg/node:18.16.0
     steps:
       - checkout
       - node/install-packages:
@@ -18,8 +18,10 @@ jobs:
           command: |
             yarn build:db:node
             yarn build:senate
+
   setup_db:
     docker:
+      - image: cimg/node:18.16.0
       - image: cimg/mysql:8.0
         environment:
           MYSQL_ROOT_PASSWORD: root
