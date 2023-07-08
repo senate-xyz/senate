@@ -6,14 +6,18 @@ jobs:
     docker:
       - image: mcr.microsoft.com/playwright:v1.34.0-jammy
     steps:
-      - checkout
-
       - run:
-          name: Setup DB env
+          name: Set DATABASE_URL based on branch
           command: |
-            chmod -x ci_setup_env.sh
-            bash ./ci_setup_env.sh
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              echo 'export DATABASE_URL=${PRODUCTION_DB}' >> $BASH_ENV
+            elif [ "${CIRCLE_BRANCH}" == "dev" ]; then
+              echo 'export DATABASE_URL=${DEVELOPMENT_DB}' >> $BASH_ENV
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              echo 'export DATABASE_URL=${STAGING_DB}' >> $BASH_ENV
+            fi
 
+      - checkout
       - restore_cache:
           name: Restore Yarn Package Cache
           keys:
@@ -41,9 +45,7 @@ jobs:
       - run:
           name: Run Playwright tests
           no_output_timeout: 30m
-          command: |
-            bash ./ci_setup_env.sh
-            yarn test:e2e:ci
+          command: yarn test:e2e:ci
 
       - discord/status:
           failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
