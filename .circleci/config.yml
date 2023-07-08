@@ -5,14 +5,6 @@ jobs:
   test:
     docker:
       - image: mcr.microsoft.com/playwright:v1.34.0-jammy
-    #   # - image: cimg/mysql:8.0
-    #   #   environment:
-    #   #     MYSQL_ROOT_PASSWORD: root
-    #   #     MYSQL_DATABASE: circleci
-    #   #     MYSQL_USER: mysql
-    #   #     MYSQL_PASSWORD: mysql
-    # environment:
-    #   DATABASE_URL: mysql://root:root@localhost:3306/circleci
     steps:
       - checkout
 
@@ -20,7 +12,7 @@ jobs:
           name: Setup DB env
           command: |
             chmod -x prepareci.sh
-            bash ./compile.sh
+            bash ./prepareci.sh
 
       - restore_cache:
           name: Restore Yarn Package Cache
@@ -44,8 +36,6 @@ jobs:
           command: |
             yarn db:generate:node
             yarn build:db:node
-            # yarn db:push
-            # yarn db:seed
             yarn build:senate
 
       - run:
