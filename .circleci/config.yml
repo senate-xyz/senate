@@ -11,8 +11,8 @@ jobs:
       - run:
           name: Setup DB env
           command: |
-            chmod -x prepareci.sh
-            bash ./prepareci.sh
+            chmod -x ci_setup_env.sh
+            bash ./ci_setup_env.sh
 
       - restore_cache:
           name: Restore Yarn Package Cache
