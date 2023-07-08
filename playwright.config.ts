@@ -25,14 +25,6 @@ export default defineConfig({
     headless: false,
   },
 
-  webServer: [
-    {
-      port,
-      command: "yarn start:senate",
-      timeout: 60000,
-    },
-  ],
-
   projects: [
     {
       name: "setup",

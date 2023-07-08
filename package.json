@@ -40,7 +40,9 @@
     "update": "rustup update && ncu -u && turbo run update && yarn",
     "start-server": "yarn start:senate",
     "test:ci": "xvfb-run yarn playwright test",
-    "test:e2e:ci": "start-server-and-test start-server http://localhost:3000 test:ci"
+    "test": "yarn playwright test",
+    "test:e2e:ci": "start-server-and-test start-server http://localhost:3000 test:ci",
+    "test:e2e": "start-server-and-test start-server http://localhost:3000 test"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.6",
