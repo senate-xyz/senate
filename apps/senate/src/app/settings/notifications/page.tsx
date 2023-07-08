@@ -33,21 +33,6 @@ export default async function Home() {
   const { aave: aaveMagicUser, uniswap: uniswapMagicUser } =
     await getMagicUser();
 
-  const telegramFlag = await posthog.isFeatureEnabled(
-    "telegram-secretary",
-    session?.user?.name ?? "",
-  );
-
-  const discordFlag = await posthog.isFeatureEnabled(
-    "discord-secretary",
-    session?.user?.name ?? "",
-  );
-
-  const magicUserFlag = await posthog.isFeatureEnabled(
-    "magic-user-menu",
-    session?.user?.name ?? "",
-  );
-
   return (
     <div className="flex min-h-screen flex-col gap-10">
       <ClientComponent />
@@ -70,20 +55,14 @@ export default async function Home() {
         empty={emailEmpty}
       />
 
-      {discordFlag && (
-        <Discord
-          enabled={discordEnabled}
-          webhook={discordWebhook}
-          reminders={discordReminders}
-          includeVotes={discordIncludeVotes}
-        />
-      )}
+      <Discord
+        enabled={discordEnabled}
+        webhook={discordWebhook}
+        reminders={discordReminders}
+        includeVotes={discordIncludeVotes}
+      />
 
-      {/* {telegramFlag && <Telegram />} */}
-
-      {magicUserFlag && (
-        <MagicUser aave={aaveMagicUser} uniswap={uniswapMagicUser} />
-      )}
+      <MagicUser aave={aaveMagicUser} uniswap={uniswapMagicUser} />
     </div>
   );
 }

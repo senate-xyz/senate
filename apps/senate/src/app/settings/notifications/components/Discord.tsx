@@ -10,7 +10,7 @@ import {
 } from "../actions";
 import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
-import { useFeatureFlagEnabled } from "posthog-js/react";
+import { PostHogFeature } from "posthog-js/react";
 
 export const Discord = (props: {
   enabled: boolean;
@@ -22,49 +22,51 @@ export const Discord = (props: {
   const [, startTransition] = useTransition();
 
   return (
-    <div className="flex max-w-[800px] flex-col gap-4 bg-black p-4">
-      <div className="flex flex-row justify-between">
-        <div className="flex flex-row gap-4">
-          <Image
-            src="/assets/Senate_Logo/settings_discord_icon.svg"
-            alt={""}
-            width={24}
-            height={24}
-          />
-          <div className="font-[18px] leading-[23px] text-white">
-            Discord Notifications
+    <PostHogFeature flag="discord-secretary" match={true}>
+      <div className="flex max-w-[800px] flex-col gap-4 bg-black p-4">
+        <div className="flex flex-row justify-between">
+          <div className="flex flex-row gap-4">
+            <Image
+              src="/assets/Senate_Logo/settings_discord_icon.svg"
+              alt={""}
+              width={24}
+              height={24}
+            />
+            <div className="font-[18px] leading-[23px] text-white">
+              Discord Notifications
+            </div>
           </div>
+          <label className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500">
+            <input
+              type="checkbox"
+              checked={discordEnabled}
+              onChange={(e) => {
+                setDiscordEnabled(e.target.checked);
+                if (!e.target.checked) startTransition(() => setDiscord(false));
+                if (e.target.checked) {
+                  if (props.webhook) startTransition(() => setDiscord(true));
+                }
+              }}
+              className="peer sr-only"
+            />
+            <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
+          </label>
         </div>
-        <label className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500">
-          <input
-            type="checkbox"
-            checked={discordEnabled}
-            onChange={(e) => {
-              setDiscordEnabled(e.target.checked);
-              if (!e.target.checked) startTransition(() => setDiscord(false));
-              if (e.target.checked) {
-                if (props.webhook) startTransition(() => setDiscord(true));
-              }
-            }}
-            className="peer sr-only"
+        <div className="max-w-[610px] text-[15px] text-white">
+          Receive instant notifications in your Discord server about proposals
+          from all organisations you follow on Senate. This will help ensure
+          that you and your team always remember to vote.
+        </div>
+        {discordEnabled && (
+          <Enabled
+            webhook={props.webhook}
+            reminders={props.reminders}
+            includeVotes={props.includeVotes}
+            setDiscordEnabled={setDiscordEnabled}
           />
-          <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
-        </label>
+        )}
       </div>
-      <div className="max-w-[610px] text-[15px] text-white">
-        Receive instant notifications in your Discord server about proposals
-        from all organisations you follow on Senate. This will help ensure that
-        you and your team always remember to vote.
-      </div>
-      {discordEnabled && (
-        <Enabled
-          webhook={props.webhook}
-          reminders={props.reminders}
-          includeVotes={props.includeVotes}
-          setDiscordEnabled={setDiscordEnabled}
-        />
-      )}
-    </div>
+    </PostHogFeature>
   );
 };
 
@@ -79,7 +81,6 @@ const Enabled = (props: {
   const [edit, setEdit] = useState(false);
   const [, startTransition] = useTransition();
   const [currentWebhook, setCurrentWebhook] = useState(props.webhook);
-  const extendedMenu = useFeatureFlagEnabled("discord-extended-menu");
 
   return (
     <div className="flex flex-col gap-2">
@@ -173,9 +174,10 @@ const Enabled = (props: {
                 </div>
                 <div className={`flex flex-col gap-2`}>
                   <RemindersSetting endingSoon={props.reminders} />
-                  {extendedMenu && (
+
+                  <PostHogFeature flag="discord-extended-menu" match={true}>
                     <IncludeVotesSetting includeVotes={props.includeVotes} />
-                  )}
+                  </PostHogFeature>
                 </div>
               </div>
             )}

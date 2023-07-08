@@ -1,6 +1,6 @@
 "use client";
 
-import { useFeatureFlagEnabled } from "posthog-js/react";
+import { PostHogFeature } from "posthog-js/react";
 import Image from "next/image";
 import { useState, useTransition } from "react";
 import {
@@ -78,8 +78,6 @@ const Enabled = (props: {
   const [resend, setResend] = useState(true);
   const [, startTransition] = useTransition();
 
-  const extendedMenu = useFeatureFlagEnabled("email-extended-menu");
-
   return (
     <div className="flex flex-col gap-2">
       <div className="text-[18px] font-light text-white">Email Address</div>
@@ -145,12 +143,12 @@ const Enabled = (props: {
         </div>
       )}
 
-      {extendedMenu && (
+      <PostHogFeature flag="email-extended-menu" match={true}>
         <div className="flex flex-col gap-2">
           <QuorumSetting quorum={props.quorum} />
           <EmptySettings empty={props.empty} />
         </div>
-      )}
+      </PostHogFeature>
     </div>
   );
 };

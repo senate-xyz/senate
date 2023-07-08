@@ -9,13 +9,11 @@ import {
   deleteNotifs,
   sendBulletin,
 } from "../actions";
-import { useFeatureFlagEnabled } from "posthog-js/react";
+import { PostHogFeature } from "posthog-js/react";
 
 const Testing = () => {
-  const testingFlag = useFeatureFlagEnabled("testing-menu");
-
   return (
-    testingFlag && (
+    <PostHogFeature flag="testing-menu" match={true}>
       <div className="flex max-w-[400px] flex-col gap-2 border border-red-400 p-2">
         <div className="font-bold text-white">Testing stuff</div>
         <div />
@@ -92,7 +90,7 @@ const Testing = () => {
           Send bulletin
         </div>
       </div>
-    )
+    </PostHogFeature>
   );
 };
 export default Testing;
