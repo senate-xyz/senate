@@ -16,6 +16,12 @@ jobs:
     steps:
       - checkout
 
+      - run:
+          name: Setup DB env
+          command: |
+            chmod -x prepareci.sh
+            bash ./compile.sh
+
       - restore_cache:
           name: Restore Yarn Package Cache
           keys:
