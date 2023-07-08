@@ -2,14 +2,16 @@
 
 if [ "${CIRCLE_BRANCH}" == "dev" ]
 then
-  export DATABASE_URL=${DEVELOPMENT_DB}
+  echo "export DATABASE_URL=${DEVELOPMENT_DB}" > ./ci_env.sh
 elif [ "${CIRCLE_BRANCH}" == "staging" ]
 then
-  export DATABASE_URL=${STAGING_DB}
+  echo "export DATABASE_URL=${STAGING_DB}" > ./ci_env.sh
 elif [ "${CIRCLE_BRANCH}" == "main" ]
 then
-  export DATABASE_URL=${PRODUCTION_DB}
+  echo "export DATABASE_URL=${PRODUCTION_DB}" > ./ci_env.sh
 fi
+
+chmod +x ./ci_env.sh
 
 echo "DATABASE_URL set for : ${CIRCLE_BRANCH} to ${DATABASE_URL}"
 
