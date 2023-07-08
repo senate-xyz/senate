@@ -11,6 +11,6 @@ then
   export DATABASE_URL=${PRODUCTION_DB}
 fi
 
-echo "DATABASE_URL set for : ${CIRCLE_BRANCH}"
+echo "DATABASE_URL set for : ${CIRCLE_BRANCH} to ${DATABASE_URL}"
 
 exit 0
