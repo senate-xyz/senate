@@ -2,11 +2,11 @@
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useTransition } from "react";
 import { useAccount, useSignMessage } from "wagmi";
-import { trpc } from "../../../../../server/trpcClient";
 import { useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
+import { discourseSignup } from "../actions";
 
 export const VerifyButton = (props: { challenge: string }) => {
   const router = useRouter();
@@ -17,8 +17,7 @@ export const VerifyButton = (props: { challenge: string }) => {
   const { signMessage, data: signedMessage } = useSignMessage({
     message: message,
   });
-
-  const verify = trpc.verify.discourseSignup.useMutation();
+  const [, startTransition] = useTransition();
 
   useEffect(() => {
     if (
@@ -36,20 +35,17 @@ export const VerifyButton = (props: { challenge: string }) => {
 
   useEffect(() => {
     if (signedMessage)
-      verify.mutate(
-        {
-          challenge: props.challenge,
-          message: message,
-          address: address ?? "",
-          signature: signedMessage ?? "",
-        },
-        {
-          onSuccess: () => {
-            if (router) router.push("/orgs?connect");
-          },
-        }
+      startTransition(() =>
+        discourseSignup(
+          props.challenge,
+          message,
+          address ?? "",
+          signedMessage ?? "",
+        ).then(() => {
+          if (router) router.push("/orgs?connect");
+        }),
       );
-  }, [address, message, props.challenge, router, signedMessage, verify]);
+  }, [address, message, props.challenge, router, signedMessage]);
 
   return (
     <Suspense fallback={<></>}>

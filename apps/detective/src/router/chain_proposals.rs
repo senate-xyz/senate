@@ -5,20 +5,35 @@ use reqwest::header::HeaderMap;
 use rocket::serde::json::Json;
 use serde_json::Value;
 use tracing::{
-    debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
+    debug_span,
+    event,
+    info_span,
+    instrument,
+    span,
+    trace_span,
+    Instrument,
+    Level,
+    Span,
 };
 
-use crate::handlers::proposals::aave::aave_proposals;
-use crate::handlers::proposals::interest_protocol::interest_protocol_proposals;
-use crate::handlers::proposals::zeroxtreasury::zeroxtreasury_proposals;
 use crate::{
     handlers::proposals::{
-        compound::compound_proposals, dydx::dydx_proposals, ens::ens_proposals,
-        gitcoin::gitcoin_proposals, hop::hop_proposals, maker_executive::maker_executive_proposals,
-        maker_poll::maker_poll_proposals, uniswap::uniswap_proposals,
+        aave::aave_proposals,
+        compound::compound_proposals,
+        dydx::dydx_proposals,
+        ens::ens_proposals,
+        gitcoin::gitcoin_proposals,
+        hop::hop_proposals,
+        interest_protocol::interest_protocol_proposals,
+        maker_executive::maker_executive_proposals,
+        maker_poll::maker_poll_proposals,
+        uniswap::uniswap_proposals,
+        zeroxtreasury::zeroxtreasury_proposals,
     },
     prisma::{dao, daohandler, proposal, DaoHandlerType, ProposalState},
-    Ctx, ProposalsRequest, ProposalsResponse,
+    Ctx,
+    ProposalsRequest,
+    ProposalsResponse,
 };
 
 #[allow(dead_code)]

@@ -6,8 +6,7 @@ use ethers::{prelude::LogMeta, providers::Middleware, types::Address};
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use serde::Deserialize;
-use tracing::Instrument;
-use tracing::{debug_span, instrument};
+use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::{uniswapgov, uniswapgov::ProposalCreatedFilter},

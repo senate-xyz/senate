@@ -7,7 +7,13 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
-        notification, proposal, subscription, user, NotificationType, PrismaClient, ProposalState,
+        notification,
+        proposal,
+        subscription,
+        user,
+        NotificationType,
+        PrismaClient,
+        ProposalState,
     },
     utils::vote::get_vote,
 };

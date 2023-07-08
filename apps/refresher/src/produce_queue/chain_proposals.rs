@@ -11,7 +11,8 @@ use crate::{
     config::Config,
     prisma,
     refresh_status::{DaoHandlerRefreshStatus, DAOS_REFRESH_STATUS},
-    RefreshEntry, RefreshType,
+    RefreshEntry,
+    RefreshType,
 };
 
 #[instrument(skip_all, level = "info")]

@@ -10,8 +10,7 @@ use futures::stream::{FuturesUnordered, StreamExt};
 use itertools::Itertools;
 use prisma_client_rust::chrono::Utc;
 use serde::Deserialize;
-use tracing::Instrument;
-use tracing::{debug_span, instrument};
+use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::makerexecutive::{self, LogNoteFilter},

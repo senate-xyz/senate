@@ -106,7 +106,7 @@ const Enabled = (props: {
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         startTransition(() =>
-                          setWebhookAndEnableDiscord(currentWebhook)
+                          setWebhookAndEnableDiscord(currentWebhook),
                         );
                         setEdit(false);
                       }
@@ -119,7 +119,7 @@ const Enabled = (props: {
                   bg-[#ABABAB] text-center hover:bg-[#999999]`}
                     onClick={() => {
                       startTransition(() =>
-                        setWebhookAndEnableDiscord(currentWebhook)
+                        setWebhookAndEnableDiscord(currentWebhook),
                       );
                       setEdit(false);
                     }}

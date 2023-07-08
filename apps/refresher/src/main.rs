@@ -9,26 +9,27 @@ use flume as _;
 use log::{info, warn};
 use reqwest as _;
 use serde_json as _;
-use tokio::time::sleep;
-use tokio::try_join;
+use tokio::{time::sleep, try_join};
 use tracing::{debug, debug_span, event, Instrument, Level};
 
 use config::{load_config_from_db, CONFIG};
 use handlers::create_voter_handlers;
 use prisma::PrismaClient;
 
-use crate::consume_queue::{
-    chain_proposals::consume_chain_proposals, snapshot_proposals::consume_snapshot_proposals,
-};
-use crate::refresh_status::DAOS_REFRESH_STATUS;
 use crate::{
-    consume_queue::{chain_votes::consume_chain_votes, snapshot_votes::consume_snapshot_votes},
+    consume_queue::{
+        chain_proposals::consume_chain_proposals,
+        chain_votes::consume_chain_votes,
+        snapshot_proposals::consume_snapshot_proposals,
+        snapshot_votes::consume_snapshot_votes,
+    },
     produce_queue::{
-        chain_proposals::produce_chain_proposals_queue, chain_votes::produce_chain_votes_queue,
+        chain_proposals::produce_chain_proposals_queue,
+        chain_votes::produce_chain_votes_queue,
         snapshot_proposals::produce_snapshot_proposals_queue,
         snapshot_votes::produce_snapshot_votes_queue,
     },
-    refresh_status::create_refresh_statuses,
+    refresh_status::{create_refresh_statuses, DAOS_REFRESH_STATUS},
 };
 
 pub mod prisma;
