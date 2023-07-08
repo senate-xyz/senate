@@ -5,17 +5,19 @@ jobs:
   test:
     docker:
       - image: mcr.microsoft.com/playwright:v1.34.0-jammy
-      - image: cimg/mysql:8.0
-        environment:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: circleci
-          MYSQL_USER: mysql
-          MYSQL_PASSWORD: mysql
-    environment:
-      DATABASE_URL: mysql://root:root@localhost:3306/circleci
     steps:
-      - checkout
+      - run:
+          name: Set DATABASE_URL based on branch
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              echo 'export DATABASE_URL=${PRODUCTION_DB}' >> $BASH_ENV
+            elif [ "${CIRCLE_BRANCH}" == "dev" ]; then
+              echo 'export DATABASE_URL=${DEVELOPMENT_DB}' >> $BASH_ENV
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              echo 'export DATABASE_URL=${STAGING_DB}' >> $BASH_ENV
+            fi
 
+      - checkout
       - restore_cache:
           name: Restore Yarn Package Cache
           keys:
@@ -38,8 +40,6 @@ jobs:
           command: |
             yarn db:generate:node
             yarn build:db:node
-            yarn db:push
-            yarn db:seed
             yarn build:senate
 
       - run:
