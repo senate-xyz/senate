@@ -21,7 +21,7 @@ pub async fn produce_snapshot_proposals_queue(config: &Config) -> Result<Vec<Ref
     let force_refresh = Utc::now() - Duration::seconds(config.force_snapshot_proposals.into());
     let new_refresh = Utc::now() - Duration::seconds(config.new_snapshot_proposals.into());
 
-    let handler_types = vec![prisma::DaoHandlerType::Snapshot];
+    let handler_types = [prisma::DaoHandlerType::Snapshot];
 
     let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
 

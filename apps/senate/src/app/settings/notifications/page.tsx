@@ -2,19 +2,9 @@ import { MagicUser } from "./components/MagicUser";
 import { Email } from "./components/Email";
 import { getMagicUser, userDiscord, userEmail } from "./actions";
 import { Discord } from "./components/Discord";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../../pages/api/auth/[...nextauth]";
-import { PostHog } from "posthog-node";
 import { ClientComponent } from "./components/ClientComponent";
 
-const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
-  host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
-  disableGeoip: true,
-});
-
 export default async function Home() {
-  const session = await getServerSession(authOptions());
-
   const {
     enabled: emailEnabled,
     email: emailEmail,
