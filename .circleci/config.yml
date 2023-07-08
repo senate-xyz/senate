@@ -41,9 +41,7 @@ jobs:
       - run:
           name: Run Playwright tests
           no_output_timeout: 30m
-          command: |
-            source ./ci_env.sh
-            yarn test:e2e:ci
+          command: yarn test:e2e:ci
 
       - discord/status:
           failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
