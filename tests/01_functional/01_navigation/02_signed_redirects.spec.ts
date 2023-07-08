@@ -3,7 +3,7 @@ import { test as test_metamask } from "../../../fixtures";
 import * as metamask from "@synthetixio/synpress/commands/metamask";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/orgs");
 });
 
 test_metamask(

@@ -2,7 +2,7 @@ import { test, expect } from "../../fixtures";
 import * as metamask from "@synthetixio/synpress/commands/metamask";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/orgs");
 });
 
 test("wallet connect button works with metamask", async ({ page }) => {

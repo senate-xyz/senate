@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/orgs");
 });
 
 test("wallet connect button works without metamask", async ({ page }) => {

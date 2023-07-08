@@ -8,7 +8,7 @@ test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async ({ browser }) => {
   sharedPage = await browser.newPage();
-  await sharedPage.goto("/");
+  await sharedPage.goto("/orgs");
 });
 
 test.afterAll(async () => {
