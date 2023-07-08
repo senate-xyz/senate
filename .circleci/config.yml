@@ -31,14 +31,7 @@ jobs:
 
       - run:
           name: Install Playwright's dependencies
-          command: npx playwright install --with-deps
-
-      - run:
-          name: Install virtual display
-          command: |
-            apt-get install --no-install-recommends -y \
-            fluxbox \
-            xvfb
+          command: yarn playwright install --with-deps
 
       - run:
           name: Build
@@ -50,17 +43,9 @@ jobs:
             yarn build:senate
 
       - run:
-          environment:
-            DEBUG: true
-          name: Run Senate
-          command: |
-            yarn start:senate
-          background: true
-
-      - run:
           name: Run Playwright tests
           no_output_timeout: 30m
-          command: xvfb-run npx playwright test
+          command: yarn test:e2e:ci
 
       - discord/status:
           failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
@@ -83,6 +68,15 @@ workflows:
   test_workflow:
     jobs:
       - test:
+          filters:
+            branches:
+              only:
+                - main
+                - dev
+                - staging
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
           filters:
             branches:
               only:

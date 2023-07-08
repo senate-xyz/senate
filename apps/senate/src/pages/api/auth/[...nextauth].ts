@@ -37,9 +37,11 @@ export function authOptions(
             JSON.parse(credentials.message) as Partial<SiweMessage>
           );
 
+           const nonce = await getCsrfToken({ req: { headers: req?.headers } });
+
           const result = await siwe.verify({
             signature: credentials?.signature || "",
-            nonce: await getCsrfToken({ req }),
+            nonce: nonce,
           });
 
           if (result.success) {
