@@ -4,7 +4,7 @@ import * as metamask from "@synthetixio/synpress/commands/metamask";
 import { prisma } from "@senate/database";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/orgs");
 });
 
 test_metamask("expect to have all daos unsubscribed", async ({ page }) => {

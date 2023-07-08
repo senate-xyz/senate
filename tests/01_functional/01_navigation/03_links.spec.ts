@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/orgs");
 });
 
 test("orgs navbar link", async ({ page }) => {
@@ -40,5 +40,5 @@ test("github link", async ({ page }) => {
 
 test("logo link", async ({ page }) => {
   await page.getByTestId("navbar").getByAltText("Senate logo").click();
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL("/orgs");
 });
