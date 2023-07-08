@@ -40,5 +40,5 @@ test("github link", async ({ page }) => {
 
 test("logo link", async ({ page }) => {
   await page.getByTestId("navbar").getByAltText("Senate logo").click();
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL("/orgs");
 });
