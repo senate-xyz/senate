@@ -18,8 +18,7 @@ use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
 use serde_json::Value as JsonValue;
-use tracing::Instrument;
-use tracing::{debug_span, instrument};
+use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::{
@@ -202,11 +201,9 @@ async fn get_title(hexhash: String) -> Result<String> {
     let mut retries = 0;
     let mut current_gateway = 0;
 
-    let gateways = vec![
-        "https://senate.infura-ipfs.io/ipfs/",
+    let gateways = ["https://senate.infura-ipfs.io/ipfs/",
         "https://cloudflare-ipfs.com/ipfs/",
-        "https://gateway.pinata.cloud/ipfs/",
-    ];
+        "https://gateway.pinata.cloud/ipfs/"];
 
     let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
     let http_client = ClientBuilder::new(reqwest::Client::new())
@@ -229,7 +226,7 @@ async fn get_title(hexhash: String) -> Result<String> {
                     return Ok(json["title"].as_str().unwrap_or("Unknown").to_string());
                 }
 
-                let re = Regex::new(r#"title:\s*(.*?)\n"#).unwrap();
+                let re = Regex::new(r"title:\s*(.*?)\n").unwrap();
                 if let Some(captures) = re.captures(&text) {
                     if let Some(matched) = captures.get(1) {
                         return Ok(matched.as_str().trim().to_string());

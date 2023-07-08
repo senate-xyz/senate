@@ -9,8 +9,7 @@ use prisma_client_rust::{
     chrono::{DateTime, NaiveDateTime, Utc},
 };
 use serde::Deserialize;
-use tracing::{debug_span, instrument};
-use tracing::{event, Instrument};
+use tracing::{debug_span, event, instrument, Instrument};
 
 use crate::{
     contracts::{zeroxtreasury, zeroxtreasury::ProposalCreatedFilter},

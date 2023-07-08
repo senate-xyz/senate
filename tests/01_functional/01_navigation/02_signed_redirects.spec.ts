@@ -20,7 +20,7 @@ test_metamask(
     await metamask.confirmSignatureRequest();
     await page.waitForTimeout(500);
 
-    await page.goto("/settings/notifications", { timeout: 60 * 1000 });
+    await page.goto("/settings/notifications");
     await page.waitForTimeout(5000);
     await expect(page).toHaveURL("/settings/notifications");
   }
@@ -40,7 +40,7 @@ test_metamask(
     await metamask.confirmSignatureRequest();
     await page.waitForTimeout(500);
 
-    await page.goto("/settings/proxy", { timeout: 60 * 1000 });
+    await page.goto("/settings/proxy");
     await page.waitForTimeout(5000);
     await expect(page).toHaveURL("/settings/proxy");
   }

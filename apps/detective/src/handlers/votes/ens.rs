@@ -6,8 +6,7 @@ use ethers::{
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
 use serde::Deserialize;
-use tracing::Instrument;
-use tracing::{debug_span, instrument};
+use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::ensgov::{self, VoteCastFilter},

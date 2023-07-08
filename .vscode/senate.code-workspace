@@ -85,7 +85,6 @@
     "editor.formatOnSave": true,
     "editor.guides.bracketPairs": "active",
     "editor.inlineSuggest.enabled": true,
-    "eslint.packageManager": "yarn",
     "rust-analyzer.rustfmt.rangeFormatting.enable": true,
     "rust-analyzer.check.command": "check"
   },

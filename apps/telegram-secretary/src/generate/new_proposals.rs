@@ -5,7 +5,13 @@ use teloxide::Bot;
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::prisma::{
-    self, notification, subscription, user, NotificationType, PrismaClient, ProposalState,
+    self,
+    notification,
+    subscription,
+    user,
+    NotificationType,
+    PrismaClient,
+    ProposalState,
 };
 
 #[instrument(skip(client), level = "debug")]

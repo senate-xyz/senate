@@ -14,7 +14,8 @@ use crate::{
     config::Config,
     prisma::{self, voterhandler},
     refresh_status::{DAOS_REFRESH_STATUS, VOTERS_REFRESH_STATUS},
-    RefreshEntry, RefreshType,
+    RefreshEntry,
+    RefreshType,
 };
 
 #[instrument(skip_all, level = "info")]
@@ -26,7 +27,7 @@ pub async fn produce_snapshot_votes_queue(
     let force_refresh = Utc::now() - Duration::seconds(config.force_snapshot_votes.into());
     let new_refresh = Utc::now() - Duration::seconds(config.new_snapshot_votes.into());
 
-    let handler_types = vec![prisma::DaoHandlerType::Snapshot];
+    let handler_types = [prisma::DaoHandlerType::Snapshot];
 
     let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
     let mut voters_refresh_status = VOTERS_REFRESH_STATUS.lock().await;

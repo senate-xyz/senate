@@ -2,13 +2,16 @@
 
 import { useState, useTransition } from "react";
 import { setAaveMagicUser, setUniswapMagicUser } from "../actions";
+import { PostHogFeature } from "posthog-js/react";
 
 export const MagicUser = (props: { aave: boolean; uniswap: boolean }) => {
   return (
-    <div className="flex max-w-[800px] flex-col gap-4 bg-black p-4">
-      <IsAaveUser enabled={props.aave} />
-      <IsUniswapUser enabled={props.uniswap} />
-    </div>
+    <PostHogFeature flag="magic-user-menu" match={true}>
+      <div className="flex max-w-[800px] flex-col gap-4 bg-black p-4">
+        <IsAaveUser enabled={props.aave} />
+        <IsUniswapUser enabled={props.uniswap} />
+      </div>
+    </PostHogFeature>
   );
 };
 

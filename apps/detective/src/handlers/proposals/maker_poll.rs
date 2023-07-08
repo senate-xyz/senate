@@ -11,14 +11,14 @@ use prisma_client_rust::{
 use regex::Regex;
 use reqwest::{
     header::{ACCEPT, USER_AGENT},
-    Client, StatusCode,
+    Client,
+    StatusCode,
 };
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tracing::Instrument;
-use tracing::{debug_span, instrument};
+use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::{makerpollcreate, makerpollcreate::PollCreatedFilter},

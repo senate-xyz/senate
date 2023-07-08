@@ -10,12 +10,22 @@ use rocket::serde::json::Json;
 use serde::{Deserialize, Deserializer};
 use serde_json::Value;
 use tracing::{
-    debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
+    debug_span,
+    event,
+    info_span,
+    instrument,
+    span,
+    trace_span,
+    Instrument,
+    Level,
+    Span,
 };
 
 use crate::{
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler},
-    Ctx, VotesRequest, VotesResponse,
+    Ctx,
+    VotesRequest,
+    VotesResponse,
 };
 
 #[derive(Debug, Deserialize)]

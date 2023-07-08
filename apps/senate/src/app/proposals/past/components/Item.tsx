@@ -121,7 +121,7 @@ export default function Item(props: {
                 <div className="text-[18px] leading-[26px] text-white">
                   with{" "}
                   {(props.proposal.scoresTotal / 1000000000000000000).toFixed(
-                    2
+                    2,
                   )}{" "}
                   MKR
                 </div>
@@ -237,7 +237,7 @@ export default function Item(props: {
                 {
                   month: "long",
                   day: "numeric",
-                }
+                },
               )} at ${new Date(props.proposal.timeEnd).toLocaleTimeString(
                 "en-US",
                 {
@@ -246,7 +246,7 @@ export default function Item(props: {
                   second: "2-digit",
                   timeZone: "UTC",
                   hour12: false,
-                }
+                },
               )} UTC
                     `}
             </div>
@@ -396,7 +396,7 @@ export default function Item(props: {
                   <div className="text-[18px] leading-[26px] text-white">
                     with{" "}
                     {(props.proposal.scoresTotal / 1000000000000000000).toFixed(
-                      2
+                      2,
                     )}{" "}
                     MKR
                   </div>
@@ -508,7 +508,7 @@ export default function Item(props: {
                   {
                     month: "long",
                     day: "numeric",
-                  }
+                  },
                 )} at ${new Date(props.proposal.timeEnd).toLocaleTimeString(
                   "en-US",
                   {
@@ -517,7 +517,7 @@ export default function Item(props: {
                     second: "2-digit",
                     timeZone: "UTC",
                     hour12: false,
-                  }
+                  },
                 )} UTC
                     `}
               </div>

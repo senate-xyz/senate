@@ -5,12 +5,12 @@ import { useEffect } from "react";
 import { useAccount } from "wagmi";
 
 export const ClientComponent = () => {
-    const account = useAccount();
-    const router = useRouter();
+  const account = useAccount();
+  const router = useRouter();
 
-    useEffect(() => {
+  useEffect(() => {
     if (!account.isConnected) if (router) void router.push("/settings/account");
-    }, [account, router]);
+  }, [account, router]);
 
-    return <></>
-}
+  return <></>;
+};

@@ -9,8 +9,7 @@ use futures::stream::{FuturesUnordered, StreamExt};
 use num_bigint::BigInt;
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
 use serde::Deserialize;
-use tracing::Instrument;
-use tracing::{debug_span, instrument};
+use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::makerpollvote::{self, VotedFilter},
