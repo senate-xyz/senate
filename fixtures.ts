@@ -28,6 +28,7 @@ export const test = base.extend<{
       headless: false,
       args: browserArgs,
     });
+    context.setDefaultTimeout(120 * 1000);
     // wait for metamask
     await context.pages()[0].waitForTimeout(3000);
     // setup metamask
