@@ -90,7 +90,7 @@ export default function Item(props: {
                 {
                   month: "long",
                   day: "numeric",
-                },
+                }
               )} at ${new Date(props.proposal.timeEnd).toLocaleTimeString(
                 "en-US",
                 {
@@ -99,7 +99,7 @@ export default function Item(props: {
                   second: "2-digit",
                   timeZone: "UTC",
                   hour12: false,
-                },
+                }
               )} UTC
                     `}
             </div>
@@ -218,7 +218,7 @@ export default function Item(props: {
                   {
                     month: "long",
                     day: "numeric",
-                  },
+                  }
                 )} at ${new Date(props.proposal.timeEnd).toLocaleTimeString(
                   "en-US",
                   {
@@ -227,7 +227,7 @@ export default function Item(props: {
                     second: "2-digit",
                     timeZone: "UTC",
                     hour12: false,
-                  },
+                  }
                 )} UTC
                     `}
               </div>

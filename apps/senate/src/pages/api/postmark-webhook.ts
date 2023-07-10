@@ -15,7 +15,7 @@ interface RequestBody {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse
 ) {
   const { RecordType, MessageID }: RequestBody = req.body as RequestBody;
 

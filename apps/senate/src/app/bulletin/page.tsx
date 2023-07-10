@@ -34,7 +34,7 @@ const Home = () => {
         .then(() => {
           setSuccess(true);
         })
-        .catch(() => setError(true)),
+        .catch(() => setError(true))
     );
   };
 
