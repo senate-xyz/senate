@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@senate/database";
 import { verifyMessage } from "viem";
 import { PostHog } from "posthog-node";
