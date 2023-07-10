@@ -8730,10 +8730,10 @@ postcss@^8.4.23:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-posthog-js@^1.70.0:
-  version "1.70.0"
-  resolved "https://registry.yarnpkg.com/posthog-js/-/posthog-js-1.70.0.tgz#2b10e4d2e5c68a00bf97f36a1950429590a76a30"
-  integrity sha512-g3j9tXVC+cbD1a7yX+hI4i5/WksvxiSFTLXnsPaYECjz93LtovBtpQA2DFxZiB2gWPPnt7DNz6VokRKof/7VMw==
+posthog-js@^1.70.1:
+  version "1.70.1"
+  resolved "https://registry.yarnpkg.com/posthog-js/-/posthog-js-1.70.1.tgz#65a720baea6723d96502b767a8c1d8b323be4f4d"
+  integrity sha512-UAnUOVBA60HapPmVHuV+8L6B10kKnH9WugNym/RZjAfOg8iCGCHxoUtD+80DqU/sO35YdFbgGK25e2BofEIaRg==
   dependencies:
     fflate "^0.4.1"
 
@@ -8796,11 +8796,6 @@ prettier-plugin-tailwindcss@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/prettier-plugin-tailwindcss/-/prettier-plugin-tailwindcss-0.3.0.tgz#8299b307c7f6467f52732265579ed9375be6c818"
   integrity sha512-009/Xqdy7UmkcTBpwlq7jsViDqXAYSOMLDrHAdTMlVZOrKfM2o9Ci7EMWTMZ7SkKBFTG04UM9F9iM2+4i6boDA==
-
-prettier@^2:
-  version "2.8.8"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.8.tgz#e8c5d7e98a4305ffe3de2e1fc4aca1a71c28b1da"
-  integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
 
 prettier@^3, prettier@^3.0.0:
   version "3.0.0"
