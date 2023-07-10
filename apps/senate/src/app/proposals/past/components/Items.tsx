@@ -39,7 +39,7 @@ type ItemsProps = {
     from?: string,
     end?: number,
     voted?: string,
-    proxy?: string
+    proxy?: string,
   ) => Promise<Item[]>;
   fetchVote: (proposalId: string, proxy: string) => Promise<string>;
   searchParams?: { from: string; end: number; voted: string; proxy: string };
@@ -64,7 +64,7 @@ export default function Items({
         searchParams?.from ?? "any",
         searchParams?.end ?? 365,
         searchParams?.voted ?? "any",
-        searchParams?.proxy ?? "any"
+        searchParams?.proxy ?? "any",
       );
 
       const itemIds = new Set(items.map((item) => item.proposalId));

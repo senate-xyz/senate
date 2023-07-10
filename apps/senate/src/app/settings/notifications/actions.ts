@@ -109,7 +109,7 @@ export const setEmailAndEnableBulletin = async (input: string) => {
   });
 
   const emailClient = new ServerClient(
-    process.env.POSTMARK_TOKEN ?? "Missing Token"
+    process.env.POSTMARK_TOKEN ?? "Missing Token",
   );
 
   try {
@@ -181,7 +181,7 @@ export const resendVerification = async () => {
   });
 
   const emailClient = new ServerClient(
-    process.env.POSTMARK_TOKEN ?? "Missing Token"
+    process.env.POSTMARK_TOKEN ?? "Missing Token",
   );
   await emailClient.sendEmailWithTemplate({
     From: "info@senatelabs.xyz",

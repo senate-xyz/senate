@@ -1,35 +1,39 @@
 version: 2.1
-
 orbs:
-  node: circleci/node@5.1.0
-  browser-tools: circleci/browser-tools@1.4.1
   discord: antonioned/discord@0.1.0
-
 jobs:
   test:
     docker:
       - image: mcr.microsoft.com/playwright:v1.34.0-jammy
-
     steps:
       - run:
-          command: apt-get update && apt-get install -y dbus
+          name: Set DATABASE_URL based on branch
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              echo 'export DATABASE_URL=${PRODUCTION_DB}' >> $BASH_ENV
+            elif [ "${CIRCLE_BRANCH}" == "dev" ]; then
+              echo 'export DATABASE_URL=${DEVELOPMENT_DB}' >> $BASH_ENV
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              echo 'export DATABASE_URL=${STAGING_DB}' >> $BASH_ENV
+            fi
 
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
-
-      - browser-tools/install-chrome
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
 
       - run:
           name: Install Playwright's dependencies
-          command: npx playwright install --with-deps
-
-      - run:
-          name: Install virtual display
-          command: |
-            apt-get install --no-install-recommends -y \
-            fluxbox \
-            xvfb
+          command: yarn playwright install --with-deps
 
       - run:
           name: Build
@@ -40,25 +44,25 @@ jobs:
 
       - run:
           name: Run Playwright tests
-          command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml xvfb-run npx playwright test --reporter=junit
+          no_output_timeout: 30m
+          command: yarn test:e2e:ci
 
       - discord/status:
           failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
           success_message: ":tada: ${CIRCLE_BRANCH} passed all tests."
           webhook: "${DISCORD_STATUS_WEBHOOK}"
           only_for_branches: "staging"
-
       - discord/status:
           failure_message: ":red_circle: **${CIRCLE_BRANCH}** tests failed."
           fail_only: true
           webhook: "${DISCORD_STATUS_WEBHOOK}"
           only_for_branches: "dev"
-
       - store_test_results:
           path: results.xml
-
       - store_artifacts:
-          path: results.xml
+          path: playwright-report/index.html
+      - store_artifacts:
+          path: test-results
 
 workflows:
   test_workflow:

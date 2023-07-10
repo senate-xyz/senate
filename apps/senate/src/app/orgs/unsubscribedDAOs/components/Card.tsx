@@ -18,14 +18,14 @@ export const UnsubscribedDAO = (props: {
   const [imgSrc, setImgSrc] = useState(
     props.daoPicture
       ? props.daoPicture + "_medium.png"
-      : "/assets/Project_Icons/placeholder_medium.png"
+      : "/assets/Project_Icons/placeholder_medium.png",
   );
 
   useEffect(() => {
     setImgSrc(
       props.daoPicture
         ? props.daoPicture + "_medium.png"
-        : "/assets/Project_Icons/placeholder_medium.png"
+        : "/assets/Project_Icons/placeholder_medium.png",
     );
   }, [props.daoPicture]);
 
@@ -44,7 +44,8 @@ export const UnsubscribedDAO = (props: {
   const [loading, setLoading] = useState(false);
 
   return (
-    <div
+    <li
+      data-testid={props.daoName}
       className={`h-[320px] w-[240px] ${
         loading ? "pointer-events-none animate-pulse opacity-25" : "opacity-100"
       }`}
@@ -89,7 +90,7 @@ export const UnsubscribedDAO = (props: {
                   (handler) =>
                     handler !== "SNAPSHOT" &&
                     handler !== "MAKER_POLL_ARBITRUM" &&
-                    handler !== "MAKER_POLL"
+                    handler !== "MAKER_POLL",
                 )
                 .sort((a, b) => a.localeCompare(b)),
             ].map((handler, index: number) => {
@@ -136,6 +137,7 @@ export const UnsubscribedDAO = (props: {
         </div>
 
         <button
+          data-testid="subscribe-button"
           className="h-14 w-full bg-white text-xl font-bold text-black hover:bg-neutral-100 active:bg-neutral-300"
           onClick={() => {
             if (account.isConnected && session.status == "authenticated") {
@@ -147,6 +149,6 @@ export const UnsubscribedDAO = (props: {
           Subscribe
         </button>
       </div>
-    </div>
+    </li>
   );
 };

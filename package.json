@@ -28,8 +28,6 @@
     "start:shortie": "turbo run start:shortie",
     "dev": "turbo run dev --parallel",
     "dev:senate": "turbo run dev:senate",
-    "test:senate": "turbo run test:senate",
-    "test:e2e": "turbo run test:e2e",
     "db:push": "turbo run db:push",
     "db:seed": "turbo run db:seed",
     "db:generate": "turbo run db:generate",
@@ -39,7 +37,12 @@
     "prettier:fix": "turbo run prettier:fix",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
-    "update": "rustup update && ncu -u && turbo run update && yarn"
+    "update": "rustup update && ncu -u && turbo run update && yarn",
+    "start-server": "yarn start:senate",
+    "test:ci": "xvfb-run yarn playwright test",
+    "test": "yarn playwright test",
+    "test:e2e:ci": "start-server-and-test start-server http://127.0.0.1:3000 test:ci",
+    "test:e2e": "start-server-and-test start-server http://127.0.0.1:3000 test"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.6",

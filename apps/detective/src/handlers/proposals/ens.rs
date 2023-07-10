@@ -12,8 +12,7 @@ use prisma_client_rust::{
     chrono::{DateTime, NaiveDateTime, Utc},
 };
 use serde::Deserialize;
-use tracing::Instrument;
-use tracing::{debug_span, instrument};
+use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::{ensgov, ensgov::ensgov::ProposalCreatedFilter},

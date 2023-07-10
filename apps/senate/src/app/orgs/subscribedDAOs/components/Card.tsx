@@ -16,14 +16,14 @@ export const SubscribedDAO = (props: {
   const [imgSrc, setImgSrc] = useState(
     props.daoPicture
       ? props.daoPicture + "_medium.png"
-      : "/assets/Project_Icons/placeholder_medium.png"
+      : "/assets/Project_Icons/placeholder_medium.png",
   );
 
   useEffect(() => {
     setImgSrc(
       props.daoPicture
         ? props.daoPicture + "_medium.png"
-        : "/assets/Project_Icons/placeholder_medium.png"
+        : "/assets/Project_Icons/placeholder_medium.png",
     );
   }, [props.daoPicture]);
 
@@ -33,7 +33,8 @@ export const SubscribedDAO = (props: {
   const [loading, setLoading] = useState(false);
 
   return (
-    <div
+    <li
+      data-testid={props.daoName}
       className={`h-[320px] w-[240px] ${
         loading ? "pointer-events-none animate-pulse opacity-25" : "opacity-100"
       }`}
@@ -78,6 +79,7 @@ export const SubscribedDAO = (props: {
             </div>
 
             <div
+              data-testid="unsubscribe-button"
               className="w-full cursor-pointer px-4 pb-4 text-center text-[15px] font-thin text-white underline"
               onClick={() => {
                 startTransition(() => unsubscribe(props.daoId));
@@ -98,6 +100,7 @@ export const SubscribedDAO = (props: {
         >
           <div className="absolute flex w-full flex-col items-end pr-4 pt-4">
             <div
+              data-testid="menu-button"
               className="cursor-pointer"
               onClick={() => {
                 setShowMenu(true);
@@ -146,7 +149,7 @@ export const SubscribedDAO = (props: {
                     (handler) =>
                       handler !== "SNAPSHOT" &&
                       handler !== "MAKER_POLL_ARBITRUM" &&
-                      handler !== "MAKER_POLL"
+                      handler !== "MAKER_POLL",
                   )
                   .sort((a, b) => a.localeCompare(b)),
               ].map((handler, index: number) => {
@@ -212,6 +215,6 @@ export const SubscribedDAO = (props: {
           </div>
         </div>
       )}
-    </div>
+    </li>
   );
 };

@@ -12,8 +12,7 @@ use teloxide::{
     types::ParseMode,
     utils::command::BotCommands,
 };
-use tokio::time::sleep;
-use tokio::try_join;
+use tokio::{time::sleep, try_join};
 
 use crate::{
     dispatch::{

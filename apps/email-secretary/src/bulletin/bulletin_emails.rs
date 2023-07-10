@@ -12,8 +12,15 @@ use tracing::{debug_span, info, instrument, warn, Instrument};
 
 use crate::{
     prisma::{
-        self, notification, proposal, user, DaoHandlerType, MagicUserState,
-        NotificationDispatchedState, NotificationType, ProposalState,
+        self,
+        notification,
+        proposal,
+        user,
+        DaoHandlerType,
+        MagicUserState,
+        NotificationDispatchedState,
+        NotificationType,
+        ProposalState,
     },
     utils::{countdown::countdown_gif, posthog::posthog_bulletin_event, vote::get_vote},
 };
@@ -246,9 +253,7 @@ async fn send_bulletin(
                             notification::dispatchstatus::set(
                                 NotificationDispatchedState::Dispatched,
                             ),
-                            notification::emailmessageid::set(
-                                postmark_result.clone().MessageID.into(),
-                            ),
+                            notification::emailmessageid::set(postmark_result.clone().MessageID),
                             notification::emailtemplate::set(bulletin_template.to_string().into()),
                         ],
                     )])

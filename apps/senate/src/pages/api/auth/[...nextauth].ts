@@ -12,7 +12,7 @@ const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
 
 export function authOptions(
   req?: NextApiRequest,
-  res?: NextApiResponse
+  res?: NextApiResponse,
 ): NextAuthOptions {
   const providers = [
     Credentials({
@@ -34,12 +34,14 @@ export function authOptions(
           if (!credentials) return { id: "" };
 
           const siwe: SiweMessage = new SiweMessage(
-            JSON.parse(credentials.message) as Partial<SiweMessage>
+            JSON.parse(credentials.message) as Partial<SiweMessage>,
           );
+
+          const nonce = await getCsrfToken({ req: { headers: req?.headers } });
 
           const result = await siwe.verify({
             signature: credentials?.signature || "",
-            nonce: await getCsrfToken({ req }),
+            nonce: nonce,
           });
 
           if (result.success) {
@@ -83,7 +85,7 @@ export function authOptions(
                 properties: {
                   email: existingUser.email,
                   subscriptions: existingUser.subscriptions.map(
-                    (s) => s.dao.name
+                    (s) => s.dao.name,
                   ),
                   notifications: existingUser._count.notifications,
                   emaildailybulletin: existingUser.emaildailybulletin,

@@ -13,9 +13,15 @@ use tracing::{debug, debug_span, instrument, warn, Instrument};
 
 use crate::{
     prisma::{
-        self, dao,
+        self,
+        dao,
         notification::{self},
-        proposal, subscription, user, DaoHandlerType, MagicUserState, NotificationDispatchedState,
+        proposal,
+        subscription,
+        user,
+        DaoHandlerType,
+        MagicUserState,
+        NotificationDispatchedState,
         NotificationType,
     },
     utils::{countdown::countdown_gif, posthog::posthog_quorum_event, vote::get_vote},
@@ -292,7 +298,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                                             NotificationDispatchedState::Dispatched,
                                         ),
                                         notification::emailmessageid::set(
-                                            postmark_result.clone().MessageID.into(),
+                                            postmark_result.clone().MessageID,
                                         ),
                                         notification::emailtemplate::set(
                                             quorum_template.to_string().into(),

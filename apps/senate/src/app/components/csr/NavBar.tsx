@@ -12,7 +12,10 @@ export const NavBar = () => {
     !pathname?.includes("bulletin") &&
     !pathname?.includes("landing") &&
     !pathname?.includes("outofservice") ? (
-    <div className="flex min-h-screen min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black">
+    <div
+      data-testid="navbar"
+      className="flex min-h-screen min-w-[92px] flex-col items-center border border-y-0 border-l-0 border-[#545454] bg-black"
+    >
       <Link href="/" className="my-[4rem]">
         <Image
           loading="eager"

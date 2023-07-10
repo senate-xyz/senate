@@ -34,6 +34,7 @@ export const Header = (props: { title: string }) => {
 
   return (
     <div
+      data-testid="header"
       className={`${headerHeight} fixed z-20 flex h-[96px] w-full items-center justify-start border border-x-0 border-t-0 border-[#545454] bg-black  px-4 transition-all lg:px-10`}
     >
       <Image

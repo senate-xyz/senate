@@ -14,7 +14,6 @@ import { SessionProvider } from "next-auth/react";
 import { configureChains, createConfig, mainnet, WagmiConfig } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
-import { TrpcClientProvider } from "../server/trpcClient";
 import Link from "next/link";
 import {
   braveWallet,
@@ -36,7 +35,7 @@ const { chains, publicClient } = configureChains(
   [
     alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? "" }),
     publicProvider(),
-  ]
+  ],
 );
 
 const connectors = connectorsForWallets([
@@ -122,6 +121,7 @@ if (typeof window !== "undefined") {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
     api_host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
     opt_in_site_apps: true,
+    autocapture: !process.env.CI,
   });
 }
 
@@ -162,9 +162,30 @@ function RootProviderInner({ children }: { children: React.ReactNode }) {
 
   return (
     <SessionProvider refetchInterval={60}>
-      <TrpcClientProvider>
-        <WagmiConfig config={config}>
-          {pathname?.includes("verify") ? (
+      <WagmiConfig config={config}>
+        {pathname?.includes("verify") ? (
+          <RainbowKitProvider
+            appInfo={{
+              appName: "Senate",
+              disclaimer: Disclaimer,
+              learnMoreUrl: "https://senate.notion.site",
+            }}
+            chains={chains}
+            modalSize="compact"
+            theme={darkTheme({
+              accentColor: "#262626",
+              accentColorForeground: "white",
+              borderRadius: "none",
+              overlayBlur: "small",
+              fontStack: "rounded",
+            })}
+          >
+            {children}
+          </RainbowKitProvider>
+        ) : (
+          <RainbowKitSiweNextAuthProvider
+            getSiweMessageOptions={getSiweMessageOptions}
+          >
             <RainbowKitProvider
               appInfo={{
                 appName: "Senate",
@@ -183,32 +204,9 @@ function RootProviderInner({ children }: { children: React.ReactNode }) {
             >
               {children}
             </RainbowKitProvider>
-          ) : (
-            <RainbowKitSiweNextAuthProvider
-              getSiweMessageOptions={getSiweMessageOptions}
-            >
-              <RainbowKitProvider
-                appInfo={{
-                  appName: "Senate",
-                  disclaimer: Disclaimer,
-                  learnMoreUrl: "https://senate.notion.site",
-                }}
-                chains={chains}
-                modalSize="compact"
-                theme={darkTheme({
-                  accentColor: "#262626",
-                  accentColorForeground: "white",
-                  borderRadius: "none",
-                  overlayBlur: "small",
-                  fontStack: "rounded",
-                })}
-              >
-                {children}
-              </RainbowKitProvider>
-            </RainbowKitSiweNextAuthProvider>
-          )}
-        </WagmiConfig>
-      </TrpcClientProvider>
+          </RainbowKitSiweNextAuthProvider>
+        )}
+      </WagmiConfig>
     </SessionProvider>
   );
 }
