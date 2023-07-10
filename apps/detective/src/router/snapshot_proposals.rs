@@ -156,9 +156,8 @@ async fn update_proposals(
 
     let graphql_response = http_client
         .get(format!(
-            "https://hub.snapshot.org/graphql",
-            // "https://hub.snapshot.org/graphql?apiKey={}",
-            // snapshot_key
+            "https://hub.snapshot.org/graphql?apiKey={}",
+            snapshot_key
         ))
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()
