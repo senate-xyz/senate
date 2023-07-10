@@ -237,6 +237,7 @@ export default function Item(props: {
                 {
                   month: "long",
                   day: "numeric",
+                  year: "numeric"
                 },
               )} at ${new Date(props.proposal.timeEnd).toLocaleTimeString(
                 "en-US",

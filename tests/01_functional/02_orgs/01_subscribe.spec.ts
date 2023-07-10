@@ -16,7 +16,7 @@ test_metamask("expect to have all daos unsubscribed", async ({ page }) => {
   await page.getByText("Send message").click();
   await page.waitForTimeout(500);
   await metamask.confirmSignatureRequest();
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(5000);
 
   const numberOfDaos = await prisma.dao.count({});
 
