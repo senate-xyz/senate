@@ -12,7 +12,7 @@ test("orgs navbar link", async ({ page }) => {
 test("proposals navbar link", async ({ page }) => {
   await page.getByTestId("navbar").getByText("Proposals").click();
   await expect(page).toHaveURL(
-    "/proposals/active?from=any&end=365&voted=any&proxy=any"
+    "/proposals/active?from=any&end=9999&voted=any&proxy=any"
   );
 });
 

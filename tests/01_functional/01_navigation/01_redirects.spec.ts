@@ -24,7 +24,7 @@ test("proposals url redirects to active proposals", async () => {
   await sharedPage.goto("/proposals");
 
   await expect(sharedPage).toHaveURL(
-    "/proposals/active?from=any&end=365&voted=any&proxy=any"
+    "/proposals/active?from=any&end=9999&voted=any&proxy=any"
   );
 });
 
@@ -32,7 +32,7 @@ test("active proposals url redirects to filters", async () => {
   await sharedPage.goto("/proposals/active");
 
   await expect(sharedPage).toHaveURL(
-    "/proposals/active?from=any&end=365&voted=any&proxy=any"
+    "/proposals/active?from=any&end=9999&voted=any&proxy=any"
   );
 });
 
@@ -40,7 +40,7 @@ test("past proposals url redirects to filters", async () => {
   await sharedPage.goto("/proposals/past");
 
   await expect(sharedPage).toHaveURL(
-    "/proposals/past?from=any&end=30&voted=any&proxy=any"
+    "/proposals/past?from=any&end=9999&voted=any&proxy=any"
   );
 });
 

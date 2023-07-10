@@ -53,7 +53,7 @@ export const Filters = (props: {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [from, setFrom] = useState(String(searchParams?.get("from") ?? "any"));
-  const [end, setEnd] = useState(Number(searchParams?.get("end") ?? 30));
+  const [end, setEnd] = useState(Number(searchParams?.get("end") ?? 9999));
   const [voted, setVoted] = useState(
     String(searchParams?.get("voted") ?? "any"),
   );
