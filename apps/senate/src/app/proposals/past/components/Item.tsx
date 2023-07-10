@@ -121,7 +121,7 @@ export default function Item(props: {
                 <div className="text-[18px] leading-[26px] text-white">
                   with{" "}
                   {(props.proposal.scoresTotal / 1000000000000000000).toFixed(
-                    2,
+                    2
                   )}{" "}
                   MKR
                 </div>
@@ -237,8 +237,8 @@ export default function Item(props: {
                 {
                   month: "long",
                   day: "numeric",
-                  year: "numeric"
-                },
+                  year: "numeric",
+                }
               )} at ${new Date(props.proposal.timeEnd).toLocaleTimeString(
                 "en-US",
                 {
@@ -247,7 +247,7 @@ export default function Item(props: {
                   second: "2-digit",
                   timeZone: "UTC",
                   hour12: false,
-                },
+                }
               )} UTC
                     `}
             </div>
@@ -397,7 +397,7 @@ export default function Item(props: {
                   <div className="text-[18px] leading-[26px] text-white">
                     with{" "}
                     {(props.proposal.scoresTotal / 1000000000000000000).toFixed(
-                      2,
+                      2
                     )}{" "}
                     MKR
                   </div>
@@ -420,11 +420,11 @@ export default function Item(props: {
                               alt="off-chain"
                             />
                           </div>
-                          <div className="truncate text-[21px] leading-[26px] text-white w-[30vw]">
+                          <div className="w-[30vw] truncate text-[21px] leading-[26px] text-white">
                             {props.proposal.highestScoreChoice}
                           </div>
                         </div>
-                        <div className="mt-1 bg-[#262626] w-[50vw]">
+                        <div className="mt-1 w-[50vw] bg-[#262626]">
                           <div
                             style={{
                               width: `${(
@@ -484,7 +484,7 @@ export default function Item(props: {
                       Hidden Results
                     </div>
                   </div>
-                  <div className="mt-1 bg-[#262626] w-[50vw]">
+                  <div className="mt-1 w-[50vw] bg-[#262626]">
                     <div
                       style={{
                         width: "100%",
@@ -509,7 +509,7 @@ export default function Item(props: {
                   {
                     month: "long",
                     day: "numeric",
-                  },
+                  }
                 )} at ${new Date(props.proposal.timeEnd).toLocaleTimeString(
                   "en-US",
                   {
@@ -518,7 +518,7 @@ export default function Item(props: {
                     second: "2-digit",
                     timeZone: "UTC",
                     hour12: false,
-                  },
+                  }
                 )} UTC
                     `}
               </div>

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { ServerClient } from "postmark";
 
 const emailClient = new ServerClient(
-  process.env.POSTMARK_TOKEN ?? "Missing Token",
+  process.env.POSTMARK_TOKEN ?? "Missing Token"
 );
 
 interface RequestBody {
@@ -13,8 +13,13 @@ interface RequestBody {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse
 ) {
+  if (req.method !== "POST") {
+    res.status(405).send({ message: "Only POST requests allowed" });
+    return;
+  }
+
   const { email } = req.body as RequestBody;
 
   const existingUser = await prisma.user.findFirst({

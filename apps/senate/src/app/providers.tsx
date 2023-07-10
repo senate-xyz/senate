@@ -35,7 +35,7 @@ const { chains, publicClient } = configureChains(
   [
     alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? "" }),
     publicProvider(),
-  ],
+  ]
 );
 
 const connectors = connectorsForWallets([
@@ -119,7 +119,7 @@ const Disclaimer: DisclaimerComponent = () => (
 
 if (typeof window !== "undefined") {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
-    api_host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
+    api_host: `/ingest`,
     opt_in_site_apps: true,
     autocapture: !process.env.CI,
   });
