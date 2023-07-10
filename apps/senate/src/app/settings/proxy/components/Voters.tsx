@@ -31,7 +31,7 @@ export const Voters = () => {
       resolvedAddress = String(
         await provider.getEnsAddress({
           name: proxyAddress,
-        }),
+        })
       );
     }
     startTransition(() =>
@@ -39,7 +39,7 @@ export const Voters = () => {
         setProxyAddress("");
         const v = await getVoters();
         setVoters(v);
-      }),
+      })
     );
   };
 
@@ -48,7 +48,7 @@ export const Voters = () => {
       removeVoter(address).then(async () => {
         const v = await getVoters();
         setVoters(v);
-      }),
+      })
     );
   };
 

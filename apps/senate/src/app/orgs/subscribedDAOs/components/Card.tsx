@@ -16,14 +16,14 @@ export const SubscribedDAO = (props: {
   const [imgSrc, setImgSrc] = useState(
     props.daoPicture
       ? props.daoPicture + "_medium.png"
-      : "/assets/Project_Icons/placeholder_medium.png",
+      : "/assets/Project_Icons/placeholder_medium.png"
   );
 
   useEffect(() => {
     setImgSrc(
       props.daoPicture
         ? props.daoPicture + "_medium.png"
-        : "/assets/Project_Icons/placeholder_medium.png",
+        : "/assets/Project_Icons/placeholder_medium.png"
     );
   }, [props.daoPicture]);
 
@@ -149,7 +149,7 @@ export const SubscribedDAO = (props: {
                     (handler) =>
                       handler !== "SNAPSHOT" &&
                       handler !== "MAKER_POLL_ARBITRUM" &&
-                      handler !== "MAKER_POLL",
+                      handler !== "MAKER_POLL"
                   )
                   .sort((a, b) => a.localeCompare(b)),
               ].map((handler, index: number) => {

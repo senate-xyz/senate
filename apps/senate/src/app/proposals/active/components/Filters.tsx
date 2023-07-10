@@ -55,10 +55,10 @@ export const Filters = (props: {
   const [from, setFrom] = useState(String(searchParams?.get("from") ?? "any"));
   const [end, setEnd] = useState(Number(searchParams?.get("end") ?? 9999));
   const [voted, setVoted] = useState(
-    String(searchParams?.get("voted") ?? "any"),
+    String(searchParams?.get("voted") ?? "any")
   );
   const [proxy, setProxy] = useState(
-    String(searchParams?.get("proxy") ?? "any"),
+    String(searchParams?.get("proxy") ?? "any")
   );
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export const Filters = (props: {
         searchParams.get("proxy") != proxy
       )
         router.push(
-          `/proposals/active?from=${from}&end=${end}&voted=${voted}&proxy=${proxy}`,
+          `/proposals/active?from=${from}&end=${end}&voted=${voted}&proxy=${proxy}`
         );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [from, end, voted, proxy]);

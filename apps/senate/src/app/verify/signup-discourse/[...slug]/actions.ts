@@ -11,7 +11,7 @@ export const discourseSignup = async (
   address: string,
   message: string,
   challenge: string,
-  signature: string,
+  signature: string
 ) => {
   const challengeRegex = /(?<=challenge:\s)[a-zA-Z0-9]+/;
   const challengeMatch = message.match(challengeRegex);

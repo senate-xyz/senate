@@ -30,7 +30,7 @@ export default function UnsubscribedDAOs({
                     daoPicture={unsubscribedDAO.picture}
                     bgColor={backgroundColors[index].color}
                     daoHandlers={unsubscribedDAO.handlers.map(
-                      (handler) => handler.type,
+                      (handler) => handler.type
                     )}
                   />
                 );
