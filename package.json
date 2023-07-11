@@ -47,7 +47,7 @@
   "devDependencies": {
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
-    "@playwright/test": "^1.35.1",
+    "@playwright/test": "^1.36.0",
     "@synthetixio/synpress": "^3.7.1",
     "dotenv": "^16.3.1",
     "husky": "^8.0.3",
