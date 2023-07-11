@@ -427,7 +427,7 @@ async fn update_refresh_statuses(
 
     for voter_handler in voter_handlers {
         if (new_index_date > voter_handler.snapshotindex.unwrap()
-            && new_index_date - voter_handler.snapshotindex.unwrap() > Duration::hours(1))
+            && new_index_date - voter_handler.snapshotindex.unwrap() > Duration::days(1))
             || uptodate != voter_handler.uptodate
         {
             ctx.db
