@@ -201,9 +201,11 @@ async fn get_title(hexhash: String) -> Result<String> {
     let mut retries = 0;
     let mut current_gateway = 0;
 
-    let gateways = ["https://senate.infura-ipfs.io/ipfs/",
+    let gateways = [
+        "https://senate.infura-ipfs.io/ipfs/",
         "https://cloudflare-ipfs.com/ipfs/",
-        "https://gateway.pinata.cloud/ipfs/"];
+        "https://gateway.pinata.cloud/ipfs/",
+    ];
 
     let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
     let http_client = ClientBuilder::new(reqwest::Client::new())

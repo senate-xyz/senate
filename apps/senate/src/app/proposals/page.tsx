@@ -131,7 +131,7 @@ export async function fetchItems(
   page: number,
   from: string,
   voted: string,
-  proxy: string
+  proxy: string,
 ) {
   "use server";
 
@@ -190,7 +190,7 @@ export async function fetchItems(
   const dao = (await prisma.dao.findMany({})).filter(
     (dao) =>
       dao.name.toLowerCase().replace(" ", "") ==
-      from.toLowerCase().replace(" ", "")
+      from.toLowerCase().replace(" ", ""),
   )[0];
 
   const proposals = await prisma.proposal.findMany({
