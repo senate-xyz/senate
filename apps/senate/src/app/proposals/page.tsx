@@ -198,25 +198,17 @@ export async function fetchItems(
       AND: [
         {
           dao: {
-            name: user
-              ? from == "any"
-                ? {
-                    in: user?.subscriptions.map((sub) => sub.dao.name),
-                  }
+            name:
+              from == "any"
+                ? user
+                  ? {
+                      in: user?.subscriptions.map((sub) => sub.dao.name),
+                    }
+                  : {}
                 : {
                     equals: String(dao?.name),
-                  }
-              : { endsWith: "placeholder" },
+                  },
           },
-        },
-        {
-          timeend: active
-            ? {
-                lte: new Date(),
-              }
-            : {
-                gte: new Date(),
-              },
         },
         {
           state: active
