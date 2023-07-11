@@ -87,7 +87,7 @@ const getSubscribedDAOs = async (): Promise<Subscribed> => {
         {
           mode: "precision",
           algorithm: "sqrt",
-        }
+        },
       )
         .then((color) => color)
         .catch(() => {
@@ -96,7 +96,7 @@ const getSubscribedDAOs = async (): Promise<Subscribed> => {
       return {
         color: `${color.hex}`,
       };
-    })
+    }),
   );
 
   return {
@@ -129,7 +129,7 @@ const getUnsubscribedDAOs = async (): Promise<Unsubscribed> => {
           {
             mode: "precision",
             algorithm: "sqrt",
-          }
+          },
         )
           .then((color) => color)
           .catch(() => {
@@ -139,7 +139,7 @@ const getUnsubscribedDAOs = async (): Promise<Unsubscribed> => {
           daoId: dao.id,
           color: `${color.hex}`,
         };
-      })
+      }),
     );
 
     return {
@@ -188,7 +188,7 @@ const getUnsubscribedDAOs = async (): Promise<Unsubscribed> => {
         {
           mode: "precision",
           algorithm: "sqrt",
-        }
+        },
       )
         .then((color) => color)
         .catch(() => {
@@ -198,7 +198,7 @@ const getUnsubscribedDAOs = async (): Promise<Unsubscribed> => {
         daoId: dao.id,
         color: `${color.hex}`,
       };
-    })
+    }),
   );
 
   return {

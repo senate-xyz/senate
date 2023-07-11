@@ -7,7 +7,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import Item from "./Item";
 import { LoadingItems } from "../../components/LoadingItems";
 
-enum VoteResult {
+export enum VoteResult {
   NOT_CONNECTED = "NOT_CONNECTED",
   LOADING = "LOADING",
   VOTED = "VOTED",
@@ -33,7 +33,7 @@ type ItemsProps = {
     page: number,
     from: string,
     voted: string,
-    proxy: string
+    proxy: string,
   ) => Promise<Item[]>;
   fetchVote: (proposalId: string, proxy: string) => Promise<string>;
   searchParams?: { from: string; voted: string; proxy: string };
@@ -57,7 +57,7 @@ export default function Items({
         items.length,
         searchParams?.from ?? "any",
         searchParams?.voted ?? "any",
-        searchParams?.proxy ?? "any"
+        searchParams?.proxy ?? "any",
       );
 
       const itemIds = new Set(items.map((item) => item.proposalId));

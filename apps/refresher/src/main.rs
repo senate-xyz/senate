@@ -81,13 +81,14 @@ async fn main() {
     let (tx_chain_proposals, rx_chain_proposals) = flume::unbounded();
     let (tx_chain_votes, rx_chain_votes) = flume::unbounded();
 
-    let config_client_clone = client.clone();
-    let config_load_task = tokio::task::spawn(async move {
-        event!(Level::DEBUG, "spawned config_load_task");
+    let slow_task_client_clone = client.clone();
+    let slow_task = tokio::task::spawn(async move {
+        event!(Level::DEBUG, "spawned slow_task");
         loop {
-            let _ = load_config_from_db(&config_client_clone).await;
-
-            sleep(Duration::from_secs(60)).await;
+            let _ = load_config_from_db(&slow_task_client_clone).await;
+            let _ = create_voter_handlers(&slow_task_client_clone).await;
+            let _ = create_refresh_statuses(&slow_task_client_clone).await;
+            sleep(Duration::from_secs(5)).await;
         }
     });
 
@@ -95,9 +96,6 @@ async fn main() {
     let producer_task = tokio::task::spawn_blocking(move || async move {
         event!(Level::INFO, "spawned producer_task");
         loop {
-            let _ = create_voter_handlers(&producer_client_clone).await;
-            let _ = create_refresh_statuses(&producer_client_clone).await;
-
             if let Ok(queue) = produce_snapshot_proposals_queue(&config).await {
                 for item in queue {
                     tx_snapshot_proposals.try_send(item).unwrap();
@@ -146,7 +144,7 @@ async fn main() {
                 });
             }
 
-            sleep(Duration::from_millis(300)).await;
+            sleep(Duration::from_millis(100)).await;
         }
     });
 
@@ -164,7 +162,7 @@ async fn main() {
                 });
             }
 
-            sleep(Duration::from_millis(300)).await;
+            sleep(Duration::from_millis(100)).await;
         }
     });
 
@@ -182,7 +180,7 @@ async fn main() {
                 });
             }
 
-            sleep(Duration::from_millis(300)).await;
+            sleep(Duration::from_millis(100)).await;
         }
     });
 
@@ -200,14 +198,14 @@ async fn main() {
                 });
             }
 
-            sleep(Duration::from_millis(300)).await;
+            sleep(Duration::from_millis(100)).await;
         }
     });
 
     producer_task.await;
 
     try_join!(
-        config_load_task,
+        slow_task,
         consumer_snapshot_proposals_task,
         consumer_snapshot_votes_task,
         consumer_chain_proposals_task,
