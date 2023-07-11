@@ -19,7 +19,14 @@ export async function getSubscribedDAOs() {
   "use server";
 
   const session = await getServerSession(authOptions());
-  if (!session || !session.user || !session.user.name) return [];
+  if (!session || !session.user || !session.user.name) {
+    const daosList = await prisma.dao.findMany({
+      orderBy: {
+        name: "asc",
+      },
+    });
+    return daosList;
+  }
   const userAddress = session.user.name;
 
   const user = await prisma.user.findFirstOrThrow({
@@ -123,7 +130,6 @@ export async function fetchItems(
   active: boolean,
   page: number,
   from: string,
-  end: number,
   voted: string,
   proxy: string
 ) {
@@ -144,41 +150,42 @@ export async function fetchItems(
     },
   });
 
-  let voteStatusQuery;
-  switch (String(voted)) {
-    case "no":
-      voteStatusQuery = {
-        votes: {
-          none: {
-            voteraddress: {
-              in:
-                proxy == "any"
-                  ? user?.voters.map((voter) => voter.address)
-                  : [proxy],
+  let voteStatusQuery = {};
+  if (user)
+    switch (String(voted)) {
+      case "no":
+        voteStatusQuery = {
+          votes: {
+            none: {
+              voteraddress: {
+                in:
+                  proxy == "any"
+                    ? user?.voters.map((voter) => voter.address)
+                    : [proxy],
+              },
             },
           },
-        },
-      };
+        };
 
-      break;
-    case "yes":
-      voteStatusQuery = {
-        votes: {
-          some: {
-            voteraddress: {
-              in:
-                proxy == "any"
-                  ? user?.voters.map((voter) => voter.address)
-                  : [proxy],
+        break;
+      case "yes":
+        voteStatusQuery = {
+          votes: {
+            some: {
+              voteraddress: {
+                in:
+                  proxy == "any"
+                    ? user?.voters.map((voter) => voter.address)
+                    : [proxy],
+              },
             },
           },
-        },
-      };
-      break;
-    default:
-      voteStatusQuery = {};
-      break;
-  }
+        };
+        break;
+      default:
+        voteStatusQuery = {};
+        break;
+    }
 
   const dao = (await prisma.dao.findMany({})).filter(
     (dao) =>
@@ -186,32 +193,25 @@ export async function fetchItems(
       from.toLowerCase().replace(" ", "")
   )[0];
 
-  const userProposals = await prisma.proposal.findMany({
+  const proposals = await prisma.proposal.findMany({
     where: {
       AND: [
         {
           dao: {
             name:
               from == "any"
-                ? {
-                    in: user?.subscriptions.map((sub) => sub.dao.name),
-                  }
+                ? user
+                  ? {
+                      in: user?.subscriptions.map((sub) => sub.dao.name),
+                    }
+                  : {}
                 : {
                     equals: String(dao?.name),
                   },
           },
         },
         {
-          timeend: Boolean(active)
-            ? {
-                lte: new Date(Date.now() + Number(end * 24 * 60 * 60 * 1000)),
-              }
-            : {
-                gte: new Date(Date.now() - Number(end * 24 * 60 * 60 * 1000)),
-              },
-        },
-        {
-          state: Boolean(active)
+          state: active
             ? {
                 in: [ProposalState.ACTIVE, ProposalState.PENDING],
               }
@@ -231,7 +231,7 @@ export async function fetchItems(
       ],
     },
     orderBy: {
-      timeend: Boolean(active) ? "asc" : "desc",
+      timeend: active ? "asc" : "desc",
     },
     include: {
       dao: true,
@@ -243,7 +243,7 @@ export async function fetchItems(
 
   const result =
     // eslint-disable-next-line @typescript-eslint/require-await
-    userProposals.map(async (proposal) => {
+    proposals.map(async (proposal) => {
       let highestScore = 0.0;
       let highestScoreIndex = 0;
       let highestScoreChoice = "";

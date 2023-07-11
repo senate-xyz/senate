@@ -37,12 +37,11 @@ type ItemsProps = {
     active: boolean,
     page: number,
     from?: string,
-    end?: number,
     voted?: string,
     proxy?: string
   ) => Promise<Item[]>;
   fetchVote: (proposalId: string, proxy: string) => Promise<string>;
-  searchParams?: { from: string; end: number; voted: string; proxy: string };
+  searchParams?: { from: string; voted: string; proxy: string };
 };
 
 export default function Items({
@@ -62,7 +61,6 @@ export default function Items({
         false,
         items.length,
         searchParams?.from ?? "any",
-        searchParams?.end ?? 365,
         searchParams?.voted ?? "any",
         searchParams?.proxy ?? "any"
       );
@@ -121,14 +119,13 @@ export default function Items({
             </div>
           </div>
         </div>
-
-        <InfiniteScroll
-          loadMore={loadMore}
-          hasMore={hasMore}
-          threshold={1024}
-          loader={<LoadingItems />}
-        >
-          <ul className="pt-1">
+        <ul className="pt-1">
+          <InfiniteScroll
+            loadMore={loadMore}
+            hasMore={hasMore}
+            threshold={1024}
+            loader={<LoadingItems />}
+          >
             {items.map((item, index) => (
               <li className="pb-1" key={index}>
                 <Item
@@ -138,8 +135,8 @@ export default function Items({
                 />
               </li>
             ))}
-          </ul>
-        </InfiniteScroll>
+          </InfiniteScroll>
+        </ul>
         {!hasMore && (
           <div className="w-full p-8 text-center text-white">
             You have seen it all

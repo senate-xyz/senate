@@ -6,29 +6,6 @@ import { useAccount, usePublicClient } from "wagmi";
 import { useSession } from "next-auth/react";
 import { LoadingFilters } from "../../components/LoadingFilters";
 
-const endOptions: { name: string; time: number }[] = [
-  {
-    name: "Last 24 hours",
-    time: 1,
-  },
-  {
-    name: "Last 7 days",
-    time: 7,
-  },
-  {
-    name: "Last 30 days",
-    time: 30,
-  },
-  {
-    name: "Last 90 days",
-    time: 90,
-  },
-  {
-    name: "All time",
-    time: 9999,
-  },
-];
-
 const voteOptions: { id: string; name: string }[] = [
   {
     id: "any",
@@ -53,7 +30,6 @@ export const Filters = (props: {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [from, setFrom] = useState(String(searchParams?.get("from") ?? "any"));
-  const [end, setEnd] = useState(Number(searchParams?.get("end") ?? 9999));
   const [voted, setVoted] = useState(
     String(searchParams?.get("voted") ?? "any")
   );
@@ -65,15 +41,14 @@ export const Filters = (props: {
     if (router && searchParams)
       if (
         searchParams.get("from") != from ||
-        searchParams.get("end") != String(end) ||
         searchParams.get("voted") != voted ||
         searchParams.get("proxy") != proxy
       )
         router.push(
-          `/proposals/past?from=${from}&end=${end}&voted=${voted}&proxy=${proxy}`
+          `/proposals/past?from=${from}&voted=${voted}&proxy=${proxy}`
         );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [from, end, voted, proxy]);
+  }, [from, voted, proxy]);
 
   return (
     <Suspense fallback={<LoadingFilters />}>
@@ -119,31 +94,6 @@ export const Filters = (props: {
                     </option>
                   );
                 })}
-            </select>
-          </div>
-
-          <div className="flex h-[38px] w-full flex-row items-center lg:w-[300px]">
-            <label
-              className="flex h-full min-w-max items-center bg-black px-[12px] py-[9px] text-[15px] text-white"
-              htmlFor="end"
-            >
-              <div>Ended on</div>
-            </label>
-            <select
-              className="h-full w-full text-black"
-              id="end"
-              onChange={(e) => {
-                setEnd(Number(e.target.value));
-              }}
-              value={end}
-            >
-              {endOptions.map((endOption) => {
-                return (
-                  <option key={endOption.time} value={endOption.time}>
-                    {endOption.name}
-                  </option>
-                );
-              })}
             </select>
           </div>
 

@@ -5,7 +5,7 @@ import { fetchItems, fetchVote, getProxies, getSubscribedDAOs } from "../page";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: { from: string; end: number; voted: string; proxy: string };
+  searchParams: { from: string; voted: string; proxy: string };
 }) {
   const subscribedDAOs = await getSubscribedDAOs();
   const proxies = await getProxies();
@@ -18,16 +18,13 @@ export default async function Home({
     <div className="min-h-screen gap-2">
       <Filters subscriptions={subscripions} proxies={proxies} />
 
-      {searchParams.end &&
-        searchParams.from &&
-        searchParams.proxy &&
-        searchParams.voted && (
-          <Items
-            fetchItems={fetchItems}
-            fetchVote={fetchVote}
-            searchParams={searchParams}
-          />
-        )}
+      {searchParams.from && searchParams.proxy && searchParams.voted && (
+        <Items
+          fetchItems={fetchItems}
+          fetchVote={fetchVote}
+          searchParams={searchParams}
+        />
+      )}
     </div>
   );
 }
