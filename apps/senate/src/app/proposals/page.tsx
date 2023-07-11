@@ -123,7 +123,6 @@ export async function fetchItems(
   active: boolean,
   page: number,
   from: string,
-  end: number,
   voted: string,
   proxy: string
 ) {
@@ -204,10 +203,10 @@ export async function fetchItems(
         {
           timeend: Boolean(active)
             ? {
-                lte: new Date(Date.now() + Number(end * 24 * 60 * 60 * 1000)),
+                lte: new Date(),
               }
             : {
-                gte: new Date(Date.now() - Number(end * 24 * 60 * 60 * 1000)),
+                gte: new Date(),
               },
         },
         {
