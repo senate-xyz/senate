@@ -5321,7 +5321,20 @@ eth-rpc-errors@^4.0.2:
   dependencies:
     fast-safe-stringify "^2.0.6"
 
-ethers@6.6.2, ethers@^6.3.0, ethers@^6.6.2:
+ethers@6.6.3, ethers@^6.6.3:
+  version "6.6.3"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.6.3.tgz#9bf11d1bd0f18c7c55087d1a52fdc8f3c33c8bab"
+  integrity sha512-g8wLXeRWSGDD0T+wsL3pvyc3aYnmxEEAwH8LSoDTDRhRsmJeNs9YMXlNU7ax2caO+zHkeI9MkHiz6rwxEjN4Mw==
+  dependencies:
+    "@adraffy/ens-normalize" "1.9.2"
+    "@noble/hashes" "1.1.2"
+    "@noble/secp256k1" "1.7.1"
+    "@types/node" "18.15.13"
+    aes-js "4.0.0-beta.5"
+    tslib "2.4.0"
+    ws "8.5.0"
+
+ethers@^6.3.0:
   version "6.6.2"
   resolved "https://registry.npmjs.org/ethers/-/ethers-6.6.2.tgz"
   integrity sha512-vyWfVAj2g7xeZIivOqlbpt7PbS2MzvJkKgsncgn4A/1xZr8Q3BznBmEBRQyPXKCgHmX4PzRQLpnYG7jl/yutMg==
