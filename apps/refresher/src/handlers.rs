@@ -45,12 +45,12 @@ pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
         }
     }
 
-    prisma::voter::include!(voter_with_users { users });
-
     Ok(())
 }
 
 async fn _remove_orphan_voters(client: &PrismaClient) {
+    prisma::voter::include!(voter_with_users { users });
+
     let all_voters = client
         .voter()
         .find_many(vec![])
