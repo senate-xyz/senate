@@ -11,7 +11,6 @@ test_metamask("expect to have all daos unsubscribed", async ({ page }) => {
   await page.getByText("Connect Wallet").click();
   await page.getByText("MetaMask").click();
   await metamask.acceptAccess();
-
   await page.waitForTimeout(500);
   await page.getByText("Send message").click();
   await page.waitForTimeout(500);
@@ -34,7 +33,6 @@ test_metamask("unsigned subscribe to Aave", async ({ page }) => {
 
   await page.getByText("MetaMask").click();
   await metamask.acceptAccess();
-
   await page.waitForTimeout(500);
   await page.getByText("Send message").click();
   await page.waitForTimeout(500);
@@ -50,7 +48,6 @@ test_metamask("signed subscribe to Uniswap", async ({ page }) => {
   await page.getByText("Connect Wallet").click();
   await page.getByText("MetaMask").click();
   await metamask.acceptAccess();
-
   await page.waitForTimeout(500);
   await page.getByText("Send message").click();
   await page.waitForTimeout(500);
@@ -72,7 +69,6 @@ test_metamask("expect to be subscribed to 2 daos", async ({ page }) => {
   await page.getByText("Connect Wallet").click();
   await page.getByText("MetaMask").click();
   await metamask.acceptAccess();
-
   await page.waitForTimeout(500);
   await page.getByText("Send message").click();
   await page.waitForTimeout(500);
@@ -90,7 +86,6 @@ test_metamask("subscribe to all daos", async ({ page }) => {
   await page.getByText("Connect Wallet").click();
   await page.getByText("MetaMask").click();
   await metamask.acceptAccess();
-
   await page.waitForTimeout(500);
   await page.getByText("Send message").click();
   await page.waitForTimeout(500);
@@ -131,7 +126,6 @@ test_metamask("expect to be subscribed to all daos", async ({ page }) => {
   await page.getByText("Connect Wallet").click();
   await page.getByText("MetaMask").click();
   await metamask.acceptAccess();
-
   await page.waitForTimeout(500);
   await page.getByText("Send message").click();
   await page.waitForTimeout(500);
