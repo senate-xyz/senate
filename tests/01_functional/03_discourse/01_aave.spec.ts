@@ -28,7 +28,7 @@ test("creates account for new email", async ({}) => {
     email: "test@senatelabs.xyz",
     result: "success",
     url: process.env.CI
-      ? `*********************/verify/signup-discourse/aave/${newUser?.challengecode}`
+      ? `/verify/signup-discourse/aave/${newUser?.challengecode}`
       : `http://127.0.0.1:3000/verify/signup-discourse/aave/${newUser?.challengecode}`,
   });
 
