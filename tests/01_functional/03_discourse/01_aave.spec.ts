@@ -27,7 +27,9 @@ test("creates account for new email", async ({}) => {
   expect(await response.json()).toStrictEqual({
     email: "test@senatelabs.xyz",
     result: "success",
-    url: `http://127.0.0.1:3000/verify/signup-discourse/aave/${newUser?.challengecode}`,
+    url: process.env.CI
+      ? `*********************/verify/signup-discourse/aave/${newUser?.challengecode}`
+      : `http://127.0.0.1:3000/verify/signup-discourse/aave/${newUser?.challengecode}`,
   });
 
   expect(newUser?.email).toBe("test@senatelabs.xyz");
