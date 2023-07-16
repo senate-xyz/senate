@@ -22,7 +22,10 @@ export const Email = (props: {
   const [, startTransition] = useTransition();
 
   return (
-    <div className="flex max-w-[800px] flex-col gap-4 bg-black p-4">
+    <div
+      className="flex max-w-[800px] flex-col gap-4 bg-black p-4"
+      data-testid="email-settings"
+    >
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-4">
           <Image
@@ -35,7 +38,10 @@ export const Email = (props: {
             Daily Bulletin Notifications
           </div>
         </div>
-        <label className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500">
+        <label
+          className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500"
+          data-testid="bulletin-enabled"
+        >
           <input
             type="checkbox"
             checked={bulletinEnabled}
@@ -73,7 +79,7 @@ const Enabled = (props: {
   quorum: boolean;
   empty: boolean;
 }) => {
-  const [edit, setEdit] = useState(false);
+  const [edit, setEdit] = useState(props.email.length > 0 ? false : true);
   const [currentEmail, setCurrentEmail] = useState(props.email);
   const [resend, setResend] = useState(true);
   const [, startTransition] = useTransition();
@@ -83,7 +89,10 @@ const Enabled = (props: {
       <div className="text-[18px] font-light text-white">Email Address</div>
       {!edit ? (
         <div className={`flex h-[46px] max-w-[382px] flex-col`}>
-          <div className="text-[18px] font-light text-[#D9D9D9]">
+          <div
+            className="text-[18px] font-light text-[#D9D9D9]"
+            data-testid="bulletin-email"
+          >
             {props.email}
           </div>
           <div
@@ -109,6 +118,7 @@ const Enabled = (props: {
                 setEdit(false);
               }
             }}
+            data-testid="email-input"
           />
 
           <div
@@ -118,6 +128,7 @@ const Enabled = (props: {
               startTransition(() => setEmailAndEnableBulletin(currentEmail));
               setEdit(false);
             }}
+            data-testid="email-save"
           >
             Save
           </div>
@@ -125,7 +136,7 @@ const Enabled = (props: {
       )}
 
       {props.email && !props.verified && (
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-2" data-testid="email-unverified">
           <div className="text-[18px] font-light text-red-400">
             Email not verified yet.
           </div>
@@ -170,6 +181,7 @@ const QuorumSetting = ({ quorum }: { quorum: boolean }) => {
             setQA(e.target.checked);
           }}
           className="peer sr-only"
+          data-testid="quorum-enabled"
         />
         <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
       </label>

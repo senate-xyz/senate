@@ -18,6 +18,7 @@ export const discourseSignup = async (
   const challengeRegex = /(?<=challenge:\s)[a-zA-Z0-9]+/;
   const challengeMatch = message.match(challengeRegex);
   if (!challengeMatch) throw new Error("Challenge does not match");
+
   if (challengeMatch[0] != challenge)
     throw new Error("Challenge does not match");
   const valid = await verifyMessage({
