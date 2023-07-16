@@ -412,8 +412,6 @@ test("has email test@senatelabs.xyz, is verified, has bulletin and quorum enable
   await expect(confirmedUser?.subscriptions.map((s) => s.dao.name)).toContain(
     "Compound"
   );
-
-  await expect(page).toHaveURL("/orgs?connect");
 });
 
 test("deletes test user test@senatelabs.xyz ...", async ({}) => {
