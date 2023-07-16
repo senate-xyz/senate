@@ -22,7 +22,10 @@ export const Email = (props: {
   const [, startTransition] = useTransition();
 
   return (
-    <div className="flex max-w-[800px] flex-col gap-4 bg-black p-4">
+    <div
+      className="flex max-w-[800px] flex-col gap-4 bg-black p-4"
+      data-testid="email-settings"
+    >
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-4">
           <Image
@@ -45,6 +48,7 @@ export const Email = (props: {
               if (e.target.checked && props.email)
                 startTransition(() => setBulletin(true));
             }}
+            data-testid="bulletin-enabled"
             className="peer sr-only"
           />
           <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
@@ -83,7 +87,10 @@ const Enabled = (props: {
       <div className="text-[18px] font-light text-white">Email Address</div>
       {!edit ? (
         <div className={`flex h-[46px] max-w-[382px] flex-col`}>
-          <div className="text-[18px] font-light text-[#D9D9D9]">
+          <div
+            className="text-[18px] font-light text-[#D9D9D9]"
+            data-testid="bulletin-email"
+          >
             {props.email}
           </div>
           <div
@@ -125,7 +132,7 @@ const Enabled = (props: {
       )}
 
       {props.email && !props.verified && (
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-2" data-testid="email-unverified">
           <div className="text-[18px] font-light text-red-400">
             Email not verified yet.
           </div>
