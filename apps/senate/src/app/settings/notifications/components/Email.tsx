@@ -38,7 +38,10 @@ export const Email = (props: {
             Daily Bulletin Notifications
           </div>
         </div>
-        <label className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500">
+        <label
+          className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500"
+          data-testid="bulletin-enabled"
+        >
           <input
             type="checkbox"
             checked={bulletinEnabled}
@@ -48,7 +51,6 @@ export const Email = (props: {
               if (e.target.checked && props.email)
                 startTransition(() => setBulletin(true));
             }}
-            data-testid="bulletin-enabled"
             className="peer sr-only"
           />
           <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
@@ -77,7 +79,7 @@ const Enabled = (props: {
   quorum: boolean;
   empty: boolean;
 }) => {
-  const [edit, setEdit] = useState(false);
+  const [edit, setEdit] = useState(props.email.length > 0 ? false : true);
   const [currentEmail, setCurrentEmail] = useState(props.email);
   const [resend, setResend] = useState(true);
   const [, startTransition] = useTransition();
@@ -116,6 +118,7 @@ const Enabled = (props: {
                 setEdit(false);
               }
             }}
+            data-testid="email-input"
           />
 
           <div
@@ -125,6 +128,7 @@ const Enabled = (props: {
               startTransition(() => setEmailAndEnableBulletin(currentEmail));
               setEdit(false);
             }}
+            data-testid="email-save"
           >
             Save
           </div>
