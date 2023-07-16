@@ -83,7 +83,7 @@ test_metamask("confirms new account by signing message", async ({ page }) => {
 });
 
 test_metamask(
-  "user has test@senatelabs.xyz email verified",
+  "user has test@senatelabs.xyz email verified, bulletin and quorum enabled and is subscribed to aave",
   async ({ page }) => {
     await page.goto("/orgs");
 
@@ -113,6 +113,12 @@ test_metamask(
     await expect(
       page.getByTestId("email-settings").getByTestId("bulletin-email")
     ).toHaveText("test@senatelabs.xyz");
+
+    await expect(page.getByTestId("email-unverified")).toBeHidden();
+
+    await expect(
+      page.getByTestId("email-settings").getByTestId("quorum-enabled")
+    ).toBeChecked();
 
     await test.step("cleans up user test@senatelabs.xyz if exists", async () => {
       await prisma.user.deleteMany({

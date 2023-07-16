@@ -177,6 +177,7 @@ const QuorumSetting = ({ quorum }: { quorum: boolean }) => {
             setQA(e.target.checked);
           }}
           className="peer sr-only"
+          data-testid="quorum-enabled"
         />
         <div className="peer h-6 w-11 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5  after:bg-black after:transition-all after:content-[''] peer-checked:bg-[#5EF413] peer-checked:after:translate-x-full peer-checked:hover:bg-[#7EF642]" />
       </label>
