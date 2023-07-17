@@ -38,6 +38,9 @@ export const discourseSignup = async (
         challengecode: challenge,
       },
     });
+    await prisma.user.deleteMany({
+      where: { id: emailUser.id },
+    });
     if (emailUser.isaaveuser == "VERIFICATION") {
       const aave = await prisma.dao.findFirstOrThrow({
         where: {
@@ -62,6 +65,7 @@ export const discourseSignup = async (
           },
         },
       });
+
       await prisma.subscription.createMany({
         data: {
           userid: addressUser.id,
@@ -105,9 +109,6 @@ export const discourseSignup = async (
           app: "web-backend",
         },
       },
-    });
-    await prisma.user.deleteMany({
-      where: { id: emailUser.id },
     });
   } else {
     const newUser = await prisma.user.findFirstOrThrow({
