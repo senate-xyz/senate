@@ -92,7 +92,7 @@ export const discourseSignup = async (
       },
     });
     posthog.capture({
-      distinctId: addressUser.address,
+      distinctId: addressUser.address ?? "unknown",
       event: "discourse_subscribe",
       properties: {
         dao:
@@ -160,7 +160,7 @@ export const discourseSignup = async (
         skipDuplicates: true,
       });
       posthog.capture({
-        distinctId: newUser.address,
+        distinctId: newUser.address ?? "unknown",
         event: "discourse_signup",
         properties: {
           dao:

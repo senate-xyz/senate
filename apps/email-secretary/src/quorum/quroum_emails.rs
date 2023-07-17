@@ -313,7 +313,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                             spawn_blocking(move || {
                                 posthog_quorum_event(
                                     "email_quorum_sent",
-                                    user.address,
+                                    user.address.unwrap(),
                                     quorum_template,
                                     proposal.clone().unwrap().name,
                                     proposal.clone().unwrap().dao.name,
@@ -328,7 +328,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                             spawn_blocking(move || {
                                 posthog_quorum_event(
                                     "email_quorum_fail",
-                                    user.address,
+                                    user.address.unwrap(),
                                     quorum_template,
                                     proposal.clone().unwrap().name,
                                     proposal.unwrap().dao.name,
@@ -385,7 +385,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                         spawn_blocking(move || {
                             posthog_quorum_event(
                                 "email_quorum_fail",
-                                user.address,
+                                user.address.unwrap(),
                                 quorum_template,
                                 proposal.clone().unwrap().name,
                                 proposal.unwrap().dao.name,
@@ -443,7 +443,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 spawn_blocking(move || {
                     posthog_quorum_event(
                         "email_quorum_fail",
-                        user.address,
+                        user.address.unwrap(),
                         quorum_template,
                         proposal.clone().unwrap().name,
                         proposal.unwrap().dao.name,

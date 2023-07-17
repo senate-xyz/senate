@@ -230,7 +230,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             Ok(msg) => {
                                 posthog_event(
                                     "discord_ended_notification",
-                                    user.address,
+                                    user.address.unwrap(),
                                     proposal.name,
                                     proposal.dao.name,
                                 );
@@ -252,7 +252,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
                                 posthog_event(
                                     "discord_ended_notification_fail",
-                                    user.address,
+                                    user.address.unwrap(),
                                     proposal.name,
                                     proposal.dao.name,
                                 );

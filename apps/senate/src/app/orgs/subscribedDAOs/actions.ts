@@ -39,7 +39,7 @@ export async function unsubscribe(daoId: string) {
   });
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: "unsubscribe",
     properties: {
       dao: result.dao.name,

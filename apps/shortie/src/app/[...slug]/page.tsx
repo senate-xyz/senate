@@ -72,7 +72,7 @@ async function log(type: Type, proposalId: string, userId: string) {
   const proposal = await getProposal(proposalId);
 
   posthog.capture({
-    distinctId: user ? user.address : "visitor",
+    distinctId: user?.address ?? "visitor",
     event: type,
     properties: {
       proposalId: proposal ? proposal.id : "unknown",
