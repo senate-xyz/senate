@@ -171,12 +171,7 @@ async fn update_proposals(
         .await
         .with_context(|| format!("bad graphql response {}", graphql_query))?;
 
-    let proposals: Vec<GraphQLProposal> = response_data
-        .data
-        .proposals
-        .into_iter()
-        .filter(|p| p.flagged.is_some_and(|v| v == true))
-        .collect();
+    let proposals: Vec<GraphQLProposal> = response_data.data.proposals.into_iter().collect();
 
     for proposal in proposals.clone() {
         let mut state = match proposal.state.as_str() {
@@ -192,7 +187,7 @@ async fn update_proposals(
             _ => ProposalState::Unknown,
         };
 
-        if proposal.flagged.is_some_and(|v| v == true) {
+        if proposal.flagged.is_some_and(|f| f == true) {
             state = ProposalState::DeletedOrSpam
         }
 
