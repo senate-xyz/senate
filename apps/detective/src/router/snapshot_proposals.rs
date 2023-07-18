@@ -174,7 +174,7 @@ async fn update_proposals(
     let proposals: Vec<GraphQLProposal> = response_data.data.proposals.into_iter().collect();
 
     for proposal in proposals.clone() {
-        let mut state = match proposal.state.as_str() {
+        let state = match proposal.state.as_str() {
             "active" => ProposalState::Active,
             "pending" => ProposalState::Pending,
             "closed" => {
@@ -186,10 +186,6 @@ async fn update_proposals(
             }
             _ => ProposalState::Unknown,
         };
-
-        if proposal.flagged.is_some_and(|f| f == true) {
-            state = ProposalState::DeletedOrSpam
-        }
 
         let existing = ctx
             .db
@@ -218,6 +214,9 @@ async fn update_proposals(
                                 proposal::scorestotal::set(proposal.scores_total.into()),
                                 proposal::quorum::set(proposal.quorum.into()),
                                 proposal::state::set(state),
+                                proposal::visible::set(
+                                    !proposal.flagged.is_some_and(|f| f == true),
+                                ),
                             ],
                         )
                         .exec()
@@ -255,7 +254,9 @@ async fn update_proposals(
                         proposal.link.clone(),
                         dao_handler.id.to_string(),
                         dao_handler.daoid.to_string(),
-                        vec![],
+                        vec![proposal::visible::set(
+                            !proposal.flagged.is_some_and(|f| f == true),
+                        )],
                     )
                     .exec()
                     .instrument(debug_span!("create_proposal"))

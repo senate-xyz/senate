@@ -104,7 +104,7 @@ async fn sanitize(
                 .proposal()
                 .update(
                     proposal::id::equals(existing_proposal.clone().id.to_string()),
-                    vec![proposal::state::set(ProposalState::DeletedOrSpam)],
+                    vec![proposal::visible::set(false)],
                 )
                 .exec()
                 .instrument(debug_span!("delete_proposal"))

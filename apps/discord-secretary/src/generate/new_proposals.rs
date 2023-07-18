@@ -82,6 +82,7 @@ pub async fn get_new_proposals_for_user(
         .find_many(vec![
             prisma::proposal::daoid::in_vec(subscribed_daos.into_iter().map(|d| d.daoid).collect()),
             prisma::proposal::state::equals(ProposalState::Active),
+            prisma::proposal::visible::equals(true),
         ])
         .include(proposal_with_dao::include())
         .exec()

@@ -91,6 +91,7 @@ pub async fn get_ended_proposals_for_user(
             ]),
             proposal::timeend::lt((Utc::now()).into()),
             proposal::timeend::gt((Utc::now() - Duration::minutes(60)).into()),
+            proposal::visible::equals(true),
         ])
         .include(proposal_with_dao::include())
         .exec()
