@@ -51,7 +51,7 @@ struct GraphQLProposal {
     quorum: f64,
     link: String,
     state: String,
-    flagged: bool,
+    flagged: Option<bool>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -174,7 +174,7 @@ async fn update_proposals(
         .data
         .proposals
         .into_iter()
-        .filter(|p| !p.flagged)
+        .filter(|p| p.flagged.is_some_and(|v| v == true))
         .collect();
 
     for proposal in proposals.clone() {
@@ -191,7 +191,7 @@ async fn update_proposals(
             _ => ProposalState::Unknown,
         };
 
-        if proposal.flagged {
+        if proposal.flagged.is_some_and(|v| v == true) {
             state = ProposalState::DeletedOrSpam
         }
 
