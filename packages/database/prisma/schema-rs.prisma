@@ -335,7 +335,7 @@ enum ProposalState {
   QUEUED
   EXPIRED
   EXECUTED
-  DELETED
   HIDDEN
+  DELETED_OR_SPAM
   UNKNOWN
 }

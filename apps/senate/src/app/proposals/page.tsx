@@ -7,6 +7,12 @@ import {
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
 import { redirect } from "next/navigation";
+import { PostHog } from "posthog-node";
+
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
+  host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
+  disableGeoip: true,
+});
 
 enum VoteResult {
   NOT_CONNECTED = "NOT_CONNECTED",
@@ -224,6 +230,12 @@ export async function fetchItems(
                   ProposalState.SUCCEEDED,
                   ProposalState.HIDDEN,
                   ProposalState.UNKNOWN,
+                  (await posthog.isFeatureEnabled(
+                    "can-see-deleted-proposals",
+                    userAddress,
+                  ))
+                    ? ProposalState.DELETED_OR_SPAM
+                    : ProposalState.UNKNOWN,
                 ],
               },
         },

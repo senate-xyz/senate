@@ -370,7 +370,10 @@ async fn get_ending_soon_proposals(
                     .map(|s| s.daoid)
                     .collect(),
             ),
-            proposal::state::not(ProposalState::Canceled),
+            proposal::state::not_in_vec(vec![
+                ProposalState::Canceled,
+                ProposalState::DeletedOrSpam,
+            ]),
         ])
         .order_by(proposal::timeend::order(Direction::Asc))
         .include(proposal_with_dao::include())
@@ -466,7 +469,10 @@ async fn get_new_proposals(
                     .map(|s| s.daoid)
                     .collect(),
             ),
-            proposal::state::not(ProposalState::Canceled),
+            proposal::state::not_in_vec(vec![
+                ProposalState::Canceled,
+                ProposalState::DeletedOrSpam,
+            ]),
         ])
         .order_by(proposal::timeend::order(Direction::Asc))
         .include(proposal_with_dao::include())
@@ -564,7 +570,10 @@ async fn get_ended_proposals(
                     .map(|s| s.daoid)
                     .collect(),
             ),
-            proposal::state::not(ProposalState::Canceled),
+            proposal::state::not_in_vec(vec![
+                ProposalState::Canceled,
+                ProposalState::DeletedOrSpam,
+            ]),
         ])
         .order_by(proposal::timeend::order(Direction::Desc))
         .include(proposal_with_dao::include())
