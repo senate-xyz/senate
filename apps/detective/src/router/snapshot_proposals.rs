@@ -178,7 +178,7 @@ async fn update_proposals(
         .collect();
 
     for proposal in proposals.clone() {
-        let state = match proposal.state.as_str() {
+        let mut state = match proposal.state.as_str() {
             "active" => ProposalState::Active,
             "pending" => ProposalState::Pending,
             "closed" => {
@@ -190,6 +190,11 @@ async fn update_proposals(
             }
             _ => ProposalState::Unknown,
         };
+
+        if proposal.flagged {
+            state = ProposalState::DeletedOrSpam
+        }
+
         let existing = ctx
             .db
             .proposal()

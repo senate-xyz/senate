@@ -12,7 +12,7 @@ use tracing::{debug, debug_span, event, instrument, Instrument, Level};
 
 use crate::{
     contracts::makerpollcreate::{self, PollWithdrawnFilter},
-    prisma::{self, daohandler, proposal, vote, DaoHandlerType},
+    prisma::{self, daohandler, proposal, vote, DaoHandlerType, ProposalState},
     Context,
 };
 
@@ -101,18 +101,11 @@ async fn sanitize(
 
         if let Some(existing_proposal) = proposal {
             ctx.db
-                .vote()
-                .delete_many(vec![vote::proposalid::equals(existing_proposal.clone().id)])
-                .exec()
-                .instrument(debug_span!("delete_votes"))
-                .await
-                .unwrap();
-
-            ctx.db
                 .proposal()
-                .delete(proposal::id::equals(
-                    existing_proposal.clone().id.to_string(),
-                ))
+                .update(
+                    proposal::id::equals(existing_proposal.clone().id.to_string()),
+                    vec![proposal::state::set(ProposalState::DeletedOrSpam)],
+                )
                 .exec()
                 .instrument(debug_span!("delete_proposal"))
                 .await

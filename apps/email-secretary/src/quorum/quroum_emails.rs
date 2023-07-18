@@ -23,6 +23,7 @@ use crate::{
         MagicUserState,
         NotificationDispatchedState,
         NotificationType,
+        ProposalState,
     },
     utils::{countdown::countdown_gif, posthog::posthog_quorum_event, vote::get_vote},
 };
@@ -502,7 +503,10 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
         .find_many(vec![
             proposal::timeend::gt(Utc::now().into()),
             proposal::timeend::lte((Utc::now() + Duration::hours(12)).into()),
-            proposal::state::not(prisma::ProposalState::Canceled),
+            proposal::state::not_in_vec(vec![
+                ProposalState::Canceled,
+                ProposalState::DeletedOrSpam,
+            ]),
         ])
         .include(proposal_with_dao::include())
         .exec()

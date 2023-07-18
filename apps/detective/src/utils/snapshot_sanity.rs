@@ -7,7 +7,7 @@ use serde::Deserialize;
 use tracing::{debug_span, event, instrument, Instrument, Level};
 
 use crate::{
-    prisma::{self, daohandler, proposal, vote, DaoHandlerType},
+    prisma::{self, daohandler, proposal, vote, DaoHandlerType, ProposalState},
     Context,
 };
 
@@ -29,7 +29,6 @@ struct GraphQLResponseInner {
 #[derive(Debug, Clone, Deserialize)]
 struct GraphQLProposal {
     id: String,
-    flagged: bool,
 }
 
 #[instrument(skip(ctx), level = "info")]
@@ -94,7 +93,6 @@ async fn sanitize(
             )
             {{
                 id
-                flagged
             }}
         }}
     "#,
@@ -124,14 +122,8 @@ async fn sanitize(
     let response_data: GraphQLResponse = graphql_response.unwrap().json().await.unwrap();
     let graph_proposals: Vec<GraphQLProposal> = response_data.data.proposals;
 
-    let _ = graph_proposals
-        .iter()
-        .filter(|proposal| proposal.flagged)
-        .map(|proposal| println!("{:?}", proposal.id));
-
     let graphql_proposal_ids: Vec<String> = graph_proposals
         .iter()
-        .filter(|proposal| !proposal.flagged)
         .map(|proposal| proposal.id.clone())
         .collect();
 
@@ -145,20 +137,13 @@ async fn sanitize(
 
     let _ = ctx
         .db
-        .vote()
-        .delete_many(vec![vote::proposalid::in_vec(
-            proposals_to_delete.iter().map(|p| p.clone().id).collect(),
-        )])
-        .exec()
-        .instrument(debug_span!("delete_votes"))
-        .await;
-
-    let _ = ctx
-        .db
         .proposal()
-        .delete_many(vec![proposal::id::in_vec(
-            proposals_to_delete.iter().map(|p| p.clone().id).collect(),
-        )])
+        .update_many(
+            vec![proposal::id::in_vec(
+                proposals_to_delete.iter().map(|p| p.clone().id).collect(),
+            )],
+            vec![proposal::state::set(ProposalState::DeletedOrSpam)],
+        )
         .exec()
         .instrument(debug_span!("delete_proposals"))
         .await;
