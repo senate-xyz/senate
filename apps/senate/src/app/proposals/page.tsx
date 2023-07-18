@@ -231,7 +231,7 @@ export async function fetchItems(
                   ProposalState.HIDDEN,
                   ProposalState.UNKNOWN,
                   (await posthog.isFeatureEnabled(
-                    "canSeeDeletedProposals",
+                    "can-see-deleted-proposals",
                     userAddress,
                   ))
                     ? ProposalState.DELETED_OR_SPAM
