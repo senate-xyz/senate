@@ -29,6 +29,7 @@ struct GraphQLResponseInner {
 #[derive(Debug, Clone, Deserialize)]
 struct GraphQLProposal {
     id: String,
+    flagged: bool,
 }
 
 #[instrument(skip(ctx), level = "info")]
@@ -86,13 +87,14 @@ async fn sanitize(
                 where: {{
                     space: {:?},
                     created_gte: {},
-                    created_lte: {}
+                    created_lte: {},
                 }},
                 orderBy: "created",
                 orderDirection: asc
             )
             {{
                 id
+                flagged
             }}
         }}
     "#,
@@ -125,6 +127,7 @@ async fn sanitize(
     if database_proposals.len() > graph_proposals.len() {
         let graphql_proposal_ids: Vec<String> = graph_proposals
             .iter()
+            .filter(|proposal| !proposal.flagged)
             .map(|proposal| proposal.id.clone())
             .collect();
 

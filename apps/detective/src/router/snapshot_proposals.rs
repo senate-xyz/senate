@@ -51,6 +51,7 @@ struct GraphQLProposal {
     quorum: f64,
     link: String,
     state: String,
+    flagged: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -169,7 +170,12 @@ async fn update_proposals(
         .await
         .with_context(|| format!("bad graphql response {}", graphql_query))?;
 
-    let proposals: Vec<GraphQLProposal> = response_data.data.proposals;
+    let proposals: Vec<GraphQLProposal> = response_data
+        .data
+        .proposals
+        .into_iter()
+        .filter(|p| !p.flagged)
+        .collect();
 
     for proposal in proposals.clone() {
         let state = match proposal.state.as_str() {
