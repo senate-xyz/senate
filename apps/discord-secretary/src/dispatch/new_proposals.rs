@@ -155,7 +155,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
                     Ok(msg) => {
                         posthog_event(
                             "discord_new_notification",
-                            user.address,
+                            user.address.unwrap(),
                             proposal.name,
                             proposal.dao.name,
                         );
@@ -177,7 +177,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) {
 
                         posthog_event(
                             "discord_new_notification_fail",
-                            user.address,
+                            user.address.unwrap(),
                             proposal.name,
                             proposal.dao.name,
                         );

@@ -49,7 +49,7 @@ export const addVoter = async (address: string) => {
   });
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: "add_voter",
     properties: {
       voter: address,
@@ -93,7 +93,7 @@ export const removeVoter = async (address: string) => {
   });
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: "remove_voter",
     properties: {
       voter: address,

@@ -38,6 +38,9 @@ export const discourseSignup = async (
         challengecode: challenge,
       },
     });
+    await prisma.user.deleteMany({
+      where: { id: emailUser.id },
+    });
     if (emailUser.isaaveuser == "VERIFICATION") {
       const aave = await prisma.dao.findFirstOrThrow({
         where: {
@@ -62,6 +65,7 @@ export const discourseSignup = async (
           },
         },
       });
+
       await prisma.subscription.createMany({
         data: {
           userid: addressUser.id,
@@ -92,7 +96,7 @@ export const discourseSignup = async (
       },
     });
     posthog.capture({
-      distinctId: addressUser.address,
+      distinctId: addressUser.address ?? "unknown",
       event: "discourse_subscribe",
       properties: {
         dao:
@@ -105,9 +109,6 @@ export const discourseSignup = async (
           app: "web-backend",
         },
       },
-    });
-    await prisma.user.deleteMany({
-      where: { id: emailUser.id },
     });
   } else {
     const newUser = await prisma.user.findFirstOrThrow({
@@ -160,7 +161,7 @@ export const discourseSignup = async (
         skipDuplicates: true,
       });
       posthog.capture({
-        distinctId: newUser.address,
+        distinctId: newUser.address ?? "unknown",
         event: "discourse_signup",
         properties: {
           dao:

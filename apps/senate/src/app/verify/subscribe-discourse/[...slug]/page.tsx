@@ -80,7 +80,7 @@ const verifyUser = async (dao: string, challenge: string) => {
   }
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: "subscribe_discourse",
     properties: {
       dao: dao_name,

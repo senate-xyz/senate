@@ -266,7 +266,7 @@ async fn send_bulletin(
                 spawn_blocking(move || {
                     posthog_bulletin_event(
                         "email_bulletin_sent",
-                        user.address,
+                        user.address.unwrap(),
                         bulletin_template,
                         postmark_result.MessageID.unwrap().as_str(),
                     );
@@ -293,7 +293,7 @@ async fn send_bulletin(
                 spawn_blocking(move || {
                     posthog_bulletin_event(
                         "email_bulletin_fail",
-                        user.address,
+                        user.address.unwrap(),
                         "",
                         postmark_result.Message.as_str(),
                     );
@@ -320,7 +320,7 @@ async fn send_bulletin(
                 .unwrap();
 
             spawn_blocking(move || {
-                posthog_bulletin_event("email_bulletin_fail", user.address, "", "");
+                posthog_bulletin_event("email_bulletin_fail", user.address.unwrap(), "", "");
             })
             .await
             .unwrap();
