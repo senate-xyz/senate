@@ -29,6 +29,8 @@ pub async fn maker_polls_sanity_check(ctx: &Context) {
     let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(30);
     let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
 
+    debug!("{:?} {:?}", sanitize_from, sanitize_to);
+
     let dao_handler = ctx
         .db
         .clone()
