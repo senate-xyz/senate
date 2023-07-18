@@ -9,7 +9,7 @@ test("deletes test user test@senatelabs.xyz", async ({}) => {
   });
 });
 
-test("creates new email account using discourse api", async ({}) => {
+test("creates new email account test@senatelabs.xyz using discourse api", async ({}) => {
   let response;
 
   await test.step("calls discourse api for test@senatelabs.xyz", async () => {
@@ -49,7 +49,7 @@ test("creates new email account using discourse api", async ({}) => {
 });
 
 test_metamask(
-  "confirms new email account by signing message",
+  "confirms new email account test@senatelabs.xyz by signing message",
   async ({ page }) => {
     const newUser = await prisma.user.findFirst({
       where: { email: "test@senatelabs.xyz" },
@@ -158,7 +158,7 @@ test_metamask(
   }
 );
 
-test("creates new email account using discourse api again", async ({}) => {
+test("creates new email account test@senatelabs.xyz using discourse api again", async ({}) => {
   let response;
 
   await test.step("calls discourse api for test@senatelabs.xyz", async () => {
@@ -198,7 +198,7 @@ test("creates new email account using discourse api again", async ({}) => {
 });
 
 test_metamask(
-  "confirms new email account by signing message again",
+  "confirms new email account test@senatelabs.xyz by signing message again",
   async ({ page }) => {
     const newUser = await prisma.user.findFirst({
       where: { email: "test@senatelabs.xyz" },
@@ -336,7 +336,7 @@ test_metamask(
   }
 );
 
-test("subscribes to Aave using discourse api again", async ({}) => {
+test("subscribes test@senatelabs.xyz to Aave using discourse api again", async ({}) => {
   let response;
 
   await test.step("calls discourse api for test@senatelabs.xyz", async () => {
@@ -375,7 +375,9 @@ test("subscribes to Aave using discourse api again", async ({}) => {
   await expect(newUser?.emailquorumwarning).toBe(true);
 });
 
-test("confirms aave subscription by visiting page", async ({ page }) => {
+test("confirms aave subscription by visiting page, no sign message required", async ({
+  page,
+}) => {
   const newUser = await prisma.user.findFirst({
     where: { email: "test@senatelabs.xyz" },
   });
@@ -415,6 +417,151 @@ test("has email test@senatelabs.xyz, is verified, has bulletin and quorum enable
 });
 
 test("deletes test user test@senatelabs.xyz ...", async ({}) => {
+  await prisma.user.deleteMany({
+    where: { email: "test@senatelabs.xyz" },
+  });
+});
+
+test_metamask(
+  "creates new address user, subscribes to Compound, sets email to test@test.com (force confirmed)",
+  async ({ page }) => {
+    await page.goto("/orgs");
+    await page.getByText("Connect Wallet").click();
+    await page.getByText("MetaMask").click();
+    await metamask.acceptAccess();
+    await page.waitForTimeout(500);
+    await page.getByText("Send message").click();
+    await page.waitForTimeout(500);
+    await metamask.confirmSignatureRequest();
+    await page.waitForTimeout(500);
+
+    await page
+      .getByTestId("unsubscribed-list")
+      .getByTestId("Compound")
+      .getByTestId("subscribe-button")
+      .click();
+
+    await expect(
+      page.getByTestId("subscribed-list").getByTestId("Compound")
+    ).toBeVisible();
+
+    await page.goto("/settings/notifications");
+
+    await page.getByTestId("bulletin-enabled").click();
+
+    await page.getByTestId("email-input").fill("test@test.com");
+
+    await page.getByTestId("email-save").click();
+
+    await expect(page.getByTestId("email-unverified")).toBeVisible();
+
+    await prisma.user.updateMany({
+      where: { email: "test@test.com" },
+      data: {
+        challengecode: "",
+        verifiedemail: true,
+      },
+    });
+  }
+);
+
+test("subscribes test@senatelabs.xyz to Aave using discourse api again ..", async ({}) => {
+  let response;
+
+  await test.step("calls discourse api for test@senatelabs.xyz", async () => {
+    response = await fetch(
+      "http://127.0.0.1:3000/api/discourse/aave-magic-user",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ email: "test@senatelabs.xyz" }),
+      }
+    );
+  });
+
+  await expect(response.status).toBe(200);
+
+  const newUser = await prisma.user.findFirst({
+    where: { email: "test@senatelabs.xyz" },
+  });
+
+  await expect(await response.json()).toStrictEqual({
+    email: "test@senatelabs.xyz",
+    result: "success",
+    url: process.env.CI
+      ? `/verify/signup-discourse/aave/${newUser?.challengecode}`
+      : `http://127.0.0.1:3000/verify/signup-discourse/aave/${newUser?.challengecode}`,
+  });
+
+  await expect(newUser?.email).toBe("test@senatelabs.xyz");
+  await expect(newUser?.isaaveuser).toBe("VERIFICATION");
+  await expect(newUser?.verifiedaddress).toBe(false);
+  await expect(newUser?.verifiedemail).toBe(false);
+  await expect(newUser?.emaildailybulletin).toBe(true);
+  await expect(newUser?.emailquorumwarning).toBe(true);
+});
+
+test_metamask(
+  "confirms new email account by signing message ..",
+  async ({ page }) => {
+    const newUser = await prisma.user.findFirst({
+      where: { email: "test@senatelabs.xyz" },
+    });
+
+    await page.goto(
+      `http://127.0.0.1:3000/verify/signup-discourse/aave/${newUser?.challengecode}`
+    );
+
+    await page.getByText("Connect Wallet").click();
+    await page.getByText("MetaMask").click();
+    await metamask.acceptAccess();
+    await page.waitForTimeout(5000);
+    await metamask.confirmSignatureRequest();
+
+    await page.waitForTimeout(10000);
+
+    await expect(page).toHaveURL("/orgs?connect");
+  }
+);
+
+test("has email updated to test@senatelabs.xyz, is verified, has bulletin and quorum enabled, is subscribed to Aave and Compound ..", async ({
+  page,
+}) => {
+  const confirmedUser = await prisma.user.findFirst({
+    where: { email: "test@senatelabs.xyz" },
+    include: {
+      subscriptions: { include: { dao: { select: { name: true } } } },
+    },
+  });
+
+  const oldEmailUser = await prisma.user.findFirst({
+    where: { email: "test@test.com" },
+    include: {
+      subscriptions: { include: { dao: { select: { name: true } } } },
+    },
+  });
+
+  await expect(oldEmailUser).toBeNull();
+
+  await expect(confirmedUser?.email).toBe("test@senatelabs.xyz");
+  await expect(confirmedUser?.isaaveuser).toBe("ENABLED");
+  await expect(confirmedUser?.verifiedaddress).toBe(true);
+  await expect(confirmedUser?.verifiedemail).toBe(true);
+  await expect(confirmedUser?.challengecode).toBe("");
+  await expect(confirmedUser?.emaildailybulletin).toBe(true);
+  await expect(confirmedUser?.emailquorumwarning).toBe(true);
+  await expect(confirmedUser?.subscriptions.map((s) => s.dao.name)).toContain(
+    "Aave"
+  );
+  await expect(confirmedUser?.subscriptions.map((s) => s.dao.name)).toContain(
+    "Compound"
+  );
+});
+
+test("deletes test user test@senatelabs.xyz ....", async ({}) => {
   await prisma.user.deleteMany({
     where: { email: "test@senatelabs.xyz" },
   });
