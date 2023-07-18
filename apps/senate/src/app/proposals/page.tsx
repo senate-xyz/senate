@@ -199,6 +199,12 @@ export async function fetchItems(
       from.toLowerCase().replace(" ", ""),
   )[0];
 
+  const canSeeDeleted =
+    (await posthog.isFeatureEnabled(
+      "can-see-deleted-proposals",
+      userAddress,
+    )) ?? false;
+
   const proposals = await prisma.proposal.findMany({
     where: {
       AND: [
@@ -230,16 +236,11 @@ export async function fetchItems(
                   ProposalState.SUCCEEDED,
                   ProposalState.HIDDEN,
                   ProposalState.UNKNOWN,
-                  (await posthog.isFeatureEnabled(
-                    "can-see-deleted-proposals",
-                    userAddress,
-                  ))
-                    ? ProposalState.DELETED_OR_SPAM
-                    : ProposalState.UNKNOWN,
                 ],
               },
         },
         voteStatusQuery,
+        canSeeDeleted ? {} : { visible: true },
       ],
     },
     orderBy: {

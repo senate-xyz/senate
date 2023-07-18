@@ -142,7 +142,7 @@ async fn sanitize(
             vec![proposal::id::in_vec(
                 proposals_to_delete.iter().map(|p| p.clone().id).collect(),
             )],
-            vec![proposal::state::set(ProposalState::DeletedOrSpam)],
+            vec![proposal::visible::set(false)],
         )
         .exec()
         .instrument(debug_span!("delete_proposals"))
