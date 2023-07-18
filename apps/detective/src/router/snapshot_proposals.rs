@@ -111,6 +111,7 @@ pub async fn update_snapshot_proposals<'a>(
                         quorum
                         link
                         state
+                        flagged
                     }}
                 }}
             "#,
