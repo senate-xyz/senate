@@ -423,7 +423,7 @@ test("deletes test user test@test.com ...", async ({}) => {
 });
 
 test_metamask(
-  "creates new address user, subscribes to Compound, sets email to test@test.com (force confirmed)",
+  "creates new address user, subscribes to Compound, sets email to test@test.com (force confirmed)..",
   async ({ page }) => {
     await page.goto("/orgs");
     await page.getByText("Connect Wallet").click();
