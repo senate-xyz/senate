@@ -485,7 +485,7 @@ test("subscribes test@test.com to Uniswap using discourse api again ..", async (
   await expect(await response.json()).toStrictEqual({
     email: "test@test.com",
     result: "success",
-    url: `http://127.0.0.1:3000/verify/signup-discourse/uniswap/${newUser?.challengecode}`,
+    url: `http://127.0.0.1:3000/verify/subscribe-discourse/uniswap/${newUser?.challengecode}`,
   });
 
   await expect(newUser?.email).toBe("test@test.com");
