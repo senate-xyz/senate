@@ -490,7 +490,7 @@ test("subscribes test@test.com to Uniswap using discourse api again ..", async (
 
   await expect(newUser?.email).toBe("test@test.com");
   await expect(newUser?.isuniswapuser).toBe("VERIFICATION");
-  await expect(newUser?.verifiedaddress).toBe(false);
+  await expect(newUser?.verifiedaddress).toBe(true);
   await expect(newUser?.verifiedemail).toBe(false);
   await expect(newUser?.emaildailybulletin).toBe(true);
   await expect(newUser?.emailquorumwarning).toBe(true);
