@@ -3,6 +3,7 @@
 import { prisma } from "@senate/database";
 import { verifyMessage } from "viem";
 import { PostHog } from "posthog-node";
+import { redirect } from "next/navigation";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
@@ -177,4 +178,5 @@ export const discourseSignup = async (
       });
     }
   }
+  redirect("/orgs?connect");
 };
