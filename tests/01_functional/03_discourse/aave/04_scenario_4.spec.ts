@@ -10,7 +10,7 @@ test("deletes test user test@test.com start", async ({}) => {
 });
 
 test_metamask(
-  "creates new address user, subscribes to Compound, sets email to test@test.com (force confirmed)..",
+  "creates new address user, subscribes to Compound, sets email to name@test.com (force confirmed)..",
   async ({ page }) => {
     await page.goto("/orgs");
     await page.getByText("Connect Wallet").click();
@@ -36,7 +36,7 @@ test_metamask(
 
     await page.getByTestId("bulletin-enabled").click();
 
-    await page.getByTestId("email-input").fill("test@test.com");
+    await page.getByTestId("email-input").fill("name@test.com");
 
     await page.getByTestId("email-save").click();
 
@@ -78,13 +78,13 @@ test("subscribes test@test.com to Aave using discourse api", async ({}) => {
   await expect(await response.json()).toStrictEqual({
     email: "test@test.com",
     result: "success",
-    url: `http://127.0.0.1:3000/verify/subscribe-discourse/aave/${newUser?.challengecode}`,
+    url: `http://127.0.0.1:3000/verify/signup-discourse/aave/${newUser?.challengecode}`,
   });
 
   await expect(newUser?.email).toBe("test@test.com");
   await expect(newUser?.isaaveuser).toBe("VERIFICATION");
-  await expect(newUser?.verifiedaddress).toBe(true);
-  await expect(newUser?.verifiedemail).toBe(true);
+  await expect(newUser?.verifiedaddress).toBe(false);
+  await expect(newUser?.verifiedemail).toBe(false);
   await expect(newUser?.emaildailybulletin).toBe(true);
   await expect(newUser?.emailquorumwarning).toBe(true);
 });
@@ -123,7 +123,7 @@ test("has email updated to test@test.com, is verified, has bulletin and quorum e
   });
 
   const oldEmailUser = await prisma.user.findFirst({
-    where: { email: "test@test.com" },
+    where: { email: "name@test.com" },
     include: {
       subscriptions: { include: { dao: { select: { name: true } } } },
     },

@@ -14,7 +14,7 @@ test("creates new email account test@test.com using discourse api", async ({}) =
 
   await test.step("calls discourse api for test@test.com", async () => {
     response = await fetch(
-      "http://127.0.0.1:3000/api/discourse/aave-magic-user",
+      "http://127.0.0.1:3000/api/discourse/uniswap-magic-user",
       {
         method: "POST",
         headers: {
