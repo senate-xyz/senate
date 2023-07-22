@@ -44,9 +44,7 @@ export const VerifyButton = (props: { challenge: string }) => {
           message,
           props.challenge,
           signedMessage ?? "",
-        ).then(() => {
-          if (router) router.push("/orgs?connect");
-        }),
+        ),
       );
   }, [address, message, props.challenge, router, signedMessage]);
 
