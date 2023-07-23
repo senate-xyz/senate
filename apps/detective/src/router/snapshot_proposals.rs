@@ -200,7 +200,10 @@ async fn update_proposals(
 
         match existing {
             Some(existing) => {
-                if state != existing.state || proposal.scores_total != existing.scorestotal {
+                if state != existing.state
+                    || proposal.scores_total != existing.scorestotal
+                    || existing.visible != !proposal.flagged.is_some_and(|f| f == true)
+                {
                     ctx.db
                         .proposal()
                         .update(
