@@ -33,8 +33,9 @@ const Home = () => {
       setEmailAndEnableBulletin(newEmail)
         .then(() => {
           setSuccess(true);
+          router.push("/orgs");
         })
-        .catch(() => setError(true))
+        .catch(() => setError(true)),
     );
   };
 

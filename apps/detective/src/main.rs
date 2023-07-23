@@ -112,7 +112,7 @@ async fn rocket() -> _ {
 
     tokio::spawn(
         async move {
-            let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(5 * 60));
+            let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(60 * 5));
             loop {
                 interval.tick().await;
                 event!(Level::INFO, "running sanity");

@@ -27,7 +27,7 @@ pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
         .unwrap();
 
     for user in users {
-        let new_proposals = get_new_proposals_for_user(&user.address, client)
+        let new_proposals = get_new_proposals_for_user(&user.address.clone().unwrap(), client)
             .await
             .unwrap();
 
@@ -62,7 +62,7 @@ pub async fn get_new_proposals_for_user(
 ) -> Result<Vec<proposal_with_dao::Data>> {
     let user = client
         .user()
-        .find_first(vec![prisma::user::address::equals(username.clone())])
+        .find_first(vec![prisma::user::address::equals(username.clone().into())])
         .exec()
         .instrument(debug_span!("get_user"))
         .await
@@ -82,6 +82,7 @@ pub async fn get_new_proposals_for_user(
         .find_many(vec![
             prisma::proposal::daoid::in_vec(subscribed_daos.into_iter().map(|d| d.daoid).collect()),
             prisma::proposal::state::equals(ProposalState::Active),
+            prisma::proposal::visible::equals(true),
         ])
         .include(proposal_with_dao::include())
         .exec()

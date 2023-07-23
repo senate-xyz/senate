@@ -51,9 +51,10 @@ pub async fn generate_ending_soon_notifications(
         .unwrap();
 
     for user in users {
-        let ending_proposals = get_ending_proposals_for_user(&user.address, timeleft, client)
-            .await
-            .unwrap();
+        let ending_proposals =
+            get_ending_proposals_for_user(&user.address.clone().unwrap(), timeleft, client)
+                .await
+                .unwrap();
 
         let mut ending_not_voted_proposals = vec![];
 
@@ -97,7 +98,7 @@ pub async fn get_ending_proposals_for_user(
 ) -> Result<Vec<proposal_with_dao::Data>> {
     let user = client
         .user()
-        .find_first(vec![user::address::equals(username.clone())])
+        .find_first(vec![user::address::equals(username.clone().into())])
         .exec()
         .instrument(debug_span!("get_user"))
         .await
@@ -119,6 +120,7 @@ pub async fn get_ending_proposals_for_user(
             proposal::state::equals(ProposalState::Active),
             proposal::timeend::lt((Utc::now() + timeleft).into()),
             proposal::timeend::gt((Utc::now() + timeleft - Duration::minutes(60)).into()),
+            proposal::visible::equals(true),
         ])
         .include(proposal_with_dao::include())
         .exec()

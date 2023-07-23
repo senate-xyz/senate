@@ -6,7 +6,7 @@ export default async function Home({
   searchParams,
 }: {
   params: { slug: string };
-  searchParams: { from: string; end: number; voted: string; proxy: string };
+  searchParams: { from: string; voted: string; proxy: string };
 }) {
   const subscribedDAOs = await getSubscribedDAOs();
   const proxies = await getProxies();
@@ -19,16 +19,13 @@ export default async function Home({
     <div className="relative min-h-screen">
       <Filters subscriptions={subscripions} proxies={proxies} />
 
-      {searchParams.end &&
-        searchParams.from &&
-        searchParams.proxy &&
-        searchParams.voted && (
-          <Items
-            fetchItems={fetchItems}
-            fetchVote={fetchVote}
-            searchParams={searchParams}
-          />
-        )}
+      {searchParams.from && searchParams.proxy && searchParams.voted && (
+        <Items
+          fetchItems={fetchItems}
+          fetchVote={fetchVote}
+          searchParams={searchParams}
+        />
+      )}
     </div>
   );
 }

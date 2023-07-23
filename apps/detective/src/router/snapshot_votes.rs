@@ -205,7 +205,7 @@ async fn update_votes(
     voter_handlers: Vec<voterhandler_with_voter::Data>,
     ctx: &Ctx,
 ) -> Result<()> {
-    let snapshot_key = env::var("SNAPSHOT_API_KEY").expect("$SNAPSHOT_API_KEY is not set");
+    let _snapshot_key = env::var("SNAPSHOT_API_KEY").expect("$SNAPSHOT_API_KEY is not set");
 
     let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
     let http_client = ClientBuilder::new(reqwest::Client::new())
@@ -427,7 +427,7 @@ async fn update_refresh_statuses(
 
     for voter_handler in voter_handlers {
         if (new_index_date > voter_handler.snapshotindex.unwrap()
-            && new_index_date - voter_handler.snapshotindex.unwrap() > Duration::hours(1))
+            && new_index_date - voter_handler.snapshotindex.unwrap() > Duration::days(1))
             || uptodate != voter_handler.uptodate
         {
             ctx.db

@@ -67,7 +67,7 @@ export const setBulletin = async (value: boolean) => {
   });
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: value ? "email_bulletin_enable" : "email_bulletin_disable",
     properties: {
       props: {
@@ -109,7 +109,7 @@ export const setEmailAndEnableBulletin = async (input: string) => {
   });
 
   const emailClient = new ServerClient(
-    process.env.POSTMARK_TOKEN ?? "Missing Token"
+    process.env.POSTMARK_TOKEN ?? "Missing Token",
   );
 
   try {
@@ -131,7 +131,7 @@ export const setEmailAndEnableBulletin = async (input: string) => {
     });
   } catch {
     posthog.capture({
-      distinctId: user.address,
+      distinctId: user.address ?? "unknown",
       event: "email_update_error",
       properties: {
         email: input,
@@ -143,7 +143,7 @@ export const setEmailAndEnableBulletin = async (input: string) => {
   }
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: "email_bulletin_enable",
     properties: {
       email: input,
@@ -154,7 +154,7 @@ export const setEmailAndEnableBulletin = async (input: string) => {
   });
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: "email_update",
     properties: {
       email: input,
@@ -181,7 +181,7 @@ export const resendVerification = async () => {
   });
 
   const emailClient = new ServerClient(
-    process.env.POSTMARK_TOKEN ?? "Missing Token"
+    process.env.POSTMARK_TOKEN ?? "Missing Token",
   );
   await emailClient.sendEmailWithTemplate({
     From: "info@senatelabs.xyz",
@@ -215,7 +215,7 @@ export const setQuorumAlerts = async (value: boolean) => {
   });
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: value ? "email_quorum_enable" : "email_quorum_disable",
     properties: {
       props: {
@@ -239,7 +239,7 @@ export const setEmptyEmails = async (value: boolean) => {
   });
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: value ? "email_empty_enable" : "email_empty_disable",
     properties: {
       props: {
@@ -299,7 +299,7 @@ export const setDiscord = async (value: boolean) => {
   });
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: value ? "discord_enable" : "discord_disable",
     properties: {
       props: {
@@ -336,7 +336,7 @@ export const setWebhookAndEnableDiscord = async (input: string) => {
   });
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: "discord_webhook_sets",
     properties: {
       email: input,
@@ -347,7 +347,7 @@ export const setWebhookAndEnableDiscord = async (input: string) => {
   });
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: "discord_enable",
     properties: {
       email: input,
@@ -372,7 +372,7 @@ export const setDiscordReminders = async (value: boolean) => {
   });
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: value ? "discord_reminders_enable" : "discord_reminders_disable",
     properties: {
       props: {
@@ -396,7 +396,7 @@ export const setDiscordIncludeVotes = async (value: boolean) => {
   });
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: value ? "discord_votes_enable" : "discord_votes_disable",
     properties: {
       props: {

@@ -393,7 +393,7 @@ async fn insert_votes(
 
     for voter_handler in voter_handlers {
         if (new_index > voter_handler.chainindex.unwrap()
-            && new_index - voter_handler.chainindex.unwrap() > 1000)
+            && new_index - voter_handler.chainindex.unwrap() > 100000)
             || uptodate != voter_handler.uptodate
         {
             ctx.db

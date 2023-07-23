@@ -68,15 +68,15 @@
     <mj-section padding="10px 0" background-color="white">
       <mj-column width="100%">
         <mj-text align="left" font-size="13px" color="#555555" font-family="sans-serif">
-          Hey senator!
+          Hey!
         </mj-text>
 
         <mj-text align="left" font-size="13px" color="#555555" font-family="sans-serif">
-          In order to become a Senate user, we need you to confirm you email
-          address and wallet by signing a message.
+          In order to activate your account, we need you to confirm your email
+          address and then sign a message with your wallet.
         </mj-text>
         <mj-text align="left" font-size="13px" color="#555555" font-family="sans-serif">
-          Please do so by clicking the link below.
+          Please do so by clicking the button below.
         </mj-text>
       </mj-column>
     </mj-section>

@@ -3,17 +3,10 @@
 import Image from "next/image";
 import dayjs, { extend } from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { type Item } from "./Items";
+import { VoteResult, type Item } from "./Items";
 import { Suspense } from "react";
 
 extend(relativeTime);
-
-enum VoteResult {
-  NOT_CONNECTED = "NOT_CONNECTED",
-  LOADING = "LOADING",
-  VOTED = "VOTED",
-  NOT_VOTED = "NOT_VOTED",
-}
 
 export default function Item(props: {
   proposal: Item;
@@ -90,7 +83,7 @@ export default function Item(props: {
                 {
                   month: "long",
                   day: "numeric",
-                }
+                },
               )} at ${new Date(props.proposal.timeEnd).toLocaleTimeString(
                 "en-US",
                 {
@@ -99,7 +92,7 @@ export default function Item(props: {
                   second: "2-digit",
                   timeZone: "UTC",
                   hour12: false,
-                }
+                },
               )} UTC
                     `}
             </div>
@@ -218,7 +211,7 @@ export default function Item(props: {
                   {
                     month: "long",
                     day: "numeric",
-                  }
+                  },
                 )} at ${new Date(props.proposal.timeEnd).toLocaleTimeString(
                   "en-US",
                   {
@@ -227,7 +220,7 @@ export default function Item(props: {
                     second: "2-digit",
                     timeZone: "UTC",
                     hour12: false,
-                  }
+                  },
                 )} UTC
                     `}
               </div>

@@ -21,7 +21,8 @@ pub async fn produce_chain_proposals_queue(config: &Config) -> Result<Vec<Refres
     let force_refresh = Utc::now() - Duration::seconds(config.force_chain_proposals.into());
     let new_refresh = Utc::now() - Duration::seconds(config.new_chain_proposals.into());
 
-    let handler_types = [prisma::DaoHandlerType::AaveChain,
+    let handler_types = [
+        prisma::DaoHandlerType::AaveChain,
         prisma::DaoHandlerType::CompoundChain,
         prisma::DaoHandlerType::MakerExecutive,
         prisma::DaoHandlerType::MakerPoll,
@@ -31,7 +32,8 @@ pub async fn produce_chain_proposals_queue(config: &Config) -> Result<Vec<Refres
         prisma::DaoHandlerType::HopChain,
         prisma::DaoHandlerType::DydxChain,
         prisma::DaoHandlerType::InterestProtocolChain,
-        prisma::DaoHandlerType::ZeroxProtocolChain];
+        prisma::DaoHandlerType::ZeroxProtocolChain,
+    ];
 
     let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
 

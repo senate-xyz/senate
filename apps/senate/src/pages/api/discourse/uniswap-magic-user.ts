@@ -4,7 +4,7 @@ import { z } from "zod";
 import { ServerClient } from "postmark";
 
 const emailClient = new ServerClient(
-  process.env.POSTMARK_TOKEN ?? "Missing Token"
+  process.env.POSTMARK_TOKEN ?? "Missing Token",
 );
 
 interface RequestBody {
@@ -13,7 +13,7 @@ interface RequestBody {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST") {
     res.status(405).send({ message: "Only POST requests allowed" });
@@ -68,6 +68,9 @@ export default async function handler(
       res.status(200).json({
         email: existingUser.email,
         result: "success",
+        url: `${
+          process.env.NEXT_PUBLIC_WEB_URL ?? ""
+        }/verify/subscribe-discourse/uniswap/${challengeCode}`,
       });
     } else if (!existingUser.verifiedemail) {
       const challengeCode = Math.random().toString(36).substring(2);
@@ -101,6 +104,9 @@ export default async function handler(
       res.status(200).json({
         email: email,
         result: "failed",
+        url: `${
+          process.env.NEXT_PUBLIC_WEB_URL ?? ""
+        }/verify/verify-email/${challengeCode}`,
       });
     }
   } else {
@@ -146,6 +152,9 @@ export default async function handler(
     res.status(200).json({
       email: newUser.email,
       result: "success",
+      url: `${
+        process.env.NEXT_PUBLIC_WEB_URL ?? ""
+      }/verify/signup-discourse/uniswap/${challengeCode}`,
     });
   }
 }

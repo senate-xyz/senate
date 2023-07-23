@@ -203,7 +203,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
             Ok(msg) => {
                 posthog_event(
                     "discord_ending_soon_notification",
-                    user.address,
+                    user.address.unwrap(),
                     proposal.clone().unwrap().name,
                     proposal.clone().unwrap().dao.name,
                 );
@@ -219,7 +219,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
 
                 posthog_event(
                     "discord_ending_soon_notification_fail",
-                    user.address,
+                    user.address.unwrap(),
                     proposal.clone().unwrap().name,
                     proposal.clone().unwrap().dao.name,
                 );

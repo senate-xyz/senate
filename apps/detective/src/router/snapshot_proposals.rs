@@ -51,6 +51,7 @@ struct GraphQLProposal {
     quorum: f64,
     link: String,
     state: String,
+    flagged: Option<bool>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -110,6 +111,7 @@ pub async fn update_snapshot_proposals<'a>(
                         quorum
                         link
                         state
+                        flagged
                     }}
                 }}
             "#,
@@ -147,7 +149,7 @@ async fn update_proposals(
     dao_handler: daohandler::Data,
     old_index: i64,
 ) -> Result<()> {
-    let snapshot_key = env::var("SNAPSHOT_API_KEY").expect("$SNAPSHOT_API_KEY is not set");
+    let _snapshot_key = env::var("SNAPSHOT_API_KEY").expect("$SNAPSHOT_API_KEY is not set");
 
     let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
     let http_client = ClientBuilder::new(reqwest::Client::new())
@@ -169,7 +171,7 @@ async fn update_proposals(
         .await
         .with_context(|| format!("bad graphql response {}", graphql_query))?;
 
-    let proposals: Vec<GraphQLProposal> = response_data.data.proposals;
+    let proposals: Vec<GraphQLProposal> = response_data.data.proposals.into_iter().collect();
 
     for proposal in proposals.clone() {
         let state = match proposal.state.as_str() {
@@ -184,6 +186,7 @@ async fn update_proposals(
             }
             _ => ProposalState::Unknown,
         };
+
         let existing = ctx
             .db
             .proposal()
@@ -211,6 +214,9 @@ async fn update_proposals(
                                 proposal::scorestotal::set(proposal.scores_total.into()),
                                 proposal::quorum::set(proposal.quorum.into()),
                                 proposal::state::set(state),
+                                proposal::visible::set(
+                                    !proposal.flagged.is_some_and(|f| f == true),
+                                ),
                             ],
                         )
                         .exec()
@@ -248,7 +254,9 @@ async fn update_proposals(
                         proposal.link.clone(),
                         dao_handler.id.to_string(),
                         dao_handler.daoid.to_string(),
-                        vec![],
+                        vec![proposal::visible::set(
+                            !proposal.flagged.is_some_and(|f| f == true),
+                        )],
                     )
                     .exec()
                     .instrument(debug_span!("create_proposal"))

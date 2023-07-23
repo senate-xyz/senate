@@ -28,8 +28,11 @@ export const VerifyButton = (props: { challenge: string }) => {
       !signPopup
     ) {
       if (posthog) posthog.identify(address);
-      setSignPopup(true);
-      signMessage();
+
+      setTimeout(() => {
+        setSignPopup(true);
+        signMessage();
+      }, 1000);
     }
   }, [posthog, address, isConnected, activeConnector, signMessage, signPopup]);
 
@@ -37,13 +40,11 @@ export const VerifyButton = (props: { challenge: string }) => {
     if (signedMessage)
       startTransition(() =>
         discourseSignup(
-          props.challenge,
-          message,
           address ?? "",
-          signedMessage ?? ""
-        ).then(() => {
-          if (router) router.push("/orgs?connect");
-        })
+          message,
+          props.challenge,
+          signedMessage ?? "",
+        ),
       );
   }, [address, message, props.challenge, router, signedMessage]);
 

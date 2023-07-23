@@ -93,25 +93,26 @@ pub async fn create_voters_refresh_statuses(client: &PrismaClient) {
         .find_many(vec![])
         .include(voterhandler::include!({ voter }))
         .exec()
-        .await
-        .unwrap();
+        .await;
 
-    voter_handlers.iter().for_each(|voterhandler| {
-        if !voters_refresh_status
-            .iter()
-            .any(|refresh_status| refresh_status.voter_handler_id == voterhandler.id)
-        {
-            let item = VoterHandlerRefreshStatus {
-                voter_handler_id: voterhandler.clone().id,
-                refresh_status: prisma::RefreshStatus::New,
-                last_refresh: Utc::now(),
-                dao_handler_id: voterhandler.clone().daohandlerid,
-                voter_address: voterhandler.clone().voter.address,
-            };
+    if let Ok(voter_handlers) = voter_handlers {
+        voter_handlers.iter().for_each(|voterhandler| {
+            if !voters_refresh_status
+                .iter()
+                .any(|refresh_status| refresh_status.voter_handler_id == voterhandler.id)
+            {
+                let item = VoterHandlerRefreshStatus {
+                    voter_handler_id: voterhandler.clone().id,
+                    refresh_status: prisma::RefreshStatus::New,
+                    last_refresh: Utc::now(),
+                    dao_handler_id: voterhandler.clone().daohandlerid,
+                    voter_address: voterhandler.clone().voter.address,
+                };
 
-            event!(Level::DEBUG, "{:?}", item);
+                event!(Level::DEBUG, "{:?}", item);
 
-            voters_refresh_status.push(item);
-        }
-    });
+                voters_refresh_status.push(item);
+            }
+        })
+    }
 }

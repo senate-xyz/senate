@@ -45,7 +45,7 @@ export async function subscribe(daoId: string) {
   });
 
   posthog.capture({
-    distinctId: user.address,
+    distinctId: user.address ?? "unknown",
     event: "subscribe",
     properties: {
       dao: result.dao.name,

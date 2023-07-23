@@ -1,6 +1,9 @@
+"use server";
+
 import { prisma } from "@senate/database";
 import { verifyMessage } from "viem";
 import { PostHog } from "posthog-node";
+import { redirect } from "next/navigation";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
@@ -11,11 +14,12 @@ export const discourseSignup = async (
   address: string,
   message: string,
   challenge: string,
-  signature: string
+  signature: string,
 ) => {
   const challengeRegex = /(?<=challenge:\s)[a-zA-Z0-9]+/;
   const challengeMatch = message.match(challengeRegex);
   if (!challengeMatch) throw new Error("Challenge does not match");
+
   if (challengeMatch[0] != challenge)
     throw new Error("Challenge does not match");
   const valid = await verifyMessage({
@@ -34,6 +38,9 @@ export const discourseSignup = async (
       where: {
         challengecode: challenge,
       },
+    });
+    await prisma.user.deleteMany({
+      where: { id: emailUser.id },
     });
     if (emailUser.isaaveuser == "VERIFICATION") {
       const aave = await prisma.dao.findFirstOrThrow({
@@ -59,6 +66,7 @@ export const discourseSignup = async (
           },
         },
       });
+
       await prisma.subscription.createMany({
         data: {
           userid: addressUser.id,
@@ -89,7 +97,7 @@ export const discourseSignup = async (
       },
     });
     posthog.capture({
-      distinctId: addressUser.address,
+      distinctId: addressUser.address ?? "unknown",
       event: "discourse_subscribe",
       properties: {
         dao:
@@ -102,9 +110,6 @@ export const discourseSignup = async (
           app: "web-backend",
         },
       },
-    });
-    await prisma.user.deleteMany({
-      where: { id: emailUser.id },
     });
   } else {
     const newUser = await prisma.user.findFirstOrThrow({
@@ -157,7 +162,7 @@ export const discourseSignup = async (
         skipDuplicates: true,
       });
       posthog.capture({
-        distinctId: newUser.address,
+        distinctId: newUser.address ?? "unknown",
         event: "discourse_signup",
         properties: {
           dao:
@@ -173,4 +178,5 @@ export const discourseSignup = async (
       });
     }
   }
+  redirect("/orgs?connect");
 };

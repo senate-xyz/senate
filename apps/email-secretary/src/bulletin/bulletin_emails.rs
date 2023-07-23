@@ -266,7 +266,7 @@ async fn send_bulletin(
                 spawn_blocking(move || {
                     posthog_bulletin_event(
                         "email_bulletin_sent",
-                        user.address,
+                        user.address.unwrap(),
                         bulletin_template,
                         postmark_result.MessageID.unwrap().as_str(),
                     );
@@ -293,7 +293,7 @@ async fn send_bulletin(
                 spawn_blocking(move || {
                     posthog_bulletin_event(
                         "email_bulletin_fail",
-                        user.address,
+                        user.address.unwrap(),
                         "",
                         postmark_result.Message.as_str(),
                     );
@@ -320,7 +320,7 @@ async fn send_bulletin(
                 .unwrap();
 
             spawn_blocking(move || {
-                posthog_bulletin_event("email_bulletin_fail", user.address, "", "");
+                posthog_bulletin_event("email_bulletin_fail", user.address.unwrap(), "", "");
             })
             .await
             .unwrap();
@@ -370,7 +370,8 @@ async fn get_ending_soon_proposals(
                     .map(|s| s.daoid)
                     .collect(),
             ),
-            proposal::state::not(ProposalState::Canceled),
+            proposal::state::not_in_vec(vec![ProposalState::Canceled]),
+            proposal::visible::equals(true),
         ])
         .order_by(proposal::timeend::order(Direction::Asc))
         .include(proposal_with_dao::include())
@@ -466,7 +467,8 @@ async fn get_new_proposals(
                     .map(|s| s.daoid)
                     .collect(),
             ),
-            proposal::state::not(ProposalState::Canceled),
+            proposal::state::not_in_vec(vec![ProposalState::Canceled]),
+            proposal::visible::equals(true),
         ])
         .order_by(proposal::timeend::order(Direction::Asc))
         .include(proposal_with_dao::include())
@@ -564,7 +566,8 @@ async fn get_ended_proposals(
                     .map(|s| s.daoid)
                     .collect(),
             ),
-            proposal::state::not(ProposalState::Canceled),
+            proposal::state::not_in_vec(vec![ProposalState::Canceled]),
+            proposal::visible::equals(true),
         ])
         .order_by(proposal::timeend::order(Direction::Desc))
         .include(proposal_with_dao::include())

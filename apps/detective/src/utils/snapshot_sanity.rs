@@ -7,7 +7,7 @@ use serde::Deserialize;
 use tracing::{debug_span, event, instrument, Instrument, Level};
 
 use crate::{
-    prisma::{self, daohandler, proposal, vote, DaoHandlerType},
+    prisma::{self, daohandler, proposal, vote, DaoHandlerType, ProposalState},
     Context,
 };
 
@@ -33,7 +33,7 @@ struct GraphQLProposal {
 
 #[instrument(skip(ctx), level = "info")]
 pub async fn snapshot_sanity_check(ctx: &Context) {
-    let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(30);
+    let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(90);
     let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
 
     debug!("{:?} {:?}", sanitize_from, sanitize_to);
@@ -86,7 +86,7 @@ async fn sanitize(
                 where: {{
                     space: {:?},
                     created_gte: {},
-                    created_lte: {}
+                    created_lte: {},
                 }},
                 orderBy: "created",
                 orderDirection: asc
@@ -102,7 +102,7 @@ async fn sanitize(
     );
 
     event!(Level::DEBUG, "{}", graphql_query);
-    let snapshot_key = env::var("SNAPSHOT_API_KEY").expect("$SNAPSHOT_API_KEY is not set");
+    let _snapshot_key = env::var("SNAPSHOT_API_KEY").expect("$SNAPSHOT_API_KEY is not set");
 
     let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
     let http_client = ClientBuilder::new(reqwest::Client::new())
@@ -122,52 +122,43 @@ async fn sanitize(
     let response_data: GraphQLResponse = graphql_response.unwrap().json().await.unwrap();
     let graph_proposals: Vec<GraphQLProposal> = response_data.data.proposals;
 
-    if database_proposals.len() > graph_proposals.len() {
-        let graphql_proposal_ids: Vec<String> = graph_proposals
-            .iter()
-            .map(|proposal| proposal.id.clone())
-            .collect();
+    let graphql_proposal_ids: Vec<String> = graph_proposals
+        .iter()
+        .map(|proposal| proposal.id.clone())
+        .collect();
 
-        let proposals_to_delete: Vec<proposal::Data> = database_proposals
-            .clone()
-            .into_iter()
-            .filter(|proposal| !graphql_proposal_ids.contains(&proposal.externalid))
-            .collect();
+    let proposals_to_delete: Vec<proposal::Data> = database_proposals
+        .clone()
+        .into_iter()
+        .filter(|proposal| !graphql_proposal_ids.contains(&proposal.externalid))
+        .collect();
 
-        event!(Level::DEBUG, "{:?}", proposals_to_delete);
+    event!(Level::DEBUG, "{:?}", proposals_to_delete);
 
-        let _ = ctx
-            .db
-            .vote()
-            .delete_many(vec![vote::proposalid::in_vec(
+    let _ = ctx
+        .db
+        .proposal()
+        .update_many(
+            vec![proposal::id::in_vec(
                 proposals_to_delete.iter().map(|p| p.clone().id).collect(),
-            )])
-            .exec()
-            .instrument(debug_span!("delete_votes"))
-            .await;
+            )],
+            vec![proposal::visible::set(false)],
+        )
+        .exec()
+        .instrument(debug_span!("delete_proposals"))
+        .await;
 
-        let _ = ctx
-            .db
-            .proposal()
-            .delete_many(vec![proposal::id::in_vec(
-                proposals_to_delete.iter().map(|p| p.clone().id).collect(),
-            )])
-            .exec()
-            .instrument(debug_span!("delete_proposals"))
-            .await;
+    event!(
+        Level::INFO,
+        "Sanitized {} Snapshot proposals for {}",
+        proposals_to_delete.len(),
+        dao_handler.id
+    );
 
-        event!(
-            Level::INFO,
-            "Sanitized {} Snapshot proposals for {}",
-            proposals_to_delete.len(),
-            dao_handler.id
-        );
-
-        event!(
-            Level::DEBUG,
-            "Sanitized Snapshot proposals for {:?} - {:?}",
-            dao_handler,
-            proposals_to_delete,
-        );
-    }
+    event!(
+        Level::DEBUG,
+        "Sanitized Snapshot proposals for {:?} - {:?}",
+        dao_handler,
+        proposals_to_delete,
+    );
 }

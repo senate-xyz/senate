@@ -15,7 +15,7 @@ interface RequestBody {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const { RecordType, MessageID }: RequestBody = req.body as RequestBody;
 
@@ -35,7 +35,7 @@ export default async function handler(
   switch (RecordType) {
     case "Delivery":
       posthog.capture({
-        distinctId: notification.user.address,
+        distinctId: notification.user.address ?? "unknown",
         event: "postmark_delivery",
         properties: {
           message: MessageID,
@@ -50,7 +50,7 @@ export default async function handler(
       break;
     case "Bounce":
       posthog.capture({
-        distinctId: notification.user.address,
+        distinctId: notification.user.address ?? "unknown",
         event: "postmark_bounce",
         properties: {
           message: MessageID,
@@ -65,7 +65,7 @@ export default async function handler(
       break;
     case "SpamComplaint":
       posthog.capture({
-        distinctId: notification.user.address,
+        distinctId: notification.user.address ?? "unknown",
         event: "postmark_spamcomplaint",
         properties: {
           message: MessageID,
@@ -80,7 +80,7 @@ export default async function handler(
       break;
     case "Open":
       posthog.capture({
-        distinctId: notification.user.address,
+        distinctId: notification.user.address ?? "unknown",
         event: "postmark_open",
         properties: {
           message: MessageID,
@@ -95,7 +95,7 @@ export default async function handler(
       break;
     case "Click":
       posthog.capture({
-        distinctId: notification.user.address,
+        distinctId: notification.user.address ?? "unknown",
         event: "postmark_click",
         properties: {
           message: MessageID,
@@ -110,7 +110,7 @@ export default async function handler(
       break;
     case "SubscriptionChange":
       posthog.capture({
-        distinctId: notification.user.address,
+        distinctId: notification.user.address ?? "unknown",
         event: "postmark_subscriptionchange",
         properties: {
           message: MessageID,
