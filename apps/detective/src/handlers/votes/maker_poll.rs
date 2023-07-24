@@ -3,7 +3,7 @@ use std::str::FromStr;
 use anyhow::{bail, Result};
 use ethers::{
     prelude::LogMeta,
-    types::{Address, H160, H256},
+    types::{Address, Filter, H160, H256},
 };
 use futures::stream::{FuturesUnordered, StreamExt};
 use num_bigint::BigInt;
@@ -47,9 +47,13 @@ pub async fn makerpoll_votes(
         .map(|v| H256::from(v.parse::<H160>().unwrap()))
         .collect();
 
+    let filter = Filter::new()
+        .address(address)
+        .event("Voted")
+        .topic1(voters_addresses);
+
     let events = gov_contract
-        .event::<makerpollvote::VotedFilter>()
-        .topic1(voters_addresses)
+        .event_with_filter(filter)
         .from_block(from_block)
         .to_block(to_block);
 
