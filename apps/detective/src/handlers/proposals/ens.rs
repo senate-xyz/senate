@@ -54,18 +54,12 @@ pub async fn ens_proposals(
         .instrument(debug_span!("get_rpc_events"))
         .await?;
 
-    println!("{:?}", decoder);
-    println!("{:?}", address);
-    println!("{:?}", gov_contract);
-
     let mut futures = FuturesUnordered::new();
 
     for p in proposals.iter() {
         futures.push(async {
             data_for_proposal(p.clone(), ctx, &decoder, dao_handler, gov_contract.clone()).await
         });
-        let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
-        println!("{:?}", meta.address);
     }
 
     let mut result = Vec::new();
