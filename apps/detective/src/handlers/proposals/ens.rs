@@ -4,7 +4,7 @@ use anyhow::Result;
 use ethers::{
     prelude::LogMeta,
     providers::Middleware,
-    types::{Address, U256},
+    types::{Address, Filter, U256},
 };
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{
@@ -42,8 +42,10 @@ pub async fn ens_proposals(
 
     let gov_contract = ensgov::ensgov::ensgov::new(address, ctx.rpc.clone());
 
+    let filter = Filter::new().address(address).event("ProposalCreated");
+
     let events = gov_contract
-        .proposal_created_filter()
+        .event_with_filter(filter)
         .from_block(*from_block)
         .to_block(*to_block);
 
@@ -52,12 +54,18 @@ pub async fn ens_proposals(
         .instrument(debug_span!("get_rpc_events"))
         .await?;
 
+    println!("{:?}", decoder);
+    println!("{:?}", address);
+    println!("{:?}", gov_contract);
+
     let mut futures = FuturesUnordered::new();
 
     for p in proposals.iter() {
         futures.push(async {
             data_for_proposal(p.clone(), ctx, &decoder, dao_handler, gov_contract.clone()).await
         });
+        let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
+        println!("{:?}", meta.address);
     }
 
     let mut result = Vec::new();
