@@ -2,7 +2,11 @@ use std::str;
 
 use anyhow::Result;
 use chrono::Duration;
-use ethers::{prelude::LogMeta, providers::Middleware, types::Address};
+use ethers::{
+    prelude::LogMeta,
+    providers::Middleware,
+    types::{Address, Filter},
+};
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{
     bigdecimal::ToPrimitive,
@@ -39,8 +43,10 @@ pub async fn zeroxtreasury_proposals(
 
     let gov_contract = zeroxtreasury::zeroxtreasury::zeroxtreasury::new(address, ctx.rpc.clone());
 
+    let filter = Filter::new().address(address).event("ProposalCreated");
+
     let events = gov_contract
-        .proposal_created_filter()
+        .event_with_filter(filter)
         .from_block(*from_block)
         .to_block(*to_block);
 

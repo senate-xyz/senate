@@ -202,7 +202,7 @@ async fn update_proposals(
             Some(existing) => {
                 if state != existing.state
                     || proposal.scores_total != existing.scorestotal
-                    || existing.visible != !proposal.flagged.is_some_and(|f| f == true)
+                    || existing.visible != !proposal.flagged.is_some_and(|f| f)
                 {
                     ctx.db
                         .proposal()
@@ -218,7 +218,7 @@ async fn update_proposals(
                                 proposal::quorum::set(proposal.quorum.into()),
                                 proposal::state::set(state),
                                 proposal::visible::set(
-                                    !proposal.flagged.is_some_and(|f| f == true),
+                                    !proposal.flagged.is_some_and(|f| f),
                                 ),
                             ],
                         )
@@ -258,7 +258,7 @@ async fn update_proposals(
                         dao_handler.id.to_string(),
                         dao_handler.daoid.to_string(),
                         vec![proposal::visible::set(
-                            !proposal.flagged.is_some_and(|f| f == true),
+                            !proposal.flagged.is_some_and(|f| f),
                         )],
                     )
                     .exec()
