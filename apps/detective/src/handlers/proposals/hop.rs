@@ -4,7 +4,7 @@ use anyhow::Result;
 use ethers::{
     prelude::LogMeta,
     providers::Middleware,
-    types::{Address, U256},
+    types::{Address, Filter, U256},
 };
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{
@@ -42,8 +42,10 @@ pub async fn hop_proposals(
 
     let gov_contract = hopgov::hopgov::hopgov::new(address, ctx.rpc.clone());
 
+    let filter = Filter::new().address(address).event("ProposalCreated");
+
     let events = gov_contract
-        .proposal_created_filter()
+        .event_with_filter(filter)
         .from_block(*from_block)
         .to_block(*to_block);
 
