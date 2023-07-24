@@ -248,7 +248,7 @@ struct ProposalData {
 async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
     let mut retries = 0;
 
-    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(3);
+    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
     let http_client = ClientBuilder::new(reqwest::Client::new())
         .with(RetryTransientMiddleware::new_with_policy(retry_policy))
         .build();
@@ -291,7 +291,7 @@ async fn get_proposal_data(spell_address: String) -> Result<ProposalData> {
                 return Ok(data);
             }
 
-            _ if retries < 5 => {
+            _ if retries < 15 => {
                 retries += 1;
                 let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
                 tokio::time::sleep(backoff_duration).await;
