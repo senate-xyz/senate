@@ -1,5 +1,8 @@
 use anyhow::{bail, Result};
-use ethers::{prelude::LogMeta, types::Address};
+use ethers::{
+    prelude::LogMeta,
+    types::{Address, Filter},
+};
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
 use serde::Deserialize;
@@ -32,8 +35,10 @@ pub async fn gitcoin_votes(
 
     let gov_contract = gitcoingov::gitcoingov::gitcoingov::new(address, ctx.rpc.clone());
 
+    let filter = Filter::new().address(address).event("VoteCast");
+
     let events = gov_contract
-        .event::<gitcoingov::VoteCastFilter>()
+        .event_with_filter(filter)
         .from_block(from_block)
         .to_block(to_block);
 

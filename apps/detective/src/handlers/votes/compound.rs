@@ -1,7 +1,7 @@
 use anyhow::{bail, Result};
 use ethers::{
     prelude::LogMeta,
-    types::{Address, H160, H256},
+    types::{Address, Filter, H160, H256},
 };
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
@@ -41,9 +41,13 @@ pub async fn compound_votes(
         .map(|v| H256::from(v.parse::<H160>().unwrap()))
         .collect();
 
+    let filter = Filter::new()
+        .address(address)
+        .event("VoteCast")
+        .topic1(voters_addresses);
+
     let events = gov_contract
-        .event::<compoundgov::VoteCastFilter>()
-        .topic1(voters_addresses)
+        .event_with_filter(filter)
         .from_block(from_block)
         .to_block(to_block);
 
