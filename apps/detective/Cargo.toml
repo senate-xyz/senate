@@ -14,12 +14,7 @@ codegen-units = 1
 anyhow = { version = "1.0.72", features = ["backtrace"] }
 chrono = "0.4.26"
 dotenv = "0.15.0"
-ethers = { version = "2.0", features = [
-    "rustls",
-    "openssl",
-    "abigen",
-    "legacy",
-] }
+ethers = { version = "=2.0.6", features = ["rustls", "openssl", "abigen"] }
 futures = "0.3.28"
 itertools = "0.11.0"
 num-bigint = "0.4.3"
@@ -36,9 +31,5 @@ tracing = "0.1.37"
 tracing-subscriber = "0.3.17"
 
 [build-dependencies]
-ethers = { version = "2.0", features = [
-    "rustls",
-    "openssl",
-    "abigen",
-    "legacy",
-] }
+ethers = { version = "=2.0.6", features = ["rustls", "openssl", "abigen"] }
+ethers-contract-abigen = "=2.0.6"

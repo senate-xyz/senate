@@ -35,10 +35,8 @@ pub async fn gitcoin_votes(
 
     let gov_contract = gitcoingov::gitcoingov::gitcoingov::new(address, ctx.rpc.clone());
 
-    let filter = Filter::new().address(address).event("VoteCast");
-
     let events = gov_contract
-        .event_with_filter(filter)
+        .event::<gitcoingov::VoteCastFilter>()
         .from_block(from_block)
         .to_block(to_block);
 

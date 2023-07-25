@@ -41,13 +41,9 @@ pub async fn ens_votes(
         .map(|v| H256::from(v.parse::<H160>().unwrap()))
         .collect();
 
-    let filter = Filter::new()
-        .address(address)
-        .event("VoteCast")
-        .topic1(voters_addresses);
-
     let events = gov_contract
-        .event_with_filter(filter)
+        .event::<ensgov::VoteCastFilter>()
+        .topic1(voters_addresses)
         .from_block(from_block)
         .to_block(to_block);
 
