@@ -65,8 +65,10 @@ export default function Item(props: {
               target="_blank"
               rel="noreferrer"
             >
-              <div className="pr-5 text-[18px] font-normal">
-                {props.proposal.proposalTitle}
+              <div className="pr-5 text-[18px] font-normal truncate">
+                {props.proposal.proposalTitle.length > 150
+                  ? props.proposal.proposalTitle.slice(0, 149) + "..."
+                  : props.proposal.proposalTitle}
               </div>
             </a>
           </div>
@@ -194,7 +196,9 @@ export default function Item(props: {
                 rel="noreferrer"
               >
                 <div className="text-[15px] font-normal leading-[23px]">
-                  {props.proposal.proposalTitle}
+                  {props.proposal.proposalTitle.length > 150
+                    ? props.proposal.proposalTitle.slice(0, 149) + "..."
+                    : props.proposal.proposalTitle}
                 </div>
               </a>
             </div>
