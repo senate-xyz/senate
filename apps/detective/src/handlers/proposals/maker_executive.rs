@@ -164,7 +164,7 @@ async fn proposal(
         time_start: voting_starts_timestamp,
         time_end: voting_ends_timestamp,
         time_created: created_timestamp,
-        block_created: block_created,
+        block_created,
         choices: vec!["Yes"].into(),
         scores: scores.parse::<f64>().unwrap().into(),
         scores_total: scores_total.parse::<f64>().unwrap().into(),
