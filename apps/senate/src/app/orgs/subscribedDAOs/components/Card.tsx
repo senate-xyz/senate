@@ -66,8 +66,8 @@ export const SubscribedDAO = (props: {
             </div>
             <div className="flex h-full flex-col gap-4 px-4 pt-4">
               <div className="text-[15px] font-thin leading-[19px]">
-                You are currently subscribed to follow the off-chain and
-                on-chain proposals of {props.daoName}.
+                You are currently subscribed to follow the off-chain and onchain
+                proposals of {props.daoName}.
               </div>
               <div className="text-[15px] font-thin leading-[19px]">
                 You are also getting daily updates on these proposals on your

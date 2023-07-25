@@ -59,7 +59,7 @@ export const Email = (props: {
       <div className="max-w-[610px] text-[15px] text-white">
         Receive a daily email at 8:00am UTC, providing updates on past, new, and
         soon-ending proposals from all the organisations you follow on Senate.
-        This ensures you won&apos;t forget to vote. Also, whenever an on-chain
+        This ensures you won&apos;t forget to vote. Also, whenever an onchain
         proposal is ending and doesn&apos;t have enough quorum, we will send you
         a notification email.
       </div>
