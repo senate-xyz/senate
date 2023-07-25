@@ -68,11 +68,11 @@
     <mj-section padding="10px 0" background-color="white">
       <mj-column width="100%">
         <mj-text align="left" font-size="13px" color="#555555" font-family="sans-serif">
-          Hey senator!
+          Hey!
         </mj-text>
 
         <mj-text align="left" font-size="13px" color="#555555" font-family="sans-serif">
-          We need you to confirm you email address, so please do so by clicking
+          We need you to confirm your email address, so please do so by clicking
           the link below.
         </mj-text>
       </mj-column>

@@ -57,7 +57,7 @@ const Home = () => {
               <div className="mb-8 w-full text-center text-[24px] font-light text-white lg:w-[447px]">
                 The place where you can keep track of{" "}
                 <span className="bg-[#5EF413] font-semibold text-black">
-                  off-chain and on-chain proposals
+                  offchain and onchain proposals
                 </span>{" "}
                 from your favorite organisations with ease.
               </div>

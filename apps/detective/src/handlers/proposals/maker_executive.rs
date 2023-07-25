@@ -24,6 +24,7 @@ use crate::{
     contracts::{makerexecutive, makerexecutive::LogNoteFilter},
     prisma::{daohandler, ProposalState},
     router::chain_proposals::ChainProposal,
+    utils::etherscan::estimate_block,
     Ctx,
 };
 
@@ -130,7 +131,7 @@ async fn proposal(
     let scores = &proposal_data.spellData.mkrSupport.clone();
     let scores_total = &proposal_data.spellData.mkrSupport.clone();
 
-    let block_created = get_proposal_block(created_timestamp).await?;
+    let block_created = estimate_block(created_timestamp.timestamp()).await?;
 
     let state = if proposal_data.spellData.hasBeenCast {
         ProposalState::Executed
@@ -163,7 +164,7 @@ async fn proposal(
         time_start: voting_starts_timestamp,
         time_end: voting_ends_timestamp,
         time_created: created_timestamp,
-        block_created: block_created.height.as_i64().unwrap(),
+        block_created: block_created,
         choices: vec!["Yes"].into(),
         scores: scores.parse::<f64>().unwrap().into(),
         scores_total: scores_total.parse::<f64>().unwrap().into(),
@@ -178,51 +179,6 @@ async fn proposal(
 #[derive(Deserialize, Serialize, PartialEq, Debug)]
 struct TimeData {
     height: Value,
-}
-
-async fn get_proposal_block(time: DateTime<Utc>) -> Result<TimeData> {
-    let mut retries = 0;
-
-    let retry_policy = ExponentialBackoff::builder().build_with_max_retries(5);
-    let http_client = ClientBuilder::new(reqwest::Client::new())
-        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
-        .build();
-
-    loop {
-        let response = http_client
-            .get(format!(
-                "https://coins.llama.fi/block/ethereum/{}",
-                time.timestamp()
-            ))
-            .header(ACCEPT, "application/json")
-            .header(USER_AGENT, "insomnia/2023.1.0")
-            .timeout(std::time::Duration::from_secs(10))
-            .send()
-            .await;
-
-        match response {
-            Ok(res) => {
-                let contents = res.text().await?;
-                let data = match serde_json::from_str::<TimeData>(&contents).with_context(|| {
-                    format!("Unable to deserialise response. Body was: \"{}\"", contents)
-                }) {
-                    Ok(d) => d,
-                    Err(_) => TimeData { height: 0.into() },
-                };
-
-                return Ok(data);
-            }
-
-            _ if retries < 15 => {
-                retries += 1;
-                let backoff_duration = std::time::Duration::from_millis(2u64.pow(retries as u32));
-                tokio::time::sleep(backoff_duration).await;
-            }
-            _ => {
-                return Ok(TimeData { height: 0.into() });
-            }
-        }
-    }
 }
 
 #[allow(non_snake_case)]
