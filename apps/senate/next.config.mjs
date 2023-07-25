@@ -26,7 +26,7 @@ const config = {
           { key: "Access-Control-Allow-Origin", value: "*" },
           {
             key: "Access-Control-Allow-Methods",
-            value: "GET,DELETE,PATCH,POST,PUT",
+            value: "POST",
           },
           {
             key: "Access-Control-Allow-Headers",

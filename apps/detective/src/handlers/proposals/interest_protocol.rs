@@ -45,10 +45,8 @@ pub async fn interest_protocol_proposals(
         ctx.rpc.clone(),
     );
 
-    let filter = Filter::new().address(address).event("ProposalCreated");
-
     let events = gov_contract
-        .event_with_filter(filter)
+        .proposal_created_filter()
         .from_block(*from_block)
         .to_block(*to_block);
 
