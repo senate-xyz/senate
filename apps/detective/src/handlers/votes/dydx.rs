@@ -10,8 +10,7 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::dydxgov::{
-        VoteEmittedFilter,
-        {self},
+        VoteEmittedFilter, {self},
     },
     prisma::{daohandler, proposal},
     router::chain_votes::{Vote, VoteResult},
@@ -44,13 +43,9 @@ pub async fn dydx_votes(
         .map(|v| H256::from(v.parse::<H160>().unwrap()))
         .collect();
 
-    let filter = Filter::new()
-        .address(address)
-        .event("VoteEmitted")
-        .topic1(voters_addresses);
-
     let events = gov_contract
-        .event_with_filter(filter)
+        .event::<dydxgov::VoteEmittedFilter>()
+        .topic1(voters_addresses)
         .from_block(from_block)
         .to_block(to_block);
 

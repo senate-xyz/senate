@@ -19,10 +19,8 @@ use prisma::PrismaClient;
 use utils::{maker_polls_sanity::maker_polls_sanity_check, snapshot_sanity::snapshot_sanity_check};
 
 use crate::router::{
-    chain_proposals::update_chain_proposals,
-    chain_votes::update_chain_votes,
-    snapshot_proposals::update_snapshot_proposals,
-    snapshot_votes::update_snapshot_votes,
+    chain_proposals::update_chain_proposals, chain_votes::update_chain_votes,
+    snapshot_proposals::update_snapshot_proposals, snapshot_votes::update_snapshot_votes,
 };
 
 pub mod contracts;
