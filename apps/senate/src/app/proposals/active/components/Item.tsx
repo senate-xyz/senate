@@ -65,7 +65,7 @@ export default function Item(props: {
               target="_blank"
               rel="noreferrer"
             >
-              <div className="pr-5 text-[18px] font-normal truncate">
+              <div className="pr-5 text-[18px] font-normal">
                 {props.proposal.proposalTitle.length > 150
                   ? props.proposal.proposalTitle.slice(0, 149) + "..."
                   : props.proposal.proposalTitle}

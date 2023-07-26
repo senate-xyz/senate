@@ -39,7 +39,7 @@ mod utils {
 #[tokio::main]
 async fn main() {
     //sleep to make sure old deployment api connection is closed
-    sleep(std::time::Duration::from_secs(60)).await;
+    // sleep(std::time::Duration::from_secs(60)).await;
 
     dotenv().ok();
 
@@ -159,8 +159,14 @@ enum Command {
 async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
     match cmd {
         Command::Start => {
-            bot.send_message(msg.chat.id, format!("ChatId: {}", msg.chat.id))
-                .await?
+            bot.send_message(
+                msg.chat.id,
+                format!(
+                    "Hello {:?}!",
+                    msg.text().unwrap().split_once(" ").unwrap().1
+                ),
+            )
+            .await?
         }
     };
 

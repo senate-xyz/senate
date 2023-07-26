@@ -157,10 +157,7 @@ async fn update_proposals(
         .build();
 
     let graphql_response = http_client
-        .get(format!(
-            "https://hub.snapshot.org/graphql" // "https://hub.snapshot.org/graphql?apiKey={}",
-                                               // snapshot_key
-        ))
+        .get("https://hub.snapshot.org/graphql".to_string())
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()
         .instrument(debug_span!("get_graphql_response"))
