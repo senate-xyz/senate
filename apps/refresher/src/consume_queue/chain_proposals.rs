@@ -71,7 +71,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                             }
                         };
                     }
-                    Err(e) => {
+                    Err(_e) => {
                         dao_handler.refresh_status = prisma::RefreshStatus::New;
                         dao_handler.last_refresh = Utc::now();
                         dao_handler.refreshspeed = cmp::max(
@@ -81,7 +81,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                     }
                 }
             }
-            Err(e) => {
+            Err(_e) => {
                 dao_handler.refresh_status = prisma::RefreshStatus::New;
                 dao_handler.last_refresh = Utc::now();
                 dao_handler.refreshspeed = cmp::max(

@@ -9,21 +9,18 @@ use tokio::{time::sleep, try_join};
 use tracing::{debug, info};
 
 use dispatch::{
-    ended::dispatch_ended_proposal_notifications,
-    ending_soon::dispatch_ending_soon_notifications,
+    ended::dispatch_ended_proposal_notifications, ending_soon::dispatch_ending_soon_notifications,
     update_active::update_active_proposal_notifications,
     update_hidden::update_hidden_proposal_notifications,
 };
 use generate::{
-    ended::generate_ended_proposal_notifications,
-    ending_soon::generate_ending_soon_notifications,
+    ended::generate_ended_proposal_notifications, ending_soon::generate_ending_soon_notifications,
 };
 use prisma::NotificationType;
 
 use crate::{
     dispatch::new_proposals::dispatch_new_proposal_notifications,
-    generate::new_proposals::generate_new_proposal_notifications,
-    prisma::PrismaClient,
+    generate::new_proposals::generate_new_proposal_notifications, prisma::PrismaClient,
 };
 
 mod dispatch;

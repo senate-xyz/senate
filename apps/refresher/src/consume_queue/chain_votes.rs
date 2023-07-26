@@ -99,7 +99,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                             }
                         }
                     }
-                    Err(e) => {
+                    Err(_e) => {
                         for vh in voter_refresh_status.iter_mut() {
                             vh.refresh_status = prisma::RefreshStatus::New;
                             vh.last_refresh = Utc::now();
@@ -112,7 +112,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                     }
                 }
             }
-            Err(e) => {
+            Err(_e) => {
                 for vh in voter_refresh_status.iter_mut() {
                     vh.refresh_status = prisma::RefreshStatus::New;
                     vh.last_refresh = Utc::now();

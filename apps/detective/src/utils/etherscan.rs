@@ -69,7 +69,6 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
             ))
             .timeout(std::time::Duration::from_secs(10))
             .send()
-          
             .await;
 
         match response {
@@ -141,7 +140,6 @@ pub async fn estimate_block(timestamp: i64) -> Result<i64> {
             ))
             .timeout(std::time::Duration::from_secs(10))
             .send()
-       
             .await;
 
         match response {

@@ -115,7 +115,7 @@ async fn main() {
                 }
             }
 
-            let daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
+            let _daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
 
             sleep(Duration::from_secs(1)).await;
         }
@@ -129,7 +129,7 @@ async fn main() {
                 tokio::spawn(async move {
                     match consume_snapshot_proposals(item).await {
                         Ok(_) => {}
-                        Err(e) => {}
+                        Err(_e) => {}
                     }
                 });
             }
@@ -144,7 +144,7 @@ async fn main() {
                 tokio::spawn(async move {
                     match consume_chain_proposals(item).await {
                         Ok(_) => {}
-                        Err(e) => {}
+                        Err(_e) => {}
                     }
                 });
             }
@@ -159,7 +159,7 @@ async fn main() {
                 tokio::spawn(async move {
                     match consume_snapshot_votes(item).await {
                         Ok(_) => {}
-                        Err(e) => {}
+                        Err(_e) => {}
                     }
                 });
             }
@@ -174,7 +174,7 @@ async fn main() {
                 tokio::spawn(async move {
                     match consume_chain_votes(item).await {
                         Ok(_) => {}
-                        Err(e) => {}
+                        Err(_e) => {}
                     }
                 });
             }

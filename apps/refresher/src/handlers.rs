@@ -22,7 +22,7 @@ pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
             .unwrap();
 
         for voter in voters {
-            let result = client
+            let _result = client
                 .voterhandler()
                 .create_many(
                     daohandlers

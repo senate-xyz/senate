@@ -163,7 +163,7 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
                 msg.chat.id,
                 format!(
                     "Hello {:?}!",
-                    msg.text().unwrap().split_once(" ").unwrap().1
+                    msg.text().unwrap().split_once(' ').unwrap().1
                 ),
             )
             .await?
