@@ -35,7 +35,6 @@ pub async fn generate_ending_soon_notifications(
         .user()
         .find_many(vec![
             user::telegramnotifications::equals(true),
-            user::telegramchatid::gt("".to_string()),
             user::telegramreminders::equals(true),
         ])
         .exec()

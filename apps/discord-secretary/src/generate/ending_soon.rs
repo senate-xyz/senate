@@ -34,7 +34,6 @@ pub async fn generate_ending_soon_notifications(
         .user()
         .find_many(vec![
             user::discordnotifications::equals(true),
-            user::discordwebhook::starts_with("https://".to_string()),
             user::discordreminders::equals(true),
         ])
         .exec()
