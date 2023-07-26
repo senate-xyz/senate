@@ -2,6 +2,7 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { MagicUserState, prisma } from "@senate/database";
 import { z } from "zod";
 import { ServerClient } from "postmark";
+import { PostHog } from "posthog-node";
 
 const emailClient = new ServerClient(
   process.env.POSTMARK_TOKEN ?? "Missing Token",
@@ -10,6 +11,10 @@ const emailClient = new ServerClient(
 interface RequestBody {
   email: string;
 }
+
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
+  host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
+});
 
 export default async function handler(
   req: NextApiRequest,
@@ -58,6 +63,11 @@ export default async function handler(
         },
       });
 
+      posthog.capture({
+        distinctId: String(existingUser.address),
+        event: "subscribe_discourse_aave",
+      });
+
       await emailClient.sendEmailWithTemplate({
         From: "info@senatelabs.xyz",
         To: String(existingUser.email),
@@ -92,6 +102,11 @@ export default async function handler(
         data: {
           challengecode: challengeCode,
         },
+      });
+
+      posthog.capture({
+        distinctId: String(existingUser.email),
+        event: "subscribe_discourse_aave",
       });
 
       await emailClient.sendEmailWithTemplate({
@@ -140,6 +155,11 @@ export default async function handler(
         emailquorumwarning: true,
         challengecode: challengeCode,
       },
+    });
+
+    posthog.capture({
+      distinctId: String(newUser.email),
+      event: "signup_discourse_aave",
     });
 
     await emailClient.sendEmailWithTemplate({
