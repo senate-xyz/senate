@@ -20,7 +20,7 @@ export const Telegram = (props: {
   const [, startTransition] = useTransition();
 
   return (
-    <PostHogFeature flag="discord-secretary" match={true}>
+    <PostHogFeature flag="telegram-secretary" match={true}>
       <div className="flex max-w-[800px] flex-col gap-4 bg-black p-4">
         <div className="flex flex-row justify-between">
           <div className="flex flex-row gap-4">
