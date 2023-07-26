@@ -2000,10 +2000,10 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-18.15.13.tgz"
   integrity sha512-N+0kuo9KgrUQ1Sn/ifDXsvg0TTleP7rIy4zOBGECxAljqvqfqpTfzx0Q1NUedOixRMBfe2Whhb056a42cWs26Q==
 
-"@types/node@20.4.4":
-  version "20.4.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.4.4.tgz#c79c7cc22c9d0e97a7944954c9e663bcbd92b0cb"
-  integrity sha512-CukZhumInROvLq3+b5gLev+vgpsIqC2D0deQr/yS1WnxvmYLlJXZpaQrQiseMY+6xusl79E04UjWoqyr+t1/Ew==
+"@types/node@20.4.5":
+  version "20.4.5"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.4.5.tgz#9dc0a5cb1ccce4f7a731660935ab70b9c00a5d69"
+  integrity sha512-rt40Nk13II9JwQBdeYqmbn2Q6IVTA5uPhvSO+JVqdXw/6/4glI6oR9ezty/A9Hg5u7JH4OmYmuQ+XvjKm0Datg==
 
 "@types/node@^12.12.54":
   version "12.20.55"
@@ -8634,10 +8634,10 @@ postcss@^8.4.23:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-posthog-js@^1.73.1:
-  version "1.73.1"
-  resolved "https://registry.yarnpkg.com/posthog-js/-/posthog-js-1.73.1.tgz#8b994e595ab8e847bc9b55707c9cd0b22f655352"
-  integrity sha512-eN08SkMdOG14TbUWek/7it4nCwcclK4MklCemq4/JK+rdsVqCWJXnYG2EdUOMoLv8wZOZ0yKIdc0vLI/ctrT/w==
+posthog-js@^1.75.0:
+  version "1.75.0"
+  resolved "https://registry.yarnpkg.com/posthog-js/-/posthog-js-1.75.0.tgz#af16ee46ee731822a5a920f2ea55932e6dedbe9d"
+  integrity sha512-3KKC2ef/c2hJpAkuFkN5WI+zbd5SoTc9CDF6XLrkpUGI1FvXHelIUdL/XXvsAwhiOmYRkrPZRa/QzfJlsL1SYg==
   dependencies:
     fflate "^0.4.1"
 
