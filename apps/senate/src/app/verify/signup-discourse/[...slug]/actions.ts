@@ -132,6 +132,12 @@ export const discourseSignup = async (
         challengecode: "",
         verifiedaddress: true,
         verifiedemail: true,
+        voters: {
+          connectOrCreate: {
+            where: { address: address },
+            create: { address: address },
+          },
+        },
       },
     });
     if (newUser.isaaveuser == "VERIFICATION") {
