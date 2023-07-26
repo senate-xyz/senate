@@ -8,14 +8,9 @@ use tracing::{debug, debug_span, event, instrument, Instrument, Level};
 use prisma::{daohandler, PrismaClient};
 
 use crate::{
-    config::Config,
-    prisma,
-    refresh_status::DAOS_REFRESH_STATUS,
-    RefreshEntry,
-    RefreshType,
+    config::Config, prisma, refresh_status::DAOS_REFRESH_STATUS, RefreshEntry, RefreshType,
 };
 
-#[instrument(skip_all, level = "info")]
 pub async fn produce_snapshot_proposals_queue(config: &Config) -> Result<Vec<RefreshEntry>> {
     let normal_refresh = Utc::now() - Duration::seconds(config.normal_snapshot_proposals.into());
     let force_refresh = Utc::now() - Duration::seconds(config.force_snapshot_proposals.into());
@@ -51,11 +46,6 @@ pub async fn produce_snapshot_proposals_queue(config: &Config) -> Result<Vec<Ref
     for dhr in &mut *dao_handlers {
         dhr.refresh_status = prisma::RefreshStatus::Pending;
         dhr.last_refresh = Utc::now();
-    }
-
-    if !refresh_queue.is_empty() {
-        event!(Level::DEBUG, "{:?}", dao_handlers);
-        event!(Level::DEBUG, "{:?}", refresh_queue);
     }
 
     Ok(refresh_queue)

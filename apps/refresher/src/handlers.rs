@@ -3,7 +3,6 @@ use tracing::{debug, event, instrument, Level};
 
 use crate::prisma::{self, voter, voterhandler, PrismaClient, RefreshStatus};
 
-#[instrument(skip(client), level = "info")]
 pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
     // remove_orphan_voters(client);
 
@@ -40,8 +39,6 @@ pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
                 .skip_duplicates()
                 .exec()
                 .await?;
-
-            event!(Level::DEBUG, "created {:?} votehandlers", result);
         }
     }
 

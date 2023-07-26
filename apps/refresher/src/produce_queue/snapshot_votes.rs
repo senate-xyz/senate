@@ -14,11 +14,9 @@ use crate::{
     config::Config,
     prisma::{self, voterhandler},
     refresh_status::{DAOS_REFRESH_STATUS, VOTERS_REFRESH_STATUS},
-    RefreshEntry,
-    RefreshType,
+    RefreshEntry, RefreshType,
 };
 
-#[instrument(skip_all, level = "info")]
 pub async fn produce_snapshot_votes_queue(
     client: &PrismaClient,
     config: &Config,
@@ -111,11 +109,6 @@ pub async fn produce_snapshot_votes_queue(
         for vhr in &mut *voter_handlers_r {
             vhr.refresh_status = prisma::RefreshStatus::Pending;
             vhr.last_refresh = Utc::now();
-        }
-
-        if !items.is_empty() {
-            event!(Level::DEBUG, "{:?}", voter_handlers_r);
-            event!(Level::DEBUG, "{:?}", items);
         }
 
         refresh_queue.extend(items)

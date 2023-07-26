@@ -5,17 +5,10 @@ use prisma_client_rust::chrono::{Duration, Utc};
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::prisma::{
-    notification,
-    proposal,
-    subscription,
-    user,
-    NotificationDispatchedState,
-    NotificationType,
-    PrismaClient,
-    ProposalState,
+    notification, proposal, subscription, user, NotificationDispatchedState, NotificationType,
+    PrismaClient, ProposalState,
 };
 
-#[instrument(skip(client), level = "info")]
 pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
     let users = client
         .user()
@@ -24,7 +17,6 @@ pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
             user::telegramchatid::gt("".to_string()),
         ])
         .exec()
-        .instrument(debug_span!("get_users"))
         .await
         .unwrap();
 
@@ -49,7 +41,6 @@ pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
             )
             .skip_duplicates()
             .exec()
-            .instrument(debug_span!("create_notifications"))
             .await
             .unwrap();
     }
@@ -57,7 +48,6 @@ pub async fn generate_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
 proposal::include!(proposal_with_dao { dao daohandler });
 
-#[instrument(skip(client), level = "debug")]
 pub async fn get_ended_proposals_for_user(
     username: &String,
     client: &Arc<PrismaClient>,
@@ -66,7 +56,6 @@ pub async fn get_ended_proposals_for_user(
         .user()
         .find_first(vec![user::address::equals(username.clone().into())])
         .exec()
-        .instrument(debug_span!("get_user"))
         .await
         .unwrap()
         .unwrap();
@@ -75,7 +64,6 @@ pub async fn get_ended_proposals_for_user(
         .subscription()
         .find_many(vec![subscription::userid::equals(user.id)])
         .exec()
-        .instrument(debug_span!("get_subscriptions"))
         .await
         .unwrap();
 
@@ -96,7 +84,6 @@ pub async fn get_ended_proposals_for_user(
         ])
         .include(proposal_with_dao::include())
         .exec()
-        .instrument(debug_span!("get_proposals"))
         .await
         .unwrap();
 

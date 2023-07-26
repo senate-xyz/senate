@@ -29,7 +29,6 @@ pub struct EstimateTimestamp {
     result: EstimateTimestampResult,
 }
 
-#[instrument(level = "info")]
 pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
     let etherscan_api_key = env::var("ETHERSCAN_API_KEY").expect("$ETHERSCAN_API_KEY is not set");
     let rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
@@ -52,7 +51,6 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
             Utc,
         );
 
-        event!(Level::DEBUG, "{:?}", result);
         return Ok(result);
     }
 
@@ -71,7 +69,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
             ))
             .timeout(std::time::Duration::from_secs(10))
             .send()
-            .instrument(debug_span!("etherscan_api_call"))
+          
             .await;
 
         match response {
@@ -95,7 +93,6 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
                     Err(_) => bail!("Unable to deserialize etherscan response."),
                 };
 
-                event!(Level::DEBUG, "{:?}", data);
                 return Ok(data);
             }
 
@@ -105,7 +102,6 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
                 tokio::time::sleep(backoff_duration).await;
             }
             _ => {
-                event!(Level::WARN, "Could not get result");
                 return Ok(DateTime::from_utc(
                     NaiveDateTime::from_timestamp_millis(Utc::now().timestamp() * 1000)
                         .expect("bad timestamp"),
@@ -124,7 +120,6 @@ pub struct EstimateBlock {
     result: String,
 }
 
-#[instrument(level = "info")]
 pub async fn estimate_block(timestamp: i64) -> Result<i64> {
     let etherscan_api_key = match env::var_os("ETHERSCAN_API_KEY") {
         Some(v) => v.into_string().unwrap(),
@@ -146,7 +141,7 @@ pub async fn estimate_block(timestamp: i64) -> Result<i64> {
             ))
             .timeout(std::time::Duration::from_secs(10))
             .send()
-            .instrument(debug_span!("etherscan_api_call"))
+       
             .await;
 
         match response {
@@ -157,7 +152,6 @@ pub async fn estimate_block(timestamp: i64) -> Result<i64> {
                     Err(_) => i64::from(0),
                 };
 
-                event!(Level::DEBUG, "{}", data);
                 return Ok(data);
             }
 
@@ -167,7 +161,6 @@ pub async fn estimate_block(timestamp: i64) -> Result<i64> {
                 tokio::time::sleep(backoff_duration).await;
             }
             _ => {
-                event!(Level::WARN, "Could not get result");
                 return Ok(i64::from(0));
             }
         }

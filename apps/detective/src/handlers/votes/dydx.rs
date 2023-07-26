@@ -23,7 +23,6 @@ struct Decoder {
     address: String,
 }
 
-#[instrument(skip(ctx, voters), level = "info")]
 pub async fn dydx_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -49,10 +48,7 @@ pub async fn dydx_votes(
         .from_block(from_block)
         .to_block(to_block);
 
-    let logs = events
-        .query_with_meta()
-        .instrument(debug_span!("get_rpc_events"))
-        .await?;
+    let logs = events.query_with_meta().await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -83,7 +79,6 @@ pub async fn dydx_votes(
         .collect())
 }
 
-#[instrument(skip(ctx, logs), level = "debug")]
 async fn get_votes_for_voter(
     logs: Vec<(VoteEmittedFilter, LogMeta)>,
     dao_handler: daohandler::Data,

@@ -14,14 +14,8 @@ use tracing::{debug_span, instrument, warn, Instrument};
 
 use crate::{
     prisma::{
-        self,
-        notification,
-        proposal,
-        user,
-        DaoHandlerType,
-        NotificationDispatchedState,
-        NotificationType,
-        PrismaClient,
+        self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
+        NotificationType, PrismaClient,
     },
     utils::{posthog::posthog_event, vote::get_vote},
 };
@@ -30,7 +24,6 @@ use super::utils::notification_retry::update_notification_retry;
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-#[instrument(skip(client), level = "info")]
 pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
     let notifications = client
         .notification()
@@ -44,7 +37,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
             notification::r#type::equals(NotificationType::EndedProposalDiscord),
         ])
         .exec()
-        .instrument(debug_span!("get_notifications"))
         .await
         .unwrap();
 
@@ -58,7 +50,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                 notification::dispatchstatus::equals(NotificationDispatchedState::Dispatched),
             ])
             .exec()
-            .instrument(debug_span!("get_notification"))
             .await
             .unwrap();
 
@@ -66,7 +57,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
             .user()
             .find_first(vec![user::id::equals(notification.clone().userid)])
             .exec()
-            .instrument(debug_span!("get_user"))
             .await
             .unwrap()
             .unwrap();
@@ -78,7 +68,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
             )])
             .include(proposal_with_dao::include())
             .exec()
-            .instrument(debug_span!("get_proposal"))
             .await
             .unwrap();
 
@@ -201,7 +190,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                         .image(image)
                                 })])
                             })
-                            .instrument(debug_span!("edit_message"))
                             .await
                             .ok();
 
@@ -223,7 +211,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                     "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
                                 )
                             })
-                            .instrument(debug_span!("send_message"))
                             .await;
 
                         let update_data = match message {
@@ -298,7 +285,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 update_data,
                             )
                             .exec()
-                            .instrument(debug_span!("update_notification"))
                             .await
                             .unwrap();
                     }
@@ -324,7 +310,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 )],
                             )
                             .exec()
-                            .instrument(debug_span!("update_notification"))
                             .await
                             .unwrap();
                     }
@@ -350,7 +335,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 "https://www.senatelabs.xyz/assets/Discord/Profile_picture.gif",
                             )
                         })
-                        .instrument(debug_span!("send_message"))
                         .await;
 
                     let update_data = match message {
@@ -405,7 +389,6 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             update_data,
                         )
                         .exec()
-                        .instrument(debug_span!("update_notification"))
                         .await
                         .unwrap();
                 }

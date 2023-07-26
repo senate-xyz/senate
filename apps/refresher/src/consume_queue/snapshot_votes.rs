@@ -24,7 +24,6 @@ struct ApiResponse {
     success: bool,
 }
 
-#[instrument(skip_all, level = "info")]
 pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
     let detective_url = env::var("DETECTIVE_URL").expect("$DETECTIVE_URL is not set");
 
@@ -46,8 +45,6 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                 .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "voters": entry.voters, "refreshspeed": dao_handler_r.votersrefreshspeed}))
                 .send()
                 .await;
-
-            event!(Level::DEBUG, "{:?} {:?}", entry.refresh_type, dao_handler_r);
 
             match response {
                 Ok(res) => {
@@ -75,21 +72,19 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                             }
                             if !nok_voters_response.is_empty() {
                                 dao_handler_r.votersrefreshspeed = cmp::max(
-                                    dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
+                                    dao_handler_r.votersrefreshspeed
+                                        - (dao_handler_r.votersrefreshspeed * 25 / 100),
                                     10,
                                 );
                             }
                             for vh in voter_refresh_status.iter_mut() {
-                                if ok_voters_response.contains(&vh.voter_address)
-                                {
+                                if ok_voters_response.contains(&vh.voter_address) {
                                     vh.refresh_status = prisma::RefreshStatus::Done;
                                     vh.last_refresh = Utc::now();
                                 }
-                                if nok_voters_response.contains(&vh.voter_address)
-                                {
+                                if nok_voters_response.contains(&vh.voter_address) {
                                     vh.refresh_status = prisma::RefreshStatus::New;
                                     vh.last_refresh = Utc::now();
-                                    event!(Level::WARN, "nok: {:?}", vh.voter_address);
                                 }
                             }
                         }
@@ -99,10 +94,10 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                                 vh.last_refresh = Utc::now();
                             }
                             dao_handler_r.votersrefreshspeed = cmp::max(
-                                dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
+                                dao_handler_r.votersrefreshspeed
+                                    - (dao_handler_r.votersrefreshspeed * 25 / 100),
                                 10,
                             );
-                            event!(Level::WARN, "{:?}", e);
                         }
                     }
                 }
@@ -112,13 +107,13 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                         vh.last_refresh = Utc::now();
                     }
                     dao_handler_r.votersrefreshspeed = cmp::max(
-                        dao_handler_r.votersrefreshspeed - (dao_handler_r.votersrefreshspeed * 25 / 100),
+                        dao_handler_r.votersrefreshspeed
+                            - (dao_handler_r.votersrefreshspeed * 25 / 100),
                         10,
                     );
-                    event!(Level::WARN, "{:?}", e);
                 }
             }
-        }.instrument(info_span!("consume_snapshot_votes_async"))
+        }
     });
     Ok(())
 }
