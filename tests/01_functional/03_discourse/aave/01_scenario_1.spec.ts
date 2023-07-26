@@ -81,7 +81,9 @@ test_metamask(
     await expect(confirmedUser?.emaildailybulletin).toBe(true);
     await expect(confirmedUser?.emailquorumwarning).toBe(true);
     await expect(confirmedUser?.subscriptions[0].dao.name).toBe("Aave");
-    await expect(confirmedUser?.voters).toContain(confirmedUser?.address);
+    await expect(confirmedUser?.voters.map((v) => v.address)).toContain(
+      confirmedUser?.address
+    );
 
     await expect(page).toHaveURL("/orgs?connect");
   }
