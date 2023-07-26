@@ -119,6 +119,7 @@ test("has email updated to test@test.com, is verified, has bulletin and quorum e
     where: { email: "test@test.com" },
     include: {
       subscriptions: { include: { dao: { select: { name: true } } } },
+      voters: true,
     },
   });
 
@@ -144,6 +145,8 @@ test("has email updated to test@test.com, is verified, has bulletin and quorum e
   await expect(confirmedUser?.subscriptions.map((s) => s.dao.name)).toContain(
     "Compound"
   );
+
+  await expect(confirmedUser?.voters).toContain(confirmedUser?.address);
 });
 
 test("deletes test user test@test.com end", async ({}) => {
