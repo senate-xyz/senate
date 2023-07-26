@@ -12,13 +12,7 @@ use tracing::{debug, debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
-        self,
-        notification,
-        proposal,
-        user,
-        DaoHandlerType,
-        NotificationType,
-        PrismaClient,
+        self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient,
         ProposalState,
     },
     utils::vote::get_vote,
@@ -26,7 +20,6 @@ use crate::{
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-#[instrument(skip_all, level = "info")]
 pub async fn _update_active_proposal_notifications(
     _client: &Arc<PrismaClient>,
     _bot: &Arc<DefaultParseMode<Throttle<teloxide::Bot>>>,

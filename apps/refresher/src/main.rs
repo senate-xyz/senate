@@ -18,14 +18,11 @@ use prisma::PrismaClient;
 
 use crate::{
     consume_queue::{
-        chain_proposals::consume_chain_proposals,
-        chain_votes::consume_chain_votes,
-        snapshot_proposals::consume_snapshot_proposals,
-        snapshot_votes::consume_snapshot_votes,
+        chain_proposals::consume_chain_proposals, chain_votes::consume_chain_votes,
+        snapshot_proposals::consume_snapshot_proposals, snapshot_votes::consume_snapshot_votes,
     },
     produce_queue::{
-        chain_proposals::produce_chain_proposals_queue,
-        chain_votes::produce_chain_votes_queue,
+        chain_proposals::produce_chain_proposals_queue, chain_votes::produce_chain_votes_queue,
         snapshot_proposals::produce_snapshot_proposals_queue,
         snapshot_votes::produce_snapshot_votes_queue,
     },
@@ -83,7 +80,6 @@ async fn main() {
 
     let slow_task_client_clone = client.clone();
     let slow_task = tokio::task::spawn(async move {
-        event!(Level::DEBUG, "spawned slow_task");
         loop {
             let _ = load_config_from_db(&slow_task_client_clone).await;
             let _ = create_voter_handlers(&slow_task_client_clone).await;
@@ -94,7 +90,6 @@ async fn main() {
 
     let producer_client_clone = client.clone();
     let producer_task = tokio::task::spawn_blocking(move || async move {
-        event!(Level::INFO, "spawned producer_task");
         loop {
             if let Ok(queue) = produce_snapshot_proposals_queue(&config).await {
                 for item in queue {
@@ -120,9 +115,7 @@ async fn main() {
                 }
             }
 
-            let daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
-
-            event!(Level::DEBUG, "{:?}", daos_refresh_status);
+            let _daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
 
             sleep(Duration::from_secs(1)).await;
         }
@@ -131,15 +124,12 @@ async fn main() {
     .unwrap();
 
     let consumer_snapshot_proposals_task = tokio::spawn(async move {
-        event!(Level::INFO, "spawned consumer_snapshot_proposals_task");
         loop {
             if let Ok(item) = rx_snapshot_proposals.recv_async().await {
                 tokio::spawn(async move {
                     match consume_snapshot_proposals(item).await {
                         Ok(_) => {}
-                        Err(e) => {
-                            event!(Level::WARN, "refresher error: {:#?}", e);
-                        }
+                        Err(_e) => {}
                     }
                 });
             }
@@ -149,15 +139,12 @@ async fn main() {
     });
 
     let consumer_chain_proposals_task = tokio::spawn(async move {
-        event!(Level::INFO, "spawned consumer_chain_proposals_task");
         loop {
             if let Ok(item) = rx_chain_proposals.recv_async().await {
                 tokio::spawn(async move {
                     match consume_chain_proposals(item).await {
                         Ok(_) => {}
-                        Err(e) => {
-                            event!(Level::WARN, "refresher error: {:#?}", e);
-                        }
+                        Err(_e) => {}
                     }
                 });
             }
@@ -167,15 +154,12 @@ async fn main() {
     });
 
     let consumer_snapshot_votes_task = tokio::spawn(async move {
-        event!(Level::INFO, "spawned consumer_snapshot_votes_task");
         loop {
             if let Ok(item) = rx_snapshot_votes.recv_async().await {
                 tokio::spawn(async move {
                     match consume_snapshot_votes(item).await {
                         Ok(_) => {}
-                        Err(e) => {
-                            event!(Level::WARN, "refresher error: {:#?}", e);
-                        }
+                        Err(_e) => {}
                     }
                 });
             }
@@ -185,15 +169,12 @@ async fn main() {
     });
 
     let consumer_chain_votes_task = tokio::spawn(async move {
-        event!(Level::INFO, "spawned consumer_chain_votes_task");
         loop {
             if let Ok(item) = rx_chain_votes.recv_async().await {
                 tokio::spawn(async move {
                     match consume_chain_votes(item).await {
                         Ok(_) => {}
-                        Err(e) => {
-                            event!(Level::WARN, "refresher error: {:#?}", e);
-                        }
+                        Err(_e) => {}
                     }
                 });
             }

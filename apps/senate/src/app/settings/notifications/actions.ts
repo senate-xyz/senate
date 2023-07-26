@@ -406,6 +406,114 @@ export const setDiscordIncludeVotes = async (value: boolean) => {
   });
 };
 
+export const userTelegram = async () => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name)
+    return {
+      userId: "",
+      enabled: false,
+      reminders: false,
+      includeVotes: false,
+    };
+  const userAddress = session.user.name;
+
+  const user = await prisma.user.findFirstOrThrow({
+    where: {
+      address: {
+        equals: userAddress,
+      },
+    },
+    select: {
+      id: true,
+      telegramnotifications: true,
+      telegramreminders: true,
+      telegramincludevotes: true,
+    },
+  });
+
+  return {
+    userId: user.id ?? "",
+    enabled: user.telegramnotifications ?? false,
+    reminders: user.telegramreminders,
+    includeVotes: user.telegramincludevotes ?? false,
+  };
+};
+
+export const setTelegram = async (value: boolean) => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name) return;
+  const userAddress = session.user.name;
+
+  const user = await prisma.user.update({
+    where: {
+      address: userAddress,
+    },
+    data: {
+      telegramnotifications: value,
+    },
+  });
+
+  posthog.capture({
+    distinctId: user.address ?? "unknown",
+    event: value ? "telegram_enable" : "telegram_disable",
+    properties: {
+      props: {
+        app: "web-backend",
+      },
+    },
+  });
+};
+
+export const setTelegramReminders = async (value: boolean) => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name) return;
+  const userAddress = session.user.name;
+
+  const user = await prisma.user.update({
+    where: {
+      address: userAddress,
+    },
+    data: { telegramreminders: value },
+  });
+
+  posthog.capture({
+    distinctId: user.address ?? "unknown",
+    event: value ? "telegram_reminders_enable" : "telegram_reminders_disable",
+    properties: {
+      props: {
+        app: "web-backend",
+      },
+    },
+  });
+};
+
+export const setTelegramIncludeVotes = async (value: boolean) => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name) return;
+  const userAddress = session.user.name;
+
+  const user = await prisma.user.update({
+    where: {
+      address: userAddress,
+    },
+    data: { telegramincludevotes: value },
+  });
+
+  posthog.capture({
+    distinctId: user.address ?? "unknown",
+    event: value ? "telegram_votes_enable" : "telegram_votes_disable",
+    properties: {
+      props: {
+        app: "web-backend",
+      },
+    },
+  });
+};
+
 export const setAaveMagicUser = async (value: boolean) => {
   const session = await getServerSession(authOptions());
 

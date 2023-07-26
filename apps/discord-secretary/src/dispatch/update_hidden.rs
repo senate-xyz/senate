@@ -14,13 +14,7 @@ use tracing::{debug_span, instrument, warn, Instrument};
 
 use crate::{
     prisma::{
-        self,
-        notification,
-        proposal,
-        user,
-        DaoHandlerType,
-        NotificationType,
-        PrismaClient,
+        self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient,
         ProposalState,
     },
     utils::vote::get_vote,
@@ -28,14 +22,12 @@ use crate::{
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-#[instrument(skip(client), level = "info")]
 pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
     let active_proposals = client
         .proposal()
         .find_many(vec![prisma::proposal::state::equals(ProposalState::Hidden)])
         .include(proposal_with_dao::include())
         .exec()
-        .instrument(debug_span!("get_proposals"))
         .await
         .unwrap();
 
@@ -50,7 +42,6 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                 ),
             ])
             .exec()
-            .instrument(debug_span!("get_notifications"))
             .await
             .unwrap();
 
@@ -66,7 +57,6 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                 .user()
                 .find_first(vec![user::id::equals(notification.clone().userid)])
                 .exec()
-                .instrument(debug_span!("get_user"))
                 .await
                 .unwrap()
                 .unwrap();
@@ -78,7 +68,6 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                 )])
                 .include(proposal_with_dao::include())
                 .exec()
-                .instrument(debug_span!("get_proposal"))
                 .await
                 .unwrap();
 
@@ -192,7 +181,6 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                                     .image(image)
                             })])
                         })
-                        .instrument(debug_span!("edit_message"))
                         .await
                         .ok();
                 }

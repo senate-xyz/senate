@@ -2,23 +2,14 @@ use std::{cmp, env, ops::Div, sync::Arc};
 
 use crate::{
     handlers::votes::{
-        aave::aave_votes,
-        compound::compound_votes,
-        dydx::dydx_votes,
-        ens::ens_votes,
-        gitcoin::gitcoin_votes,
-        hop::hop_votes,
-        interest_protocol::interest_protocol_votes,
-        maker_executive::makerexecutive_votes,
-        maker_poll::makerpoll_votes,
-        maker_poll_arbitrum::makerpollarbitrum_votes,
-        uniswap::uniswap_votes,
+        aave::aave_votes, compound::compound_votes, dydx::dydx_votes, ens::ens_votes,
+        gitcoin::gitcoin_votes, hop::hop_votes, interest_protocol::interest_protocol_votes,
+        maker_executive::makerexecutive_votes, maker_poll::makerpoll_votes,
+        maker_poll_arbitrum::makerpollarbitrum_votes, uniswap::uniswap_votes,
         zeroxtreasury::zeroxtreasury_votes,
     },
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType},
-    Ctx,
-    VotesRequest,
-    VotesResponse,
+    Ctx, VotesRequest, VotesResponse,
 };
 use anyhow::{bail, Context, Result};
 use ethers::{
@@ -30,15 +21,7 @@ use rocket::serde::json::Json;
 use serde::Deserialize;
 use serde_json::Value;
 use tracing::{
-    debug_span,
-    event,
-    info_span,
-    instrument,
-    span,
-    trace_span,
-    Instrument,
-    Level,
-    Span,
+    debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
 };
 
 #[derive(Debug, Deserialize, Clone)]
@@ -63,19 +46,16 @@ pub struct VoteResult {
 
 voterhandler::include!(voterhandler_with_voter { voter });
 
-#[instrument(skip(ctx), ret, level = "info")]
 #[post("/chain_votes", data = "<data>")]
 pub async fn update_chain_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>,
 ) -> Json<Vec<VotesResponse>> {
-    event!(Level::DEBUG, "{:?}", data);
     let dao_handler = ctx
         .db
         .daohandler()
         .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
         .exec()
-        .instrument(debug_span!("get_dao_handler"))
         .await
         .expect("bad prisma result")
         .expect("daoHandlerId not found");
@@ -89,7 +69,6 @@ pub async fn update_chain_votes<'a>(
         .order_by(proposal::blockcreated::order(Direction::Asc))
         .take(1)
         .exec()
-        .instrument(debug_span!("get_first_proposal"))
         .await
         .expect("bad prisma result");
 
@@ -109,7 +88,6 @@ pub async fn update_chain_votes<'a>(
         ])
         .include(voterhandler_with_voter::include())
         .exec()
-        .instrument(debug_span!("get_voter_handlers"))
         .await
         .expect("bad prisma result");
 
@@ -125,7 +103,6 @@ pub async fn update_chain_votes<'a>(
     let mut current_block = ctx
         .rpc
         .get_block_number()
-        .instrument(debug_span!("get_current_block"))
         .await
         .unwrap_or(U64::from(0))
         .as_u64() as i64;
@@ -157,7 +134,6 @@ pub async fn update_chain_votes<'a>(
 
         current_block = rpc
             .get_block_number()
-            .instrument(debug_span!("get_current_block"))
             .await
             .unwrap_or(U64::from(0))
             .as_u64() as i64;
@@ -172,15 +148,6 @@ pub async fn update_chain_votes<'a>(
             from_block = to_block - 10;
         }
     }
-
-    event!(
-        Level::DEBUG,
-        "{:?} {:?} {:?} {:?}",
-        dao_handler,
-        batch_size,
-        from_block,
-        to_block
-    );
 
     let result = get_results(
         ctx,
@@ -216,7 +183,6 @@ pub async fn update_chain_votes<'a>(
     }
 }
 
-#[instrument(skip(ctx, voters, voter_handlers), level = "debug")]
 async fn get_results(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -294,7 +260,6 @@ async fn get_results(
     }
 }
 
-#[instrument(skip(ctx, votes, voter_handlers), level = "debug")]
 async fn insert_votes(
     votes: Vec<VoteResult>,
     to_block: i64,
@@ -309,8 +274,6 @@ async fn insert_votes(
         .collect();
 
     for vote in successful_votes {
-        event!(Level::DEBUG, "{:?}", vote);
-
         let existing = ctx
             .db
             .vote()
@@ -344,7 +307,6 @@ async fn insert_votes(
                             ],
                         )
                         .exec()
-                        .instrument(debug_span!("update_vote"))
                         .await
                         .unwrap();
                 }
@@ -363,7 +325,6 @@ async fn insert_votes(
                         vec![],
                     )
                     .exec()
-                    .instrument(debug_span!("create_vote"))
                     .await
                     .unwrap();
             }
@@ -389,8 +350,6 @@ async fn insert_votes(
         new_index = to_block;
     }
 
-    event!(Level::DEBUG, "{:?} ", new_index);
-
     for voter_handler in voter_handlers {
         if (new_index > voter_handler.chainindex.unwrap()
             && new_index - voter_handler.chainindex.unwrap() > 100000)
@@ -409,7 +368,6 @@ async fn insert_votes(
                     ],
                 )
                 .exec()
-                .instrument(debug_span!("update_chainindex"))
                 .await?;
         }
     }

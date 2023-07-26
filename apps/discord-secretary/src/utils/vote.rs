@@ -5,7 +5,6 @@ use tracing::instrument;
 
 use crate::prisma::{self, PrismaClient};
 
-#[instrument(skip(client), ret, level = "debug")]
 pub async fn get_vote(
     user_id: String,
     proposal_id: String,

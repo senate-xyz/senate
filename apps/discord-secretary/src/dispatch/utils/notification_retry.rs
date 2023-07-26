@@ -4,7 +4,6 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::prisma::{notification, NotificationDispatchedState, PrismaClient};
 
-#[instrument(skip_all, level = "info")]
 pub async fn update_notification_retry(
     client: &Arc<PrismaClient>,
     notification: notification::Data,
@@ -44,7 +43,6 @@ pub async fn update_notification_retry(
             },
         )
         .exec()
-        .instrument(debug_span!("update_notification"))
         .await
         .unwrap();
 }

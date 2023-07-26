@@ -8,6 +8,7 @@ use dotenv::dotenv;
 use log::{debug, info};
 use teloxide::{
     adaptors::{throttle::Limits, DefaultParseMode, Throttle},
+    dispatching::dialogue::GetChatId,
     prelude::*,
     types::ParseMode,
     utils::command::BotCommands,
@@ -159,14 +160,55 @@ enum Command {
 async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
     match cmd {
         Command::Start => {
-            bot.send_message(
-                msg.chat.id,
-                format!(
-                    "Hello {:?}!",
-                    msg.text().unwrap().split_once(" ").unwrap().1
-                ),
-            )
-            .await?
+            let text = msg.text().unwrap();
+            let split_result = text.split_once(' ');
+
+            match split_result {
+                Some((_, id_with_quotes)) => {
+                    let id = id_with_quotes.trim_matches('"');
+
+                    if id.len() == 0 {
+                        bot.send_message(msg.chat.id, "You can't start the bot directly. Please sign up to Senate Telegram Notifications using https://senatelabs.xyz/settings/notifications.")
+            .await?;
+                    } else {
+                        let prisma_client =
+                            Arc::new(PrismaClient::_builder().build().await.unwrap());
+
+                        prisma_client
+                            .user()
+                            .update(
+                                prisma::user::id::equals(id.to_string()),
+                                vec![
+                                    prisma::user::telegramnotifications::set(true),
+                                    prisma::user::telegramchatid::set(msg.chat.id.to_string()),
+                                ],
+                            )
+                            .exec()
+                            .await
+                            .unwrap();
+
+                        let user = prisma_client
+                            .user()
+                            .find_first(vec![prisma::user::id::equals(id.to_string())])
+                            .exec()
+                            .await
+                            .unwrap()
+                            .unwrap();
+
+                        bot.send_message(msg.chat.id, format!("Hello {}!", user.address.unwrap()))
+                            .await?;
+                        bot.send_message(
+                            msg.chat.id,
+                            "You are now subscribed to Senate Telegram Notifications!",
+                        )
+                        .await?;
+                    }
+                }
+                None => {
+                    bot.send_message(msg.chat.id, "You can't start the bot directly. Please sign up to Senate Telegram Notifications using https://senatelabs.xyz/settings/notifications.")
+            .await?;
+                }
+            }
         }
     };
 

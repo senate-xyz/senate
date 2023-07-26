@@ -5,35 +5,19 @@ use reqwest::header::HeaderMap;
 use rocket::serde::json::Json;
 use serde_json::Value;
 use tracing::{
-    debug_span,
-    event,
-    info_span,
-    instrument,
-    span,
-    trace_span,
-    Instrument,
-    Level,
-    Span,
+    debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
 };
 
 use crate::{
     handlers::proposals::{
-        aave::aave_proposals,
-        compound::compound_proposals,
-        dydx::dydx_proposals,
-        ens::ens_proposals,
-        gitcoin::gitcoin_proposals,
-        hop::hop_proposals,
-        interest_protocol::interest_protocol_proposals,
-        maker_executive::maker_executive_proposals,
-        maker_poll::maker_poll_proposals,
-        uniswap::uniswap_proposals,
+        aave::aave_proposals, compound::compound_proposals, dydx::dydx_proposals,
+        ens::ens_proposals, gitcoin::gitcoin_proposals, hop::hop_proposals,
+        interest_protocol::interest_protocol_proposals, maker_executive::maker_executive_proposals,
+        maker_poll::maker_poll_proposals, uniswap::uniswap_proposals,
         zeroxtreasury::zeroxtreasury_proposals,
     },
     prisma::{dao, daohandler, proposal, DaoHandlerType, ProposalState},
-    Ctx,
-    ProposalsRequest,
-    ProposalsResponse,
+    Ctx, ProposalsRequest, ProposalsResponse,
 };
 
 #[allow(dead_code)]
@@ -55,19 +39,16 @@ pub struct ChainProposal {
     pub(crate) state: ProposalState,
 }
 
-#[instrument(skip(ctx), ret, level = "info")]
 #[post("/chain_proposals", data = "<data>")]
 pub async fn update_chain_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>,
 ) -> Json<ProposalsResponse<'a>> {
-    event!(Level::DEBUG, "{:?}", data);
     let dao_handler = ctx
         .db
         .daohandler()
         .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
         .exec()
-        .instrument(debug_span!("get_dao_handlers"))
         .await
         .expect("bad prisma result")
         .expect("daoHandlerId not found");
@@ -80,7 +61,6 @@ pub async fn update_chain_proposals<'a>(
     let current_block = ctx
         .rpc
         .get_block_number()
-        .instrument(debug_span!("get_current_block"))
         .await
         .unwrap_or(U64::from(from_block))
         .as_u64() as i64;
@@ -99,17 +79,6 @@ pub async fn update_chain_proposals<'a>(
         to_block = current_block - 10;
     }
 
-    event!(
-        Level::DEBUG,
-        "{:?} {:?} {:?} {:?} {:?} {:?}",
-        dao_handler,
-        min_block,
-        batch_size,
-        from_block,
-        to_block,
-        current_block
-    );
-
     let result = get_results(ctx, from_block, to_block, dao_handler).await;
 
     match result {
@@ -127,7 +96,6 @@ pub async fn update_chain_proposals<'a>(
     }
 }
 
-#[instrument(skip(ctx), level = "debug")]
 async fn get_results(
     ctx: &Ctx,
     from_block: i64,
@@ -195,7 +163,6 @@ async fn get_results(
     }
 }
 
-#[instrument(skip(ctx, proposals), level = "debug")]
 async fn insert_proposals(
     proposals: Vec<ChainProposal>,
     to_block: i64,
@@ -252,7 +219,6 @@ async fn insert_proposals(
                             },
                         )
                         .exec()
-                        .instrument(debug_span!("update_proposal"))
                         .await
                         .unwrap();
                 }
@@ -283,7 +249,6 @@ async fn insert_proposals(
                         vec![proposal::blockcreated::set(proposal.block_created.into())],
                     )
                     .exec()
-                    .instrument(debug_span!("create_proposal"))
                     .await
                     .unwrap();
             }
@@ -311,8 +276,6 @@ async fn insert_proposals(
         to_block
     };
 
-    event!(Level::DEBUG, "{:?} {:?}", open_proposals.len(), new_index);
-
     let uptodate = dao_handler.chainindex.unwrap() - new_index < 1000;
 
     if (new_index > dao_handler.chainindex.unwrap()
@@ -329,7 +292,6 @@ async fn insert_proposals(
                 ],
             )
             .exec()
-            .instrument(debug_span!("update_chainindex"))
             .await
             .expect("failed to update daohandlers");
     }

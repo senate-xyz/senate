@@ -12,15 +12,8 @@ use tracing::{debug_span, info, instrument, warn, Instrument};
 
 use crate::{
     prisma::{
-        self,
-        notification,
-        proposal,
-        user,
-        DaoHandlerType,
-        MagicUserState,
-        NotificationDispatchedState,
-        NotificationType,
-        ProposalState,
+        self, notification, proposal, user, DaoHandlerType, MagicUserState,
+        NotificationDispatchedState, NotificationType, ProposalState,
     },
     utils::{countdown::countdown_gif, posthog::posthog_bulletin_event, vote::get_vote},
 };
@@ -107,7 +100,6 @@ struct PostmarkResult {
     MessageID: Option<String>,
 }
 
-#[instrument(skip(db), level = "info")]
 pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
     let notifications = db
         .notification()
@@ -139,7 +131,6 @@ pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
     }
 }
 
-#[instrument(skip(db), level = "info")]
 pub async fn send_bulletin_emails(db: Arc<prisma::PrismaClient>) {
     let users = db
         .user()
@@ -150,7 +141,6 @@ pub async fn send_bulletin_emails(db: Arc<prisma::PrismaClient>) {
         ])
         .include(user_with_voters_and_subscriptions::include())
         .exec()
-        .instrument(debug_span!("get_users"))
         .await
         .unwrap();
 
@@ -177,7 +167,6 @@ pub async fn send_bulletin_emails(db: Arc<prisma::PrismaClient>) {
     info!("sent all bulletin emails");
 }
 
-#[instrument(skip_all, fields(user = user.id), ret, level = "info")]
 async fn send_bulletin(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -235,7 +224,6 @@ async fn send_bulletin(
         .headers(headers)
         .json(content)
         .send()
-        .instrument(debug_span!("send_email"))
         .await
         .unwrap();
 
@@ -259,7 +247,6 @@ async fn send_bulletin(
                     )])
                     .skip_duplicates()
                     .exec()
-                    .instrument(debug_span!("create_notifications"))
                     .await
                     .unwrap();
 
@@ -286,7 +273,6 @@ async fn send_bulletin(
                     )])
                     .skip_duplicates()
                     .exec()
-                    .instrument(debug_span!("create_notifications"))
                     .await
                     .unwrap();
 
@@ -315,7 +301,6 @@ async fn send_bulletin(
                 )])
                 .skip_duplicates()
                 .exec()
-                .instrument(debug_span!("create_notifications"))
                 .await
                 .unwrap();
 
@@ -330,7 +315,6 @@ async fn send_bulletin(
     Ok(true)
 }
 
-#[instrument(skip_all, fields(user = user.id), ret, level = "debug")]
 async fn get_user_bulletin_data(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -353,7 +337,6 @@ async fn get_user_bulletin_data(
     })
 }
 
-#[instrument(skip_all, fields(user = user.id), level = "debug")]
 async fn get_ending_soon_proposals(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -451,7 +434,6 @@ async fn get_ending_soon_proposals(
     Ok(ending_proposals)
 }
 
-#[instrument(skip_all, fields(user = user.id), level = "debug")]
 async fn get_new_proposals(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -549,7 +531,6 @@ async fn get_new_proposals(
     Ok(new_proposals)
 }
 
-#[instrument(skip_all, fields(user = user.id), level = "debug")]
 async fn get_ended_proposals(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
