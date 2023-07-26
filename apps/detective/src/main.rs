@@ -108,18 +108,15 @@ async fn rocket() -> _ {
         rpc: rpc.clone(),
     };
 
-    tokio::spawn(
-        async move {
-            let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(60 * 5));
-            loop {
-                interval.tick().await;
-                event!(Level::INFO, "running sanity");
-                maker_polls_sanity_check(&context).await;
-                snapshot_sanity_check(&context).await;
-            }
+    tokio::spawn(async move {
+        let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(60 * 5));
+        loop {
+            interval.tick().await;
+
+            maker_polls_sanity_check(&context).await;
+            snapshot_sanity_check(&context).await;
         }
-        .instrument(debug_span!("sanity")),
-    );
+    });
 
     rocket::build()
         .manage(Context { db, rpc })

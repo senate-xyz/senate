@@ -30,7 +30,6 @@ const VOTE_MULTIPLE_ACTIONS_TOPIC: &str =
 const VOTE_SINGLE_ACTION_TOPIC: &str =
     "0xa69beaba00000000000000000000000000000000000000000000000000000000";
 
-#[instrument(skip(ctx, voters), level = "info")]
 pub async fn makerexecutive_votes(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -58,10 +57,7 @@ pub async fn makerexecutive_votes(
         .from_block(from_block)
         .to_block(to_block);
 
-    let single_spell_logs = single_spell_events
-        .query_with_meta()
-        .instrument(debug_span!("get_rpc_events"))
-        .await?;
+    let single_spell_logs = single_spell_events.query_with_meta().await?;
 
     let multi_spell_events = gov_contract
         .log_note_filter()
@@ -70,10 +66,7 @@ pub async fn makerexecutive_votes(
         .from_block(from_block)
         .to_block(to_block);
 
-    let multi_spell_logs = multi_spell_events
-        .query_with_meta()
-        .instrument(debug_span!("get_rpc_events"))
-        .await?;
+    let multi_spell_logs = multi_spell_events.query_with_meta().await?;
 
     let single_spells =
         get_single_spell_addresses(voters.clone(), single_spell_logs, gov_contract.clone()).await?;
@@ -123,7 +116,6 @@ pub async fn makerexecutive_votes(
         .collect())
 }
 
-#[instrument(skip(ctx, spell_addresses), level = "debug")]
 async fn get_votes_for_voter(
     spell_addresses: Vec<String>,
     dao_handler: daohandler::Data,

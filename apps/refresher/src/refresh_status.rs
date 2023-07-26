@@ -32,13 +32,11 @@ pub static DAOS_REFRESH_STATUS: Lazy<Arc<Mutex<Vec<DaoHandlerRefreshStatus>>>> =
 pub static VOTERS_REFRESH_STATUS: Lazy<Arc<Mutex<Vec<VoterHandlerRefreshStatus>>>> =
     Lazy::new(|| Arc::new(Mutex::new(Vec::new())));
 
-#[instrument(skip(client), level = "info")]
 pub async fn create_refresh_statuses(client: &PrismaClient) {
     create_daos_refresh_statuses(client).await;
     create_voters_refresh_statuses(client).await;
 }
 
-#[instrument(skip(client), level = "debug")]
 pub async fn create_daos_refresh_statuses(client: &PrismaClient) {
     let dao_handlers_count = client.daohandler().count(vec![]).exec().await.unwrap();
     let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
@@ -72,13 +70,12 @@ pub async fn create_daos_refresh_statuses(client: &PrismaClient) {
                     10000000
                 },
             };
-            event!(Level::DEBUG, "{:?}", item);
+
             daos_refresh_status.push(item);
         }
     });
 }
 
-#[instrument(skip(client), level = "debug")]
 pub async fn create_voters_refresh_statuses(client: &PrismaClient) {
     let voter_handlers_count = client.voterhandler().count(vec![]).exec().await.unwrap();
 
@@ -108,8 +105,6 @@ pub async fn create_voters_refresh_statuses(client: &PrismaClient) {
                     dao_handler_id: voterhandler.clone().daohandlerid,
                     voter_address: voterhandler.clone().voter.address,
                 };
-
-                event!(Level::DEBUG, "{:?}", item);
 
                 voters_refresh_status.push(item);
             }

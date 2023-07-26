@@ -24,7 +24,6 @@ struct Decoder {
     address_create: String,
 }
 
-#[instrument(skip(ctx), level = "info")]
 pub async fn maker_polls_sanity_check(ctx: &Context) {
     let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(30);
     let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
@@ -37,7 +36,6 @@ pub async fn maker_polls_sanity_check(ctx: &Context) {
         .daohandler()
         .find_first(vec![daohandler::r#type::equals(DaoHandlerType::MakerPoll)])
         .exec()
-        .instrument(debug_span!("get_dao_handlers"))
         .await
         .unwrap();
 
@@ -46,7 +44,6 @@ pub async fn maker_polls_sanity_check(ctx: &Context) {
     }
 }
 
-#[instrument(skip(ctx), level = "debug")]
 async fn sanitize(
     dao_handler: daohandler::Data,
     sanitize_from: chrono::DateTime<Utc>,
@@ -63,15 +60,6 @@ async fn sanitize(
         .parse::<Address>()
         .expect("bad address");
 
-    event!(
-        Level::DEBUG,
-        "{:?} {:?} {:?} {:?}",
-        from_block,
-        to_block,
-        decoder,
-        address
-    );
-
     let gov_contract =
         makerpollcreate::makerpollcreate::makerpollcreate::new(address, ctx.rpc.clone());
 
@@ -80,11 +68,7 @@ async fn sanitize(
         .from_block(from_block)
         .to_block(to_block);
 
-    let withdrawn_proposals: Vec<PollWithdrawnFilter> = events
-        .query()
-        .instrument(debug_span!("get_rpc_events"))
-        .await
-        .unwrap();
+    let withdrawn_proposals: Vec<PollWithdrawnFilter> = events.query().await.unwrap();
 
     for withdrawn_proposal in withdrawn_proposals {
         let proposal = ctx
@@ -95,7 +79,6 @@ async fn sanitize(
                 proposal::daohandlerid::equals(dao_handler.clone().id),
             ])
             .exec()
-            .instrument(debug_span!("get_proposals"))
             .await
             .unwrap();
 
@@ -107,21 +90,8 @@ async fn sanitize(
                     vec![proposal::visible::set(false)],
                 )
                 .exec()
-                .instrument(debug_span!("delete_proposal"))
                 .await
                 .unwrap();
-
-            event!(
-                Level::INFO,
-                "Sanitized {} MakerPoll proposal",
-                existing_proposal.name
-            );
-
-            event!(
-                Level::DEBUG,
-                "Sanitized MakerPoll proposal - {:?}",
-                existing_proposal
-            );
         }
     }
 }

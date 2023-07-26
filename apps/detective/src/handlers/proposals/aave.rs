@@ -39,7 +39,6 @@ struct Decoder {
     proposalUrl: String,
 }
 
-#[instrument(skip(ctx), level = "info")]
 pub async fn aave_proposals(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -57,10 +56,7 @@ pub async fn aave_proposals(
         .from_block(*from_block)
         .to_block(*to_block);
 
-    let proposals = events
-        .query_with_meta()
-        .instrument(debug_span!("get_rpc_events"))
-        .await?;
+    let proposals = events.query_with_meta().await?;
 
     let mut futures = FuturesUnordered::new();
 
@@ -78,7 +74,6 @@ pub async fn aave_proposals(
     Ok(result)
 }
 
-#[instrument(skip(p, ctx, decoder, gov_contract), ret, level = "debug")]
 async fn data_for_proposal(
     p: (aavegov::aavegov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,

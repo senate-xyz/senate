@@ -8,22 +8,12 @@ use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use rocket::serde::json::Json;
 use serde::Deserialize;
 use tracing::{
-    debug_span,
-    event,
-    info_span,
-    instrument,
-    span,
-    trace_span,
-    Instrument,
-    Level,
-    Span,
+    debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
 };
 
 use crate::{
     prisma::{dao, daohandler, proposal, ProposalState},
-    Ctx,
-    ProposalsRequest,
-    ProposalsResponse,
+    Ctx, ProposalsRequest, ProposalsResponse,
 };
 
 #[derive(Debug, Deserialize)]
@@ -59,19 +49,16 @@ struct Decoder {
     space: String,
 }
 
-#[instrument(skip(ctx), ret, level = "info")]
 #[post("/snapshot_proposals", data = "<data>")]
 pub async fn update_snapshot_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>,
 ) -> Json<ProposalsResponse<'a>> {
-    event!(Level::DEBUG, "{:?}", data);
     let dao_handler = ctx
         .db
         .daohandler()
         .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
         .exec()
-        .instrument(debug_span!("get_dao_handler"))
         .await
         .expect("bad prisma result")
         .expect("daoHandlerId not found");
@@ -118,15 +105,6 @@ pub async fn update_snapshot_proposals<'a>(
         data.refreshspeed, decoder.space, old_index
     );
 
-    event!(
-        Level::DEBUG,
-        "{:?} {:?} {:?} {:?}",
-        dao_handler,
-        decoder,
-        old_index,
-        graphql_query
-    );
-
     match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
         Ok(_) => Json(ProposalsResponse {
             daoHandlerId: data.daoHandlerId,
@@ -142,7 +120,6 @@ pub async fn update_snapshot_proposals<'a>(
     }
 }
 
-#[instrument(skip(ctx), level = "debug")]
 async fn update_proposals(
     graphql_query: String,
     ctx: &Ctx,
@@ -160,7 +137,6 @@ async fn update_proposals(
         .get("https://hub.snapshot.org/graphql".to_string())
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()
-        .instrument(debug_span!("get_graphql_response"))
         .await?;
 
     let response_data: GraphQLResponse = graphql_response
@@ -214,13 +190,10 @@ async fn update_proposals(
                                 proposal::scorestotal::set(proposal.scores_total.into()),
                                 proposal::quorum::set(proposal.quorum.into()),
                                 proposal::state::set(state),
-                                proposal::visible::set(
-                                    !proposal.flagged.is_some_and(|f| f),
-                                ),
+                                proposal::visible::set(!proposal.flagged.is_some_and(|f| f)),
                             ],
                         )
                         .exec()
-                        .instrument(debug_span!("update_proposal"))
                         .await
                         .unwrap();
                 }
@@ -254,12 +227,9 @@ async fn update_proposals(
                         proposal.link.clone(),
                         dao_handler.id.to_string(),
                         dao_handler.daoid.to_string(),
-                        vec![proposal::visible::set(
-                            !proposal.flagged.is_some_and(|f| f),
-                        )],
+                        vec![proposal::visible::set(!proposal.flagged.is_some_and(|f| f))],
                     )
                     .exec()
-                    .instrument(debug_span!("create_proposal"))
                     .await
                     .unwrap();
             }
@@ -297,14 +267,6 @@ async fn update_proposals(
         new_index = old_index;
     }
 
-    event!(
-        Level::DEBUG,
-        "{:?} {:?} {:?}",
-        open_proposals.len(),
-        closed_proposals.len(),
-        new_index
-    );
-
     let uptodate = old_index - new_index < 60 * 60;
 
     let new_index_date: DateTime<FixedOffset> = DateTime::from_utc(
@@ -330,7 +292,6 @@ async fn update_proposals(
                 ],
             )
             .exec()
-            .instrument(debug_span!("update_snapshotindex"))
             .await
             .context("failed to update daohandler")?;
     }

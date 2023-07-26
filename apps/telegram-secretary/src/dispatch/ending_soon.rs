@@ -11,19 +11,12 @@ use tokio::time::sleep;
 use tracing::{debug, debug_span, instrument, warn, Instrument};
 
 use crate::prisma::{
-    self,
-    notification,
-    proposal,
-    user,
-    DaoHandlerType,
-    NotificationDispatchedState,
-    NotificationType,
-    PrismaClient,
+    self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
+    NotificationType, PrismaClient,
 };
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-#[instrument(skip_all, level = "info")]
 pub async fn dispatch_ending_soon_notifications(
     client: &Arc<PrismaClient>,
     bot: &Arc<DefaultParseMode<Throttle<teloxide::Bot>>>,
@@ -43,7 +36,6 @@ pub async fn dispatch_ending_soon_notifications(
             ]),
         ])
         .exec()
-        .instrument(debug_span!("get_notifications"))
         .await
         .unwrap();
 
@@ -52,7 +44,6 @@ pub async fn dispatch_ending_soon_notifications(
             .user()
             .find_first(vec![user::id::equals(notification.clone().userid)])
             .exec()
-            .instrument(debug_span!("get_user"))
             .await
             .unwrap()
             .unwrap();
@@ -64,7 +55,6 @@ pub async fn dispatch_ending_soon_notifications(
             )])
             .include(proposal_with_dao::include())
             .exec()
-            .instrument(debug_span!("get_proposal"))
             .await
             .unwrap();
 
@@ -195,7 +185,6 @@ pub async fn dispatch_ending_soon_notifications(
                         update_data,
                     )
                     .exec()
-                    .instrument(debug_span!("update_notification"))
                     .await
                     .unwrap();
             }
@@ -213,7 +202,6 @@ pub async fn dispatch_ending_soon_notifications(
                         )],
                     )
                     .exec()
-                    .instrument(debug_span!("update_notification"))
                     .await
                     .unwrap();
             }

@@ -10,22 +10,12 @@ use rocket::serde::json::Json;
 use serde::{Deserialize, Deserializer};
 use serde_json::Value;
 use tracing::{
-    debug_span,
-    event,
-    info_span,
-    instrument,
-    span,
-    trace_span,
-    Instrument,
-    Level,
-    Span,
+    debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
 };
 
 use crate::{
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler},
-    Ctx,
-    VotesRequest,
-    VotesResponse,
+    Ctx, VotesRequest, VotesResponse,
 };
 
 #[derive(Debug, Deserialize)]
@@ -70,19 +60,16 @@ struct Decoder {
 
 voterhandler::include!(voterhandler_with_voter { voter });
 
-#[instrument(skip(ctx), ret, level = "info")]
 #[post("/snapshot_votes", data = "<data>")]
 pub async fn update_snapshot_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>,
 ) -> Json<Vec<VotesResponse>> {
-    event!(Level::DEBUG, "{:?}", data);
     let dao_handler = ctx
         .db
         .daohandler()
         .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
         .exec()
-        .instrument(debug_span!("get_dao_handler"))
         .await
         .expect("bad prisma result")
         .expect("daoHandlerId not found");
@@ -103,7 +90,6 @@ pub async fn update_snapshot_votes<'a>(
         ])
         .include(voterhandler_with_voter::include())
         .exec()
-        .instrument(debug_span!("get_voter_handlers"))
         .await
         .expect("bad prisma result");
 
@@ -154,15 +140,6 @@ pub async fn update_snapshot_votes<'a>(
         search_from_timestamp
     );
 
-    event!(
-        Level::DEBUG,
-        "{:?} {:?} {:?} {:?}",
-        dao_handler,
-        decoder,
-        search_from_timestamp,
-        graphql_query,
-    );
-
     let response = match update_votes(
         graphql_query,
         search_from_timestamp,
@@ -197,7 +174,6 @@ pub async fn update_snapshot_votes<'a>(
     Json(response)
 }
 
-#[instrument(skip(ctx, voter_handlers, graphql_query), level = "debug")]
 async fn update_votes(
     graphql_query: String,
     search_from_timestamp: i64,
@@ -216,7 +192,6 @@ async fn update_votes(
         .get("https://hub.snapshot.org/graphql".to_string())
         .json(&serde_json::json!({ "query": graphql_query }))
         .send()
-        .instrument(debug_span!("get_graphql_response"))
         .await?;
 
     let response_data: GraphQLResponse = graphql_response
@@ -253,7 +228,6 @@ async fn update_votes(
     Ok(())
 }
 
-#[instrument(skip(ctx, votes, p), level = "debug")]
 async fn upsert_votes_for_proposal(
     votes: Vec<GraphQLVote>,
     p: GraphQLProposal,
@@ -268,7 +242,6 @@ async fn upsert_votes_for_proposal(
             dao_handler.daoid.to_string(),
         ))
         .exec()
-        .instrument(debug_span!("get_proposal"))
         .await
     {
         Ok(r) => match r {
@@ -290,7 +263,6 @@ async fn upsert_votes_for_proposal(
     }
 }
 
-#[instrument(skip(ctx, votes_for_proposal), level = "debug")]
 async fn update_or_create_votes(
     ctx: &Ctx,
     votes_for_proposal: Vec<GraphQLVote>,
@@ -298,8 +270,6 @@ async fn update_or_create_votes(
     dao_handler: daohandler::Data,
 ) -> Result<()> {
     for vote in votes_for_proposal {
-        event!(Level::DEBUG, "{:?}", vote);
-
         let existing = ctx
             .db
             .vote()
@@ -338,7 +308,6 @@ async fn update_or_create_votes(
                             ],
                         )
                         .exec()
-                        .instrument(debug_span!("update_vote"))
                         .await
                         .unwrap();
                 }
@@ -361,7 +330,6 @@ async fn update_or_create_votes(
                         )))],
                     )
                     .exec()
-                    .instrument(debug_span!("create_vote"))
                     .await
                     .unwrap();
             }
@@ -371,7 +339,6 @@ async fn update_or_create_votes(
     Ok(())
 }
 
-#[instrument(skip(ctx, votes, voter_handlers), level = "debug")]
 async fn update_refresh_statuses(
     votes: Vec<GraphQLVote>,
     search_from_timestamp: i64,
@@ -420,8 +387,6 @@ async fn update_refresh_statuses(
         FixedOffset::east_opt(0).unwrap(),
     );
 
-    event!(Level::DEBUG, "{:?} {:?}", search_to_timestamp, new_index);
-
     for voter_handler in voter_handlers {
         if (new_index_date > voter_handler.snapshotindex.unwrap()
             && new_index_date - voter_handler.snapshotindex.unwrap() > Duration::days(1))
@@ -440,7 +405,6 @@ async fn update_refresh_statuses(
                     ],
                 )
                 .exec()
-                .instrument(debug_span!("update_snapshotindex"))
                 .await?;
         }
     }
