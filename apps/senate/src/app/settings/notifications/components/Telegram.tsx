@@ -80,7 +80,15 @@ const Enabled = (props: {
             <div className={`flex flex-row gap-1`}>
               <Link
                 className="flex h-[44px] w-[240px] cursor-pointer flex-col justify-center bg-white text-center text-black"
-                href={`https://t.me/senatesecretarybot?start=${props.userId}`}
+                href={`https://t.me/senatesecretary${
+                  process.env.NEXT_PUBLIC_WEB_URL?.includes("dev") ||
+                  process.env.NEXT_PUBLIC_WEB_URL?.includes("127") ||
+                  process.env.NEXT_PUBLIC_WEB_URL?.includes("localhost")
+                    ? "dev"
+                    : process.env.NEXT_PUBLIC_WEB_URL?.includes("staging")
+                    ? "staging"
+                    : ""
+                }bot?start=${props.userId}`}
                 target="_blank"
               >
                 Start a chat
@@ -88,7 +96,15 @@ const Enabled = (props: {
 
               <Link
                 className="flex h-[44px] w-[240px] cursor-pointer flex-col justify-center bg-white text-center text-black"
-                href={`https://t.me/senatesecretarybot?startgroup=${props.userId}`}
+                href={`https://t.me/senatesecretary${
+                  process.env.NEXT_PUBLIC_WEB_URL?.includes("dev") ||
+                  process.env.NEXT_PUBLIC_WEB_URL?.includes("127") ||
+                  process.env.NEXT_PUBLIC_WEB_URL?.includes("localhost")
+                    ? "dev"
+                    : process.env.NEXT_PUBLIC_WEB_URL?.includes("staging")
+                    ? "staging"
+                    : ""
+                }bot?startgroup=${props.userId}`}
                 target="_blank"
               >
                 Start a group chat
