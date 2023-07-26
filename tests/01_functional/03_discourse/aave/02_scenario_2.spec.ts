@@ -111,7 +111,9 @@ test_metamask(
     await expect(confirmedUser?.subscriptions.map((s) => s.dao.name)).toContain(
       "Compound"
     );
-    await expect(confirmedUser?.voters).toContain(confirmedUser?.address);
+    await expect(confirmedUser?.voters.map((v) => v.address)).toContain(
+      confirmedUser?.address
+    );
 
     await expect(page).toHaveURL("/orgs?connect");
   }
