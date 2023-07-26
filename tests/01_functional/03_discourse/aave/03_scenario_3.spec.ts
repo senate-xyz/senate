@@ -130,7 +130,9 @@ test("has email test@test.com, is verified, has bulletin and quorum enabled, is 
     "Compound"
   );
 
-  await expect(confirmedUser?.voters).toContain(confirmedUser?.address);
+  await expect(confirmedUser?.voters.map((v) => v.address)).toContain(
+    confirmedUser?.address
+  );
 });
 
 test("deletes test user test@test.com end", async ({}) => {

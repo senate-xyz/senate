@@ -94,6 +94,7 @@ test_metamask(
       where: { email: "test@test.com" },
       include: {
         subscriptions: { include: { dao: { select: { name: true } } } },
+        voters: true,
       },
     });
 
@@ -109,6 +110,9 @@ test_metamask(
     );
     await expect(confirmedUser?.subscriptions.map((s) => s.dao.name)).toContain(
       "Compound"
+    );
+    await expect(confirmedUser?.voters.map((v) => v.address)).toContain(
+      confirmedUser?.address
     );
 
     await expect(page).toHaveURL("/orgs?connect");
