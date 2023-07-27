@@ -193,6 +193,8 @@ async fn send_bulletin(
         "aave-bulletin"
     } else if user.isuniswapuser == MagicUserState::Enabled {
         "uniswap-bulletin"
+    } else if user.subscriptions.len() > 1 {
+        "senate-bulletin"
     } else {
         "senate-bulletin"
     };
