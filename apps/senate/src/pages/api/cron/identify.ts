@@ -15,7 +15,7 @@ export default async function handler(
     include: {
       _count: true,
       subscriptions: {
-        select: {
+        include: {
           dao: {
             select: { name: true },
           },
