@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { type Prisma, PrismaClient } from "@prisma/client";
 
 export type { JsonArray, JsonValue } from "type-fest";
 
@@ -65,3 +65,25 @@ const globalForPrisma = globalThis as unknown as {
 export const prisma = globalForPrisma.prisma ?? new PrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+import { drizzle } from "drizzle-orm/planetscale-serverless";
+import { connect } from "@planetscale/database";
+import * as schema from "./db/migrations/schema";
+
+const connection = connect({
+  url: process.env.DATABASE_URL,
+});
+
+export const db = drizzle(connection, { schema: { ...schema } });
+
+export { like } from "drizzle-orm";
+export const {
+  dao,
+  daohandler,
+  proposal,
+  subscription,
+  user,
+  vote,
+  voter,
+  voterhandler,
+} = schema;

@@ -26,8 +26,11 @@
     "update": "ncu -u"
   },
   "dependencies": {
+    "@planetscale/database": "^1.10.0",
     "@prisma/client": "5.0.0",
+    "drizzle-orm": "^0.27.2",
     "ethers": "^6.6.5",
+    "mysql2": "^3.5.2",
     "type-fest": "^4.0.0"
   },
   "devDependencies": {
@@ -35,6 +38,7 @@
     "@types/prettier": "^2.7.3",
     "@typescript-eslint/eslint-plugin": "^6.2.0",
     "@typescript-eslint/parser": "^6.2.0",
+    "drizzle-kit": "^0.19.12",
     "eslint": "^8.45.0",
     "prettier": "^3.0.0",
     "prisma": "5.0.0",

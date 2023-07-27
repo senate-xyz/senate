@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1690474517666,
+      "tag": "0000_legal_colleen_wing",
+      "breakpoints": true
+    }
+  ]
+}
