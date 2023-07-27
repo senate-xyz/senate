@@ -10,8 +10,6 @@ const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
 });
 
-const lastIdentifyTimes = {};
-
 export function authOptions(
   req?: NextApiRequest,
   res?: NextApiResponse,
@@ -199,45 +197,6 @@ export function authOptions(
           `WebsiteToken=deleted; Max-Age=0`,
           `AnotherCookieName=deleted; Max-Age=0`,
         ]);
-      },
-      async session(session) {
-        const user = await prisma.user.findFirstOrThrow({
-          where: { address: session.session.user?.name },
-          include: {
-            _count: true,
-            subscriptions: {
-              select: {
-                dao: {
-                  select: { name: true },
-                },
-              },
-            },
-          },
-        });
-
-        const now = Date.now();
-
-        if (
-          !lastIdentifyTimes[user.address ?? "visitor"] ||
-          now - lastIdentifyTimes[user.address ?? "visitor"] >= 60000
-        ) {
-          posthog.identify({
-            distinctId: user.address ?? "visitor",
-            properties: {
-              email: user.email,
-              subscriptions: user.subscriptions.map((s) => s.dao.name),
-              notifications: user._count.notifications,
-              emaildailybulletin: user.emaildailybulletin,
-              emptydailybulletin: user.emptydailybulletin,
-              discordnotifications: user.discordnotifications,
-              telegramnotifications: user.telegramnotifications,
-              lastactive: user.lastactive,
-              sessioncount: user.sessioncount,
-            },
-          });
-
-          lastIdentifyTimes[user.address ?? "visitor"] = now;
-        }
       },
     },
   };
