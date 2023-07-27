@@ -1,4 +1,4 @@
-import { prisma } from "@senate/database";
+import { db, proposal, user, like } from "@senate/database";
 import { redirect } from "next/navigation";
 import { PostHog } from "posthog-node";
 
@@ -7,64 +7,38 @@ const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
 });
 
 async function getProposalId(slug: string) {
-  const proposal = await prisma.proposal.findFirst({
-    where: {
-      id: {
-        endsWith: slug,
-      },
-    },
-    select: {
-      id: true,
-    },
+  const p = await db.query.proposal.findFirst({
+    where: like(proposal.id, `%${slug}`),
   });
 
-  return proposal ? proposal.id : "";
+  return p ? p.id : "";
 }
 
 async function getUser(slug: string) {
-  const user = await prisma.user.findFirst({
-    where: {
-      id: {
-        endsWith: slug,
-      },
-    },
-  });
+  const [u] = await db
+    .select()
+    .from(user)
+    .limit(1)
+    .where(like(user.id, `%${slug}`));
 
-  return user;
+  return u;
 }
 
 async function getProposal(slug: string) {
-  const proposal = await prisma.proposal.findFirst({
-    where: {
-      id: {
-        endsWith: slug,
-      },
-    },
-    include: {
-      dao: {
-        select: {
-          name: true,
-        },
-      },
-    },
+  const p = await db.query.proposal.findFirst({
+    where: like(proposal.id, `%${slug}`),
+    with: { dao: true },
   });
 
-  return proposal;
+  return p;
 }
 
 async function getProposalUrl(slug: string) {
-  const proposal = await prisma.proposal.findFirst({
-    where: {
-      id: {
-        endsWith: slug,
-      },
-    },
-    select: {
-      url: true,
-    },
+  const p = await db.query.proposal.findFirst({
+    where: like(proposal.id, `%${slug}`),
   });
 
-  return proposal ? proposal.url : "";
+  return p?.url ?? "";
 }
 
 async function log(type: Type, proposalId: string, userId: string) {
