@@ -30,7 +30,7 @@
     "dayjs": "1.11.9",
     "ethers": "6.6.5",
     "fast-average-color-node": "2.6.0",
-    "framer-motion": "10.13.1",
+    "framer-motion": "10.13.2",
     "next": "^13.4.12",
     "next-auth": "4.22.3",
     "posthog-js": "^1.75.2",
