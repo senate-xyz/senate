@@ -66,11 +66,11 @@ async fn main() {
             )
             .await;
 
-            generate_ending_soon_notifications(
-                &client_for_ending_soon,
-                NotificationType::SecondReminderDiscord,
-            )
-            .await;
+            // generate_ending_soon_notifications(
+            //     &client_for_ending_soon,
+            //     NotificationType::SecondReminderDiscord,
+            // )
+            // .await;
 
             dispatch_ending_soon_notifications(&client_for_ending_soon).await;
 
