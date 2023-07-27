@@ -1006,10 +1006,17 @@ async function testUsers() {
   }
 }
 
+async function maintenance() {
+  const usersToDelete = [""];
+
+  await prisma.user.deleteMany({ where: { email: { in: usersToDelete } } });
+}
+
 async function main() {
-  await seedData();
-  await seedVoters();
-  await testUsers();
+  await maintenance();
+  // await seedData();
+  // await seedVoters();
+  // await testUsers();
 }
 
 void main();

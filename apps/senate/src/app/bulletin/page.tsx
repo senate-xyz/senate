@@ -132,7 +132,7 @@ const Home = () => {
             )}
             {error && (
               <div className="mt-4 text-center text-[12px] font-normal text-[#FF3D00]">
-                There was an error updating your email.
+                There was a problem updating your email.
               </div>
             )}
           </div>
