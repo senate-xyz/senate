@@ -85,6 +85,7 @@ const Enabled = (props: {
   const [currentEmail, setCurrentEmail] = useState(props.email);
   const [resend, setResend] = useState(true);
   const [, startTransition] = useTransition();
+  const [error, setError] = useState(false);
 
   return (
     <div className="flex flex-col gap-2">
@@ -116,7 +117,12 @@ const Enabled = (props: {
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                startTransition(() => setEmailAndEnableBulletin(currentEmail));
+                startTransition(() => {
+                  setEmailAndEnableBulletin(currentEmail).catch(() => {
+                    setError(true);
+                    setEdit(true);
+                  });
+                });
                 setEdit(false);
               }
             }}
@@ -127,13 +133,24 @@ const Enabled = (props: {
             className={`flex h-full w-[72px] cursor-pointer flex-col justify-center
                   bg-[#ABABAB] text-center hover:bg-[#999999]`}
             onClick={() => {
-              startTransition(() => setEmailAndEnableBulletin(currentEmail));
+              startTransition(() => {
+                setEmailAndEnableBulletin(currentEmail).catch(() => {
+                  setError(true);
+                  setEdit(true);
+                });
+              });
               setEdit(false);
             }}
             data-testid="email-save"
           >
             Save
           </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="text-[18px] font-light text-red-400">
+          There was a problem updating your email.
         </div>
       )}
 
