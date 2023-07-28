@@ -76,7 +76,7 @@ const connection = connect({
 
 export const db = drizzle(connection, { schema: { ...schema } });
 
-export { like, eq, and, not, sql, isNull } from "drizzle-orm";
+export { like, eq, and, not, sql, isNull, inArray } from "drizzle-orm";
 export const {
   dao,
   daohandler,

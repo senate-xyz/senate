@@ -1,8 +1,17 @@
 import {
+  db,
   prisma,
-  type Vote,
   ProposalState,
   type JsonArray,
+  eq,
+  user,
+  userTovoter,
+  voter,
+  proposal,
+  vote,
+  inArray,
+  and,
+  voterhandler,
 } from "@senate/database";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
@@ -29,46 +38,53 @@ export async function fetchVote(proposalId: string, proxy: string) {
     return VoteResult.NOT_CONNECTED;
   const userAddress = session.user.name;
 
-  const user = await prisma.user.findFirst({
-    where: {
-      address: { equals: userAddress },
-    },
-    include: {
-      voters: true,
-    },
-  });
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
-  if (!user) return VoteResult.NOT_CONNECTED;
+  if (!u) return VoteResult.NOT_CONNECTED;
 
-  const proposal = await prisma.proposal.findFirst({
-    where: { id: proposalId },
-    include: {
-      votes: {
-        where: {
-          voteraddress: {
-            in:
-              proxy == "any"
-                ? user?.voters.map((voter) => voter.address)
-                : [proxy],
-          },
-        },
-      },
-    },
-  });
+  const [p] = await db
+    .select()
+    .from(proposal)
+    .where(and(eq(proposal.id, proposalId)));
 
-  if (!proposal) return VoteResult.LOADING;
+  if (!p) return VoteResult.LOADING;
 
-  const voterHandlers = await prisma.voterhandler.findMany({
-    where: {
-      daohandlerid: { equals: proposal?.daohandlerid },
-      voter: { id: { in: user?.voters.map((v) => v.id) } },
-    },
-  });
+  const proxies =
+    proxy == "any"
+      ? await db
+          .select()
+          .from(userTovoter)
+          .leftJoin(user, eq(userTovoter.a, user.id))
+          .leftJoin(voter, eq(userTovoter.b, voter.id))
+          .where(eq(user.id, u.id))
+      : [];
+
+  const votersAddresses = proxies.map((p) => (p.voter ? p.voter?.address : ""));
+  const votersIds = proxies.map((p) => (p.voter ? p.voter?.address : ""));
+
+  const voterHandlers = await db
+    .select()
+    .from(voterhandler)
+    .where(
+      and(
+        eq(voterhandler.daohandlerid, p.daohandlerid),
+        inArray(voterhandler.voterid, votersIds),
+      ),
+    );
 
   if (voterHandlers.some((vh) => !vh.uptodate)) return VoteResult.LOADING;
 
-  if (proposal.votes.map((vote: Vote) => vote.choice).length > 0)
-    return VoteResult.VOTED;
+  const votes = await db
+    .select()
+    .from(vote)
+    .where(
+      and(
+        eq(vote.proposalid, proposalId),
+        inArray(vote.voteraddress, proxy == "any" ? votersAddresses : [proxy]),
+      ),
+    );
+
+  if (votes.map((vote) => vote.choice).length > 0) return VoteResult.VOTED;
 
   return VoteResult.NOT_VOTED;
 }
