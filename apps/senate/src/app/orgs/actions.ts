@@ -96,7 +96,9 @@ const getSubscribedDAOs = async () => {
       const proposalsCount = await db
         .select({ count: sql<number>`count(*)` })
         .from(proposal)
-        .where(eq(proposal.daoid, item ? item.dao.id : ""));
+        .where(
+          and(eq(proposal.daoid, cur.dao.id), eq(proposal.state, "ACTIVE")),
+        );
 
       if (cur.daohandler)
         if (item) {
@@ -153,11 +155,6 @@ const getUnsubscribedDAOs = async () => {
           return "#5A5A5A";
         });
 
-      const proposalsCount = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(proposal)
-        .where(eq(proposal.daoid, item ? item.dao.id : ""));
-
       if (cur.daohandler)
         if (item) {
           item.daohandlers?.push(cur.daohandler);
@@ -168,7 +165,7 @@ const getUnsubscribedDAOs = async () => {
               backgroundColor,
             },
             daohandlers: [cur.daohandler],
-            proposals: proposalsCount[0],
+            proposals: { count: 0 },
           });
         }
     }
