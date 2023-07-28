@@ -29,7 +29,7 @@
     "@planetscale/database": "^1.10.0",
     "@prisma/client": "5.0.0",
     "drizzle-orm": "^0.27.2",
-    "ethers": "^6.6.5",
+    "ethers": "^6.6.6",
     "mysql2": "^3.5.2",
     "type-fest": "^4.0.0"
   },
