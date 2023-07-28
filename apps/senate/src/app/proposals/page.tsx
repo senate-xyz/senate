@@ -21,44 +21,6 @@ enum VoteResult {
   NOT_VOTED = "NOT_VOTED",
 }
 
-export async function getSubscribedDAOs() {
-  "use server";
-
-  const session = await getServerSession(authOptions());
-  if (!session || !session.user || !session.user.name) {
-    const daosList = await prisma.dao.findMany({
-      orderBy: {
-        name: "asc",
-      },
-    });
-    return daosList;
-  }
-  const userAddress = session.user.name;
-
-  const user = await prisma.user.findFirstOrThrow({
-    where: {
-      address: { equals: userAddress },
-    },
-    select: {
-      id: true,
-    },
-  });
-
-  const daosList = await prisma.dao.findMany({
-    where: {
-      subscriptions: {
-        some: {
-          user: { is: user },
-        },
-      },
-    },
-    orderBy: {
-      name: "asc",
-    },
-  });
-  return daosList;
-}
-
 export async function getProxies() {
   "use server";
 

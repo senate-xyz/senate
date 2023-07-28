@@ -16,16 +16,6 @@ import { authOptions } from "../../pages/api/auth/[...nextauth]";
 import { isNull } from "@senate/database";
 import { and } from "@senate/database";
 
-export type Unsubscribed = {
-  unsubscriptions: Array<{
-    id: string;
-    name: string;
-    picture: string;
-    handlers: Array<{ type: string }>;
-  }>;
-  backgroundColors: Array<{ color: string }>;
-};
-
 export interface MergedDao {
   dao: {
     id: string;
@@ -203,7 +193,6 @@ const getUnsubscribedDAOs = async () => {
       and(eq(dao.id, subscription.daoid), eq(subscription.userid, u.id)),
     )
     .leftJoin(daohandler, eq(daohandler.daoid, dao.id))
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call
     .where(isNull(subscription.id));
 
   const reducedDaosListQueryResult = await reduceAsync(daosListQueryResult);
