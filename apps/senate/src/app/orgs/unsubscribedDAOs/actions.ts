@@ -1,10 +1,11 @@
 "use server";
 
-import { prisma } from "@senate/database";
+import { db, eq, user, dao, subscription } from "@senate/database";
 import { getServerSession } from "next-auth";
 import { PostHog } from "posthog-node";
 import { authOptions } from "../../../pages/api/auth/[...nextauth]";
 import { revalidateTag } from "next/cache";
+import cuid from "cuid";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
@@ -16,39 +17,18 @@ export async function subscribe(daoId: string) {
   const session = await getServerSession(authOptions());
   const userAddress = session?.user?.name ?? "";
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: {
-      address: {
-        equals: userAddress,
-      },
-    },
-  });
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
+  const [d] = await db.select().from(dao).where(eq(dao.id, daoId));
 
-  const result = await prisma.subscription.upsert({
-    where: {
-      userid_daoid: {
-        userid: user.id,
-        daoid: daoId,
-      },
-    },
-    update: {
-      userid: user.id,
-      daoid: daoId,
-    },
-    create: {
-      userid: user.id,
-      daoid: daoId,
-    },
-    select: {
-      dao: { select: { name: true } },
-    },
-  });
+  await db
+    .insert(subscription)
+    .values({ id: cuid(), daoid: d.id, userid: u.id });
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: u.address ?? "unknown",
     event: "subscribe",
     properties: {
-      dao: result.dao.name,
+      dao: d.name,
       props: {
         app: "web-backend",
       },

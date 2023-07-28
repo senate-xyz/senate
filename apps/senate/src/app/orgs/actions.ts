@@ -1,20 +1,20 @@
 "use server";
 
-import { prisma } from "@senate/database";
+import {
+  db,
+  sql,
+  eq,
+  dao,
+  user,
+  subscription,
+  proposal,
+  daohandler,
+} from "@senate/database";
 import { getAverageColor } from "fast-average-color-node";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
-
-export type Subscribed = {
-  subscriptions: Array<{
-    id: string;
-    name: string;
-    picture: string;
-    handlers: Array<{ type: string }>;
-    proposals: unknown[];
-  }>;
-  backgroundColors: Array<{ color: string }>;
-};
+import { isNull } from "@senate/database";
+import { and } from "@senate/database";
 
 export type Unsubscribed = {
   unsubscriptions: Array<{
@@ -26,6 +26,26 @@ export type Unsubscribed = {
   backgroundColors: Array<{ color: string }>;
 };
 
+export interface MergedDao {
+  dao: {
+    id: string;
+    name: string;
+    picture: string;
+    quorumwarningemailsupport: number;
+    backgroundColor: string;
+  };
+  daohandlers: Array<{
+    id: string;
+    type: string;
+    decoder: unknown;
+    chainindex: number;
+    snapshotindex: string;
+    uptodate: number;
+    daoid: string;
+  }>;
+  proposals: { count: number };
+}
+
 export const getSubscriptions = async () => {
   "use server";
 
@@ -35,174 +55,153 @@ export const getSubscriptions = async () => {
   return { subscribed, unsubscribed };
 };
 
-const getSubscribedDAOs = async (): Promise<Subscribed> => {
+const getSubscribedDAOs = async () => {
   "use server";
 
   const session = await getServerSession(authOptions());
 
-  if (!session || !session.user || !session.user.name)
-    return { subscriptions: [], backgroundColors: [] };
+  if (!session || !session.user || !session.user.name) return [];
 
   const userAddress = session.user.name;
 
-  const user = await prisma.user
-    .findFirstOrThrow({
-      where: {
-        address: { equals: userAddress },
-      },
-      select: {
-        id: true,
-      },
-    })
-    .catch(() => {
-      return { id: "0" };
-    });
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
-  const daosList = (
-    await prisma.dao.findMany({
-      where: {
-        subscriptions: {
-          some: {
-            userid: user.id,
-          },
-        },
-      },
-      orderBy: {
-        id: "asc",
-      },
-      include: {
-        handlers: { select: { type: true } },
-        proposals: {
-          where: { timeend: { gt: new Date() } },
-          select: { _count: true },
-        },
-      },
-    })
-  ).sort((a, b) => a.name.localeCompare(b.name));
+  const daosListQueryResult = await db
+    .select()
+    .from(dao)
+    .innerJoin(subscription, eq(dao.id, subscription.daoid))
+    .leftJoin(daohandler, eq(daohandler.daoid, dao.id))
+    .where(eq(subscription.userid, u.id));
 
-  const backgroundColors = await Promise.all(
-    daosList.map(async (sub) => {
-      const color = await getAverageColor(
-        `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${sub.picture}.svg`,
+  const reduceAsync = async (
+    qr: typeof daosListQueryResult,
+  ): Promise<MergedDao[]> => {
+    const acc: MergedDao[] = [];
+
+    for (const cur of qr) {
+      const item = acc.find((item) => item.dao?.id === cur.dao.id);
+
+      const backgroundColor = await getAverageColor(
+        `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${cur.dao.picture}.svg`,
         {
           mode: "precision",
           algorithm: "sqrt",
         },
       )
-        .then((color) => color)
+        .then((r) => r.hex)
         .catch(() => {
-          return { hex: "#5A5A5A" };
+          return "#5A5A5A";
         });
-      return {
-        color: `${color.hex}`,
-      };
-    }),
+
+      const proposalsCount = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(proposal)
+        .where(eq(proposal.daoid, item ? item.dao.id : ""));
+
+      if (cur.daohandler)
+        if (item) {
+          item.daohandlers?.push(cur.daohandler);
+        } else {
+          acc.push({
+            dao: {
+              ...cur.dao,
+              backgroundColor,
+            },
+            daohandlers: [cur.daohandler],
+            proposals: proposalsCount[0],
+          });
+        }
+    }
+
+    return acc;
+  };
+
+  const reducedDaosListQueryResult = await reduceAsync(daosListQueryResult);
+
+  const daosList: MergedDao[] = Object.values(reducedDaosListQueryResult);
+
+  daosList.sort(
+    (a: MergedDao, b: MergedDao) =>
+      a.dao?.name.localeCompare(b.dao?.name || ""),
   );
 
-  return {
-    subscriptions: daosList,
-    backgroundColors: backgroundColors,
-  };
+  return daosList;
 };
 
-const getUnsubscribedDAOs = async (): Promise<Unsubscribed> => {
+const getUnsubscribedDAOs = async () => {
   "use server";
 
   const session = await getServerSession(authOptions());
 
-  if (!session || !session.user || !session.user.name) {
-    const daosList = (
-      await prisma.dao.findMany({
-        orderBy: {
-          id: "asc",
-        },
-        include: {
-          handlers: { select: { type: true } },
-        },
-      })
-    ).sort((a, b) => a.name.localeCompare(b.name));
-
-    const backgroundColors = await Promise.all(
-      daosList.map(async (dao) => {
-        const color = await getAverageColor(
-          `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${dao.picture}.svg`,
-          {
-            mode: "precision",
-            algorithm: "sqrt",
-          },
-        )
-          .then((color) => color)
-          .catch(() => {
-            return { hex: "#5A5A5A" };
-          });
-        return {
-          daoId: dao.id,
-          color: `${color.hex}`,
-        };
-      }),
-    );
-
-    return {
-      unsubscriptions: daosList,
-      backgroundColors: backgroundColors,
-    };
-  }
+  if (!session || !session.user || !session.user.name) return [];
 
   const userAddress = session.user.name;
 
-  const user = await prisma.user
-    .findFirstOrThrow({
-      where: {
-        address: { equals: userAddress },
-      },
-      select: {
-        id: true,
-      },
-    })
-    .catch(() => {
-      return { id: "0" };
-    });
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
-  const daosList = (
-    await prisma.dao.findMany({
-      where: {
-        subscriptions: {
-          none: {
-            user: { is: user },
-          },
-        },
-      },
-      orderBy: {
-        id: "asc",
-      },
-      include: {
-        handlers: { select: { type: true } },
-      },
-    })
-  ).sort((a, b) => a.name.localeCompare(b.name));
+  const daosListQueryResult = await db
+    .select()
+    .from(dao)
+    .leftJoin(
+      subscription,
+      and(eq(dao.id, subscription.daoid), eq(subscription.userid, u.id)),
+    )
+    .leftJoin(daohandler, eq(daohandler.daoid, dao.id))
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call
+    .where(isNull(subscription.id));
 
-  const backgroundColors = await Promise.all(
-    daosList.map(async (dao) => {
-      const color = await getAverageColor(
-        `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${dao.picture}.svg`,
+  const reduceAsync = async (
+    qr: typeof daosListQueryResult,
+  ): Promise<MergedDao[]> => {
+    const acc: MergedDao[] = [];
+
+    for (const cur of qr) {
+      const item = acc.find((item) => item.dao?.id === cur.dao.id);
+
+      const backgroundColor = await getAverageColor(
+        `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${cur.dao.picture}.svg`,
         {
           mode: "precision",
           algorithm: "sqrt",
         },
       )
-        .then((color) => color)
+        .then((r) => r.hex)
         .catch(() => {
-          return { hex: "#5A5A5A" };
+          return "#5A5A5A";
         });
-      return {
-        daoId: dao.id,
-        color: `${color.hex}`,
-      };
-    }),
+
+      const proposalsCount = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(proposal)
+        .where(eq(proposal.daoid, item ? item.dao.id : ""));
+
+      if (cur.daohandler)
+        if (item) {
+          item.daohandlers?.push(cur.daohandler);
+        } else {
+          acc.push({
+            dao: {
+              ...cur.dao,
+              backgroundColor,
+            },
+            daohandlers: [cur.daohandler],
+            proposals: proposalsCount[0],
+          });
+        }
+    }
+
+    return acc;
+  };
+
+  const reducedDaosListQueryResult = await reduceAsync(daosListQueryResult);
+
+  const daosList: MergedDao[] = Object.values(reducedDaosListQueryResult);
+
+  // Sort the array by the name of the dao
+  daosList.sort(
+    (a: MergedDao, b: MergedDao) =>
+      a.dao?.name.localeCompare(b.dao?.name || ""),
   );
 
-  return {
-    unsubscriptions: daosList,
-    backgroundColors: backgroundColors,
-  };
+  return daosList;
 };

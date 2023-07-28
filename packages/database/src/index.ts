@@ -68,7 +68,7 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
 import { drizzle } from "drizzle-orm/planetscale-serverless";
 import { connect } from "@planetscale/database";
-import * as schema from "./db/migrations/schema";
+import * as schema from "./db/schema";
 
 const connection = connect({
   url: process.env.DATABASE_URL,
@@ -76,7 +76,7 @@ const connection = connect({
 
 export const db = drizzle(connection, { schema: { ...schema } });
 
-export { like } from "drizzle-orm";
+export { like, eq, and, not, sql, isNull } from "drizzle-orm";
 export const {
   dao,
   daohandler,

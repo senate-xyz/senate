@@ -45,8 +45,6 @@ model user {
   firstactive            DateTime  @default(now())
   lastactive             DateTime  @default(now())
   sessioncount           Int       @default(0)
-  createdat              DateTime  @default(now())
-  updatedat              DateTime  @updatedAt
 
   @@index(fields: [email])
   @@index(fields: [address])
@@ -60,9 +58,6 @@ model voter {
   votes         vote[]
   voterhandlers voterhandler[]
   users         user[]
-
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
 
   @@index(fields: [address])
 }
@@ -79,9 +74,6 @@ model dao {
   votes         vote[]
 
   quorumwarningemailsupport Boolean @default(false)
-
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
 
   @@index(fields: [name])
 }
@@ -102,9 +94,6 @@ model daohandler {
   proposals     proposal[]
   voterhandlers voterhandler[]
   votes         vote[]
-
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
 
   @@unique([daoid, type])
   @@index(fields: [daoid])
@@ -136,8 +125,6 @@ model proposal {
   dao          dao        @relation(fields: [daoid], references: [id], onUpdate: NoAction, onDelete: Cascade)
   votes        vote[]
 
-  createdat    DateTime       @default(now())
-  updatedat    DateTime       @updatedAt
   notification notification[]
 
   @@unique([externalid, daoid])
@@ -164,9 +151,6 @@ model vote {
   blockcreated BigInt?   @default(0)
   timecreated  DateTime?
 
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
-
   @@unique([voteraddress, daoid, proposalid])
   @@index(fields: [proposalid])
   @@index(fields: [daoid])
@@ -186,9 +170,6 @@ model voterhandler {
   voterid      String
   voter        voter      @relation(fields: [voterid], references: [id], onUpdate: NoAction, onDelete: Cascade)
 
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
-
   @@unique([voterid, daohandlerid])
   @@index(fields: [daohandlerid])
   @@index(fields: [voterid])
@@ -201,9 +182,6 @@ model subscription {
   user   user   @relation(fields: [userid], references: [id], onUpdate: NoAction, onDelete: Cascade)
   daoid  String
   dao    dao    @relation(fields: [daoid], references: [id], onUpdate: NoAction, onDelete: Cascade)
-
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
 
   @@unique([userid, daoid])
   @@index(fields: [daoid])
@@ -229,9 +207,6 @@ model notification {
 
   telegramchatid    String?
   telegrammessageid String?
-
-  createdat DateTime @default(now())
-  updatedat DateTime @default(now()) @updatedAt
 
   @@unique([userid, proposalid, type])
   @@index(fields: [userid])
