@@ -86,4 +86,5 @@ export const {
   vote,
   voter,
   voterhandler,
+  userTovoter,
 } = schema;

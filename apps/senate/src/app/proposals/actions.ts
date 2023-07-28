@@ -1,6 +1,7 @@
-import { db, user, eq, dao, subscription } from "@senate/database";
+import { db, user, eq, dao, subscription, voter } from "@senate/database";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
+import { userTovoter } from "@senate/database";
 
 export interface MergedDao {
   dao: {
@@ -65,3 +66,22 @@ export const getSubscribedDAOs = async () => {
 
   return daosList;
 };
+
+export async function getProxies() {
+  "use server";
+
+  const session = await getServerSession(authOptions());
+  if (!session || !session.user || !session.user.name) return [];
+  const userAddress = session.user.name;
+
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
+
+  const proxies = await db
+    .select()
+    .from(userTovoter)
+    .leftJoin(user, eq(userTovoter.a, user.id))
+    .leftJoin(voter, eq(userTovoter.b, voter.id))
+    .where(eq(user.id, u.id));
+
+  return proxies.map((p) => (p.voter ? p.voter?.address : ""));
+}

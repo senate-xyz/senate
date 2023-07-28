@@ -21,27 +21,6 @@ enum VoteResult {
   NOT_VOTED = "NOT_VOTED",
 }
 
-export async function getProxies() {
-  "use server";
-
-  const session = await getServerSession(authOptions());
-  if (!session || !session.user || !session.user.name) return [];
-  const userAddress = session.user.name;
-
-  const user = await prisma.user.findFirstOrThrow({
-    where: {
-      address: { equals: userAddress },
-    },
-    include: {
-      voters: true,
-    },
-  });
-
-  const proxies = user.voters.map((voter) => voter.address);
-
-  return proxies;
-}
-
 export async function fetchVote(proposalId: string, proxy: string) {
   "use server";
 

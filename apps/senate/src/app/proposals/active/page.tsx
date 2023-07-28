@@ -1,7 +1,7 @@
 import { Filters } from "./components/Filters";
 import Items from "./components/Items";
-import { fetchItems, fetchVote, getProxies } from "../page";
-import { getSubscribedDAOs } from "../actions";
+import { fetchItems, fetchVote } from "../page";
+import { getProxies, getSubscribedDAOs } from "../actions";
 
 export default async function Home({
   searchParams,
