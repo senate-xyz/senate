@@ -133,23 +133,6 @@ const getUnsubscribedDAOs = async () => {
 
   const session = await getServerSession(authOptions());
 
-  if (!session || !session.user || !session.user.name) return [];
-
-  const userAddress = session.user.name;
-
-  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
-
-  const daosListQueryResult = await db
-    .select()
-    .from(dao)
-    .leftJoin(
-      subscription,
-      and(eq(dao.id, subscription.daoid), eq(subscription.userid, u.id)),
-    )
-    .leftJoin(daohandler, eq(daohandler.daoid, dao.id))
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call
-    .where(isNull(subscription.id));
-
   const reduceAsync = async (
     qr: typeof daosListQueryResult,
   ): Promise<MergedDao[]> => {
@@ -193,11 +176,43 @@ const getUnsubscribedDAOs = async () => {
     return acc;
   };
 
+  if (!session || !session.user || !session.user.name) {
+    const daosListQueryResult = await db
+      .select({ dao, daohandler })
+      .from(dao)
+      .leftJoin(daohandler, eq(daohandler.daoid, dao.id));
+
+    const reducedDaosListQueryResult = await reduceAsync(daosListQueryResult);
+
+    const daosList: MergedDao[] = Object.values(reducedDaosListQueryResult);
+
+    daosList.sort(
+      (a: MergedDao, b: MergedDao) =>
+        a.dao?.name.localeCompare(b.dao?.name || ""),
+    );
+
+    return daosList;
+  }
+
+  const userAddress = session.user.name;
+
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
+
+  const daosListQueryResult = await db
+    .select({ dao, daohandler })
+    .from(dao)
+    .leftJoin(
+      subscription,
+      and(eq(dao.id, subscription.daoid), eq(subscription.userid, u.id)),
+    )
+    .leftJoin(daohandler, eq(daohandler.daoid, dao.id))
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call
+    .where(isNull(subscription.id));
+
   const reducedDaosListQueryResult = await reduceAsync(daosListQueryResult);
 
   const daosList: MergedDao[] = Object.values(reducedDaosListQueryResult);
 
-  // Sort the array by the name of the dao
   daosList.sort(
     (a: MergedDao, b: MergedDao) =>
       a.dao?.name.localeCompare(b.dao?.name || ""),
