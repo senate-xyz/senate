@@ -83,9 +83,12 @@ export {
   not,
   sql,
   isNull,
+  isNotNull,
   inArray,
   asc,
   desc,
+  exists,
+  notExists,
 } from "drizzle-orm";
 export const {
   dao,

@@ -12,6 +12,7 @@ import {
   asc,
   daohandler,
   desc,
+  isNull,
 } from "@senate/database";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
@@ -152,7 +153,7 @@ export async function fetchItems(
     .leftJoin(user, eq(user.id, subscription.userid))
     .where(eq(user.address, userAddress));
 
-  const unfiltededProposals = await db
+  const p = await db
     .select()
     .from(proposal)
     .leftJoin(
@@ -166,6 +167,8 @@ export async function fetchItems(
     .leftJoin(daohandler, eq(proposal.daohandlerid, daohandler.id))
     .where(
       and(
+        voted == "no" ? isNull(vote.id) : undefined,
+        voted == "yes" ? eq(vote.proposalid, proposal.id) : undefined,
         canSeeDeleted ? undefined : eq(proposal.visible, 1),
         from == "any"
           ? userAddress
@@ -194,19 +197,6 @@ export async function fetchItems(
     .orderBy(active ? asc(proposal.timeend) : desc(proposal.timeend))
     .limit(20)
     .offset(page);
-
-  let p: typeof unfiltededProposals = [];
-  switch (voted) {
-    case "yes":
-      p = unfiltededProposals.filter((p) => p.vote);
-      break;
-    case "no":
-      p = unfiltededProposals.filter((p) => !p.vote);
-      break;
-    case "any":
-      p = unfiltededProposals;
-      break;
-  }
 
   return p;
 }
