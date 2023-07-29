@@ -1,11 +1,6 @@
 import { Filters } from "./components/Filters";
 import Items from "./components/Items";
-import {
-  fetchItems,
-  fetchVote,
-  getProxies,
-  getSubscribedDAOs,
-} from "../actions";
+import { fetchItems, getProxies, getSubscribedDAOs } from "../actions";
 
 export default async function Home({
   searchParams,
@@ -24,11 +19,7 @@ export default async function Home({
       <Filters subscriptions={subscripions} proxies={proxies} />
 
       {searchParams.from && searchParams.proxy && searchParams.voted && (
-        <Items
-          fetchItems={fetchItems}
-          fetchVote={fetchVote}
-          searchParams={searchParams}
-        />
+        <Items fetchItems={fetchItems} searchParams={searchParams} />
       )}
     </div>
   );

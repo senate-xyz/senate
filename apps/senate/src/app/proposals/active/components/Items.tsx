@@ -15,13 +15,12 @@ type ItemsProps = {
     voted: string,
     proxy: string,
   ) => Promise<fetchItemsType>;
-  fetchVote: (proposalId: string, proxy: string) => Promise<string>;
   searchParams?: { from: string; voted: string; proxy: string };
 };
 
 export default function Items({
   fetchItems,
-  fetchVote,
+
   searchParams,
 }: ItemsProps) {
   const [loading, setLoading] = useState(false);
@@ -40,8 +39,8 @@ export default function Items({
         searchParams?.proxy ?? "any",
       );
 
-      const itemIds = new Set(items?.map((item) => item.proposal?.id));
-      const newItems = data.filter((d) => !itemIds.has(d.proposal?.id));
+      const itemIds = new Set(items.map((item) => item.proposal.id));
+      const newItems = data.filter((d) => !itemIds.has(d.proposal.id));
 
       if (newItems.length) setItems([...items, ...newItems]);
 
@@ -103,11 +102,7 @@ export default function Items({
           >
             {items.map((item, index) => (
               <li className="pb-1" key={index}>
-                <Item
-                  item={item}
-                  proxy={searchParams?.proxy ?? "any"}
-                  fetchVote={fetchVote}
-                />
+                <Item item={item} proxy={searchParams?.proxy ?? "any"} />
               </li>
             ))}
           </InfiniteScroll>

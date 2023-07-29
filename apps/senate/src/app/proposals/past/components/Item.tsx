@@ -13,7 +13,6 @@ extend(relativeTime);
 export default function Item(props: {
   item: fetchItemsType[0];
   proxy: string;
-  fetchVote: (proposalId: string, proxy: string) => Promise<string>;
 }) {
   const [highestScore, setHighestScore] = useState(0.0);
   const [highestScoreChoice, setHighestScoreChoice] = useState("");
@@ -53,7 +52,7 @@ export default function Item(props: {
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.fetchVote, props.item, props.proxy]);
+  }, [props.item, props.proxy]);
 
   return (
     <div>

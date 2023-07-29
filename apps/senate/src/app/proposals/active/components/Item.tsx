@@ -12,7 +12,6 @@ extend(relativeTime);
 export default function Item(props: {
   item: fetchItemsType[0];
   proxy: string;
-  fetchVote: (proposalId: string, proxy: string) => Promise<string>;
 }) {
   const { isConnected } = useAccount();
 
