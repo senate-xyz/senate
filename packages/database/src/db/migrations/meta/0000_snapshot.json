@@ -26,9 +26,7 @@
       "indexes": {
         "_userTovoter_B_index": {
           "name": "_userTovoter_B_index",
-          "columns": [
-            "B"
-          ],
+          "columns": ["B"],
           "isUnique": false
         }
       },
@@ -36,10 +34,7 @@
       "uniqueConstraints": {
         "_userTovoter_AB_unique": {
           "name": "_userTovoter_AB_unique",
-          "columns": [
-            "A",
-            "B"
-          ]
+          "columns": ["A", "B"]
         }
       }
     },
@@ -64,17 +59,13 @@
       "compositePrimaryKeys": {
         "config_key": {
           "name": "config_key",
-          "columns": [
-            "key"
-          ]
+          "columns": ["key"]
         }
       },
       "indexes": {
         "config_key_idx": {
           "name": "config_key_idx",
-          "columns": [
-            "key"
-          ],
+          "columns": ["key"],
           "isUnique": false
         }
       },
@@ -132,17 +123,13 @@
       "compositePrimaryKeys": {
         "dao_id": {
           "name": "dao_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "indexes": {
         "dao_name_idx": {
           "name": "dao_name_idx",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": false
         }
       },
@@ -150,9 +137,7 @@
       "uniqueConstraints": {
         "dao_name_key": {
           "name": "dao_name_key",
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       }
     },
@@ -230,17 +215,13 @@
       "compositePrimaryKeys": {
         "daohandler_id": {
           "name": "daohandler_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "indexes": {
         "daohandler_daoid_idx": {
           "name": "daohandler_daoid_idx",
-          "columns": [
-            "daoid"
-          ],
+          "columns": ["daoid"],
           "isUnique": false
         }
       },
@@ -248,10 +229,7 @@
       "uniqueConstraints": {
         "daohandler_daoid_type_key": {
           "name": "daohandler_daoid_type_key",
-          "columns": [
-            "daoid",
-            "type"
-          ]
+          "columns": ["daoid", "type"]
         }
       }
     },
@@ -356,38 +334,28 @@
       "compositePrimaryKeys": {
         "notification_id": {
           "name": "notification_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "indexes": {
         "notification_userid_idx": {
           "name": "notification_userid_idx",
-          "columns": [
-            "userid"
-          ],
+          "columns": ["userid"],
           "isUnique": false
         },
         "notification_type_idx": {
           "name": "notification_type_idx",
-          "columns": [
-            "type"
-          ],
+          "columns": ["type"],
           "isUnique": false
         },
         "notification_proposalid_idx": {
           "name": "notification_proposalid_idx",
-          "columns": [
-            "proposalid"
-          ],
+          "columns": ["proposalid"],
           "isUnique": false
         },
         "notification_dispatchstatus_idx": {
           "name": "notification_dispatchstatus_idx",
-          "columns": [
-            "dispatchstatus"
-          ],
+          "columns": ["dispatchstatus"],
           "isUnique": false
         }
       },
@@ -395,11 +363,7 @@
       "uniqueConstraints": {
         "notification_userid_proposalid_type_key": {
           "name": "notification_userid_proposalid_type_key",
-          "columns": [
-            "userid",
-            "proposalid",
-            "type"
-          ]
+          "columns": ["userid", "proposalid", "type"]
         }
       }
     },
@@ -539,24 +503,18 @@
       "compositePrimaryKeys": {
         "proposal_id": {
           "name": "proposal_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "indexes": {
         "proposal_daoid_idx": {
           "name": "proposal_daoid_idx",
-          "columns": [
-            "daoid"
-          ],
+          "columns": ["daoid"],
           "isUnique": false
         },
         "proposal_daohandlerid_idx": {
           "name": "proposal_daohandlerid_idx",
-          "columns": [
-            "daohandlerid"
-          ],
+          "columns": ["daohandlerid"],
           "isUnique": false
         }
       },
@@ -564,10 +522,7 @@
       "uniqueConstraints": {
         "proposal_externalid_daoid_key": {
           "name": "proposal_externalid_daoid_key",
-          "columns": [
-            "externalid",
-            "daoid"
-          ]
+          "columns": ["externalid", "daoid"]
         }
       }
     },
@@ -614,24 +569,18 @@
       "compositePrimaryKeys": {
         "subscription_id": {
           "name": "subscription_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "indexes": {
         "subscription_daoid_idx": {
           "name": "subscription_daoid_idx",
-          "columns": [
-            "daoid"
-          ],
+          "columns": ["daoid"],
           "isUnique": false
         },
         "subscription_userid_idx": {
           "name": "subscription_userid_idx",
-          "columns": [
-            "userid"
-          ],
+          "columns": ["userid"],
           "isUnique": false
         }
       },
@@ -639,10 +588,7 @@
       "uniqueConstraints": {
         "subscription_userid_daoid_key": {
           "name": "subscription_userid_daoid_key",
-          "columns": [
-            "userid",
-            "daoid"
-          ]
+          "columns": ["userid", "daoid"]
         }
       }
     },
@@ -855,24 +801,18 @@
       "compositePrimaryKeys": {
         "user_id": {
           "name": "user_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "indexes": {
         "user_email_idx": {
           "name": "user_email_idx",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": false
         },
         "user_address_idx": {
           "name": "user_address_idx",
-          "columns": [
-            "address"
-          ],
+          "columns": ["address"],
           "isUnique": false
         }
       },
@@ -880,15 +820,11 @@
       "uniqueConstraints": {
         "user_address_key": {
           "name": "user_address_key",
-          "columns": [
-            "address"
-          ]
+          "columns": ["address"]
         },
         "user_email_key": {
           "name": "user_email_key",
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       }
     },
@@ -985,38 +921,28 @@
       "compositePrimaryKeys": {
         "vote_id": {
           "name": "vote_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "indexes": {
         "vote_proposalid_idx": {
           "name": "vote_proposalid_idx",
-          "columns": [
-            "proposalid"
-          ],
+          "columns": ["proposalid"],
           "isUnique": false
         },
         "vote_daoid_idx": {
           "name": "vote_daoid_idx",
-          "columns": [
-            "daoid"
-          ],
+          "columns": ["daoid"],
           "isUnique": false
         },
         "vote_voteraddress_idx": {
           "name": "vote_voteraddress_idx",
-          "columns": [
-            "voteraddress"
-          ],
+          "columns": ["voteraddress"],
           "isUnique": false
         },
         "vote_daohandlerid_idx": {
           "name": "vote_daohandlerid_idx",
-          "columns": [
-            "daohandlerid"
-          ],
+          "columns": ["daohandlerid"],
           "isUnique": false
         }
       },
@@ -1024,11 +950,7 @@
       "uniqueConstraints": {
         "vote_voteraddress_daoid_proposalid_key": {
           "name": "vote_voteraddress_daoid_proposalid_key",
-          "columns": [
-            "voteraddress",
-            "daoid",
-            "proposalid"
-          ]
+          "columns": ["voteraddress", "daoid", "proposalid"]
         }
       }
     },
@@ -1068,17 +990,13 @@
       "compositePrimaryKeys": {
         "voter_id": {
           "name": "voter_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "indexes": {
         "voter_address_idx": {
           "name": "voter_address_idx",
-          "columns": [
-            "address"
-          ],
+          "columns": ["address"],
           "isUnique": false
         }
       },
@@ -1086,9 +1004,7 @@
       "uniqueConstraints": {
         "voter_address_key": {
           "name": "voter_address_key",
-          "columns": [
-            "address"
-          ]
+          "columns": ["address"]
         }
       }
     },
@@ -1159,24 +1075,18 @@
       "compositePrimaryKeys": {
         "voterhandler_id": {
           "name": "voterhandler_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "indexes": {
         "voterhandler_daohandlerid_idx": {
           "name": "voterhandler_daohandlerid_idx",
-          "columns": [
-            "daohandlerid"
-          ],
+          "columns": ["daohandlerid"],
           "isUnique": false
         },
         "voterhandler_voterid_idx": {
           "name": "voterhandler_voterid_idx",
-          "columns": [
-            "voterid"
-          ],
+          "columns": ["voterid"],
           "isUnique": false
         }
       },
@@ -1184,10 +1094,7 @@
       "uniqueConstraints": {
         "voterhandler_voterid_daohandlerid_key": {
           "name": "voterhandler_voterid_daohandlerid_key",
-          "columns": [
-            "voterid",
-            "daohandlerid"
-          ]
+          "columns": ["voterid", "daohandlerid"]
         }
       }
     }

@@ -167,7 +167,7 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
                 Some((_, id_with_quotes)) => {
                     let id = id_with_quotes.trim_matches('"');
 
-                    if id.len() == 0 {
+                    if id.is_empty() {
                         bot.send_message(msg.chat.id, "You can't start the bot directly. Please sign up to Senate Telegram Notifications using https://senatelabs.xyz/settings/notifications.")
             .await?;
                     } else {
