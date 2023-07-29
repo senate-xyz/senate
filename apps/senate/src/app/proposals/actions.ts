@@ -10,6 +10,9 @@ import {
   proposal,
   vote,
   voterhandler,
+  asc,
+  daohandler,
+  desc,
 } from "@senate/database";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
@@ -98,7 +101,7 @@ export async function getProxies() {
   return proxies.map((p) => (p.voter ? p.voter?.address : ""));
 }
 
-enum VoteResult {
+export enum VoteResult {
   NOT_CONNECTED = "NOT_CONNECTED",
   LOADING = "LOADING",
   VOTED = "VOTED",
@@ -163,3 +166,77 @@ export async function fetchVote(proposalId: string, proxy: string) {
 
   return VoteResult.NOT_VOTED;
 }
+
+export async function fetchItems(
+  active: boolean,
+  page: number,
+  from: string,
+  _voted: string,
+  _proxy: string,
+) {
+  "use server";
+
+  const session = await getServerSession(authOptions());
+  const userAddress = session?.user?.name ?? "";
+
+  // const canSeeDeleted =
+  //   (await posthog.isFeatureEnabled(
+  //     "can-see-deleted-proposals",
+  //     userAddress,
+  //   )) ?? false;
+
+  const subscribedDaos = await db
+    .select()
+    .from(subscription)
+    .leftJoin(dao, eq(subscription.daoid, dao.id))
+    .leftJoin(user, eq(user.id, subscription.userid))
+    .where(eq(user.address, userAddress));
+
+  const p = await db
+    .select()
+    .from(proposal)
+    .leftJoin(dao, eq(proposal.daoid, dao.id))
+    .leftJoin(daohandler, eq(proposal.daohandlerid, daohandler.id))
+    .where(
+      and(
+        from == "any"
+          ? userAddress
+            ? inArray(
+                dao.name,
+                subscribedDaos.map((s) => s.dao!.name),
+              )
+            : undefined
+          : eq(dao.name, from),
+        inArray(
+          proposal.state,
+          active
+            ? ["ACTIVE", "PENDING"]
+            : [
+                "QUEUED",
+                "DEFEATED",
+                "EXECUTED",
+                "EXPIRED",
+                "SUCCEEDED",
+                "HIDDEN",
+                "UNKNOWN",
+              ],
+        ),
+      ),
+    )
+    .orderBy(active ? asc(proposal.timeend) : desc(proposal.timeend))
+    .limit(20)
+    .offset(page);
+
+  return p;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extends (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ...args: any
+) => Promise<infer R>
+  ? R
+  : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    any;
+
+export type fetchItemsType = AsyncReturnType<typeof fetchItems>;

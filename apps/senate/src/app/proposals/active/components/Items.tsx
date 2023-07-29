@@ -1,31 +1,11 @@
 "use client";
 
-import { type ProposalState } from "@senate/database";
 import { Suspense, useEffect, useState } from "react";
 import Image from "next/image";
 import InfiniteScroll from "react-infinite-scroller";
 import Item from "./Item";
 import { LoadingItems } from "../../components/LoadingItems";
-
-export enum VoteResult {
-  NOT_CONNECTED = "NOT_CONNECTED",
-  LOADING = "LOADING",
-  VOTED = "VOTED",
-  NOT_VOTED = "NOT_VOTED",
-}
-
-export type Item = {
-  proposalId: string;
-  daoName: string;
-  daoHandlerId: string;
-  onchain: boolean;
-  daoPicture: string;
-  proposalTitle: string;
-  state: ProposalState;
-  proposalLink: string;
-  timeEnd: Date;
-  voteResult: VoteResult;
-};
+import { type fetchItemsType } from "../../actions";
 
 type ItemsProps = {
   fetchItems: (
@@ -34,7 +14,7 @@ type ItemsProps = {
     from: string,
     voted: string,
     proxy: string,
-  ) => Promise<Item[]>;
+  ) => Promise<fetchItemsType>;
   fetchVote: (proposalId: string, proxy: string) => Promise<string>;
   searchParams?: { from: string; voted: string; proxy: string };
 };
@@ -45,7 +25,7 @@ export default function Items({
   searchParams,
 }: ItemsProps) {
   const [loading, setLoading] = useState(false);
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<fetchItemsType>([]);
   const [hasMore, setHasMore] = useState(true);
 
   const loadMore = async () => {
@@ -54,14 +34,14 @@ export default function Items({
 
       const data = await fetchItems(
         true,
-        items.length,
+        items ? items.length : 0,
         searchParams?.from ?? "any",
         searchParams?.voted ?? "any",
         searchParams?.proxy ?? "any",
       );
 
-      const itemIds = new Set(items.map((item) => item.proposalId));
-      const newItems = data.filter((d) => !itemIds.has(d.proposalId));
+      const itemIds = new Set(items?.map((item) => item.proposal.id));
+      const newItems = data.filter((d) => !itemIds.has(d.proposal.id));
 
       if (newItems.length) setItems([...items, ...newItems]);
 
@@ -121,15 +101,16 @@ export default function Items({
             threshold={1024}
             loader={<LoadingItems />}
           >
-            {items.map((item, index) => (
-              <li className="pb-1" key={index}>
-                <Item
-                  proposal={item}
-                  proxy={searchParams?.proxy ?? "any"}
-                  fetchVote={fetchVote}
-                />
-              </li>
-            ))}
+            {items &&
+              items.map((item, index) => (
+                <li className="pb-1" key={index}>
+                  <Item
+                    item={item}
+                    proxy={searchParams?.proxy ?? "any"}
+                    fetchVote={fetchVote}
+                  />
+                </li>
+              ))}
           </InfiniteScroll>
         </ul>
         {!hasMore && (

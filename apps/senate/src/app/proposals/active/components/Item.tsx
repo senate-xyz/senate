@@ -3,16 +3,26 @@
 import Image from "next/image";
 import dayjs, { extend } from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { VoteResult, type Item } from "./Items";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { type fetchItemsType } from "../../actions";
 
 extend(relativeTime);
 
 export default function Item(props: {
-  proposal: Item;
+  item: fetchItemsType[0];
   proxy: string;
   fetchVote: (proposalId: string, proxy: string) => Promise<string>;
 }) {
+  const [vote, setVote] = useState("LOADING");
+
+  useEffect(() => {
+    const loadVote = async () => {
+      setVote(await props.fetchVote(props.item.proposal.id, props.proxy));
+    };
+
+    void loadVote();
+  }, [props, props.fetchVote, props.item, props.proxy]);
+
   return (
     <div>
       <div className="hidden h-[96px] w-full flex-row justify-between bg-[#121212] text-[#EDEDED] lg:flex">
@@ -26,27 +36,18 @@ export default function Item(props: {
                 width={64}
                 height={64}
                 src={`${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${
-                  props.proposal.daoPicture
+                  props.item.dao!.picture
                 }.svg`}
-                alt={props.proposal.daoName}
+                alt={props.item.dao!.name}
               />
             </div>
             <div className="flex h-[70px] min-w-[150px] flex-col justify-between gap-1 pl-2">
               <div className="text-[24px] font-light leading-[22px]">
-                {props.proposal.daoName}
+                {props.item.dao?.name}
               </div>
 
               <div>
-                {props.proposal.onchain ? (
-                  <Image
-                    loading="eager"
-                    priority={true}
-                    width={94}
-                    height={26}
-                    src={"/assets/Icon/OnChainProposal.svg"}
-                    alt="off-chain"
-                  />
-                ) : (
+                {props.item.daohandler!.type == "SNAPSHOT" ? (
                   <Image
                     loading="eager"
                     priority={true}
@@ -55,20 +56,25 @@ export default function Item(props: {
                     src={"/assets/Icon/OffChainProposal.svg"}
                     alt="off-chain"
                   />
+                ) : (
+                  <Image
+                    loading="eager"
+                    priority={true}
+                    width={94}
+                    height={26}
+                    src={"/assets/Icon/OnChainProposal.svg"}
+                    alt="off-chain"
+                  />
                 )}
               </div>
             </div>
           </div>
           <div className="cursor-pointer hover:underline">
-            <a
-              href={props.proposal.proposalLink}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a href={props.item.proposal.url} target="_blank" rel="noreferrer">
               <div className="pr-5 text-[18px] font-normal">
-                {props.proposal.proposalTitle.length > 150
-                  ? props.proposal.proposalTitle.slice(0, 149) + "..."
-                  : props.proposal.proposalTitle}
+                {props.item.proposal.name.length > 150
+                  ? props.item.proposal.name.slice(0, 149) + "..."
+                  : props.item.proposal.name}
               </div>
             </a>
           </div>
@@ -77,16 +83,16 @@ export default function Item(props: {
         <div className="flex flex-row items-center">
           <div className="flex w-[340px] flex-col justify-between gap-2">
             <div className="text-[21px] font-semibold leading-[26px]">
-              {dayjs(props.proposal.timeEnd).fromNow()}
+              {dayjs(props.item.proposal.timeend).fromNow()}
             </div>
             <div className="text-[15px] font-normal leading-[19px]">
-              {`on ${new Date(props.proposal.timeEnd).toLocaleDateString(
+              {`on ${new Date(props.item.proposal.timeend).toLocaleDateString(
                 "en-US",
                 {
                   month: "long",
                   day: "numeric",
                 },
-              )} at ${new Date(props.proposal.timeEnd).toLocaleTimeString(
+              )} at ${new Date(props.item.proposal.timeend).toLocaleTimeString(
                 "en-US",
                 {
                   hour: "2-digit",
@@ -103,12 +109,12 @@ export default function Item(props: {
           <div className="w-[200px] text-end">
             <Suspense>
               <div className="flex flex-col items-center">
-                {props.proposal.voteResult == VoteResult.NOT_CONNECTED && (
+                {vote == "NOT_CONNECTED" && (
                   <div className="p-2 text-center text-[17px] leading-[26px] text-white">
                     Connect wallet to see your vote status
                   </div>
                 )}
-                {props.proposal.voteResult == VoteResult.LOADING && (
+                {vote == "LOADING" && (
                   <Image
                     loading="eager"
                     priority={true}
@@ -118,7 +124,7 @@ export default function Item(props: {
                     height={32}
                   />
                 )}
-                {props.proposal.voteResult == VoteResult.VOTED && (
+                {vote == "VOTED" && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"
@@ -131,7 +137,7 @@ export default function Item(props: {
                     <div className="text-[18px]">Voted</div>
                   </div>
                 )}
-                {props.proposal.voteResult == VoteResult.NOT_VOTED && (
+                {vote == "NOT_VOTED" && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"
@@ -161,14 +167,14 @@ export default function Item(props: {
                   width={48}
                   height={48}
                   src={`${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${
-                    props.proposal.daoPicture
+                    props.item.dao!.picture
                   }.svg`}
-                  alt={props.proposal.daoName}
+                  alt={props.item.dao!.name}
                 />
               </div>
 
               <div>
-                {props.proposal.onchain ? (
+                {props.item.daohandler!.type == "SNAPSHOT" ? (
                   <Image
                     loading="eager"
                     priority={true}
@@ -191,14 +197,14 @@ export default function Item(props: {
             </div>
             <div className="cursor-pointer self-center pb-5 hover:underline">
               <a
-                href={props.proposal.proposalLink}
+                href={props.item.proposal.url}
                 target="_blank"
                 rel="noreferrer"
               >
                 <div className="text-[15px] font-normal leading-[23px]">
-                  {props.proposal.proposalTitle.length > 150
-                    ? props.proposal.proposalTitle.slice(0, 149) + "..."
-                    : props.proposal.proposalTitle}
+                  {props.item.proposal.name.length > 150
+                    ? props.item.proposal.name.slice(0, 149) + "..."
+                    : props.item.proposal.name}
                 </div>
               </a>
             </div>
@@ -207,74 +213,75 @@ export default function Item(props: {
           <div className="flex w-full flex-row items-end justify-between">
             <div className="flex flex-col justify-end">
               <div className="text-start text-[21px] font-semibold leading-[26px]">
-                {dayjs(props.proposal.timeEnd).fromNow()}
+                {dayjs(props.item.proposal.timeend).fromNow()}
               </div>
               <div className="text-[12px] font-normal leading-[19px]">
-                {`on ${new Date(props.proposal.timeEnd).toLocaleDateString(
+                {`on ${new Date(props.item.proposal.timeend).toLocaleDateString(
                   "en-US",
                   {
                     month: "long",
                     day: "numeric",
                   },
-                )} at ${new Date(props.proposal.timeEnd).toLocaleTimeString(
-                  "en-US",
-                  {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                    timeZone: "UTC",
-                    hour12: false,
-                  },
-                )} UTC
+                )} at ${new Date(
+                  props.item.proposal.timeend,
+                ).toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                  timeZone: "UTC",
+                  hour12: false,
+                })} UTC
                     `}
               </div>
             </div>
 
             <div className="self-end p-2">
-              <div className="flex w-full flex-col items-center">
-                {props.proposal.voteResult == VoteResult.NOT_CONNECTED && (
-                  <div className="p-2 text-center text-[17px] leading-[26px] text-white">
-                    Connect wallet to see your vote status
-                  </div>
-                )}
+              <Suspense>
+                <div className="flex w-full flex-col items-center">
+                  {vote == "NOT_CONNECTED" && (
+                    <div className="p-2 text-center text-[17px] leading-[26px] text-white">
+                      Connect wallet to see your vote status
+                    </div>
+                  )}
 
-                {props.proposal.voteResult == VoteResult.LOADING && (
-                  <Image
-                    loading="eager"
-                    priority={true}
-                    src="/assets/Senate_Logo/Loading/senate-loading-onDark.svg"
-                    alt="loading"
-                    width={32}
-                    height={32}
-                  />
-                )}
-
-                {props.proposal.voteResult == VoteResult.VOTED && (
-                  <div className="flex w-full flex-col items-center">
+                  {vote == "LOADING" && (
                     <Image
                       loading="eager"
                       priority={true}
-                      src="/assets/Icon/Voted.svg"
-                      alt="voted"
+                      src="/assets/Senate_Logo/Loading/senate-loading-onDark.svg"
+                      alt="loading"
                       width={32}
                       height={32}
                     />
-                  </div>
-                )}
+                  )}
 
-                {props.proposal.voteResult == VoteResult.NOT_VOTED && (
-                  <div className="flex w-full flex-col items-center">
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      src="/assets/Icon/NotVotedYet.svg"
-                      alt="voted"
-                      width={32}
-                      height={32}
-                    />
-                  </div>
-                )}
-              </div>
+                  {vote == "VOTED" && (
+                    <div className="flex w-full flex-col items-center">
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        src="/assets/Icon/Voted.svg"
+                        alt="voted"
+                        width={32}
+                        height={32}
+                      />
+                    </div>
+                  )}
+
+                  {vote == "NOT_VOTED" && (
+                    <div className="flex w-full flex-col items-center">
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        src="/assets/Icon/NotVotedYet.svg"
+                        alt="voted"
+                        width={32}
+                        height={32}
+                      />
+                    </div>
+                  )}
+                </div>
+              </Suspense>
             </div>
           </div>
         </div>

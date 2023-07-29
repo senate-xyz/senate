@@ -1,5 +1,5 @@
 import { Filters } from "./components/Filters";
-import { fetchItems } from "../page";
+import { fetchItems } from "../actions";
 import Items from "./components/Items";
 import { fetchVote, getProxies, getSubscribedDAOs } from "../actions";
 
