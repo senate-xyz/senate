@@ -34,7 +34,7 @@ export default function Items({
 
       const data = await fetchItems(
         true,
-        items ? items.length : 0,
+        items.length,
         searchParams?.from ?? "any",
         searchParams?.voted ?? "any",
         searchParams?.proxy ?? "any",
