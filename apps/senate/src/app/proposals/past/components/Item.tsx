@@ -6,6 +6,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 
 import { Suspense, useEffect, useState } from "react";
 import { type fetchItemsType } from "../../actions";
+import { useAccount } from "wagmi";
 
 extend(relativeTime);
 
@@ -14,45 +15,45 @@ export default function Item(props: {
   proxy: string;
   fetchVote: (proposalId: string, proxy: string) => Promise<string>;
 }) {
-  const [vote, setVote] = useState("LOADING");
-  const [highestScore, setHighestScore] = useState(0);
-  const [highestScoreChoice, setHighestScoreChoice] = useState("undefined");
+  const [highestScore, setHighestScore] = useState(0.0);
+  const [highestScoreChoice, setHighestScoreChoice] = useState("");
   const [passedQuorum, setPassedQuorum] = useState(false);
+  const { isConnected } = useAccount();
 
   useEffect(() => {
-    const loadVote = async () => {
-      setVote(await props.fetchVote(props.item.proposal.id, props.proxy));
-    };
-
-    void loadVote();
-
+    let highestScore = 0.0;
+    let highestScoreIndex = 0;
+    let highestScoreChoice = "";
     if (
       props.item.proposal.scores &&
       typeof props.item.proposal.scores === "object" &&
-      Array.isArray(props.item.proposal.scores) &&
+      Array.isArray(props.item.proposal?.scores) &&
       props.item.proposal.choices &&
       typeof props.item.proposal.choices === "object" &&
-      Array.isArray(props.item.proposal.choices)
+      Array.isArray(props.item.proposal?.choices)
     ) {
-      const scores = Array.from(props.item.proposal.scores);
-      let highestScoreIndex = 0;
+      const scores = props.item.proposal.scores;
       for (let i = 0; i < scores.length; i++) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         if (parseFloat(String(scores[i]?.toString())) > highestScore) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-          setHighestScore(parseFloat(String(scores[i]?.toString())));
+          highestScore = parseFloat(String(scores[i]?.toString()));
           highestScoreIndex = i;
         }
       }
-      setHighestScoreChoice(
-        String(props.item.proposal.choices[highestScoreIndex]),
-      );
-      setPassedQuorum(
-        Number(props.item.proposal.quorum) <
-          Number(props.item.proposal.scorestotal),
+      highestScoreChoice = String(
+        props.item.proposal.choices[highestScoreIndex],
       );
     }
-  }, [props, props.fetchVote, props.item, props.proxy]);
+    setHighestScoreChoice(String(highestScoreChoice));
+    setHighestScore(highestScore);
+    setPassedQuorum(
+      Number(props.item.proposal!.quorum) <
+        Number(props.item.proposal!.scorestotal),
+    );
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.fetchVote, props.item, props.proxy]);
 
   return (
     <div>
@@ -84,7 +85,7 @@ export default function Item(props: {
                     priority={true}
                     width={94}
                     height={26}
-                    src={"/assets/Icon/OnChainProposal.svg"}
+                    src={"/assets/Icon/OffChainProposal.svg"}
                     alt="off-chain"
                   />
                 ) : (
@@ -93,19 +94,19 @@ export default function Item(props: {
                     priority={true}
                     width={94}
                     height={26}
-                    src={"/assets/Icon/OffChainProposal.svg"}
-                    alt="off-chain"
+                    src={"/assets/Icon/OnChainProposal.svg"}
+                    alt="on-chain"
                   />
                 )}
               </div>
             </div>
           </div>
           <div className="cursor-pointer hover:underline">
-            <a href={props.item.proposal.url} target="_blank" rel="noreferrer">
+            <a href={props.item.proposal!.url} target="_blank" rel="noreferrer">
               <div className="pr-5 text-[18px] font-normal">
-                {props.item.proposal.name.length > 150
-                  ? props.item.proposal.name.slice(0, 149) + "..."
-                  : props.item.proposal.name}
+                {props.item.proposal!.name.length > 150
+                  ? props.item.proposal!.name.slice(0, 149) + "..."
+                  : props.item.proposal!.name}
               </div>
             </a>
           </div>
@@ -116,8 +117,8 @@ export default function Item(props: {
             {props.item.daohandler?.type == "MAKER_EXECUTIVE" && (
               <div className="text-[21px] leading-[26px] text-white">
                 <div className="mb-1 flex flex-row gap-2">
-                  {(props.item.proposal.state == "EXECUTED" ||
-                    props.item.proposal.state == "QUEUED") && (
+                  {(props.item.proposal!.state == "EXECUTED" ||
+                    props.item.proposal!.state == "QUEUED") && (
                     <div className="flex flex-row gap-2">
                       <div className="h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]">
                         <Image
@@ -133,7 +134,7 @@ export default function Item(props: {
                       <div>Passed</div>
                     </div>
                   )}
-                  {props.item.proposal.state == "EXPIRED" && (
+                  {props.item.proposal!.state == "EXPIRED" && (
                     <div className="flex flex-row gap-2">
                       <div className="h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]">
                         <Image
@@ -153,7 +154,7 @@ export default function Item(props: {
                 <div className="text-[18px] leading-[26px] text-white">
                   with{" "}
                   {(
-                    (props.item.proposal.scorestotal as number) /
+                    (props.item.proposal!.scorestotal as number) /
                     1000000000000000000
                   ).toFixed(2)}{" "}
                   MKR
@@ -162,7 +163,7 @@ export default function Item(props: {
             )}
             {props.item.daohandler?.type != "MAKER_EXECUTIVE" &&
               highestScoreChoice != "undefined" &&
-              props.item.proposal.state != "HIDDEN" &&
+              props.item.proposal!.state != "HIDDEN" &&
               passedQuorum && (
                 <div className="w-[340px]">
                   <div className="flex flex-row gap-2">
@@ -185,7 +186,7 @@ export default function Item(props: {
                       style={{
                         width: `${(
                           (highestScore /
-                            (props.item.proposal.scorestotal as number)) *
+                            (props.item.proposal!.scorestotal as number)) *
                           100
                         ).toFixed(0)}%`,
                       }}
@@ -194,7 +195,7 @@ export default function Item(props: {
                       <div className="px-2 text-black">
                         {(
                           (highestScore /
-                            (props.item.proposal.scorestotal as number)) *
+                            (props.item.proposal!.scorestotal as number)) *
                           100
                         ).toFixed(2)}
                         %
@@ -206,7 +207,7 @@ export default function Item(props: {
 
             {props.item.daohandler?.type != "MAKER_EXECUTIVE" &&
               highestScoreChoice != "undefined" &&
-              props.item.proposal.state != "HIDDEN" &&
+              props.item.proposal!.state != "HIDDEN" &&
               !passedQuorum && (
                 <div>
                   <div className="flex flex-row gap-2">
@@ -227,7 +228,7 @@ export default function Item(props: {
                 </div>
               )}
 
-            {props.item.proposal.state == "HIDDEN" && (
+            {props.item.proposal!.state == "HIDDEN" && (
               <div>
                 <div className="flex flex-row gap-2">
                   <div className="flex h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]">
@@ -265,14 +266,14 @@ export default function Item(props: {
                 </div>
               )}
             <div className="text-[15px] font-normal leading-[19px]">
-              {`on ${new Date(props.item.proposal.timeend).toLocaleDateString(
+              {`on ${new Date(props.item.proposal!.timeend).toLocaleDateString(
                 "en-US",
                 {
                   month: "long",
                   day: "numeric",
                   year: "numeric",
                 },
-              )} at ${new Date(props.item.proposal.timeend).toLocaleTimeString(
+              )} at ${new Date(props.item.proposal!.timeend).toLocaleTimeString(
                 "en-US",
                 {
                   hour: "2-digit",
@@ -289,12 +290,12 @@ export default function Item(props: {
           <div className="w-[200px] text-end">
             <Suspense>
               <div className="flex flex-col items-center">
-                {vote == "NOT_CONNECTED" && (
+                {!isConnected && (
                   <div className="p-2 text-center text-[17px] leading-[26px] text-white">
                     Connect wallet to see your vote status
                   </div>
                 )}
-                {vote == "LOADING" && (
+                {/*    {vote == "LOADING" && (
                   <Image
                     loading="eager"
                     priority={true}
@@ -303,8 +304,8 @@ export default function Item(props: {
                     width={32}
                     height={32}
                   />
-                )}
-                {vote == "VOTED" && (
+                )} */}
+                {isConnected && props.item.vote && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"
@@ -317,7 +318,7 @@ export default function Item(props: {
                     <div className="text-[18px]">Voted</div>
                   </div>
                 )}
-                {vote == "NOT_VOTED" && (
+                {isConnected && !props.item.vote && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"
@@ -369,21 +370,21 @@ export default function Item(props: {
                     width={50}
                     height={15}
                     src={"/assets/Icon/OnChainProposal.svg"}
-                    alt="off-chain"
+                    alt="on-chain"
                   />
                 )}
               </div>
             </div>
             <div className="cursor-pointer self-center pb-5 hover:underline">
               <a
-                href={props.item.proposal.url}
+                href={props.item.proposal!.url}
                 target="_blank"
                 rel="noreferrer"
               >
                 <div className="text-[15px] font-normal leading-[23px]">
-                  {props.item.proposal.name.length > 150
-                    ? props.item.proposal.name.slice(0, 149) + "..."
-                    : props.item.proposal.name}
+                  {props.item.proposal!.name.length > 150
+                    ? props.item.proposal!.name.slice(0, 149) + "..."
+                    : props.item.proposal!.name}
                 </div>
               </a>
             </div>
@@ -394,8 +395,8 @@ export default function Item(props: {
               {props.item.daohandler?.type == "MAKER_EXECUTIVE" && (
                 <div>
                   <div className="text-[21px] leading-[26px] text-white">
-                    {(props.item.proposal.state == "EXECUTED" ||
-                      props.item.proposal.state == "QUEUED") && (
+                    {(props.item.proposal!.state == "EXECUTED" ||
+                      props.item.proposal!.state == "QUEUED") && (
                       <div className="flex flex-row gap-2">
                         <div className="h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]">
                           <Image
@@ -411,7 +412,7 @@ export default function Item(props: {
                         <div>Passed</div>
                       </div>
                     )}
-                    {props.item.proposal.state == "EXPIRED" && (
+                    {props.item.proposal!.state == "EXPIRED" && (
                       <div className="flex flex-row gap-2">
                         <div className="h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9]">
                           <Image
@@ -431,7 +432,7 @@ export default function Item(props: {
                   <div className="text-[18px] leading-[26px] text-white">
                     with{" "}
                     {(
-                      (props.item.proposal.scorestotal as number) /
+                      (props.item.proposal!.scorestotal as number) /
                       1000000000000000000
                     ).toFixed(2)}{" "}
                     MKR
@@ -439,7 +440,7 @@ export default function Item(props: {
                 </div>
               )}
               {props.item.daohandler?.type != "MAKER_EXECUTIVE" &&
-                props.item.proposal.state != "HIDDEN" &&
+                props.item.proposal!.state != "HIDDEN" &&
                 highestScoreChoice != "undefined" && (
                   <div>
                     {passedQuorum ? (
@@ -464,7 +465,8 @@ export default function Item(props: {
                             style={{
                               width: `${(
                                 (highestScore /
-                                  (props.item.proposal.scorestotal as number)) *
+                                  (props.item.proposal!
+                                    .scorestotal as number)) *
                                 100
                               ).toFixed(0)}%`,
                             }}
@@ -473,7 +475,8 @@ export default function Item(props: {
                             <div className="px-2 text-black">
                               {(
                                 (highestScore /
-                                  (props.item.proposal.scorestotal as number)) *
+                                  (props.item.proposal!
+                                    .scorestotal as number)) *
                                 100
                               ).toFixed(2)}
                               %
@@ -501,7 +504,7 @@ export default function Item(props: {
                   </div>
                 )}
 
-              {props.item.proposal.state == "HIDDEN" && (
+              {props.item.proposal!.state == "HIDDEN" && (
                 <div>
                   <div className="flex flex-row gap-2">
                     <div className="flex h-[24px] w-[24px] items-center justify-center bg-[#D9D9D9] ">
@@ -539,14 +542,13 @@ export default function Item(props: {
                   </div>
                 )}
               <div className="text-[12px] font-normal leading-[19px]">
-                {`on ${new Date(props.item.proposal.timeend).toLocaleDateString(
-                  "en-US",
-                  {
-                    month: "long",
-                    day: "numeric",
-                  },
-                )} at ${new Date(
-                  props.item.proposal.timeend,
+                {`on ${new Date(
+                  props.item.proposal!.timeend,
+                ).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                })} at ${new Date(
+                  props.item.proposal!.timeend,
                 ).toLocaleTimeString("en-US", {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -561,13 +563,13 @@ export default function Item(props: {
             <div className="self-end p-2">
               <Suspense>
                 <div className="flex w-full flex-col items-center">
-                  {vote == "NOT_CONNECTED" && (
+                  {!isConnected && (
                     <div className="p-2 text-center text-[17px] leading-[26px] text-white">
                       Connect wallet to see your vote status
                     </div>
                   )}
 
-                  {vote == "LOADING" && (
+                  {/* {vote == "LOADING" && (
                     <Image
                       loading="eager"
                       priority={true}
@@ -576,9 +578,9 @@ export default function Item(props: {
                       width={32}
                       height={32}
                     />
-                  )}
+                  )} */}
 
-                  {vote == "VOTED" && (
+                  {isConnected && props.item.vote && (
                     <div className="flex w-full flex-col items-center">
                       <Image
                         loading="eager"
@@ -591,7 +593,7 @@ export default function Item(props: {
                     </div>
                   )}
 
-                  {vote == "NOT_VOTED" && (
+                  {isConnected && !props.item.vote && (
                     <div className="flex w-full flex-col items-center">
                       <Image
                         loading="eager"

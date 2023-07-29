@@ -40,8 +40,8 @@ export default function Items({
         searchParams?.proxy ?? "any",
       );
 
-      const itemIds = new Set(items?.map((item) => item.proposal.id));
-      const newItems = data.filter((d) => !itemIds.has(d.proposal.id));
+      const itemIds = new Set(items?.map((item) => item.proposal?.id));
+      const newItems = data.filter((d) => !itemIds.has(d.proposal?.id));
 
       if (newItems.length) setItems([...items, ...newItems]);
 
@@ -101,16 +101,15 @@ export default function Items({
             threshold={1024}
             loader={<LoadingItems />}
           >
-            {items &&
-              items.map((item, index) => (
-                <li className="pb-1" key={index}>
-                  <Item
-                    item={item}
-                    proxy={searchParams?.proxy ?? "any"}
-                    fetchVote={fetchVote}
-                  />
-                </li>
-              ))}
+            {items.map((item, index) => (
+              <li className="pb-1" key={index}>
+                <Item
+                  item={item}
+                  proxy={searchParams?.proxy ?? "any"}
+                  fetchVote={fetchVote}
+                />
+              </li>
+            ))}
           </InfiniteScroll>
         </ul>
         {!hasMore && (

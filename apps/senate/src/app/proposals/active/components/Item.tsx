@@ -3,8 +3,9 @@
 import Image from "next/image";
 import dayjs, { extend } from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 import { type fetchItemsType } from "../../actions";
+import { useAccount } from "wagmi";
 
 extend(relativeTime);
 
@@ -13,15 +14,7 @@ export default function Item(props: {
   proxy: string;
   fetchVote: (proposalId: string, proxy: string) => Promise<string>;
 }) {
-  const [vote, setVote] = useState("LOADING");
-
-  useEffect(() => {
-    const loadVote = async () => {
-      setVote(await props.fetchVote(props.item.proposal.id, props.proxy));
-    };
-
-    void loadVote();
-  }, [props, props.fetchVote, props.item, props.proxy]);
+  const { isConnected } = useAccount();
 
   return (
     <div>
@@ -63,18 +56,18 @@ export default function Item(props: {
                     width={94}
                     height={26}
                     src={"/assets/Icon/OnChainProposal.svg"}
-                    alt="off-chain"
+                    alt="on-chain"
                   />
                 )}
               </div>
             </div>
           </div>
           <div className="cursor-pointer hover:underline">
-            <a href={props.item.proposal.url} target="_blank" rel="noreferrer">
+            <a href={props.item.proposal!.url} target="_blank" rel="noreferrer">
               <div className="pr-5 text-[18px] font-normal">
-                {props.item.proposal.name.length > 150
-                  ? props.item.proposal.name.slice(0, 149) + "..."
-                  : props.item.proposal.name}
+                {props.item.proposal!.name.length > 150
+                  ? props.item.proposal!.name.slice(0, 149) + "..."
+                  : props.item.proposal!.name}
               </div>
             </a>
           </div>
@@ -83,16 +76,16 @@ export default function Item(props: {
         <div className="flex flex-row items-center">
           <div className="flex w-[340px] flex-col justify-between gap-2">
             <div className="text-[21px] font-semibold leading-[26px]">
-              {dayjs(props.item.proposal.timeend).fromNow()}
+              {dayjs(props.item.proposal!.timeend).fromNow()}
             </div>
             <div className="text-[15px] font-normal leading-[19px]">
-              {`on ${new Date(props.item.proposal.timeend).toLocaleDateString(
+              {`on ${new Date(props.item.proposal!.timeend).toLocaleDateString(
                 "en-US",
                 {
                   month: "long",
                   day: "numeric",
                 },
-              )} at ${new Date(props.item.proposal.timeend).toLocaleTimeString(
+              )} at ${new Date(props.item.proposal!.timeend).toLocaleTimeString(
                 "en-US",
                 {
                   hour: "2-digit",
@@ -109,12 +102,12 @@ export default function Item(props: {
           <div className="w-[200px] text-end">
             <Suspense>
               <div className="flex flex-col items-center">
-                {vote == "NOT_CONNECTED" && (
+                {!isConnected && (
                   <div className="p-2 text-center text-[17px] leading-[26px] text-white">
                     Connect wallet to see your vote status
                   </div>
                 )}
-                {vote == "LOADING" && (
+                {/* {vote == "LOADING" && (
                   <Image
                     loading="eager"
                     priority={true}
@@ -123,8 +116,8 @@ export default function Item(props: {
                     width={32}
                     height={32}
                   />
-                )}
-                {vote == "VOTED" && (
+                )} */}
+                {isConnected && props.item.vote && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"
@@ -137,7 +130,7 @@ export default function Item(props: {
                     <div className="text-[18px]">Voted</div>
                   </div>
                 )}
-                {vote == "NOT_VOTED" && (
+                {isConnected && !props.item.vote && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"
@@ -190,21 +183,21 @@ export default function Item(props: {
                     width={50}
                     height={14}
                     src={"/assets/Icon/OffChainProposal.svg"}
-                    alt="off-chain"
+                    alt="on-chain"
                   />
                 )}
               </div>
             </div>
             <div className="cursor-pointer self-center pb-5 hover:underline">
               <a
-                href={props.item.proposal.url}
+                href={props.item.proposal!.url}
                 target="_blank"
                 rel="noreferrer"
               >
                 <div className="text-[15px] font-normal leading-[23px]">
-                  {props.item.proposal.name.length > 150
-                    ? props.item.proposal.name.slice(0, 149) + "..."
-                    : props.item.proposal.name}
+                  {props.item.proposal!.name.length > 150
+                    ? props.item.proposal!.name.slice(0, 149) + "..."
+                    : props.item.proposal!.name}
                 </div>
               </a>
             </div>
@@ -213,17 +206,16 @@ export default function Item(props: {
           <div className="flex w-full flex-row items-end justify-between">
             <div className="flex flex-col justify-end">
               <div className="text-start text-[21px] font-semibold leading-[26px]">
-                {dayjs(props.item.proposal.timeend).fromNow()}
+                {dayjs(props.item.proposal!.timeend).fromNow()}
               </div>
               <div className="text-[12px] font-normal leading-[19px]">
-                {`on ${new Date(props.item.proposal.timeend).toLocaleDateString(
-                  "en-US",
-                  {
-                    month: "long",
-                    day: "numeric",
-                  },
-                )} at ${new Date(
-                  props.item.proposal.timeend,
+                {`on ${new Date(
+                  props.item.proposal!.timeend,
+                ).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                })} at ${new Date(
+                  props.item.proposal!.timeend,
                 ).toLocaleTimeString("en-US", {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -238,13 +230,13 @@ export default function Item(props: {
             <div className="self-end p-2">
               <Suspense>
                 <div className="flex w-full flex-col items-center">
-                  {vote == "NOT_CONNECTED" && (
+                  {!isConnected && (
                     <div className="p-2 text-center text-[17px] leading-[26px] text-white">
                       Connect wallet to see your vote status
                     </div>
                   )}
 
-                  {vote == "LOADING" && (
+                  {/*  {vote == "LOADING" && (
                     <Image
                       loading="eager"
                       priority={true}
@@ -253,9 +245,9 @@ export default function Item(props: {
                       width={32}
                       height={32}
                     />
-                  )}
+                  )} */}
 
-                  {vote == "VOTED" && (
+                  {isConnected && props.item.vote && (
                     <div className="flex w-full flex-col items-center">
                       <Image
                         loading="eager"
@@ -268,7 +260,7 @@ export default function Item(props: {
                     </div>
                   )}
 
-                  {vote == "NOT_VOTED" && (
+                  {isConnected && !props.item.vote && (
                     <div className="flex w-full flex-col items-center">
                       <Image
                         loading="eager"

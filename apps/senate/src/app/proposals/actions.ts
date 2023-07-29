@@ -17,6 +17,12 @@ import {
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
 import { userTovoter } from "@senate/database";
+import { PostHog } from "posthog-node";
+
+const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
+  host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
+  disableGeoip: true,
+});
 
 export interface MergedDao {
   dao: {
@@ -171,19 +177,33 @@ export async function fetchItems(
   active: boolean,
   page: number,
   from: string,
-  _voted: string,
-  _proxy: string,
+  voted: string,
+  proxy: string,
 ) {
   "use server";
 
   const session = await getServerSession(authOptions());
   const userAddress = session?.user?.name ?? "";
 
-  // const canSeeDeleted =
-  //   (await posthog.isFeatureEnabled(
-  //     "can-see-deleted-proposals",
-  //     userAddress,
-  //   )) ?? false;
+  const canSeeDeleted =
+    (await posthog.isFeatureEnabled(
+      "can-see-deleted-proposals",
+      userAddress,
+    )) ?? false;
+
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
+
+  const proxies = await db
+    .select()
+    .from(userTovoter)
+    .leftJoin(user, eq(userTovoter.a, user.id))
+    .leftJoin(voter, eq(userTovoter.b, voter.id))
+    .where(u ? eq(user.id, u.id) : undefined);
+
+  const votersAddresses =
+    proxy == "any"
+      ? proxies.map((p) => (p.voter ? p.voter?.address : ""))
+      : [proxy];
 
   const subscribedDaos = await db
     .select()
@@ -192,13 +212,21 @@ export async function fetchItems(
     .leftJoin(user, eq(user.id, subscription.userid))
     .where(eq(user.address, userAddress));
 
-  const p = await db
+  const unfiltededProposals = await db
     .select()
     .from(proposal)
+    .leftJoin(
+      vote,
+      and(
+        eq(proposal.id, vote.proposalid),
+        inArray(vote.voteraddress, votersAddresses),
+      ),
+    )
     .leftJoin(dao, eq(proposal.daoid, dao.id))
     .leftJoin(daohandler, eq(proposal.daohandlerid, daohandler.id))
     .where(
       and(
+        canSeeDeleted ? undefined : eq(proposal.visible, 1),
         from == "any"
           ? userAddress
             ? inArray(
@@ -226,6 +254,19 @@ export async function fetchItems(
     .orderBy(active ? asc(proposal.timeend) : desc(proposal.timeend))
     .limit(20)
     .offset(page);
+
+  let p: typeof unfiltededProposals = [];
+  switch (voted) {
+    case "yes":
+      p = unfiltededProposals.filter((p) => p.vote);
+      break;
+    case "no":
+      p = unfiltededProposals.filter((p) => !p.vote);
+      break;
+    case "any":
+      p = unfiltededProposals;
+      break;
+  }
 
   return p;
 }
