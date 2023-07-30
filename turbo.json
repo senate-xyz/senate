@@ -51,8 +51,7 @@
       "cache": false
     },
     "build:db:node": {
-      "cache": false,
-      "dependsOn": ["^db:generate:node"]
+      "cache": false
     },
     "*": {
       "env": [

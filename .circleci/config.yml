@@ -10,14 +10,14 @@ jobs:
           name: Set DATABASE_URL based on branch
           command: |
             if [ "${CIRCLE_BRANCH}" == "main" ]; then
-              echo 'export DATABASE_URL=${PRODUCTION_DB}' >> $BASH_ENV
-              echo 'export DRIZZLE_DB=${PRODUCTION_DB_DRIZZLE}' >> $BASH_ENV
+              echo "export DATABASE_URL=${PRODUCTION_DB}" >> $BASH_ENV
+              echo "export DRIZZLE_DB=${PRODUCTION_DB_DRIZZLE}" >> $BASH_ENV
             elif [ "${CIRCLE_BRANCH}" == "dev" ]; then
-              echo 'export DATABASE_URL=${DEVELOPMENT_DB}' >> $BASH_ENV
-              echo 'export DRIZZLE_DB=${DEVELOPMENT_DB_DRIZZLE}' >> $BASH_ENV
+              echo "export DATABASE_URL=${DEVELOPMENT_DB}" >> $BASH_ENV
+              echo "export DRIZZLE_DB=${DEVELOPMENT_DB_DRIZZLE}" >> $BASH_ENV
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
-              echo 'export DATABASE_URL=${STAGING_DB}' >> $BASH_ENV
-              echo 'export DRIZZLE_DB=${STAGING_DB_DRIZZLE}' >> $BASH_ENV
+              echo "export DATABASE_URL=${STAGING_DB}" >> $BASH_ENV
+              echo "export DRIZZLE_DB=${STAGING_DB_DRIZZLE}" >> $BASH_ENV
             fi
 
       - checkout
@@ -41,7 +41,6 @@ jobs:
       - run:
           name: Build
           command: |
-            yarn db:generate:node
             yarn build:db:node
             yarn build:senate
 
