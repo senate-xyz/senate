@@ -3,7 +3,7 @@ import { connect } from "@planetscale/database";
 import * as schema from "./db/schema";
 
 const connection = connect({
-  url: process.env.DATABASE_URL,
+  url: process.env.DB_DRIZZLE,
 });
 
 export const db = drizzle(connection, { schema: { ...schema } });
