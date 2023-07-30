@@ -1,7 +1,7 @@
 import { Locator, expect, test } from "@playwright/test";
 import { test as test_metamask } from "../../../fixtures";
 import * as metamask from "@synthetixio/synpress/commands/metamask";
-import { prisma } from "@senate/database";
+import { dao, db, eq, prisma, subscription, user } from "@senate/database";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/orgs");
@@ -17,7 +17,7 @@ test_metamask("expect to have all daos unsubscribed", async ({ page }) => {
   await metamask.confirmSignatureRequest();
   await page.waitForTimeout(5000);
 
-  const numberOfDaos = await prisma.dao.count({});
+  const numberOfDaos = (await db.select().from(dao)).length;
 
   await expect(
     await page.getByTestId("unsubscribed-list").getByRole("listitem")
@@ -99,7 +99,7 @@ test_metamask("subscribe to all daos", async ({ page }) => {
 
   let currentCount = 2;
 
-  const numberOfDaos = await prisma.dao.count({});
+  const numberOfDaos = (await db.select().from(dao)).length;
 
   while (currentCount < numberOfDaos) {
     await test.step(`Create subscription ${currentCount}`, async () => {
@@ -115,9 +115,14 @@ test_metamask("subscribe to all daos", async ({ page }) => {
     await page.getByTestId("subscribed-list").getByRole("listitem")
   ).toHaveCount(numberOfDaos);
 
-  const numberOfSubscriptions = await prisma.subscription.count({
-    where: { user: { address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" } },
-  });
+  const [u] = await db
+    .select()
+    .from(user)
+    .where(eq(user.address, "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"));
+
+  const numberOfSubscriptions = (
+    await db.select().from(subscription).where(eq(subscription.userid, u.id))
+  ).length;
 
   await expect(numberOfSubscriptions).toBe(numberOfDaos);
 });

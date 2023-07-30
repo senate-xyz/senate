@@ -1,6 +1,6 @@
 "use server";
 
-import { MagicUserState, db, eq, user } from "@senate/database";
+import { db, eq, user } from "@senate/database";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../pages/api/auth/[...nextauth]";
 import { PostHog } from "posthog-node";
@@ -503,7 +503,7 @@ export const getMagicUser = async () => {
   const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
   return {
-    aave: u.isaaveuser == MagicUserState.ENABLED ? true : false,
-    uniswap: u.isuniswapuser == MagicUserState.ENABLED ? true : false,
+    aave: u.isaaveuser == "ENABLED" ? true : false,
+    uniswap: u.isuniswapuser == "ENABLED" ? true : false,
   };
 };

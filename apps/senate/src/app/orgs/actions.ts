@@ -36,6 +36,17 @@ export interface MergedDao {
   proposals: { count: number };
 }
 
+export const hasUserBulletin = async () => {
+  "use server";
+  const session = await getServerSession(authOptions());
+  if (!session || !session.user || !session.user.name) return true;
+  const userAddress = session.user.name;
+
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
+
+  return u.emaildailybulletin;
+};
+
 export const getSubscriptions = async () => {
   "use server";
 

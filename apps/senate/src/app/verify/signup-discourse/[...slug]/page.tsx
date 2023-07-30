@@ -1,19 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import "@rainbow-me/rainbowkit/styles.css";
 
-import { prisma } from "@senate/database";
 import Link from "next/link";
 import { VerifyButton } from "./components/VerifyButton";
-
-const isValidChallenge = async (challenge: string) => {
-  const user = await prisma.user.findFirst({
-    where: {
-      challengecode: challenge,
-    },
-  });
-
-  return user ? true : false;
-};
+import { isValidChallenge } from "./actions";
 
 export default async function Page({ params }) {
   const validChallenge = await isValidChallenge(String(params.slug[1]));

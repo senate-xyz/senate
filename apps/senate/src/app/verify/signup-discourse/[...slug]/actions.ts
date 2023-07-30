@@ -19,6 +19,16 @@ const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   disableGeoip: true,
 });
 
+export const isValidChallenge = async (challenge: string) => {
+  "use server";
+  const c = await db
+    .select({ challenge: user.challengecode })
+    .from(user)
+    .where(eq(user.challengecode, challenge));
+
+  return c ? true : false;
+};
+
 export const discourseSignup = async (
   address: string,
   message: string,

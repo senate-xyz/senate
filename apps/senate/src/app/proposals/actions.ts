@@ -88,6 +88,22 @@ export const getSubscribedDAOs = async () => {
   return daosList;
 };
 
+export const userHasProxies = async () => {
+  "use server";
+
+  const session = await getServerSession(authOptions());
+  if (!session || !session.user || !session.user.name) return true;
+  const userAddress = session.user.name;
+
+  const proxies = await db
+    .select()
+    .from(userTovoter)
+    .leftJoin(user, eq(userTovoter.a, user.id))
+    .where(eq(user.address, userAddress));
+
+  return proxies.length > 1;
+};
+
 export async function getProxies() {
   "use server";
 

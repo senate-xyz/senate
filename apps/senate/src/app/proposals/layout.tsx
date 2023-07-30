@@ -1,31 +1,6 @@
-import { prisma } from "@senate/database";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../pages/api/auth/[...nextauth]";
 import { Header } from "../components/csr/Header";
+import { userHasProxies } from "./actions";
 import SetupOtherAddress from "./components/SetupOtherAddress";
-
-const userHasProxies = async () => {
-  "use server";
-
-  const session = await getServerSession(authOptions());
-  if (!session || !session.user || !session.user.name) return true;
-  const userAddress = session.user.name;
-
-  const result = await prisma.user.findFirstOrThrow({
-    where: {
-      address: { equals: userAddress },
-    },
-    include: {
-      _count: {
-        select: {
-          voters: true,
-        },
-      },
-    },
-  });
-
-  return result._count.voters > 1;
-};
 
 export default async function RootLayout({
   children,

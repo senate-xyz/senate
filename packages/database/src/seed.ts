@@ -745,18 +745,15 @@ const seedData = async () => {
   });
 
   console.log("Inserting seed user");
-  const seedUser = await prisma.user.upsert({
-    where: {
-      address: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
-    },
-    create: {
-      address: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
-      emaildailybulletin: true,
-    },
-    update: {
-      address: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
-    },
-  });
+
+  const seedUser = await prisma.user
+    .create({
+      data: {
+        address: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
+        emaildailybulletin: true,
+      },
+    })
+    .catch();
 
   console.log("Inserting subscriptions");
   const alldaos = await prisma.dao.findMany({});
@@ -772,7 +769,7 @@ const seedData = async () => {
   });
 };
 
-const seedVoters = async () => {
+const seedVoters = () => {
   const voters = [
     "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
     // '0x5B3bFfC0bcF8D4cAEC873fDcF719F60725767c98',
@@ -935,26 +932,26 @@ const seedVoters = async () => {
 
   // console.log('Inserting voters')
 
-  await prisma.$transaction(
-    voters.map((voter) => {
-      return prisma.user.update({
-        where: {
-          address: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
-        },
-        data: {
-          voters: {
-            connectOrCreate: {
-              where: { address: voter },
-              create: { address: voter },
-            },
-          },
-        },
-      });
-    }),
-    {
-      isolationLevel: "ReadCommitted",
-    },
-  );
+  // await prisma.$transaction(
+  //   voters.map((voter) => {
+  //     return prisma.user.upda({
+  //       where: {
+  //         address: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
+  //       },
+  //       data: {
+  //         voters: {
+  //           connectOrCreate: {
+  //             where: { address: voter },
+  //             create: { address: voter },
+  //           },
+  //         },
+  //       },
+  //     });
+  //   }),
+  //   {
+  //     isolationLevel: "ReadCommitted",
+  //   },
+  // );
 };
 
 async function testUsers() {
@@ -1015,7 +1012,7 @@ async function maintenance() {
 async function main() {
   // await maintenance();
   await seedData();
-  await seedVoters();
+  // await seedVoters();
   // await testUsers();
 }
 

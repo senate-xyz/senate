@@ -1,12 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { test as test_metamask } from "../../../../fixtures";
 import * as metamask from "@synthetixio/synpress/commands/metamask";
-import { prisma } from "@senate/database";
+import { db, eq, prisma, user, userTovoter, voter } from "@senate/database";
 
 test("deletes test user test@test.com start", async ({}) => {
-  await prisma.user.deleteMany({
-    where: { email: "test@test.com" },
-  });
+  await db.delete(user).where(eq(user.email, "test@test.com"));
 });
 
 test_metamask(
@@ -53,8 +51,8 @@ test("creates new email account test@test.com using discourse api", async ({}) =
 
   await expect(response.status).toBe(200);
 
-  const newUser = await prisma.user.findFirst({
-    where: { email: "test@test.com" },
+  const newUser = await db.query.user.findFirst({
+    where: eq(user.email, "test@test.com"),
   });
 
   await expect(await response.json()).toStrictEqual({
@@ -90,13 +88,23 @@ test_metamask(
 
     await page.waitForTimeout(10000);
 
-    const confirmedUser = await prisma.user.findFirst({
-      where: { email: "test@test.com" },
-      include: {
-        subscriptions: { include: { dao: { select: { name: true } } } },
-        voters: true,
+    const confirmedUser = await db.query.user.findFirst({
+      where: eq(user.email, "test@test.com"),
+      with: {
+        subscriptions: { with: { dao: true } },
       },
     });
+
+    const proxies = await db
+      .select()
+      .from(userTovoter)
+      .leftJoin(user, eq(userTovoter.a, user.id))
+      .leftJoin(voter, eq(userTovoter.b, voter.id))
+      .where(confirmedUser ? eq(user.id, confirmedUser.id) : undefined);
+
+    const votersAddresses = proxies.map((p) =>
+      p.voter ? p.voter?.address : ""
+    );
 
     await expect(confirmedUser?.email).toBe("test@test.com");
     await expect(confirmedUser?.isuniswapuser).toBe("ENABLED");
@@ -111,9 +119,7 @@ test_metamask(
     await expect(confirmedUser?.subscriptions.map((s) => s.dao.name)).toContain(
       "Compound"
     );
-    await expect(confirmedUser?.voters.map((v) => v.address)).toContain(
-      confirmedUser?.address
-    );
+    await expect(votersAddresses).toContain(confirmedUser?.address);
 
     await expect(page).toHaveURL("/orgs?connect");
   }
