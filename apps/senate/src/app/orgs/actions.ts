@@ -29,7 +29,7 @@ export interface MergedDao {
     type: string;
     decoder: unknown;
     chainindex: number;
-    snapshotindex: string;
+    snapshotindex: Date;
     uptodate: boolean;
     daoid: string;
   }>;

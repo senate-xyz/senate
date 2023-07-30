@@ -68,10 +68,7 @@ pub async fn update_snapshot_proposals<'a>(
         Err(_) => panic!("{:?} decoder not found", data.daoHandlerId),
     };
 
-    let old_index = match dao_handler.snapshotindex {
-        Some(data) => data.timestamp(),
-        None => 0,
-    };
+    let old_index = dao_handler.snapshotindex;
 
     let graphql_query = format!(
         r#"
@@ -105,7 +102,14 @@ pub async fn update_snapshot_proposals<'a>(
         data.refreshspeed, decoder.space, old_index
     );
 
-    match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
+    match update_proposals(
+        graphql_query,
+        ctx,
+        dao_handler.clone(),
+        old_index.timestamp(),
+    )
+    .await
+    {
         Ok(_) => Json(ProposalsResponse {
             daoHandlerId: data.daoHandlerId,
             success: true,
@@ -163,10 +167,10 @@ async fn update_proposals(
         let existing = ctx
             .db
             .proposal()
-            .find_unique(proposal::externalid_daoid(
-                proposal.id.to_string(),
-                dao_handler.daoid.to_string(),
-            ))
+            .find_first(vec![
+                proposal::externalid::equals(proposal.id.clone()),
+                proposal::daohandlerid::equals(dao_handler.id.clone()),
+            ])
             .exec()
             .await
             .unwrap();
@@ -179,11 +183,11 @@ async fn update_proposals(
                 {
                     ctx.db
                         .proposal()
-                        .update(
-                            proposal::externalid_daoid(
-                                proposal.id.to_string(),
-                                dao_handler.daoid.to_string(),
-                            ),
+                        .update_many(
+                            vec![
+                                proposal::externalid::equals(proposal.id.clone()),
+                                proposal::daohandlerid::equals(dao_handler.id.clone()),
+                            ],
                             vec![
                                 proposal::choices::set(proposal.choices.clone().into()),
                                 proposal::scores::set(proposal.scores.clone().into()),
@@ -274,8 +278,8 @@ async fn update_proposals(
         FixedOffset::east_opt(0).unwrap(),
     );
 
-    if (new_index_date > dao_handler.snapshotindex.unwrap()
-        && new_index_date - dao_handler.snapshotindex.unwrap() > Duration::hours(1))
+    if (new_index_date > dao_handler.snapshotindex
+        && new_index_date - dao_handler.snapshotindex > Duration::hours(1))
         || uptodate != dao_handler.uptodate
     {
         ctx.db
@@ -283,11 +287,13 @@ async fn update_proposals(
             .update(
                 daohandler::id::equals(dao_handler.id),
                 vec![
-                    daohandler::snapshotindex::set(Some(DateTime::from_utc(
-                        NaiveDateTime::from_timestamp_millis(new_index * 1000)
-                            .expect("can not create snapshotindex"),
-                        FixedOffset::east_opt(0).unwrap(),
-                    ))),
+                    daohandler::snapshotindex::set(
+                        (DateTime::from_utc(
+                            NaiveDateTime::from_timestamp_millis(new_index * 1000)
+                                .expect("can not create snapshotindex"),
+                            FixedOffset::east_opt(0).unwrap(),
+                        )),
+                    ),
                     daohandler::uptodate::set(uptodate),
                 ],
             )

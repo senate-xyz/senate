@@ -14,7 +14,7 @@ use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level
 use crate::{
     prisma::{self, daohandler, PrismaClient},
     refresh_status::{DAOS_REFRESH_STATUS, VOTERS_REFRESH_STATUS},
-    RefreshEntry,
+    RefreshEntry, RefreshStatus,
 };
 
 #[allow(non_snake_case)]
@@ -89,19 +89,19 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
 
                         for vh in voter_refresh_status.iter_mut() {
                             if ok_voters_response.contains(&vh.voter_address) {
-                                vh.refresh_status = prisma::RefreshStatus::Done;
+                                vh.refresh_status = RefreshStatus::DONE;
                                 vh.last_refresh = Utc::now();
                             }
 
                             if nok_voters_response.contains(&vh.voter_address) {
-                                vh.refresh_status = prisma::RefreshStatus::New;
+                                vh.refresh_status = RefreshStatus::NEW;
                                 vh.last_refresh = Utc::now();
                             }
                         }
                     }
                     Err(_e) => {
                         for vh in voter_refresh_status.iter_mut() {
-                            vh.refresh_status = prisma::RefreshStatus::New;
+                            vh.refresh_status = RefreshStatus::NEW;
                             vh.last_refresh = Utc::now();
                         }
                         dao_handler_r.votersrefreshspeed = cmp::max(
@@ -114,7 +114,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
             }
             Err(_e) => {
                 for vh in voter_refresh_status.iter_mut() {
-                    vh.refresh_status = prisma::RefreshStatus::New;
+                    vh.refresh_status = RefreshStatus::NEW;
                     vh.last_refresh = Utc::now();
                 }
                 dao_handler_r.votersrefreshspeed = cmp::max(

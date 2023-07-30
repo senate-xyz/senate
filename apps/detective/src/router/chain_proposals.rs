@@ -56,7 +56,7 @@ pub async fn update_chain_proposals<'a>(
     let min_block = dao_handler.chainindex;
     let batch_size = data.refreshspeed;
 
-    let mut from_block = min_block.unwrap_or(0);
+    let mut from_block = min_block;
 
     let current_block = ctx
         .rpc
@@ -173,10 +173,10 @@ async fn insert_proposals(
         let existing = ctx
             .db
             .proposal()
-            .find_unique(proposal::externalid_daoid(
-                proposal.external_id.to_string(),
-                dao_handler.daoid.to_string(),
-            ))
+            .find_first(vec![
+                proposal::externalid::equals(proposal.external_id.clone()),
+                proposal::daohandlerid::equals(dao_handler.daoid.clone()),
+            ])
             .exec()
             .await
             .unwrap();
@@ -189,11 +189,11 @@ async fn insert_proposals(
                 {
                     ctx.db
                         .proposal()
-                        .update(
-                            proposal::externalid_daoid(
-                                proposal.external_id.to_string(),
-                                dao_handler.daoid.to_string(),
-                            ),
+                        .update_many(
+                            vec![
+                                proposal::externalid::equals(proposal.external_id.clone()),
+                                proposal::daohandlerid::equals(dao_handler.daoid.clone()),
+                            ],
                             {
                                 let mut update_v = Vec::new();
 
@@ -276,10 +276,9 @@ async fn insert_proposals(
         to_block
     };
 
-    let uptodate = dao_handler.chainindex.unwrap() - new_index < 1000;
+    let uptodate = dao_handler.chainindex - new_index < 1000;
 
-    if (new_index > dao_handler.chainindex.unwrap()
-        && new_index - dao_handler.chainindex.unwrap() > 1000)
+    if (new_index > dao_handler.chainindex && new_index - dao_handler.chainindex > 1000)
         || uptodate != dao_handler.uptodate
     {
         ctx.db
@@ -287,7 +286,7 @@ async fn insert_proposals(
             .update(
                 daohandler::id::equals(dao_handler.id.to_string()),
                 vec![
-                    daohandler::chainindex::set(new_index.into()),
+                    daohandler::chainindex::set(new_index),
                     daohandler::uptodate::set(uptodate),
                 ],
             )

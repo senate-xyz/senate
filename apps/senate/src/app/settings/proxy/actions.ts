@@ -1,10 +1,11 @@
 "use server";
 
-import { prisma } from "@senate/database";
+import { db, eq, user, userTovoter, voter, and } from "@senate/database";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../pages/api/auth/[...nextauth]";
 import { PostHog } from "posthog-node";
 import { revalidateTag } from "next/cache";
+import cuid from "cuid";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
@@ -17,39 +18,23 @@ export const addVoter = async (address: string) => {
   revalidateTag("voters");
 
   const session = await getServerSession(authOptions());
-
   if (!session || !session.user || !session.user.name) return;
 
   const userAddress = session.user.name;
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: {
-      address: {
-        equals: userAddress,
-      },
-    },
-  });
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
-  await prisma.user.update({
-    where: {
-      id: user?.id,
-    },
-    data: {
-      voters: {
-        connectOrCreate: {
-          where: {
-            address: address,
-          },
-          create: {
-            address: address,
-          },
-        },
-      },
-    },
-  });
+  await db.insert(voter).values({ id: cuid(), address: address }).catch();
+
+  const [newVoter] = await db
+    .select()
+    .from(voter)
+    .where(eq(voter.address, address));
+
+  await db.insert(userTovoter).values({ a: u.id, b: newVoter.id });
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: "add_voter",
     properties: {
       voter: address,
@@ -66,34 +51,20 @@ export const removeVoter = async (address: string) => {
   revalidateTag("voters");
 
   const session = await getServerSession(authOptions());
-
   if (!session || !session.user || !session.user.name) return;
 
   const userAddress = session.user.name;
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: {
-      address: {
-        equals: userAddress,
-      },
-    },
-  });
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
-  await prisma.user.update({
-    where: {
-      id: user?.id,
-    },
-    data: {
-      voters: {
-        disconnect: {
-          address: address,
-        },
-      },
-    },
-  });
+  const [v] = await db.select().from(voter).where(eq(voter.address, address));
+
+  await db
+    .delete(userTovoter)
+    .where(and(eq(userTovoter.a, u.id), eq(userTovoter.b, v.id)));
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: "remove_voter",
     properties: {
       voter: address,
@@ -112,23 +83,20 @@ export const getVoters = async () => {
   const session = await getServerSession(authOptions());
 
   if (!session || !session.user || !session.user.name) return [];
-
   const userAddress = session.user.name;
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: {
-      address: {
-        equals: userAddress,
-      },
-    },
-    include: {
-      voters: true,
-    },
-  });
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
-  const filteredVoters = user.voters
-    .filter((voter) => voter.address !== userAddress)
-    .map((v) => v.address);
+  const voters = await db
+    .select()
+    .from(userTovoter)
+    .leftJoin(user, eq(userTovoter.a, user.id))
+    .leftJoin(voter, eq(userTovoter.b, voter.id))
+    .where(u ? eq(user.id, u.id) : undefined);
+
+  const filteredVoters = voters
+    .filter((voter) => voter.voter!.address !== userAddress)
+    .map((v) => v.voter!.address);
 
   return filteredVoters;
 };

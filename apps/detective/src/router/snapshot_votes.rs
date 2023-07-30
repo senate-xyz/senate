@@ -95,21 +95,15 @@ pub async fn update_snapshot_votes<'a>(
 
     let newest_vote = voter_handlers
         .iter()
-        .map(|voterhandler| {
-            voterhandler
-                .snapshotindex
-                .expect("bad snapshotindex")
-                .timestamp()
-        })
+        .map(|voterhandler| voterhandler.snapshotindex.timestamp())
         .max()
         .unwrap_or(0);
 
-    let search_from_timestamp =
-        if newest_vote < dao_handler.snapshotindex.unwrap_or_default().timestamp() {
-            newest_vote
-        } else {
-            dao_handler.snapshotindex.unwrap_or_default().timestamp()
-        };
+    let search_from_timestamp = if newest_vote < dao_handler.snapshotindex.timestamp() {
+        newest_vote
+    } else {
+        dao_handler.snapshotindex.timestamp()
+    };
 
     let graphql_query = format!(
         r#"{{
@@ -237,10 +231,10 @@ async fn upsert_votes_for_proposal(
     match ctx
         .db
         .proposal()
-        .find_unique(proposal::externalid_daoid(
-            p.id.to_string(),
-            dao_handler.daoid.to_string(),
-        ))
+        .find_first(vec![
+            proposal::externalid::equals(p.id.to_string()),
+            proposal::daohandlerid::equals(dao_handler.id.clone()),
+        ])
         .exec()
         .await
     {
@@ -273,11 +267,11 @@ async fn update_or_create_votes(
         let existing = ctx
             .db
             .vote()
-            .find_unique(vote::voteraddress_daoid_proposalid(
-                vote.voter.to_string(),
-                dao_handler.daoid.clone(),
-                proposal_id.clone(),
-            ))
+            .find_first(vec![
+                vote::voteraddress::equals(vote.voter.to_string()),
+                vote::daohandlerid::equals(dao_handler.id.clone()),
+                vote::proposalid::equals(proposal_id.clone()),
+            ])
             .exec()
             .await
             .unwrap();
@@ -290,12 +284,12 @@ async fn update_or_create_votes(
                 {
                     ctx.db
                         .vote()
-                        .update(
-                            vote::voteraddress_daoid_proposalid(
-                                vote.voter.clone(),
-                                dao_handler.daoid.clone(),
-                                proposal_id.clone(),
-                            ),
+                        .update_many(
+                            vec![
+                                vote::voteraddress::equals(vote.voter.to_string()),
+                                vote::daohandlerid::equals(dao_handler.id.clone()),
+                                vote::proposalid::equals(proposal_id.clone()),
+                            ],
                             vec![
                                 vote::timecreated::set(Some(DateTime::from_utc(
                                     NaiveDateTime::from_timestamp_millis(vote.created * 1000)
@@ -354,16 +348,10 @@ async fn update_refresh_statuses(
         .max()
         .expect("bad search_to_timestamp");
 
-    let mut new_index = vec![
-        search_to_timestamp,
-        dao_handler
-            .snapshotindex
-            .expect("bad snapshotindex")
-            .timestamp(),
-    ]
-    .into_iter()
-    .min()
-    .expect("bad new_index");
+    let mut new_index = vec![search_to_timestamp, dao_handler.snapshotindex.timestamp()]
+        .into_iter()
+        .min()
+        .expect("bad new_index");
 
     if search_to_timestamp == search_from_timestamp || votes.is_empty() {
         new_index = Utc::now().timestamp();
@@ -371,14 +359,14 @@ async fn update_refresh_statuses(
 
     let mut uptodate = false;
 
-    if (search_to_timestamp - dao_handler.snapshotindex.unwrap().timestamp() < 10 * 60 * 60
+    if (search_to_timestamp - dao_handler.snapshotindex.timestamp() < 10 * 60 * 60
         && dao_handler.uptodate)
         || votes.len() < 100
     {
         uptodate = true;
     }
 
-    if search_to_timestamp > dao_handler.snapshotindex.unwrap().timestamp() {
+    if search_to_timestamp > dao_handler.snapshotindex.timestamp() {
         uptodate = true;
     }
 
@@ -388,19 +376,19 @@ async fn update_refresh_statuses(
     );
 
     for voter_handler in voter_handlers {
-        if (new_index_date > voter_handler.snapshotindex.unwrap()
-            && new_index_date - voter_handler.snapshotindex.unwrap() > Duration::days(1))
+        if (new_index_date > voter_handler.snapshotindex
+            && new_index_date - voter_handler.snapshotindex > Duration::days(1))
             || uptodate != voter_handler.uptodate
         {
             ctx.db
                 .voterhandler()
-                .update(
-                    voterhandler::voterid_daohandlerid(
-                        voter_handler.voterid,
-                        dao_handler.clone().id,
-                    ),
+                .update_many(
                     vec![
-                        voterhandler::snapshotindex::set(new_index_date.into()),
+                        voterhandler::voterid::equals(voter_handler.voterid),
+                        voterhandler::daohandlerid::equals(dao_handler.id.clone()),
+                    ],
+                    vec![
+                        voterhandler::snapshotindex::set(new_index_date),
                         voterhandler::uptodate::set(uptodate),
                     ],
                 )

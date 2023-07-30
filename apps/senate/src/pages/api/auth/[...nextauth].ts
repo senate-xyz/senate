@@ -56,11 +56,12 @@ export function authOptions(
 
             if (!existingUser) {
               posthog.capture({
-                distinctId: siwe.address,
+                distinctId: result.data.address,
                 event: "sign_up_wallet",
               });
 
               const userCUID = cuid();
+
               await db
                 .insert(user)
                 .values({
@@ -68,7 +69,7 @@ export function authOptions(
                   address: result.data.address,
                   verifiedaddress: true,
                   acceptedterms: true,
-                  acceptedtermstimestamp: new Date().toString(),
+                  acceptedtermstimestamp: new Date(),
                   sessioncount: 1,
                 })
                 .catch();
@@ -107,10 +108,10 @@ export function authOptions(
               await db
                 .update(user)
                 .set({
-                  lastactive: new Date().toString(),
+                  lastactive: new Date(),
                   verifiedaddress: true,
                   acceptedterms: true,
-                  acceptedtermstimestamp: new Date().toString(),
+                  acceptedtermstimestamp: new Date(),
                   sessioncount: existingUser.sessioncount + 1,
                 })
                 .where(eq(user.address, result.data.address));
@@ -184,7 +185,7 @@ export function authOptions(
         await db
           .update(user)
           .set({
-            lastactive: new Date().toString(),
+            lastactive: new Date(),
             sessioncount: sql`${user.sessioncount} + 1`,
           })
           .where(eq(user.address, String(message.user.name)))

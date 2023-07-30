@@ -15,7 +15,7 @@ use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level
 use crate::{
     prisma::{self, daohandler, PrismaClient},
     refresh_status::DAOS_REFRESH_STATUS,
-    RefreshEntry,
+    RefreshEntry, RefreshStatus,
 };
 
 #[derive(Deserialize, Debug)]
@@ -52,7 +52,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                     Ok(data) => {
                         match data.success {
                             true => {
-                                dao_handler.refresh_status = prisma::RefreshStatus::Done;
+                                dao_handler.refresh_status = RefreshStatus::DONE;
                                 dao_handler.last_refresh = Utc::now();
                                 dao_handler.refreshspeed = cmp::min(
                                     dao_handler.refreshspeed
@@ -61,7 +61,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                                 );
                             }
                             false => {
-                                dao_handler.refresh_status = prisma::RefreshStatus::New;
+                                dao_handler.refresh_status = RefreshStatus::NEW;
                                 dao_handler.last_refresh = Utc::now();
                                 dao_handler.refreshspeed = cmp::max(
                                     dao_handler.refreshspeed
@@ -72,7 +72,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                         };
                     }
                     Err(_e) => {
-                        dao_handler.refresh_status = prisma::RefreshStatus::New;
+                        dao_handler.refresh_status = RefreshStatus::NEW;
                         dao_handler.last_refresh = Utc::now();
                         dao_handler.refreshspeed = cmp::max(
                             dao_handler.refreshspeed - (dao_handler.refreshspeed * 25 / 100),
@@ -82,7 +82,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                 }
             }
             Err(_e) => {
-                dao_handler.refresh_status = prisma::RefreshStatus::New;
+                dao_handler.refresh_status = RefreshStatus::NEW;
                 dao_handler.last_refresh = Utc::now();
                 dao_handler.refreshspeed = cmp::max(
                     dao_handler.refreshspeed - (dao_handler.refreshspeed * 25 / 100),

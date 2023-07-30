@@ -14,7 +14,7 @@ use crate::{
     config::Config,
     prisma::{self, voterhandler},
     refresh_status::{DAOS_REFRESH_STATUS, VOTERS_REFRESH_STATUS},
-    RefreshEntry, RefreshType,
+    RefreshEntry, RefreshStatus, RefreshType,
 };
 
 pub async fn produce_chain_votes_queue(
@@ -56,12 +56,11 @@ pub async fn produce_chain_votes_queue(
             .iter_mut()
             .filter(|r| {
                 r.dao_handler_id == dao_handler.dao_handler_id
-                    && ((r.refresh_status == prisma::RefreshStatus::Done
+                    && ((r.refresh_status == RefreshStatus::DONE
                         && r.last_refresh < normal_refresh)
-                        || (r.refresh_status == prisma::RefreshStatus::Pending
+                        || (r.refresh_status == RefreshStatus::PENDING
                             && r.last_refresh < force_refresh)
-                        || (r.refresh_status == prisma::RefreshStatus::New
-                            && r.last_refresh < new_refresh))
+                        || (r.refresh_status == RefreshStatus::NEW && r.last_refresh < new_refresh))
             })
             .collect();
 
@@ -83,7 +82,7 @@ pub async fn produce_chain_votes_queue(
 
         let vote_indexes: Vec<i64> = voter_handlers
             .iter()
-            .map(|voter_handler| voter_handler.chainindex.unwrap())
+            .map(|voter_handler| voter_handler.chainindex)
             .collect();
 
         let domain_limit = if dao_handler.r#type == prisma::DaoHandlerType::MakerPollArbitrum {
@@ -101,7 +100,7 @@ pub async fn produce_chain_votes_queue(
                     .iter()
                     .cloned()
                     .filter(|voter_handler| {
-                        let index = voter_handler.chainindex.unwrap();
+                        let index = voter_handler.chainindex;
                         bucket.min <= index && index < bucket.max
                     })
                     .take(config.batch_chain_votes.try_into().unwrap())
@@ -126,7 +125,7 @@ pub async fn produce_chain_votes_queue(
             .collect();
 
         for vhr in &mut *voter_handlers_r {
-            vhr.refresh_status = prisma::RefreshStatus::Pending;
+            vhr.refresh_status = RefreshStatus::PENDING;
             vhr.last_refresh = Utc::now();
         }
 

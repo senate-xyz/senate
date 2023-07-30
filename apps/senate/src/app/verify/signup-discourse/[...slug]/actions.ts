@@ -89,7 +89,7 @@ export const discourseSignup = async (
         verifiedaddress: true,
         verifiedemail: true,
         acceptedterms: true,
-        acceptedtermstimestamp: new Date().toString(),
+        acceptedtermstimestamp: new Date(),
       })
       .where(eq(user.id, addressUser.id));
 

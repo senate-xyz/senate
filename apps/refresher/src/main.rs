@@ -55,6 +55,13 @@ pub struct RefreshEntry {
     voters: Vec<String>,
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum RefreshStatus {
+    NEW,
+    DONE,
+    PENDING,
+}
+
 #[tokio::main]
 async fn main() {
     dotenv().ok();

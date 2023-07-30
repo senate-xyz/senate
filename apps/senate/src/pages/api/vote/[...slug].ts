@@ -47,7 +47,7 @@ export default async function handler(
       )
       .where(eq(proposal.id, proposalId ?? ""));
 
-    if (new Date(p.proposal.timeend).getTime() < Date.now()) {
+    if (p.proposal.timeend.getTime() < Date.now()) {
       if (p.vote) img = "voted.png";
       else img = "not-voted-yet.png";
     } else {

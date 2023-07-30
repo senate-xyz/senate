@@ -97,8 +97,7 @@ pub async fn update_chain_votes<'a>(
         .iter()
         .map(|vh| vh.chainindex)
         .min()
-        .unwrap_or_default()
-        .unwrap_or(0);
+        .unwrap_or_default();
 
     let mut current_block = ctx
         .rpc
@@ -277,11 +276,11 @@ async fn insert_votes(
         let existing = ctx
             .db
             .vote()
-            .find_unique(vote::voteraddress_daoid_proposalid(
-                vote.voter_address.to_string(),
-                dao_handler.daoid.clone(),
-                vote.proposal_id.clone(),
-            ))
+            .find_first(vec![
+                vote::voteraddress::equals(vote.voter_address.clone()),
+                vote::daohandlerid::equals(dao_handler.daoid.clone()),
+                vote::proposalid::equals(vote.proposal_id.clone()),
+            ])
             .exec()
             .await
             .unwrap();
@@ -294,12 +293,12 @@ async fn insert_votes(
                 {
                     ctx.db
                         .vote()
-                        .update(
-                            vote::voteraddress_daoid_proposalid(
-                                vote.voter_address.to_string(),
-                                dao_handler.daoid.to_string(),
-                                vote.proposal_id.clone(),
-                            ),
+                        .update_many(
+                            vec![
+                                vote::voteraddress::equals(vote.voter_address.clone()),
+                                vote::daohandlerid::equals(dao_handler.daoid.clone()),
+                                vote::proposalid::equals(vote.proposal_id.clone()),
+                            ],
                             vec![
                                 vote::choice::set(vote.choice.clone()),
                                 vote::votingpower::set(vote.voting_power.clone()),
@@ -331,7 +330,7 @@ async fn insert_votes(
         }
     }
 
-    let daochainindex = dao_handler.chainindex.unwrap();
+    let daochainindex = dao_handler.chainindex;
 
     let mut new_index = if daochainindex > to_block {
         to_block
@@ -351,19 +350,18 @@ async fn insert_votes(
     }
 
     for voter_handler in voter_handlers {
-        if (new_index > voter_handler.chainindex.unwrap()
-            && new_index - voter_handler.chainindex.unwrap() > 100000)
+        if (new_index > voter_handler.chainindex && new_index - voter_handler.chainindex > 100000)
             || uptodate != voter_handler.uptodate
         {
             ctx.db
                 .voterhandler()
-                .update(
-                    voterhandler::voterid_daohandlerid(
-                        voter_handler.voterid,
-                        dao_handler.clone().id,
-                    ),
+                .update_many(
                     vec![
-                        voterhandler::chainindex::set(new_index.into()),
+                        voterhandler::voterid::equals(voter_handler.voterid),
+                        voterhandler::daohandlerid::equals(dao_handler.id.clone()),
+                    ],
+                    vec![
+                        voterhandler::chainindex::set(new_index),
                         voterhandler::uptodate::set(uptodate),
                     ],
                 )

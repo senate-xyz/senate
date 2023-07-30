@@ -1013,9 +1013,9 @@ async function maintenance() {
 }
 
 async function main() {
-  await maintenance();
-  // await seedData();
-  // await seedVoters();
+  // await maintenance();
+  await seedData();
+  await seedVoters();
   // await testUsers();
 }
 
