@@ -1,11 +1,27 @@
-import { drizzle } from "drizzle-orm/planetscale-serverless";
-import { connect } from "@planetscale/database";
+import { drizzle } from "drizzle-orm/mysql2";
+import mysql from "mysql2/promise";
 import * as schema from "./db/schema";
 import { config } from "dotenv";
+import url from "url";
 config();
 
-const connection = connect({
-  url: process.env.DATABASE_URL,
+const databaseUrl = process.env.DATABASE_URL;
+
+const parsedUrl = new url.URL(databaseUrl);
+
+const username = parsedUrl.username;
+const password = parsedUrl.password;
+const host = parsedUrl.hostname;
+const database = parsedUrl.pathname.split("/")[1];
+
+const connection = mysql.createPool({
+  host: host,
+  user: username,
+  password: password,
+  database: database,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 export const db = drizzle(connection, { schema: { ...schema } });
