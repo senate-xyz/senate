@@ -99,7 +99,9 @@ pub async fn update_snapshot_proposals<'a>(
                     }}
                 }}
             "#,
-        data.refreshspeed, decoder.space, old_index
+        data.refreshspeed,
+        decoder.space,
+        old_index.timestamp()
     );
 
     match update_proposals(
