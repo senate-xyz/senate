@@ -1,32 +1,7 @@
 import "@rainbow-me/rainbowkit/styles.css";
 
-import { prisma } from "@senate/database";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-
-const isValidChallenge = async (challenge: string) => {
-  const user = await prisma.user.findFirst({
-    where: {
-      challengecode: challenge,
-    },
-  });
-
-  return user ? true : false;
-};
-
-const verifyUser = async (challenge: string) => {
-  await prisma.user.updateMany({
-    where: {
-      challengecode: challenge,
-    },
-    data: {
-      challengecode: "",
-      verifiedemail: true,
-    },
-  });
-
-  redirect("/orgs");
-};
+import { isValidChallenge, verifyUser } from "./actions";
 
 export default async function Page({
   params,

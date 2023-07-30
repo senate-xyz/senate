@@ -1,9 +1,18 @@
 "use server";
 
-import { prisma } from "@senate/database";
 import { verifyMessage } from "viem";
 import { PostHog } from "posthog-node";
 import { redirect } from "next/navigation";
+import {
+  dao,
+  db,
+  eq,
+  subscription,
+  user,
+  userTovoter,
+  voter,
+} from "@senate/database";
+import cuid from "cuid";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
@@ -28,56 +37,43 @@ export const discourseSignup = async (
     signature: signature as `0x${string}`,
   });
   if (!valid) throw new Error("Signature does not match");
-  const addressUser = await prisma.user.findFirst({
-    where: {
-      address: address,
-    },
+
+  const addressUser = await db.query.user.findFirst({
+    where: eq(user.address, address),
   });
+
   if (addressUser) {
-    const emailUser = await prisma.user.findFirstOrThrow({
-      where: {
-        challengecode: challenge,
-      },
+    const emailUser = await db.query.user.findFirst({
+      where: eq(user.challengecode, challenge),
     });
-    await prisma.user.deleteMany({
-      where: { id: emailUser.id },
-    });
+
+    if (!emailUser) return;
+
+    await db.delete(user).where(eq(user.id, emailUser.id));
+
     if (emailUser.isaaveuser == "VERIFICATION") {
-      const aave = await prisma.dao.findFirstOrThrow({
-        where: {
-          name: {
-            equals: "Aave",
-          },
-        },
-      });
-      await prisma.subscription.createMany({
-        data: {
-          userid: addressUser.id,
-          daoid: aave.id,
-        },
-        skipDuplicates: true,
-      });
+      const [aave] = await db.select().from(dao).where(eq(dao.name, "Aave"));
+
+      await db
+        .insert(subscription)
+        .values({ id: cuid(), userid: addressUser.id, daoid: aave.id })
+        .catch();
     }
     if (emailUser.isuniswapuser == "VERIFICATION") {
-      const uniswap = await prisma.dao.findFirstOrThrow({
-        where: {
-          name: {
-            equals: "Uniswap",
-          },
-        },
-      });
+      const [uniswap] = await db
+        .select()
+        .from(dao)
+        .where(eq(dao.name, "Uniswap"));
 
-      await prisma.subscription.createMany({
-        data: {
-          userid: addressUser.id,
-          daoid: uniswap.id,
-        },
-        skipDuplicates: true,
-      });
+      await db
+        .insert(subscription)
+        .values({ id: cuid(), userid: addressUser.id, daoid: uniswap.id })
+        .catch();
     }
-    await prisma.user.update({
-      where: { id: addressUser.id },
-      data: {
+
+    await db
+      .update(user)
+      .set({
         isaaveuser:
           emailUser.isaaveuser == "VERIFICATION"
             ? "ENABLED"
@@ -93,9 +89,10 @@ export const discourseSignup = async (
         verifiedaddress: true,
         verifiedemail: true,
         acceptedterms: true,
-        acceptedtermstimestamp: new Date(),
-      },
-    });
+        acceptedtermstimestamp: new Date().toString(),
+      })
+      .where(eq(user.id, addressUser.id));
+
     posthog.capture({
       distinctId: addressUser.address ?? "unknown",
       event: "discourse_subscribe",
@@ -112,14 +109,14 @@ export const discourseSignup = async (
       },
     });
   } else {
-    const newUser = await prisma.user.findFirstOrThrow({
-      where: {
-        challengecode: challenge,
-      },
-    });
-    await prisma.user.update({
-      where: { id: newUser.id },
-      data: {
+    const [newUser] = await db
+      .select()
+      .from(user)
+      .where(eq(user.challengecode, challenge));
+
+    await db
+      .update(user)
+      .set({
         address: address,
         isaaveuser:
           newUser.isaaveuser == "VERIFICATION" ? "ENABLED" : newUser.isaaveuser,
@@ -132,57 +129,52 @@ export const discourseSignup = async (
         challengecode: "",
         verifiedaddress: true,
         verifiedemail: true,
-        voters: {
-          connectOrCreate: {
-            where: { address: address },
-            create: { address: address },
-          },
+      })
+      .where(eq(user.id, newUser.id));
+
+    await db.insert(voter).values({ id: cuid(), address: address }).catch();
+
+    const [newVoter] = await db
+      .select()
+      .from(voter)
+      .where(eq(voter.address, address));
+
+    await db.insert(userTovoter).values({ a: newUser.id, b: newVoter.id });
+
+    if (newUser.isaaveuser == "VERIFICATION") {
+      const [aave] = await db.select().from(dao).where(eq(dao.name, "Aave"));
+
+      await db
+        .insert(subscription)
+        .values({ id: cuid(), userid: newUser.id, daoid: aave.id })
+        .catch();
+    }
+    if (newUser.isuniswapuser == "VERIFICATION") {
+      const [uniswap] = await db
+        .select()
+        .from(dao)
+        .where(eq(dao.name, "Uniswap"));
+
+      await db
+        .insert(subscription)
+        .values({ id: cuid(), userid: newUser.id, daoid: uniswap.id })
+        .catch();
+    }
+    posthog.capture({
+      distinctId: newUser.address ?? "unknown",
+      event: "discourse_signup",
+      properties: {
+        dao:
+          newUser.isaaveuser == "VERIFICATION"
+            ? "Aave"
+            : newUser.isuniswapuser == "VERIFICATION"
+            ? "Uniswap"
+            : "Unknown",
+        props: {
+          app: "web-backend",
         },
       },
     });
-    if (newUser.isaaveuser == "VERIFICATION") {
-      const aave = await prisma.dao.findFirstOrThrow({
-        where: {
-          name: { equals: "Aave" },
-        },
-      });
-      await prisma.subscription.createMany({
-        data: {
-          userid: newUser.id,
-          daoid: aave.id,
-        },
-        skipDuplicates: true,
-      });
-    }
-    if (newUser.isuniswapuser == "VERIFICATION") {
-      const uniswap = await prisma.dao.findFirstOrThrow({
-        where: {
-          name: { equals: "Uniswap" },
-        },
-      });
-      await prisma.subscription.createMany({
-        data: {
-          userid: newUser.id,
-          daoid: uniswap.id,
-        },
-        skipDuplicates: true,
-      });
-      posthog.capture({
-        distinctId: newUser.address ?? "unknown",
-        event: "discourse_signup",
-        properties: {
-          dao:
-            newUser.isaaveuser == "VERIFICATION"
-              ? "Aave"
-              : newUser.isuniswapuser == "VERIFICATION"
-              ? "Uniswap"
-              : "Unknown",
-          props: {
-            app: "web-backend",
-          },
-        },
-      });
-    }
   }
   redirect("/orgs?connect");
 };
