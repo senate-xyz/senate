@@ -175,7 +175,7 @@ async fn insert_proposals(
             .proposal()
             .find_first(vec![
                 proposal::externalid::equals(proposal.external_id.clone()),
-                proposal::daohandlerid::equals(dao_handler.daoid.clone()),
+                proposal::daohandlerid::equals(dao_handler.id.clone()),
             ])
             .exec()
             .await
@@ -192,7 +192,7 @@ async fn insert_proposals(
                         .update_many(
                             vec![
                                 proposal::externalid::equals(proposal.external_id.clone()),
-                                proposal::daohandlerid::equals(dao_handler.daoid.clone()),
+                                proposal::daohandlerid::equals(dao_handler.id.clone()),
                             ],
                             {
                                 let mut update_v = Vec::new();

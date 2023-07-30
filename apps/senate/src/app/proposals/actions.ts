@@ -181,6 +181,7 @@ export async function fetchItems(
     )
     .leftJoin(dao, eq(proposal.daoid, dao.id))
     .leftJoin(daohandler, eq(proposal.daohandlerid, daohandler.id))
+
     .where(
       and(
         voted == "no" ? isNull(vote.id) : undefined,
@@ -188,10 +189,12 @@ export async function fetchItems(
         canSeeDeleted ? undefined : eq(proposal.visible, true),
         from == "any"
           ? userAddress
-            ? inArray(
-                dao.name,
-                subscribedDaos.map((s) => s.dao!.name),
-              )
+            ? subscribedDaos.length
+              ? inArray(
+                  dao.name,
+                  subscribedDaos.map((s) => s.dao!.name),
+                )
+              : eq(dao.name, "none")
             : undefined
           : eq(dao.name, from),
         inArray(
