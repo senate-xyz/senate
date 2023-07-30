@@ -28,6 +28,8 @@
   "dependencies": {
     "@planetscale/database": "^1.10.0",
     "@prisma/client": "5.0.0",
+    "cuid": "^3.0.0",
+    "dotenv": "^16.3.1",
     "drizzle-orm": "^0.27.2",
     "ethers": "^6.6.7",
     "mysql2": "^3.5.2",

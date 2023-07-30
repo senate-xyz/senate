@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { test as test_metamask } from "../../../../fixtures";
 import * as metamask from "@synthetixio/synpress/commands/metamask";
-import { db, eq, prisma, user, userTovoter, voter } from "@senate/database";
+import { db, eq, user, userTovoter, voter } from "@senate/database";
 
 test("deletes test user test@test.com start", async ({}) => {
   await db.delete(user).where(eq(user.email, "test@test.com"));
@@ -172,7 +172,5 @@ test_metamask(
 );
 
 test("deletes test user test@test.com end", async ({}) => {
-  await prisma.user.deleteMany({
-    where: { email: "test@test.com" },
-  });
+  await db.delete(user).where(eq(user.email, "test@test.com"));
 });

@@ -7,14 +7,16 @@ test("delete previous test user", async () => {
     .from(user)
     .where(eq(user.address, "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"));
 
-  await db.delete(subscription).where(eq(subscription.userid, u.id));
-  await db.delete(notification).where(eq(notification.userid, u.id));
-  await db.delete(user).where(eq(user.id, u.id));
+  if (u) {
+    await db.delete(subscription).where(eq(subscription.userid, u.id));
+    await db.delete(notification).where(eq(notification.userid, u.id));
+    await db.delete(user).where(eq(user.id, u.id));
+  }
 
   const [old_u] = await db
     .select()
     .from(user)
     .where(eq(user.address, "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"));
 
-  await expect(old_u).toBeNull();
+  await expect(old_u).toBeUndefined();
 });

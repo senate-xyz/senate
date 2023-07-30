@@ -1,7 +1,7 @@
-import { Locator, expect, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { test as test_metamask } from "../../../fixtures";
 import * as metamask from "@synthetixio/synpress/commands/metamask";
-import { dao, db, eq, prisma, subscription, user } from "@senate/database";
+import { dao, db, eq, subscription, user } from "@senate/database";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/orgs");
@@ -107,7 +107,7 @@ test_metamask("subscribe to all daos", async ({ page }) => {
       currentCount++;
       await expect(
         await page.getByTestId("subscribed-list").getByRole("listitem")
-      ).toHaveCount(currentCount);
+      ).toHaveCount(currentCount, { timeout: 15000 });
     });
   }
 
@@ -137,7 +137,7 @@ test_metamask("expect to be subscribed to all daos", async ({ page }) => {
   await metamask.confirmSignatureRequest();
   await page.waitForTimeout(500);
 
-  const numberOfDaos = await prisma.dao.count({});
+  const numberOfDaos = (await db.select().from(dao)).length;
   await expect(
     await page.getByTestId("subscribed-list").getByRole("listitem")
   ).toHaveCount(numberOfDaos);
