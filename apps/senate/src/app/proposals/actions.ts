@@ -29,7 +29,7 @@ export interface MergedDao {
     id: string;
     name: string;
     picture: string;
-    quorumwarningemailsupport: number;
+    quorumwarningemailsupport: boolean;
   };
 }
 
@@ -169,7 +169,7 @@ export async function fetchItems(
       and(
         voted == "no" ? isNull(vote.id) : undefined,
         voted == "yes" ? eq(vote.proposalid, proposal.id) : undefined,
-        canSeeDeleted ? undefined : eq(proposal.visible, 1),
+        canSeeDeleted ? undefined : eq(proposal.visible, true),
         from == "any"
           ? userAddress
             ? inArray(

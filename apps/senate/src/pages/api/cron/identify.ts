@@ -1,5 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { prisma } from "@senate/database";
+import { dao, db } from "@senate/database";
 import { PostHog } from "posthog-node";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
@@ -10,22 +10,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const daos = await prisma.dao.findMany({
-    where: {},
-    select: { id: true, name: true },
-  });
+  const daos = await db.select().from(dao);
 
   const daoMap = daos.reduce<Record<string, string>>((acc, dao) => {
     acc[dao.id] = dao.name;
     return acc;
   }, {});
 
-  const users = await prisma.user.findMany({
-    where: {},
-    include: {
-      _count: true,
-      subscriptions: true,
-    },
+  const users = await db.query.user.findMany({
+    with: { subscriptions: true, notifications: true },
   });
 
   for (const user of users) {
@@ -34,7 +27,7 @@ export default async function handler(
       properties: {
         email: user.email,
         subscriptions: user.subscriptions.map((s) => daoMap[s.daoid]),
-        notifications: user._count.notifications,
+        notifications: user.notifications.length,
         emaildailybulletin: user.emaildailybulletin,
         emptydailybulletin: user.emptydailybulletin,
         discordnotifications: user.discordnotifications,

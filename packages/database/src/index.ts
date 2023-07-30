@@ -100,4 +100,5 @@ export const {
   voter,
   voterhandler,
   userTovoter,
+  notification,
 } = schema;

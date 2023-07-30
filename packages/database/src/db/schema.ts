@@ -6,10 +6,10 @@ import {
   primaryKey,
   int,
   datetime,
-  tinyint,
   mysqlEnum,
   json,
   bigint,
+  boolean,
 } from "drizzle-orm/mysql-core";
 import { relations, sql } from "drizzle-orm";
 
@@ -61,8 +61,8 @@ export const dao = mysqlTable(
     id: varchar("id", { length: 191 }).notNull(),
     name: varchar("name", { length: 191 }).notNull(),
     picture: varchar("picture", { length: 191 }).notNull(),
-    quorumwarningemailsupport: tinyint("quorumwarningemailsupport")
-      .default(0)
+    quorumwarningemailsupport: boolean("quorumwarningemailsupport")
+      .default(false)
       .notNull(),
   },
   (table) => {
@@ -101,14 +101,14 @@ export const daohandler = mysqlTable(
       "SNAPSHOT",
     ]).notNull(),
     decoder: json("decoder").notNull(),
-    chainindex: bigint("chainindex", { mode: "number" }).default(0).notNull(),
+    chainindex: bigint("chainindex", { mode: "number" }).notNull().default(0),
     snapshotindex: datetime("snapshotindex", {
       mode: "string",
       fsp: 3,
     })
-      .default("2000-01-01 00:00:00.000")
-      .notNull(),
-    uptodate: tinyint("uptodate").default(0).notNull(),
+      .notNull()
+      .default("2000-01-01 00:00:00.000"),
+    uptodate: boolean("uptodate").default(false).notNull(),
     daoid: varchar("daoid", { length: 191 }).notNull(),
   },
   (table) => {
@@ -187,6 +187,17 @@ export const notification = mysqlTable(
   },
 );
 
+export const notificationRelations = relations(notification, ({ one }) => ({
+  user: one(user, {
+    fields: [notification.userid],
+    references: [user.id],
+  }),
+  proposal: one(proposal, {
+    fields: [notification.proposalid],
+    references: [proposal.id],
+  }),
+}));
+
 export const proposal = mysqlTable(
   "proposal",
   {
@@ -216,7 +227,7 @@ export const proposal = mysqlTable(
     url: varchar("url", { length: 1024 }).notNull(),
     daohandlerid: varchar("daohandlerid", { length: 191 }).notNull(),
     daoid: varchar("daoid", { length: 191 }).notNull(),
-    visible: tinyint("visible").default(1).notNull(),
+    visible: boolean("visible").default(true).notNull(),
   },
   (table) => {
     return {
@@ -283,8 +294,8 @@ export const user = mysqlTable(
     id: varchar("id", { length: 191 }).notNull(),
     address: varchar("address", { length: 191 }),
     email: varchar("email", { length: 191 }),
-    verifiedaddress: tinyint("verifiedaddress").default(0).notNull(),
-    verifiedemail: tinyint("verifiedemail").default(0).notNull(),
+    verifiedaddress: boolean("verifiedaddress").default(false).notNull(),
+    verifiedemail: boolean("verifiedemail").default(false).notNull(),
     isuniswapuser: mysqlEnum("isuniswapuser", [
       "DISABLED",
       "VERIFICATION",
@@ -296,24 +307,28 @@ export const user = mysqlTable(
       .default("DISABLED")
       .notNull(),
     challengecode: varchar("challengecode", { length: 191 }),
-    emaildailybulletin: tinyint("emaildailybulletin").default(0).notNull(),
-    emptydailybulletin: tinyint("emptydailybulletin").default(0).notNull(),
-    emailquorumwarning: tinyint("emailquorumwarning").default(1).notNull(),
-    discordnotifications: tinyint("discordnotifications").default(0).notNull(),
-    discordreminders: tinyint("discordreminders").default(1).notNull(),
-    discordincludevotes: tinyint("discordincludevotes").default(1).notNull(),
+    emaildailybulletin: boolean("emaildailybulletin").default(false).notNull(),
+    emptydailybulletin: boolean("emptydailybulletin").default(false).notNull(),
+    emailquorumwarning: boolean("emailquorumwarning").default(true).notNull(),
+    discordnotifications: boolean("discordnotifications")
+      .default(false)
+      .notNull(),
+    discordreminders: boolean("discordreminders").default(true).notNull(),
+    discordincludevotes: boolean("discordincludevotes").default(true).notNull(),
     discordwebhook: varchar("discordwebhook", { length: 191 })
       .default("")
       .notNull(),
-    telegramnotifications: tinyint("telegramnotifications")
-      .default(0)
+    telegramnotifications: boolean("telegramnotifications")
+      .default(false)
       .notNull(),
-    telegramreminders: tinyint("telegramreminders").default(1).notNull(),
-    telegramincludevotes: tinyint("telegramincludevotes").default(1).notNull(),
+    telegramreminders: boolean("telegramreminders").default(true).notNull(),
+    telegramincludevotes: boolean("telegramincludevotes")
+      .default(true)
+      .notNull(),
     telegramchatid: varchar("telegramchatid", { length: 191 })
       .default("")
       .notNull(),
-    acceptedterms: tinyint("acceptedterms").default(0).notNull(),
+    acceptedterms: boolean("acceptedterms").default(false).notNull(),
     acceptedtermstimestamp: datetime("acceptedtermstimestamp", {
       mode: "string",
       fsp: 3,
@@ -413,14 +428,14 @@ export const voterhandler = mysqlTable(
   "voterhandler",
   {
     id: varchar("id", { length: 191 }).notNull(),
-    chainindex: bigint("chainindex", { mode: "number" }).default(0).notNull(),
+    chainindex: bigint("chainindex", { mode: "number" }).notNull().default(0),
     snapshotindex: datetime("snapshotindex", {
       mode: "string",
       fsp: 3,
     })
-      .default("2000-01-01 00:00:00.000")
-      .notNull(),
-    uptodate: tinyint("uptodate").default(0).notNull(),
+      .notNull()
+      .default("2000-01-01 00:00:00.000"),
+    uptodate: boolean("uptodate").default(false).notNull(),
     daohandlerid: varchar("daohandlerid", { length: 191 }).notNull(),
     voterid: varchar("voterid", { length: 191 }).notNull(),
   },

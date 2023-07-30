@@ -21,7 +21,7 @@ export interface MergedDao {
     id: string;
     name: string;
     picture: string;
-    quorumwarningemailsupport: number;
+    quorumwarningemailsupport: boolean;
     backgroundColor: string;
   };
   daohandlers: Array<{
@@ -30,7 +30,7 @@ export interface MergedDao {
     decoder: unknown;
     chainindex: number;
     snapshotindex: string;
-    uptodate: number;
+    uptodate: boolean;
     daoid: string;
   }>;
   proposals: { count: number };
