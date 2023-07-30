@@ -5,7 +5,7 @@ import { config } from "dotenv";
 config();
 
 const connection = connect({
-  url: process.env.DB_DRIZZLE,
+  url: process.env.DATABASE_URL,
 });
 
 export const db = drizzle(connection, { schema: { ...schema } });
@@ -24,6 +24,7 @@ export {
   exists,
   notExists,
 } from "drizzle-orm";
+
 export const {
   dao,
   daohandler,

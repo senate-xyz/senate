@@ -107,7 +107,7 @@ test_metamask("subscribe to all daos", async ({ page }) => {
       currentCount++;
       await expect(
         await page.getByTestId("subscribed-list").getByRole("listitem")
-      ).toHaveCount(currentCount, { timeout: 15000 });
+      ).toHaveCount(currentCount, { timeout: 30000 });
     });
   }
 

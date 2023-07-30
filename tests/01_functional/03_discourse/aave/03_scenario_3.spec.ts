@@ -135,7 +135,6 @@ test("has email test@test.com, is verified, has bulletin and quorum enabled, is 
   await expect(confirmedUser?.subscriptions.map((s) => s.dao.name)).toContain(
     "Compound"
   );
-
   await expect(votersAddresses).toContain(confirmedUser?.address);
 });
 
