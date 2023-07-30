@@ -28,6 +28,15 @@ export const userEmail = async () => {
 
   const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
+  if (!u)
+    return {
+      enabled: false,
+      email: "",
+      verified: true,
+      quorum: false,
+      empty: false,
+    };
+
   return {
     enabled: u.emaildailybulletin ?? false,
     email: u.email ?? "",
@@ -244,6 +253,14 @@ export const userDiscord = async () => {
 
   const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
+  if (!u)
+    return {
+      enabled: false,
+      webhook: "",
+      reminders: false,
+      includeVotes: false,
+    };
+
   return {
     enabled: u.discordnotifications ?? false,
     webhook: u.discordwebhook ?? "",
@@ -385,6 +402,14 @@ export const userTelegram = async () => {
 
   const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
+  if (!u)
+    return {
+      userId: "",
+      enabled: false,
+      reminders: false,
+      includeVotes: false,
+    };
+
   return {
     userId: u.id ?? "",
     enabled: u.telegramnotifications ?? false,
@@ -501,6 +526,8 @@ export const getMagicUser = async () => {
   const userAddress = session.user.name;
 
   const [u] = await db.select().from(user).where(eq(user.address, userAddress));
+
+  if (!u) return { aave: false, uniswap: false };
 
   return {
     aave: u.isaaveuser == "ENABLED" ? true : false,

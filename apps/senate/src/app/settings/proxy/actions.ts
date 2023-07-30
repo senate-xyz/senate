@@ -24,7 +24,7 @@ export const addVoter = async (address: string) => {
 
   const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
-  await db.insert(voter).values({ id: cuid(), address: address }).catch();
+  await db.insert(voter).ignore().values({ id: cuid(), address: address });
 
   const [newVoter] = await db
     .select()

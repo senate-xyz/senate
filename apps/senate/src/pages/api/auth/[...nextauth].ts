@@ -62,22 +62,19 @@ export function authOptions(
 
               const userCUID = cuid();
 
-              await db
-                .insert(user)
-                .values({
-                  id: userCUID,
-                  address: result.data.address,
-                  verifiedaddress: true,
-                  acceptedterms: true,
-                  acceptedtermstimestamp: new Date(),
-                  sessioncount: 1,
-                })
-                .catch();
+              await db.insert(user).ignore().values({
+                id: userCUID,
+                address: result.data.address,
+                verifiedaddress: true,
+                acceptedterms: true,
+                acceptedtermstimestamp: new Date(),
+                sessioncount: 1,
+              });
 
               await db
                 .insert(voter)
-                .values({ id: cuid(), address: result.data.address })
-                .catch();
+                .ignore()
+                .values({ id: cuid(), address: result.data.address });
 
               const [newVoter] = await db
                 .select()

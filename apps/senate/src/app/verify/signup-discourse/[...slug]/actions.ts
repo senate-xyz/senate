@@ -66,8 +66,8 @@ export const discourseSignup = async (
 
       await db
         .insert(subscription)
-        .values({ id: cuid(), userid: addressUser.id, daoid: aave.id })
-        .catch();
+        .ignore()
+        .values({ id: cuid(), userid: addressUser.id, daoid: aave.id });
     }
     if (emailUser.isuniswapuser == "VERIFICATION") {
       const [uniswap] = await db
@@ -77,8 +77,8 @@ export const discourseSignup = async (
 
       await db
         .insert(subscription)
-        .values({ id: cuid(), userid: addressUser.id, daoid: uniswap.id })
-        .catch();
+        .ignore()
+        .values({ id: cuid(), userid: addressUser.id, daoid: uniswap.id });
     }
 
     await db
@@ -142,7 +142,7 @@ export const discourseSignup = async (
       })
       .where(eq(user.id, newUser.id));
 
-    await db.insert(voter).values({ id: cuid(), address: address }).catch();
+    await db.insert(voter).ignore().values({ id: cuid(), address: address });
 
     const [newVoter] = await db
       .select()
@@ -156,8 +156,8 @@ export const discourseSignup = async (
 
       await db
         .insert(subscription)
-        .values({ id: cuid(), userid: newUser.id, daoid: aave.id })
-        .catch();
+        .ignore()
+        .values({ id: cuid(), userid: newUser.id, daoid: aave.id });
     }
     if (newUser.isuniswapuser == "VERIFICATION") {
       const [uniswap] = await db
@@ -167,8 +167,8 @@ export const discourseSignup = async (
 
       await db
         .insert(subscription)
-        .values({ id: cuid(), userid: newUser.id, daoid: uniswap.id })
-        .catch();
+        .ignore()
+        .values({ id: cuid(), userid: newUser.id, daoid: uniswap.id });
     }
     posthog.capture({
       distinctId: newUser.address ?? "unknown",

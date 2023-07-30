@@ -133,7 +133,7 @@ test("has email updated to test@test.com, is verified, has bulletin and quorum e
     where: eq(user.email, "name@test.com"),
   });
 
-  await expect(oldEmailUser).toBeNull();
+  await expect(oldEmailUser).toBeUndefined();
 
   await expect(confirmedUser?.email).toBe("test@test.com");
   await expect(confirmedUser?.isaaveuser).toBe("ENABLED");

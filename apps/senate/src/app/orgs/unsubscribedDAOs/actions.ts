@@ -22,8 +22,8 @@ export async function subscribe(daoId: string) {
 
   await db
     .insert(subscription)
-    .values({ id: cuid(), daoid: d.id, userid: u.id })
-    .catch();
+    .ignore()
+    .values({ id: cuid(), daoid: d.id, userid: u.id });
 
   posthog.capture({
     distinctId: u.address ?? "unknown",

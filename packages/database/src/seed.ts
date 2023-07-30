@@ -6,17 +6,17 @@ const seedData = async () => {
   console.log("Inserting daos");
 
   const aave_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: aave_id,
-      name: "Aave",
-      picture: "/assets/Project_Icons/aave",
-      quorumwarningemailsupport: true,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: aave_id,
+    name: "Aave",
+    picture: "/assets/Project_Icons/aave",
+    quorumwarningemailsupport: true,
+  });
+
   await db
     .insert(daohandler)
+    .ignore()
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -35,21 +35,20 @@ const seedData = async () => {
           space: "aave.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const maker_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: maker_id,
-      name: "MakerDAO",
-      picture: "/assets/Project_Icons/makerdao",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: maker_id,
+    name: "MakerDAO",
+    picture: "/assets/Project_Icons/makerdao",
+    quorumwarningemailsupport: false,
+  });
+
   await db
     .insert(daohandler)
+    .ignore()
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -78,21 +77,18 @@ const seedData = async () => {
           address_vote: "0x4f4e551b4920a5417F8d4e7f8f099660dAdadcEC",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const balancer_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: balancer_id,
-      name: "Balancer",
-      picture: "/assets/Project_Icons/balancer",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: balancer_id,
+    name: "Balancer",
+    picture: "/assets/Project_Icons/balancer",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -102,21 +98,18 @@ const seedData = async () => {
           space: "balancer.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const optimism_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: optimism_id,
-      name: "Optimism",
-      picture: "/assets/Project_Icons/optimism",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: optimism_id,
+    name: "Optimism",
+    picture: "/assets/Project_Icons/optimism",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -126,21 +119,18 @@ const seedData = async () => {
           space: "opcollective.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const element_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: element_id,
-      name: "Element",
-      picture: "/assets/Project_Icons/element-dao",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: element_id,
+    name: "Element",
+    picture: "/assets/Project_Icons/element-dao",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -150,21 +140,18 @@ const seedData = async () => {
           space: "elfi.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const oneinch_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: oneinch_id,
-      name: "1inch",
-      picture: "/assets/Project_Icons/1inch",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: oneinch_id,
+    name: "1inch",
+    picture: "/assets/Project_Icons/1inch",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -174,21 +161,18 @@ const seedData = async () => {
           space: "1inch.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const hopprotocol_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: hopprotocol_id,
-      name: "Hop Protocol",
-      picture: "/assets/Project_Icons/hop-protocol",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: hopprotocol_id,
+    name: "Hop Protocol",
+    picture: "/assets/Project_Icons/hop-protocol",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -207,21 +191,18 @@ const seedData = async () => {
           proposalUrl: "https://www.tally.xyz/gov/hop/proposal/",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const safe_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: safe_id,
-      name: "SafeDAO",
-      picture: "/assets/Project_Icons/safedao",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: safe_id,
+    name: "SafeDAO",
+    picture: "/assets/Project_Icons/safedao",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -231,21 +212,18 @@ const seedData = async () => {
           space: "safe.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const compound_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: compound_id,
-      name: "Compound",
-      picture: "/assets/Project_Icons/compound",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: compound_id,
+    name: "Compound",
+    picture: "/assets/Project_Icons/compound",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -265,21 +243,18 @@ const seedData = async () => {
           proposalUrl: "https://compound.finance/governance/proposals/",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const synthetix_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: synthetix_id,
-      name: "Synthetix",
-      picture: "/assets/Project_Icons/synthetix",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: synthetix_id,
+    name: "Synthetix",
+    picture: "/assets/Project_Icons/synthetix",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -289,21 +264,18 @@ const seedData = async () => {
           space: "snxgov.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const dydx_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: dydx_id,
-      name: "dYdX",
-      picture: "/assets/Project_Icons/dYdX",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: dydx_id,
+    name: "dYdX",
+    picture: "/assets/Project_Icons/dYdX",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -322,21 +294,18 @@ const seedData = async () => {
           proposalUrl: "https://dydx.community/dashboard/proposal/",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const uniswap_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: uniswap_id,
-      name: "Uniswap",
-      picture: "/assets/Project_Icons/uniswap",
-      quorumwarningemailsupport: true,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: uniswap_id,
+    name: "Uniswap",
+    picture: "/assets/Project_Icons/uniswap",
+    quorumwarningemailsupport: true,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -356,21 +325,18 @@ const seedData = async () => {
           proposalUrl: "https://app.uniswap.org/#/vote/2/",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const ens_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: ens_id,
-      name: "ENS",
-      picture: "/assets/Project_Icons/ens",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: ens_id,
+    name: "ENS",
+    picture: "/assets/Project_Icons/ens",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -389,21 +355,18 @@ const seedData = async () => {
           proposalUrl: "https://www.tally.xyz/gov/ens/proposal/",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const fwb_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: fwb_id,
-      name: "FWB",
-      picture: "/assets/Project_Icons/friends-with-benefits",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: fwb_id,
+    name: "FWB",
+    picture: "/assets/Project_Icons/friends-with-benefits",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -413,21 +376,18 @@ const seedData = async () => {
           space: "friendswithbenefits.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const gnosis_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: gnosis_id,
-      name: "GnosisDAO",
-      picture: "/assets/Project_Icons/gnosis",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: gnosis_id,
+    name: "GnosisDAO",
+    picture: "/assets/Project_Icons/gnosis",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -437,21 +397,18 @@ const seedData = async () => {
           space: "gnosis.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const index_coop_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: index_coop_id,
-      name: "Index Coop",
-      picture: "/assets/Project_Icons/index-coop",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: index_coop_id,
+    name: "Index Coop",
+    picture: "/assets/Project_Icons/index-coop",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -461,21 +418,18 @@ const seedData = async () => {
           space: "index-coop.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const paladin_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: paladin_id,
-      name: "Paladin",
-      picture: "/assets/Project_Icons/paladin",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: paladin_id,
+    name: "Paladin",
+    picture: "/assets/Project_Icons/paladin",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -485,21 +439,18 @@ const seedData = async () => {
           space: "palvote.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const sushi_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: sushi_id,
-      name: "Sushi",
-      picture: "/assets/Project_Icons/sushiswap",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: sushi_id,
+    name: "Sushi",
+    picture: "/assets/Project_Icons/sushiswap",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -509,21 +460,18 @@ const seedData = async () => {
           space: "sushigov.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const instadapp_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: instadapp_id,
-      name: "Instadapp",
-      picture: "/assets/Project_Icons/instadapp",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: instadapp_id,
+    name: "Instadapp",
+    picture: "/assets/Project_Icons/instadapp",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -533,21 +481,18 @@ const seedData = async () => {
           space: "instadapp-gov.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const gitcoin_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: gitcoin_id,
-      name: "Gitcoin",
-      picture: "/assets/Project_Icons/gitcoin",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: gitcoin_id,
+    name: "Gitcoin",
+    picture: "/assets/Project_Icons/gitcoin",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -567,21 +512,18 @@ const seedData = async () => {
           proposalUrl: "https://www.tally.xyz/gov/gitcoin/proposal/",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const gearbox_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: gearbox_id,
-      name: "Gearbox",
-      picture: "/assets/Project_Icons/gearbox",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: gearbox_id,
+    name: "Gearbox",
+    picture: "/assets/Project_Icons/gearbox",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -591,21 +533,18 @@ const seedData = async () => {
           space: "gearbox.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const euler_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: euler_id,
-      name: "Euler",
-      picture: "/assets/Project_Icons/euler",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: euler_id,
+    name: "Euler",
+    picture: "/assets/Project_Icons/euler",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -615,21 +554,18 @@ const seedData = async () => {
           space: "eulerdao.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const aura_finance_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: aura_finance_id,
-      name: "Aura Finance",
-      picture: "/assets/Project_Icons/aura-finance",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: aura_finance_id,
+    name: "Aura Finance",
+    picture: "/assets/Project_Icons/aura-finance",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -639,21 +575,18 @@ const seedData = async () => {
           space: "aurafinance.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const developerdao_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: developerdao_id,
-      name: "Developer DAO",
-      picture: "/assets/Project_Icons/developerdao",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: developerdao_id,
+    name: "Developer DAO",
+    picture: "/assets/Project_Icons/developerdao",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -663,21 +596,18 @@ const seedData = async () => {
           space: "devdao.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const apwine_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: apwine_id,
-      name: "APWine",
-      picture: "/assets/Project_Icons/APWine",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: apwine_id,
+    name: "APWine",
+    picture: "/assets/Project_Icons/APWine",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -687,21 +617,18 @@ const seedData = async () => {
           space: "apwine.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const morpho_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: morpho_id,
-      name: "Morpho",
-      picture: "/assets/Project_Icons/morpho",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: morpho_id,
+    name: "Morpho",
+    picture: "/assets/Project_Icons/morpho",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -711,21 +638,18 @@ const seedData = async () => {
           space: "morpho.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const lido_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: lido_id,
-      name: "Lido DAO",
-      picture: "/assets/Project_Icons/lido",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: lido_id,
+    name: "Lido DAO",
+    picture: "/assets/Project_Icons/lido",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -735,21 +659,18 @@ const seedData = async () => {
           space: "lido-snapshot.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const starknet_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: starknet_id,
-      name: "Starknet",
-      picture: "/assets/Project_Icons/starknet",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: starknet_id,
+    name: "Starknet",
+    picture: "/assets/Project_Icons/starknet",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -759,21 +680,18 @@ const seedData = async () => {
           space: "starknet.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const arbitrum_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: arbitrum_id,
-      name: "Arbitrum DAO",
-      picture: "/assets/Project_Icons/arbitrum",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: arbitrum_id,
+    name: "Arbitrum DAO",
+    picture: "/assets/Project_Icons/arbitrum",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -783,21 +701,18 @@ const seedData = async () => {
           space: "arbitrumfoundation.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const dorg_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: dorg_id,
-      name: "dOrg",
-      picture: "/assets/Project_Icons/dOrg",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: dorg_id,
+    name: "dOrg",
+    picture: "/assets/Project_Icons/dOrg",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -807,21 +722,18 @@ const seedData = async () => {
           space: "dorg.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const solace_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: solace_id,
-      name: "Solace DAO",
-      picture: "/assets/Project_Icons/solace-dao",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: solace_id,
+    name: "Solace DAO",
+    picture: "/assets/Project_Icons/solace-dao",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -831,21 +743,18 @@ const seedData = async () => {
           space: "solace-dao.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const interest_protocol_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: interest_protocol_id,
-      name: "Interest Protocol",
-      picture: "/assets/Project_Icons/interest",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: interest_protocol_id,
+    name: "Interest Protocol",
+    picture: "/assets/Project_Icons/interest",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -857,21 +766,18 @@ const seedData = async () => {
           proposalUrl: "https://interestprotocol.io/#/proposal/",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const rocket_pool_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: rocket_pool_id,
-      name: "Rocket Pool",
-      picture: "/assets/Project_Icons/rocket-pool",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: rocket_pool_id,
+    name: "Rocket Pool",
+    picture: "/assets/Project_Icons/rocket-pool",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -881,21 +787,18 @@ const seedData = async () => {
           space: "rocketpool-dao.eth",
         },
       },
-    ])
-    .catch();
+    ]);
 
   const zerox_protocol_id = cuid();
-  await db
-    .insert(dao)
-    .values({
-      id: zerox_protocol_id,
-      name: "0x Protocol",
-      picture: "/assets/Project_Icons/0x-protocol",
-      quorumwarningemailsupport: false,
-    })
-    .catch();
+  await db.insert(dao).ignore().values({
+    id: zerox_protocol_id,
+    name: "0x Protocol",
+    picture: "/assets/Project_Icons/0x-protocol",
+    quorumwarningemailsupport: false,
+  });
   await db
     .insert(daohandler)
+    .ignore()
     .values([
       {
         id: cuid(),
@@ -914,19 +817,15 @@ const seedData = async () => {
           proposalUrl: "https://governance.0xprotocol.org/vote/proposal/",
         },
       },
-    ])
-    .catch();
+    ]);
 
   console.log("Inserting seed user");
 
   const userid = cuid();
-  await db
-    .insert(user)
-    .values({
-      id: userid,
-      address: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
-    })
-    .catch();
+  await db.insert(user).ignore().values({
+    id: userid,
+    address: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
+  });
 
   console.log("Inserting subscriptions");
 
@@ -935,8 +834,7 @@ const seedData = async () => {
   for (const dao of alldaos) {
     await db
       .insert(subscription)
-      .values({ id: cuid(), userid: userid, daoid: dao.id })
-      .catch();
+      .values({ id: cuid(), userid: userid, daoid: dao.id });
   }
 };
 
