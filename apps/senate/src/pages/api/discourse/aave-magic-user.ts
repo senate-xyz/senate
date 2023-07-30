@@ -1,8 +1,9 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { MagicUserState, prisma } from "@senate/database";
 import { z } from "zod";
 import { ServerClient } from "postmark";
 import { PostHog } from "posthog-node";
+import { db, eq, user } from "@senate/database";
+import cuid from "cuid";
 
 const emailClient = new ServerClient(
   process.env.POSTMARK_TOKEN ?? "Missing Token",
@@ -35,10 +36,10 @@ export default async function handler(
     return;
   }
 
-  const { email } = req.body as RequestBody;
+  const { email: emailInput } = req.body as RequestBody;
 
-  const existingUser = await prisma.user.findFirst({
-    where: { email: email },
+  const existingUser = await db.query.user.findFirst({
+    where: eq(user.email, emailInput),
   });
 
   if (existingUser) {
@@ -53,15 +54,10 @@ export default async function handler(
     ) {
       const challengeCode = Math.random().toString(36).substring(2);
 
-      await prisma.user.update({
-        where: {
-          id: existingUser.id,
-        },
-        data: {
-          isaaveuser: MagicUserState.VERIFICATION,
-          challengecode: challengeCode,
-        },
-      });
+      await db
+        .update(user)
+        .set({ isaaveuser: "VERIFICATION", challengecode: challengeCode })
+        .where(eq(user.id, existingUser.id));
 
       posthog.capture({
         distinctId: String(existingUser.address),
@@ -95,14 +91,10 @@ export default async function handler(
     } else if (!existingUser.verifiedemail) {
       const challengeCode = Math.random().toString(36).substring(2);
 
-      await prisma.user.update({
-        where: {
-          id: existingUser.id,
-        },
-        data: {
-          challengecode: challengeCode,
-        },
-      });
+      await db
+        .update(user)
+        .set({ challengecode: challengeCode })
+        .where(eq(user.id, existingUser.id));
 
       posthog.capture({
         distinctId: String(existingUser.email),
@@ -127,7 +119,7 @@ export default async function handler(
       });
 
       res.status(200).json({
-        email: email,
+        email: emailInput,
         result: "failed",
         url: `${
           process.env.NEXT_PUBLIC_WEB_URL ?? ""
@@ -138,33 +130,32 @@ export default async function handler(
     const schema = z.coerce.string().email();
 
     try {
-      schema.parse(email);
+      schema.parse(emailInput);
     } catch {
-      res.status(500).json({ email: email, result: "failed" });
+      res.status(500).json({ email: emailInput, result: "failed" });
       return;
     }
 
     const challengeCode = Math.random().toString(36).substring(2);
 
-    const newUser = await prisma.user.create({
-      data: {
-        email: email,
-        verifiedemail: false,
-        isaaveuser: MagicUserState.VERIFICATION,
-        emaildailybulletin: true,
-        emailquorumwarning: true,
-        challengecode: challengeCode,
-      },
+    await db.insert(user).values({
+      id: cuid(),
+      email: emailInput,
+      verifiedemail: false,
+      isaaveuser: "VERIFICATION",
+      emaildailybulletin: true,
+      emailquorumwarning: true,
+      challengecode: challengeCode,
     });
 
     posthog.capture({
-      distinctId: String(newUser.email),
+      distinctId: String(emailInput),
       event: "signup_discourse_aave",
     });
 
     await emailClient.sendEmailWithTemplate({
       From: "info@senatelabs.xyz",
-      To: String(newUser.email),
+      To: String(emailInput),
       TemplateAlias: "aave-validate",
       TemplateModel: {
         todaysDate: new Date().toLocaleDateString("en-US", {
@@ -180,7 +171,7 @@ export default async function handler(
     });
 
     res.status(200).json({
-      email: newUser.email,
+      email: emailInput,
       result: "success",
       url: `${
         process.env.NEXT_PUBLIC_WEB_URL ?? ""

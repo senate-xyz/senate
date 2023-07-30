@@ -1,5 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import {
+  db,
+  user,
   and,
   eq,
   inArray,
@@ -10,7 +12,6 @@ import {
 } from "@senate/database";
 import fs from "fs";
 import path from "path";
-import { db, user } from "@senate/database";
 
 export default async function handler(
   req: NextApiRequest,
