@@ -66,7 +66,7 @@ pub async fn update_snapshot_votes<'a>(
     data: Json<VotesRequest<'a>>,
 ) -> Json<Vec<VotesResponse>> {
     let my_span = info_span!(
-        "update_chain_votes",
+        "update_snapshot_votes",
         dao_handler_id = data.daoHandlerId,
         refreshspeed = data.refreshspeed
     );
