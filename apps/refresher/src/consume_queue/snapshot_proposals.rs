@@ -131,7 +131,7 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                 );
             }
         }
-    });
+    }.instrument(info_span!("consume_snapshot_proposals_task")));
 
     Ok(())
 }

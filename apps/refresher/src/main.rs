@@ -5,12 +5,16 @@
 use dotenv::dotenv;
 use flume as _;
 use log::{info, warn};
+use opentelemetry::{
+    sdk::{trace, Resource},
+    KeyValue,
+};
+use opentelemetry_otlp::WithExportConfig;
 use reqwest as _;
 use serde_json as _;
-use std::{env, sync::Arc, time::Duration};
+use std::{collections::HashMap, env, sync::Arc, time::Duration};
 use tokio::{time::sleep, try_join};
 use tracing::{debug, debug_span, event, Instrument, Level};
-use tracing_bunyan_formatter::BunyanFormattingLayer;
 use tracing_subscriber::{fmt, prelude::*};
 
 use config::{load_config_from_db, CONFIG};
@@ -31,11 +35,11 @@ use crate::{
     refresh_status::{create_refresh_statuses, DAOS_REFRESH_STATUS},
 };
 
-pub mod prisma;
-
 mod consume_queue;
+pub mod prisma;
 mod produce_queue;
 mod refresh_status;
+mod telemetry;
 
 pub mod config;
 pub mod handlers;
@@ -68,21 +72,7 @@ pub enum RefreshStatus {
 async fn main() {
     dotenv().ok();
 
-    let app_name = "refresher";
-
-    let filter_str = format!("{}={}", app_name, "info");
-    let env_filter = EnvFilter::try_new(filter_str).unwrap_or_else(|_| EnvFilter::new("info"));
-    let (axiom_layer, _guard) = tracing_axiom::builder()
-        .with_service_name(app_name)
-        .layer()
-        .unwrap();
-
-    tracing_subscriber::registry()
-        .with(env_filter)
-        .with(axiom_layer)
-        .with(BunyanFormattingLayer::new(app_name.into(), std::io::stdout))
-        .try_init()
-        .unwrap();
+    telemetry::setup();
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
     let config = *CONFIG.read().unwrap();

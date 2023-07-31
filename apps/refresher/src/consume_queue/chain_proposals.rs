@@ -10,7 +10,7 @@ use reqwest::{
 };
 use serde::Deserialize;
 use tokio::task;
-use tracing::{debug, event, instrument, warn_span, Instrument, Level, Span};
+use tracing::{debug, event, info_span, instrument, warn_span, Instrument, Level, Span};
 
 use crate::{
     prisma::{self, daohandler, PrismaClient},
@@ -130,7 +130,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                 );
             }
         }
-    });
+    }.instrument(info_span!("consume_chain_proposals_task")));
 
     Ok(())
 }

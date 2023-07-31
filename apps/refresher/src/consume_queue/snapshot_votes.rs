@@ -156,7 +156,7 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                 );
             }
         }
-    });
+    }.instrument(info_span!("consume_snapshot_votes_task")));
 
     Ok(())
 }

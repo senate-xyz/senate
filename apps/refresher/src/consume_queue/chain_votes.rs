@@ -165,7 +165,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                 );
             }
         }
-    });
+    }.instrument(info_span!("consume_chain_votes_task")));
 
     Ok(())
 }
