@@ -44,6 +44,13 @@ pub async fn update_chain_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>,
 ) -> Json<ProposalsResponse<'a>> {
+    let my_span = info_span!(
+        "update_chain_proposals",
+        dao_handler_id = data.daoHandlerId,
+        refreshspeed = data.refreshspeed
+    );
+    let _enter = my_span.enter();
+
     let dao_handler = ctx
         .db
         .daohandler()
@@ -79,6 +86,17 @@ pub async fn update_chain_proposals<'a>(
         to_block = current_block - 10;
     }
 
+    event!(
+        Level::INFO,
+        dao_handler_id = dao_handler.id,
+        min_block = min_block,
+        batch_size = batch_size,
+        from_block = from_block,
+        to_block = to_block,
+        current_block = current_block,
+        "refresh interval"
+    );
+
     let result = get_results(ctx, from_block, to_block, dao_handler).await;
 
     match result {
@@ -87,7 +105,7 @@ pub async fn update_chain_proposals<'a>(
             success: true,
         }),
         Err(e) => {
-            warn!("{:?}", e);
+            event!(Level::WARN, err = e.to_string(), "refresh error");
             Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,
                 success: false,
@@ -96,6 +114,7 @@ pub async fn update_chain_proposals<'a>(
     }
 }
 
+#[instrument(skip_all)]
 async fn get_results(
     ctx: &Ctx,
     from_block: i64,
@@ -163,6 +182,7 @@ async fn get_results(
     }
 }
 
+#[instrument(skip_all)]
 async fn insert_proposals(
     proposals: Vec<ChainProposal>,
     to_block: i64,
@@ -187,6 +207,13 @@ async fn insert_proposals(
                     || proposal.scores_total != existing.scorestotal
                     || proposal.url != existing.url
                 {
+                    event!(
+                        Level::INFO,
+                        proposal_id = existing.id,
+                        proposal_name = existing.name,
+                        dao_handler_id = dao_handler.id,
+                        "update proposal"
+                    );
                     ctx.db
                         .proposal()
                         .update_many(
@@ -224,6 +251,14 @@ async fn insert_proposals(
                 }
             }
             None => {
+                event!(
+                    Level::INFO,
+                    proposal_external_id = proposal.external_id,
+                    proposal_name = proposal.name,
+                    dao_handler_id = dao_handler.id,
+                    "insert proposal"
+                );
+
                 ctx.db
                     .proposal()
                     .create_unchecked(
@@ -278,9 +313,24 @@ async fn insert_proposals(
 
     let uptodate = dao_handler.chainindex - new_index < 1000;
 
+    event!(
+        Level::INFO,
+        dao_handler_id = dao_handler.id,
+        new_index = new_index,
+        to_block = to_block,
+        uptodate = uptodate,
+        "new index"
+    );
+
     if (new_index > dao_handler.chainindex && new_index - dao_handler.chainindex > 1000)
         || uptodate != dao_handler.uptodate
     {
+        event!(
+            Level::INFO,
+            new_index = new_index,
+            dao_handler_id = dao_handler.id,
+            "set new index"
+        );
         ctx.db
             .daohandler()
             .update(

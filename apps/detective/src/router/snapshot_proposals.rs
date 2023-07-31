@@ -54,6 +54,13 @@ pub async fn update_snapshot_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>,
 ) -> Json<ProposalsResponse<'a>> {
+    let my_span = info_span!(
+        "update_snapshot_proposals",
+        dao_handler_id = data.daoHandlerId,
+        refreshspeed = data.refreshspeed
+    );
+    let _enter = my_span.enter();
+
     let dao_handler = ctx
         .db
         .daohandler()
@@ -108,6 +115,15 @@ pub async fn update_snapshot_proposals<'a>(
         old_index.timestamp()
     );
 
+    event!(
+        Level::INFO,
+        dao_handler_id = dao_handler.id,
+        old_index = old_index.timestamp(),
+        space = decoder.space,
+        graphql_query = graphql_query,
+        "refresh interval"
+    );
+
     match update_proposals(
         graphql_query,
         ctx,
@@ -121,7 +137,7 @@ pub async fn update_snapshot_proposals<'a>(
             success: true,
         }),
         Err(e) => {
-            warn!("{:?}", e);
+            event!(Level::WARN, err = e.to_string(), "refresh error");
             Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,
                 success: false,
@@ -130,6 +146,7 @@ pub async fn update_snapshot_proposals<'a>(
     }
 }
 
+#[instrument(skip_all)]
 async fn update_proposals(
     graphql_query: String,
     ctx: &Ctx,
@@ -187,6 +204,13 @@ async fn update_proposals(
                     || proposal.scores_total != existing.scorestotal
                     || existing.visible != !proposal.flagged.is_some_and(|f| f)
                 {
+                    event!(
+                        Level::INFO,
+                        proposal_id = existing.id,
+                        proposal_name = existing.name,
+                        dao_handler_id = dao_handler.id,
+                        "update proposal"
+                    );
                     ctx.db
                         .proposal()
                         .update_many(
@@ -209,6 +233,14 @@ async fn update_proposals(
                 }
             }
             None => {
+                event!(
+                    Level::INFO,
+                    proposal_external_id = proposal.id,
+                    proposal_name = proposal.title,
+                    dao_handler_id = dao_handler.id,
+                    "insert proposal"
+                );
+
                 ctx.db
                     .proposal()
                     .create_unchecked(
@@ -284,10 +316,25 @@ async fn update_proposals(
         FixedOffset::east_opt(0).unwrap(),
     );
 
+    event!(
+        Level::INFO,
+        dao_handler_id = dao_handler.id,
+        new_index = new_index,
+        uptodate = uptodate,
+        "new index"
+    );
+
     if (new_index_date > dao_handler.snapshotindex
         && new_index_date - dao_handler.snapshotindex > Duration::hours(1))
         || uptodate != dao_handler.uptodate
     {
+        event!(
+            Level::INFO,
+            new_index = new_index,
+            dao_handler_id = dao_handler.id,
+            "set new index"
+        );
+
         ctx.db
             .daohandler()
             .update(

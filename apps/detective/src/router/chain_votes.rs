@@ -51,6 +51,13 @@ pub async fn update_chain_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>,
 ) -> Json<Vec<VotesResponse>> {
+    let my_span = info_span!(
+        "update_chain_votes",
+        dao_handler_id = data.daoHandlerId,
+        refreshspeed = data.refreshspeed
+    );
+    let _enter = my_span.enter();
+
     let dao_handler = ctx
         .db
         .daohandler()
@@ -148,6 +155,17 @@ pub async fn update_chain_votes<'a>(
         }
     }
 
+    event!(
+        Level::INFO,
+        dao_handler_id = dao_handler.id,
+        oldest_vote_block = oldest_vote_block,
+        batch_size = batch_size,
+        from_block = from_block,
+        to_block = to_block,
+        current_block = current_block,
+        "refresh interval"
+    );
+
     let result = get_results(
         ctx,
         &dao_handler,
@@ -168,7 +186,7 @@ pub async fn update_chain_votes<'a>(
                 .collect(),
         ),
         Err(e) => {
-            warn!("{:?}", e);
+            event!(Level::WARN, err = e.to_string(), "refresh error");
             Json(
                 voters
                     .into_iter()
@@ -182,6 +200,7 @@ pub async fn update_chain_votes<'a>(
     }
 }
 
+#[instrument(skip_all)]
 async fn get_results(
     ctx: &Ctx,
     dao_handler: &daohandler::Data,
@@ -259,6 +278,7 @@ async fn get_results(
     }
 }
 
+#[instrument(skip_all)]
 async fn insert_votes(
     votes: Vec<VoteResult>,
     to_block: i64,
@@ -291,6 +311,14 @@ async fn insert_votes(
                     || existing.votingpower != vote.voting_power
                     || existing.reason != vote.reason
                 {
+                    event!(
+                        Level::INFO,
+                        voter_address = existing.voteraddress,
+                        proposal_id = existing.proposalid,
+                        dao_handler_id = dao_handler.id,
+                        "update vote"
+                    );
+
                     ctx.db
                         .vote()
                         .update_many(
@@ -311,6 +339,14 @@ async fn insert_votes(
                 }
             }
             None => {
+                event!(
+                    Level::INFO,
+                    voter_address = vote.voter_address,
+                    proposal_id = vote.proposal_id,
+                    dao_handler_id = dao_handler.id,
+                    "insert vote"
+                );
+
                 ctx.db
                     .vote()
                     .create(
@@ -349,10 +385,26 @@ async fn insert_votes(
         new_index = to_block;
     }
 
+    event!(
+        Level::INFO,
+        dao_handler_id = dao_handler.id,
+        new_index = new_index,
+        uptodate = uptodate,
+        "new index"
+    );
+
     for voter_handler in voter_handlers {
         if (new_index > voter_handler.chainindex && new_index - voter_handler.chainindex > 100000)
             || uptodate != voter_handler.uptodate
         {
+            event!(
+                Level::INFO,
+                new_index = new_index,
+                voter_handler_id = voter_handler.id,
+                dao_handler_id = dao_handler.id,
+                "set new index"
+            );
+
             ctx.db
                 .voterhandler()
                 .update_many(

@@ -76,6 +76,7 @@ pub fn setup() {
 
     tracing_subscriber::registry()
         .with(env_filter)
+        .with(tracing_subscriber::fmt::Layer::default())
         .with(logging_layer)
         .with(telemetry_layer)
         .init();

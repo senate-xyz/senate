@@ -27,6 +27,7 @@ pub mod contracts;
 pub mod handlers;
 pub mod prisma;
 mod router;
+mod telemetry;
 
 pub mod utils {
     pub mod etherscan;
@@ -88,10 +89,7 @@ fn health() -> &'static str {
 async fn rocket() -> _ {
     dotenv().ok();
 
-    tracing_subscriber::fmt()
-        .pretty()
-        .with_max_level(tracing::Level::INFO)
-        .init();
+    telemetry::setup();
 
     let rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
 

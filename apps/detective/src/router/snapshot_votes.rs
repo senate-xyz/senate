@@ -65,6 +65,13 @@ pub async fn update_snapshot_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>,
 ) -> Json<Vec<VotesResponse>> {
+    let my_span = info_span!(
+        "update_chain_votes",
+        dao_handler_id = data.daoHandlerId,
+        refreshspeed = data.refreshspeed
+    );
+    let _enter = my_span.enter();
+
     let dao_handler = ctx
         .db
         .daohandler()
@@ -134,6 +141,15 @@ pub async fn update_snapshot_votes<'a>(
         search_from_timestamp
     );
 
+    event!(
+        Level::INFO,
+        dao_handler_id = dao_handler.id,
+        search_from_timestamp = search_from_timestamp,
+        space = decoder.space,
+        graphql_query = graphql_query,
+        "refresh interval"
+    );
+
     let response = match update_votes(
         graphql_query,
         search_from_timestamp,
@@ -153,7 +169,7 @@ pub async fn update_snapshot_votes<'a>(
             })
             .collect(),
         Err(e) => {
-            warn!("{:?}", e);
+            event!(Level::WARN, err = e.to_string(), "refresh error");
             data.voters
                 .clone()
                 .into_iter()
@@ -168,6 +184,7 @@ pub async fn update_snapshot_votes<'a>(
     Json(response)
 }
 
+#[instrument(skip_all)]
 async fn update_votes(
     graphql_query: String,
     search_from_timestamp: i64,
@@ -222,6 +239,7 @@ async fn update_votes(
     Ok(())
 }
 
+#[instrument(skip_all)]
 async fn upsert_votes_for_proposal(
     votes: Vec<GraphQLVote>,
     p: GraphQLProposal,
@@ -257,6 +275,7 @@ async fn upsert_votes_for_proposal(
     }
 }
 
+#[instrument(skip_all)]
 async fn update_or_create_votes(
     ctx: &Ctx,
     votes_for_proposal: Vec<GraphQLVote>,
@@ -282,6 +301,14 @@ async fn update_or_create_votes(
                     || existing.votingpower != vote.vp
                     || existing.reason != vote.reason
                 {
+                    event!(
+                        Level::INFO,
+                        voter_address = existing.voteraddress,
+                        proposal_id = existing.proposalid,
+                        dao_handler_id = dao_handler.id,
+                        "update vote"
+                    );
+
                     ctx.db
                         .vote()
                         .update_many(
@@ -307,6 +334,14 @@ async fn update_or_create_votes(
                 }
             }
             None => {
+                event!(
+                    Level::INFO,
+                    voter_address = vote.voter,
+                    proposal_id = proposal_id,
+                    dao_handler_id = dao_handler.id,
+                    "insert vote"
+                );
+
                 ctx.db
                     .vote()
                     .create(
@@ -333,6 +368,7 @@ async fn update_or_create_votes(
     Ok(())
 }
 
+#[instrument(skip_all)]
 async fn update_refresh_statuses(
     votes: Vec<GraphQLVote>,
     search_from_timestamp: i64,
@@ -375,11 +411,27 @@ async fn update_refresh_statuses(
         FixedOffset::east_opt(0).unwrap(),
     );
 
+    event!(
+        Level::INFO,
+        dao_handler_id = dao_handler.id,
+        new_index = new_index,
+        uptodate = uptodate,
+        "new index"
+    );
+
     for voter_handler in voter_handlers {
         if (new_index_date > voter_handler.snapshotindex
             && new_index_date - voter_handler.snapshotindex > Duration::days(1))
             || uptodate != voter_handler.uptodate
         {
+            event!(
+                Level::INFO,
+                new_index = new_index,
+                voter_handler_id = voter_handler.id,
+                dao_handler_id = dao_handler.id,
+                "set new index"
+            );
+
             ctx.db
                 .voterhandler()
                 .update_many(
