@@ -70,50 +70,50 @@ pub async fn update_snapshot_votes<'a>(
         dao_handler_id = data.daoHandlerId,
         refreshspeed = data.refreshspeed
     );
-    let _enter = my_span.enter();
 
-    let dao_handler = ctx
-        .db
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-        .exec()
-        .await
-        .expect("bad prisma result")
-        .expect("daoHandlerId not found");
+    async move {
+        let dao_handler = ctx
+            .db
+            .daohandler()
+            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .exec()
+            .await
+            .expect("bad prisma result")
+            .expect("daoHandlerId not found");
 
-    let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
-        Ok(data) => data,
-        Err(_) => panic!("decoder not found"),
-    };
+        let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
+            Ok(data) => data,
+            Err(_) => panic!("decoder not found"),
+        };
 
-    let voter_handlers = ctx
-        .db
-        .voterhandler()
-        .find_many(vec![
-            voterhandler::voter::is(vec![voter::address::in_vec(data.voters.clone())]),
-            voterhandler::daohandler::is(vec![daohandler::id::equals(
-                data.daoHandlerId.to_string(),
-            )]),
-        ])
-        .include(voterhandler_with_voter::include())
-        .exec()
-        .await
-        .expect("bad prisma result");
+        let voter_handlers = ctx
+            .db
+            .voterhandler()
+            .find_many(vec![
+                voterhandler::voter::is(vec![voter::address::in_vec(data.voters.clone())]),
+                voterhandler::daohandler::is(vec![daohandler::id::equals(
+                    data.daoHandlerId.to_string(),
+                )]),
+            ])
+            .include(voterhandler_with_voter::include())
+            .exec()
+            .await
+            .expect("bad prisma result");
 
-    let newest_vote = voter_handlers
-        .iter()
-        .map(|voterhandler| voterhandler.snapshotindex.timestamp())
-        .max()
-        .unwrap_or(0);
+        let newest_vote = voter_handlers
+            .iter()
+            .map(|voterhandler| voterhandler.snapshotindex.timestamp())
+            .max()
+            .unwrap_or(0);
 
-    let search_from_timestamp = if newest_vote < dao_handler.snapshotindex.timestamp() {
-        newest_vote
-    } else {
-        dao_handler.snapshotindex.timestamp()
-    };
+        let search_from_timestamp = if newest_vote < dao_handler.snapshotindex.timestamp() {
+            newest_vote
+        } else {
+            dao_handler.snapshotindex.timestamp()
+        };
 
-    let graphql_query = format!(
-        r#"{{
+        let graphql_query = format!(
+            r#"{{
         votes(
             first: {:?},
             orderBy: "created",
@@ -135,53 +135,56 @@ pub async fn update_snapshot_votes<'a>(
             }}
         }}
     }}"#,
-        data.refreshspeed,
-        data.voters.clone(),
-        decoder.space,
-        search_from_timestamp
-    );
+            data.refreshspeed,
+            data.voters.clone(),
+            decoder.space,
+            search_from_timestamp
+        );
 
-    event!(
-        Level::INFO,
-        dao_handler_id = dao_handler.id,
-        search_from_timestamp = search_from_timestamp,
-        space = decoder.space,
-        graphql_query = graphql_query,
-        "refresh interval"
-    );
+        event!(
+            Level::INFO,
+            dao_handler_id = dao_handler.id,
+            search_from_timestamp = search_from_timestamp,
+            space = decoder.space,
+            graphql_query = graphql_query,
+            "refresh interval"
+        );
 
-    let response = match update_votes(
-        graphql_query,
-        search_from_timestamp,
-        dao_handler,
-        voter_handlers,
-        ctx,
-    )
-    .await
-    {
-        Ok(_) => data
-            .voters
-            .clone()
-            .into_iter()
-            .map(|v| VotesResponse {
-                voter_address: v,
-                success: true,
-            })
-            .collect(),
-        Err(e) => {
-            event!(Level::WARN, err = e.to_string(), "refresh error");
-            data.voters
+        let response = match update_votes(
+            graphql_query,
+            search_from_timestamp,
+            dao_handler,
+            voter_handlers,
+            ctx,
+        )
+        .await
+        {
+            Ok(_) => data
+                .voters
                 .clone()
                 .into_iter()
                 .map(|v| VotesResponse {
                     voter_address: v,
-                    success: false,
+                    success: true,
                 })
-                .collect()
-        }
-    };
+                .collect(),
+            Err(e) => {
+                event!(Level::WARN, err = e.to_string(), "refresh error");
+                data.voters
+                    .clone()
+                    .into_iter()
+                    .map(|v| VotesResponse {
+                        voter_address: v,
+                        success: false,
+                    })
+                    .collect()
+            }
+        };
 
-    Json(response)
+        Json(response)
+    }
+    .instrument(my_span)
+    .await
 }
 
 #[instrument(skip_all)]

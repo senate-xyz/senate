@@ -49,69 +49,72 @@ pub async fn update_chain_proposals<'a>(
         dao_handler_id = data.daoHandlerId,
         refreshspeed = data.refreshspeed
     );
-    let _enter = my_span.enter();
 
-    let dao_handler = ctx
-        .db
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-        .exec()
-        .await
-        .expect("bad prisma result")
-        .expect("daoHandlerId not found");
+    async move {
+        let dao_handler = ctx
+            .db
+            .daohandler()
+            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .exec()
+            .await
+            .expect("bad prisma result")
+            .expect("daoHandlerId not found");
 
-    let min_block = dao_handler.chainindex;
-    let batch_size = data.refreshspeed;
+        let min_block = dao_handler.chainindex;
+        let batch_size = data.refreshspeed;
 
-    let mut from_block = min_block;
+        let mut from_block = min_block;
 
-    let current_block = ctx
-        .rpc
-        .get_block_number()
-        .await
-        .unwrap_or(U64::from(from_block))
-        .as_u64() as i64;
+        let current_block = ctx
+            .rpc
+            .get_block_number()
+            .await
+            .unwrap_or(U64::from(from_block))
+            .as_u64() as i64;
 
-    let mut to_block = if current_block - from_block > batch_size {
-        from_block + batch_size
-    } else {
-        current_block
-    };
+        let mut to_block = if current_block - from_block > batch_size {
+            from_block + batch_size
+        } else {
+            current_block
+        };
 
-    if from_block > current_block - 10 {
-        from_block = current_block - 10;
-    }
+        if from_block > current_block - 10 {
+            from_block = current_block - 10;
+        }
 
-    if to_block > current_block - 10 {
-        to_block = current_block - 10;
-    }
+        if to_block > current_block - 10 {
+            to_block = current_block - 10;
+        }
 
-    event!(
-        Level::INFO,
-        dao_handler_id = dao_handler.id,
-        min_block = min_block,
-        batch_size = batch_size,
-        from_block = from_block,
-        to_block = to_block,
-        current_block = current_block,
-        "refresh interval"
-    );
+        event!(
+            Level::INFO,
+            dao_handler_id = dao_handler.id,
+            min_block = min_block,
+            batch_size = batch_size,
+            from_block = from_block,
+            to_block = to_block,
+            current_block = current_block,
+            "refresh interval"
+        );
 
-    let result = get_results(ctx, from_block, to_block, dao_handler).await;
+        let result = get_results(ctx, from_block, to_block, dao_handler).await;
 
-    match result {
-        Ok(_) => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            success: true,
-        }),
-        Err(e) => {
-            event!(Level::WARN, err = e.to_string(), "refresh error");
-            Json(ProposalsResponse {
+        match result {
+            Ok(_) => Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,
-                success: false,
-            })
+                success: true,
+            }),
+            Err(e) => {
+                event!(Level::WARN, err = e.to_string(), "refresh error");
+                Json(ProposalsResponse {
+                    daoHandlerId: data.daoHandlerId,
+                    success: false,
+                })
+            }
         }
     }
+    .instrument(my_span)
+    .await
 }
 
 #[instrument(skip_all)]

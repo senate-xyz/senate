@@ -7,6 +7,8 @@ extern crate rocket;
 
 use std::{env, process, sync::Arc};
 
+use metrics::{self as _, register_counter};
+
 use dotenv::dotenv;
 use ethers::providers::{Http, Provider};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};

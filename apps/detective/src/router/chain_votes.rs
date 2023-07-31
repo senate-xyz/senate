@@ -56,95 +56,72 @@ pub async fn update_chain_votes<'a>(
         dao_handler_id = data.daoHandlerId,
         refreshspeed = data.refreshspeed
     );
-    let _enter = my_span.enter();
 
-    let dao_handler = ctx
-        .db
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-        .exec()
-        .await
-        .expect("bad prisma result")
-        .expect("daoHandlerId not found");
+    async move {
+        let dao_handler = ctx
+            .db
+            .daohandler()
+            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .exec()
+            .await
+            .expect("bad prisma result")
+            .expect("daoHandlerId not found");
 
-    let first_proposal = ctx
-        .db
-        .proposal()
-        .find_many(vec![proposal::daohandlerid::equals(
-            dao_handler.id.to_string(),
-        )])
-        .order_by(proposal::blockcreated::order(Direction::Asc))
-        .take(1)
-        .exec()
-        .await
-        .expect("bad prisma result");
+        let first_proposal = ctx
+            .db
+            .proposal()
+            .find_many(vec![proposal::daohandlerid::equals(
+                dao_handler.id.to_string(),
+            )])
+            .order_by(proposal::blockcreated::order(Direction::Asc))
+            .take(1)
+            .exec()
+            .await
+            .expect("bad prisma result");
 
-    let first_proposal_block = match first_proposal.first() {
-        Some(s) => s.blockcreated.unwrap_or(0),
-        None => 0,
-    };
+        let first_proposal_block = match first_proposal.first() {
+            Some(s) => s.blockcreated.unwrap_or(0),
+            None => 0,
+        };
 
-    let voter_handlers = ctx
-        .db
-        .voterhandler()
-        .find_many(vec![
-            voterhandler::voter::is(vec![voter::address::in_vec(data.voters.clone())]),
-            voterhandler::daohandler::is(vec![daohandler::id::equals(
-                data.daoHandlerId.to_string(),
-            )]),
-        ])
-        .include(voterhandler_with_voter::include())
-        .exec()
-        .await
-        .expect("bad prisma result");
+        let voter_handlers = ctx
+            .db
+            .voterhandler()
+            .find_many(vec![
+                voterhandler::voter::is(vec![voter::address::in_vec(data.voters.clone())]),
+                voterhandler::daohandler::is(vec![daohandler::id::equals(
+                    data.daoHandlerId.to_string(),
+                )]),
+            ])
+            .include(voterhandler_with_voter::include())
+            .exec()
+            .await
+            .expect("bad prisma result");
 
-    let voters = data.voters.clone();
+        let voters = data.voters.clone();
 
-    let oldest_vote_block = voter_handlers
-        .iter()
-        .map(|vh| vh.chainindex)
-        .min()
-        .unwrap_or_default();
+        let oldest_vote_block = voter_handlers
+            .iter()
+            .map(|vh| vh.chainindex)
+            .min()
+            .unwrap_or_default();
 
-    let mut current_block = ctx
-        .rpc
-        .get_block_number()
-        .await
-        .unwrap_or(U64::from(0))
-        .as_u64() as i64;
-
-    let batch_size = (data.refreshspeed).div(voters.len() as i64);
-
-    let mut from_block = cmp::max(oldest_vote_block, 0);
-
-    if from_block < first_proposal_block {
-        from_block = first_proposal_block;
-    }
-
-    let mut to_block = if current_block - from_block > batch_size {
-        from_block + batch_size
-    } else {
-        current_block
-    };
-
-    if from_block > to_block {
-        from_block = to_block - 10;
-    }
-
-    if dao_handler.r#type == DaoHandlerType::MakerPollArbitrum {
-        let rpc_url = env::var("ARBITRUM_NODE_URL").expect("$ARBITRUM_NODE_URL is not set");
-        let provider = Provider::<Http>::try_from(rpc_url).unwrap();
-        let rpc = Arc::new(provider);
-
-        from_block = cmp::max(oldest_vote_block, 0);
-
-        current_block = rpc
+        let mut current_block = ctx
+            .rpc
             .get_block_number()
             .await
             .unwrap_or(U64::from(0))
             .as_u64() as i64;
 
-        to_block = if current_block - from_block > batch_size {
+        let batch_size = (data.refreshspeed).div(voters.len() as i64);
+
+        let mut from_block = cmp::max(oldest_vote_block, 0);
+
+        if from_block < first_proposal_block {
+            from_block = first_proposal_block;
+        }
+
+        let mut to_block = if current_block - from_block > batch_size {
             from_block + batch_size
         } else {
             current_block
@@ -153,51 +130,77 @@ pub async fn update_chain_votes<'a>(
         if from_block > to_block {
             from_block = to_block - 10;
         }
-    }
 
-    event!(
-        Level::INFO,
-        dao_handler_id = dao_handler.id,
-        oldest_vote_block = oldest_vote_block,
-        batch_size = batch_size,
-        from_block = from_block,
-        to_block = to_block,
-        current_block = current_block,
-        "refresh interval"
-    );
+        if dao_handler.r#type == DaoHandlerType::MakerPollArbitrum {
+            let rpc_url = env::var("ARBITRUM_NODE_URL").expect("$ARBITRUM_NODE_URL is not set");
+            let provider = Provider::<Http>::try_from(rpc_url).unwrap();
+            let rpc = Arc::new(provider);
 
-    let result = get_results(
-        ctx,
-        &dao_handler,
-        from_block,
-        to_block,
-        voters.clone(),
-        voter_handlers,
-    )
-    .await;
+            from_block = cmp::max(oldest_vote_block, 0);
 
-    match result {
-        Ok(r) => Json(
-            r.into_iter()
-                .map(|v| VotesResponse {
-                    voter_address: v.voter_address,
-                    success: v.success,
-                })
-                .collect(),
-        ),
-        Err(e) => {
-            event!(Level::WARN, err = e.to_string(), "refresh error");
-            Json(
-                voters
-                    .into_iter()
+            current_block = rpc
+                .get_block_number()
+                .await
+                .unwrap_or(U64::from(0))
+                .as_u64() as i64;
+
+            to_block = if current_block - from_block > batch_size {
+                from_block + batch_size
+            } else {
+                current_block
+            };
+
+            if from_block > to_block {
+                from_block = to_block - 10;
+            }
+        }
+
+        event!(
+            Level::INFO,
+            dao_handler_id = dao_handler.id,
+            oldest_vote_block = oldest_vote_block,
+            batch_size = batch_size,
+            from_block = from_block,
+            to_block = to_block,
+            current_block = current_block,
+            "refresh interval"
+        );
+
+        let result = get_results(
+            ctx,
+            &dao_handler,
+            from_block,
+            to_block,
+            voters.clone(),
+            voter_handlers,
+        )
+        .await;
+
+        match result {
+            Ok(r) => Json(
+                r.into_iter()
                     .map(|v| VotesResponse {
-                        voter_address: v,
-                        success: false,
+                        voter_address: v.voter_address,
+                        success: v.success,
                     })
                     .collect(),
-            )
+            ),
+            Err(e) => {
+                event!(Level::WARN, err = e.to_string(), "refresh error");
+                Json(
+                    voters
+                        .into_iter()
+                        .map(|v| VotesResponse {
+                            voter_address: v,
+                            success: false,
+                        })
+                        .collect(),
+                )
+            }
         }
     }
+    .instrument(my_span)
+    .await
 }
 
 #[instrument(skip_all)]

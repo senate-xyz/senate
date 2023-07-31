@@ -59,26 +59,26 @@ pub async fn update_snapshot_proposals<'a>(
         dao_handler_id = data.daoHandlerId,
         refreshspeed = data.refreshspeed
     );
-    let _enter = my_span.enter();
 
-    let dao_handler = ctx
-        .db
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-        .exec()
-        .await
-        .expect("bad prisma result")
-        .expect("daoHandlerId not found");
+    async move {
+        let dao_handler = ctx
+            .db
+            .daohandler()
+            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .exec()
+            .await
+            .expect("bad prisma result")
+            .expect("daoHandlerId not found");
 
-    let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
-        Ok(data) => data,
-        Err(_) => panic!("{:?} decoder not found", data.daoHandlerId),
-    };
+        let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
+            Ok(data) => data,
+            Err(_) => panic!("{:?} decoder not found", data.daoHandlerId),
+        };
 
-    let old_index = dao_handler.snapshotindex;
+        let old_index = dao_handler.snapshotindex;
 
-    let graphql_query = format!(
-        r#"
+        let graphql_query = format!(
+            r#"
                 {{
                     proposals (
                         first: {:?},
@@ -106,44 +106,47 @@ pub async fn update_snapshot_proposals<'a>(
                     }}
                 }}
             "#,
-        if data.refreshspeed < 1000 {
-            data.refreshspeed
-        } else {
-            1000
-        },
-        decoder.space,
-        old_index.timestamp()
-    );
+            if data.refreshspeed < 1000 {
+                data.refreshspeed
+            } else {
+                1000
+            },
+            decoder.space,
+            old_index.timestamp()
+        );
 
-    event!(
-        Level::INFO,
-        dao_handler_id = dao_handler.id,
-        old_index = old_index.timestamp(),
-        space = decoder.space,
-        graphql_query = graphql_query,
-        "refresh interval"
-    );
+        event!(
+            Level::INFO,
+            dao_handler_id = dao_handler.id,
+            old_index = old_index.timestamp(),
+            space = decoder.space,
+            graphql_query = graphql_query,
+            "refresh interval"
+        );
 
-    match update_proposals(
-        graphql_query,
-        ctx,
-        dao_handler.clone(),
-        old_index.timestamp(),
-    )
-    .await
-    {
-        Ok(_) => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            success: true,
-        }),
-        Err(e) => {
-            event!(Level::WARN, err = e.to_string(), "refresh error");
-            Json(ProposalsResponse {
+        match update_proposals(
+            graphql_query,
+            ctx,
+            dao_handler.clone(),
+            old_index.timestamp(),
+        )
+        .await
+        {
+            Ok(_) => Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,
-                success: false,
-            })
+                success: true,
+            }),
+            Err(e) => {
+                event!(Level::WARN, err = e.to_string(), "refresh error");
+                Json(ProposalsResponse {
+                    daoHandlerId: data.daoHandlerId,
+                    success: false,
+                })
+            }
         }
     }
+    .instrument(my_span)
+    .await
 }
 
 #[instrument(skip_all)]
