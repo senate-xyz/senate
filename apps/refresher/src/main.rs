@@ -10,7 +10,8 @@ use serde_json as _;
 use std::{env, sync::Arc, time::Duration};
 use tokio::{time::sleep, try_join};
 use tracing::{debug, debug_span, event, Instrument, Level};
-use tracing_subscriber::prelude::*;
+use tracing_bunyan_formatter::BunyanFormattingLayer;
+use tracing_subscriber::{fmt, prelude::*};
 
 use config::{load_config_from_db, CONFIG};
 use handlers::create_voter_handlers;
@@ -79,6 +80,7 @@ async fn main() {
     tracing_subscriber::registry()
         .with(env_filter)
         .with(axiom_layer)
+        .with(BunyanFormattingLayer::new(app_name.into(), std::io::stdout))
         .try_init()
         .unwrap();
 

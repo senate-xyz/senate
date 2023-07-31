@@ -1,7 +1,7 @@
 use std::{cmp, collections::HashMap, env, sync::Arc};
 
 use anyhow::Result;
-use log::warn;
+use log::{info, warn};
 
 use prisma_client_rust::chrono::Utc;
 use reqwest::{
@@ -10,9 +10,7 @@ use reqwest::{
 };
 use serde::Deserialize;
 use tokio::task;
-use tracing::{
-    debug, debug_span, error_span, event, info_span, instrument, warn_span, Instrument, Level, Span,
-};
+use tracing::{debug, event, instrument, warn_span, Instrument, Level, Span};
 
 use crate::{
     prisma::{self, daohandler, PrismaClient},
@@ -42,10 +40,11 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
             .expect("DaoHandler not found in refresh status array");
         let dao_handler = daos_refresh_status.get_mut(dao_handler_position).unwrap();
 
-        info_span!(
-            "refresh item",
+        event!(
+            Level::INFO,
             daoHandlerId = entry.handler_id,
-            votersrefreshspeed = dao_handler.refreshspeed
+            votersrefreshspeed = dao_handler.refreshspeed,
+            "refresh item"
         );
 
         let response = http_client
@@ -69,11 +68,12 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                                     10000000,
                                 );
 
-                                info_span!(
-                                    "updated ok",
+                                event!(
+                                    Level::INFO,
                                     daohandler = dao_handler.dao_handler_id,
                                     lastrefresh = dao_handler.last_refresh.to_string(),
                                     refreshspeed = dao_handler.refreshspeed,
+                                    "updated ok"
                                 );
                             }
                             false => {
@@ -85,11 +85,12 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                                     100,
                                 );
 
-                                warn_span!(
-                                    "updated nok",
+                                event!(
+                                    Level::WARN,
                                     daohandler = dao_handler.dao_handler_id,
                                     lastrefresh = dao_handler.last_refresh.to_string(),
                                     refreshspeed = dao_handler.refreshspeed,
+                                    "updated nok"
                                 );
                             }
                         };
@@ -102,11 +103,12 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                             100,
                         );
 
-                        error_span!(
-                            "failed to update",
+                        event!(
+                            Level::ERROR,
                             daohandler = dao_handler.dao_handler_id,
                             lastrefresh = dao_handler.last_refresh.to_string(),
                             refreshspeed = dao_handler.refreshspeed,
+                            "failed to update"
                         );
                     }
                 }
@@ -119,11 +121,12 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                     100,
                 );
 
-                error_span!(
-                    "failed to update",
+                event!(
+                    Level::ERROR,
                     daohandler = dao_handler.dao_handler_id,
                     lastrefresh = dao_handler.last_refresh.to_string(),
                     refreshspeed = dao_handler.refreshspeed,
+                    "failed to update"
                 );
             }
         }

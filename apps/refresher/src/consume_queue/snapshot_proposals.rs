@@ -41,10 +41,11 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
             .expect("DaoHandler not found in refresh status array");
         let dao_handler = daos_refresh_status.get_mut(dao_handler_position).unwrap();
 
-        info_span!(
-            "refresh item",
+        event!(
+            Level::INFO,
             daoHandlerId = entry.handler_id,
-            votersrefreshspeed = dao_handler.refreshspeed
+            votersrefreshspeed = dao_handler.refreshspeed,
+            "refresh item"
         );
 
         let response = http_client
@@ -68,11 +69,12 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                                     1000,
                                 );
 
-                                info_span!(
-                                    "updated ok",
+                                event!(
+                                    Level::INFO,
                                     daohandler = dao_handler.dao_handler_id,
                                     lastrefresh = dao_handler.last_refresh.to_string(),
                                     refreshspeed = dao_handler.refreshspeed,
+                                    "updated ok"
                                 );
                             }
                             false => {
@@ -84,11 +86,12 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                                     10,
                                 );
 
-                                warn_span!(
-                                    "updated nok",
+                                event!(
+                                    Level::WARN,
                                     daohandler = dao_handler.dao_handler_id,
                                     lastrefresh = dao_handler.last_refresh.to_string(),
                                     refreshspeed = dao_handler.refreshspeed,
+                                    "updated nok"
                                 );
                             }
                         };
@@ -101,11 +104,12 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                             10,
                         );
 
-                        error_span!(
-                            "failed to update",
+                        event!(
+                            Level::ERROR,
                             daohandler = dao_handler.dao_handler_id,
                             lastrefresh = dao_handler.last_refresh.to_string(),
                             refreshspeed = dao_handler.refreshspeed,
+                            "failed to update"
                         );
                     }
                 }
@@ -118,11 +122,12 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                     10,
                 );
 
-                error_span!(
-                    "failed to update",
+                event!(
+                    Level::ERROR,
                     daohandler = dao_handler.dao_handler_id,
                     lastrefresh = dao_handler.last_refresh.to_string(),
                     refreshspeed = dao_handler.refreshspeed,
+                    "failed to update"
                 );
             }
         }

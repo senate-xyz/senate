@@ -43,10 +43,11 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
             .expect("DaoHandler not found in refresh status array");
         let dao_handler_r = daos_refresh_status.get_mut(dao_handler_position).unwrap();
 
-        info_span!(
-            "refresh item",
+        event!(
+            Level::INFO,
             daoHandlerId = entry.handler_id,
-            votersrefreshspeed = dao_handler_r.votersrefreshspeed
+            votersrefreshspeed = dao_handler_r.votersrefreshspeed,
+            "refresh item"
         );
 
         let response = http_client
@@ -93,11 +94,12 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                                 vh.refresh_status = RefreshStatus::DONE;
                                 vh.last_refresh = Utc::now();
 
-                                info_span!(
-                                    "updated ok",
+                                event!(
+                                    Level::INFO,
                                     daohandler = dao_handler_r.dao_handler_id,
                                     voteraddress = vh.voter_address,
                                     voterstatus = vh.last_refresh.to_string(),
+                                    "updated ok"
                                 );
                             }
 
@@ -105,11 +107,12 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                                 vh.refresh_status = RefreshStatus::NEW;
                                 vh.last_refresh = Utc::now();
 
-                                warn_span!(
-                                    "updated nok",
+                                event!(
+                                    Level::WARN,
                                     daohandler = dao_handler_r.dao_handler_id,
                                     voteraddress = vh.voter_address,
-                                    voterstatus = vh.last_refresh.to_string()
+                                    voterstatus = vh.last_refresh.to_string(),
+                                    "updated nok"
                                 );
                             }
                         }
@@ -119,10 +122,11 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                             vh.refresh_status = RefreshStatus::NEW;
                             vh.last_refresh = Utc::now();
 
-                            error_span!(
-                                "failed to update",
+                            event!(
+                                Level::ERROR,
                                 daohandler = dao_handler_r.dao_handler_id,
                                 voteraddress = vh.voter_address,
+                                "failed to update"
                             );
                         }
                         dao_handler_r.votersrefreshspeed = cmp::max(
@@ -138,10 +142,11 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                     vh.refresh_status = RefreshStatus::NEW;
                     vh.last_refresh = Utc::now();
 
-                    error_span!(
-                        "failed to update",
+                    event!(
+                        Level::ERROR,
                         daohandler = dao_handler_r.dao_handler_id,
                         voteraddress = vh.voter_address,
+                        "failed to update"
                     );
                 }
                 dao_handler_r.votersrefreshspeed = cmp::max(
@@ -152,5 +157,6 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
             }
         }
     });
+
     Ok(())
 }
