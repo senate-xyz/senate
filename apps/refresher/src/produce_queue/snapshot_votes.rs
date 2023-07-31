@@ -18,6 +18,7 @@ use crate::{
     RefreshEntry, RefreshType,
 };
 
+#[instrument(skip_all)]
 pub async fn produce_snapshot_votes_queue(
     client: &PrismaClient,
     config: &Config,

@@ -17,6 +17,7 @@ use crate::{
     RefreshEntry, RefreshStatus, RefreshType,
 };
 
+#[instrument(skip_all)]
 pub async fn produce_chain_votes_queue(
     client: &PrismaClient,
     config: &Config,

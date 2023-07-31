@@ -11,6 +11,7 @@ use crate::{
     config::Config, prisma, refresh_status::DAOS_REFRESH_STATUS, RefreshEntry, RefreshType,
 };
 
+#[instrument(skip_all)]
 pub async fn produce_snapshot_proposals_queue(config: &Config) -> Result<Vec<RefreshEntry>> {
     let normal_refresh = Utc::now() - Duration::seconds(config.normal_snapshot_proposals.into());
     let force_refresh = Utc::now() - Duration::seconds(config.force_snapshot_proposals.into());

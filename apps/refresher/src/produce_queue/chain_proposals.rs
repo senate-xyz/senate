@@ -14,6 +14,7 @@ use crate::{
     RefreshEntry, RefreshStatus, RefreshType,
 };
 
+#[instrument(skip_all)]
 pub async fn produce_chain_proposals_queue(config: &Config) -> Result<Vec<RefreshEntry>> {
     let normal_refresh = Utc::now() - Duration::seconds(config.normal_chain_proposals.into());
     let force_refresh = Utc::now() - Duration::seconds(config.force_chain_proposals.into());
