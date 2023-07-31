@@ -96,7 +96,7 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                             }
                         };
                     }
-                    Err(_e) => {
+                    Err(e) => {
                         dao_handler.refresh_status = RefreshStatus::NEW;
                         dao_handler.last_refresh = Utc::now();
                         dao_handler.refreshspeed = cmp::max(
@@ -109,12 +109,13 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                             daohandler = dao_handler.dao_handler_id,
                             lastrefresh = dao_handler.last_refresh.to_string(),
                             refreshspeed = dao_handler.refreshspeed,
+                            err = e.to_string(),
                             "failed to update"
                         );
                     }
                 }
             }
-            Err(_e) => {
+            Err(e) => {
                 dao_handler.refresh_status = RefreshStatus::NEW;
                 dao_handler.last_refresh = Utc::now();
                 dao_handler.refreshspeed = cmp::max(
@@ -127,6 +128,7 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                     daohandler = dao_handler.dao_handler_id,
                     lastrefresh = dao_handler.last_refresh.to_string(),
                     refreshspeed = dao_handler.refreshspeed,
+                    err = e.to_string(),
                     "failed to update"
                 );
             }

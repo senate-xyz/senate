@@ -117,7 +117,7 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                             }
                         }
                     }
-                    Err(_e) => {
+                    Err(e) => {
                         for vh in voter_refresh_status.iter_mut() {
                             vh.refresh_status = RefreshStatus::NEW;
                             vh.last_refresh = Utc::now();
@@ -126,6 +126,7 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                                 Level::ERROR,
                                 daohandler = dao_handler_r.dao_handler_id,
                                 voteraddress = vh.voter_address,
+                                err = e.to_string(),
                                 "failed to update"
                             );
                         }
@@ -137,7 +138,7 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                     }
                 }
             }
-            Err(_e) => {
+            Err(e) => {
                 for vh in voter_refresh_status.iter_mut() {
                     vh.refresh_status = RefreshStatus::NEW;
                     vh.last_refresh = Utc::now();
@@ -146,6 +147,7 @@ pub(crate) async fn consume_snapshot_votes(entry: RefreshEntry) -> Result<()> {
                         Level::ERROR,
                         daohandler = dao_handler_r.dao_handler_id,
                         voteraddress = vh.voter_address,
+                        err = e.to_string(),
                         "failed to update"
                     );
                 }
