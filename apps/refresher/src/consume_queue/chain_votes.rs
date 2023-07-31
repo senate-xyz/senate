@@ -2,6 +2,7 @@ use std::{cmp, collections::HashMap, env, sync::Arc};
 
 use anyhow::Result;
 use log::warn;
+use metrics::increment_counter;
 use prisma_client_rust::chrono::Utc;
 use reqwest::{
     header::{HeaderName, HeaderValue},
@@ -131,6 +132,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                             vh.refresh_status = RefreshStatus::NEW;
                             vh.last_refresh = Utc::now();
 
+                            increment_counter!("refresher_chain_votes_errors");
                             event!(
                                 Level::ERROR,
                                 daohandler = dao_handler_r.dao_handler_id,
@@ -152,6 +154,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                     vh.refresh_status = RefreshStatus::NEW;
                     vh.last_refresh = Utc::now();
 
+                    increment_counter!("refresher_chain_votes_errors");
                     event!(
                         Level::ERROR,
                         daohandler = dao_handler_r.dao_handler_id,

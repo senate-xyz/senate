@@ -3,6 +3,7 @@ use std::{cmp, collections::HashMap, env, sync::Arc};
 use anyhow::Result;
 use log::{info, warn};
 
+use metrics::increment_counter;
 use prisma_client_rust::chrono::Utc;
 use reqwest::{
     header::{HeaderName, HeaderValue},
@@ -103,6 +104,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                             100,
                         );
 
+                        increment_counter!("refresher_chain_proposals_errors");
                         event!(
                             Level::ERROR,
                             daohandler = dao_handler.dao_handler_id,
@@ -122,6 +124,7 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                     100,
                 );
 
+                increment_counter!("refresher_chain_proposals_errors");
                 event!(
                     Level::ERROR,
                     daohandler = dao_handler.dao_handler_id,

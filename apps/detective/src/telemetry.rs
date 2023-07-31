@@ -1,11 +1,12 @@
-use std::env;
+use std::{env, thread, time::Duration};
 
 use base64::{
     alphabet,
     engine::{self, general_purpose},
     Engine as _,
 };
-use metrics_exporter_influx::InfluxBuilder;
+use metrics::{counter, gauge, histogram};
+use metrics_exporter_influx::{InfluxBuilder, MetricData};
 use opentelemetry::{
     global,
     sdk::{propagation::TraceContextPropagator, trace, Resource},
@@ -20,8 +21,6 @@ use url::Url;
 
 pub fn setup() {
     let app_name = "detective";
-
-    // let telemetry_agent;
 
     let telemetry_key = env::var("TELEMETRY_KEY").expect("$TELEMETRY_KEY is not set");
     let exec_env = env::var("EXEC_ENV").expect("$EXEC_ENV is not set");
@@ -84,26 +83,22 @@ pub fn setup() {
 
     tokio::spawn(task);
 
-    let _ = InfluxBuilder::new()
-        .with_grafana_cloud_api(
-            "https://https://influx-prod-22-prod-eu-west-3.grafana.net/api/v1/push/influx/write",
-            Some("683371".to_string()),
-            Some(telemetry_key),
-        )
-        .expect("influx api")
-        .install();
+    thread::sleep(Duration::from_secs(5));
 
-    // if env::consts::OS != "macos" {
-    //     telemetry_agent =
-    //         PyroscopeAgent::builder("https://profiles-prod-004.grafana.net", app_name)
-    //             .backend(pprof_backend(PprofConfig::new().sample_rate(10)))
-    //             .basic_auth("491298", telemetry_key)
-    //             .tags([("env", exec_env.as_str())].to_vec())
-    //             .build()
-    //             .unwrap();
+    Box::leak(Box::new(
+        InfluxBuilder::new()
+            .with_grafana_cloud_api(
+                "https://influx-prod-22-prod-eu-west-3.grafana.net/api/v1/push/influx/write",
+                Some("683371".to_string()),
+                Some(telemetry_key),
+            )
+            .expect("influx api")
+            .with_gzip(false)
+            .add_global_tag("app", app_name)
+            .with_duration(Duration::from_secs(10))
+            .install()
+            .expect("influx install"),
+    ));
 
-    //     let _ = telemetry_agent.start().unwrap();
-    // }
-
-    tracing::info!("telemetry successfully set up");
+    tracing::info!("telemetry set up");
 }

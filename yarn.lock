@@ -2006,10 +2006,10 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/react@18.2.17":
-  version "18.2.17"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.17.tgz#baa565b17ddb649c2dac85b5eaf9e9a1fe0f3b4e"
-  integrity sha512-u+e7OlgPPh+aryjOm5UJMX32OvB2E3QASOAqVMY6Ahs90djagxwv2ya0IctglNbNTexC12qCSMZG47KPfy1hAA==
+"@types/react@18.2.18":
+  version "18.2.18"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.18.tgz#c8b233919eef1bdc294f6f34b37f9727ad677516"
+  integrity sha512-da4NTSeBv/P34xoZPhtcLkmZuJ+oYaCxHmyHzwaDQo9RQPBeXV+06gEk2FpqEcsX9XrnNLvRpVh6bdavDSjtiQ==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -10758,10 +10758,10 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-viem@1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-1.4.2.tgz#81aaff0d8ee0d39bb2994ffa6c89bf7ee4fbcde6"
-  integrity sha512-125E7HoOr5PrL+Iwt8853dQexwRoiPpLwPsrRvlDX94su2xoe7AYqrdfR6N9nmy6vd6mt8eQy8+LWiP3A+1dqw==
+viem@1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-1.5.0.tgz#65ae00f27a693e2573ac62fb2aa2c40f3f3fb4d0"
+  integrity sha512-+SVCVaXJRR+fE9q6Sf6q9droB6TunPGY1JfwB3uTdxwWrkgr3qq/NbXaRdtEk+TyaOEjzZQr7t6vUzjOL0zL0Q==
   dependencies:
     "@adraffy/ens-normalize" "1.9.0"
     "@noble/curves" "1.0.0"

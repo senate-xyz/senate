@@ -7,7 +7,7 @@ extern crate rocket;
 
 use std::{env, process, sync::Arc};
 
-use metrics::{self as _, register_counter};
+use metrics::{self as _, counter, register_counter};
 
 use dotenv::dotenv;
 use ethers::providers::{Http, Provider};
@@ -84,6 +84,7 @@ fn index() -> &'static str {
 
 #[get("/")]
 fn health() -> &'static str {
+    counter!("some_metric_name", 12);
     "ok"
 }
 
