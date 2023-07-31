@@ -4,6 +4,7 @@ use tracing::{debug, event, instrument, Level};
 use crate::prisma::{self, voter, voterhandler, PrismaClient};
 use crate::RefreshStatus;
 
+#[instrument(skip(client))]
 pub(crate) async fn create_voter_handlers(client: &PrismaClient) -> Result<()> {
     // remove_orphan_voters(client);
 

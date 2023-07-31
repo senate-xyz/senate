@@ -99,7 +99,11 @@ pub async fn update_snapshot_proposals<'a>(
                     }}
                 }}
             "#,
-        data.refreshspeed,
+        if data.refreshspeed < 1000 {
+            data.refreshspeed
+        } else {
+            1000
+        },
         decoder.space,
         old_index.timestamp()
     );

@@ -2,19 +2,20 @@
 #![allow(unused_imports)]
 #![allow(unused_parens)]
 
-use std::{env, sync::Arc, time::Duration};
-
 use dotenv::dotenv;
 use flume as _;
 use log::{info, warn};
 use reqwest as _;
 use serde_json as _;
+use std::{env, sync::Arc, time::Duration};
 use tokio::{time::sleep, try_join};
 use tracing::{debug, debug_span, event, Instrument, Level};
+use tracing_subscriber::prelude::*;
 
 use config::{load_config_from_db, CONFIG};
 use handlers::create_voter_handlers;
 use prisma::PrismaClient;
+use tracing_subscriber::{prelude::__tracing_subscriber_SubscriberExt, EnvFilter};
 
 use crate::{
     consume_queue::{
@@ -66,10 +67,20 @@ pub enum RefreshStatus {
 async fn main() {
     dotenv().ok();
 
-    tracing_subscriber::fmt()
-        .pretty()
-        .with_max_level(tracing::Level::INFO)
-        .init();
+    let app_name = "refresher";
+
+    let filter_str = format!("{}={}", app_name, "info");
+    let env_filter = EnvFilter::try_new(filter_str).unwrap_or_else(|_| EnvFilter::new("info"));
+    let (axiom_layer, _guard) = tracing_axiom::builder()
+        .with_service_name(app_name)
+        .layer()
+        .unwrap();
+
+    tracing_subscriber::registry()
+        .with(env_filter)
+        .with(axiom_layer)
+        .try_init()
+        .unwrap();
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
     let config = *CONFIG.read().unwrap();

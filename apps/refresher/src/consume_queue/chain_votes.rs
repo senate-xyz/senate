@@ -9,7 +9,9 @@ use reqwest::{
 };
 use serde::Deserialize;
 use tokio::task;
-use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level};
+use tracing::{
+    debug, debug_span, error_span, event, info_span, instrument, warn_span, Instrument, Level,
+};
 
 use crate::{
     prisma::{self, daohandler, PrismaClient},
@@ -24,6 +26,7 @@ struct ApiResponse {
     success: bool,
 }
 
+#[instrument]
 pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
     let detective_url = env::var("DETECTIVE_URL").expect("$DETECTIVE_URL is not set");
 
@@ -39,6 +42,13 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
             .position(|r| r.dao_handler_id == entry.handler_id)
             .expect("DaoHandler not found in refresh status array");
         let dao_handler_r = daos_refresh_status.get_mut(dao_handler_position).unwrap();
+
+        info_span!(
+            "refresh item",
+            daoHandlerId = entry.handler_id,
+            votersrefreshspeed = dao_handler_r.votersrefreshspeed
+        );
+
         let response = http_client
                 .post(&post_url)
                 .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "voters": entry.voters, "refreshspeed": dao_handler_r.votersrefreshspeed}))
@@ -91,11 +101,25 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                             if ok_voters_response.contains(&vh.voter_address) {
                                 vh.refresh_status = RefreshStatus::DONE;
                                 vh.last_refresh = Utc::now();
+
+                                info_span!(
+                                    "updated ok",
+                                    daohandler = dao_handler_r.dao_handler_id,
+                                    voteraddress = vh.voter_address,
+                                    voterstatus = vh.last_refresh.to_string()
+                                );
                             }
 
                             if nok_voters_response.contains(&vh.voter_address) {
                                 vh.refresh_status = RefreshStatus::NEW;
                                 vh.last_refresh = Utc::now();
+
+                                warn_span!(
+                                    "updated nok",
+                                    daohandler = dao_handler_r.dao_handler_id,
+                                    voteraddress = vh.voter_address,
+                                    voterstatus = vh.last_refresh.to_string()
+                                );
                             }
                         }
                     }
@@ -103,6 +127,12 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                         for vh in voter_refresh_status.iter_mut() {
                             vh.refresh_status = RefreshStatus::NEW;
                             vh.last_refresh = Utc::now();
+
+                            error_span!(
+                                "failed to update",
+                                daohandler = dao_handler_r.dao_handler_id,
+                                voteraddress = vh.voter_address,
+                            );
                         }
                         dao_handler_r.votersrefreshspeed = cmp::max(
                             dao_handler_r.votersrefreshspeed
@@ -116,6 +146,12 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                 for vh in voter_refresh_status.iter_mut() {
                     vh.refresh_status = RefreshStatus::NEW;
                     vh.last_refresh = Utc::now();
+
+                    error_span!(
+                        "failed to update",
+                        daohandler = dao_handler_r.dao_handler_id,
+                        voteraddress = vh.voter_address,
+                    );
                 }
                 dao_handler_r.votersrefreshspeed = cmp::max(
                     dao_handler_r.votersrefreshspeed

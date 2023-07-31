@@ -9,7 +9,9 @@ use reqwest::{
 };
 use serde::Deserialize;
 use tokio::task;
-use tracing::{debug, debug_span, event, info_span, instrument, Instrument, Level};
+use tracing::{
+    debug, debug_span, error_span, event, info_span, instrument, warn_span, Instrument, Level,
+};
 
 use crate::{
     prisma::{self, daohandler, PrismaClient},
@@ -23,6 +25,7 @@ struct ProposalsResponse {
     success: bool,
 }
 
+#[instrument]
 pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()> {
     let detective_url = env::var("DETECTIVE_URL").expect("$DETECTIVE_URL is not set");
 
@@ -38,6 +41,12 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
             .expect("DaoHandler not found in refresh status array");
         let dao_handler = daos_refresh_status.get_mut(dao_handler_position).unwrap();
 
+        info_span!(
+            "refresh item",
+            daoHandlerId = entry.handler_id,
+            votersrefreshspeed = dao_handler.refreshspeed
+        );
+
         let response = http_client
                 .post(&post_url)
                 .json(&serde_json::json!({ "daoHandlerId": entry.handler_id, "refreshspeed":dao_handler.refreshspeed}))
@@ -47,7 +56,6 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
         match response {
             Ok(res) => {
                 let data = res.json::<ProposalsResponse>().await;
-
                 match data {
                     Ok(data) => {
                         match data.success {
@@ -59,6 +67,13 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                                         + (dao_handler.refreshspeed * 10 / 100),
                                     1000,
                                 );
+
+                                info_span!(
+                                    "updated ok",
+                                    daohandler = dao_handler.dao_handler_id,
+                                    lastrefresh = dao_handler.last_refresh.to_string(),
+                                    refreshspeed = dao_handler.refreshspeed,
+                                );
                             }
                             false => {
                                 dao_handler.refresh_status = RefreshStatus::NEW;
@@ -67,6 +82,13 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                                     dao_handler.refreshspeed
                                         - (dao_handler.refreshspeed * 25 / 100),
                                     10,
+                                );
+
+                                warn_span!(
+                                    "updated nok",
+                                    daohandler = dao_handler.dao_handler_id,
+                                    lastrefresh = dao_handler.last_refresh.to_string(),
+                                    refreshspeed = dao_handler.refreshspeed,
                                 );
                             }
                         };
@@ -78,6 +100,13 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                             dao_handler.refreshspeed - (dao_handler.refreshspeed * 25 / 100),
                             10,
                         );
+
+                        error_span!(
+                            "failed to update",
+                            daohandler = dao_handler.dao_handler_id,
+                            lastrefresh = dao_handler.last_refresh.to_string(),
+                            refreshspeed = dao_handler.refreshspeed,
+                        );
                     }
                 }
             }
@@ -87,6 +116,13 @@ pub(crate) async fn consume_snapshot_proposals(entry: RefreshEntry) -> Result<()
                 dao_handler.refreshspeed = cmp::max(
                     dao_handler.refreshspeed - (dao_handler.refreshspeed * 25 / 100),
                     10,
+                );
+
+                error_span!(
+                    "failed to update",
+                    daohandler = dao_handler.dao_handler_id,
+                    lastrefresh = dao_handler.last_refresh.to_string(),
+                    refreshspeed = dao_handler.refreshspeed,
                 );
             }
         }

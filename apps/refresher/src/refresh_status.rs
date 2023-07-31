@@ -38,6 +38,7 @@ pub async fn create_refresh_statuses(client: &PrismaClient) {
     create_voters_refresh_statuses(client).await;
 }
 
+#[instrument(skip(client))]
 pub async fn create_daos_refresh_statuses(client: &PrismaClient) {
     let dao_handlers_count = client.daohandler().count(vec![]).exec().await.unwrap();
     let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
@@ -77,6 +78,7 @@ pub async fn create_daos_refresh_statuses(client: &PrismaClient) {
     });
 }
 
+#[instrument(skip(client))]
 pub async fn create_voters_refresh_statuses(client: &PrismaClient) {
     let voter_handlers_count = client.voterhandler().count(vec![]).exec().await.unwrap();
 
