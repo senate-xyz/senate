@@ -102,7 +102,13 @@ pub async fn update_snapshot_proposals<'a>(
                     }}
                 }}
             "#,
-        data.refreshspeed, decoder.space, old_index
+        if data.refreshspeed < 1000 {
+            data.refreshspeed
+        } else {
+            1000
+        },
+        decoder.space,
+        old_index
     );
 
     match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
