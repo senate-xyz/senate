@@ -168,7 +168,7 @@ pub async fn estimate_block(timestamp: i64) -> Result<i64> {
             Ok(res) => {
                 let contents = res.text().await?;
                 let data = match serde_json::from_str::<EstimateBlock>(&contents) {
-                    Ok(d) => d.result.parse::<i64>().unwrap(),
+                    Ok(d) => d.result.parse::<i64>().unwrap_or(0),
                     Err(_) => {
                         event!(
                             Level::ERROR,

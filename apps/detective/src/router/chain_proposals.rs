@@ -335,7 +335,7 @@ async fn insert_proposals(
         "new index"
     );
 
-    if (new_index > dao_handler.chainindex && new_index - dao_handler.chainindex > 1000)
+    if (new_index > dao_handler.chainindex && new_index - dao_handler.chainindex > 100)
         || uptodate != dao_handler.uptodate
     {
         event!(
