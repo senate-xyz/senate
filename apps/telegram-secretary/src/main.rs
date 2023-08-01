@@ -43,11 +43,6 @@ async fn main() {
     dotenv().ok();
     telemetry::setup();
 
-    tracing_subscriber::fmt()
-        .pretty()
-        .with_max_level(tracing::Level::INFO)
-        .init();
-
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
     let bot = Bot::from_env()
         .throttle(Limits::default())
