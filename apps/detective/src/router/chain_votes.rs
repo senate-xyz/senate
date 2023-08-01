@@ -1,6 +1,7 @@
 use std::{cmp, env, ops::Div, sync::Arc};
 
 use crate::{
+    daohandler_with_dao,
     handlers::votes::{
         aave::aave_votes, compound::compound_votes, dydx::dydx_votes, ens::ens_votes,
         gitcoin::gitcoin_votes, hop::hop_votes, interest_protocol::interest_protocol_votes,
@@ -9,7 +10,7 @@ use crate::{
         zeroxtreasury::zeroxtreasury_votes,
     },
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType},
-    Ctx, VotesRequest, VotesResponse,
+    voterhandler_with_voter, Ctx, VotesRequest, VotesResponse,
 };
 use anyhow::{bail, Context, Result};
 use ethers::{
@@ -44,8 +45,6 @@ pub struct VoteResult {
     pub votes: Vec<Vote>,
 }
 
-voterhandler::include!(voterhandler_with_voter { voter });
-
 #[post("/chain_votes", data = "<data>")]
 pub async fn update_chain_votes<'a>(
     ctx: &Ctx,
@@ -62,6 +61,7 @@ pub async fn update_chain_votes<'a>(
             .db
             .daohandler()
             .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .include(daohandler_with_dao::include())
             .exec()
             .await
             .expect("bad prisma result")
@@ -157,6 +157,8 @@ pub async fn update_chain_votes<'a>(
 
         event!(
             Level::INFO,
+            dao_name = dao_handler.dao.name,
+            dao_handler_type = dao_handler.r#type.to_string(),
             dao_handler_id = dao_handler.id,
             oldest_vote_block = oldest_vote_block,
             batch_size = batch_size,
@@ -206,7 +208,7 @@ pub async fn update_chain_votes<'a>(
 #[instrument(skip_all)]
 async fn get_results(
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     from_block: i64,
     to_block: i64,
     voters: Vec<String>,
@@ -286,7 +288,7 @@ async fn insert_votes(
     votes: Vec<VoteResult>,
     to_block: i64,
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     voter_handlers: Vec<voterhandler_with_voter::Data>,
 ) -> Result<Vec<VoteResult>> {
     let successful_votes: Vec<Vote> = votes
@@ -318,6 +320,8 @@ async fn insert_votes(
                         Level::INFO,
                         voter_address = existing.voteraddress,
                         proposal_id = existing.proposalid,
+                        dao_name = dao_handler.dao.name,
+                        dao_handler_type = dao_handler.r#type.to_string(),
                         dao_handler_id = dao_handler.id,
                         "update vote"
                     );
@@ -346,6 +350,8 @@ async fn insert_votes(
                     Level::INFO,
                     voter_address = vote.voter_address,
                     proposal_id = vote.proposal_id,
+                    dao_name = dao_handler.dao.name,
+                    dao_handler_type = dao_handler.r#type.to_string(),
                     dao_handler_id = dao_handler.id,
                     "insert vote"
                 );
@@ -390,6 +396,8 @@ async fn insert_votes(
 
     event!(
         Level::INFO,
+        dao_name = dao_handler.dao.name,
+        dao_handler_type = dao_handler.r#type.to_string(),
         dao_handler_id = dao_handler.id,
         new_index = new_index,
         uptodate = uptodate,
@@ -402,6 +410,8 @@ async fn insert_votes(
         {
             event!(
                 Level::INFO,
+                dao_name = dao_handler.dao.name,
+                dao_handler_type = dao_handler.r#type.to_string(),
                 new_index = new_index,
                 voter_handler_id = voter_handler.id,
                 dao_handler_id = dao_handler.id,

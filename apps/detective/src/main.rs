@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tracing::{debug_span, event, instrument, Instrument, Level};
 
-use prisma::PrismaClient;
+use prisma::{daohandler, proposal, voterhandler, PrismaClient};
 use utils::{maker_polls_sanity::maker_polls_sanity_check, snapshot_sanity::snapshot_sanity_check};
 
 use crate::router::{
@@ -76,6 +76,10 @@ pub struct VotesResponse {
     voter_address: String,
     success: bool,
 }
+
+daohandler::include!(daohandler_with_dao { dao });
+voterhandler::include!(voterhandler_with_voter { voter });
+proposal::include!(proposal_with_dao { dao daohandler });
 
 #[get("/")]
 fn index() -> &'static str {

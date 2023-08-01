@@ -12,6 +12,7 @@ use tracing::{
 };
 
 use crate::{
+    daohandler_with_dao,
     prisma::{dao, daohandler, proposal, ProposalState},
     Ctx, ProposalsRequest, ProposalsResponse,
 };
@@ -65,6 +66,7 @@ pub async fn update_snapshot_proposals<'a>(
             .db
             .daohandler()
             .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .include(daohandler_with_dao::include())
             .exec()
             .await
             .expect("bad prisma result")
@@ -117,6 +119,8 @@ pub async fn update_snapshot_proposals<'a>(
 
         event!(
             Level::INFO,
+            dao_name = dao_handler.dao.name,
+            dao_handler_type = dao_handler.r#type.to_string(),
             dao_handler_id = dao_handler.id,
             old_index = old_index.timestamp(),
             space = decoder.space,
@@ -153,7 +157,7 @@ pub async fn update_snapshot_proposals<'a>(
 async fn update_proposals(
     graphql_query: String,
     ctx: &Ctx,
-    dao_handler: daohandler::Data,
+    dao_handler: daohandler_with_dao::Data,
     old_index: i64,
 ) -> Result<()> {
     let _snapshot_key = env::var("SNAPSHOT_API_KEY").expect("$SNAPSHOT_API_KEY is not set");
@@ -211,6 +215,8 @@ async fn update_proposals(
                         Level::INFO,
                         proposal_id = existing.id,
                         proposal_name = existing.name,
+                        dao_name = dao_handler.dao.name,
+                        dao_handler_type = dao_handler.r#type.to_string(),
                         dao_handler_id = dao_handler.id,
                         "update proposal"
                     );
@@ -240,6 +246,8 @@ async fn update_proposals(
                     Level::INFO,
                     proposal_external_id = proposal.id,
                     proposal_name = proposal.title,
+                    dao_name = dao_handler.dao.name,
+                    dao_handler_type = dao_handler.r#type.to_string(),
                     dao_handler_id = dao_handler.id,
                     "insert proposal"
                 );
@@ -321,6 +329,8 @@ async fn update_proposals(
 
     event!(
         Level::INFO,
+        dao_name = dao_handler.dao.name,
+        dao_handler_type = dao_handler.r#type.to_string(),
         dao_handler_id = dao_handler.id,
         new_index = new_index,
         uptodate = uptodate,
@@ -333,6 +343,8 @@ async fn update_proposals(
     {
         event!(
             Level::INFO,
+            dao_name = dao_handler.dao.name,
+            dao_handler_type = dao_handler.r#type.to_string(),
             new_index = new_index,
             dao_handler_id = dao_handler.id,
             "set new index"

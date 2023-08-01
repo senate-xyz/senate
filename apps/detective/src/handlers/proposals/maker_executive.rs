@@ -22,6 +22,7 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::{makerexecutive, makerexecutive::LogNoteFilter},
+    daohandler_with_dao,
     prisma::{daohandler, ProposalState},
     router::chain_proposals::ChainProposal,
     utils::etherscan::estimate_block,
@@ -42,7 +43,7 @@ const VOTE_SINGLE_ACTION_TOPIC: &str =
 
 pub async fn maker_executive_proposals(
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     from_block: &i64,
     to_block: &i64,
 ) -> Result<Vec<ChainProposal>> {
@@ -95,7 +96,7 @@ pub async fn maker_executive_proposals(
 async fn proposal(
     spell_address: &String,
     decoder: &Decoder,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
 ) -> Result<ChainProposal> {
     let proposal_url = format!("{}{}", decoder.proposalUrl, spell_address);
 

@@ -9,6 +9,7 @@ use tracing::{
 };
 
 use crate::{
+    daohandler_with_dao,
     handlers::proposals::{
         aave::aave_proposals, compound::compound_proposals, dydx::dydx_proposals,
         ens::ens_proposals, gitcoin::gitcoin_proposals, hop::hop_proposals,
@@ -55,6 +56,7 @@ pub async fn update_chain_proposals<'a>(
             .db
             .daohandler()
             .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .include(daohandler_with_dao::include())
             .exec()
             .await
             .expect("bad prisma result")
@@ -88,6 +90,8 @@ pub async fn update_chain_proposals<'a>(
 
         event!(
             Level::INFO,
+            dao_name = dao_handler.dao.name,
+            dao_handler_type = dao_handler.r#type.to_string(),
             dao_handler_id = dao_handler.id,
             min_block = min_block,
             batch_size = batch_size,
@@ -122,7 +126,7 @@ async fn get_results(
     ctx: &Ctx,
     from_block: i64,
     to_block: i64,
-    dao_handler: daohandler::Data,
+    dao_handler: daohandler_with_dao::Data,
 ) -> Result<()> {
     match dao_handler.r#type {
         DaoHandlerType::AaveChain => {
@@ -190,7 +194,7 @@ async fn insert_proposals(
     proposals: Vec<ChainProposal>,
     to_block: i64,
     ctx: &Ctx,
-    dao_handler: daohandler::Data,
+    dao_handler: daohandler_with_dao::Data,
 ) {
     for proposal in proposals.clone() {
         let existing = ctx
@@ -214,6 +218,8 @@ async fn insert_proposals(
                         Level::INFO,
                         proposal_id = existing.id,
                         proposal_name = existing.name,
+                        dao_name = dao_handler.dao.name,
+                        dao_handler_type = dao_handler.r#type.to_string(),
                         dao_handler_id = dao_handler.id,
                         "update proposal"
                     );
@@ -258,6 +264,8 @@ async fn insert_proposals(
                     Level::INFO,
                     proposal_external_id = proposal.external_id,
                     proposal_name = proposal.name,
+                    dao_name = dao_handler.dao.name,
+                    dao_handler_type = dao_handler.r#type.to_string(),
                     dao_handler_id = dao_handler.id,
                     "insert proposal"
                 );
@@ -318,6 +326,8 @@ async fn insert_proposals(
 
     event!(
         Level::INFO,
+        dao_name = dao_handler.dao.name,
+        dao_handler_type = dao_handler.r#type.to_string(),
         dao_handler_id = dao_handler.id,
         new_index = new_index,
         to_block = to_block,
@@ -330,6 +340,8 @@ async fn insert_proposals(
     {
         event!(
             Level::INFO,
+            dao_name = dao_handler.dao.name,
+            dao_handler_type = dao_handler.r#type.to_string(),
             new_index = new_index,
             dao_handler_id = dao_handler.id,
             "set new index"

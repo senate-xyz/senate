@@ -25,6 +25,7 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::{makerpollcreate, makerpollcreate::PollCreatedFilter},
+    daohandler_with_dao,
     prisma::{daohandler, ProposalState},
     router::chain_proposals::ChainProposal,
     Ctx,
@@ -39,7 +40,7 @@ struct Decoder {
 
 pub async fn maker_poll_proposals(
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     from_block: &i64,
     to_block: &i64,
 ) -> Result<Vec<ChainProposal>> {
@@ -78,7 +79,7 @@ async fn data_for_proposal(
     p: (makerpollcreate::makerpollcreate::PollCreatedFilter, LogMeta),
     ctx: &Ctx,
     decoder: &Decoder,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
 ) -> Result<ChainProposal> {
     let (log, meta): (PollCreatedFilter, LogMeta) = p.clone();
 

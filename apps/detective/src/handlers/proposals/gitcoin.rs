@@ -16,6 +16,7 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::{gitcoingov, gitcoingov::ProposalCreatedFilter},
+    daohandler_with_dao,
     prisma::{daohandler, ProposalState},
     router::chain_proposals::ChainProposal,
     utils::etherscan::estimate_timestamp,
@@ -31,7 +32,7 @@ struct Decoder {
 
 pub async fn gitcoin_proposals(
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     from_block: &i64,
     to_block: &i64,
 ) -> Result<Vec<ChainProposal>> {
@@ -68,7 +69,7 @@ async fn data_for_proposal(
     p: (gitcoingov::gitcoingov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,
     decoder: &Decoder,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     gov_contract: gitcoingov::gitcoingov::gitcoingov<
         ethers::providers::Provider<ethers::providers::Http>,
     >,

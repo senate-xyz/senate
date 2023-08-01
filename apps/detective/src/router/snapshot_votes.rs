@@ -14,8 +14,9 @@ use tracing::{
 };
 
 use crate::{
+    daohandler_with_dao,
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler},
-    Ctx, VotesRequest, VotesResponse,
+    voterhandler_with_voter, Ctx, VotesRequest, VotesResponse,
 };
 
 #[derive(Debug, Deserialize)]
@@ -58,8 +59,6 @@ struct Decoder {
     space: String,
 }
 
-voterhandler::include!(voterhandler_with_voter { voter });
-
 #[post("/snapshot_votes", data = "<data>")]
 pub async fn update_snapshot_votes<'a>(
     ctx: &Ctx,
@@ -76,6 +75,7 @@ pub async fn update_snapshot_votes<'a>(
             .db
             .daohandler()
             .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .include(daohandler_with_dao::include())
             .exec()
             .await
             .expect("bad prisma result")
@@ -143,6 +143,8 @@ pub async fn update_snapshot_votes<'a>(
 
         event!(
             Level::INFO,
+            dao_name = dao_handler.dao.name,
+            dao_handler_type = dao_handler.r#type.to_string(),
             dao_handler_id = dao_handler.id,
             search_from_timestamp = search_from_timestamp,
             space = decoder.space,
@@ -191,7 +193,7 @@ pub async fn update_snapshot_votes<'a>(
 async fn update_votes(
     graphql_query: String,
     search_from_timestamp: i64,
-    dao_handler: daohandler::Data,
+    dao_handler: daohandler_with_dao::Data,
     voter_handlers: Vec<voterhandler_with_voter::Data>,
     ctx: &Ctx,
 ) -> Result<()> {
@@ -246,7 +248,7 @@ async fn update_votes(
 async fn upsert_votes_for_proposal(
     votes: Vec<GraphQLVote>,
     p: GraphQLProposal,
-    dao_handler: daohandler::Data,
+    dao_handler: daohandler_with_dao::Data,
     ctx: &Ctx,
 ) -> Result<()> {
     match ctx
@@ -283,7 +285,7 @@ async fn update_or_create_votes(
     ctx: &Ctx,
     votes_for_proposal: Vec<GraphQLVote>,
     proposal_id: String,
-    dao_handler: daohandler::Data,
+    dao_handler: daohandler_with_dao::Data,
 ) -> Result<()> {
     for vote in votes_for_proposal {
         let existing = ctx
@@ -308,6 +310,8 @@ async fn update_or_create_votes(
                         Level::INFO,
                         voter_address = existing.voteraddress,
                         proposal_id = existing.proposalid,
+                        dao_name = dao_handler.dao.name,
+                        dao_handler_type = dao_handler.r#type.to_string(),
                         dao_handler_id = dao_handler.id,
                         "update vote"
                     );
@@ -341,6 +345,8 @@ async fn update_or_create_votes(
                     Level::INFO,
                     voter_address = vote.voter,
                     proposal_id = proposal_id,
+                    dao_name = dao_handler.dao.name,
+                    dao_handler_type = dao_handler.r#type.to_string(),
                     dao_handler_id = dao_handler.id,
                     "insert vote"
                 );
@@ -375,7 +381,7 @@ async fn update_or_create_votes(
 async fn update_refresh_statuses(
     votes: Vec<GraphQLVote>,
     search_from_timestamp: i64,
-    dao_handler: daohandler::Data,
+    dao_handler: daohandler_with_dao::Data,
     voter_handlers: Vec<voterhandler_with_voter::Data>,
     ctx: &Ctx,
 ) -> Result<()> {
@@ -416,6 +422,8 @@ async fn update_refresh_statuses(
 
     event!(
         Level::INFO,
+        dao_name = dao_handler.dao.name,
+        dao_handler_type = dao_handler.r#type.to_string(),
         dao_handler_id = dao_handler.id,
         new_index = new_index,
         uptodate = uptodate,
@@ -429,6 +437,8 @@ async fn update_refresh_statuses(
         {
             event!(
                 Level::INFO,
+                dao_name = dao_handler.dao.name,
+                dao_handler_type = dao_handler.r#type.to_string(),
                 new_index = new_index,
                 voter_handler_id = voter_handler.id,
                 dao_handler_id = dao_handler.id,

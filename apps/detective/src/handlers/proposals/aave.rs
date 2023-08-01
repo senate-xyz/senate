@@ -26,6 +26,7 @@ use crate::{
         aavegov::{self, ProposalCreatedFilter},
         aavestrategy,
     },
+    daohandler_with_dao,
     prisma::{daohandler, ProposalState},
     router::chain_proposals::ChainProposal,
     utils::etherscan::estimate_timestamp,
@@ -41,7 +42,7 @@ struct Decoder {
 
 pub async fn aave_proposals(
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     from_block: &i64,
     to_block: &i64,
 ) -> Result<Vec<ChainProposal>> {
@@ -78,7 +79,7 @@ async fn data_for_proposal(
     p: (aavegov::aavegov::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,
     decoder: &Decoder,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     gov_contract: aavegov::aavegov::aavegov<ethers::providers::Provider<ethers::providers::Http>>,
 ) -> Result<ChainProposal> {
     let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
