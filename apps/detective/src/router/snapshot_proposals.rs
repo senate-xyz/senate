@@ -355,13 +355,11 @@ async fn update_proposals(
             .update(
                 daohandler::id::equals(dao_handler.id),
                 vec![
-                    daohandler::snapshotindex::set(
-                        (DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(new_index * 1000)
-                                .expect("can not create snapshotindex"),
-                            FixedOffset::east_opt(0).unwrap(),
-                        )),
-                    ),
+                    daohandler::snapshotindex::set(DateTime::from_utc(
+                        NaiveDateTime::from_timestamp_millis(new_index * 1000)
+                            .expect("can not create snapshotindex"),
+                        FixedOffset::east_opt(0).unwrap(),
+                    )),
                     daohandler::uptodate::set(uptodate),
                 ],
             )

@@ -110,7 +110,6 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                                 "updated nok"
                             );
                         }
-                        
                         for vh in voter_refresh_status.iter_mut() {
                             if ok_voters_response.contains(&vh.voter_address) {
                                 vh.refresh_status = RefreshStatus::DONE;
