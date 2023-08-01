@@ -95,6 +95,7 @@ pub fn setup() {
             .expect("influx api")
             .with_gzip(false)
             .add_global_tag("app", app_name)
+            .add_global_tag("env", exec_env)
             .with_duration(Duration::from_secs(10))
             .install()
             .expect("influx install"),

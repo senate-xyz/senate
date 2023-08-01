@@ -89,6 +89,12 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                                     10000000000,
                                 );
                             }
+
+                            event!(
+                                Level::INFO,
+                                daohandler = dao_handler_r.dao_handler_id,
+                                "updated ok"
+                            );
                         }
 
                         if !nok_voters_response.is_empty() {
@@ -97,40 +103,28 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                                     - (dao_handler_r.votersrefreshspeed * 25 / 100),
                                 100,
                             );
-                        }
 
+                            event!(
+                                Level::INFO,
+                                daohandler = dao_handler_r.dao_handler_id,
+                                "updated nok"
+                            );
+                        }
+                        
                         for vh in voter_refresh_status.iter_mut() {
                             if ok_voters_response.contains(&vh.voter_address) {
                                 vh.refresh_status = RefreshStatus::DONE;
                                 vh.last_refresh = Utc::now();
-
-                                event!(
-                                    Level::INFO,
-                                    daohandler = dao_handler_r.dao_handler_id,
-                                    voteraddress = vh.voter_address,
-                                    voterstatus = vh.last_refresh.to_string(),
-                                    "updated ok"
-                                );
                             }
 
                             if nok_voters_response.contains(&vh.voter_address) {
                                 vh.refresh_status = RefreshStatus::NEW;
-                                vh.last_refresh = Utc::now();
-
-                                event!(
-                                    Level::WARN,
-                                    daohandler = dao_handler_r.dao_handler_id,
-                                    voteraddress = vh.voter_address,
-                                    voterstatus = vh.last_refresh.to_string(),
-                                    "updated nok"
-                                );
                             }
                         }
                     }
                     Err(e) => {
                         for vh in voter_refresh_status.iter_mut() {
                             vh.refresh_status = RefreshStatus::NEW;
-                            vh.last_refresh = Utc::now();
 
                             increment_counter!("refresher_chain_votes_errors");
                             event!(
@@ -152,7 +146,6 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
             Err(e) => {
                 for vh in voter_refresh_status.iter_mut() {
                     vh.refresh_status = RefreshStatus::NEW;
-                    vh.last_refresh = Utc::now();
 
                     increment_counter!("refresher_chain_votes_errors");
                     event!(

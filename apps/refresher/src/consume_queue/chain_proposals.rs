@@ -79,7 +79,6 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                             }
                             false => {
                                 dao_handler.refresh_status = RefreshStatus::NEW;
-                                dao_handler.last_refresh = Utc::now();
                                 dao_handler.refreshspeed = cmp::max(
                                     dao_handler.refreshspeed
                                         - (dao_handler.refreshspeed * 25 / 100),
@@ -98,7 +97,6 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
                     }
                     Err(e) => {
                         dao_handler.refresh_status = RefreshStatus::NEW;
-                        dao_handler.last_refresh = Utc::now();
                         dao_handler.refreshspeed = cmp::max(
                             dao_handler.refreshspeed - (dao_handler.refreshspeed * 25 / 100),
                             100,
@@ -118,7 +116,6 @@ pub(crate) async fn consume_chain_proposals(entry: RefreshEntry) -> Result<()> {
             }
             Err(e) => {
                 dao_handler.refresh_status = RefreshStatus::NEW;
-                dao_handler.last_refresh = Utc::now();
                 dao_handler.refreshspeed = cmp::max(
                     dao_handler.refreshspeed - (dao_handler.refreshspeed * 25 / 100),
                     100,
