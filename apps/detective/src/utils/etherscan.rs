@@ -29,6 +29,7 @@ pub struct EstimateTimestamp {
     result: EstimateTimestampResult,
 }
 
+#[instrument(ret)]
 pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
     let etherscan_api_key = env::var("ETHERSCAN_API_KEY").expect("$ETHERSCAN_API_KEY is not set");
     let rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
@@ -60,6 +61,16 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
     let http_client = ClientBuilder::new(reqwest::Client::new())
         .with(RetryTransientMiddleware::new_with_policy(retry_policy))
         .build();
+
+    event!(
+        Level::INFO,
+        block_number = block_number,
+        url = format!(
+                "https://api.etherscan.io/api?module=block&action=getblockcountdown&blockno={}&apikey={}",
+                block_number, etherscan_api_key
+            ),
+        "estimate_timestamp"
+        );
 
     loop {
         let response = http_client
@@ -119,6 +130,7 @@ pub struct EstimateBlock {
     result: String,
 }
 
+#[instrument(ret)]
 pub async fn estimate_block(timestamp: i64) -> Result<i64> {
     let etherscan_api_key = match env::var_os("ETHERSCAN_API_KEY") {
         Some(v) => v.into_string().unwrap(),
@@ -131,6 +143,16 @@ pub async fn estimate_block(timestamp: i64) -> Result<i64> {
     let http_client = ClientBuilder::new(reqwest::Client::new())
         .with(RetryTransientMiddleware::new_with_policy(retry_policy))
         .build();
+
+    event!(
+            Level::INFO,
+            timestamp = timestamp,
+            url = format!(
+                "https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp={}&closest=before&apikey={}",
+                timestamp, etherscan_api_key
+            ),
+            "estimate_block"
+        );
 
     loop {
         let response = http_client
@@ -147,7 +169,19 @@ pub async fn estimate_block(timestamp: i64) -> Result<i64> {
                 let contents = res.text().await?;
                 let data = match serde_json::from_str::<EstimateBlock>(&contents) {
                     Ok(d) => d.result.parse::<i64>().unwrap(),
-                    Err(_) => i64::from(0),
+                    Err(_) => {
+                        event!(
+                            Level::ERROR,
+                            timestamp = timestamp,
+                            url = format!(
+                                "https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp={}&closest=before&apikey={}",
+                                timestamp, etherscan_api_key
+                            ),
+                            "estimate_block"
+                        );
+
+                        i64::from(0)
+                    }
                 };
 
                 return Ok(data);
