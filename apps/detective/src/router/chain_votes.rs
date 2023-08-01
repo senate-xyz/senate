@@ -307,8 +307,7 @@ async fn insert_votes(
                 vote::proposalid::equals(vote.proposal_id.clone()),
             ])
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         match existing {
             Some(existing) => {
@@ -341,8 +340,7 @@ async fn insert_votes(
                             ],
                         )
                         .exec()
-                        .await
-                        .unwrap();
+                        .await?;
                 }
             }
             None => {
@@ -369,8 +367,7 @@ async fn insert_votes(
                         vec![],
                     )
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
             }
         }
     }

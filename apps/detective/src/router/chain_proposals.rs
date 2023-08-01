@@ -1,5 +1,5 @@
 use anyhow::{bail, Result};
-use ethers::{providers::Middleware, types::U64};
+use ethers::{prelude::k256::elliptic_curve::PrimeField, providers::Middleware, types::U64};
 use prisma_client_rust::chrono::{DateTime, FixedOffset, Utc};
 use reqwest::header::HeaderMap;
 use rocket::serde::json::Json;
@@ -195,7 +195,7 @@ async fn insert_proposals(
     to_block: i64,
     ctx: &Ctx,
     dao_handler: daohandler_with_dao::Data,
-) {
+) -> Result<()> {
     for proposal in proposals.clone() {
         let existing = ctx
             .db
@@ -205,8 +205,7 @@ async fn insert_proposals(
                 proposal::daohandlerid::equals(dao_handler.id.clone()),
             ])
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         match existing {
             Some(existing) => {
@@ -255,8 +254,7 @@ async fn insert_proposals(
                             },
                         )
                         .exec()
-                        .await
-                        .unwrap();
+                        .await?;
                 }
             }
             None => {
@@ -295,8 +293,7 @@ async fn insert_proposals(
                         vec![proposal::blockcreated::set(proposal.block_created.into())],
                     )
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
             }
         }
     }
@@ -356,7 +353,8 @@ async fn insert_proposals(
                 ],
             )
             .exec()
-            .await
-            .expect("failed to update daohandlers");
+            .await?;
     }
+
+    Ok(())
 }

@@ -224,7 +224,7 @@ async fn get_title(hexhash: String) -> Result<String> {
                     return Ok(json["title"].as_str().unwrap_or("Unknown").to_string());
                 }
 
-                let re = Regex::new(r"title:\s*(.*?)\n").unwrap();
+                let re = Regex::new(r"title:\s*(.*?)\n")?;
                 if let Some(captures) = re.captures(&text) {
                     if let Some(matched) = captures.get(1) {
                         return Ok(matched.as_str().trim().to_string());

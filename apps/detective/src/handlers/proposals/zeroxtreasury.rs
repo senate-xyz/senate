@@ -86,8 +86,7 @@ async fn data_for_proposal(
     let voting_period_seconds = gov_contract
         .voting_period()
         .call()
-        .await
-        .unwrap()
+        .await?
         .as_u64()
         .to_i64()
         .unwrap();

@@ -34,15 +34,12 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
     let etherscan_api_key = env::var("ETHERSCAN_API_KEY").expect("$ETHERSCAN_API_KEY is not set");
     let rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
 
-    let provider = Provider::<Http>::try_from(rpc_url).unwrap();
+    let provider = Provider::<Http>::try_from(rpc_url)?;
 
-    let current_block = provider.get_block_number().await.unwrap();
+    let current_block = provider.get_block_number().await?;
 
     if block_number < current_block.as_u64().to_i64().unwrap() {
-        let block = provider
-            .get_block(block_number.to_u64().unwrap())
-            .await
-            .unwrap();
+        let block = provider.get_block(block_number.to_u64().unwrap()).await?;
 
         let result: DateTime<Utc> = DateTime::from_utc(
             NaiveDateTime::from_timestamp_millis(
@@ -89,12 +86,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
                     Ok(d) => DateTime::from_utc(
                         NaiveDateTime::from_timestamp_millis(
                             Utc::now().timestamp() * 1000
-                                + d.result
-                                    .EstimateTimeInSec
-                                    .parse::<f64>()
-                                    .unwrap()
-                                    .to_i64()
-                                    .unwrap()
+                                + d.result.EstimateTimeInSec.parse::<f64>()?.to_i64().unwrap()
                                     * 1000,
                         )
                         .expect("bad timestamp"),

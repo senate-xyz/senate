@@ -297,8 +297,7 @@ async fn update_or_create_votes(
                 vote::proposalid::equals(proposal_id.clone()),
             ])
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         match existing {
             Some(existing) => {
@@ -336,8 +335,7 @@ async fn update_or_create_votes(
                             ],
                         )
                         .exec()
-                        .await
-                        .unwrap();
+                        .await?;
                 }
             }
             None => {
@@ -368,8 +366,7 @@ async fn update_or_create_votes(
                         )))],
                     )
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
             }
         }
     }

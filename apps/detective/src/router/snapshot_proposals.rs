@@ -202,8 +202,7 @@ async fn update_proposals(
                 proposal::daohandlerid::equals(dao_handler.id.clone()),
             ])
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         match existing {
             Some(existing) => {
@@ -237,8 +236,7 @@ async fn update_proposals(
                             ],
                         )
                         .exec()
-                        .await
-                        .unwrap();
+                        .await?;
                 }
             }
             None => {
@@ -283,8 +281,7 @@ async fn update_proposals(
                         vec![proposal::visible::set(!proposal.flagged.is_some_and(|f| f))],
                     )
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
             }
         }
     }
