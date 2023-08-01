@@ -14,6 +14,8 @@ use teloxide::{
     utils::command::BotCommands,
 };
 use tokio::{time::sleep, try_join};
+use tracing::event;
+use tracing::Level;
 
 use crate::{
     dispatch::{
@@ -53,12 +55,20 @@ async fn main() {
     let bot_for_new_proposals: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
         Arc::clone(&botwrapper);
     let new_proposals_task = tokio::task::spawn(async move {
-        info!("started new_proposals_task");
         loop {
-            debug!("loop new_proposals_task");
-            generate_new_proposal_notifications(&client_for_new_proposals).await;
-            dispatch_new_proposal_notifications(&client_for_new_proposals, &bot_for_new_proposals)
-                .await;
+            match generate_new_proposal_notifications(&client_for_new_proposals).await {
+                Ok(_) => event!(Level::INFO, "generate_new_proposal_notifications ok"),
+                Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to generate new"),
+            };
+            match dispatch_new_proposal_notifications(
+                &client_for_new_proposals,
+                &bot_for_new_proposals,
+            )
+            .await
+            {
+                Ok(_) => event!(Level::INFO, "dispatch_new_proposal_notifications ok"),
+                Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to generate new"),
+            };
 
             sleep(std::time::Duration::from_secs(60)).await;
         }
@@ -68,22 +78,45 @@ async fn main() {
     let bot_for_ending_soon: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
         Arc::clone(&botwrapper);
     let ending_soon_task = tokio::task::spawn(async move {
-        info!("started ending_soon_task");
         loop {
-            debug!("loop ending_soon_task");
-            generate_ending_soon_notifications(
+            match generate_ending_soon_notifications(
                 &client_for_ending_soon,
                 NotificationType::FirstReminderTelegram,
             )
-            .await;
+            .await
+            {
+                Ok(_) => event!(Level::INFO, "generate_ending_soon_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to generate ending"
+                ),
+            };
 
-            generate_ending_soon_notifications(
+            match generate_ending_soon_notifications(
                 &client_for_ending_soon,
                 NotificationType::SecondReminderTelegram,
             )
-            .await;
+            .await
+            {
+                Ok(_) => event!(Level::INFO, "generate_ending_soon_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to generate ending"
+                ),
+            };
 
-            dispatch_ending_soon_notifications(&client_for_ending_soon, &bot_for_ending_soon).await;
+            match dispatch_ending_soon_notifications(&client_for_ending_soon, &bot_for_ending_soon)
+                .await
+            {
+                Ok(_) => event!(Level::INFO, "dispatch_ending_soon_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to dispatch ending"
+                ),
+            };
 
             sleep(std::time::Duration::from_secs(60)).await;
         }
@@ -93,15 +126,28 @@ async fn main() {
     let bot_for_ended_proposals: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
         Arc::clone(&botwrapper);
     let ended_proposals_task = tokio::task::spawn(async move {
-        info!("started ended_proposals_task");
         loop {
-            debug!("loop ended_proposals_task");
-            generate_ended_proposal_notifications(&client_for_ended_proposals).await;
-            dispatch_ended_proposal_notifications(
+            match generate_ended_proposal_notifications(&client_for_ended_proposals).await {
+                Ok(_) => event!(Level::INFO, "generate_ended_proposal_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to generate ended"
+                ),
+            };
+            match dispatch_ended_proposal_notifications(
                 &client_for_ended_proposals,
                 &bot_for_ended_proposals,
             )
-            .await;
+            .await
+            {
+                Ok(_) => event!(Level::INFO, "dispatch_ended_proposal_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to dispatch ended"
+                ),
+            };
 
             sleep(std::time::Duration::from_secs(60)).await;
         }

@@ -62,7 +62,7 @@ async fn main() {
     let triggered_bulletin_task = tokio::task::spawn(async move {
         loop {
             match send_triggered_emails(&client_for_triggered_bulletin).await {
-                Ok(_) => event!(Level::INFO, "sent bulletin"),
+                Ok(_) => event!(Level::INFO, "send_triggered_emails ok"),
                 Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to send bulletin"),
             };
             sleep(Duration::from_secs(60)).await;
@@ -73,7 +73,7 @@ async fn main() {
     let quroum_task = tokio::task::spawn(async move {
         loop {
             match send_quorum_email(&client_for_quorum).await {
-                Ok(_) => event!(Level::INFO, "sent bulletin"),
+                Ok(_) => event!(Level::INFO, "send_quorum_email ok"),
                 Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to send bulletin"),
             };
             sleep(Duration::from_secs(60)).await;

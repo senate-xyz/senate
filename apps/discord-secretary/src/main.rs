@@ -44,7 +44,7 @@ async fn main() {
     let new_proposals_task = tokio::task::spawn(async move {
         loop {
             match generate_new_proposal_notifications(&client_for_new_proposals).await {
-                Ok(_) => event!(Level::INFO, "generated new"),
+                Ok(_) => event!(Level::INFO, "generate_new_proposal_notifications ok"),
                 Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to generate new"),
             };
             match dispatch_new_proposal_notifications(&client_for_new_proposals).await {
@@ -65,7 +65,7 @@ async fn main() {
             )
             .await
             {
-                Ok(_) => event!(Level::INFO, "generated ending"),
+                Ok(_) => event!(Level::INFO, "generate_ending_soon_notifications ok"),
                 Err(e) => event!(
                     Level::ERROR,
                     err = e.to_string(),
@@ -80,7 +80,7 @@ async fn main() {
             // .await;
 
             match dispatch_ending_soon_notifications(&client_for_ending_soon).await {
-                Ok(_) => event!(Level::INFO, "dispatch ending"),
+                Ok(_) => event!(Level::INFO, "dispatch_ending_soon_notifications ok"),
                 Err(e) => event!(
                     Level::ERROR,
                     err = e.to_string(),
@@ -96,7 +96,7 @@ async fn main() {
     let ended_proposals_task = tokio::task::spawn(async move {
         loop {
             match generate_ended_proposal_notifications(&client_for_ended_proposals).await {
-                Ok(_) => event!(Level::INFO, "generated ended"),
+                Ok(_) => event!(Level::INFO, "generate_ended_proposal_notifications ok"),
                 Err(e) => event!(
                     Level::ERROR,
                     err = e.to_string(),
@@ -104,7 +104,7 @@ async fn main() {
                 ),
             };
             match dispatch_ended_proposal_notifications(&client_for_ended_proposals).await {
-                Ok(_) => event!(Level::INFO, "dispatch ended"),
+                Ok(_) => event!(Level::INFO, "dispatch_ended_proposal_notifications ok"),
                 Err(e) => event!(
                     Level::ERROR,
                     err = e.to_string(),
@@ -118,15 +118,13 @@ async fn main() {
 
     let client_for_active_proposals: Arc<PrismaClient> = Arc::clone(&client);
     let active_proposals_task = tokio::task::spawn(async move {
-        info!("started active_proposals_task");
         loop {
-            debug!("loop active_proposals_task");
             match update_active_proposal_notifications(&client_for_active_proposals).await {
-                Ok(_) => event!(Level::INFO, "update active"),
+                Ok(_) => event!(Level::INFO, "update_active_proposal_notifications ok"),
                 Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to update active"),
             };
             match update_hidden_proposal_notifications(&client_for_active_proposals).await {
-                Ok(_) => event!(Level::INFO, "update hidden"),
+                Ok(_) => event!(Level::INFO, "update_hidden_proposal_notifications ok"),
                 Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to update hidden"),
             };
 

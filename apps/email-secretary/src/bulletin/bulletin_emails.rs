@@ -121,7 +121,7 @@ pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) -> Result<()>
             .unwrap();
 
         match send_bulletin(user, db).await {
-            Ok(_) => event!(Level::INFO, "sent triggered bulletin"),
+            Ok(_) => event!(Level::INFO, "send_bulletin ok"),
             Err(e) => event!(
                 Level::ERROR,
                 err = e.to_string(),

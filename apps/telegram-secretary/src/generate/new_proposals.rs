@@ -8,18 +8,17 @@ use crate::prisma::{
     self, notification, subscription, user, NotificationType, PrismaClient, ProposalState,
 };
 
-pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
+#[instrument(skip(client))]
+pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) -> Result<()> {
     let users = client
         .user()
         .find_many(vec![user::telegramnotifications::equals(true)])
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     for user in users {
-        let new_proposals = get_new_proposals_for_user(&user.address.clone().unwrap(), client)
-            .await
-            .unwrap();
+        let new_proposals =
+            get_new_proposals_for_user(&user.address.clone().unwrap(), client).await?;
 
         client
             .notification()
@@ -37,13 +36,15 @@ pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) {
             )
             .skip_duplicates()
             .exec()
-            .await
-            .unwrap();
+            .await?;
     }
+
+    Ok(())
 }
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
+#[instrument(skip(client))]
 pub async fn get_new_proposals_for_user(
     username: &String,
     client: &Arc<PrismaClient>,
@@ -52,16 +53,14 @@ pub async fn get_new_proposals_for_user(
         .user()
         .find_first(vec![prisma::user::address::equals(username.clone().into())])
         .exec()
-        .await
-        .unwrap()
+        .await?
         .unwrap();
 
     let subscribed_daos = client
         .subscription()
         .find_many(vec![subscription::userid::equals(user.id)])
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     let proposals = client
         .proposal()
@@ -72,8 +71,7 @@ pub async fn get_new_proposals_for_user(
         ])
         .include(proposal_with_dao::include())
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     Ok(proposals)
 }

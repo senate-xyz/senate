@@ -8,19 +8,22 @@ use teloxide::{
     Bot,
 };
 use tokio::time::sleep;
-use tracing::{debug, debug_span, instrument, warn, Instrument};
+use tracing::{debug, debug_span, event, instrument, warn, Instrument, Level};
 
 use crate::prisma::{
     self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
     NotificationType, PrismaClient,
 };
 
+use anyhow::Result;
+
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
+#[instrument(skip(client))]
 pub async fn dispatch_ending_soon_notifications(
     client: &Arc<PrismaClient>,
     bot: &Arc<DefaultParseMode<Throttle<teloxide::Bot>>>,
-) {
+) -> Result<()> {
     let notifications = client
         .notification()
         .find_many(vec![
@@ -36,16 +39,14 @@ pub async fn dispatch_ending_soon_notifications(
             ]),
         ])
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     for notification in notifications {
         let user = client
             .user()
             .find_first(vec![user::id::equals(notification.clone().userid)])
             .exec()
-            .await
-            .unwrap()
+            .await?
             .unwrap();
 
         let proposal = client
@@ -55,8 +56,7 @@ pub async fn dispatch_ending_soon_notifications(
             )])
             .include(proposal_with_dao::include())
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         match proposal {
             Some(proposal) => {
@@ -136,6 +136,7 @@ pub async fn dispatch_ending_soon_notifications(
 
                 let update_data = match message {
                     Ok(msg) => {
+                        event!(Level::INFO, "ending notification");
                         vec![
                             notification::dispatchstatus::set(
                                 NotificationDispatchedState::Dispatched,
@@ -145,7 +146,7 @@ pub async fn dispatch_ending_soon_notifications(
                         ]
                     }
                     Err(e) => {
-                        warn!("{:?}", e);
+                        event!(Level::ERROR, err = e.to_string(), "failed new notification");
                         match notification.dispatchstatus {
                             NotificationDispatchedState::NotDispatched => {
                                 vec![notification::dispatchstatus::set(
@@ -185,8 +186,7 @@ pub async fn dispatch_ending_soon_notifications(
                         update_data,
                     )
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
             }
             None => {
                 client
@@ -202,11 +202,11 @@ pub async fn dispatch_ending_soon_notifications(
                         )],
                     )
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
             }
         }
 
         sleep(Duration::from_millis(100)).await;
     }
+    Ok(())
 }
