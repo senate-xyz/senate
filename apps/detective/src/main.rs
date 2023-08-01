@@ -95,7 +95,6 @@ fn health() -> &'static str {
 #[launch]
 async fn rocket() -> _ {
     dotenv().ok();
-
     telemetry::setup();
 
     let rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
@@ -118,8 +117,8 @@ async fn rocket() -> _ {
         loop {
             interval.tick().await;
 
-            maker_polls_sanity_check(&context).await;
-            snapshot_sanity_check(&context).await;
+            let _ = maker_polls_sanity_check(&context).await;
+            let _ = snapshot_sanity_check(&context).await;
         }
     });
 

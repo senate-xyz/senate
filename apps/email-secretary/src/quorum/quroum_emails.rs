@@ -1,6 +1,6 @@
 use std::{collections::HashMap, env, sync::Arc};
 
-use anyhow::bail;
+use anyhow::{bail, Result};
 use chrono::{Duration, Utc};
 use log::info;
 use num_format::{Locale, ToFormattedString};
@@ -9,7 +9,7 @@ use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use tokio::task::spawn_blocking;
-use tracing::{debug, debug_span, instrument, warn, Instrument};
+use tracing::{debug, debug_span, event, instrument, warn, Instrument, Level};
 
 use crate::{
     prisma::{
@@ -54,13 +54,16 @@ struct PostmarkResult {
 prisma::proposal::include!(proposal_with_dao { dao });
 prisma::user::include!(user_with_voters_and_subscriptions { subscriptions voters });
 
-pub async fn send_quorum_email(db: &Arc<prisma::PrismaClient>) {
-    generate_quorum_notifications(db).await;
+#[instrument(skip(db))]
+pub async fn send_quorum_email(db: &Arc<prisma::PrismaClient>) -> Result<()> {
+    let _ = generate_quorum_notifications(db).await;
+    let _ = dispatch_quorum_notifications(db).await;
 
-    dispatch_quorum_notifications(db).await;
+    Ok(())
 }
 
-pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
+#[instrument(skip(db))]
+pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) -> Result<()> {
     let notifications = db
         .notification()
         .find_many(vec![
@@ -73,8 +76,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             ]),
         ])
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     for notification in notifications {
         let proposal = db
@@ -87,15 +89,13 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 daohandler
             }))
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         let user = db
             .user()
             .find_first(vec![user::id::equals(notification.clone().userid)])
             .exec()
-            .await
-            .unwrap()
+            .await?
             .unwrap();
 
         if user.email.is_none() || proposal.is_none() {
@@ -111,8 +111,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                     )],
                 )
                 .exec()
-                .await
-                .unwrap();
+                .await?;
 
             continue;
         }
@@ -239,13 +238,19 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
         };
 
         let content = &EmailBody {
-            To: user.email.unwrap(),
+            To: user.email.clone().unwrap(),
             From: "info@senatelabs.xyz".to_string(),
             TemplateAlias: quorum_template.to_string(),
             TemplateModel: data.clone(),
         };
 
-        debug!("{:?}", content);
+        event!(
+            Level::INFO,
+            to = user.email.unwrap(),
+            from = "info@senatelabs.xyz".to_string(),
+            template_alias = quorum_template.to_string(),
+            "email body"
+        );
 
         let client = reqwest::Client::new();
         let mut headers = HeaderMap::new();
@@ -293,8 +298,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                                     ],
                                 )
                                 .exec()
-                                .await
-                                .unwrap();
+                                .await?;
 
                             spawn_blocking(move || {
                                 posthog_quorum_event(
@@ -306,10 +310,13 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                                     postmark_result.MessageID.unwrap().as_str(),
                                 );
                             })
-                            .await
-                            .unwrap();
+                            .await?;
                         } else {
-                            warn!("{:?}", postmark_result.Message);
+                            event!(
+                                Level::WARN,
+                                err = postmark_result.Message,
+                                "email failed to send"
+                            );
 
                             spawn_blocking(move || {
                                 posthog_quorum_event(
@@ -321,8 +328,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                                     postmark_result.Message.as_str(),
                                 );
                             })
-                            .await
-                            .unwrap();
+                            .await?;
 
                             db.notification()
                                 .update_many(
@@ -360,12 +366,11 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                                     },
                                 )
                                 .exec()
-                                .await
-                                .unwrap();
+                                .await?;
                         }
                     }
                     Err(e) => {
-                        warn!("{:?}", e);
+                        event!(Level::WARN, err = e.to_string(), "email failed to send");
 
                         spawn_blocking(move || {
                             posthog_quorum_event(
@@ -377,8 +382,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                                 "",
                             );
                         })
-                        .await
-                        .unwrap();
+                        .await?;
 
                         db.notification()
                             .update_many(
@@ -416,13 +420,12 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                                 },
                             )
                             .exec()
-                            .await
-                            .unwrap();
+                            .await?;
                     }
                 }
             }
             Err(e) => {
-                warn!("{:?}", e);
+                event!(Level::WARN, err = e.to_string(), "email failed to send");
 
                 spawn_blocking(move || {
                     posthog_quorum_event(
@@ -434,8 +437,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                         "",
                     );
                 })
-                .await
-                .unwrap();
+                .await?;
 
                 db.notification()
                     .update_many(
@@ -471,14 +473,15 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                         },
                     )
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
             }
         };
     }
+    Ok(())
 }
 
-pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
+#[instrument(skip(db))]
+pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) -> Result<()> {
     let proposals_ending_soon = db
         .proposal()
         .find_many(vec![
@@ -489,8 +492,7 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
         ])
         .include(proposal_with_dao::include())
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     let proposals_to_send_notifications: Vec<_> = proposals_ending_soon
         .iter()
@@ -511,8 +513,7 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                 dao
             }))
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         let subscriptions_with_email: Vec<_> = subscriptions
             .iter()
@@ -526,9 +527,7 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
             .collect();
 
         for sub in subscriptions_with_email.iter() {
-            let voted = get_vote(sub.userid.clone(), proposal.id.clone(), db)
-                .await
-                .unwrap();
+            let voted = get_vote(sub.userid.clone(), proposal.id.clone(), db).await?;
             if !voted {
                 db.notification()
                     .create_many(vec![notification::create_unchecked(
@@ -538,9 +537,9 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) {
                     )])
                     .skip_duplicates()
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
             }
         }
     }
+    Ok(())
 }

@@ -1,5 +1,8 @@
 use std::env;
 
+use tracing::instrument;
+
+#[instrument]
 pub fn posthog_bulletin_event(event: &str, user: String, r#type: &str, message_id: &str) {
     let mut event = posthog_rs::Event::new(event, user.as_str());
     event.insert_prop("type", message_id).unwrap();
@@ -15,6 +18,7 @@ pub fn posthog_bulletin_event(event: &str, user: String, r#type: &str, message_i
     .capture(event);
 }
 
+#[instrument]
 pub fn posthog_quorum_event(
     event: &str,
     user: String,

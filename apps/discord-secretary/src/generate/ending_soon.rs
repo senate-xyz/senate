@@ -11,10 +11,11 @@ use crate::{
     utils::vote::get_vote,
 };
 
+#[instrument(skip(client))]
 pub async fn generate_ending_soon_notifications(
     client: &Arc<PrismaClient>,
     ending_type: NotificationType,
-) {
+) -> Result<()> {
     let timeleft = match ending_type {
         NotificationType::FirstReminderDiscord => Duration::hours(24),
         NotificationType::SecondReminderDiscord => Duration::hours(6),
@@ -37,22 +38,16 @@ pub async fn generate_ending_soon_notifications(
             user::discordreminders::equals(true),
         ])
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     for user in users {
         let ending_proposals =
-            get_ending_proposals_for_user(&user.address.clone().unwrap(), timeleft, client)
-                .await
-                .unwrap();
+            get_ending_proposals_for_user(&user.address.clone().unwrap(), timeleft, client).await?;
 
         let mut ending_not_voted_proposals = vec![];
 
         for proposal in ending_proposals {
-            if !get_vote(user.clone().id, proposal.clone().id, client)
-                .await
-                .unwrap()
-            {
+            if !get_vote(user.clone().id, proposal.clone().id, client).await? {
                 ending_not_voted_proposals.push(proposal);
             }
         }
@@ -72,13 +67,14 @@ pub async fn generate_ending_soon_notifications(
             )
             .skip_duplicates()
             .exec()
-            .await
-            .unwrap();
+            .await?;
     }
+    Ok(())
 }
 
 proposal::include!(proposal_with_dao { dao daohandler });
 
+#[instrument(skip(client))]
 pub async fn get_ending_proposals_for_user(
     username: &String,
     timeleft: Duration,
@@ -88,16 +84,14 @@ pub async fn get_ending_proposals_for_user(
         .user()
         .find_first(vec![user::address::equals(username.clone().into())])
         .exec()
-        .await
-        .unwrap()
+        .await?
         .unwrap();
 
     let subscribed_daos = client
         .subscription()
         .find_many(vec![subscription::userid::equals(user.id)])
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     let proposals = client
         .proposal()
@@ -110,8 +104,7 @@ pub async fn get_ending_proposals_for_user(
         ])
         .include(proposal_with_dao::include())
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     Ok(proposals)
 }

@@ -131,57 +131,57 @@ async fn get_results(
     match dao_handler.r#type {
         DaoHandlerType::AaveChain => {
             let p = aave_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::CompoundChain => {
             let p = compound_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::UniswapChain => {
             let p = uniswap_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::EnsChain => {
             let p = ens_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::GitcoinChain => {
             let p = gitcoin_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::HopChain => {
             let p = hop_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::DydxChain => {
             let p = dydx_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::MakerPoll => {
             let p = maker_poll_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::MakerExecutive => {
             let p = maker_executive_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::InterestProtocolChain => {
             let p = interest_protocol_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::ZeroxProtocolChain => {
             let p = zeroxtreasury_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::MakerPollArbitrum => bail!("not implemeneted"),

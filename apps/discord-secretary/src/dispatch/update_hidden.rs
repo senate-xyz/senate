@@ -10,7 +10,7 @@ use serenity::{
     utils::Colour,
 };
 use tokio::time::sleep;
-use tracing::{debug_span, instrument, warn, Instrument};
+use tracing::{debug_span, event, instrument, warn, Instrument, Level};
 
 use crate::{
     prisma::{
@@ -19,17 +19,17 @@ use crate::{
     },
     utils::vote::get_vote,
 };
+use anyhow::Result;
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
+pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) -> Result<()> {
     let active_proposals = client
         .proposal()
         .find_many(vec![prisma::proposal::state::equals(ProposalState::Hidden)])
         .include(proposal_with_dao::include())
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     for active_proposal in active_proposals {
         let notifications_for_proposal = client
@@ -42,23 +42,16 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                 ),
             ])
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         for notification in notifications_for_proposal {
-            let initial_message_id: u64 = notification
-                .clone()
-                .discordmessageid
-                .unwrap()
-                .parse()
-                .unwrap();
+            let initial_message_id: u64 = notification.clone().discordmessageid.unwrap().parse()?;
 
             let user = client
                 .user()
                 .find_first(vec![user::id::equals(notification.clone().userid)])
                 .exec()
-                .await
-                .unwrap()
+                .await?
                 .unwrap();
 
             let proposal = client
@@ -68,8 +61,7 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                 )])
                 .include(proposal_with_dao::include())
                 .exec()
-                .await
-                .unwrap();
+                .await?;
 
             let http = Http::new("");
 
@@ -78,7 +70,7 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
             let webhook = match webhook_response {
                 Ok(w) => w,
                 Err(e) => {
-                    warn!("{:?}", e);
+                    event!(Level::ERROR, err = e.to_string(), "webhook err");
                     continue;
                 }
             };
@@ -129,8 +121,7 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                         notification.clone().proposalid.unwrap(),
                         client,
                     )
-                    .await
-                    .unwrap();
+                    .await?;
 
                     let message_content = if result_index == 100 {
                         "❓ Could not fetch results".to_string()
@@ -181,19 +172,18 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) {
                                     .image(image)
                             })])
                         })
-                        .await
-                        .ok();
+                        .await?;
                 }
                 None => {
                     webhook
                         .clone()
                         .delete_message(&http, MessageId::from(initial_message_id))
-                        .await
-                        .ok();
+                        .await?;
                 }
             }
         }
 
         sleep(Duration::from_millis(100)).await;
     }
+    Ok(())
 }

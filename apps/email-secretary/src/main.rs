@@ -11,7 +11,7 @@ use log::info;
 use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 use tokio::{time::sleep, try_join};
-use tracing::debug;
+use tracing::{debug, event, Level};
 
 use crate::{
     bulletin::bulletin_emails::{send_bulletin_emails, send_triggered_emails},
@@ -20,6 +20,7 @@ use crate::{
 };
 
 pub mod prisma;
+mod telemetry;
 
 pub mod bulletin {
     pub mod bulletin_emails;
@@ -38,11 +39,7 @@ pub mod utils {
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-
-    tracing_subscriber::fmt()
-        .pretty()
-        .with_max_level(tracing::Level::INFO)
-        .init();
+    telemetry::setup();
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
 
@@ -63,21 +60,22 @@ async fn main() {
 
     let client_for_triggered_bulletin: Arc<PrismaClient> = Arc::clone(&client);
     let triggered_bulletin_task = tokio::task::spawn(async move {
-        info!("started triggered_bulletin_task");
         loop {
-            debug!("loop triggered_bulletin_task");
-            send_triggered_emails(&client_for_triggered_bulletin).await;
+            match send_triggered_emails(&client_for_triggered_bulletin).await {
+                Ok(_) => event!(Level::INFO, "sent bulletin"),
+                Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to send bulletin"),
+            };
             sleep(Duration::from_secs(60)).await;
         }
     });
 
     let client_for_quorum = Arc::clone(&client);
     let quroum_task = tokio::task::spawn(async move {
-        info!("started quroum_task");
         loop {
-            debug!("loop quroum_task");
-            send_quorum_email(&client_for_quorum).await;
-
+            match send_quorum_email(&client_for_quorum).await {
+                Ok(_) => event!(Level::INFO, "sent bulletin"),
+                Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to send bulletin"),
+            };
             sleep(Duration::from_secs(60)).await;
         }
     });

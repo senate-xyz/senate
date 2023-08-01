@@ -1,5 +1,6 @@
 use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
 
+use anyhow::Result;
 use prisma_client_rust::bigdecimal::ToPrimitive;
 use serenity::{
     http::Http,
@@ -10,7 +11,7 @@ use serenity::{
     utils::Colour,
 };
 use tokio::time::sleep;
-use tracing::{debug_span, instrument, warn, Instrument};
+use tracing::{debug_span, event, instrument, warn, Instrument, Level};
 
 use crate::{
     prisma::{
@@ -24,7 +25,8 @@ use super::utils::notification_retry::update_notification_retry;
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
+#[instrument(skip(client))]
+pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -> Result<()> {
     let notifications = client
         .notification()
         .find_many(vec![
@@ -37,8 +39,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
             notification::r#type::equals(NotificationType::EndedProposalDiscord),
         ])
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     for notification in notifications {
         let new_notification = client
@@ -50,15 +51,13 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                 notification::dispatchstatus::equals(NotificationDispatchedState::Dispatched),
             ])
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         let user = client
             .user()
             .find_first(vec![user::id::equals(notification.clone().userid)])
             .exec()
-            .await
-            .unwrap()
+            .await?
             .unwrap();
 
         let proposal = client
@@ -68,8 +67,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
             )])
             .include(proposal_with_dao::include())
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         let http = Http::new("");
 
@@ -78,7 +76,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
         let webhook = match webhook_response {
             Ok(w) => w,
             Err(e) => {
-                warn!("{:?}", e);
+                event!(Level::ERROR, err = e.to_string(), "webhook err");
                 update_notification_retry(client, notification).await;
                 continue;
             }
@@ -121,8 +119,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             new_notification.proposalid.unwrap(),
                             client,
                         )
-                        .await
-                        .unwrap();
+                        .await?;
 
                         let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
                             Some(v) => v.into_string().unwrap(),
@@ -215,6 +212,14 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
 
                         let update_data = match message {
                             Ok(msg) => {
+                                event!(
+                                    Level::INFO,
+                                    user = user.address.clone().unwrap(),
+                                    proposal_name = proposal.name,
+                                    dao = proposal.dao.name,
+                                    "new notification"
+                                );
+
                                 posthog_event(
                                     "discord_ended_notification",
                                     user.address.unwrap(),
@@ -235,7 +240,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 ]
                             }
                             Err(e) => {
-                                warn!("{:?}", e);
+                                event!(Level::ERROR, err = e.to_string(), "update err");
 
                                 posthog_event(
                                     "discord_ended_notification_fail",
@@ -285,8 +290,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 update_data,
                             )
                             .exec()
-                            .await
-                            .unwrap();
+                            .await?;
                     }
                     None => {
                         webhook
@@ -310,8 +314,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                                 )],
                             )
                             .exec()
-                            .await
-                            .unwrap();
+                            .await?;
                     }
                 }
             }
@@ -389,12 +392,13 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) {
                             update_data,
                         )
                         .exec()
-                        .await
-                        .unwrap();
+                        .await?;
                 }
             }
         }
 
         sleep(Duration::from_millis(100)).await;
     }
+
+    Ok(())
 }

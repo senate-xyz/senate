@@ -9,7 +9,7 @@ use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
 use serde_json::json;
 use tokio::{sync::Mutex, time::sleep};
-use tracing::{info, instrument, warn};
+use tracing::{event, info, instrument, warn, Level};
 
 #[derive(Deserialize, Debug)]
 struct CountdownResponse {
@@ -30,6 +30,7 @@ pub struct CountdownCache {
 pub static COUNTDOWN_CACHE: Lazy<Arc<Mutex<Vec<CountdownCache>>>> =
     Lazy::new(|| Arc::new(Mutex::new(Vec::new())));
 
+#[instrument(ret)]
 pub async fn countdown_gif(end_time: DateTime<Utc>, with_days: bool) -> Result<String> {
     let mut countdown_cache = COUNTDOWN_CACHE.lock().await;
 
@@ -109,7 +110,7 @@ pub async fn countdown_gif(end_time: DateTime<Utc>, with_days: bool) -> Result<S
                 }
             }
             Err(e) => {
-                warn!("countdown api err: {:?}", e);
+                event!(Level::WARN, err = e.to_string(), "countdown api err");
             }
         }
     }
