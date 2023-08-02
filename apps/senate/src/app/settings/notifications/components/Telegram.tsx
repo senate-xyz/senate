@@ -88,7 +88,7 @@ const Enabled = (props: {
                     : process.env.NEXT_PUBLIC_WEB_URL?.includes("staging")
                     ? "staging"
                     : ""
-                }bot?start=${props.userId}`}
+                }bot?start=${props.userId}_dm`}
                 target="_blank"
               >
                 Start a chat
@@ -104,7 +104,7 @@ const Enabled = (props: {
                     : process.env.NEXT_PUBLIC_WEB_URL?.includes("staging")
                     ? "staging"
                     : ""
-                }bot?startgroup=${props.userId}`}
+                }bot?startgroup=${props.userId}_group`}
                 target="_blank"
               >
                 Start a group chat

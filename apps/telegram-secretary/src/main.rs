@@ -201,52 +201,72 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
     match cmd {
         Command::Start => {
             let text = msg.text().unwrap();
-            let split_result = text.split_once(' ');
 
-            match split_result {
-                Some((_, id_with_quotes)) => {
-                    let id = id_with_quotes.trim_matches('"');
+            let commands = text.trim_matches('"').split_once(' ');
 
-                    if id.is_empty() {
+            match commands {
+                Some((_, params)) => {
+                    if params.is_empty() {
                         bot.send_message(msg.chat.id, "You can't start the bot directly. Please sign up to Senate Telegram Notifications using https://senatelabs.xyz/settings/notifications.")
             .await?;
                     } else {
-                        let prisma_client =
-                            Arc::new(PrismaClient::_builder().build().await.unwrap());
+                        let split_params: Option<(&str, &str)> = params.split_once('_');
 
-                        prisma_client
-                            .user()
-                            .update(
-                                prisma::user::id::equals(id.to_string()),
-                                vec![
-                                    prisma::user::telegramnotifications::set(true),
-                                    prisma::user::telegramchatid::set(msg.chat.id.to_string()),
-                                ],
-                            )
-                            .exec()
-                            .await
-                            .unwrap();
+                        match split_params {
+                            Some((userid, group)) => {
+                                if group == "group" && msg.chat.id > ChatId(0) {
+                                    bot.send_message(msg.chat.id, "You can only start group chat notifications in groups you are admin.")
+                                .await?;
+                                    return Ok(());
+                                }
 
-                        let user = prisma_client
-                            .user()
-                            .find_first(vec![prisma::user::id::equals(id.to_string())])
-                            .exec()
-                            .await
-                            .unwrap()
-                            .unwrap();
+                                let prisma_client =
+                                    Arc::new(PrismaClient::_builder().build().await.unwrap());
 
-                        bot.send_message(msg.chat.id, format!("Hello {}!", user.address.unwrap()))
-                            .await?;
-                        bot.send_message(
-                            msg.chat.id,
-                            "You are now subscribed to Senate Telegram Notifications!",
-                        )
-                        .await?;
+                                prisma_client
+                                    .user()
+                                    .update(
+                                        prisma::user::id::equals(userid.to_string()),
+                                        vec![
+                                            prisma::user::telegramnotifications::set(true),
+                                            prisma::user::telegramchatid::set(
+                                                msg.chat.id.to_string(),
+                                            ),
+                                        ],
+                                    )
+                                    .exec()
+                                    .await
+                                    .unwrap();
+
+                                let user = prisma_client
+                                    .user()
+                                    .find_first(vec![prisma::user::id::equals(userid.to_string())])
+                                    .exec()
+                                    .await
+                                    .unwrap()
+                                    .unwrap();
+
+                                bot.send_message(
+                                    msg.chat.id,
+                                    format!("Hello {}!", user.address.unwrap()),
+                                )
+                                .await?;
+                                bot.send_message(
+                                    msg.chat.id,
+                                    "You are now subscribed to Senate Telegram Notifications!",
+                                )
+                                .await?;
+                            }
+                            None => {
+                                bot.send_message(msg.chat.id, "You can't start the bot directly. Please sign up to Senate Telegram Notifications using https://senatelabs.xyz/settings/notifications.")
+                                .await?;
+                            }
+                        }
                     }
                 }
                 None => {
                     bot.send_message(msg.chat.id, "You can't start the bot directly. Please sign up to Senate Telegram Notifications using https://senatelabs.xyz/settings/notifications.")
-            .await?;
+                    .await?;
                 }
             }
         }
