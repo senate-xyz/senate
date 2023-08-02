@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import cuid from "cuid";
-import { db, dao, daohandler, user, subscription } from "./index";
+import { db, dao, daohandler, user, subscription, voter } from "./index";
 
 const seedData = async () => {
   console.log("Inserting daos");
@@ -827,6 +827,11 @@ const seedData = async () => {
     address: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
   });
 
+  await db.insert(voter).ignore().values({
+    id: cuid(),
+    address: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
+  });
+
   console.log("Inserting subscriptions");
 
   const alldaos = await db.select().from(dao);
@@ -834,8 +839,10 @@ const seedData = async () => {
   for (const dao of alldaos) {
     await db
       .insert(subscription)
+      .ignore()
       .values({ id: cuid(), userid: userid, daoid: dao.id });
   }
+  console.log("Done seeding data");
 };
 
 // async function maintenance() {

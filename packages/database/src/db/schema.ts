@@ -8,6 +8,7 @@ import {
   json,
   bigint,
   boolean,
+  index,
 } from "drizzle-orm/mysql-core";
 import { relations, sql } from "drizzle-orm";
 
@@ -23,6 +24,7 @@ export const userTovoter = mysqlTable(
         table.a,
         table.b,
       ),
+      userTovoter_B_index: index("_userTovoter_B_index").on(table.b),
     };
   },
 );
@@ -59,34 +61,42 @@ export const daoRelations = relations(dao, ({ many }) => ({
   votes: many(vote),
 }));
 
-export const daohandler = mysqlTable("daohandler", {
-  id: varchar("id", { length: 191 }).primaryKey().unique().notNull(),
-  type: mysqlEnum("type", [
-    "AAVE_CHAIN",
-    "COMPOUND_CHAIN",
-    "UNISWAP_CHAIN",
-    "ENS_CHAIN",
-    "GITCOIN_CHAIN",
-    "HOP_CHAIN",
-    "DYDX_CHAIN",
-    "MAKER_EXECUTIVE",
-    "MAKER_POLL",
-    "MAKER_POLL_ARBITRUM",
-    "INTEREST_PROTOCOL_CHAIN",
-    "ZEROX_PROTOCOL_CHAIN",
-    "SNAPSHOT",
-  ]).notNull(),
-  decoder: json("decoder").notNull(),
-  chainindex: bigint("chainindex", { mode: "number" }).default(0).notNull(),
-  snapshotindex: datetime("snapshotindex", {
-    mode: "date",
-    fsp: 3,
-  })
-    .default(new Date(0))
-    .notNull(),
-  uptodate: boolean("uptodate").default(false).notNull(),
-  daoid: varchar("daoid", { length: 191 }).notNull(),
-});
+export const daohandler = mysqlTable(
+  "daohandler",
+  {
+    id: varchar("id", { length: 191 }).primaryKey().unique().notNull(),
+    type: mysqlEnum("type", [
+      "AAVE_CHAIN",
+      "COMPOUND_CHAIN",
+      "UNISWAP_CHAIN",
+      "ENS_CHAIN",
+      "GITCOIN_CHAIN",
+      "HOP_CHAIN",
+      "DYDX_CHAIN",
+      "MAKER_EXECUTIVE",
+      "MAKER_POLL",
+      "MAKER_POLL_ARBITRUM",
+      "INTEREST_PROTOCOL_CHAIN",
+      "ZEROX_PROTOCOL_CHAIN",
+      "SNAPSHOT",
+    ]).notNull(),
+    decoder: json("decoder").notNull(),
+    chainindex: bigint("chainindex", { mode: "number" }).default(0).notNull(),
+    snapshotindex: datetime("snapshotindex", {
+      mode: "date",
+      fsp: 3,
+    })
+      .default(new Date(0))
+      .notNull(),
+    uptodate: boolean("uptodate").default(false).notNull(),
+    daoid: varchar("daoid", { length: 191 }).notNull(),
+  },
+  (table) => {
+    return {
+      daohandler_daoid_idx: index("daohandler_daoid_idx").on(table.daoid),
+    };
+  },
+);
 
 export const daohandlerRelations = relations(daohandler, ({ many, one }) => ({
   dao: one(dao, {
@@ -98,42 +108,55 @@ export const daohandlerRelations = relations(daohandler, ({ many, one }) => ({
   votes: many(vote),
 }));
 
-export const notification = mysqlTable("notification", {
-  id: varchar("id", { length: 191 }).primaryKey().unique().notNull(),
-  userid: varchar("userid", { length: 191 }).notNull(),
-  proposalid: varchar("proposalid", { length: 191 }),
-  type: mysqlEnum("type", [
-    "QUORUM_NOT_REACHED_EMAIL",
-    "BULLETIN_EMAIL",
-    "NEW_PROPOSAL_DISCORD",
-    "FIRST_REMINDER_DISCORD",
-    "SECOND_REMINDER_DISCORD",
-    "THIRD_REMINDER_DISCORD",
-    "ENDED_PROPOSAL_DISCORD",
-    "NEW_PROPOSAL_TELEGRAM",
-    "FIRST_REMINDER_TELEGRAM",
-    "SECOND_REMINDER_TELEGRAM",
-    "THIRD_REMINDER_TELEGRAM",
-    "ENDED_PROPOSAL_TELEGRAM",
-  ]).notNull(),
-  dispatchstatus: mysqlEnum("dispatchstatus", [
-    "NOT_DISPATCHED",
-    "FIRST_RETRY",
-    "SECOND_RETRY",
-    "THIRD_RETRY",
-    "DISPATCHED",
-    "DELETED",
-    "FAILED",
-  ])
-    .default("NOT_DISPATCHED")
-    .notNull(),
-  emailmessageid: varchar("emailmessageid", { length: 191 }),
-  discordmessagelink: varchar("discordmessagelink", { length: 191 }),
-  discordmessageid: varchar("discordmessageid", { length: 191 }),
-  telegramchatid: varchar("telegramchatid", { length: 191 }),
-  telegrammessageid: varchar("telegrammessageid", { length: 191 }),
-  emailtemplate: varchar("emailtemplate", { length: 191 }),
-});
+export const notification = mysqlTable(
+  "notification",
+  {
+    id: varchar("id", { length: 191 }).primaryKey().unique().notNull(),
+    userid: varchar("userid", { length: 191 }).notNull(),
+    proposalid: varchar("proposalid", { length: 191 }),
+    type: mysqlEnum("type", [
+      "QUORUM_NOT_REACHED_EMAIL",
+      "BULLETIN_EMAIL",
+      "NEW_PROPOSAL_DISCORD",
+      "FIRST_REMINDER_DISCORD",
+      "SECOND_REMINDER_DISCORD",
+      "THIRD_REMINDER_DISCORD",
+      "ENDED_PROPOSAL_DISCORD",
+      "NEW_PROPOSAL_TELEGRAM",
+      "FIRST_REMINDER_TELEGRAM",
+      "SECOND_REMINDER_TELEGRAM",
+      "THIRD_REMINDER_TELEGRAM",
+      "ENDED_PROPOSAL_TELEGRAM",
+    ]).notNull(),
+    dispatchstatus: mysqlEnum("dispatchstatus", [
+      "NOT_DISPATCHED",
+      "FIRST_RETRY",
+      "SECOND_RETRY",
+      "THIRD_RETRY",
+      "DISPATCHED",
+      "DELETED",
+      "FAILED",
+    ])
+      .default("NOT_DISPATCHED")
+      .notNull(),
+    emailmessageid: varchar("emailmessageid", { length: 191 }),
+    discordmessagelink: varchar("discordmessagelink", { length: 191 }),
+    discordmessageid: varchar("discordmessageid", { length: 191 }),
+    telegramchatid: varchar("telegramchatid", { length: 191 }),
+    telegrammessageid: varchar("telegrammessageid", { length: 191 }),
+    emailtemplate: varchar("emailtemplate", { length: 191 }),
+  },
+  (table) => {
+    return {
+      notification_userid_idx: index("notification_userid_idx").on(
+        table.userid,
+      ),
+      notification_proposalid_idx: index("notification_proposalid_idx").on(
+        table.proposalid,
+      ),
+    };
+  },
+);
 
 export const notificationRelations = relations(notification, ({ one }) => ({
   user: one(user, {
@@ -146,35 +169,46 @@ export const notificationRelations = relations(notification, ({ one }) => ({
   }),
 }));
 
-export const proposal = mysqlTable("proposal", {
-  id: varchar("id", { length: 191 }).primaryKey().unique().notNull(),
-  name: varchar("name", { length: 2048 }).notNull(),
-  externalid: varchar("externalid", { length: 191 }).notNull(),
-  choices: json("choices").notNull(),
-  scores: json("scores").notNull(),
-  scorestotal: json("scorestotal").notNull(),
-  quorum: json("quorum").notNull(),
-  state: mysqlEnum("state", [
-    "PENDING",
-    "ACTIVE",
-    "CANCELED",
-    "DEFEATED",
-    "SUCCEEDED",
-    "QUEUED",
-    "EXPIRED",
-    "EXECUTED",
-    "HIDDEN",
-    "UNKNOWN",
-  ]).notNull(),
-  blockcreated: bigint("blockcreated", { mode: "number" }),
-  timecreated: datetime("timecreated", { mode: "date", fsp: 3 }).notNull(),
-  timestart: datetime("timestart", { mode: "date", fsp: 3 }).notNull(),
-  timeend: datetime("timeend", { mode: "date", fsp: 3 }).notNull(),
-  url: varchar("url", { length: 1024 }).notNull(),
-  daohandlerid: varchar("daohandlerid", { length: 191 }).notNull(),
-  daoid: varchar("daoid", { length: 191 }).notNull(),
-  visible: boolean("visible").default(true).notNull(),
-});
+export const proposal = mysqlTable(
+  "proposal",
+  {
+    id: varchar("id", { length: 191 }).primaryKey().unique().notNull(),
+    name: varchar("name", { length: 2048 }).notNull(),
+    externalid: varchar("externalid", { length: 191 }).notNull(),
+    choices: json("choices").notNull(),
+    scores: json("scores").notNull(),
+    scorestotal: json("scorestotal").notNull(),
+    quorum: json("quorum").notNull(),
+    state: mysqlEnum("state", [
+      "PENDING",
+      "ACTIVE",
+      "CANCELED",
+      "DEFEATED",
+      "SUCCEEDED",
+      "QUEUED",
+      "EXPIRED",
+      "EXECUTED",
+      "HIDDEN",
+      "UNKNOWN",
+    ]).notNull(),
+    blockcreated: bigint("blockcreated", { mode: "number" }),
+    timecreated: datetime("timecreated", { mode: "date", fsp: 3 }).notNull(),
+    timestart: datetime("timestart", { mode: "date", fsp: 3 }).notNull(),
+    timeend: datetime("timeend", { mode: "date", fsp: 3 }).notNull(),
+    url: varchar("url", { length: 1024 }).notNull(),
+    daohandlerid: varchar("daohandlerid", { length: 191 }).notNull(),
+    daoid: varchar("daoid", { length: 191 }).notNull(),
+    visible: boolean("visible").default(true).notNull(),
+  },
+  (table) => {
+    return {
+      proposal_daohandlerid_idx: index("proposal_daohandlerid_idx").on(
+        table.daohandlerid,
+      ),
+      proposal_daoid_idx: index("proposal_daoid_idx").on(table.daoid),
+    };
+  },
+);
 
 export const proposalRelations = relations(proposal, ({ many, one }) => ({
   votes: many(vote),
@@ -189,11 +223,22 @@ export const proposalRelations = relations(proposal, ({ many, one }) => ({
   }),
 }));
 
-export const subscription = mysqlTable("subscription", {
-  id: varchar("id", { length: 191 }).primaryKey().unique().notNull(),
-  userid: varchar("userid", { length: 191 }).notNull(),
-  daoid: varchar("daoid", { length: 191 }).notNull(),
-});
+export const subscription = mysqlTable(
+  "subscription",
+  {
+    id: varchar("id", { length: 191 }).primaryKey().unique().notNull(),
+    userid: varchar("userid", { length: 191 }).notNull(),
+    daoid: varchar("daoid", { length: 191 }).notNull(),
+  },
+  (table) => {
+    return {
+      subscription_userid_idx: index("subscription_userid_idx").on(
+        table.userid,
+      ),
+      subscription_daoid_idx: index("subscription_daoid_idx").on(table.daoid),
+    };
+  },
+);
 
 export const subscriptionRelations = relations(subscription, ({ one }) => ({
   dao: one(dao, {
@@ -208,8 +253,8 @@ export const subscriptionRelations = relations(subscription, ({ one }) => ({
 
 export const user = mysqlTable("user", {
   id: varchar("id", { length: 191 }).primaryKey().unique().notNull(),
-  address: varchar("address", { length: 191 }),
-  email: varchar("email", { length: 191 }),
+  address: varchar("address", { length: 191 }).unique(),
+  email: varchar("email", { length: 191 }).unique(),
   verifiedaddress: boolean("verifiedaddress").default(false).notNull(),
   verifiedemail: boolean("verifiedemail").default(false).notNull(),
   isuniswapuser: mysqlEnum("isuniswapuser", [
@@ -264,18 +309,33 @@ export const userRelations = relations(user, ({ many }) => ({
   notifications: many(notification),
 }));
 
-export const vote = mysqlTable("vote", {
-  id: varchar("id", { length: 191 }).primaryKey().unique().notNull(),
-  choice: json("choice").notNull(),
-  votingpower: json("votingpower").notNull(),
-  reason: varchar("reason", { length: 2048 }).notNull(),
-  voteraddress: varchar("voteraddress", { length: 191 }).notNull(),
-  proposalid: varchar("proposalid", { length: 191 }).notNull(),
-  daoid: varchar("daoid", { length: 191 }).notNull(),
-  daohandlerid: varchar("daohandlerid", { length: 191 }).notNull(),
-  blockcreated: bigint("blockcreated", { mode: "number" }),
-  timecreated: datetime("timecreated", { mode: "date", fsp: 3 }),
-});
+export const vote = mysqlTable(
+  "vote",
+  {
+    id: varchar("id", { length: 191 }).primaryKey().unique().notNull(),
+    choice: json("choice").notNull(),
+    votingpower: json("votingpower").notNull(),
+    reason: varchar("reason", { length: 2048 }).notNull(),
+    voteraddress: varchar("voteraddress", { length: 191 }).notNull(),
+    proposalid: varchar("proposalid", { length: 191 }).notNull(),
+    daoid: varchar("daoid", { length: 191 }).notNull(),
+    daohandlerid: varchar("daohandlerid", { length: 191 }).notNull(),
+    blockcreated: bigint("blockcreated", { mode: "number" }),
+    timecreated: datetime("timecreated", { mode: "date", fsp: 3 }),
+  },
+  (table) => {
+    return {
+      vote_voteraddress_idx: index("vote_voteraddress_idx").on(
+        table.voteraddress,
+      ),
+      vote_proposalid_idx: index("vote_proposalid_idx").on(table.proposalid),
+      vote_daoid_idx: index("vote_daoid_idx").on(table.daoid),
+      vote_daohandlerid_idx: index("vote_daohandlerid_idx").on(
+        table.daohandlerid,
+      ),
+    };
+  },
+);
 
 export const voteRelations = relations(vote, ({ one }) => ({
   voteraddress: one(voter, {
@@ -305,19 +365,32 @@ export const voterRelations = relations(voter, ({ many }) => ({
   usersToVoters: many(userTovoter),
 }));
 
-export const voterhandler = mysqlTable("voterhandler", {
-  id: varchar("id", { length: 191 }).primaryKey().unique().notNull(),
-  chainindex: bigint("chainindex", { mode: "number" }).default(0).notNull(),
-  snapshotindex: datetime("snapshotindex", {
-    mode: "date",
-    fsp: 3,
-  })
-    .default(new Date(0))
-    .notNull(),
-  uptodate: boolean("uptodate").default(false).notNull(),
-  daohandlerid: varchar("daohandlerid", { length: 191 }).notNull(),
-  voterid: varchar("voterid", { length: 191 }).notNull(),
-});
+export const voterhandler = mysqlTable(
+  "voterhandler",
+  {
+    id: varchar("id", { length: 191 }).primaryKey().unique().notNull(),
+    chainindex: bigint("chainindex", { mode: "number" }).default(0).notNull(),
+    snapshotindex: datetime("snapshotindex", {
+      mode: "date",
+      fsp: 3,
+    })
+      .default(new Date(0))
+      .notNull(),
+    uptodate: boolean("uptodate").default(false).notNull(),
+    daohandlerid: varchar("daohandlerid", { length: 191 }).notNull(),
+    voterid: varchar("voterid", { length: 191 }).notNull(),
+  },
+  (table) => {
+    return {
+      voterhandler_daohandlerid_idx: index("voterhandler_daohandlerid_idx").on(
+        table.daohandlerid,
+      ),
+      voterhandler_voterid_idx: index("voterhandler_voterid_idx").on(
+        table.voterid,
+      ),
+    };
+  },
+);
 
 export const voterhandlerRelations = relations(voterhandler, ({ one }) => ({
   daohandler: one(daohandler, {
