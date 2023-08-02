@@ -25,11 +25,10 @@ struct Decoder {
     address_create: String,
 }
 
+#[instrument(skip_all)]
 pub async fn maker_polls_sanity_check(ctx: &Context) -> Result<()> {
     let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(30);
     let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
-
-    debug!("{:?} {:?}", sanitize_from, sanitize_to);
 
     let dao_handler = ctx
         .db
@@ -46,6 +45,7 @@ pub async fn maker_polls_sanity_check(ctx: &Context) -> Result<()> {
     Ok(())
 }
 
+#[instrument(skip(ctx))]
 async fn sanitize(
     dao_handler: daohandler::Data,
     sanitize_from: chrono::DateTime<Utc>,
