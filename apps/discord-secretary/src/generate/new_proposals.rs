@@ -11,7 +11,10 @@ use crate::prisma::{
 pub async fn generate_new_proposal_notifications(client: &Arc<PrismaClient>) -> Result<()> {
     let users = client
         .user()
-        .find_many(vec![user::discordnotifications::equals(true)])
+        .find_many(vec![
+            user::discordnotifications::equals(true),
+            user::discordwebhook::contains("https://".to_string()),
+        ])
         .exec()
         .await?;
 

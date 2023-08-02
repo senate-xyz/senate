@@ -522,7 +522,7 @@ pub async fn generate_quorum_notifications(db: &Arc<prisma::PrismaClient>) -> Re
                     && s.user.verifiedemail
                     && s.user.emaildailybulletin
                     && s.user.emailquorumwarning
-                    && !s.user.email.clone().unwrap().is_empty()
+                    && s.user.email.clone().unwrap().contains("@")
             })
             .collect();
 

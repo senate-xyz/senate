@@ -146,6 +146,7 @@ pub async fn send_bulletin_emails(db: Arc<prisma::PrismaClient>) {
             user::emaildailybulletin::equals(true),
             user::verifiedemail::equals(true),
             user::verifiedaddress::equals(true),
+            user::email::contains("@".to_string()),
         ])
         .include(user_with_voters_and_subscriptions::include())
         .exec()
@@ -182,10 +183,6 @@ async fn send_bulletin(
     db: &Arc<prisma::PrismaClient>,
 ) -> Result<bool> {
     let user_data = get_user_bulletin_data(user.clone(), db).await?;
-
-    if user.email.is_none() {
-        return Ok(false);
-    }
 
     if user_data.newProposals.is_empty()
         && user_data.endedProposals.is_empty()
