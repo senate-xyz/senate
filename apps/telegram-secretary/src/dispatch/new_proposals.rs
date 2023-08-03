@@ -99,9 +99,9 @@ pub async fn dispatch_new_proposal_notifications(
                             "📢 New <b>{}</b> {} proposal ending <b>{}</b>\n<a href=\"{}\"><i>{}</i></a>\n",
                             proposal.dao.name,
                             if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                "off-chain"
+                                "offchain"
                             } else {
-                                "on-chain"
+                                "onchain"
                             },
                             proposal.timeend.format("%Y-%m-%d %H:%M"),
                             short_url,

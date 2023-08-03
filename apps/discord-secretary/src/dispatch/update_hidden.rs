@@ -156,9 +156,9 @@ pub async fn update_hidden_proposal_notifications(client: &Arc<PrismaClient>) ->
                                         "**{}** {} proposal ended on {}",
                                         proposal.dao.name,
                                         if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                            "off-chain"
+                                            "offchain"
                                         } else {
-                                            "on-chain"
+                                            "onchain"
                                         },
                                         proposal.timeend.format("%B %e")
                                     ))

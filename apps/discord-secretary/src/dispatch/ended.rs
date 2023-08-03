@@ -171,9 +171,9 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
                                             if proposal.daohandler.r#type
                                                 == DaoHandlerType::Snapshot
                                             {
-                                                "off-chain"
+                                                "offchain"
                                             } else {
-                                                "on-chain"
+                                                "onchain"
                                             },
                                             proposal.timeend.format("%B %e")
                                         ))
@@ -197,9 +197,9 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
                                     "🗳️ **{}** {} proposal {} **just ended.** ☑️",
                                     proposal.dao.name,
                                     if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                        "off-chain"
+                                        "offchain"
                                     } else {
-                                        "on-chain"
+                                        "onchain"
                                     },
                                     new_notification.discordmessagelink.unwrap(),
                                 ))
@@ -327,9 +327,9 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
                                 "🗳️ **{}** {} proposal {} **just ended.** ☑️",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                    "off-chain"
+                                    "offchain"
                                 } else {
-                                    "on-chain"
+                                    "onchain"
                                 },
                                 proposal.name,
                             ))

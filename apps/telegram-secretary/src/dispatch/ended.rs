@@ -122,9 +122,9 @@ pub async fn dispatch_ended_proposal_notifications(
                                 "🗳️ <b>{}</b> {} proposal <b>just ended.</b> \n<b>{}</b> \n<i>✅ {}</i> - <a href=\"{}\"><i>{}</i></a>",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                    "off-chain"
+                                    "offchain"
                                 } else {
-                                    "on-chain"
+                                    "onchain"
                                 },
                                 if voted { "🟢 Voted" } else { "🔴 Did not vote" },
                                 result,
@@ -146,9 +146,9 @@ pub async fn dispatch_ended_proposal_notifications(
                                 "🗳️ <b>{}</b> {} proposal <b>just ended.</b> \n<b>{}</b> \n<i>🚫 No Quorum</i> - <a href=\"{}\"><i>{}</i></a>",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                    "off-chain"
+                                    "offchain"
                                 } else {
-                                    "on-chain"
+                                    "onchain"
                                 },
                                 if voted { "🟢 Voted" } else { "🔴 Did not vote" },
                                 short_url,

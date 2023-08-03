@@ -289,6 +289,9 @@ export const user = mysqlTable("user", {
   telegramchatid: varchar("telegramchatid", { length: 191 })
     .default("")
     .notNull(),
+  telegramchattitle: varchar("telegramchattitle", { length: 1024 })
+    .default("")
+    .notNull(),
   acceptedterms: boolean("acceptedterms").default(false).notNull(),
   acceptedtermstimestamp: datetime("acceptedtermstimestamp", {
     mode: "date",

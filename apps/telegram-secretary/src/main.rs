@@ -214,7 +214,7 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
 
                         match split_params {
                             Some((userid, group)) => {
-                                if group == "group" && msg.chat.id > ChatId(0) {
+                                if group == "group" && msg.chat.is_private() {
                                     bot.send_message(msg.chat.id, "You can only start group chat notifications in groups you are admin.")
                                 .await?;
                                     return Ok(());
@@ -231,6 +231,13 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
                                             prisma::user::telegramnotifications::set(true),
                                             prisma::user::telegramchatid::set(
                                                 msg.chat.id.to_string(),
+                                            ),
+                                            prisma::user::telegramchattitle::set(
+                                                if msg.chat.is_private() {
+                                                    msg.chat.first_name().unwrap().to_string()
+                                                } else {
+                                                    msg.chat.title().unwrap().to_string()
+                                                },
                                             ),
                                         ],
                                     )

@@ -53,6 +53,7 @@ model user {
   telegramreminders      Boolean        @default(true)
   telegramincludevotes   Boolean        @default(true)
   telegramchatid         String         @default("")
+  telegramchattitle      String         @default("")
   acceptedterms          Boolean        @default(false)
   acceptedtermstimestamp DateTime?
   firstactive            DateTime       @default(now())

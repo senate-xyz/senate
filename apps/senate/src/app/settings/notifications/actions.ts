@@ -397,6 +397,8 @@ export const userTelegram = async () => {
       enabled: false,
       reminders: false,
       includeVotes: false,
+      chatId: "",
+      chatTitle: "",
     };
   const userAddress = session.user.name;
 
@@ -408,6 +410,8 @@ export const userTelegram = async () => {
       enabled: false,
       reminders: false,
       includeVotes: false,
+      chatId: "",
+      chatTitle: "",
     };
 
   return {
@@ -415,6 +419,8 @@ export const userTelegram = async () => {
     enabled: u.telegramnotifications ?? false,
     reminders: u.telegramreminders,
     includeVotes: u.telegramincludevotes ?? false,
+    chatId: u.telegramchatid,
+    chatTitle: u.telegramchattitle,
   };
 };
 

@@ -102,9 +102,9 @@ pub async fn dispatch_ending_soon_notifications(
                             "⌛ <b>{}</b> {} proposal <b>ends in 2️⃣4️⃣ hours.</b> 🕒 \nVote here 👉 {}",
                             proposal.dao.name,
                             if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                "off-chain"
+                                "offchain"
                             } else {
-                                "on-chain"
+                                "onchain"
                             },
                             short_url
                         )
@@ -114,9 +114,9 @@ pub async fn dispatch_ending_soon_notifications(
                             "🚨 <b>{}</b> {} proposal <b>ends in 6️⃣ hours.</b> 🕒 \nVote here 👉 {}",
                             proposal.dao.name,
                             if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                "off-chain"
+                                "offchain"
                             } else {
-                                "on-chain"
+                                "onchain"
                             },
                             short_url
                         )

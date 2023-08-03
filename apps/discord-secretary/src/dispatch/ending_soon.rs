@@ -134,7 +134,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
                     "⌛ **{}** {} proposal {} **ends in 2️⃣4️⃣ hours.** 🕒 \nVote here 👉 <{}>",
                     proposal.clone().unwrap().dao.name,
                     if proposal.clone().unwrap().daohandler.r#type == DaoHandlerType::Snapshot {
-                        "off-chain"
+                        "offchain"
                     } else {
                         "on-chain"
                     },
@@ -152,7 +152,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
                     "🚨 **{}** {} proposal {} **ends in :six: hours.** 🕒 \nVote here 👉 <{}>",
                     proposal.clone().unwrap().dao.name,
                     if proposal.clone().unwrap().daohandler.r#type == DaoHandlerType::Snapshot {
-                        "off-chain"
+                        "offchain"
                     } else {
                         "on-chain"
                     },

@@ -26,6 +26,8 @@ export default async function Home() {
     enabled: telegramEnabled,
     reminders: telegramReminders,
     includeVotes: telegramIncludeVotes,
+    chatId: telegramChatId,
+    chatTitle: telegramChatTitle,
   } = await userTelegram();
 
   const { aave: aaveMagicUser, uniswap: uniswapMagicUser } =
@@ -65,6 +67,8 @@ export default async function Home() {
         enabled={telegramEnabled}
         reminders={telegramReminders}
         includeVotes={telegramIncludeVotes}
+        chatId={telegramChatId}
+        chatTitle={telegramChatTitle}
       />
 
       <MagicUser aave={aaveMagicUser} uniswap={uniswapMagicUser} />
