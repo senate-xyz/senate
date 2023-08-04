@@ -192,7 +192,9 @@ async fn send_bulletin(
         return Ok(false);
     }
 
-    let bulletin_template = if user.isaaveuser == MagicUserState::Enabled
+    let bulletin_template = if user.subscriptions.len() > 1 {
+        "senate-bulletin"
+    } else if user.isaaveuser == MagicUserState::Enabled
         && user.isuniswapuser == MagicUserState::Enabled
     {
         "senate-bulletin"
@@ -200,8 +202,6 @@ async fn send_bulletin(
         "aave-bulletin"
     } else if user.isuniswapuser == MagicUserState::Enabled {
         "uniswap-bulletin"
-    } else if user.subscriptions.len() > 1 {
-        "senate-bulletin"
     } else {
         "senate-bulletin"
     };
