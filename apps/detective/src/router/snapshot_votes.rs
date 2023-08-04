@@ -254,10 +254,10 @@ async fn upsert_votes_for_proposal(
     match ctx
         .db
         .proposal()
-        .find_first(vec![
-            proposal::externalid::equals(p.id.to_string()),
-            proposal::daohandlerid::equals(dao_handler.id.clone()),
-        ])
+      .find_unique(proposal::externalid_daoid(
+            p.id.to_string(),
+            dao_handler.daoid.to_string(),
+        ))
         .exec()
         .await
     {
@@ -291,11 +291,11 @@ async fn update_or_create_votes(
         let existing = ctx
             .db
             .vote()
-            .find_first(vec![
-                vote::voteraddress::equals(vote.voter.to_string()),
-                vote::daohandlerid::equals(dao_handler.id.clone()),
-                vote::proposalid::equals(proposal_id.clone()),
-            ])
+           .find_unique(vote::voteraddress_daoid_proposalid(
+                vote.voter.to_string(),
+                dao_handler.daoid.clone(),
+                proposal_id.clone(),
+            ))
             .exec()
             .await?;
 
@@ -317,12 +317,12 @@ async fn update_or_create_votes(
 
                     ctx.db
                         .vote()
-                        .update_many(
-                            vec![
-                                vote::voteraddress::equals(vote.voter.to_string()),
-                                vote::daohandlerid::equals(dao_handler.id.clone()),
-                                vote::proposalid::equals(proposal_id.clone()),
-                            ],
+                         .update(
+                            vote::voteraddress_daoid_proposalid(
+                                vote.voter.clone(),
+                                dao_handler.daoid.clone(),
+                                proposal_id.clone(),
+                            ),
                             vec![
                                 vote::timecreated::set(Some(DateTime::from_utc(
                                     NaiveDateTime::from_timestamp_millis(vote.created * 1000)
@@ -444,11 +444,11 @@ async fn update_refresh_statuses(
 
             ctx.db
                 .voterhandler()
-                .update_many(
-                    vec![
-                        voterhandler::voterid::equals(voter_handler.voterid),
-                        voterhandler::daohandlerid::equals(dao_handler.id.clone()),
-                    ],
+                .update(
+                    voterhandler::voterid_daohandlerid(
+                        voter_handler.voterid,
+                        dao_handler.clone().id,
+                    ),
                     vec![
                         voterhandler::snapshotindex::set(new_index_date),
                         voterhandler::uptodate::set(uptodate),
