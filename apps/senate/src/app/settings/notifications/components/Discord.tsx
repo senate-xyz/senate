@@ -172,7 +172,7 @@ const Enabled = (props: {
                     Change Webhook
                   </div>
                 </div>
-                <div className={`flex flex-col gap-2`}>
+                <div className={`flex flex-row gap-16`}>
                   <RemindersSetting endingSoon={props.reminders} />
 
                   <PostHogFeature flag="discord-extended-menu" match={true}>
@@ -242,7 +242,9 @@ const IncludeVotesSetting = ({ includeVotes }: { includeVotes: boolean }) => {
   const [, startTransition] = useTransition();
   return (
     <div className="flex max-w-[382px] flex-row items-center justify-between gap-4">
-      <div className="font-[18px] leading-[23px] text-white">Include votes</div>
+      <div className="font-[18px] leading-[23px] text-white">
+        Show my vote status
+      </div>
       <label className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500">
         <input
           type="checkbox"
