@@ -301,11 +301,11 @@ async fn insert_votes(
         let existing = ctx
             .db
             .vote()
-            .find_first(vec![
-                vote::voteraddress::equals(vote.voter_address.clone()),
-                vote::daohandlerid::equals(dao_handler.daoid.clone()),
-                vote::proposalid::equals(vote.proposal_id.clone()),
-            ])
+            .find_unique(vote::voteraddress_daoid_proposalid(
+                vote.voter_address.to_string(),
+                dao_handler.daoid.clone(),
+                vote.proposal_id.clone(),
+            ))
             .exec()
             .await?;
 
@@ -327,12 +327,12 @@ async fn insert_votes(
 
                     ctx.db
                         .vote()
-                        .update_many(
-                            vec![
-                                vote::voteraddress::equals(vote.voter_address.clone()),
-                                vote::daohandlerid::equals(dao_handler.daoid.clone()),
-                                vote::proposalid::equals(vote.proposal_id.clone()),
-                            ],
+                        .update(
+                            vote::voteraddress_daoid_proposalid(
+                                vote.voter_address.to_string(),
+                                dao_handler.daoid.to_string(),
+                                vote.proposal_id.clone(),
+                            ),
                             vec![
                                 vote::choice::set(vote.choice.clone()),
                                 vote::votingpower::set(vote.voting_power.clone()),
@@ -417,11 +417,11 @@ async fn insert_votes(
 
             ctx.db
                 .voterhandler()
-                .update_many(
-                    vec![
-                        voterhandler::voterid::equals(voter_handler.voterid),
-                        voterhandler::daohandlerid::equals(dao_handler.id.clone()),
-                    ],
+                .update(
+                    voterhandler::voterid_daohandlerid(
+                        voter_handler.voterid,
+                        dao_handler.clone().id,
+                    ),
                     vec![
                         voterhandler::chainindex::set(new_index),
                         voterhandler::uptodate::set(uptodate),

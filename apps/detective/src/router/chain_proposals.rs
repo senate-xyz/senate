@@ -200,10 +200,10 @@ async fn insert_proposals(
         let existing = ctx
             .db
             .proposal()
-            .find_first(vec![
-                proposal::externalid::equals(proposal.external_id.clone()),
-                proposal::daohandlerid::equals(dao_handler.id.clone()),
-            ])
+            .find_unique(proposal::externalid_daoid(
+                proposal.external_id.to_string(),
+                dao_handler.daoid.to_string(),
+            ))
             .exec()
             .await?;
 
@@ -224,11 +224,11 @@ async fn insert_proposals(
                     );
                     ctx.db
                         .proposal()
-                        .update_many(
-                            vec![
-                                proposal::externalid::equals(proposal.external_id.clone()),
-                                proposal::daohandlerid::equals(dao_handler.id.clone()),
-                            ],
+                       .update(
+                            proposal::externalid_daoid(
+                                proposal.external_id.to_string(),
+                                dao_handler.daoid.to_string(),
+                            ),
                             {
                                 let mut update_v = Vec::new();
 

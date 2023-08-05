@@ -1333,32 +1333,32 @@
   optionalDependencies:
     fsevents "2.3.2"
 
-"@prisma/client@5.1.0":
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-5.1.0.tgz#6c378a2b7ecdeab6b3f24179484980257beac25d"
-  integrity sha512-aIxuXlH3p3Vy91buodQhYgAD9m0yuxJzpXMhc1ejQ/WN3pNNWzBA0iDcBObLq8DMdszcXmoLAk3hiRq/ZwBsOw==
+"@prisma/client@5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-5.1.1.tgz#ea2b0c8599bdb3f86d92e8df46fba795a744db01"
+  integrity sha512-fxcCeK5pMQGcgCqCrWsi+I2rpIbk0rAhdrN+ke7f34tIrgPwA68ensrpin+9+fZvuV2OtzHmuipwduSY6HswdA==
   dependencies:
-    "@prisma/engines-version" "5.1.0-28.a9b7003df90aa623086e4d6f4e43c72468e6339b"
+    "@prisma/engines-version" "5.1.1-1.6a3747c37ff169c90047725a05a6ef02e32ac97e"
 
-"@prisma/engines-version@5.1.0-28.a9b7003df90aa623086e4d6f4e43c72468e6339b":
-  version "5.1.0-28.a9b7003df90aa623086e4d6f4e43c72468e6339b"
-  resolved "https://registry.yarnpkg.com/@prisma/engines-version/-/engines-version-5.1.0-28.a9b7003df90aa623086e4d6f4e43c72468e6339b.tgz#0a6400d709a64cc43b076f0567715f459fadd5bc"
-  integrity sha512-jTwE2oy1yjICmTfnCR0ASIpuMZXZ18sUzQXB7V0RMbrM9OlcmbUwXPuYhnxXuWN8XwRmujeIhsXs/Zeh+fjPOQ==
+"@prisma/engines-version@5.1.1-1.6a3747c37ff169c90047725a05a6ef02e32ac97e":
+  version "5.1.1-1.6a3747c37ff169c90047725a05a6ef02e32ac97e"
+  resolved "https://registry.yarnpkg.com/@prisma/engines-version/-/engines-version-5.1.1-1.6a3747c37ff169c90047725a05a6ef02e32ac97e.tgz#2e8a1f098ec09452dbe00923b24f582f95d1747c"
+  integrity sha512-owZqbY/wucbr65bXJ/ljrHPgQU5xXTSkmcE/JcbqE1kusuAXV/TLN3/exmz21SZ5rJ7WDkyk70J2G/n68iogbQ==
 
-"@prisma/engines@5.1.0":
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@prisma/engines/-/engines-5.1.0.tgz#4ccf7f344eaeee08ca1e4a1bb2dc14e36ff1d5ec"
-  integrity sha512-HqaFsnPmZOdMWkPq6tT2eTVTQyaAXEDdKszcZ4yc7DGMBIYRP6j/zAJTtZUG9SsMV8FaucdL5vRyxY/p5Ni28g==
+"@prisma/engines@5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@prisma/engines/-/engines-5.1.1.tgz#9c26d209f93a563e048eab63b1976f222f1707d0"
+  integrity sha512-NV/4nVNWFZSJCCIA3HIFJbbDKO/NARc9ej0tX5S9k2EVbkrFJC4Xt9b0u4rNZWL4V+F5LAjvta8vzEUw0rw+HA==
 
-"@rainbow-me/rainbowkit-siwe-next-auth@0.2.0":
-  version "0.2.0"
-  resolved "https://registry.npmjs.org/@rainbow-me/rainbowkit-siwe-next-auth/-/rainbowkit-siwe-next-auth-0.2.0.tgz"
-  integrity sha512-U0GPPc5tRhNSLgdLb4sU6eha7qxIJmfNbUmcGeQGh7IR/jw3xFdYYKYaHcEG8rB09/yfEMQodwJiV+vrjta6zQ==
+"@rainbow-me/rainbowkit-siwe-next-auth@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbowkit-siwe-next-auth/-/rainbowkit-siwe-next-auth-0.3.0.tgz#780c267877c5c54f80316593745c8be40369222c"
+  integrity sha512-8qj2O7egeWLMHwZSDN9SBo6n1t+nAlVEdLij6D7eOKmBrvkv4ruuhJm1RHACllgxqBeIsMmfvJSjTG8GR+ZdUw==
 
-"@rainbow-me/rainbowkit@1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbowkit/-/rainbowkit-1.0.7.tgz#07f946b037166a3a84e7384e06855a2926fac8ba"
-  integrity sha512-cZZgPqpkeQEmKX5As3+WnKFF7PejDFVbc4bF9t6zC52nMFjSQUAnv2AttzyR4sP4pp2BSE1nVpTvygZGJ4f1Xg==
+"@rainbow-me/rainbowkit@1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbowkit/-/rainbowkit-1.0.8.tgz#280b3c572118957cdcfd6e54bc5bea12f969d980"
+  integrity sha512-m1B9/X3p8MLmj4fDfs2NpJlFRmKz7vOR0jmcdBw2SMFzXqP1FQFQc4pjvtLEeyfEUGSNNceGrecFZRVS0Qk//A==
   dependencies:
     "@vanilla-extract/css" "1.9.1"
     "@vanilla-extract/dynamic" "2.0.2"
@@ -1821,10 +1821,10 @@
   dependencies:
     "@types/ms" "*"
 
-"@types/eslint@^8.44.1":
-  version "8.44.1"
-  resolved "https://registry.yarnpkg.com/@types/eslint/-/eslint-8.44.1.tgz#d1811559bb6bcd1a76009e3f7883034b78a0415e"
-  integrity sha512-XpNDc4Z5Tb4x+SW1MriMVeIsMoONHCkWFMkR/aPJbzEsxqHy+4Glu/BqTdPrApfDeMaXbtNh6bseNgl5KaWrSg==
+"@types/eslint@^8.44.2":
+  version "8.44.2"
+  resolved "https://registry.yarnpkg.com/@types/eslint/-/eslint-8.44.2.tgz#0d21c505f98a89b8dd4d37fa162b09da6089199a"
+  integrity sha512-sdPRb9K6iL5XZOmBubg8yiFp5yS/JdUDQsq5e6h95km91MCYMuvp7mh1fjPEYUhvHepKpZOjnEaMBR4PxjWDzg==
   dependencies:
     "@types/estree" "*"
     "@types/json-schema" "*"
@@ -1943,10 +1943,10 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-18.15.13.tgz"
   integrity sha512-N+0kuo9KgrUQ1Sn/ifDXsvg0TTleP7rIy4zOBGECxAljqvqfqpTfzx0Q1NUedOixRMBfe2Whhb056a42cWs26Q==
 
-"@types/node@20.4.6":
-  version "20.4.6"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.4.6.tgz#b66b66c9bb5d49b199f03399e341c9d6036e9e88"
-  integrity sha512-q0RkvNgMweWWIvSMDiXhflGUKMdIxBo2M2tYM/0kEGDueQByFzK4KZAgu5YHGFNxziTlppNpTIBcqHQAxlfHdA==
+"@types/node@20.4.8":
+  version "20.4.8"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.4.8.tgz#b5dda19adaa473a9bf0ab5cbd8f30ec7d43f5c85"
+  integrity sha512-0mHckf6D2DiIAzh8fM8f3HQCvMKDpK94YQ0DSVkfWTG9BZleYIWudw9cJxX8oCk9bM+vAkDyujDV6dmKHbvQpg==
 
 "@types/node@^12.12.54":
   version "12.20.55"
@@ -5244,10 +5244,10 @@ eth-rpc-errors@^4.0.2:
   dependencies:
     fast-safe-stringify "^2.0.6"
 
-ethers@6.6.7, ethers@^6.6.7:
-  version "6.6.7"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.6.7.tgz#9cf773bcbc0ca56d783d4774e9b73b4d1aff9962"
-  integrity sha512-1SdT3W5/IPAcx9l5/+9qKRYR/iqVIdNQIct18yeh+XvN+I4RK44mvOsAerMwJYCAwdQfsOgf3OkfozeuMInbtQ==
+ethers@6.7.0, ethers@^6.7.0:
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.7.0.tgz#0f772c31a9450de28aa518b181c8cb269bbe7fd1"
+  integrity sha512-pxt5hK82RNwcTX2gOZP81t6qVPVspnkpeivwEgQuK9XUvbNtghBnT8GNIb/gPh+WnVSfi8cXC9XlfT8sqc6D6w==
   dependencies:
     "@adraffy/ens-normalize" "1.9.2"
     "@noble/hashes" "1.1.2"
@@ -7792,10 +7792,10 @@ multiformats@^9.4.2:
   resolved "https://registry.npmjs.org/multiformats/-/multiformats-9.9.0.tgz"
   integrity sha512-HoMUjhH9T8DDBNT+6xzkrd9ga/XiBI4xLr58LJACwK6G3HTOPeMz4nB4KJs33L2BelrIJa7P0VuNaVF3hMYfjg==
 
-mysql2@^3.5.2:
-  version "3.5.2"
-  resolved "https://registry.yarnpkg.com/mysql2/-/mysql2-3.5.2.tgz#a06050e1514e9ac15711a8b883ffd51cb44b2dc8"
-  integrity sha512-cptobmhYkYeTBIFp2c0piw2+gElpioga1rUw5UidHvo8yaHijMZoo8A3zyBVoo/K71f7ZFvrShA9iMIy9dCzCA==
+mysql2@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/mysql2/-/mysql2-3.6.0.tgz#d54ef4867655daf2f65ced1dbdb63852314f039f"
+  integrity sha512-EWUGAhv6SphezurlfI2Fpt0uJEWLmirrtQR7SkbTHFC+4/mJBrPiSzHESHKAWKG7ALVD6xaG/NBjjd1DGJGQQQ==
   dependencies:
     denque "^2.1.0"
     generate-function "^2.3.1"
@@ -8684,7 +8684,12 @@ prepend-http@^2.0.0:
   resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-2.0.0.tgz#e92434bfa5ea8c19f41cdfd401d741a3c819d897"
   integrity sha512-ravE6m9Atw9Z/jjttRUZ+clIXogdghyZAuWJ3qEzjT+jI/dL1ifAqhZeC5VHzQp1MSt1+jxKkFNemj/iO7tVUA==
 
-prettier@3.0.0, prettier@^3, prettier@^3.0.0:
+prettier@3.0.1, prettier@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.0.1.tgz#65271fc9320ce4913c57747a70ce635b30beaa40"
+  integrity sha512-fcOWSnnpCrovBsmFZIGIy9UqK2FaI7Hqax+DIO0A9UxeVoY4iweyaFjS5TavZN97Hfehph0nhsZnjlVKzEQSrQ==
+
+prettier@^3:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.0.0.tgz#e7b19f691245a21d618c68bc54dc06122f6105ae"
   integrity sha512-zBf5eHpwHOGPC47h0zrPyNn+eAEIdEzfywMoYn2XPi0P44Zp0tSq64rq0xAREh4auw2cJZHo9QUob+NqCQky4g==
@@ -8734,12 +8739,12 @@ pretty-format@^3.8.0:
   resolved "https://registry.npmjs.org/pretty-format/-/pretty-format-3.8.0.tgz"
   integrity sha512-WuxUnVtlWL1OfZFQFuqvnvs6MiAGk9UNsBostyBOB0Is9wb5uRESevA6rnl/rkksXaGX3GzZhPup5d6Vp1nFew==
 
-prisma@5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/prisma/-/prisma-5.1.0.tgz#29e316b54844f5694a83017a9781a6d6f7cb99ea"
-  integrity sha512-wkXvh+6wxk03G8qwpZMOed4Y3j+EQ+bMTlvbDZHeal6k1E8QuGKzRO7DRXlE1NV0WNgOAas8kwZqcLETQ2+BiQ==
+prisma@5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/prisma/-/prisma-5.1.1.tgz#8f5c0f9467a828746cb94f846d694dc7b7481a9e"
+  integrity sha512-WJFG/U7sMmcc6TjJTTifTfpI6Wjoh55xl4AzopVwAdyK68L9/ogNo8QQ2cxuUjJf/Wa82z/uhyh3wMzvRIBphg==
   dependencies:
-    "@prisma/engines" "5.1.0"
+    "@prisma/engines" "5.1.1"
 
 process-nextick-args@~2.0.0:
   version "2.0.1"
@@ -10758,10 +10763,10 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-viem@1.5.2:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-1.5.2.tgz#b8b9b464c4fb211c1daec6253b3e2559b69607b7"
-  integrity sha512-hPs4TJ9ONZw44K8lh24I5+Qntu62DEP85yhPsGqSSyr2d9yROY/9AisLLTlrlsudhg+A+BnLQGAuqvj/X+i8Ow==
+viem@1.5.3:
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-1.5.3.tgz#076a95e0c11d03b6cfa8abb1bd19b48a2c02e056"
+  integrity sha512-oImpSDDvm8Y72qxXV0pCAGAqQLYgo8YENdz9EKS8ExnnOJLascpex4LNazNyp9cksjm3ORpVpbqGMr9Cy1z2mg==
   dependencies:
     "@adraffy/ens-normalize" "1.9.0"
     "@noble/curves" "1.0.0"

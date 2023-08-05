@@ -9,7 +9,7 @@ datasource db {
 }
 
 model user {
-  id                     String         @id @unique(map: "user_id_unique") @default(cuid())
+  id                     String         @id @default(cuid())
   address                String?        @unique
   email                  String?        @unique
   verifiedaddress        Boolean        @default(false)
@@ -37,29 +37,36 @@ model user {
   subscriptions          subscription[]
   voters                 voter[]
   notifications          notification[]
+
+  @@index(fields: [email])
+  @@index(fields: [address])
 }
 
 model voter {
-  id            String         @id @unique(map: "voter_id_unique") @default(cuid())
-  address       String         @unique(map: "voter_address_unique")
+  id            String         @id @default(cuid())
+  address       String         @unique
   votes         vote[]
   voterhandlers voterhandler[]
   users         user[]
+
+  @@index(fields: [address])
 }
 
 model dao {
-  id                        String         @unique(map: "dao_id_unique") @default(cuid())
-  name                      String         @id @unique(map: "dao_name_unique")
+  id                        String         @id @default(cuid())
+  name                      String         @unique
   picture                   String
   quorumwarningemailsupport Boolean        @default(false)
   handlers                  daohandler[]
   proposals                 proposal[]
   subscriptions             subscription[]
   votes                     vote[]
+
+  @@index(fields: [name])
 }
 
 model daohandler {
-  id            String         @id @unique(map: "daohandler_id_unique") @default(cuid())
+  id            String         @id @default(cuid())
   type          DAOHandlerType
   decoder       Json
   chainindex    BigInt         @default(0)
@@ -71,11 +78,12 @@ model daohandler {
   voterhandlers voterhandler[]
   votes         vote[]
 
-  @@index([daoid])
+  @@unique([daoid, type])
+  @@index(fields: [daoid])
 }
 
 model proposal {
-  id           String         @id @unique(map: "proposal_id_unique") @default(cuid())
+  id           String         @id @default(cuid())
   name         String         @db.VarChar(2048)
   externalid   String
   choices      Json
@@ -96,12 +104,13 @@ model proposal {
   votes        vote[]
   notification notification[]
 
-  @@index([daohandlerid])
-  @@index([daoid])
+  @@unique([externalid, daoid])
+  @@index(fields: [daoid])
+  @@index(fields: [daohandlerid])
 }
 
 model vote {
-  id           String     @id @unique(map: "vote_id_unique") @default(cuid())
+  id           String     @id @default(cuid())
   choice       Json
   votingpower  Json
   reason       String     @db.VarChar(2048)
@@ -116,14 +125,15 @@ model vote {
   dao          dao        @relation(fields: [daoid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([voteraddress])
-  @@index([proposalid])
-  @@index([daoid])
-  @@index([daohandlerid])
+  @@unique([voteraddress, daoid, proposalid])
+  @@index(fields: [proposalid])
+  @@index(fields: [daoid])
+  @@index(fields: [voteraddress])
+  @@index(fields: [daohandlerid])
 }
 
 model voterhandler {
-  id            String     @id @unique(map: "voterhandler_id_unique") @default(cuid())
+  id            String     @id @default(cuid())
   chainindex    BigInt     @default(0)
   snapshotindex DateTime   @default(dbgenerated("'1970-01-01 00:00:00.000'"))
   uptodate      Boolean    @default(false)
@@ -132,23 +142,25 @@ model voterhandler {
   daohandler    daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   voter         voter      @relation(fields: [voterid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([daohandlerid])
-  @@index([voterid])
+  @@unique([voterid, daohandlerid])
+  @@index(fields: [daohandlerid])
+  @@index(fields: [voterid])
 }
 
 model subscription {
-  id     String @id @unique(map: "subscription_id_unique") @default(cuid())
+  id     String @id @default(cuid())
   userid String
   daoid  String
   user   user   @relation(fields: [userid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   dao    dao    @relation(fields: [daoid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([userid])
-  @@index([daoid])
+  @@unique([userid, daoid])
+  @@index(fields: [daoid])
+  @@index(fields: [userid])
 }
 
 model notification {
-  id                 String                      @id @unique(map: "notification_id_unique") @default(cuid())
+  id                 String                      @id @default(cuid())
   userid             String
   proposalid         String?
   type               NotificationType
@@ -162,13 +174,18 @@ model notification {
   user               user                        @relation(fields: [userid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   proposal           proposal?                   @relation(fields: [proposalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([userid])
-  @@index([proposalid])
+  @@unique([userid, proposalid, type])
+  @@index(fields: [userid])
+  @@index(fields: [type])
+  @@index(fields: [proposalid])
+  @@index(fields: [dispatchstatus])
 }
 
 model config {
-  key   String @unique(map: "config_key_unique")
+  key   String @id
   value Int
+
+  @@index(fields: [key])
 }
 
 model userTovoter {

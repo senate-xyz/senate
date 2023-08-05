@@ -221,11 +221,11 @@ async fn update_proposals(
                     );
                     ctx.db
                         .proposal()
-                        .update_many(
-                            vec![
-                                proposal::externalid::equals(proposal.id.clone()),
-                                proposal::daohandlerid::equals(dao_handler.id.clone()),
-                            ],
+                        .update(
+                            proposal::externalid_daoid(
+                                proposal.id.to_string(),
+                                dao_handler.daoid.to_string(),
+                            ),
                             vec![
                                 proposal::choices::set(proposal.choices.clone().into()),
                                 proposal::scores::set(proposal.scores.clone().into()),
