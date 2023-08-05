@@ -34,7 +34,7 @@ datasource db {
 }
 
 model user {
-  id                     String         @id @unique @default(cuid())
+  id                     String         @id @default(cuid())
   address                String?        @unique
   email                  String?        @unique
   verifiedaddress        Boolean        @default(false)
@@ -68,7 +68,7 @@ model user {
 }
 
 model voter {
-  id            String         @id @unique @default(cuid())
+  id            String         @id @default(cuid())
   address       String         @unique
   votes         vote[]
   voterhandlers voterhandler[]
@@ -78,7 +78,7 @@ model voter {
 }
 
 model dao {
-  id                        String         @id @unique @default(cuid())
+  id                        String         @id @default(cuid())
   name                      String         @unique
   picture                   String
   quorumwarningemailsupport Boolean        @default(false)
@@ -91,7 +91,7 @@ model dao {
 }
 
 model daohandler {
-  id            String         @id @unique @default(cuid())
+  id            String         @id @default(cuid())
   type          DAOHandlerType
   decoder       Json
   chainindex    BigInt         @default(0)
@@ -108,7 +108,7 @@ model daohandler {
 }
 
 model proposal {
-  id           String         @id @unique @default(cuid())
+  id           String         @id @default(cuid())
   name         String         @db.VarChar(2048)
   externalid   String
   choices      Json
@@ -135,7 +135,7 @@ model proposal {
 }
 
 model vote {
-  id           String     @id @unique @default(cuid())
+  id           String     @id @default(cuid())
   choice       Json
   votingpower  Json
   reason       String     @db.VarChar(2048)
@@ -158,7 +158,7 @@ model vote {
 }
 
 model voterhandler {
-  id            String     @id @unique @default(cuid())
+  id            String     @id @default(cuid())
   chainindex    BigInt     @default(0)
   snapshotindex DateTime   @default(dbgenerated("'1970-01-01 00:00:00.000'"))
   uptodate      Boolean    @default(false)
@@ -173,7 +173,7 @@ model voterhandler {
 }
 
 model subscription {
-  id     String @id @unique @default(cuid())
+  id     String @id @default(cuid())
   userid String
   daoid  String
   user   user   @relation(fields: [userid], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -185,7 +185,7 @@ model subscription {
 }
 
 model notification {
-  id                 String                      @id @unique @default(cuid())
+  id                 String                      @id @default(cuid())
   userid             String
   proposalid         String?
   type               NotificationType
@@ -207,7 +207,7 @@ model notification {
 }
 
 model config {
-  key   String @id @unique
+  key   String @id
   value Int
 
   @@index(fields: [key])
