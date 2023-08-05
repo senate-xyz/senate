@@ -38,26 +38,23 @@ model user {
   voters                 voter[]
   notifications          notification[]
 
-  @@unique([id])
   @@index(fields: [email])
   @@index(fields: [address])
 }
 
 model voter {
   id            String         @id @default(cuid())
-  address       String
+  address       String         @unique
   votes         vote[]
   voterhandlers voterhandler[]
   users         user[]
 
-  @@unique([id])
-  @@unique([address])
   @@index(fields: [address])
 }
 
 model dao {
-  id                        String         @default(cuid())
-  name                      String         @id
+  id                        String         @id @default(cuid())
+  name                      String         @unique
   picture                   String
   quorumwarningemailsupport Boolean        @default(false)
   handlers                  daohandler[]
@@ -65,8 +62,6 @@ model dao {
   subscriptions             subscription[]
   votes                     vote[]
 
-  @@unique([id])
-  @@unique([name])
   @@index(fields: [name])
 }
 
@@ -83,7 +78,6 @@ model daohandler {
   voterhandlers voterhandler[]
   votes         vote[]
 
-  @@unique([id])
   @@unique([daoid, type])
   @@index(fields: [daoid])
 }
@@ -110,7 +104,6 @@ model proposal {
   votes        vote[]
   notification notification[]
 
-  @@unique([id])
   @@unique([externalid, daoid])
   @@index(fields: [daoid])
   @@index(fields: [daohandlerid])
@@ -132,7 +125,6 @@ model vote {
   dao          dao        @relation(fields: [daoid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@unique([id])
   @@unique([voteraddress, daoid, proposalid])
   @@index(fields: [proposalid])
   @@index(fields: [daoid])
@@ -150,7 +142,6 @@ model voterhandler {
   daohandler    daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   voter         voter      @relation(fields: [voterid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@unique([id])
   @@unique([voterid, daohandlerid])
   @@index(fields: [daohandlerid])
   @@index(fields: [voterid])
@@ -163,7 +154,6 @@ model subscription {
   user   user   @relation(fields: [userid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   dao    dao    @relation(fields: [daoid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@unique([id])
   @@unique([userid, daoid])
   @@index(fields: [daoid])
   @@index(fields: [userid])
@@ -184,7 +174,6 @@ model notification {
   user               user                        @relation(fields: [userid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   proposal           proposal?                   @relation(fields: [proposalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@unique([id])
   @@unique([userid, proposalid, type])
   @@index(fields: [userid])
   @@index(fields: [type])
@@ -193,10 +182,9 @@ model notification {
 }
 
 model config {
-  key   String
+  key   String @id
   value Int
 
-  @@unique([key])
   @@index(fields: [key])
 }
 

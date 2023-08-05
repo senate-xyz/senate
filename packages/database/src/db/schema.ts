@@ -50,7 +50,7 @@ export const config = mysqlTable(
   (table) => {
     return {
       keyIdx: index("config_key_idx").on(table.key),
-      configKeyKey: unique("config_key_key").on(table.key),
+      configKey: primaryKey(table.key),
     };
   },
 );
@@ -68,8 +68,7 @@ export const dao = mysqlTable(
   (table) => {
     return {
       nameIdx: index("dao_name_idx").on(table.name),
-      daoName: primaryKey(table.name),
-      daoIdKey: unique("dao_id_key").on(table.id),
+      daoId: primaryKey(table.id),
       daoNameKey: unique("dao_name_key").on(table.name),
     };
   },
@@ -116,7 +115,6 @@ export const daohandler = mysqlTable(
     return {
       daoidIdx: index("daohandler_daoid_idx").on(table.daoid),
       daohandlerId: primaryKey(table.id),
-      daohandlerIdKey: unique("daohandler_id_key").on(table.id),
       daohandlerDaoidTypeKey: unique("daohandler_daoid_type_key").on(
         table.daoid,
         table.type,
@@ -182,7 +180,6 @@ export const notification = mysqlTable(
         table.dispatchstatus,
       ),
       notificationId: primaryKey(table.id),
-      notificationIdKey: unique("notification_id_key").on(table.id),
       notificationUseridProposalidTypeKey: unique(
         "notification_userid_proposalid_type_key",
       ).on(table.userid, table.proposalid, table.type),
@@ -239,7 +236,6 @@ export const proposal = mysqlTable(
       ),
       daoidIdx: index("proposal_daoid_idx").on(table.daoid),
       proposalId: primaryKey(table.id),
-      proposalIdKey: unique("proposal_id_key").on(table.id),
       proposalExternalidDaoidKey: unique("proposal_externalid_daoid_key").on(
         table.externalid,
         table.daoid,
@@ -273,7 +269,6 @@ export const subscription = mysqlTable(
       useridIdx: index("subscription_userid_idx").on(table.userid),
       daoidIdx: index("subscription_daoid_idx").on(table.daoid),
       subscriptionId: primaryKey(table.id),
-      subscriptionIdKey: unique("subscription_id_key").on(table.id),
       subscriptionUseridDaoidKey: unique("subscription_userid_daoid_key").on(
         table.userid,
         table.daoid,
@@ -356,7 +351,6 @@ export const user = mysqlTable(
       emailIdx: index("user_email_idx").on(table.email),
       addressIdx: index("user_address_idx").on(table.address),
       userId: primaryKey(table.id),
-      userIdKey: unique("user_id_key").on(table.id),
       userAddressKey: unique("user_address_key").on(table.address),
       userEmailKey: unique("user_email_key").on(table.email),
     };
@@ -390,7 +384,6 @@ export const vote = mysqlTable(
       daoidIdx: index("vote_daoid_idx").on(table.daoid),
       daohandleridIdx: index("vote_daohandlerid_idx").on(table.daohandlerid),
       voteId: primaryKey(table.id),
-      voteIdKey: unique("vote_id_key").on(table.id),
       voteVoteraddressDaoidProposalidKey: unique(
         "vote_voteraddress_daoid_proposalid_key",
       ).on(table.voteraddress, table.daoid, table.proposalid),
@@ -427,7 +420,6 @@ export const voter = mysqlTable(
     return {
       addressIdx: index("voter_address_idx").on(table.address),
       voterId: primaryKey(table.id),
-      voterIdKey: unique("voter_id_key").on(table.id),
       voterAddressKey: unique("voter_address_key").on(table.address),
     };
   },
@@ -459,7 +451,6 @@ export const voterhandler = mysqlTable(
       ),
       voteridIdx: index("voterhandler_voterid_idx").on(table.voterid),
       voterhandlerId: primaryKey(table.id),
-      voterhandlerIdKey: unique("voterhandler_id_key").on(table.id),
       voterhandlerVoteridDaohandleridKey: unique(
         "voterhandler_voterid_daohandlerid_key",
       ).on(table.voterid, table.daohandlerid),
