@@ -1,4 +1,4 @@
-use std::{env, iter::once};
+use std::{cmp, env, iter::once};
 
 use anyhow::{bail, Context, Result};
 use chrono::Duration;
@@ -100,17 +100,13 @@ pub async fn update_snapshot_votes<'a>(
             .await
             .expect("bad prisma result");
 
-        let newest_vote = voter_handlers
+        let vh_index = voter_handlers
             .iter()
             .map(|voterhandler| voterhandler.snapshotindex.timestamp())
-            .max()
+            .min()
             .unwrap_or(0);
 
-        let search_from_timestamp = if newest_vote < dao_handler.snapshotindex.timestamp() {
-            newest_vote
-        } else {
-            dao_handler.snapshotindex.timestamp()
-        };
+        let search_from_timestamp = cmp::min(vh_index, dao_handler.snapshotindex.timestamp());
 
         let graphql_query = format!(
             r#"{{
@@ -146,6 +142,7 @@ pub async fn update_snapshot_votes<'a>(
             dao_name = dao_handler.dao.name,
             dao_handler_type = dao_handler.r#type.to_string(),
             dao_handler_id = dao_handler.id,
+            vh_index = vh_index,
             search_from_timestamp = search_from_timestamp,
             space = decoder.space,
             graphql_query = graphql_query,

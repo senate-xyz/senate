@@ -67,23 +67,6 @@ pub async fn update_chain_votes<'a>(
             .expect("bad prisma result")
             .expect("daoHandlerId not found");
 
-        let first_proposal = ctx
-            .db
-            .proposal()
-            .find_many(vec![proposal::daohandlerid::equals(
-                dao_handler.id.to_string(),
-            )])
-            .order_by(proposal::blockcreated::order(Direction::Asc))
-            .take(1)
-            .exec()
-            .await
-            .expect("bad prisma result");
-
-        let first_proposal_block = match first_proposal.first() {
-            Some(s) => s.blockcreated.unwrap_or(0),
-            None => 0,
-        };
-
         let voter_handlers = ctx
             .db
             .voterhandler()
@@ -100,11 +83,11 @@ pub async fn update_chain_votes<'a>(
 
         let voters = data.voters.clone();
 
-        let oldest_vote_block = voter_handlers
+        let vh_index = voter_handlers
             .iter()
             .map(|vh| vh.chainindex)
             .min()
-            .unwrap_or_default();
+            .unwrap_or(0);
 
         let mut current_block = ctx
             .rpc
@@ -115,11 +98,7 @@ pub async fn update_chain_votes<'a>(
 
         let batch_size = (data.refreshspeed).div(voters.len() as i64);
 
-        let mut from_block = cmp::max(oldest_vote_block, 0);
-
-        if from_block < first_proposal_block {
-            from_block = first_proposal_block;
-        }
+        let mut from_block = cmp::min(vh_index, dao_handler.chainindex);
 
         let mut to_block = if current_block - from_block > batch_size {
             from_block + batch_size
@@ -136,7 +115,7 @@ pub async fn update_chain_votes<'a>(
             let provider = Provider::<Http>::try_from(rpc_url).unwrap();
             let rpc = Arc::new(provider);
 
-            from_block = cmp::max(oldest_vote_block, 0);
+            from_block = cmp::min(vh_index, dao_handler.chainindex);
 
             current_block = rpc
                 .get_block_number()
@@ -160,7 +139,7 @@ pub async fn update_chain_votes<'a>(
             dao_name = dao_handler.dao.name,
             dao_handler_type = dao_handler.r#type.to_string(),
             dao_handler_id = dao_handler.id,
-            oldest_vote_block = oldest_vote_block,
+            vh_index = vh_index,
             batch_size = batch_size,
             from_block = from_block,
             to_block = to_block,
