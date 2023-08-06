@@ -133,6 +133,7 @@ model proposal {
   @@index(fields: [daoid])
   @@index(fields: [daohandlerid])
   @@index(fields: [state])
+  @@index(fields: [visible])
 }
 
 model vote {
