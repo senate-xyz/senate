@@ -109,6 +109,7 @@ model proposal {
   @@index(fields: [daohandlerid])
   @@index(fields: [state])
   @@index(fields: [visible])
+  @@index(fields: [timeend])
 }
 
 model vote {

@@ -231,6 +231,7 @@ export const proposal = mysqlTable(
   },
   (table) => {
     return {
+      timeendIdx: index("proposal_timeend_idx").on(table.timeend),
       visibleIdx: index("proposal_visible_idx").on(table.visible),
       stateIdx: index("proposal_state_idx").on(table.state),
       daohandleridIdx: index("proposal_daohandlerid_idx").on(
