@@ -254,7 +254,7 @@ async fn upsert_votes_for_proposal(
     match ctx
         .db
         .proposal()
-      .find_unique(proposal::externalid_daoid(
+        .find_unique(proposal::externalid_daoid(
             p.id.to_string(),
             dao_handler.daoid.to_string(),
         ))
@@ -291,7 +291,7 @@ async fn update_or_create_votes(
         let existing = ctx
             .db
             .vote()
-           .find_unique(vote::voteraddress_daoid_proposalid(
+            .find_unique(vote::voteraddress_daoid_proposalid(
                 vote.voter.to_string(),
                 dao_handler.daoid.clone(),
                 proposal_id.clone(),
@@ -302,7 +302,7 @@ async fn update_or_create_votes(
         match existing {
             Some(existing) => {
                 if existing.choice != vote.choice
-                    || existing.votingpower != vote.vp
+                    || existing.votingpower.as_f64().unwrap().floor() != vote.vp.floor()
                     || existing.reason != vote.reason
                 {
                     event!(
@@ -317,7 +317,7 @@ async fn update_or_create_votes(
 
                     ctx.db
                         .vote()
-                         .update(
+                        .update(
                             vote::voteraddress_daoid_proposalid(
                                 vote.voter.clone(),
                                 dao_handler.daoid.clone(),

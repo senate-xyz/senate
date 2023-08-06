@@ -312,7 +312,8 @@ async fn insert_votes(
         match existing {
             Some(existing) => {
                 if existing.choice != vote.choice
-                    || existing.votingpower != vote.voting_power
+                    || existing.votingpower.as_f64().unwrap().floor()
+                        != vote.voting_power.as_f64().unwrap().floor()
                     || existing.reason != vote.reason
                 {
                     event!(

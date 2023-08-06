@@ -210,7 +210,8 @@ async fn insert_proposals(
         match existing {
             Some(existing) => {
                 if proposal.state != existing.state
-                    || proposal.scores_total != existing.scorestotal
+                    || proposal.scores_total.as_f64().unwrap().floor()
+                        != existing.scorestotal.as_f64().unwrap().floor()
                     || proposal.url != existing.url
                 {
                     event!(
@@ -224,7 +225,7 @@ async fn insert_proposals(
                     );
                     ctx.db
                         .proposal()
-                       .update(
+                        .update(
                             proposal::externalid_daoid(
                                 proposal.external_id.to_string(),
                                 dao_handler.daoid.to_string(),
