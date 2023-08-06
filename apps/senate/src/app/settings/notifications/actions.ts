@@ -104,7 +104,7 @@ export const setEmailAndEnableBulletin = async (input: string) => {
   try {
     await emailClient.sendEmailWithTemplate({
       From: "info@senatelabs.xyz",
-      To: String(user.email),
+      To: input,
       TemplateAlias: "senate-confirm",
       TemplateModel: {
         todaysDate: new Date().toLocaleDateString("en-US", {
@@ -162,6 +162,8 @@ export const resendVerification = async () => {
 
   const challengeCode = Math.random().toString(36).substring(2);
 
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
+
   await db
     .update(user)
     .set({
@@ -175,7 +177,7 @@ export const resendVerification = async () => {
   );
   await emailClient.sendEmailWithTemplate({
     From: "info@senatelabs.xyz",
-    To: String(user.email),
+    To: String(u.email),
     TemplateAlias: "senate-confirm",
     TemplateModel: {
       todaysDate: new Date().toLocaleDateString("en-US", {
