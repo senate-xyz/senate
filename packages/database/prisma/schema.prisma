@@ -107,6 +107,7 @@ model proposal {
   @@unique([externalid, daoid])
   @@index(fields: [daoid])
   @@index(fields: [daohandlerid])
+  @@index(fields: [state])
 }
 
 model vote {
