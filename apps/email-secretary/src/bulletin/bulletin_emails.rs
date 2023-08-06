@@ -666,7 +666,10 @@ async fn get_ended_proposals(
                 && p.dao.name != "MakerDAO"
             {
                 Some(NormalResult {
-                    choiceName: p.choices.as_array().unwrap()[result_index].to_string(),
+                    choiceName: p.choices.as_array().unwrap()[result_index]
+                        .as_str()
+                        .unwrap_or_default()
+                        .to_string(),
                     choicePercentage: (max_score / p.scorestotal.as_f64().unwrap() * 100.0).round()
                         as i64,
                 })
