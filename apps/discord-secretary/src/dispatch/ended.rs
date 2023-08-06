@@ -103,7 +103,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
                             "❓ Could not fetch results".to_string()
                         } else if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
                             format!(
-                                "✅ **{}** {}%",
+                                ":ballot_box_with_check: **{}** {}%",
                                 &proposal.choices.as_array().unwrap()[result_index]
                                     .as_str()
                                     .unwrap(),
@@ -111,7 +111,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
                                     .round()
                             )
                         } else {
-                            "❌ No Quorum".to_string()
+                            ":regional_indicator_x: No Quorum".to_string()
                         };
 
                         let voted = get_vote(
