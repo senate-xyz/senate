@@ -172,7 +172,7 @@ const Enabled = (props: {
                     Change Webhook
                   </div>
                 </div>
-                <div className={`flex flex-row gap-16`}>
+                <div className="flex flex-row gap-16">
                   <RemindersSetting endingSoon={props.reminders} />
 
                   <PostHogFeature flag="discord-extended-menu" match={true}>

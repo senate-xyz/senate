@@ -174,7 +174,7 @@ const Enabled = (props: {
       )}
 
       <PostHogFeature flag="email-extended-menu" match={true}>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-row gap-16">
           <QuorumSetting quorum={props.quorum} />
           <EmptySettings empty={props.empty} />
         </div>
