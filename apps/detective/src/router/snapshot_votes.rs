@@ -1,4 +1,4 @@
-use std::{env, iter::once};
+use std::{cmp, env, iter::once};
 
 use anyhow::{bail, Context, Result};
 use chrono::Duration;
@@ -100,17 +100,13 @@ pub async fn update_snapshot_votes<'a>(
             .await
             .expect("bad prisma result");
 
-        let newest_vote = voter_handlers
+        let vh_index = voter_handlers
             .iter()
             .map(|voterhandler| voterhandler.snapshotindex.timestamp())
-            .max()
+            .min()
             .unwrap_or(0);
 
-        let search_from_timestamp = if newest_vote < dao_handler.snapshotindex.timestamp() {
-            newest_vote
-        } else {
-            dao_handler.snapshotindex.timestamp()
-        };
+        let search_from_timestamp = cmp::min(vh_index, dao_handler.snapshotindex.timestamp());
 
         let graphql_query = format!(
             r#"{{
@@ -146,6 +142,7 @@ pub async fn update_snapshot_votes<'a>(
             dao_name = dao_handler.dao.name,
             dao_handler_type = dao_handler.r#type.to_string(),
             dao_handler_id = dao_handler.id,
+            vh_index = vh_index,
             search_from_timestamp = search_from_timestamp,
             space = decoder.space,
             graphql_query = graphql_query,
@@ -254,7 +251,7 @@ async fn upsert_votes_for_proposal(
     match ctx
         .db
         .proposal()
-      .find_unique(proposal::externalid_daoid(
+        .find_unique(proposal::externalid_daoid(
             p.id.to_string(),
             dao_handler.daoid.to_string(),
         ))
@@ -291,7 +288,7 @@ async fn update_or_create_votes(
         let existing = ctx
             .db
             .vote()
-           .find_unique(vote::voteraddress_daoid_proposalid(
+            .find_unique(vote::voteraddress_daoid_proposalid(
                 vote.voter.to_string(),
                 dao_handler.daoid.clone(),
                 proposal_id.clone(),
@@ -302,7 +299,7 @@ async fn update_or_create_votes(
         match existing {
             Some(existing) => {
                 if existing.choice != vote.choice
-                    || existing.votingpower != vote.vp
+                    || existing.votingpower.as_f64().unwrap().floor() != vote.vp.floor()
                     || existing.reason != vote.reason
                 {
                     event!(
@@ -317,7 +314,7 @@ async fn update_or_create_votes(
 
                     ctx.db
                         .vote()
-                         .update(
+                        .update(
                             vote::voteraddress_daoid_proposalid(
                                 vote.voter.clone(),
                                 dao_handler.daoid.clone(),

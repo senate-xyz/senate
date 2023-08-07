@@ -82,17 +82,27 @@ const getSubscribedDAOs = async () => {
     for (const cur of qr) {
       const item = acc.find((item) => item.dao?.id === cur.dao.id);
 
-      const backgroundColor = await getAverageColor(
-        `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${cur.dao.picture}.svg`,
-        {
-          mode: "precision",
-          algorithm: "sqrt",
-        },
-      )
-        .then((r) => r.hex)
-        .catch(() => {
-          return "#5A5A5A";
-        });
+      let backgroundColor = "#5A5A5A";
+      if (cur.dao.backgroundcolor == "#5A5A5A") {
+        const newBgColor = await getAverageColor(
+          `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${cur.dao.picture}.svg`,
+          {
+            mode: "precision",
+            algorithm: "sqrt",
+          },
+        )
+          .then((r) => r.hex)
+          .catch(() => {
+            return "#5A5A5A";
+          });
+
+        backgroundColor = newBgColor;
+
+        await db
+          .update(dao)
+          .set({ backgroundcolor: newBgColor })
+          .where(eq(dao.id, cur.dao.id));
+      } else backgroundColor = String(cur.dao.backgroundcolor);
 
       const proposalsCount = await db
         .select({ count: sql<number>`count(*)` })
@@ -138,23 +148,34 @@ const getUnsubscribedDAOs = async () => {
 
   const reduceAsync = async (
     qr: typeof daosListQueryResult,
+    // eslint-disable-next-line @typescript-eslint/require-await
   ): Promise<MergedDao[]> => {
     const acc: MergedDao[] = [];
 
     for (const cur of qr) {
       const item = acc.find((item) => item.dao?.id === cur.dao.id);
 
-      const backgroundColor = await getAverageColor(
-        `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${cur.dao.picture}.svg`,
-        {
-          mode: "precision",
-          algorithm: "sqrt",
-        },
-      )
-        .then((r) => r.hex)
-        .catch(() => {
-          return "#5A5A5A";
-        });
+      let backgroundColor = "#5A5A5A";
+      if (cur.dao.backgroundcolor == "#5A5A5A") {
+        const newBgColor = await getAverageColor(
+          `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${cur.dao.picture}.svg`,
+          {
+            mode: "precision",
+            algorithm: "sqrt",
+          },
+        )
+          .then((r) => r.hex)
+          .catch(() => {
+            return "#5A5A5A";
+          });
+
+        backgroundColor = newBgColor;
+
+        await db
+          .update(dao)
+          .set({ backgroundcolor: newBgColor })
+          .where(eq(dao.id, cur.dao.id));
+      } else backgroundColor = String(cur.dao.backgroundcolor);
 
       if (cur.daohandler)
         if (item) {

@@ -207,7 +207,8 @@ async fn update_proposals(
         match existing {
             Some(existing) => {
                 if state != existing.state
-                    || proposal.scores_total != existing.scorestotal
+                    || proposal.scores_total.floor()
+                        != existing.scorestotal.as_f64().unwrap().floor()
                     || existing.visible != !proposal.flagged.is_some_and(|f| f)
                 {
                     event!(

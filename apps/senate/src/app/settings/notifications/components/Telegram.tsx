@@ -146,7 +146,7 @@ const Enabled = (props: {
               </div>
             )}
             {props.enabled && (
-              <div className={`flex flex-row gap-16`}>
+              <div className="flex flex-row gap-16">
                 <RemindersSetting endingSoon={props.reminders} />
 
                 <PostHogFeature flag="telegram-extended-menu" match={true}>

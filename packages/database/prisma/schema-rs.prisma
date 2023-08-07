@@ -81,6 +81,7 @@ model dao {
   id                        String         @id @default(cuid())
   name                      String         @unique
   picture                   String
+  backgroundcolor           String         @default("#5A5A5A")
   quorumwarningemailsupport Boolean        @default(false)
   handlers                  daohandler[]
   proposals                 proposal[]
@@ -132,6 +133,9 @@ model proposal {
   @@unique([externalid, daoid])
   @@index(fields: [daoid])
   @@index(fields: [daohandlerid])
+  @@index(fields: [state])
+  @@index(fields: [visible])
+  @@index(fields: [timeend])
 }
 
 model vote {

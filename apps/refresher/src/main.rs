@@ -91,7 +91,6 @@ async fn main() {
     let slow_task_client_clone = client.clone();
     let slow_task = tokio::task::spawn(async move {
         loop {
-            let _ = load_config_from_db(&slow_task_client_clone).await;
             let _ = create_voter_handlers(&slow_task_client_clone).await;
             let _ = create_refresh_statuses(&slow_task_client_clone).await;
             sleep(Duration::from_secs(5)).await;
