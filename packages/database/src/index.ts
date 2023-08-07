@@ -24,7 +24,7 @@ const connection = mysql.createPool({
   },
 });
 
-export const db = drizzle(connection, { schema: { ...schema } });
+export const db = drizzle(connection, { schema, mode: "planetscale" });
 
 export {
   like,
