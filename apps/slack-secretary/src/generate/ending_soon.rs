@@ -19,8 +19,8 @@ pub async fn generate_ending_soon_notifications(
     ending_type: NotificationType,
 ) -> Result<()> {
     let timeleft = match ending_type {
-        NotificationType::FirstReminderDiscord => Duration::hours(24),
-        NotificationType::SecondReminderDiscord => Duration::hours(6),
+        NotificationType::FirstReminderDiscord => todo!(),
+        NotificationType::SecondReminderDiscord => todo!(),
         NotificationType::QuorumNotReachedEmail => todo!(),
         NotificationType::NewProposalDiscord => todo!(),
         NotificationType::ThirdReminderDiscord => todo!(),
@@ -32,8 +32,8 @@ pub async fn generate_ending_soon_notifications(
         NotificationType::EndedProposalTelegram => todo!(),
         NotificationType::BulletinEmail => todo!(),
         NotificationType::NewProposalSlack => todo!(),
-        NotificationType::FirstReminderSlack => todo!(),
-        NotificationType::SecondReminderSlack => todo!(),
+        NotificationType::FirstReminderSlack => Duration::hours(24),
+        NotificationType::SecondReminderSlack => Duration::hours(6),
         NotificationType::ThirdReminderSlack => todo!(),
         NotificationType::EndedProposalSlack => todo!(),
     };
