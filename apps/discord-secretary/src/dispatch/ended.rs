@@ -101,7 +101,10 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
 
                         let message_content = if result_index == 100 {
                             "❓ Could not fetch results".to_string()
-                        } else if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
+                        } else if proposal.scorestotal.as_f64().unwrap()
+                            >= proposal.quorum.as_f64().unwrap()
+                            && proposal.scorestotal.as_f64().unwrap() > 0.0
+                        {
                             format!(
                                 ":ballot_box_with_check: **{}** {}%",
                                 &proposal.choices.as_array().unwrap()[result_index]

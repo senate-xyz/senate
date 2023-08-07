@@ -106,7 +106,10 @@ pub async fn dispatch_ended_proposal_notifications(
                 )
                 .await?;
 
-                let message = if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
+                let message = if proposal.scorestotal.as_f64().unwrap()
+                    >= proposal.quorum.as_f64().unwrap()
+                    && proposal.scorestotal.as_f64().unwrap() > 0.0
+                {
                     let result = format!(
                         "{} {}%",
                         proposal.choices.as_array().unwrap()[result_index]

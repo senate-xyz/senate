@@ -47,8 +47,9 @@ export default function Item(props: {
     setHighestScoreChoice(String(highestScoreChoice));
     setHighestScore(highestScore);
     setPassedQuorum(
-      Number(props.item.proposal!.quorum) <
-        Number(props.item.proposal!.scorestotal),
+      Number(props.item.proposal!.scorestotal) >=
+        Number(props.item.proposal!.quorum) &&
+        Number(props.item.proposal!.scorestotal) > 0,
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
