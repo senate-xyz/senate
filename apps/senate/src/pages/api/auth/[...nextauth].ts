@@ -48,10 +48,6 @@ export function authOptions(
           if (result.success) {
             const existingUser = await db.query.user.findFirst({
               where: eq(user.address, result.data.address),
-              with: {
-                subscriptions: { with: { dao: true } },
-                notifications: true,
-              },
             });
 
             if (!existingUser) {
@@ -89,10 +85,6 @@ export function authOptions(
                 distinctId: result.data.address,
                 properties: {
                   email: existingUser.email,
-                  subscriptions: existingUser.subscriptions.map(
-                    (s) => s.dao.name,
-                  ),
-                  notifications: existingUser.notifications.length,
                   emaildailybulletin: existingUser.emaildailybulletin,
                   emptydailybulletin: existingUser.emptydailybulletin,
                   discordnotifications: existingUser.discordnotifications,
