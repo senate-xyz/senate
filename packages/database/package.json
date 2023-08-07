@@ -30,7 +30,7 @@
     "@prisma/client": "5.1.1",
     "cuid": "^3.0.0",
     "dotenv": "^16.3.1",
-    "drizzle-orm": "^0.27.2",
+    "drizzle-orm": "^0.28.0",
     "ethers": "^6.7.0",
     "mysql2": "^3.6.0",
     "type-fest": "^4.1.0",

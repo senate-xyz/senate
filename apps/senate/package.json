@@ -33,7 +33,7 @@
     "fast-average-color-node": "2.6.0",
     "framer-motion": "10.15.0",
     "next": "^13.4.12",
-    "next-auth": "4.22.3",
+    "next-auth": "4.22.4",
     "posthog-js": "^1.75.3",
     "posthog-node": "^3.1.1",
     "postmark": "3.0.19",
