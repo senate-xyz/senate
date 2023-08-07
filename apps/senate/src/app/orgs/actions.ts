@@ -10,7 +10,7 @@ import {
   proposal,
   daohandler,
 } from "@senate/database";
-import { getAverageColor } from "fast-average-color-node";
+//import { getAverageColor } from "fast-average-color-node";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
 import { isNull } from "@senate/database";
@@ -82,17 +82,18 @@ const getSubscribedDAOs = async () => {
     for (const cur of qr) {
       const item = acc.find((item) => item.dao?.id === cur.dao.id);
 
-      const backgroundColor = await getAverageColor(
-        `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${cur.dao.picture}.svg`,
-        {
-          mode: "precision",
-          algorithm: "sqrt",
-        },
-      )
-        .then((r) => r.hex)
-        .catch(() => {
-          return "#5A5A5A";
-        });
+      // const backgroundColor = await getAverageColor(
+      //   `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${cur.dao.picture}.svg`,
+      //   {
+      //     mode: "precision",
+      //     algorithm: "sqrt",
+      //   },
+      // )
+      //   .then((r) => r.hex)
+      //   .catch(() => {
+      //     return "#5A5A5A";
+      //   });
+      const backgroundColor = "#5A5A5A";
 
       const proposalsCount = await db
         .select({ count: sql<number>`count(*)` })
@@ -138,23 +139,25 @@ const getUnsubscribedDAOs = async () => {
 
   const reduceAsync = async (
     qr: typeof daosListQueryResult,
+    // eslint-disable-next-line @typescript-eslint/require-await
   ): Promise<MergedDao[]> => {
     const acc: MergedDao[] = [];
 
     for (const cur of qr) {
       const item = acc.find((item) => item.dao?.id === cur.dao.id);
 
-      const backgroundColor = await getAverageColor(
-        `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${cur.dao.picture}.svg`,
-        {
-          mode: "precision",
-          algorithm: "sqrt",
-        },
-      )
-        .then((r) => r.hex)
-        .catch(() => {
-          return "#5A5A5A";
-        });
+      // const backgroundColor = await getAverageColor(
+      //   `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${cur.dao.picture}.svg`,
+      //   {
+      //     mode: "precision",
+      //     algorithm: "sqrt",
+      //   },
+      // )
+      //   .then((r) => r.hex)
+      //   .catch(() => {
+      //     return "#5A5A5A";
+      //   });
+      const backgroundColor = "#5A5A5A";
 
       if (cur.daohandler)
         if (item) {
