@@ -94,7 +94,7 @@ export default function Items({ fetchItems, searchParams }: ItemsProps) {
             loadMore={loadMore}
             hasMore={hasMore}
             threshold={1024}
-            loader={<LoadingItems />}
+            loader={<LoadingItems key="1" />}
           >
             {items.map((item, index) => (
               <li className="pb-1" key={index}>
