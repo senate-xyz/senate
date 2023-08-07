@@ -61,6 +61,7 @@ export const dao = mysqlTable(
     id: varchar("id", { length: 191 }).notNull(),
     name: varchar("name", { length: 191 }).notNull(),
     picture: varchar("picture", { length: 191 }).notNull(),
+    backgroundcolor: varchar("backgroundcolor", { length: 191 }).notNull(),
     quorumwarningemailsupport: boolean("quorumwarningemailsupport")
       .default(false)
       .notNull(),

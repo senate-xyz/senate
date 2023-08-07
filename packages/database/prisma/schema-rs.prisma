@@ -81,6 +81,7 @@ model dao {
   id                        String         @id @default(cuid())
   name                      String         @unique
   picture                   String
+  backgroundcolor           String         @default("#5A5A5A")
   quorumwarningemailsupport Boolean        @default(false)
   handlers                  daohandler[]
   proposals                 proposal[]
