@@ -1,12 +1,14 @@
 use std::{env, sync::Arc, time::Duration};
 
+use teloxide::types::InlineKeyboardButtonKind;
 use teloxide::{
     adaptors::{DefaultParseMode, Throttle},
     payloads::SendMessageSetters,
     requests::Requester,
-    types::ChatId,
+    types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup},
     Bot,
 };
+
 use tokio::time::sleep;
 use tracing::{debug, debug_span, event, instrument, warn, Instrument, Level};
 
@@ -131,6 +133,12 @@ pub async fn dispatch_ending_soon_notifications(
                         ChatId(user.telegramchatid.parse().unwrap()),
                         message_content,
                     )
+                    .reply_markup(InlineKeyboardMarkup::default().append_row(vec![
+                        InlineKeyboardButton::url(
+                            "Vote".to_string(),
+                            url::Url::parse(proposal.url.as_str()).unwrap(),
+                        ),
+                    ]))
                     .disable_web_page_preview(true)
                     .await;
 
