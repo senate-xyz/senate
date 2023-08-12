@@ -6,7 +6,7 @@ use teloxide::{
     payloads::SendMessageSetters,
     prelude::OnError,
     requests::Requester,
-    types::ChatId,
+    types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup},
     Bot,
 };
 use tokio::time::sleep;
@@ -113,7 +113,12 @@ pub async fn dispatch_new_proposal_notifications(
                                 .replace('\"', "&quot;")
                                 .replace('\'', "&#39;"),
                         ),
-                    )
+                    ).reply_markup(InlineKeyboardMarkup::default().append_row(vec![
+                        InlineKeyboardButton::url(
+                            "Vote".to_string(),
+                            url::Url::parse(proposal.url.as_str()).unwrap(),
+                        ),
+                    ]))
                     .disable_web_page_preview(true)
                     .await;
 
