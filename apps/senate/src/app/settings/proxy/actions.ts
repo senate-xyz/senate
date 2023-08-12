@@ -94,9 +94,13 @@ export const getVoters = async () => {
     .leftJoin(voter, eq(userTovoter.b, voter.id))
     .where(u ? eq(user.id, u.id) : undefined);
 
-  const filteredVoters = voters
-    .filter((voter) => voter.voter!.address !== userAddress)
-    .map((v) => v.voter!.address);
+  const result: Array<string> = [];
 
-  return filteredVoters;
+  voters.map((p) => {
+    if (p.voter && p.voter.address.length > 0 && p.voter.address != u.address) {
+      result.push(p.voter.address);
+    }
+  });
+
+  return result;
 };

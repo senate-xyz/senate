@@ -120,7 +120,15 @@ export async function getProxies() {
     .leftJoin(voter, eq(userTovoter.b, voter.id))
     .where(eq(user.id, u.id));
 
-  return proxies.map((p) => (p.voter ? p.voter?.address : ""));
+  const result: Array<string> = [];
+
+  proxies.map((p) => {
+    if (p.voter && p.voter.address.length > 0) {
+      result.push(p.voter.address);
+    }
+  });
+
+  return result;
 }
 
 export enum VoteResult {
