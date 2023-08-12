@@ -43,15 +43,15 @@ async function getProposalUrl(slug: string) {
 
 async function log(type: Type, proposalId: string, userId: string) {
   const user = await getUser(userId);
-  const proposal = await getProposal(proposalId);
+  const p = await getProposal(proposalId);
 
   posthog.capture({
     distinctId: user?.address ?? "visitor",
     event: type,
     properties: {
-      proposalId: proposal ? proposal.id : "unknown",
-      proposalUrl: proposal ? proposal.url : "unknown",
-      dao: proposal ? proposal.dao.name : "unknown",
+      proposalId: p ? p.id : "unknown",
+      proposalUrl: p ? p.url : "unknown",
+      dao: p ? p.dao.name : "unknown",
       props: {
         app: "shortie",
       },
