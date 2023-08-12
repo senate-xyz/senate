@@ -199,7 +199,7 @@ export async function fetchItems(
         canSeeDeleted ? undefined : eq(proposal.visible, true),
         from == "any"
           ? userAddress
-            ? subscribedDaos.length
+            ? subscribedDaos.length > 1
               ? inArray(
                   dao.name,
                   subscribedDaos.map((s) => s.dao!.name),
