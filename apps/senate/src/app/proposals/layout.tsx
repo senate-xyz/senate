@@ -1,6 +1,13 @@
+import dynamic from "next/dynamic";
 import { Header } from "../components/csr/Header";
 import { userHasProxies } from "./actions";
-import SetupOtherAddress from "./components/SetupOtherAddress";
+
+const SetupOtherAddress = dynamic(
+  () => import("./components/SetupOtherAddress"),
+  {
+    ssr: false,
+  },
+);
 
 export default async function RootLayout({
   children,
