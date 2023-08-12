@@ -14,6 +14,8 @@ use teloxide::{
     utils::command::BotCommands,
 };
 use tokio::{time::sleep, try_join};
+use tracing::event;
+use tracing::Level;
 
 use crate::{
     dispatch::{
@@ -32,6 +34,7 @@ use crate::{
 mod dispatch;
 mod generate;
 pub mod prisma;
+mod telemetry;
 
 mod utils {
     pub mod vote;
@@ -39,15 +42,8 @@ mod utils {
 
 #[tokio::main]
 async fn main() {
-    //sleep to make sure old deployment api connection is closed
-    // sleep(std::time::Duration::from_secs(60)).await;
-
     dotenv().ok();
-
-    tracing_subscriber::fmt()
-        .pretty()
-        .with_max_level(tracing::Level::INFO)
-        .init();
+    telemetry::setup();
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
     let bot = Bot::from_env()
@@ -59,12 +55,20 @@ async fn main() {
     let bot_for_new_proposals: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
         Arc::clone(&botwrapper);
     let new_proposals_task = tokio::task::spawn(async move {
-        info!("started new_proposals_task");
         loop {
-            debug!("loop new_proposals_task");
-            generate_new_proposal_notifications(&client_for_new_proposals).await;
-            dispatch_new_proposal_notifications(&client_for_new_proposals, &bot_for_new_proposals)
-                .await;
+            match generate_new_proposal_notifications(&client_for_new_proposals).await {
+                Ok(_) => event!(Level::INFO, "generate_new_proposal_notifications ok"),
+                Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to generate new"),
+            };
+            match dispatch_new_proposal_notifications(
+                &client_for_new_proposals,
+                &bot_for_new_proposals,
+            )
+            .await
+            {
+                Ok(_) => event!(Level::INFO, "dispatch_new_proposal_notifications ok"),
+                Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to generate new"),
+            };
 
             sleep(std::time::Duration::from_secs(60)).await;
         }
@@ -74,22 +78,45 @@ async fn main() {
     let bot_for_ending_soon: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
         Arc::clone(&botwrapper);
     let ending_soon_task = tokio::task::spawn(async move {
-        info!("started ending_soon_task");
         loop {
-            debug!("loop ending_soon_task");
-            generate_ending_soon_notifications(
+            match generate_ending_soon_notifications(
                 &client_for_ending_soon,
                 NotificationType::FirstReminderTelegram,
             )
-            .await;
+            .await
+            {
+                Ok(_) => event!(Level::INFO, "generate_ending_soon_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to generate ending"
+                ),
+            };
 
-            generate_ending_soon_notifications(
+            match generate_ending_soon_notifications(
                 &client_for_ending_soon,
                 NotificationType::SecondReminderTelegram,
             )
-            .await;
+            .await
+            {
+                Ok(_) => event!(Level::INFO, "generate_ending_soon_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to generate ending"
+                ),
+            };
 
-            dispatch_ending_soon_notifications(&client_for_ending_soon, &bot_for_ending_soon).await;
+            match dispatch_ending_soon_notifications(&client_for_ending_soon, &bot_for_ending_soon)
+                .await
+            {
+                Ok(_) => event!(Level::INFO, "dispatch_ending_soon_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to dispatch ending"
+                ),
+            };
 
             sleep(std::time::Duration::from_secs(60)).await;
         }
@@ -99,15 +126,28 @@ async fn main() {
     let bot_for_ended_proposals: Arc<DefaultParseMode<Throttle<teloxide::Bot>>> =
         Arc::clone(&botwrapper);
     let ended_proposals_task = tokio::task::spawn(async move {
-        info!("started ended_proposals_task");
         loop {
-            debug!("loop ended_proposals_task");
-            generate_ended_proposal_notifications(&client_for_ended_proposals).await;
-            dispatch_ended_proposal_notifications(
+            match generate_ended_proposal_notifications(&client_for_ended_proposals).await {
+                Ok(_) => event!(Level::INFO, "generate_ended_proposal_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to generate ended"
+                ),
+            };
+            match dispatch_ended_proposal_notifications(
                 &client_for_ended_proposals,
                 &bot_for_ended_proposals,
             )
-            .await;
+            .await
+            {
+                Ok(_) => event!(Level::INFO, "dispatch_ended_proposal_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to dispatch ended"
+                ),
+            };
 
             sleep(std::time::Duration::from_secs(60)).await;
         }
@@ -161,52 +201,79 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
     match cmd {
         Command::Start => {
             let text = msg.text().unwrap();
-            let split_result = text.split_once(' ');
 
-            match split_result {
-                Some((_, id_with_quotes)) => {
-                    let id = id_with_quotes.trim_matches('"');
+            let commands = text.trim_matches('"').split_once(' ');
 
-                    if id.len() == 0 {
+            match commands {
+                Some((_, params)) => {
+                    if params.is_empty() {
                         bot.send_message(msg.chat.id, "You can't start the bot directly. Please sign up to Senate Telegram Notifications using https://senatelabs.xyz/settings/notifications.")
             .await?;
                     } else {
-                        let prisma_client =
-                            Arc::new(PrismaClient::_builder().build().await.unwrap());
+                        let split_params: Option<(&str, &str)> = params.split_once('_');
 
-                        prisma_client
-                            .user()
-                            .update(
-                                prisma::user::id::equals(id.to_string()),
-                                vec![
-                                    prisma::user::telegramnotifications::set(true),
-                                    prisma::user::telegramchatid::set(msg.chat.id.to_string()),
-                                ],
-                            )
-                            .exec()
-                            .await
-                            .unwrap();
+                        match split_params {
+                            Some((userid, group)) => {
+                                if group == "group" && msg.chat.is_private() {
+                                    bot.send_message(msg.chat.id, "You can only start group chat notifications in groups you are admin.")
+                                .await?;
+                                    return Ok(());
+                                }
 
-                        let user = prisma_client
-                            .user()
-                            .find_first(vec![prisma::user::id::equals(id.to_string())])
-                            .exec()
-                            .await
-                            .unwrap()
-                            .unwrap();
+                                let prisma_client =
+                                    Arc::new(PrismaClient::_builder().build().await.unwrap());
 
-                        bot.send_message(msg.chat.id, format!("Hello {}!", user.address.unwrap()))
-                            .await?;
-                        bot.send_message(
-                            msg.chat.id,
-                            "You are now subscribed to Senate Telegram Notifications!",
-                        )
-                        .await?;
+                                prisma_client
+                                    .user()
+                                    .update(
+                                        prisma::user::id::equals(userid.to_string()),
+                                        vec![
+                                            prisma::user::telegramnotifications::set(true),
+                                            prisma::user::telegramchatid::set(
+                                                msg.chat.id.to_string(),
+                                            ),
+                                            prisma::user::telegramchattitle::set(
+                                                if msg.chat.is_private() {
+                                                    msg.chat.first_name().unwrap().to_string()
+                                                } else {
+                                                    msg.chat.title().unwrap().to_string()
+                                                },
+                                            ),
+                                        ],
+                                    )
+                                    .exec()
+                                    .await
+                                    .unwrap();
+
+                                let user = prisma_client
+                                    .user()
+                                    .find_first(vec![prisma::user::id::equals(userid.to_string())])
+                                    .exec()
+                                    .await
+                                    .unwrap()
+                                    .unwrap();
+
+                                bot.send_message(
+                                    msg.chat.id,
+                                    format!("Hello {}!", user.address.unwrap()),
+                                )
+                                .await?;
+                                bot.send_message(
+                                    msg.chat.id,
+                                    "You are now subscribed to Senate Telegram Notifications!",
+                                )
+                                .await?;
+                            }
+                            None => {
+                                bot.send_message(msg.chat.id, "You can't start the bot directly. Please sign up to Senate Telegram Notifications using https://senatelabs.xyz/settings/notifications.")
+                                .await?;
+                            }
+                        }
                     }
                 }
                 None => {
                     bot.send_message(msg.chat.id, "You can't start the bot directly. Please sign up to Senate Telegram Notifications using https://senatelabs.xyz/settings/notifications.")
-            .await?;
+                    .await?;
                 }
             }
         }

@@ -8,7 +8,7 @@ use reqwest::header::{HeaderMap, ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::{sync::Semaphore, task::spawn_blocking};
-use tracing::{debug_span, info, instrument, warn, Instrument};
+use tracing::{debug_span, event, info, instrument, warn, Instrument, Level};
 
 use crate::{
     prisma::{
@@ -100,7 +100,8 @@ struct PostmarkResult {
     MessageID: Option<String>,
 }
 
-pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
+#[instrument(skip_all)]
+pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) -> Result<()> {
     let notifications = db
         .notification()
         .find_many(vec![
@@ -108,8 +109,7 @@ pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
             notification::dispatchstatus::in_vec(vec![NotificationDispatchedState::NotDispatched]),
         ])
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     for notification in notifications {
         let user = db
@@ -117,20 +117,28 @@ pub async fn send_triggered_emails(db: &Arc<prisma::PrismaClient>) {
             .find_first(vec![user::id::equals(notification.clone().userid)])
             .include(user_with_voters_and_subscriptions::include())
             .exec()
-            .await
-            .unwrap()
+            .await?
             .unwrap();
 
-        send_bulletin(user, db).await.unwrap();
+        match send_bulletin(user, db).await {
+            Ok(_) => event!(Level::INFO, "send_bulletin ok"),
+            Err(e) => event!(
+                Level::ERROR,
+                err = e.to_string(),
+                "failed to send triggered bulletin"
+            ),
+        };
 
         db.notification()
             .delete(notification::id::equals(notification.id))
             .exec()
-            .await
-            .unwrap();
+            .await?;
     }
+
+    Ok(())
 }
 
+#[instrument(skip_all)]
 pub async fn send_bulletin_emails(db: Arc<prisma::PrismaClient>) {
     let users = db
         .user()
@@ -138,6 +146,7 @@ pub async fn send_bulletin_emails(db: Arc<prisma::PrismaClient>) {
             user::emaildailybulletin::equals(true),
             user::verifiedemail::equals(true),
             user::verifiedaddress::equals(true),
+            user::email::contains("@".to_string()),
         ])
         .include(user_with_voters_and_subscriptions::include())
         .exec()
@@ -156,26 +165,24 @@ pub async fn send_bulletin_emails(db: Arc<prisma::PrismaClient>) {
             .expect("Failed to acquire permit");
 
         tasks.push(tokio::spawn(async move {
-            info!("sending bulletin to {:?}", user.clone().email.unwrap());
-            send_bulletin(user, &db).await.unwrap();
+            let result = send_bulletin(user, &db).await;
             drop(permit);
+            match result {
+                Ok(_) => event!(Level::INFO, "sent bulletin"),
+                Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to send bulletin"),
+            }
         }));
     }
 
     futures::future::join_all(tasks).await;
-
-    info!("sent all bulletin emails");
 }
 
+#[instrument(skip(db))]
 async fn send_bulletin(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
 ) -> Result<bool> {
     let user_data = get_user_bulletin_data(user.clone(), db).await?;
-
-    if user.email.is_none() {
-        return Ok(false);
-    }
 
     if user_data.newProposals.is_empty()
         && user_data.endedProposals.is_empty()
@@ -208,7 +215,13 @@ async fn send_bulletin(
         TemplateModel: user_data.clone(),
     };
 
-    debug!("{:?}", content);
+    event!(
+        Level::INFO,
+        to = user_email.clone(),
+        from = "info@senatelabs.xyz".to_string(),
+        template_alias = bulletin_template.to_string(),
+        "email body"
+    );
 
     let client = reqwest::Client::new();
     let mut headers = HeaderMap::new();
@@ -234,7 +247,14 @@ async fn send_bulletin(
     match result {
         Ok(postmark_result) => {
             if postmark_result.Message == "OK" {
-                info!("sent bulletin to {:?}", user_email);
+                event!(
+                    Level::INFO,
+                    to = user_email.clone(),
+                    from = "info@senatelabs.xyz".to_string(),
+                    template_alias = bulletin_template.to_string(),
+                    "email sent"
+                );
+
                 db.notification()
                     .create_many(vec![notification::create_unchecked(
                         user.id,
@@ -249,8 +269,7 @@ async fn send_bulletin(
                     )])
                     .skip_duplicates()
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
 
                 spawn_blocking(move || {
                     posthog_bulletin_event(
@@ -260,10 +279,16 @@ async fn send_bulletin(
                         postmark_result.MessageID.unwrap().as_str(),
                     );
                 })
-                .await
-                .unwrap();
+                .await?;
             } else {
-                warn!("{:?}", postmark_result.Message);
+                event!(
+                    Level::WARN,
+                    to = user_email.clone(),
+                    from = "info@senatelabs.xyz".to_string(),
+                    template_alias = bulletin_template.to_string(),
+                    err = postmark_result.Message,
+                    "email failed to send"
+                );
 
                 db.notification()
                     .create_many(vec![notification::create_unchecked(
@@ -275,8 +300,7 @@ async fn send_bulletin(
                     )])
                     .skip_duplicates()
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
 
                 spawn_blocking(move || {
                     posthog_bulletin_event(
@@ -286,12 +310,18 @@ async fn send_bulletin(
                         postmark_result.Message.as_str(),
                     );
                 })
-                .await
-                .unwrap();
+                .await?;
             }
         }
         Err(e) => {
-            warn!("{:?}", e);
+            event!(
+                Level::WARN,
+                to = user_email.clone(),
+                from = "info@senatelabs.xyz".to_string(),
+                template_alias = bulletin_template.to_string(),
+                err = e.to_string(),
+                "email failed to send"
+            );
 
             db.notification()
                 .create_many(vec![notification::create_unchecked(
@@ -303,20 +333,19 @@ async fn send_bulletin(
                 )])
                 .skip_duplicates()
                 .exec()
-                .await
-                .unwrap();
+                .await?;
 
             spawn_blocking(move || {
                 posthog_bulletin_event("email_bulletin_fail", user.address.unwrap(), "", "");
             })
-            .await
-            .unwrap();
+            .await?;
         }
     }
 
     Ok(true)
 }
 
+#[instrument(skip(db))]
 async fn get_user_bulletin_data(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -339,6 +368,7 @@ async fn get_user_bulletin_data(
     })
 }
 
+#[instrument(skip(db))]
 async fn get_ending_soon_proposals(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -361,8 +391,7 @@ async fn get_ending_soon_proposals(
         .order_by(proposal::timeend::order(Direction::Asc))
         .include(proposal_with_dao::include())
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     let ending_proposals = futures::future::join_all(proposals.iter().map(|p| async {
         let countdown_url = countdown_gif(p.timeend.into(), true).await.unwrap();
@@ -436,6 +465,7 @@ async fn get_ending_soon_proposals(
     Ok(ending_proposals)
 }
 
+#[instrument(skip(db))]
 async fn get_new_proposals(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -457,8 +487,7 @@ async fn get_new_proposals(
         .order_by(proposal::timeend::order(Direction::Asc))
         .include(proposal_with_dao::include())
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     let new_proposals = futures::future::join_all(proposals.iter().map(|p| async {
         let countdown_url = countdown_gif(p.timeend.into(), true).await.unwrap();
@@ -533,6 +562,7 @@ async fn get_new_proposals(
     Ok(new_proposals)
 }
 
+#[instrument(skip(db))]
 async fn get_ended_proposals(
     user: user_with_voters_and_subscriptions::Data,
     db: &Arc<prisma::PrismaClient>,
@@ -555,8 +585,7 @@ async fn get_ended_proposals(
         .order_by(proposal::timeend::order(Direction::Desc))
         .include(proposal_with_dao::include())
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     let ended_proposals = futures::future::join_all(proposals.iter().map(|p| async {
         let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
@@ -637,7 +666,10 @@ async fn get_ended_proposals(
                 && p.dao.name != "MakerDAO"
             {
                 Some(NormalResult {
-                    choiceName: p.choices.as_array().unwrap()[result_index].to_string(),
+                    choiceName: p.choices.as_array().unwrap()[result_index]
+                        .as_str()
+                        .unwrap_or_default()
+                        .to_string(),
                     choicePercentage: (max_score / p.scorestotal.as_f64().unwrap() * 100.0).round()
                         as i64,
                 })

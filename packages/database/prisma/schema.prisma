@@ -9,163 +9,125 @@ datasource db {
 }
 
 model user {
-  id String @id @default(cuid())
-
-  address String? @unique
-  email   String? @unique
-
-  verifiedaddress Boolean @default(false)
-  verifiedemail   Boolean @default(false)
-
-  isuniswapuser MagicUserState @default(DISABLED)
-  isaaveuser    MagicUserState @default(DISABLED)
-
-  challengecode String?
-
-  emaildailybulletin Boolean @default(false)
-  emptydailybulletin Boolean @default(false)
-  emailquorumwarning Boolean @default(true)
-
-  discordnotifications Boolean @default(false)
-  discordreminders     Boolean @default(true)
-  discordincludevotes  Boolean @default(true)
-  discordwebhook       String  @default("")
-
-  telegramnotifications Boolean @default(false)
-  telegramreminders     Boolean @default(true)
-  telegramincludevotes  Boolean @default(true)
-  telegramchatid        String  @default("")
-
-  subscriptions subscription[]
-  voters        voter[]
-  notifications notification[]
-
-  acceptedterms          Boolean   @default(false)
+  id                     String         @id @default(cuid())
+  address                String?        @unique
+  email                  String?        @unique
+  verifiedaddress        Boolean        @default(false)
+  verifiedemail          Boolean        @default(false)
+  isuniswapuser          MagicUserState @default(DISABLED)
+  isaaveuser             MagicUserState @default(DISABLED)
+  challengecode          String         @default("")
+  emaildailybulletin     Boolean        @default(false)
+  emptydailybulletin     Boolean        @default(false)
+  emailquorumwarning     Boolean        @default(true)
+  discordnotifications   Boolean        @default(false)
+  discordreminders       Boolean        @default(true)
+  discordincludevotes    Boolean        @default(true)
+  discordwebhook         String         @default("")
+  telegramnotifications  Boolean        @default(false)
+  telegramreminders      Boolean        @default(true)
+  telegramincludevotes   Boolean        @default(true)
+  telegramchatid         String         @default("")
+  telegramchattitle      String         @default("")
+  acceptedterms          Boolean        @default(false)
   acceptedtermstimestamp DateTime?
-  firstactive            DateTime  @default(now())
-  lastactive             DateTime  @default(now())
-  sessioncount           Int       @default(0)
-  createdat              DateTime  @default(now())
-  updatedat              DateTime  @updatedAt
+  firstactive            DateTime       @default(now())
+  lastactive             DateTime       @default(now())
+  sessioncount           Int            @default(0)
+  subscriptions          subscription[]
+  voters                 voter[]
+  notifications          notification[]
 
   @@index(fields: [email])
   @@index(fields: [address])
 }
 
 model voter {
-  id String @id @default(cuid())
-
-  address String @unique
-
+  id            String         @id @default(cuid())
+  address       String         @unique
   votes         vote[]
   voterhandlers voterhandler[]
   users         user[]
-
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
 
   @@index(fields: [address])
 }
 
 model dao {
-  id String @id @default(cuid())
-
-  name    String @unique
-  picture String
-
-  handlers      daohandler[]
-  proposals     proposal[]
-  subscriptions subscription[]
-  votes         vote[]
-
-  quorumwarningemailsupport Boolean @default(false)
-
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
+  id                        String         @id @default(cuid())
+  name                      String         @unique
+  picture                   String
+  backgroundcolor           String         @default("#5A5A5A")
+  quorumwarningemailsupport Boolean        @default(false)
+  handlers                  daohandler[]
+  proposals                 proposal[]
+  subscriptions             subscription[]
+  votes                     vote[]
 
   @@index(fields: [name])
 }
 
 model daohandler {
-  id String @id @default(cuid())
-
-  type    DAOHandlerType
-  decoder Json
-
-  chainindex    BigInt?   @default(0)
-  snapshotindex DateTime? @default("2000-01-01T00:00:00.00Z")
-
-  uptodate Boolean @default(false)
-
+  id            String         @id @default(cuid())
+  type          DAOHandlerType
+  decoder       Json
+  chainindex    BigInt         @default(0)
+  snapshotindex DateTime       @default(dbgenerated("'1970-01-01 00:00:00.000'"))
+  uptodate      Boolean        @default(false)
   daoid         String
-  dao           dao            @relation(fields: [daoid], references: [id], onUpdate: NoAction, onDelete: Cascade)
+  dao           dao            @relation(fields: [daoid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   proposals     proposal[]
   voterhandlers voterhandler[]
   votes         vote[]
-
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
 
   @@unique([daoid, type])
   @@index(fields: [daoid])
 }
 
 model proposal {
-  id String @id @default(cuid())
-
-  name       String @db.VarChar(2048)
-  externalid String
-
-  choices     Json
-  scores      Json
-  scorestotal Json
-  quorum      Json
-
-  state   ProposalState
-  visible Boolean       @default(true)
-
-  blockcreated BigInt?  @default(0)
+  id           String         @id @default(cuid())
+  name         String         @db.VarChar(2048)
+  externalid   String
+  choices      Json
+  scores       Json
+  scorestotal  Json
+  quorum       Json
+  state        ProposalState
+  blockcreated BigInt?
   timecreated  DateTime
   timestart    DateTime
   timeend      DateTime
-  url          String   @db.VarChar(1024)
-
+  url          String         @db.VarChar(1024)
   daohandlerid String
-  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onUpdate: NoAction, onDelete: Cascade)
   daoid        String
-  dao          dao        @relation(fields: [daoid], references: [id], onUpdate: NoAction, onDelete: Cascade)
+  visible      Boolean        @default(true)
+  daohandler   daohandler     @relation(fields: [daohandlerid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  dao          dao            @relation(fields: [daoid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   votes        vote[]
-
-  createdat    DateTime       @default(now())
-  updatedat    DateTime       @updatedAt
   notification notification[]
 
   @@unique([externalid, daoid])
   @@index(fields: [daoid])
   @@index(fields: [daohandlerid])
+  @@index(fields: [state])
+  @@index(fields: [visible])
+  @@index(fields: [timeend])
 }
 
 model vote {
-  id String @id @default(cuid())
-
-  choice      Json
-  votingpower Json
-  reason      String @db.VarChar(2048)
-
+  id           String     @id @default(cuid())
+  choice       Json
+  votingpower  Json
+  reason       String     @db.VarChar(2048)
   voteraddress String
-  voter        voter      @relation(fields: [voteraddress], references: [address], onUpdate: NoAction, onDelete: Cascade)
   proposalid   String
-  proposal     proposal   @relation(fields: [proposalid], references: [id], onUpdate: NoAction, onDelete: Cascade)
   daoid        String
-  dao          dao        @relation(fields: [daoid], references: [id], onUpdate: NoAction, onDelete: Cascade)
   daohandlerid String
-  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onUpdate: NoAction, onDelete: Cascade)
-
-  blockcreated BigInt?   @default(0)
+  blockcreated BigInt?
   timecreated  DateTime?
-
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
+  voter        voter      @relation(fields: [voteraddress], references: [address], onDelete: Cascade, onUpdate: NoAction)
+  proposal     proposal   @relation(fields: [proposalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  dao          dao        @relation(fields: [daoid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([voteraddress, daoid, proposalid])
   @@index(fields: [proposalid])
@@ -175,19 +137,14 @@ model vote {
 }
 
 model voterhandler {
-  id String @id @default(cuid())
-
-  chainindex    BigInt?   @default(0)
-  snapshotindex DateTime? @default("2000-01-01T00:00:00.00Z")
-  uptodate      Boolean   @default(false)
-
-  daohandlerid String
-  daohandler   daohandler @relation(fields: [daohandlerid], references: [id], onUpdate: NoAction, onDelete: Cascade)
-  voterid      String
-  voter        voter      @relation(fields: [voterid], references: [id], onUpdate: NoAction, onDelete: Cascade)
-
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
+  id            String     @id @default(cuid())
+  chainindex    BigInt     @default(0)
+  snapshotindex DateTime   @default(dbgenerated("'1970-01-01 00:00:00.000'"))
+  uptodate      Boolean    @default(false)
+  daohandlerid  String
+  voterid       String
+  daohandler    daohandler @relation(fields: [daohandlerid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  voter         voter      @relation(fields: [voterid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([voterid, daohandlerid])
   @@index(fields: [daohandlerid])
@@ -195,15 +152,11 @@ model voterhandler {
 }
 
 model subscription {
-  id String @id @default(cuid())
-
+  id     String @id @default(cuid())
   userid String
-  user   user   @relation(fields: [userid], references: [id], onUpdate: NoAction, onDelete: Cascade)
   daoid  String
-  dao    dao    @relation(fields: [daoid], references: [id], onUpdate: NoAction, onDelete: Cascade)
-
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
+  user   user   @relation(fields: [userid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  dao    dao    @relation(fields: [daoid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([userid, daoid])
   @@index(fields: [daoid])
@@ -211,27 +164,19 @@ model subscription {
 }
 
 model notification {
-  id String @id @default(cuid())
-
-  userid     String
-  user       user      @relation(fields: [userid], references: [id], onUpdate: NoAction, onDelete: Cascade)
-  proposalid String?
-  proposal   proposal? @relation(fields: [proposalid], references: [id], onUpdate: NoAction, onDelete: Cascade)
-
-  type           NotificationType
-  dispatchstatus NotificationDispatchedState @default(NOT_DISPATCHED)
-
-  emailmessageid String?
-  emailtemplate  String?
-
+  id                 String                      @id @default(cuid())
+  userid             String
+  proposalid         String?
+  type               NotificationType
+  dispatchstatus     NotificationDispatchedState @default(NOT_DISPATCHED)
+  emailmessageid     String?
   discordmessagelink String?
   discordmessageid   String?
-
-  telegramchatid    String?
-  telegrammessageid String?
-
-  createdat DateTime @default(now())
-  updatedat DateTime @default(now()) @updatedAt
+  telegramchatid     String?
+  telegrammessageid  String?
+  emailtemplate      String?
+  user               user                        @relation(fields: [userid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  proposal           proposal?                   @relation(fields: [proposalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([userid, proposalid, type])
   @@index(fields: [userid])
@@ -245,6 +190,14 @@ model config {
   value Int
 
   @@index(fields: [key])
+}
+
+model userTovoter {
+  A String
+  B String
+
+  @@unique([A, B], map: "_userTovoter_AB_unique")
+  @@map("_userTovoter")
 }
 
 enum MagicUserState {
@@ -266,13 +219,11 @@ enum NotificationDispatchedState {
 enum NotificationType {
   QUORUM_NOT_REACHED_EMAIL
   BULLETIN_EMAIL
-
   NEW_PROPOSAL_DISCORD
   FIRST_REMINDER_DISCORD
   SECOND_REMINDER_DISCORD
   THIRD_REMINDER_DISCORD
   ENDED_PROPOSAL_DISCORD
-
   NEW_PROPOSAL_TELEGRAM
   FIRST_REMINDER_TELEGRAM
   SECOND_REMINDER_TELEGRAM
@@ -294,12 +245,6 @@ enum DAOHandlerType {
   INTEREST_PROTOCOL_CHAIN
   ZEROX_PROTOCOL_CHAIN
   SNAPSHOT
-}
-
-enum RefreshStatus {
-  NEW
-  PENDING
-  DONE
 }
 
 enum ProposalState {

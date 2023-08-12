@@ -22,6 +22,7 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::{makerexecutive, makerexecutive::LogNoteFilter},
+    daohandler_with_dao,
     prisma::{daohandler, ProposalState},
     router::chain_proposals::ChainProposal,
     utils::etherscan::estimate_block,
@@ -42,7 +43,7 @@ const VOTE_SINGLE_ACTION_TOPIC: &str =
 
 pub async fn maker_executive_proposals(
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     from_block: &i64,
     to_block: &i64,
 ) -> Result<Vec<ChainProposal>> {
@@ -95,7 +96,7 @@ pub async fn maker_executive_proposals(
 async fn proposal(
     spell_address: &String,
     decoder: &Decoder,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
 ) -> Result<ChainProposal> {
     let proposal_url = format!("{}{}", decoder.proposalUrl, spell_address);
 
@@ -104,20 +105,16 @@ async fn proposal(
     let title = proposal_data.title.clone();
 
     let created_timestamp = Utc
-        .from_local_datetime(
-            &NaiveDateTime::parse_from_str(
-                proposal_data.clone().date.split(" GMT").next().unwrap(),
-                "%a %b %d %Y %H:%M:%S",
-            )
-            .unwrap(),
-        )
+        .from_local_datetime(&NaiveDateTime::parse_from_str(
+            proposal_data.clone().date.split(" GMT").next().unwrap(),
+            "%a %b %d %Y %H:%M:%S",
+        )?)
         .unwrap();
 
     let voting_starts_timestamp = created_timestamp;
 
     let mut voting_ends_timestamp =
-        DateTime::parse_from_rfc3339(proposal_data.clone().spellData.expiration.as_str())
-            .unwrap()
+        DateTime::parse_from_rfc3339(proposal_data.clone().spellData.expiration.as_str())?
             .with_timezone(&Utc);
 
     let scores = &proposal_data.spellData.mkrSupport.clone();
@@ -131,8 +128,7 @@ async fn proposal(
         ProposalState::Active
     } else if proposal_data.spellData.hasBeenScheduled {
         ProposalState::Queued
-    } else if DateTime::parse_from_rfc3339(proposal_data.clone().spellData.expiration.as_str())
-        .unwrap()
+    } else if DateTime::parse_from_rfc3339(proposal_data.clone().spellData.expiration.as_str())?
         .with_timezone(&Utc)
         < Utc::now()
     {
@@ -143,8 +139,7 @@ async fn proposal(
 
     if state == ProposalState::Executed {
         voting_ends_timestamp =
-            DateTime::parse_from_rfc3339(proposal_data.clone().spellData.dateExecuted.as_str())
-                .unwrap()
+            DateTime::parse_from_rfc3339(proposal_data.clone().spellData.dateExecuted.as_str())?
                 .with_timezone(&Utc);
     }
 
@@ -158,8 +153,8 @@ async fn proposal(
         time_created: created_timestamp,
         block_created,
         choices: vec!["Yes"].into(),
-        scores: scores.parse::<f64>().unwrap().into(),
-        scores_total: scores_total.parse::<f64>().unwrap().into(),
+        scores: scores.parse::<f64>()?.into(),
+        scores_total: scores_total.parse::<f64>()?.into(),
         quorum: 0.into(),
         url: proposal_url,
         state,

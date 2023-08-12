@@ -3,8 +3,9 @@ import Credentials from "next-auth/providers/credentials";
 import { SiweMessage } from "siwe";
 import { getCsrfToken } from "next-auth/react";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { prisma } from "@senate/database";
+import { db, eq, sql, user, userTovoter, voter } from "@senate/database";
 import { PostHog } from "posthog-node";
+import cuid from "cuid";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
@@ -45,49 +46,45 @@ export function authOptions(
           });
 
           if (result.success) {
-            const existingUser = await prisma.user.findUnique({
-              where: { address: siwe.address },
-              include: {
-                _count: true,
-                subscriptions: {
-                  select: {
-                    dao: {
-                      select: { name: true },
-                    },
-                  },
-                },
-              },
+            const existingUser = await db.query.user.findFirst({
+              where: eq(user.address, result.data.address),
             });
 
             if (!existingUser) {
               posthog.capture({
-                distinctId: siwe.address,
+                distinctId: result.data.address,
                 event: "sign_up_wallet",
               });
 
-              await prisma.user.create({
-                data: {
-                  address: siwe.address,
-                  verifiedaddress: true,
-                  acceptedterms: true,
-                  acceptedtermstimestamp: new Date(),
-                  voters: {
-                    connectOrCreate: {
-                      where: { address: siwe.address },
-                      create: { address: siwe.address },
-                    },
-                  },
-                },
+              const userCUID = cuid();
+
+              await db.insert(user).ignore().values({
+                id: userCUID,
+                address: result.data.address,
+                verifiedaddress: true,
+                acceptedterms: true,
+                acceptedtermstimestamp: new Date(),
+                sessioncount: 1,
               });
+
+              await db
+                .insert(voter)
+                .ignore()
+                .values({ id: cuid(), address: result.data.address });
+
+              const [newVoter] = await db
+                .select()
+                .from(voter)
+                .where(eq(voter.address, result.data.address));
+
+              await db
+                .insert(userTovoter)
+                .values({ a: userCUID, b: newVoter.id });
             } else {
               posthog.identify({
-                distinctId: siwe.address,
+                distinctId: result.data.address,
                 properties: {
                   email: existingUser.email,
-                  subscriptions: existingUser.subscriptions.map(
-                    (s) => s.dao.name,
-                  ),
-                  notifications: existingUser._count.notifications,
                   emaildailybulletin: existingUser.emaildailybulletin,
                   emptydailybulletin: existingUser.emptydailybulletin,
                   discordnotifications: existingUser.discordnotifications,
@@ -97,27 +94,25 @@ export function authOptions(
                 },
               });
 
-              await prisma.user.update({
-                where: {
-                  address: siwe.address,
-                },
-                data: {
-                  verifiedaddress: true,
+              await db
+                .update(user)
+                .set({
                   lastactive: new Date(),
-                  sessioncount: { increment: 1 },
+                  verifiedaddress: true,
                   acceptedterms: true,
                   acceptedtermstimestamp: new Date(),
-                },
-              });
+                  sessioncount: existingUser.sessioncount + 1,
+                })
+                .where(eq(user.address, result.data.address));
             }
 
             posthog.capture({
-              distinctId: siwe.address,
+              distinctId: result.data.address,
               event: "connect_wallet",
             });
 
             return {
-              id: siwe.address,
+              id: result.data.address,
             };
           }
           return null;
@@ -176,21 +171,14 @@ export function authOptions(
     secret: process.env.NEXTAUTH_SECRET,
     events: {
       async signIn(message) {
-        const user = await prisma.user.findFirst({
-          where: {
-            address: String(message.user.name),
-          },
-        });
-        if (user)
-          await prisma.user.update({
-            where: {
-              address: String(message.user.name),
-            },
-            data: {
-              lastactive: new Date(),
-              sessioncount: { increment: 1 },
-            },
-          });
+        await db
+          .update(user)
+          .set({
+            lastactive: new Date(),
+            sessioncount: sql`${user.sessioncount} + 1`,
+          })
+          .where(eq(user.address, String(message.user.name)))
+          .catch();
       },
       signOut() {
         res?.setHeader("Set-Cookie", [

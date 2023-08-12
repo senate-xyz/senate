@@ -1,16 +1,17 @@
+use crate::RefreshStatus;
 use anyhow::Result;
+use prisma::{daohandler, PrismaClient};
 use prisma_client_rust::{
     chrono::{Duration, Utc},
     operator::{and, or},
 };
 use tracing::{debug, debug_span, event, instrument, Instrument, Level};
 
-use prisma::{daohandler, PrismaClient};
-
 use crate::{
     config::Config, prisma, refresh_status::DAOS_REFRESH_STATUS, RefreshEntry, RefreshType,
 };
 
+#[instrument(skip_all)]
 pub async fn produce_snapshot_proposals_queue(config: &Config) -> Result<Vec<RefreshEntry>> {
     let normal_refresh = Utc::now() - Duration::seconds(config.normal_snapshot_proposals.into());
     let force_refresh = Utc::now() - Duration::seconds(config.force_snapshot_proposals.into());
@@ -24,12 +25,10 @@ pub async fn produce_snapshot_proposals_queue(config: &Config) -> Result<Vec<Ref
         .iter_mut()
         .filter(|r| {
             handler_types.contains(&r.r#type)
-                && ((r.refresh_status == prisma::RefreshStatus::Done
-                    && r.last_refresh < normal_refresh)
-                    || (r.refresh_status == prisma::RefreshStatus::Pending
+                && ((r.refresh_status == RefreshStatus::DONE && r.last_refresh < normal_refresh)
+                    || (r.refresh_status == RefreshStatus::PENDING
                         && r.last_refresh < force_refresh)
-                    || (r.refresh_status == prisma::RefreshStatus::New
-                        && r.last_refresh < new_refresh))
+                    || (r.refresh_status == RefreshStatus::NEW && r.last_refresh < new_refresh))
         })
         .collect();
 
@@ -44,7 +43,7 @@ pub async fn produce_snapshot_proposals_queue(config: &Config) -> Result<Vec<Ref
         .collect();
 
     for dhr in &mut *dao_handlers {
-        dhr.refresh_status = prisma::RefreshStatus::Pending;
+        dhr.refresh_status = RefreshStatus::PENDING;
         dhr.last_refresh = Utc::now();
     }
 

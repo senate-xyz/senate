@@ -1,5 +1,6 @@
 use std::{env, sync::Arc};
 
+use anyhow::Result;
 use chrono::{Duration, Utc};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
@@ -31,11 +32,10 @@ struct GraphQLProposal {
     id: String,
 }
 
-pub async fn snapshot_sanity_check(ctx: &Context) {
+#[instrument(skip_all)]
+pub async fn snapshot_sanity_check(ctx: &Context) -> Result<()> {
     let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(90);
     let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
-
-    debug!("{:?} {:?}", sanitize_from, sanitize_to);
 
     let dao_handlers = ctx
         .db
@@ -43,20 +43,22 @@ pub async fn snapshot_sanity_check(ctx: &Context) {
         .daohandler()
         .find_many(vec![daohandler::r#type::equals(DaoHandlerType::Snapshot)])
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     for dao_handler in dao_handlers {
-        sanitize(dao_handler, sanitize_from, sanitize_to, ctx).await;
+        sanitize(dao_handler, sanitize_from, sanitize_to, ctx).await?;
     }
+
+    Ok(())
 }
 
+#[instrument(skip(ctx))]
 async fn sanitize(
     dao_handler: daohandler::Data,
     sanitize_from: chrono::DateTime<Utc>,
     sanitize_to: chrono::DateTime<Utc>,
     ctx: &Context,
-) {
+) -> Result<()> {
     let database_proposals = ctx
         .db
         .proposal()
@@ -66,8 +68,7 @@ async fn sanitize(
             proposal::timecreated::lte(sanitize_to.into()),
         ])
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
         Ok(data) => data,
@@ -110,7 +111,7 @@ async fn sanitize(
         .send()
         .await;
 
-    let response_data: GraphQLResponse = graphql_response.unwrap().json().await.unwrap();
+    let response_data: GraphQLResponse = graphql_response?.json().await?;
     let graph_proposals: Vec<GraphQLProposal> = response_data.data.proposals;
 
     let graphql_proposal_ids: Vec<String> = graph_proposals
@@ -135,4 +136,6 @@ async fn sanitize(
         )
         .exec()
         .await;
+
+    Ok(())
 }

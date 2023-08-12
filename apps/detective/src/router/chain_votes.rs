@@ -1,6 +1,7 @@
 use std::{cmp, env, ops::Div, sync::Arc};
 
 use crate::{
+    daohandler_with_dao,
     handlers::votes::{
         aave::aave_votes, compound::compound_votes, dydx::dydx_votes, ens::ens_votes,
         gitcoin::gitcoin_votes, hop::hop_votes, interest_protocol::interest_protocol_votes,
@@ -9,7 +10,7 @@ use crate::{
         zeroxtreasury::zeroxtreasury_votes,
     },
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType},
-    Ctx, VotesRequest, VotesResponse,
+    voterhandler_with_voter, Ctx, VotesRequest, VotesResponse,
 };
 use anyhow::{bail, Context, Result};
 use ethers::{
@@ -44,101 +45,62 @@ pub struct VoteResult {
     pub votes: Vec<Vote>,
 }
 
-voterhandler::include!(voterhandler_with_voter { voter });
-
 #[post("/chain_votes", data = "<data>")]
 pub async fn update_chain_votes<'a>(
     ctx: &Ctx,
     data: Json<VotesRequest<'a>>,
 ) -> Json<Vec<VotesResponse>> {
-    let dao_handler = ctx
-        .db
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-        .exec()
-        .await
-        .expect("bad prisma result")
-        .expect("daoHandlerId not found");
+    let my_span = info_span!(
+        "update_chain_votes",
+        dao_handler_id = data.daoHandlerId,
+        refreshspeed = data.refreshspeed
+    );
 
-    let first_proposal = ctx
-        .db
-        .proposal()
-        .find_many(vec![proposal::daohandlerid::equals(
-            dao_handler.id.to_string(),
-        )])
-        .order_by(proposal::blockcreated::order(Direction::Asc))
-        .take(1)
-        .exec()
-        .await
-        .expect("bad prisma result");
+    async move {
+        let dao_handler = ctx
+            .db
+            .daohandler()
+            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .include(daohandler_with_dao::include())
+            .exec()
+            .await
+            .expect("bad prisma result")
+            .expect("daoHandlerId not found");
 
-    let first_proposal_block = match first_proposal.first() {
-        Some(s) => s.blockcreated.unwrap_or(0),
-        None => 0,
-    };
+        let voter_handlers = ctx
+            .db
+            .voterhandler()
+            .find_many(vec![
+                voterhandler::voter::is(vec![voter::address::in_vec(data.voters.clone())]),
+                voterhandler::daohandler::is(vec![daohandler::id::equals(
+                    data.daoHandlerId.to_string(),
+                )]),
+            ])
+            .include(voterhandler_with_voter::include())
+            .exec()
+            .await
+            .expect("bad prisma result");
 
-    let voter_handlers = ctx
-        .db
-        .voterhandler()
-        .find_many(vec![
-            voterhandler::voter::is(vec![voter::address::in_vec(data.voters.clone())]),
-            voterhandler::daohandler::is(vec![daohandler::id::equals(
-                data.daoHandlerId.to_string(),
-            )]),
-        ])
-        .include(voterhandler_with_voter::include())
-        .exec()
-        .await
-        .expect("bad prisma result");
+        let voters = data.voters.clone();
 
-    let voters = data.voters.clone();
+        let vh_index = voter_handlers
+            .iter()
+            .map(|vh| vh.chainindex)
+            .min()
+            .unwrap_or(0);
 
-    let oldest_vote_block = voter_handlers
-        .iter()
-        .map(|vh| vh.chainindex)
-        .min()
-        .unwrap_or_default()
-        .unwrap_or(0);
-
-    let mut current_block = ctx
-        .rpc
-        .get_block_number()
-        .await
-        .unwrap_or(U64::from(0))
-        .as_u64() as i64;
-
-    let batch_size = (data.refreshspeed).div(voters.len() as i64);
-
-    let mut from_block = cmp::max(oldest_vote_block, 0);
-
-    if from_block < first_proposal_block {
-        from_block = first_proposal_block;
-    }
-
-    let mut to_block = if current_block - from_block > batch_size {
-        from_block + batch_size
-    } else {
-        current_block
-    };
-
-    if from_block > to_block {
-        from_block = to_block - 10;
-    }
-
-    if dao_handler.r#type == DaoHandlerType::MakerPollArbitrum {
-        let rpc_url = env::var("ARBITRUM_NODE_URL").expect("$ARBITRUM_NODE_URL is not set");
-        let provider = Provider::<Http>::try_from(rpc_url).unwrap();
-        let rpc = Arc::new(provider);
-
-        from_block = cmp::max(oldest_vote_block, 0);
-
-        current_block = rpc
+        let mut current_block = ctx
+            .rpc
             .get_block_number()
             .await
             .unwrap_or(U64::from(0))
             .as_u64() as i64;
 
-        to_block = if current_block - from_block > batch_size {
+        let batch_size = (data.refreshspeed).div(voters.len() as i64);
+
+        let mut from_block = cmp::min(vh_index, dao_handler.chainindex);
+
+        let mut to_block = if current_block - from_block > batch_size {
             from_block + batch_size
         } else {
             current_block
@@ -147,45 +109,85 @@ pub async fn update_chain_votes<'a>(
         if from_block > to_block {
             from_block = to_block - 10;
         }
-    }
 
-    let result = get_results(
-        ctx,
-        &dao_handler,
-        from_block,
-        to_block,
-        voters.clone(),
-        voter_handlers,
-    )
-    .await;
+        if dao_handler.r#type == DaoHandlerType::MakerPollArbitrum {
+            let rpc_url = env::var("ARBITRUM_NODE_URL").expect("$ARBITRUM_NODE_URL is not set");
+            let provider = Provider::<Http>::try_from(rpc_url).unwrap();
+            let rpc = Arc::new(provider);
 
-    match result {
-        Ok(r) => Json(
-            r.into_iter()
-                .map(|v| VotesResponse {
-                    voter_address: v.voter_address,
-                    success: v.success,
-                })
-                .collect(),
-        ),
-        Err(e) => {
-            warn!("{:?}", e);
-            Json(
-                voters
-                    .into_iter()
+            from_block = cmp::min(vh_index, dao_handler.chainindex);
+
+            current_block = rpc
+                .get_block_number()
+                .await
+                .unwrap_or(U64::from(0))
+                .as_u64() as i64;
+
+            to_block = if current_block - from_block > batch_size {
+                from_block + batch_size
+            } else {
+                current_block
+            };
+
+            if from_block > to_block {
+                from_block = to_block - 10;
+            }
+        }
+
+        event!(
+            Level::INFO,
+            dao_name = dao_handler.dao.name,
+            dao_handler_type = dao_handler.r#type.to_string(),
+            dao_handler_id = dao_handler.id,
+            vh_index = vh_index,
+            batch_size = batch_size,
+            from_block = from_block,
+            to_block = to_block,
+            current_block = current_block,
+            "refresh interval"
+        );
+
+        let result = get_results(
+            ctx,
+            &dao_handler,
+            from_block,
+            to_block,
+            voters.clone(),
+            voter_handlers,
+        )
+        .await;
+
+        match result {
+            Ok(r) => Json(
+                r.into_iter()
                     .map(|v| VotesResponse {
-                        voter_address: v,
-                        success: false,
+                        voter_address: v.voter_address,
+                        success: v.success,
                     })
                     .collect(),
-            )
+            ),
+            Err(e) => {
+                event!(Level::WARN, err = e.to_string(), "refresh error");
+                Json(
+                    voters
+                        .into_iter()
+                        .map(|v| VotesResponse {
+                            voter_address: v,
+                            success: false,
+                        })
+                        .collect(),
+                )
+            }
         }
     }
+    .instrument(my_span)
+    .await
 }
 
+#[instrument(skip_all)]
 async fn get_results(
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     from_block: i64,
     to_block: i64,
     voters: Vec<String>,
@@ -260,11 +262,12 @@ async fn get_results(
     }
 }
 
+#[instrument(skip_all)]
 async fn insert_votes(
     votes: Vec<VoteResult>,
     to_block: i64,
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     voter_handlers: Vec<voterhandler_with_voter::Data>,
 ) -> Result<Vec<VoteResult>> {
     let successful_votes: Vec<Vote> = votes
@@ -283,15 +286,25 @@ async fn insert_votes(
                 vote.proposal_id.clone(),
             ))
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         match existing {
             Some(existing) => {
                 if existing.choice != vote.choice
-                    || existing.votingpower != vote.voting_power
+                    || existing.votingpower.as_f64().unwrap().floor()
+                        != vote.voting_power.as_f64().unwrap().floor()
                     || existing.reason != vote.reason
                 {
+                    event!(
+                        Level::INFO,
+                        voter_address = existing.voteraddress,
+                        proposal_id = existing.proposalid,
+                        dao_name = dao_handler.dao.name,
+                        dao_handler_type = dao_handler.r#type.to_string(),
+                        dao_handler_id = dao_handler.id,
+                        "update vote"
+                    );
+
                     ctx.db
                         .vote()
                         .update(
@@ -307,11 +320,20 @@ async fn insert_votes(
                             ],
                         )
                         .exec()
-                        .await
-                        .unwrap();
+                        .await?;
                 }
             }
             None => {
+                event!(
+                    Level::INFO,
+                    voter_address = vote.voter_address,
+                    proposal_id = vote.proposal_id,
+                    dao_name = dao_handler.dao.name,
+                    dao_handler_type = dao_handler.r#type.to_string(),
+                    dao_handler_id = dao_handler.id,
+                    "insert vote"
+                );
+
                 ctx.db
                     .vote()
                     .create(
@@ -325,13 +347,12 @@ async fn insert_votes(
                         vec![],
                     )
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
             }
         }
     }
 
-    let daochainindex = dao_handler.chainindex.unwrap();
+    let daochainindex = dao_handler.chainindex;
 
     let mut new_index = if daochainindex > to_block {
         to_block
@@ -350,11 +371,30 @@ async fn insert_votes(
         new_index = to_block;
     }
 
+    event!(
+        Level::INFO,
+        dao_name = dao_handler.dao.name,
+        dao_handler_type = dao_handler.r#type.to_string(),
+        dao_handler_id = dao_handler.id,
+        new_index = new_index,
+        uptodate = uptodate,
+        "new index"
+    );
+
     for voter_handler in voter_handlers {
-        if (new_index > voter_handler.chainindex.unwrap()
-            && new_index - voter_handler.chainindex.unwrap() > 100000)
+        if (new_index > voter_handler.chainindex && new_index - voter_handler.chainindex > 100000)
             || uptodate != voter_handler.uptodate
         {
+            event!(
+                Level::INFO,
+                dao_name = dao_handler.dao.name,
+                dao_handler_type = dao_handler.r#type.to_string(),
+                new_index = new_index,
+                voter_handler_id = voter_handler.id,
+                dao_handler_id = dao_handler.id,
+                "set new index"
+            );
+
             ctx.db
                 .voterhandler()
                 .update(
@@ -363,7 +403,7 @@ async fn insert_votes(
                         dao_handler.clone().id,
                     ),
                     vec![
-                        voterhandler::chainindex::set(new_index.into()),
+                        voterhandler::chainindex::set(new_index),
                         voterhandler::uptodate::set(uptodate),
                     ],
                 )

@@ -1,12 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { test as test_metamask } from "../../../../fixtures";
 import * as metamask from "@synthetixio/synpress/commands/metamask";
-import { prisma } from "@senate/database";
+import { db, eq, user, userTovoter, voter } from "@senate/database";
 
 test("deletes test user test@test.com start", async ({}) => {
-  await prisma.user.deleteMany({
-    where: { email: "test@test.com" },
-  });
+  await db.delete(user).where(eq(user.email, "test@test.com"));
 });
 
 test("creates new email account test@test.com using discourse api", async ({}) => {
@@ -28,8 +26,8 @@ test("creates new email account test@test.com using discourse api", async ({}) =
 
   await expect(response.status).toBe(200);
 
-  const newUser = await prisma.user.findFirst({
-    where: { email: "test@test.com" },
+  const newUser = await db.query.user.findFirst({
+    where: eq(user.email, "test@test.com"),
   });
 
   await expect(await response.json()).toStrictEqual({
@@ -49,8 +47,8 @@ test("creates new email account test@test.com using discourse api", async ({}) =
 test_metamask(
   "confirms new email account test@test.com by signing message",
   async ({ page }) => {
-    const newUser = await prisma.user.findFirst({
-      where: { email: "test@test.com" },
+    const newUser = await db.query.user.findFirst({
+      where: eq(user.email, "test@test.com"),
     });
 
     await page.goto(
@@ -65,13 +63,23 @@ test_metamask(
 
     await page.waitForTimeout(10000);
 
-    const confirmedUser = await prisma.user.findFirst({
-      where: { email: "test@test.com" },
-      include: {
-        subscriptions: { include: { dao: { select: { name: true } } } },
-        voters: true,
+    const confirmedUser = await db.query.user.findFirst({
+      where: eq(user.email, "test@test.com"),
+      with: {
+        subscriptions: { with: { dao: true } },
       },
     });
+
+    const proxies = await db
+      .select()
+      .from(userTovoter)
+      .leftJoin(user, eq(userTovoter.a, user.id))
+      .leftJoin(voter, eq(userTovoter.b, voter.id))
+      .where(confirmedUser ? eq(user.id, confirmedUser.id) : undefined);
+
+    const votersAddresses = proxies.map((p) =>
+      p.voter ? p.voter?.address : ""
+    );
 
     await expect(confirmedUser?.email).toBe("test@test.com");
     await expect(confirmedUser?.isaaveuser).toBe("ENABLED");
@@ -81,9 +89,7 @@ test_metamask(
     await expect(confirmedUser?.emaildailybulletin).toBe(true);
     await expect(confirmedUser?.emailquorumwarning).toBe(true);
     await expect(confirmedUser?.subscriptions[0].dao.name).toBe("Aave");
-    await expect(confirmedUser?.voters.map((v) => v.address)).toContain(
-      confirmedUser?.address
-    );
+    await expect(votersAddresses).toContain(confirmedUser?.address);
 
     await expect(page).toHaveURL("/orgs?connect");
   }
@@ -130,7 +136,5 @@ test_metamask(
 );
 
 test("deletes test user test@test.com end", async ({}) => {
-  await prisma.user.deleteMany({
-    where: { email: "test@test.com" },
-  });
+  await db.delete(user).where(eq(user.email, "test@test.com"));
 });

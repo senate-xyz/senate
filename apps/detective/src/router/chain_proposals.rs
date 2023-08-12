@@ -1,5 +1,5 @@
 use anyhow::{bail, Result};
-use ethers::{providers::Middleware, types::U64};
+use ethers::{prelude::k256::elliptic_curve::PrimeField, providers::Middleware, types::U64};
 use prisma_client_rust::chrono::{DateTime, FixedOffset, Utc};
 use reqwest::header::HeaderMap;
 use rocket::serde::json::Json;
@@ -9,6 +9,7 @@ use tracing::{
 };
 
 use crate::{
+    daohandler_with_dao,
     handlers::proposals::{
         aave::aave_proposals, compound::compound_proposals, dydx::dydx_proposals,
         ens::ens_proposals, gitcoin::gitcoin_proposals, hop::hop_proposals,
@@ -44,118 +45,143 @@ pub async fn update_chain_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>,
 ) -> Json<ProposalsResponse<'a>> {
-    let dao_handler = ctx
-        .db
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-        .exec()
-        .await
-        .expect("bad prisma result")
-        .expect("daoHandlerId not found");
+    let my_span = info_span!(
+        "update_chain_proposals",
+        dao_handler_id = data.daoHandlerId,
+        refreshspeed = data.refreshspeed
+    );
 
-    let min_block = dao_handler.chainindex;
-    let batch_size = data.refreshspeed;
+    async move {
+        let dao_handler = ctx
+            .db
+            .daohandler()
+            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .include(daohandler_with_dao::include())
+            .exec()
+            .await
+            .expect("bad prisma result")
+            .expect("daoHandlerId not found");
 
-    let mut from_block = min_block.unwrap_or(0);
+        let min_block = dao_handler.chainindex;
+        let batch_size = data.refreshspeed;
 
-    let current_block = ctx
-        .rpc
-        .get_block_number()
-        .await
-        .unwrap_or(U64::from(from_block))
-        .as_u64() as i64;
+        let mut from_block = min_block;
 
-    let mut to_block = if current_block - from_block > batch_size {
-        from_block + batch_size
-    } else {
-        current_block
-    };
+        let current_block = ctx
+            .rpc
+            .get_block_number()
+            .await
+            .unwrap_or(U64::from(from_block))
+            .as_u64() as i64;
 
-    if from_block > current_block - 10 {
-        from_block = current_block - 10;
-    }
+        let mut to_block = if current_block - from_block > batch_size {
+            from_block + batch_size
+        } else {
+            current_block
+        };
 
-    if to_block > current_block - 10 {
-        to_block = current_block - 10;
-    }
+        if from_block > current_block - 10 {
+            from_block = current_block - 10;
+        }
 
-    let result = get_results(ctx, from_block, to_block, dao_handler).await;
+        if to_block > current_block - 10 {
+            to_block = current_block - 10;
+        }
 
-    match result {
-        Ok(_) => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            success: true,
-        }),
-        Err(e) => {
-            warn!("{:?}", e);
-            Json(ProposalsResponse {
+        event!(
+            Level::INFO,
+            dao_name = dao_handler.dao.name,
+            dao_handler_type = dao_handler.r#type.to_string(),
+            dao_handler_id = dao_handler.id,
+            min_block = min_block,
+            batch_size = batch_size,
+            from_block = from_block,
+            to_block = to_block,
+            current_block = current_block,
+            "refresh interval"
+        );
+
+        let result = get_results(ctx, from_block, to_block, dao_handler).await;
+
+        match result {
+            Ok(_) => Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,
-                success: false,
-            })
+                success: true,
+            }),
+            Err(e) => {
+                event!(Level::WARN, err = e.to_string(), "refresh error");
+                Json(ProposalsResponse {
+                    daoHandlerId: data.daoHandlerId,
+                    success: false,
+                })
+            }
         }
     }
+    .instrument(my_span)
+    .await
 }
 
+#[instrument(skip_all)]
 async fn get_results(
     ctx: &Ctx,
     from_block: i64,
     to_block: i64,
-    dao_handler: daohandler::Data,
+    dao_handler: daohandler_with_dao::Data,
 ) -> Result<()> {
     match dao_handler.r#type {
         DaoHandlerType::AaveChain => {
             let p = aave_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::CompoundChain => {
             let p = compound_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::UniswapChain => {
             let p = uniswap_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::EnsChain => {
             let p = ens_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::GitcoinChain => {
             let p = gitcoin_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::HopChain => {
             let p = hop_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::DydxChain => {
             let p = dydx_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::MakerPoll => {
             let p = maker_poll_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::MakerExecutive => {
             let p = maker_executive_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::InterestProtocolChain => {
             let p = interest_protocol_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::ZeroxProtocolChain => {
             let p = zeroxtreasury_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
             Ok(())
         }
         DaoHandlerType::MakerPollArbitrum => bail!("not implemeneted"),
@@ -163,12 +189,13 @@ async fn get_results(
     }
 }
 
+#[instrument(skip_all)]
 async fn insert_proposals(
     proposals: Vec<ChainProposal>,
     to_block: i64,
     ctx: &Ctx,
-    dao_handler: daohandler::Data,
-) {
+    dao_handler: daohandler_with_dao::Data,
+) -> Result<()> {
     for proposal in proposals.clone() {
         let existing = ctx
             .db
@@ -178,15 +205,24 @@ async fn insert_proposals(
                 dao_handler.daoid.to_string(),
             ))
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         match existing {
             Some(existing) => {
                 if proposal.state != existing.state
-                    || proposal.scores_total != existing.scorestotal
+                    || proposal.scores_total.as_f64().unwrap().floor()
+                        != existing.scorestotal.as_f64().unwrap().floor()
                     || proposal.url != existing.url
                 {
+                    event!(
+                        Level::INFO,
+                        proposal_id = existing.id,
+                        proposal_name = existing.name,
+                        dao_name = dao_handler.dao.name,
+                        dao_handler_type = dao_handler.r#type.to_string(),
+                        dao_handler_id = dao_handler.id,
+                        "update proposal"
+                    );
                     ctx.db
                         .proposal()
                         .update(
@@ -219,11 +255,20 @@ async fn insert_proposals(
                             },
                         )
                         .exec()
-                        .await
-                        .unwrap();
+                        .await?;
                 }
             }
             None => {
+                event!(
+                    Level::INFO,
+                    proposal_external_id = proposal.external_id,
+                    proposal_name = proposal.name,
+                    dao_name = dao_handler.dao.name,
+                    dao_handler_type = dao_handler.r#type.to_string(),
+                    dao_handler_id = dao_handler.id,
+                    "insert proposal"
+                );
+
                 ctx.db
                     .proposal()
                     .create_unchecked(
@@ -249,8 +294,7 @@ async fn insert_proposals(
                         vec![proposal::blockcreated::set(proposal.block_created.into())],
                     )
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
             }
         }
     }
@@ -276,23 +320,42 @@ async fn insert_proposals(
         to_block
     };
 
-    let uptodate = dao_handler.chainindex.unwrap() - new_index < 1000;
+    let uptodate = dao_handler.chainindex - new_index < 1000;
 
-    if (new_index > dao_handler.chainindex.unwrap()
-        && new_index - dao_handler.chainindex.unwrap() > 1000)
+    event!(
+        Level::INFO,
+        dao_name = dao_handler.dao.name,
+        dao_handler_type = dao_handler.r#type.to_string(),
+        dao_handler_id = dao_handler.id,
+        new_index = new_index,
+        to_block = to_block,
+        uptodate = uptodate,
+        "new index"
+    );
+
+    if (new_index > dao_handler.chainindex && new_index - dao_handler.chainindex > 100)
         || uptodate != dao_handler.uptodate
     {
+        event!(
+            Level::INFO,
+            dao_name = dao_handler.dao.name,
+            dao_handler_type = dao_handler.r#type.to_string(),
+            new_index = new_index,
+            dao_handler_id = dao_handler.id,
+            "set new index"
+        );
         ctx.db
             .daohandler()
             .update(
                 daohandler::id::equals(dao_handler.id.to_string()),
                 vec![
-                    daohandler::chainindex::set(new_index.into()),
+                    daohandler::chainindex::set(new_index),
                     daohandler::uptodate::set(uptodate),
                 ],
             )
             .exec()
-            .await
-            .expect("failed to update daohandlers");
+            .await?;
     }
+
+    Ok(())
 }

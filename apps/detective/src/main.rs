@@ -7,6 +7,8 @@ extern crate rocket;
 
 use std::{env, process, sync::Arc};
 
+use metrics::{self as _, counter, register_counter};
+
 use dotenv::dotenv;
 use ethers::providers::{Http, Provider};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
@@ -15,7 +17,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tracing::{debug_span, event, instrument, Instrument, Level};
 
-use prisma::PrismaClient;
+use prisma::{daohandler, proposal, voterhandler, PrismaClient};
 use utils::{maker_polls_sanity::maker_polls_sanity_check, snapshot_sanity::snapshot_sanity_check};
 
 use crate::router::{
@@ -27,6 +29,7 @@ pub mod contracts;
 pub mod handlers;
 pub mod prisma;
 mod router;
+mod telemetry;
 
 pub mod utils {
     pub mod etherscan;
@@ -74,6 +77,10 @@ pub struct VotesResponse {
     success: bool,
 }
 
+daohandler::include!(daohandler_with_dao { dao });
+voterhandler::include!(voterhandler_with_voter { voter });
+proposal::include!(proposal_with_dao { dao daohandler });
+
 #[get("/")]
 fn index() -> &'static str {
     "Hello, world!"
@@ -81,17 +88,14 @@ fn index() -> &'static str {
 
 #[get("/")]
 fn health() -> &'static str {
+    counter!("some_metric_name", 12);
     "ok"
 }
 
 #[launch]
 async fn rocket() -> _ {
     dotenv().ok();
-
-    tracing_subscriber::fmt()
-        .pretty()
-        .with_max_level(tracing::Level::INFO)
-        .init();
+    telemetry::setup();
 
     let rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
 
@@ -113,8 +117,8 @@ async fn rocket() -> _ {
         loop {
             interval.tick().await;
 
-            maker_polls_sanity_check(&context).await;
-            snapshot_sanity_check(&context).await;
+            let _ = maker_polls_sanity_check(&context).await;
+            let _ = snapshot_sanity_check(&context).await;
         }
     });
 

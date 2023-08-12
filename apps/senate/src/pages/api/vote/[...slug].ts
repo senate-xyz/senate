@@ -1,5 +1,15 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { prisma } from "@senate/database";
+import {
+  db,
+  user,
+  and,
+  eq,
+  inArray,
+  proposal,
+  userTovoter,
+  vote,
+  voter,
+} from "@senate/database";
 import fs from "fs";
 import path from "path";
 
@@ -11,38 +21,41 @@ export default async function handler(
   const userEmail = slug?.[0];
   const proposalId = slug?.[1];
 
-  let voted = false;
-  let img: string;
+  let img: string = "did-not-vote.png";
 
-  const user = await prisma.user.findFirst({
-    where: { email: userEmail },
-    include: { voters: true },
-  });
+  if (userEmail) {
+    const proxies = await db
+      .select()
+      .from(userTovoter)
+      .leftJoin(user, eq(userTovoter.a, user.id))
+      .leftJoin(voter, eq(userTovoter.b, voter.id))
+      .where(eq(user.email, userEmail ?? ""));
 
-  if (!user) img = "not-voted-yet.png";
-  else
-    for (const voter of user.voters) {
-      const vote = await prisma.vote.findFirst({
-        where: { voteraddress: voter.address, proposalid: proposalId },
-      });
+    const votersAddresses = proxies.map((p) =>
+      p.voter ? p.voter?.address : "",
+    );
 
-      if (vote) voted = true;
-    }
+    const [p] = await db
+      .select()
+      .from(proposal)
+      .leftJoin(
+        vote,
+        and(
+          eq(proposal.id, vote.proposalid),
+          inArray(vote.voteraddress, votersAddresses),
+        ),
+      )
+      .where(eq(proposal.id, proposalId ?? ""));
 
-  if (voted) img = "voted.png";
-  else {
-    const proposal = await prisma.proposal.findFirst({
-      where: { id: proposalId },
-      select: { timeend: true },
-    });
-
-    if (!proposal) {
-      img = "did-not-vote.png";
+    if (p.proposal.timeend.getTime() < Date.now()) {
+      if (p.vote) img = "voted.png";
+      else img = "not-voted-yet.png";
     } else {
-      if (proposal.timeend.getTime() > Date.now()) img = "not-voted-yet.png";
+      if (p.vote) img = "voted.png";
       else img = "did-not-vote.png";
     }
   }
+
   const dirRelativeToPublicFolder = "assets/Emails";
   const dir = path.resolve(process.cwd(), "public", dirRelativeToPublicFolder);
 

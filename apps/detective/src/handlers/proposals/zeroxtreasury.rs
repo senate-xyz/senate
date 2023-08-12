@@ -17,6 +17,7 @@ use tracing::{debug_span, event, instrument, Instrument};
 
 use crate::{
     contracts::{zeroxtreasury, zeroxtreasury::ProposalCreatedFilter},
+    daohandler_with_dao,
     prisma::{daohandler, ProposalState},
     router::chain_proposals::ChainProposal,
     utils::etherscan::estimate_timestamp,
@@ -32,7 +33,7 @@ struct Decoder {
 
 pub async fn zeroxtreasury_proposals(
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     from_block: &i64,
     to_block: &i64,
 ) -> Result<Vec<ChainProposal>> {
@@ -69,7 +70,7 @@ async fn data_for_proposal(
     p: (zeroxtreasury::zeroxtreasury::ProposalCreatedFilter, LogMeta),
     ctx: &Ctx,
     decoder: &Decoder,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     gov_contract: zeroxtreasury::zeroxtreasury::zeroxtreasury<
         ethers::providers::Provider<ethers::providers::Http>,
     >,
@@ -85,8 +86,7 @@ async fn data_for_proposal(
     let voting_period_seconds = gov_contract
         .voting_period()
         .call()
-        .await
-        .unwrap()
+        .await?
         .as_u64()
         .to_i64()
         .unwrap();

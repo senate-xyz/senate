@@ -2,19 +2,25 @@
 #![allow(unused_imports)]
 #![allow(unused_parens)]
 
-use std::{env, sync::Arc, time::Duration};
-
 use dotenv::dotenv;
 use flume as _;
 use log::{info, warn};
+use opentelemetry::{
+    sdk::{trace, Resource},
+    KeyValue,
+};
+use opentelemetry_otlp::WithExportConfig;
 use reqwest as _;
 use serde_json as _;
+use std::{collections::HashMap, env, sync::Arc, time::Duration};
 use tokio::{time::sleep, try_join};
 use tracing::{debug, debug_span, event, Instrument, Level};
+use tracing_subscriber::{fmt, prelude::*};
 
 use config::{load_config_from_db, CONFIG};
 use handlers::create_voter_handlers;
 use prisma::PrismaClient;
+use tracing_subscriber::{prelude::__tracing_subscriber_SubscriberExt, EnvFilter};
 
 use crate::{
     consume_queue::{
@@ -29,11 +35,11 @@ use crate::{
     refresh_status::{create_refresh_statuses, DAOS_REFRESH_STATUS},
 };
 
-pub mod prisma;
-
 mod consume_queue;
+pub mod prisma;
 mod produce_queue;
 mod refresh_status;
+mod telemetry;
 
 pub mod config;
 pub mod handlers;
@@ -55,14 +61,18 @@ pub struct RefreshEntry {
     voters: Vec<String>,
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum RefreshStatus {
+    NEW,
+    DONE,
+    PENDING,
+}
+
 #[tokio::main]
 async fn main() {
     dotenv().ok();
 
-    tracing_subscriber::fmt()
-        .pretty()
-        .with_max_level(tracing::Level::INFO)
-        .init();
+    telemetry::setup();
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
     let config = *CONFIG.read().unwrap();
@@ -81,7 +91,6 @@ async fn main() {
     let slow_task_client_clone = client.clone();
     let slow_task = tokio::task::spawn(async move {
         loop {
-            let _ = load_config_from_db(&slow_task_client_clone).await;
             let _ = create_voter_handlers(&slow_task_client_clone).await;
             let _ = create_refresh_statuses(&slow_task_client_clone).await;
             sleep(Duration::from_secs(5)).await;

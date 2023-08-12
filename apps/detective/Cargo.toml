@@ -27,8 +27,26 @@ rocket = { version = "=0.5.0-rc.3", features = ["json"] }
 serde = "1.0.174"
 serde_json = "1.0.103"
 tokio = { version = "1.29.1", features = ["full"] }
+
+base64 = "0.21.2"
+opentelemetry = { version = "0.19.0", features = ["trace", "rt-tokio"] }
+opentelemetry-otlp = { version = "0.12.0", features = [
+    "tonic",
+    "tls",
+    "tls-roots",
+    "protobuf",
+    "http-proto",
+] }
+tonic = "0.8.3"
+pyroscope = "0.5.6"
+pyroscope_pprofrs = "0.2.5"
 tracing = "0.1.37"
-tracing-subscriber = "0.3.17"
+tracing-loki = "0.2.2"
+tracing-opentelemetry = "0.19.0"
+tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+url = "2.4.0"
+metrics-exporter-influx = "0.1.2"
+metrics = "0.21.1"
 
 [build-dependencies]
 ethers = { version = "=2.0.6", features = ["rustls", "openssl", "abigen"] }

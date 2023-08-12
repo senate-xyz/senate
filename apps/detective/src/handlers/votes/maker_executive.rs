@@ -14,6 +14,7 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::makerexecutive::{self, LogNoteFilter},
+    daohandler_with_dao,
     prisma::{daohandler, proposal},
     router::chain_votes::{Vote, VoteResult},
     Ctx,
@@ -32,7 +33,7 @@ const VOTE_SINGLE_ACTION_TOPIC: &str =
 
 pub async fn makerexecutive_votes(
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     from_block: i64,
     to_block: i64,
     voters: Vec<String>,
@@ -118,7 +119,7 @@ pub async fn makerexecutive_votes(
 
 async fn get_votes_for_voter(
     spell_addresses: Vec<String>,
-    dao_handler: daohandler::Data,
+    dao_handler: daohandler_with_dao::Data,
     voter_address: String,
     ctx: &Ctx,
 ) -> Result<VoteResult> {

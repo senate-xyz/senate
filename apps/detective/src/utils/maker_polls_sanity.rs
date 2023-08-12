@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use anyhow::Result;
 use chrono::{Duration, Utc};
 use ethers::{
     providers::{Http, Provider},
@@ -24,11 +25,10 @@ struct Decoder {
     address_create: String,
 }
 
-pub async fn maker_polls_sanity_check(ctx: &Context) {
+#[instrument(skip_all)]
+pub async fn maker_polls_sanity_check(ctx: &Context) -> Result<()> {
     let sanitize_from: chrono::DateTime<Utc> = Utc::now() - Duration::days(30);
     let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
-
-    debug!("{:?} {:?}", sanitize_from, sanitize_to);
 
     let dao_handler = ctx
         .db
@@ -36,22 +36,24 @@ pub async fn maker_polls_sanity_check(ctx: &Context) {
         .daohandler()
         .find_first(vec![daohandler::r#type::equals(DaoHandlerType::MakerPoll)])
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     if let Some(handler) = dao_handler {
-        sanitize(handler, sanitize_from, sanitize_to, ctx).await
+        sanitize(handler, sanitize_from, sanitize_to, ctx).await?
     }
+
+    Ok(())
 }
 
+#[instrument(skip(ctx))]
 async fn sanitize(
     dao_handler: daohandler::Data,
     sanitize_from: chrono::DateTime<Utc>,
     sanitize_to: chrono::DateTime<Utc>,
     ctx: &Context,
-) {
-    let from_block = estimate_block(sanitize_from.timestamp()).await.unwrap();
-    let to_block = estimate_block(sanitize_to.timestamp()).await.unwrap();
+) -> Result<()> {
+    let from_block = estimate_block(sanitize_from.timestamp()).await?;
+    let to_block = estimate_block(sanitize_to.timestamp()).await?;
 
     let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder).unwrap();
 
@@ -68,7 +70,7 @@ async fn sanitize(
         .from_block(from_block)
         .to_block(to_block);
 
-    let withdrawn_proposals: Vec<PollWithdrawnFilter> = events.query().await.unwrap();
+    let withdrawn_proposals: Vec<PollWithdrawnFilter> = events.query().await?;
 
     for withdrawn_proposal in withdrawn_proposals {
         let proposal = ctx
@@ -79,8 +81,7 @@ async fn sanitize(
                 proposal::daohandlerid::equals(dao_handler.clone().id),
             ])
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         if let Some(existing_proposal) = proposal {
             ctx.db
@@ -90,8 +91,9 @@ async fn sanitize(
                     vec![proposal::visible::set(false)],
                 )
                 .exec()
-                .await
-                .unwrap();
+                .await?;
         }
     }
+
+    Ok(())
 }

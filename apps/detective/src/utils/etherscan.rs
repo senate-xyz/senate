@@ -29,19 +29,17 @@ pub struct EstimateTimestamp {
     result: EstimateTimestampResult,
 }
 
+#[instrument(ret)]
 pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
     let etherscan_api_key = env::var("ETHERSCAN_API_KEY").expect("$ETHERSCAN_API_KEY is not set");
     let rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
 
-    let provider = Provider::<Http>::try_from(rpc_url).unwrap();
+    let provider = Provider::<Http>::try_from(rpc_url)?;
 
-    let current_block = provider.get_block_number().await.unwrap();
+    let current_block = provider.get_block_number().await?;
 
     if block_number < current_block.as_u64().to_i64().unwrap() {
-        let block = provider
-            .get_block(block_number.to_u64().unwrap())
-            .await
-            .unwrap();
+        let block = provider.get_block(block_number.to_u64().unwrap()).await?;
 
         let result: DateTime<Utc> = DateTime::from_utc(
             NaiveDateTime::from_timestamp_millis(
@@ -61,6 +59,16 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
         .with(RetryTransientMiddleware::new_with_policy(retry_policy))
         .build();
 
+    event!(
+        Level::INFO,
+        block_number = block_number,
+        url = format!(
+                "https://api.etherscan.io/api?module=block&action=getblockcountdown&blockno={}&apikey={}",
+                block_number, etherscan_api_key
+            ),
+        "estimate_timestamp"
+        );
+
     loop {
         let response = http_client
             .get(format!(
@@ -78,12 +86,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
                     Ok(d) => DateTime::from_utc(
                         NaiveDateTime::from_timestamp_millis(
                             Utc::now().timestamp() * 1000
-                                + d.result
-                                    .EstimateTimeInSec
-                                    .parse::<f64>()
-                                    .unwrap()
-                                    .to_i64()
-                                    .unwrap()
+                                + d.result.EstimateTimeInSec.parse::<f64>()?.to_i64().unwrap()
                                     * 1000,
                         )
                         .expect("bad timestamp"),
@@ -119,6 +122,7 @@ pub struct EstimateBlock {
     result: String,
 }
 
+#[instrument(ret)]
 pub async fn estimate_block(timestamp: i64) -> Result<i64> {
     let etherscan_api_key = match env::var_os("ETHERSCAN_API_KEY") {
         Some(v) => v.into_string().unwrap(),
@@ -131,6 +135,16 @@ pub async fn estimate_block(timestamp: i64) -> Result<i64> {
     let http_client = ClientBuilder::new(reqwest::Client::new())
         .with(RetryTransientMiddleware::new_with_policy(retry_policy))
         .build();
+
+    event!(
+            Level::INFO,
+            timestamp = timestamp,
+            url = format!(
+                "https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp={}&closest=before&apikey={}",
+                timestamp, etherscan_api_key
+            ),
+            "estimate_block"
+        );
 
     loop {
         let response = http_client
@@ -146,8 +160,20 @@ pub async fn estimate_block(timestamp: i64) -> Result<i64> {
             Ok(res) => {
                 let contents = res.text().await?;
                 let data = match serde_json::from_str::<EstimateBlock>(&contents) {
-                    Ok(d) => d.result.parse::<i64>().unwrap(),
-                    Err(_) => i64::from(0),
+                    Ok(d) => d.result.parse::<i64>().unwrap_or(0),
+                    Err(_) => {
+                        event!(
+                            Level::ERROR,
+                            timestamp = timestamp,
+                            url = format!(
+                                "https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp={}&closest=before&apikey={}",
+                                timestamp, etherscan_api_key
+                            ),
+                            "estimate_block"
+                        );
+
+                        i64::from(0)
+                    }
                 };
 
                 return Ok(data);

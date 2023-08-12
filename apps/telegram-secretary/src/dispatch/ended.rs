@@ -1,5 +1,6 @@
 use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
 
+use anyhow::Result;
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
 use teloxide::{
     adaptors::{DefaultParseMode, Throttle},
@@ -9,7 +10,7 @@ use teloxide::{
     Bot,
 };
 use tokio::time::sleep;
-use tracing::{debug, debug_span, instrument, warn, Instrument};
+use tracing::{debug, debug_span, event, instrument, warn, Instrument, Level};
 
 use crate::{
     prisma::{
@@ -21,10 +22,11 @@ use crate::{
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
+#[instrument(skip(client))]
 pub async fn dispatch_ended_proposal_notifications(
     client: &Arc<PrismaClient>,
     bot: &Arc<DefaultParseMode<Throttle<teloxide::Bot>>>,
-) {
+) -> Result<()> {
     let ended_notifications = client
         .notification()
         .find_many(vec![
@@ -37,16 +39,14 @@ pub async fn dispatch_ended_proposal_notifications(
             notification::r#type::equals(NotificationType::EndedProposalTelegram),
         ])
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     for notification in ended_notifications {
         let user = client
             .user()
             .find_first(vec![user::id::equals(notification.clone().userid)])
             .exec()
-            .await
-            .unwrap()
+            .await?
             .unwrap();
 
         let proposal = client
@@ -56,8 +56,7 @@ pub async fn dispatch_ended_proposal_notifications(
             )])
             .include(proposal_with_dao::include())
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         match proposal {
             Some(proposal) => {
@@ -105,10 +104,12 @@ pub async fn dispatch_ended_proposal_notifications(
                     notification.clone().proposalid.unwrap(),
                     client,
                 )
-                .await
-                .unwrap();
+                .await?;
 
-                let message = if proposal.scorestotal.as_f64() > proposal.quorum.as_f64() {
+                let message = if proposal.scorestotal.as_f64().unwrap()
+                    >= proposal.quorum.as_f64().unwrap()
+                    && proposal.scorestotal.as_f64().unwrap() > 0.0
+                {
                     let result = format!(
                         "{} {}%",
                         proposal.choices.as_array().unwrap()[result_index]
@@ -124,9 +125,9 @@ pub async fn dispatch_ended_proposal_notifications(
                                 "🗳️ <b>{}</b> {} proposal <b>just ended.</b> \n<b>{}</b> \n<i>✅ {}</i> - <a href=\"{}\"><i>{}</i></a>",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                    "off-chain"
+                                    "offchain"
                                 } else {
-                                    "on-chain"
+                                    "onchain"
                                 },
                                 if voted { "🟢 Voted" } else { "🔴 Did not vote" },
                                 result,
@@ -148,9 +149,9 @@ pub async fn dispatch_ended_proposal_notifications(
                                 "🗳️ <b>{}</b> {} proposal <b>just ended.</b> \n<b>{}</b> \n<i>🚫 No Quorum</i> - <a href=\"{}\"><i>{}</i></a>",
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                    "off-chain"
+                                    "offchain"
                                 } else {
-                                    "on-chain"
+                                    "onchain"
                                 },
                                 if voted { "🟢 Voted" } else { "🔴 Did not vote" },
                                 short_url,
@@ -167,6 +168,7 @@ pub async fn dispatch_ended_proposal_notifications(
 
                 let update_data = match message {
                     Ok(msg) => {
+                        event!(Level::INFO, "ended notification");
                         vec![
                             notification::dispatchstatus::set(
                                 NotificationDispatchedState::Dispatched,
@@ -176,7 +178,11 @@ pub async fn dispatch_ended_proposal_notifications(
                         ]
                     }
                     Err(e) => {
-                        warn!("{:?}", e);
+                        event!(
+                            Level::ERROR,
+                            err = e.to_string(),
+                            "failed ended notification"
+                        );
                         match notification.dispatchstatus {
                             NotificationDispatchedState::NotDispatched => {
                                 vec![notification::dispatchstatus::set(
@@ -216,8 +222,7 @@ pub async fn dispatch_ended_proposal_notifications(
                         update_data,
                     )
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
             }
             None => {
                 client
@@ -233,11 +238,12 @@ pub async fn dispatch_ended_proposal_notifications(
                         )],
                     )
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
             }
         }
 
         sleep(Duration::from_millis(100)).await;
     }
+
+    Ok(())
 }

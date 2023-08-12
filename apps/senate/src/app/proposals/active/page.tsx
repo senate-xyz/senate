@@ -1,6 +1,6 @@
 import { Filters } from "./components/Filters";
 import Items from "./components/Items";
-import { fetchItems, fetchVote, getProxies, getSubscribedDAOs } from "../page";
+import { fetchItems, getProxies, getSubscribedDAOs } from "../actions";
 
 export default async function Home({
   searchParams,
@@ -10,8 +10,8 @@ export default async function Home({
   const subscribedDAOs = await getSubscribedDAOs();
   const proxies = await getProxies();
 
-  const subscripions = subscribedDAOs.map((subDAO) => {
-    return { id: subDAO.id, name: subDAO.name };
+  const subscripions = subscribedDAOs.map((entry) => {
+    return { id: entry.dao.id, name: entry.dao.name };
   });
 
   return (
@@ -19,11 +19,7 @@ export default async function Home({
       <Filters subscriptions={subscripions} proxies={proxies} />
 
       {searchParams.from && searchParams.proxy && searchParams.voted && (
-        <Items
-          fetchItems={fetchItems}
-          fetchVote={fetchVote}
-          searchParams={searchParams}
-        />
+        <Items fetchItems={fetchItems} searchParams={searchParams} />
       )}
     </div>
   );

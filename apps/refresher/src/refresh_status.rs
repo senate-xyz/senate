@@ -6,11 +6,12 @@ use tokio::sync::Mutex;
 use tracing::{event, instrument, Level};
 
 use crate::prisma::{self, dao, voterhandler, DaoHandlerType, PrismaClient};
+use crate::RefreshStatus;
 
 #[derive(Debug, Clone)]
 pub struct DaoHandlerRefreshStatus {
     pub dao_handler_id: String,
-    pub refresh_status: prisma::RefreshStatus,
+    pub refresh_status: RefreshStatus,
     pub last_refresh: DateTime<Utc>,
     pub r#type: prisma::DaoHandlerType,
     pub refreshspeed: i64,
@@ -22,7 +23,7 @@ pub struct VoterHandlerRefreshStatus {
     pub voter_address: String,
     pub dao_handler_id: String,
     pub voter_handler_id: String,
-    pub refresh_status: prisma::RefreshStatus,
+    pub refresh_status: RefreshStatus,
     pub last_refresh: DateTime<Utc>,
 }
 
@@ -37,6 +38,7 @@ pub async fn create_refresh_statuses(client: &PrismaClient) {
     create_voters_refresh_statuses(client).await;
 }
 
+#[instrument(skip_all)]
 pub async fn create_daos_refresh_statuses(client: &PrismaClient) {
     let dao_handlers_count = client.daohandler().count(vec![]).exec().await.unwrap();
     let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
@@ -54,7 +56,7 @@ pub async fn create_daos_refresh_statuses(client: &PrismaClient) {
         {
             let item = DaoHandlerRefreshStatus {
                 dao_handler_id: daohandler.clone().id,
-                refresh_status: prisma::RefreshStatus::New,
+                refresh_status: RefreshStatus::NEW,
                 last_refresh: Utc::now(),
                 r#type: daohandler.clone().r#type,
                 refreshspeed: if daohandler.r#type == DaoHandlerType::Snapshot {
@@ -76,6 +78,7 @@ pub async fn create_daos_refresh_statuses(client: &PrismaClient) {
     });
 }
 
+#[instrument(skip_all)]
 pub async fn create_voters_refresh_statuses(client: &PrismaClient) {
     let voter_handlers_count = client.voterhandler().count(vec![]).exec().await.unwrap();
 
@@ -100,7 +103,7 @@ pub async fn create_voters_refresh_statuses(client: &PrismaClient) {
             {
                 let item = VoterHandlerRefreshStatus {
                     voter_handler_id: voterhandler.clone().id,
-                    refresh_status: prisma::RefreshStatus::New,
+                    refresh_status: RefreshStatus::NEW,
                     last_refresh: Utc::now(),
                     dao_handler_id: voterhandler.clone().daohandlerid,
                     voter_address: voterhandler.clone().voter.address,

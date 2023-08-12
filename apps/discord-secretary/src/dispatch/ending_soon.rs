@@ -2,7 +2,7 @@ use std::{env, sync::Arc, time::Duration};
 
 use serenity::{http::Http, model::webhook::Webhook};
 use tokio::time::sleep;
-use tracing::{debug_span, instrument, warn, Instrument};
+use tracing::{debug_span, event, instrument, warn, Instrument, Level};
 
 use crate::{
     dispatch::new_proposals,
@@ -14,10 +14,11 @@ use crate::{
 };
 
 use super::utils::notification_retry::update_notification_retry;
+use anyhow::Result;
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
+pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> Result<()> {
     let notifications = client
         .notification()
         .find_many(vec![
@@ -33,8 +34,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
             ]),
         ])
         .exec()
-        .await
-        .unwrap();
+        .await?;
 
     for notification in notifications {
         let new_notification = client
@@ -45,15 +45,13 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                 notification::r#type::equals(NotificationType::NewProposalDiscord),
             ])
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         let user = client
             .user()
             .find_first(vec![user::id::equals(notification.clone().userid)])
             .exec()
-            .await
-            .unwrap()
+            .await?
             .unwrap();
 
         let http = Http::new("");
@@ -63,7 +61,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
         let webhook = match webhook_response {
             Ok(w) => w,
             Err(e) => {
-                warn!("{:?}", e);
+                event!(Level::ERROR, err = e.to_string(), "webhook err");
                 update_notification_retry(client, notification).await;
                 continue;
             }
@@ -76,8 +74,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
             )])
             .include(proposal_with_dao::include())
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         if proposal.is_none() {
             client
@@ -93,8 +90,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                     )],
                 )
                 .exec()
-                .await
-                .unwrap();
+                .await?;
 
             continue;
         }
@@ -138,7 +134,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                     "⌛ **{}** {} proposal {} **ends in 2️⃣4️⃣ hours.** 🕒 \nVote here 👉 <{}>",
                     proposal.clone().unwrap().dao.name,
                     if proposal.clone().unwrap().daohandler.r#type == DaoHandlerType::Snapshot {
-                        "off-chain"
+                        "offchain"
                     } else {
                         "on-chain"
                     },
@@ -156,7 +152,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                     "🚨 **{}** {} proposal {} **ends in :six: hours.** 🕒 \nVote here 👉 <{}>",
                     proposal.clone().unwrap().dao.name,
                     if proposal.clone().unwrap().daohandler.r#type == DaoHandlerType::Snapshot {
-                        "off-chain"
+                        "offchain"
                     } else {
                         "on-chain"
                     },
@@ -189,6 +185,14 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
 
         let update_data = match message {
             Ok(msg) => {
+                event!(
+                    Level::INFO,
+                    user = user.address.clone().unwrap(),
+                    proposal_name = proposal.clone().unwrap().name,
+                    dao = proposal.clone().unwrap().dao.name,
+                    "new notification"
+                );
+
                 posthog_event(
                     "discord_ending_soon_notification",
                     user.address.unwrap(),
@@ -203,7 +207,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                 ]
             }
             Err(e) => {
-                warn!("{:?}", e);
+                event!(Level::ERROR, err = e.to_string(), "update err");
 
                 posthog_event(
                     "discord_ending_soon_notification_fail",
@@ -251,9 +255,10 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) {
                 update_data,
             )
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         sleep(Duration::from_millis(100)).await;
     }
+
+    Ok(())
 }

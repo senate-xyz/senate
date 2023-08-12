@@ -12,6 +12,7 @@ use crate::{
     contracts::dydxgov::{
         VoteEmittedFilter, {self},
     },
+    daohandler_with_dao,
     prisma::{daohandler, proposal},
     router::chain_votes::{Vote, VoteResult},
     Ctx,
@@ -25,7 +26,7 @@ struct Decoder {
 
 pub async fn dydx_votes(
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     from_block: i64,
     to_block: i64,
     voters: Vec<String>,
@@ -81,7 +82,7 @@ pub async fn dydx_votes(
 
 async fn get_votes_for_voter(
     logs: Vec<(VoteEmittedFilter, LogMeta)>,
-    dao_handler: daohandler::Data,
+    dao_handler: daohandler_with_dao::Data,
     voter_address: String,
     ctx: &Ctx,
 ) -> Result<VoteResult> {

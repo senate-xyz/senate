@@ -10,6 +10,7 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::ensgov::{self, VoteCastFilter},
+    daohandler_with_dao,
     prisma::{daohandler, proposal},
     router::chain_votes::{Vote, VoteResult},
     Ctx,
@@ -23,7 +24,7 @@ struct Decoder {
 
 pub async fn ens_votes(
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     from_block: i64,
     to_block: i64,
     voters: Vec<String>,
@@ -79,7 +80,7 @@ pub async fn ens_votes(
 
 async fn get_votes_for_voter(
     logs: Vec<(VoteCastFilter, LogMeta)>,
-    dao_handler: daohandler::Data,
+    dao_handler: daohandler_with_dao::Data,
     voter_address: String,
     ctx: &Ctx,
 ) -> Result<VoteResult> {

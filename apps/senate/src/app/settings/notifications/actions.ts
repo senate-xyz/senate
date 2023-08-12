@@ -1,6 +1,6 @@
 "use server";
 
-import { MagicUserState, prisma } from "@senate/database";
+import { db, eq, user } from "@senate/database";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../pages/api/auth/[...nextauth]";
 import { PostHog } from "posthog-node";
@@ -26,27 +26,23 @@ export const userEmail = async () => {
     };
   const userAddress = session.user.name;
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: {
-      address: {
-        equals: userAddress,
-      },
-    },
-    select: {
-      email: true,
-      verifiedemail: true,
-      emaildailybulletin: true,
-      emailquorumwarning: true,
-      emptydailybulletin: true,
-    },
-  });
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
+
+  if (!u)
+    return {
+      enabled: false,
+      email: "",
+      verified: true,
+      quorum: false,
+      empty: false,
+    };
 
   return {
-    enabled: user.emaildailybulletin ?? false,
-    email: user.email ?? "",
-    verified: user.verifiedemail,
-    quorum: user.emailquorumwarning ?? false,
-    empty: user.emptydailybulletin ?? false,
+    enabled: u.emaildailybulletin ?? false,
+    email: u.email ?? "",
+    verified: u.verifiedemail,
+    quorum: u.emailquorumwarning ?? false,
+    empty: u.emptydailybulletin ?? false,
   };
 };
 
@@ -56,18 +52,13 @@ export const setBulletin = async (value: boolean) => {
   if (!session || !session.user || !session.user.name) return;
   const userAddress = session.user.name;
 
-  const user = await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: {
-      emaildailybulletin: value,
-      emailquorumwarning: value,
-    },
-  });
+  await db
+    .update(user)
+    .set({ emaildailybulletin: value, emailquorumwarning: value })
+    .where(eq(user.address, userAddress));
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: value ? "email_bulletin_enable" : "email_bulletin_disable",
     properties: {
       props: {
@@ -95,18 +86,16 @@ export const setEmailAndEnableBulletin = async (input: string) => {
 
   revalidateTag("email");
 
-  const user = await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: {
+  await db
+    .update(user)
+    .set({
       email: input,
       emaildailybulletin: true,
       emailquorumwarning: true,
       verifiedemail: false,
       challengecode: challengeCode,
-    },
-  });
+    })
+    .where(eq(user.address, userAddress));
 
   const emailClient = new ServerClient(
     process.env.POSTMARK_TOKEN ?? "Missing Token",
@@ -115,7 +104,7 @@ export const setEmailAndEnableBulletin = async (input: string) => {
   try {
     await emailClient.sendEmailWithTemplate({
       From: "info@senatelabs.xyz",
-      To: String(user.email),
+      To: input,
       TemplateAlias: "senate-confirm",
       TemplateModel: {
         todaysDate: new Date().toLocaleDateString("en-US", {
@@ -131,7 +120,7 @@ export const setEmailAndEnableBulletin = async (input: string) => {
     });
   } catch {
     posthog.capture({
-      distinctId: user.address ?? "unknown",
+      distinctId: userAddress ?? "unknown",
       event: "email_update_error",
       properties: {
         email: input,
@@ -143,7 +132,7 @@ export const setEmailAndEnableBulletin = async (input: string) => {
   }
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: "email_bulletin_enable",
     properties: {
       email: input,
@@ -154,7 +143,7 @@ export const setEmailAndEnableBulletin = async (input: string) => {
   });
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: "email_update",
     properties: {
       email: input,
@@ -173,19 +162,22 @@ export const resendVerification = async () => {
 
   const challengeCode = Math.random().toString(36).substring(2);
 
-  const user = await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: { challengecode: challengeCode, verifiedemail: false },
-  });
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
+
+  await db
+    .update(user)
+    .set({
+      challengecode: challengeCode,
+      verifiedemail: false,
+    })
+    .where(eq(user.address, userAddress));
 
   const emailClient = new ServerClient(
     process.env.POSTMARK_TOKEN ?? "Missing Token",
   );
   await emailClient.sendEmailWithTemplate({
     From: "info@senatelabs.xyz",
-    To: String(user.email),
+    To: String(u.email),
     TemplateAlias: "senate-confirm",
     TemplateModel: {
       todaysDate: new Date().toLocaleDateString("en-US", {
@@ -207,15 +199,15 @@ export const setQuorumAlerts = async (value: boolean) => {
   if (!session || !session.user || !session.user.name) return;
   const userAddress = session.user.name;
 
-  const user = await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: { emailquorumwarning: value },
-  });
+  await db
+    .update(user)
+    .set({
+      emailquorumwarning: value,
+    })
+    .where(eq(user.address, userAddress));
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: value ? "email_quorum_enable" : "email_quorum_disable",
     properties: {
       props: {
@@ -231,15 +223,15 @@ export const setEmptyEmails = async (value: boolean) => {
   if (!session || !session.user || !session.user.name) return;
   const userAddress = session.user.name;
 
-  const user = await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: { emptydailybulletin: value },
-  });
+  await db
+    .update(user)
+    .set({
+      emptydailybulletin: value,
+    })
+    .where(eq(user.address, userAddress));
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: value ? "email_empty_enable" : "email_empty_disable",
     properties: {
       props: {
@@ -261,25 +253,21 @@ export const userDiscord = async () => {
     };
   const userAddress = session.user.name;
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: {
-      address: {
-        equals: userAddress,
-      },
-    },
-    select: {
-      discordnotifications: true,
-      discordwebhook: true,
-      discordreminders: true,
-      discordincludevotes: true,
-    },
-  });
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
+
+  if (!u)
+    return {
+      enabled: false,
+      webhook: "",
+      reminders: false,
+      includeVotes: false,
+    };
 
   return {
-    enabled: user.discordnotifications ?? false,
-    webhook: user.discordwebhook ?? "",
-    reminders: user.discordreminders,
-    includeVotes: user.discordincludevotes ?? false,
+    enabled: u.discordnotifications ?? false,
+    webhook: u.discordwebhook ?? "",
+    reminders: u.discordreminders,
+    includeVotes: u.discordincludevotes ?? false,
   };
 };
 
@@ -289,17 +277,15 @@ export const setDiscord = async (value: boolean) => {
   if (!session || !session.user || !session.user.name) return;
   const userAddress = session.user.name;
 
-  const user = await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: {
+  await db
+    .update(user)
+    .set({
       discordnotifications: value,
-    },
-  });
+    })
+    .where(eq(user.address, userAddress));
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: value ? "discord_enable" : "discord_disable",
     properties: {
       props: {
@@ -325,18 +311,16 @@ export const setWebhookAndEnableDiscord = async (input: string) => {
 
   revalidateTag("discord");
 
-  const user = await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: {
+  await db
+    .update(user)
+    .set({
       discordnotifications: true,
       discordwebhook: input,
-    },
-  });
+    })
+    .where(eq(user.address, userAddress));
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: "discord_webhook_sets",
     properties: {
       email: input,
@@ -347,7 +331,7 @@ export const setWebhookAndEnableDiscord = async (input: string) => {
   });
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: "discord_enable",
     properties: {
       email: input,
@@ -364,15 +348,15 @@ export const setDiscordReminders = async (value: boolean) => {
   if (!session || !session.user || !session.user.name) return;
   const userAddress = session.user.name;
 
-  const user = await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: { discordreminders: value },
-  });
+  await db
+    .update(user)
+    .set({
+      discordreminders: value,
+    })
+    .where(eq(user.address, userAddress));
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: value ? "discord_reminders_enable" : "discord_reminders_disable",
     properties: {
       props: {
@@ -388,15 +372,15 @@ export const setDiscordIncludeVotes = async (value: boolean) => {
   if (!session || !session.user || !session.user.name) return;
   const userAddress = session.user.name;
 
-  const user = await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: { discordincludevotes: value },
-  });
+  await db
+    .update(user)
+    .set({
+      discordincludevotes: value,
+    })
+    .where(eq(user.address, userAddress));
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: value ? "discord_votes_enable" : "discord_votes_disable",
     properties: {
       props: {
@@ -415,28 +399,30 @@ export const userTelegram = async () => {
       enabled: false,
       reminders: false,
       includeVotes: false,
+      chatId: "",
+      chatTitle: "",
     };
   const userAddress = session.user.name;
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: {
-      address: {
-        equals: userAddress,
-      },
-    },
-    select: {
-      id: true,
-      telegramnotifications: true,
-      telegramreminders: true,
-      telegramincludevotes: true,
-    },
-  });
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
+
+  if (!u)
+    return {
+      userId: "",
+      enabled: false,
+      reminders: false,
+      includeVotes: false,
+      chatId: "",
+      chatTitle: "",
+    };
 
   return {
-    userId: user.id ?? "",
-    enabled: user.telegramnotifications ?? false,
-    reminders: user.telegramreminders,
-    includeVotes: user.telegramincludevotes ?? false,
+    userId: u.id ?? "",
+    enabled: u.telegramnotifications ?? false,
+    reminders: u.telegramreminders,
+    includeVotes: u.telegramincludevotes ?? false,
+    chatId: u.telegramchatid,
+    chatTitle: u.telegramchattitle,
   };
 };
 
@@ -446,17 +432,15 @@ export const setTelegram = async (value: boolean) => {
   if (!session || !session.user || !session.user.name) return;
   const userAddress = session.user.name;
 
-  const user = await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: {
+  await db
+    .update(user)
+    .set({
       telegramnotifications: value,
-    },
-  });
+    })
+    .where(eq(user.address, userAddress));
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: value ? "telegram_enable" : "telegram_disable",
     properties: {
       props: {
@@ -472,15 +456,15 @@ export const setTelegramReminders = async (value: boolean) => {
   if (!session || !session.user || !session.user.name) return;
   const userAddress = session.user.name;
 
-  const user = await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: { telegramreminders: value },
-  });
+  await db
+    .update(user)
+    .set({
+      telegramreminders: value,
+    })
+    .where(eq(user.address, userAddress));
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: value ? "telegram_reminders_enable" : "telegram_reminders_disable",
     properties: {
       props: {
@@ -496,15 +480,15 @@ export const setTelegramIncludeVotes = async (value: boolean) => {
   if (!session || !session.user || !session.user.name) return;
   const userAddress = session.user.name;
 
-  const user = await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: { telegramincludevotes: value },
-  });
+  await db
+    .update(user)
+    .set({
+      telegramincludevotes: value,
+    })
+    .where(eq(user.address, userAddress));
 
   posthog.capture({
-    distinctId: user.address ?? "unknown",
+    distinctId: userAddress ?? "unknown",
     event: value ? "telegram_votes_enable" : "telegram_votes_disable",
     properties: {
       props: {
@@ -520,14 +504,12 @@ export const setAaveMagicUser = async (value: boolean) => {
   if (!session || !session.user || !session.user.name) return;
   const userAddress = session.user.name;
 
-  await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: {
-      isaaveuser: value ? MagicUserState.ENABLED : MagicUserState.DISABLED,
-    },
-  });
+  await db
+    .update(user)
+    .set({
+      isaaveuser: value ? "ENABLED" : "DISABLED",
+    })
+    .where(eq(user.address, userAddress));
 };
 
 export const setUniswapMagicUser = async (value: boolean) => {
@@ -536,14 +518,12 @@ export const setUniswapMagicUser = async (value: boolean) => {
   if (!session || !session.user || !session.user.name) return;
   const userAddress = session.user.name;
 
-  await prisma.user.update({
-    where: {
-      address: userAddress,
-    },
-    data: {
-      isuniswapuser: value ? MagicUserState.ENABLED : MagicUserState.DISABLED,
-    },
-  });
+  await db
+    .update(user)
+    .set({
+      isuniswapuser: value ? "ENABLED" : "DISABLED",
+    })
+    .where(eq(user.address, userAddress));
 };
 
 export const getMagicUser = async () => {
@@ -553,18 +533,12 @@ export const getMagicUser = async () => {
     return { aave: false, uniswap: false };
   const userAddress = session.user.name;
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: {
-      address: userAddress,
-    },
-    select: {
-      isaaveuser: true,
-      isuniswapuser: true,
-    },
-  });
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
+
+  if (!u) return { aave: false, uniswap: false };
 
   return {
-    aave: user.isaaveuser == MagicUserState.ENABLED ? true : false,
-    uniswap: user.isuniswapuser == MagicUserState.ENABLED ? true : false,
+    aave: u.isaaveuser == "ENABLED" ? true : false,
+    uniswap: u.isuniswapuser == "ENABLED" ? true : false,
   };
 };

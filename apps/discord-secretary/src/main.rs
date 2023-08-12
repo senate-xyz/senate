@@ -6,7 +6,7 @@ use std::{env, sync::Arc};
 
 use dotenv::dotenv;
 use tokio::{time::sleep, try_join};
-use tracing::{debug, info};
+use tracing::{debug, event, info, Level};
 
 use dispatch::{
     ended::dispatch_ended_proposal_notifications, ending_soon::dispatch_ending_soon_notifications,
@@ -26,6 +26,7 @@ use crate::{
 mod dispatch;
 mod generate;
 pub mod prisma;
+mod telemetry;
 
 mod utils {
     pub mod posthog;
@@ -35,21 +36,21 @@ mod utils {
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-
-    tracing_subscriber::fmt()
-        .pretty()
-        .with_max_level(tracing::Level::INFO)
-        .init();
+    telemetry::setup();
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());
 
     let client_for_new_proposals: Arc<PrismaClient> = Arc::clone(&client);
     let new_proposals_task = tokio::task::spawn(async move {
-        info!("started new_proposals_task");
         loop {
-            debug!("loop new_proposals_task");
-            generate_new_proposal_notifications(&client_for_new_proposals).await;
-            dispatch_new_proposal_notifications(&client_for_new_proposals).await;
+            match generate_new_proposal_notifications(&client_for_new_proposals).await {
+                Ok(_) => event!(Level::INFO, "generate_new_proposal_notifications ok"),
+                Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to generate new"),
+            };
+            match dispatch_new_proposal_notifications(&client_for_new_proposals).await {
+                Ok(_) => event!(Level::INFO, "dispatched new"),
+                Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to dispatch new"),
+            };
 
             sleep(std::time::Duration::from_secs(60)).await;
         }
@@ -57,14 +58,20 @@ async fn main() {
 
     let client_for_ending_soon = Arc::clone(&client);
     let ending_soon_task = tokio::task::spawn(async move {
-        info!("started ending_soon_task");
         loop {
-            debug!("loop ending_soon_task");
-            generate_ending_soon_notifications(
+            match generate_ending_soon_notifications(
                 &client_for_ending_soon,
                 NotificationType::FirstReminderDiscord,
             )
-            .await;
+            .await
+            {
+                Ok(_) => event!(Level::INFO, "generate_ending_soon_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to generate ending"
+                ),
+            };
 
             // generate_ending_soon_notifications(
             //     &client_for_ending_soon,
@@ -72,7 +79,14 @@ async fn main() {
             // )
             // .await;
 
-            dispatch_ending_soon_notifications(&client_for_ending_soon).await;
+            match dispatch_ending_soon_notifications(&client_for_ending_soon).await {
+                Ok(_) => event!(Level::INFO, "dispatch_ending_soon_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to dispatch ending"
+                ),
+            };
 
             sleep(std::time::Duration::from_secs(60)).await;
         }
@@ -80,11 +94,23 @@ async fn main() {
 
     let client_for_ended_proposals: Arc<PrismaClient> = Arc::clone(&client);
     let ended_proposals_task = tokio::task::spawn(async move {
-        info!("started ended_proposals_task");
         loop {
-            debug!("loop ended_proposals_task");
-            generate_ended_proposal_notifications(&client_for_ended_proposals).await;
-            dispatch_ended_proposal_notifications(&client_for_ended_proposals).await;
+            match generate_ended_proposal_notifications(&client_for_ended_proposals).await {
+                Ok(_) => event!(Level::INFO, "generate_ended_proposal_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to generate ended"
+                ),
+            };
+            match dispatch_ended_proposal_notifications(&client_for_ended_proposals).await {
+                Ok(_) => event!(Level::INFO, "dispatch_ended_proposal_notifications ok"),
+                Err(e) => event!(
+                    Level::ERROR,
+                    err = e.to_string(),
+                    "failed to dispatch ended"
+                ),
+            };
 
             sleep(std::time::Duration::from_secs(60)).await;
         }
@@ -92,11 +118,15 @@ async fn main() {
 
     let client_for_active_proposals: Arc<PrismaClient> = Arc::clone(&client);
     let active_proposals_task = tokio::task::spawn(async move {
-        info!("started active_proposals_task");
         loop {
-            debug!("loop active_proposals_task");
-            update_active_proposal_notifications(&client_for_active_proposals).await;
-            update_hidden_proposal_notifications(&client_for_active_proposals).await;
+            match update_active_proposal_notifications(&client_for_active_proposals).await {
+                Ok(_) => event!(Level::INFO, "update_active_proposal_notifications ok"),
+                Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to update active"),
+            };
+            match update_hidden_proposal_notifications(&client_for_active_proposals).await {
+                Ok(_) => event!(Level::INFO, "update_hidden_proposal_notifications ok"),
+                Err(e) => event!(Level::ERROR, err = e.to_string(), "failed to update hidden"),
+            };
 
             sleep(std::time::Duration::from_secs(60)).await;
         }

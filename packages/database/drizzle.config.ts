@@ -5,7 +5,7 @@ export default {
   schema: "./src/db/schema.ts",
   out: "./src/db/migrations",
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL,
+    connectionString: process.env.DB_DRIZZLE,
   },
   driver: "mysql2",
   breakpoints: true,

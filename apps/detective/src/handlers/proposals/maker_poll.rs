@@ -25,6 +25,7 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::{makerpollcreate, makerpollcreate::PollCreatedFilter},
+    daohandler_with_dao,
     prisma::{daohandler, ProposalState},
     router::chain_proposals::ChainProposal,
     Ctx,
@@ -39,7 +40,7 @@ struct Decoder {
 
 pub async fn maker_poll_proposals(
     ctx: &Ctx,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
     from_block: &i64,
     to_block: &i64,
 ) -> Result<Vec<ChainProposal>> {
@@ -78,7 +79,7 @@ async fn data_for_proposal(
     p: (makerpollcreate::makerpollcreate::PollCreatedFilter, LogMeta),
     ctx: &Ctx,
     decoder: &Decoder,
-    dao_handler: &daohandler::Data,
+    dao_handler: &daohandler_with_dao::Data,
 ) -> Result<ChainProposal> {
     let (log, meta): (PollCreatedFilter, LogMeta) = p.clone();
 
@@ -124,8 +125,8 @@ async fn data_for_proposal(
 
     for res in results_data {
         choices.push(res.optionName.to_string());
-        scores.push(res.mkrSupport.as_str().unwrap().parse::<f64>().unwrap());
-        scores_total += res.mkrSupport.as_str().unwrap().parse::<f64>().unwrap();
+        scores.push(res.mkrSupport.as_str().unwrap().parse::<f64>()?);
+        scores_total += res.mkrSupport.as_str().unwrap().parse::<f64>()?;
     }
 
     //do some sanity here because mkr is weird
@@ -238,7 +239,7 @@ async fn get_title(url: String) -> Result<String> {
                     Err(_) => "Unknown".to_string(),
                 };
                 let pattern = r"(?m)^title:\s*(.+)$";
-                let re = Regex::new(pattern).unwrap();
+                let re = Regex::new(pattern)?;
                 let result = re
                     .captures(text.as_str())
                     .and_then(|cap| cap.get(1).map(|m| m.as_str().to_string()))

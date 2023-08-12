@@ -12,6 +12,7 @@ use tracing::{
 };
 
 use crate::{
+    daohandler_with_dao,
     prisma::{dao, daohandler, proposal, ProposalState},
     Ctx, ProposalsRequest, ProposalsResponse,
 };
@@ -54,27 +55,32 @@ pub async fn update_snapshot_proposals<'a>(
     ctx: &Ctx,
     data: Json<ProposalsRequest<'a>>,
 ) -> Json<ProposalsResponse<'a>> {
-    let dao_handler = ctx
-        .db
-        .daohandler()
-        .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
-        .exec()
-        .await
-        .expect("bad prisma result")
-        .expect("daoHandlerId not found");
+    let my_span = info_span!(
+        "update_snapshot_proposals",
+        dao_handler_id = data.daoHandlerId,
+        refreshspeed = data.refreshspeed
+    );
 
-    let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
-        Ok(data) => data,
-        Err(_) => panic!("{:?} decoder not found", data.daoHandlerId),
-    };
+    async move {
+        let dao_handler = ctx
+            .db
+            .daohandler()
+            .find_first(vec![daohandler::id::equals(data.daoHandlerId.to_string())])
+            .include(daohandler_with_dao::include())
+            .exec()
+            .await
+            .expect("bad prisma result")
+            .expect("daoHandlerId not found");
 
-    let old_index = match dao_handler.snapshotindex {
-        Some(data) => data.timestamp(),
-        None => 0,
-    };
+        let decoder: Decoder = match serde_json::from_value(dao_handler.clone().decoder) {
+            Ok(data) => data,
+            Err(_) => panic!("{:?} decoder not found", data.daoHandlerId),
+        };
 
-    let graphql_query = format!(
-        r#"
+        let old_index = dao_handler.snapshotindex;
+
+        let graphql_query = format!(
+            r#"
                 {{
                     proposals (
                         first: {:?},
@@ -102,34 +108,56 @@ pub async fn update_snapshot_proposals<'a>(
                     }}
                 }}
             "#,
-        if data.refreshspeed < 1000 {
-            data.refreshspeed
-        } else {
-            1000
-        },
-        decoder.space,
-        old_index
-    );
+            if data.refreshspeed < 1000 {
+                data.refreshspeed
+            } else {
+                1000
+            },
+            decoder.space,
+            old_index.timestamp()
+        );
 
-    match update_proposals(graphql_query, ctx, dao_handler.clone(), old_index).await {
-        Ok(_) => Json(ProposalsResponse {
-            daoHandlerId: data.daoHandlerId,
-            success: true,
-        }),
-        Err(e) => {
-            warn!("{:?}", e);
-            Json(ProposalsResponse {
+        event!(
+            Level::INFO,
+            dao_name = dao_handler.dao.name,
+            dao_handler_type = dao_handler.r#type.to_string(),
+            dao_handler_id = dao_handler.id,
+            old_index = old_index.timestamp(),
+            space = decoder.space,
+            graphql_query = graphql_query,
+            "refresh interval"
+        );
+
+        match update_proposals(
+            graphql_query,
+            ctx,
+            dao_handler.clone(),
+            old_index.timestamp(),
+        )
+        .await
+        {
+            Ok(_) => Json(ProposalsResponse {
                 daoHandlerId: data.daoHandlerId,
-                success: false,
-            })
+                success: true,
+            }),
+            Err(e) => {
+                event!(Level::WARN, err = e.to_string(), "refresh error");
+                Json(ProposalsResponse {
+                    daoHandlerId: data.daoHandlerId,
+                    success: false,
+                })
+            }
         }
     }
+    .instrument(my_span)
+    .await
 }
 
+#[instrument(skip_all)]
 async fn update_proposals(
     graphql_query: String,
     ctx: &Ctx,
-    dao_handler: daohandler::Data,
+    dao_handler: daohandler_with_dao::Data,
     old_index: i64,
 ) -> Result<()> {
     let _snapshot_key = env::var("SNAPSHOT_API_KEY").expect("$SNAPSHOT_API_KEY is not set");
@@ -169,20 +197,29 @@ async fn update_proposals(
         let existing = ctx
             .db
             .proposal()
-            .find_unique(proposal::externalid_daoid(
-                proposal.id.to_string(),
-                dao_handler.daoid.to_string(),
-            ))
+            .find_first(vec![
+                proposal::externalid::equals(proposal.id.clone()),
+                proposal::daohandlerid::equals(dao_handler.id.clone()),
+            ])
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         match existing {
             Some(existing) => {
                 if state != existing.state
-                    || proposal.scores_total != existing.scorestotal
+                    || proposal.scores_total.floor()
+                        != existing.scorestotal.as_f64().unwrap().floor()
                     || existing.visible != !proposal.flagged.is_some_and(|f| f)
                 {
+                    event!(
+                        Level::INFO,
+                        proposal_id = existing.id,
+                        proposal_name = existing.name,
+                        dao_name = dao_handler.dao.name,
+                        dao_handler_type = dao_handler.r#type.to_string(),
+                        dao_handler_id = dao_handler.id,
+                        "update proposal"
+                    );
                     ctx.db
                         .proposal()
                         .update(
@@ -200,11 +237,20 @@ async fn update_proposals(
                             ],
                         )
                         .exec()
-                        .await
-                        .unwrap();
+                        .await?;
                 }
             }
             None => {
+                event!(
+                    Level::INFO,
+                    proposal_external_id = proposal.id,
+                    proposal_name = proposal.title,
+                    dao_name = dao_handler.dao.name,
+                    dao_handler_type = dao_handler.r#type.to_string(),
+                    dao_handler_id = dao_handler.id,
+                    "insert proposal"
+                );
+
                 ctx.db
                     .proposal()
                     .create_unchecked(
@@ -236,8 +282,7 @@ async fn update_proposals(
                         vec![proposal::visible::set(!proposal.flagged.is_some_and(|f| f))],
                     )
                     .exec()
-                    .await
-                    .unwrap();
+                    .await?;
             }
         }
     }
@@ -280,20 +325,39 @@ async fn update_proposals(
         FixedOffset::east_opt(0).unwrap(),
     );
 
-    if (new_index_date > dao_handler.snapshotindex.unwrap()
-        && new_index_date - dao_handler.snapshotindex.unwrap() > Duration::hours(1))
+    event!(
+        Level::INFO,
+        dao_name = dao_handler.dao.name,
+        dao_handler_type = dao_handler.r#type.to_string(),
+        dao_handler_id = dao_handler.id,
+        new_index = new_index,
+        uptodate = uptodate,
+        "new index"
+    );
+
+    if (new_index_date > dao_handler.snapshotindex
+        && new_index_date - dao_handler.snapshotindex > Duration::hours(1))
         || uptodate != dao_handler.uptodate
     {
+        event!(
+            Level::INFO,
+            dao_name = dao_handler.dao.name,
+            dao_handler_type = dao_handler.r#type.to_string(),
+            new_index = new_index,
+            dao_handler_id = dao_handler.id,
+            "set new index"
+        );
+
         ctx.db
             .daohandler()
             .update(
                 daohandler::id::equals(dao_handler.id),
                 vec![
-                    daohandler::snapshotindex::set(Some(DateTime::from_utc(
+                    daohandler::snapshotindex::set(DateTime::from_utc(
                         NaiveDateTime::from_timestamp_millis(new_index * 1000)
                             .expect("can not create snapshotindex"),
                         FixedOffset::east_opt(0).unwrap(),
-                    ))),
+                    )),
                     daohandler::uptodate::set(uptodate),
                 ],
             )

@@ -8,6 +8,7 @@ use prisma_client_rust::{
 };
 use tracing::{debug, debug_span, event, instrument, Instrument, Level};
 
+use crate::RefreshStatus;
 use prisma::{daohandler, PrismaClient};
 
 use crate::{
@@ -17,6 +18,7 @@ use crate::{
     RefreshEntry, RefreshType,
 };
 
+#[instrument(skip_all)]
 pub async fn produce_snapshot_votes_queue(
     client: &PrismaClient,
     config: &Config,
@@ -43,12 +45,11 @@ pub async fn produce_snapshot_votes_queue(
             .iter_mut()
             .filter(|r| {
                 r.dao_handler_id == dao_handler.dao_handler_id
-                    && ((r.refresh_status == prisma::RefreshStatus::Done
+                    && ((r.refresh_status == RefreshStatus::DONE
                         && r.last_refresh < normal_refresh)
-                        || (r.refresh_status == prisma::RefreshStatus::Pending
+                        || (r.refresh_status == RefreshStatus::PENDING
                             && r.last_refresh < force_refresh)
-                        || (r.refresh_status == prisma::RefreshStatus::New
-                            && r.last_refresh < new_refresh))
+                        || (r.refresh_status == RefreshStatus::NEW && r.last_refresh < new_refresh))
             })
             .collect();
 
@@ -70,7 +71,7 @@ pub async fn produce_snapshot_votes_queue(
 
         let vote_indexes: Vec<i64> = voter_handlers
             .iter()
-            .map(|voter_handler| voter_handler.snapshotindex.unwrap().timestamp_millis())
+            .map(|voter_handler| voter_handler.snapshotindex.timestamp_millis())
             .collect();
 
         let vote_indexes_buckets = bin(vote_indexes, 10);
@@ -82,7 +83,7 @@ pub async fn produce_snapshot_votes_queue(
                     .iter()
                     .cloned()
                     .filter(|voter_handler| {
-                        let index = voter_handler.snapshotindex.unwrap().timestamp_millis();
+                        let index = voter_handler.snapshotindex.timestamp_millis();
                         bucket.min <= index && index <= bucket.max
                     })
                     .take(config.batch_snapshot_votes.try_into().unwrap())
@@ -107,7 +108,7 @@ pub async fn produce_snapshot_votes_queue(
             .collect();
 
         for vhr in &mut *voter_handlers_r {
-            vhr.refresh_status = prisma::RefreshStatus::Pending;
+            vhr.refresh_status = RefreshStatus::PENDING;
             vhr.last_refresh = Utc::now();
         }
 

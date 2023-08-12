@@ -1,5 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { prisma } from "@senate/database";
+import { db, eq, notification } from "@senate/database";
 import { PostHog } from "posthog-node";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
@@ -19,15 +19,15 @@ export default async function handler(
 ) {
   const { RecordType, MessageID }: RequestBody = req.body as RequestBody;
 
-  const notification = await prisma.notification.findFirst({
-    where: { emailmessageid: MessageID },
-    include: {
+  const n = await db.query.notification.findFirst({
+    where: eq(notification.emailmessageid, MessageID),
+    with: {
       user: true,
       proposal: true,
     },
   });
 
-  if (!notification) {
+  if (!n) {
     res.status(500).send("");
     return;
   }
@@ -35,7 +35,7 @@ export default async function handler(
   switch (RecordType) {
     case "Delivery":
       posthog.capture({
-        distinctId: notification.user.address ?? "unknown",
+        distinctId: n.user.address ?? "unknown",
         event: "postmark_delivery",
         properties: {
           message: MessageID,
@@ -50,7 +50,7 @@ export default async function handler(
       break;
     case "Bounce":
       posthog.capture({
-        distinctId: notification.user.address ?? "unknown",
+        distinctId: n.user.address ?? "unknown",
         event: "postmark_bounce",
         properties: {
           message: MessageID,
@@ -65,7 +65,7 @@ export default async function handler(
       break;
     case "SpamComplaint":
       posthog.capture({
-        distinctId: notification.user.address ?? "unknown",
+        distinctId: n.user.address ?? "unknown",
         event: "postmark_spamcomplaint",
         properties: {
           message: MessageID,
@@ -80,7 +80,7 @@ export default async function handler(
       break;
     case "Open":
       posthog.capture({
-        distinctId: notification.user.address ?? "unknown",
+        distinctId: n.user.address ?? "unknown",
         event: "postmark_open",
         properties: {
           message: MessageID,
@@ -95,7 +95,7 @@ export default async function handler(
       break;
     case "Click":
       posthog.capture({
-        distinctId: notification.user.address ?? "unknown",
+        distinctId: n.user.address ?? "unknown",
         event: "postmark_click",
         properties: {
           message: MessageID,
@@ -110,7 +110,7 @@ export default async function handler(
       break;
     case "SubscriptionChange":
       posthog.capture({
-        distinctId: notification.user.address ?? "unknown",
+        distinctId: n.user.address ?? "unknown",
         event: "postmark_subscriptionchange",
         properties: {
           message: MessageID,

@@ -5,6 +5,7 @@ use tracing::instrument;
 
 use crate::prisma::{self, PrismaClient};
 
+#[instrument(skip(client))]
 pub async fn get_vote(
     user_id: String,
     proposal_id: String,
@@ -15,8 +16,7 @@ pub async fn get_vote(
         .find_first(vec![prisma::user::id::equals(user_id)])
         .include(prisma::user::include!({ voters }))
         .exec()
-        .await
-        .unwrap()
+        .await?
         .unwrap();
 
     let mut voted = false;
@@ -29,8 +29,7 @@ pub async fn get_vote(
                 prisma::vote::voteraddress::equals(voter.address),
             ])
             .exec()
-            .await
-            .unwrap();
+            .await?;
 
         if vote.is_some() {
             voted = true
