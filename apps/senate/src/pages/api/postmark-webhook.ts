@@ -39,8 +39,8 @@ export default async function handler(
         event: "postmark_delivery",
         properties: {
           message: MessageID,
-          template: notification.emailtemplate,
-          type: notification.type,
+          template: n.emailtemplate,
+          type: n.type,
           data: req.body as RequestBody,
           props: {
             app: "postmark",
@@ -54,8 +54,8 @@ export default async function handler(
         event: "postmark_bounce",
         properties: {
           message: MessageID,
-          template: notification.emailtemplate,
-          type: notification.type,
+          template: n.emailtemplate,
+          type: n.type,
           data: req.body as RequestBody,
           props: {
             app: "postmark",
@@ -69,8 +69,8 @@ export default async function handler(
         event: "postmark_spamcomplaint",
         properties: {
           message: MessageID,
-          template: notification.emailtemplate,
-          type: notification.type,
+          template: n.emailtemplate,
+          type: n.type,
           data: req.body as RequestBody,
           props: {
             app: "postmark",
@@ -84,8 +84,8 @@ export default async function handler(
         event: "postmark_open",
         properties: {
           message: MessageID,
-          template: notification.emailtemplate,
-          type: notification.type,
+          template: n.emailtemplate,
+          type: n.type,
           data: req.body as RequestBody,
           props: {
             app: "postmark",
@@ -99,8 +99,8 @@ export default async function handler(
         event: "postmark_click",
         properties: {
           message: MessageID,
-          template: notification.emailtemplate,
-          type: notification.type,
+          template: n.emailtemplate,
+          type: n.type,
           data: req.body as RequestBody,
           props: {
             app: "postmark",
@@ -114,8 +114,8 @@ export default async function handler(
         event: "postmark_subscriptionchange",
         properties: {
           message: MessageID,
-          template: notification.emailtemplate,
-          type: notification.type,
+          template: n.emailtemplate,
+          type: n.type,
           data: req.body as RequestBody,
           props: {
             app: "postmark",
