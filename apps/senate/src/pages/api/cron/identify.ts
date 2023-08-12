@@ -21,19 +21,19 @@ export default async function handler(
     with: { subscriptions: true, notifications: true },
   });
 
-  for (const user of users) {
+  for (const u of users) {
     posthog.identify({
-      distinctId: user.address ?? "visitor",
+      distinctId: u.address ?? "visitor",
       properties: {
-        email: user.email,
-        subscriptions: user.subscriptions.map((s) => daoMap[s.daoid]),
-        notifications: user.notifications.length,
-        emaildailybulletin: user.emaildailybulletin,
-        emptydailybulletin: user.emptydailybulletin,
-        discordnotifications: user.discordnotifications,
-        telegramnotifications: user.telegramnotifications,
-        lastactive: user.lastactive,
-        sessioncount: user.sessioncount,
+        email: u.email,
+        subscriptions: u.subscriptions.map((s) => daoMap[s.daoid]),
+        notifications: u.notifications.length,
+        emaildailybulletin: u.emaildailybulletin,
+        emptydailybulletin: u.emptydailybulletin,
+        discordnotifications: u.discordnotifications,
+        telegramnotifications: u.telegramnotifications,
+        lastactive: u.lastactive,
+        sessioncount: u.sessioncount,
       },
     });
   }
