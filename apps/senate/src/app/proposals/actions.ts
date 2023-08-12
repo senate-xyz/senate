@@ -155,7 +155,7 @@ export async function fetchItems(
     .from(userTovoter)
     .leftJoin(user, eq(userTovoter.a, user.id))
     .leftJoin(voter, eq(userTovoter.b, voter.id))
-    .where(u ? eq(user.id, u.id) : undefined);
+    .where(u ? eq(user.id, u.id) : eq(user.id, "none"));
 
   const votersAddresses =
     proxy == "any"
@@ -176,7 +176,9 @@ export async function fetchItems(
       vote,
       and(
         eq(proposal.id, vote.proposalid),
-        inArray(vote.voteraddress, votersAddresses),
+        votersAddresses.length > 0
+          ? inArray(vote.voteraddress, votersAddresses)
+          : inArray(vote.voteraddress, ["undefined"]),
       ),
     )
     .leftJoin(dao, eq(proposal.daoid, dao.id))

@@ -42,7 +42,9 @@ export default async function handler(
         vote,
         and(
           eq(proposal.id, vote.proposalid),
-          inArray(vote.voteraddress, votersAddresses),
+          votersAddresses.length > 0
+            ? inArray(vote.voteraddress, votersAddresses)
+            : undefined,
         ),
       )
       .where(eq(proposal.id, proposalId ?? ""));
