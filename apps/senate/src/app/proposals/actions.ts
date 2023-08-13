@@ -219,7 +219,7 @@ export async function fetchItems(
                   dao.name,
                   subscribedDaos.map((s) => s.dao!.name),
                 )
-              : eq(dao.name, "none")
+              : undefined
             : undefined
           : eq(dao.name, from),
         inArray(
