@@ -267,6 +267,8 @@ export async function fetchItems(
     [],
   );
 
+  console.log("fetchItems 10");
+
   return consolidatedResults;
 }
 
