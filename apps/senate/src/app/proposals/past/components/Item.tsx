@@ -305,7 +305,7 @@ export default function Item(props: {
                     height={32}
                   />
                 )} */}
-                {isConnected && props.item.vote && (
+                {isConnected && props.item.votes!.length > 0 && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"
@@ -318,7 +318,7 @@ export default function Item(props: {
                     <div className="text-[18px]">Voted</div>
                   </div>
                 )}
-                {isConnected && !props.item.vote && (
+                {isConnected && props.item.votes!.length == 0 && (
                   <div className="flex w-full flex-col items-center">
                     <Image
                       loading="eager"
@@ -580,7 +580,7 @@ export default function Item(props: {
                     />
                   )} */}
 
-                  {isConnected && props.item.vote && (
+                  {isConnected && props.item.votes!.length > 0 && (
                     <div className="flex w-full flex-col items-center">
                       <Image
                         loading="eager"
@@ -593,7 +593,7 @@ export default function Item(props: {
                     </div>
                   )}
 
-                  {isConnected && !props.item.vote && (
+                  {isConnected && props.item.votes!.length == 0 && (
                     <div className="flex w-full flex-col items-center">
                       <Image
                         loading="eager"

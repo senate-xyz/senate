@@ -39,36 +39,18 @@ export const getSubscribedDAOs = async () => {
   console.log("getSubscribedDAOs 1");
   const session = await getServerSession(authOptions());
 
-  const reduceAsync = (qr: typeof daosListQueryResult): MergedDao[] => {
-    const acc: MergedDao[] = [];
-
-    for (const cur of qr) {
-      acc.push({
-        dao: {
-          ...cur.dao,
-        },
-      });
-    }
-
-    return acc;
-  };
-
   console.log("getSubscribedDAOs 2");
   if (!session || !session.user || !session.user.name) {
     console.log("getSubscribedDAOs 3");
     const daosListQueryResult = await db.select({ dao }).from(dao);
-    const reducedDaosListQueryResult = reduceAsync(daosListQueryResult);
 
-    console.log("getSubscribedDAOs 4");
-    const daosList: MergedDao[] = Object.values(reducedDaosListQueryResult);
-
-    daosList.sort(
+    daosListQueryResult.sort(
       (a: MergedDao, b: MergedDao) =>
         a.dao?.name.localeCompare(b.dao?.name || ""),
     );
 
     console.log("getSubscribedDAOs 5");
-    return daosList;
+    return daosListQueryResult;
   }
 
   console.log("getSubscribedDAOs 6");
@@ -83,19 +65,13 @@ export const getSubscribedDAOs = async () => {
     .innerJoin(subscription, eq(dao.id, subscription.daoid))
     .where(eq(subscription.userid, u.id));
 
-  console.log("getSubscribedDAOs 8");
-  const reducedDaosListQueryResult = reduceAsync(daosListQueryResult);
-
-  const daosList: MergedDao[] = Object.values(reducedDaosListQueryResult);
-
-  console.log("getSubscribedDAOs 9");
-  daosList.sort(
+  daosListQueryResult.sort(
     (a: MergedDao, b: MergedDao) =>
       a.dao?.name.localeCompare(b.dao?.name || ""),
   );
 
   console.log("getSubscribedDAOs 10");
-  return daosList;
+  return daosListQueryResult;
 };
 
 export const userHasProxies = async () => {
@@ -166,10 +142,12 @@ export async function fetchItems(
 ) {
   "use server";
 
+  console.log("=======");
+  console.log(from);
   console.log("fetchItems 1");
 
   const session = await getServerSession(authOptions());
-  const userAddress = session?.user?.name ?? "";
+  const userAddress = session?.user?.name ?? "unknown";
 
   console.log("fetchItems 2");
   const canSeeDeleted =
@@ -188,12 +166,12 @@ export async function fetchItems(
     .from(userTovoter)
     .leftJoin(user, eq(userTovoter.a, user.id))
     .leftJoin(voter, eq(userTovoter.b, voter.id))
-    .where(u ? eq(user.id, u.id) : eq(user.id, "none"));
+    .where(u ? eq(user.id, u.id) : eq(user.id, "unknown"));
 
   console.log("fetchItems 5");
   const votersAddresses =
     proxy == "any"
-      ? proxies.map((p) => (p.voter ? p.voter?.address : ""))
+      ? proxies.map((p) => (p.voter ? p.voter?.address : "unknown"))
       : [proxy];
 
   console.log("fetchItems 6");
@@ -210,7 +188,7 @@ export async function fetchItems(
   console.log(`votersAddresses.length > 0 ${votersAddresses.length > 0}`);
   console.log(`canSeeDeleted ${canSeeDeleted}`);
   console.log(`from == "any" ${from == "any"}`);
-  console.log(`userAddress" ${userAddress}`);
+  console.log(`userAddress ${userAddress}`);
   console.log(`subscribedDaos.length > 0" ${subscribedDaos.length > 0}`);
   console.log(`active" ${active}`);
 
@@ -266,7 +244,30 @@ export async function fetchItems(
 
   console.log("fetchItems 9");
 
-  return p;
+  type ConsolidatedProposalResult = Omit<(typeof p)[0], "vote"> & {
+    votes?: (typeof p)[0]["vote"][];
+  };
+
+  const consolidatedResults = p.reduce(
+    (acc: ConsolidatedProposalResult[], curr) => {
+      const existingProposal = acc.find(
+        (p) => p.proposal.id === curr.proposal.id,
+      );
+
+      if (existingProposal) {
+        existingProposal.votes!.push(curr.vote);
+      } else {
+        acc.push(curr);
+        if (curr.vote) (curr as ConsolidatedProposalResult).votes = [curr.vote];
+        else (curr as ConsolidatedProposalResult).votes = [];
+      }
+
+      return acc;
+    },
+    [],
+  );
+
+  return consolidatedResults;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
