@@ -36,6 +36,7 @@ export interface MergedDao {
 export const getSubscribedDAOs = async () => {
   "use server";
 
+  console.log("getSubscribedDAOs 1");
   const session = await getServerSession(authOptions());
 
   const reduceAsync = (qr: typeof daosListQueryResult): MergedDao[] => {
@@ -52,10 +53,13 @@ export const getSubscribedDAOs = async () => {
     return acc;
   };
 
+  console.log("getSubscribedDAOs 2");
   if (!session || !session.user || !session.user.name) {
+    console.log("getSubscribedDAOs 3");
     const daosListQueryResult = await db.select({ dao }).from(dao);
     const reducedDaosListQueryResult = reduceAsync(daosListQueryResult);
 
+    console.log("getSubscribedDAOs 4");
     const daosList: MergedDao[] = Object.values(reducedDaosListQueryResult);
 
     daosList.sort(
@@ -63,56 +67,68 @@ export const getSubscribedDAOs = async () => {
         a.dao?.name.localeCompare(b.dao?.name || ""),
     );
 
+    console.log("getSubscribedDAOs 5");
     return daosList;
   }
 
+  console.log("getSubscribedDAOs 6");
   const userAddress = session.user.name;
 
   const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
+  console.log("getSubscribedDAOs 7");
   const daosListQueryResult = await db
     .select({ dao })
     .from(dao)
     .innerJoin(subscription, eq(dao.id, subscription.daoid))
     .where(eq(subscription.userid, u.id));
 
+  console.log("getSubscribedDAOs 8");
   const reducedDaosListQueryResult = reduceAsync(daosListQueryResult);
 
   const daosList: MergedDao[] = Object.values(reducedDaosListQueryResult);
 
+  console.log("getSubscribedDAOs 9");
   daosList.sort(
     (a: MergedDao, b: MergedDao) =>
       a.dao?.name.localeCompare(b.dao?.name || ""),
   );
 
+  console.log("getSubscribedDAOs 10");
   return daosList;
 };
 
 export const userHasProxies = async () => {
   "use server";
 
+  console.log("userHasProxies 1");
   const session = await getServerSession(authOptions());
   if (!session || !session.user || !session.user.name) return true;
   const userAddress = session.user.name;
 
+  console.log("userHasProxies 2");
   const proxies = await db
     .select()
     .from(userTovoter)
     .leftJoin(user, eq(userTovoter.a, user.id))
     .where(eq(user.address, userAddress));
 
+  console.log("userHasProxies 3");
   return proxies.length > 1;
 };
 
 export async function getProxies() {
   "use server";
 
+  console.log("getProxies 1");
   const session = await getServerSession(authOptions());
   if (!session || !session.user || !session.user.name) return [];
   const userAddress = session.user.name;
 
+  console.log("getProxies 2");
   const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
+  console.log("getProxies 3");
   const proxies = await db
     .select()
     .from(userTovoter)
@@ -120,6 +136,7 @@ export async function getProxies() {
     .leftJoin(voter, eq(userTovoter.b, voter.id))
     .where(eq(user.id, u.id));
 
+  console.log("getProxies 4");
   const result: Array<string> = [];
 
   proxies.map((p) => {
@@ -127,6 +144,8 @@ export async function getProxies() {
       result.push(p.voter.address);
     }
   });
+
+  console.log("getProxies 5");
 
   return result;
 }
@@ -147,17 +166,23 @@ export async function fetchItems(
 ) {
   "use server";
 
+  console.log("fetchItems 1");
+
   const session = await getServerSession(authOptions());
   const userAddress = session?.user?.name ?? "";
 
+  console.log("fetchItems 2");
   const canSeeDeleted =
     (await posthog.isFeatureEnabled(
       "can-see-deleted-proposals",
       userAddress,
     )) ?? false;
 
+  console.log("fetchItems 3");
+
   const [u] = await db.select().from(user).where(eq(user.address, userAddress));
 
+  console.log("fetchItems 4");
   const proxies = await db
     .select()
     .from(userTovoter)
@@ -165,17 +190,29 @@ export async function fetchItems(
     .leftJoin(voter, eq(userTovoter.b, voter.id))
     .where(u ? eq(user.id, u.id) : eq(user.id, "none"));
 
+  console.log("fetchItems 5");
   const votersAddresses =
     proxy == "any"
       ? proxies.map((p) => (p.voter ? p.voter?.address : ""))
       : [proxy];
 
+  console.log("fetchItems 6");
   const subscribedDaos = await db
     .select()
     .from(subscription)
     .leftJoin(dao, eq(subscription.daoid, dao.id))
     .leftJoin(user, eq(user.id, subscription.userid))
     .where(eq(user.address, userAddress));
+
+  console.log("fetchItems 7");
+
+  console.log(`voted ${voted}`);
+  console.log(`votersAddresses.length > 0 ${votersAddresses.length > 0}`);
+  console.log(`canSeeDeleted ${canSeeDeleted}`);
+  console.log(`from == "any" ${from == "any"}`);
+  console.log(`userAddress" ${userAddress}`);
+  console.log(`subscribedDaos.length > 0" ${subscribedDaos.length > 0}`);
+  console.log(`active" ${active}`);
 
   const p = await db
     .select()
@@ -226,6 +263,8 @@ export async function fetchItems(
     .orderBy(active ? asc(proposal.timeend) : desc(proposal.timeend))
     .limit(20)
     .offset(page);
+
+  console.log("fetchItems 9");
 
   return p;
 }
