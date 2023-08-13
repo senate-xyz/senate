@@ -2,6 +2,7 @@
 const config = {
   experimental: {
     serverActions: true,
+    serverActionsBodySizeLimit: "5mb",
   },
   reactStrictMode: true,
   swcMinify: true,
