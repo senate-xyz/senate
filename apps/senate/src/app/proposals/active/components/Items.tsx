@@ -18,11 +18,7 @@ type ItemsProps = {
   searchParams?: { from: string; voted: string; proxy: string };
 };
 
-export default function Items({
-  fetchItems,
-
-  searchParams,
-}: ItemsProps) {
+export default function Items({ fetchItems, searchParams }: ItemsProps) {
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<fetchItemsType>([]);
   const [hasMore, setHasMore] = useState(true);
