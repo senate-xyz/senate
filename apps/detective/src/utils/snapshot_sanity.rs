@@ -1,7 +1,7 @@
 use std::{env, sync::Arc};
 
 use anyhow::Result;
-use chrono::{Duration, Utc};
+use chrono::{DateTime, Duration, FixedOffset, Local, Utc};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::Deserialize;
@@ -125,6 +125,8 @@ async fn sanitize(
         .filter(|proposal| !graphql_proposal_ids.contains(&proposal.externalid))
         .collect();
 
+    let now: DateTime<FixedOffset> = DateTime::<FixedOffset>::from(Local::now());
+
     let _ = ctx
         .db
         .proposal()
@@ -132,7 +134,11 @@ async fn sanitize(
             vec![proposal::id::in_vec(
                 proposals_to_delete.iter().map(|p| p.clone().id).collect(),
             )],
-            vec![proposal::visible::set(false)],
+            vec![
+                proposal::visible::set(false),
+                proposal::timeend::set(now),
+                proposal::state::set(ProposalState::Canceled),
+            ],
         )
         .exec()
         .await;

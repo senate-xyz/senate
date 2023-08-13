@@ -88,8 +88,8 @@ export const Filters = (props: {
                 .map((sub) => {
                   return (
                     <option
-                      key={sub.name.toLowerCase().replace(" ", "")}
-                      value={sub.name.toLowerCase().replace(" ", "")}
+                      key={sub.name.toLowerCase()}
+                      value={sub.name.toLowerCase()}
                     >
                       {sub.name}
                     </option>
