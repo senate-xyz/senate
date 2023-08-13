@@ -3,14 +3,11 @@
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "Dockerfile.detective",
-    "watchPatterns": [
-      "apps/detective",
-      "packages/database"
-    ]
+    "watchPatterns": ["apps/detective", "packages/database"]
   },
   "deploy": {
     "numReplicas": 1,
-    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyType": "ALWAYS",
     "restartPolicyMaxRetries": 10
   }
 }

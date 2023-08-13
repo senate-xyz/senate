@@ -3,14 +3,11 @@
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "Dockerfile.refresher",
-    "watchPatterns": [
-      "apps/refresher",
-      "packages/database"
-    ]
+    "watchPatterns": ["apps/refresher", "packages/database"]
   },
   "deploy": {
     "numReplicas": 1,
-    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyType": "ALWAYS",
     "restartPolicyMaxRetries": 10
   }
 }
