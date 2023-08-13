@@ -20,20 +20,20 @@
   },
   "dependencies": {
     "@senate/database": "*",
-    "next": "^13.4.13",
+    "next": "^13.4.12",
     "posthog-node": "^3.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@types/eslint": "^8.44.2",
-    "@types/node": "20.4.10",
+    "@types/node": "20.5.0",
     "@types/prettier": "^2.7.3",
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
-    "autoprefixer": "^10.4.14",
+    "autoprefixer": "^10.4.15",
     "eslint": "^8.47.0",
     "eslint-config-next": "^13.4.13",
     "postcss": "^8.4.27",
