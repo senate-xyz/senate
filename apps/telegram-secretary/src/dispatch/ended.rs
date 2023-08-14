@@ -136,7 +136,7 @@ pub async fn dispatch_ended_proposal_notifications(
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
-                                "🗳️ <a href=\"{}\"><b>{}</b></a> {} proposal <b>just ended.</b> \n<a href=\"{}\"><i>{}</i></a> \n<i>✅ {}</i>\n<b>{}</b>  ",
+                                "🗳️ <a href=\"{}\"><b>{}</b></a> {} proposal <b>just ended.</b> \n<a href=\"{}\"><i>{}</i></a> \n<b>✅ {}</b>\n<b>{}</b>  ",
                                 decoder.governancePortal,
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
@@ -161,7 +161,7 @@ pub async fn dispatch_ended_proposal_notifications(
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
-                                "🗳️ <a href=\"{}\"><b>{}</b></a> {} proposal <b>just ended.</b> \n<a href=\"{}\"><i>{}</i></a> \n<i>❌ No Quorum</i> \n<b>{}</b> ",
+                                "🗳️ <a href=\"{}\"><b>{}</b></a> {} proposal <b>just ended.</b> \n<a href=\"{}\"><i>{}</i></a> \n<b>❌ No Quorum</b> \n<b>{}</b> ",
                                 decoder.governancePortal,
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
