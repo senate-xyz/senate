@@ -96,14 +96,14 @@ const Enabled = (props: {
                 {Number(props.chatId) > 0 ? (
                   <div className="flex gap-1">
                     Sending notifications to a private chat with{" "}
-                    <div className="text-[15px] font-light text-[#ABABAB]">
+                    <div className="text-[15px] font-light text-[#D9D9D9]">
                       @{props.chatTitle}
                     </div>
                   </div>
                 ) : (
                   <div className="flex gap-1">
                     Sending notifications to a group chat called{" "}
-                    <div className="text-[15px] font-light text-[#ABABAB]">
+                    <div className="text-[15px] font-light text-[#D9D9D9]">
                       {props.chatTitle}
                     </div>
                   </div>
