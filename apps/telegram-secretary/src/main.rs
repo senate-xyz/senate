@@ -93,19 +93,19 @@ async fn main() {
                 ),
             };
 
-            match generate_ending_soon_notifications(
-                &client_for_ending_soon,
-                NotificationType::SecondReminderTelegram,
-            )
-            .await
-            {
-                Ok(_) => event!(Level::INFO, "generate_ending_soon_notifications ok"),
-                Err(e) => event!(
-                    Level::ERROR,
-                    err = e.to_string(),
-                    "failed to generate ending"
-                ),
-            };
+            // match generate_ending_soon_notifications(
+            //     &client_for_ending_soon,
+            //     NotificationType::SecondReminderTelegram,
+            // )
+            // .await
+            // {
+            //     Ok(_) => event!(Level::INFO, "generate_ending_soon_notifications ok"),
+            //     Err(e) => event!(
+            //         Level::ERROR,
+            //         err = e.to_string(),
+            //         "failed to generate ending"
+            //     ),
+            // };
 
             match dispatch_ending_soon_notifications(&client_for_ending_soon, &bot_for_ending_soon)
                 .await

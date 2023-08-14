@@ -1,6 +1,7 @@
 use std::{env, sync::Arc, time::Duration};
 
-use prisma_client_rust::chrono::Utc;
+use prisma_client_rust::{chrono::Utc, serde_json};
+use serde::Deserialize;
 use teloxide::{
     adaptors::{DefaultParseMode, Throttle},
     payloads::SendMessageSetters,
@@ -92,18 +93,33 @@ pub async fn dispatch_new_proposal_notifications(
                 );
 
                 debug!("Send message");
+
+                #[allow(non_snake_case)]
+                #[derive(Debug, Deserialize)]
+                struct Decoder {
+                    governancePortal: String,
+                }
+
+                let decoder: Decoder = match serde_json::from_value(proposal.daohandler.decoder) {
+                    Ok(data) => data,
+                    Err(_) => Decoder {
+                        governancePortal: "https://senate.app".to_string(),
+                    },
+                };
+
                 let message = bot
                     .send_message(
                         ChatId(user.telegramchatid.parse().unwrap()),
                         format!(
-                            "📢 New <b>{}</b> {} proposal ending <b>{}</b>\n<a href=\"{}\"><i>{}</i></a>\n",
+                            "📢 New <a href=\"{}\"><b>{}</b></a> {} proposal ending <b>{}</b>\n<a href=\"{}\"><i>{}</i></a>\n",
+                            decoder.governancePortal,
                             proposal.dao.name,
                             if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                 "offchain"
                             } else {
                                 "onchain"
                             },
-                            proposal.timeend.format("%Y-%m-%d %H:%M"),
+                            proposal.timeend.format("%B %d at %H:%M UTC"),
                             short_url,
                             proposal
                                 .name
@@ -115,8 +131,8 @@ pub async fn dispatch_new_proposal_notifications(
                         ),
                     ).reply_markup(InlineKeyboardMarkup::default().append_row(vec![
                         InlineKeyboardButton::url(
-                            "Vote".to_string(),
-                            url::Url::parse(proposal.url.as_str()).unwrap(),
+                            "🗳️ Vote".to_string(),
+                            url::Url::parse(short_url.as_str()).unwrap(),
                         ),
                     ]))
                     .disable_web_page_preview(true)
