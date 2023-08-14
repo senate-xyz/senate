@@ -124,7 +124,7 @@ pub async fn dispatch_ending_soon_notifications(
                     NotificationType::NewProposalTelegram => todo!(),
                     NotificationType::FirstReminderTelegram => {
                         format!(
-                            "⌛ <a href=\"{}\"><b>{}</b></a> {} proposal <b>ends in 2️⃣4️⃣ hours.</b> 🕒 \n <i>{}</i> \n {}",
+                            "⌛ <a href=\"{}\"><b>{}</b></a> {} proposal <b>ends in 2️⃣4️⃣ hours.</b> 🕒 \n<a href=\"{}\"><i>{}</i></a> \n{}",
                             decoder.governancePortal,
                             proposal.dao.name,
                             if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
@@ -132,6 +132,7 @@ pub async fn dispatch_ending_soon_notifications(
                             } else {
                                 "onchain"
                             },
+                            short_url,
                             proposal
                                 .name
                                 .replace('&', "&amp;")
@@ -144,7 +145,7 @@ pub async fn dispatch_ending_soon_notifications(
                     }
                     NotificationType::SecondReminderTelegram => {
                         format!(
-                            "🚨 <a href=\"{}\"><b>{}</b></a> {} proposal <b>ends in 6️⃣ hours.</b> 🕒 \n <i>{}</i> \n {}",
+                            "🚨 <a href=\"{}\"><b>{}</b></a> {} proposal <b>ends in 6️⃣ hours.</b> 🕒 \n<a href=\"{}\"><i>{}</i></a> \n{}",
                             decoder.governancePortal,
                             proposal.dao.name,
                             if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
@@ -152,6 +153,7 @@ pub async fn dispatch_ending_soon_notifications(
                             } else {
                                 "onchain"
                             },
+                            short_url,
                             proposal
                                 .name
                                 .replace('&', "&amp;")
