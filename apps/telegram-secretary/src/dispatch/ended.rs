@@ -1,7 +1,8 @@
 use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
 
 use anyhow::Result;
-use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
+use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc, serde_json};
+use serde::Deserialize;
 use teloxide::{
     adaptors::{DefaultParseMode, Throttle},
     payloads::SendMessageSetters,
@@ -106,6 +107,19 @@ pub async fn dispatch_ended_proposal_notifications(
                 )
                 .await?;
 
+                #[allow(non_snake_case)]
+                #[derive(Debug, Deserialize)]
+                struct Decoder {
+                    governancePortal: String,
+                }
+
+                let decoder: Decoder = match serde_json::from_value(proposal.daohandler.decoder) {
+                    Ok(data) => data,
+                    Err(_) => Decoder {
+                        governancePortal: "https://senate.app".to_string(),
+                    },
+                };
+
                 let message = if proposal.scorestotal.as_f64().unwrap()
                     >= proposal.quorum.as_f64().unwrap()
                     && proposal.scorestotal.as_f64().unwrap() > 0.0
@@ -122,15 +136,14 @@ pub async fn dispatch_ended_proposal_notifications(
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
-                                "🗳️ <b>{}</b> {} proposal <b>just ended.</b> \n<b>{}</b> \n<i>✅ {}</i> - <a href=\"{}\"><i>{}</i></a>",
+                                "🗳️ <a href=\"{}\"><b>{}</b></a> {} proposal <b>just ended.</b> \n<a href=\"{}\"><i>{}</i></a> \n<i>✅ {}</i>\n<b>{}</b>  ",
+                                decoder.governancePortal,
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                     "offchain"
                                 } else {
                                     "onchain"
                                 },
-                                if voted { "🟢 Voted" } else { "🔴 Did not vote" },
-                                result,
                                 short_url,
                                 proposal.name
                                     .replace('&', "&amp;")
@@ -138,6 +151,8 @@ pub async fn dispatch_ended_proposal_notifications(
                                     .replace('>', "&gt;")
                                     .replace('\"', "&quot;")
                                     .replace('\'', "&#39;"),
+                                result,
+                                if voted { "⚫️ Voted" } else { "🚫 Didn't vote" },
                             ),
                         ).disable_web_page_preview(true)
                         .await
@@ -146,14 +161,14 @@ pub async fn dispatch_ended_proposal_notifications(
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
-                                "🗳️ <b>{}</b> {} proposal <b>just ended.</b> \n<b>{}</b> \n<i>🚫 No Quorum</i> - <a href=\"{}\"><i>{}</i></a>",
+                                "🗳️ <a href=\"{}\"><b>{}</b></a> {} proposal <b>just ended.</b> \n<a href=\"{}\"><i>{}</i></a> \n<i>❌ No Quorum</i> \n<b>{}</b> ",
+                                decoder.governancePortal,
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                     "offchain"
                                 } else {
                                     "onchain"
                                 },
-                                if voted { "🟢 Voted" } else { "🔴 Did not vote" },
                                 short_url,
                                 proposal.name
                                     .replace('&', "&amp;")
@@ -161,6 +176,7 @@ pub async fn dispatch_ended_proposal_notifications(
                                     .replace('>', "&gt;")
                                     .replace('\"', "&quot;")
                                     .replace('\'', "&#39;"),
+                                if voted { "⚫️ Voted" } else { "🚫 Didn't vote" },
                             ),
                         ).disable_web_page_preview(true)
                         .await
