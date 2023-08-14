@@ -152,7 +152,7 @@ pub async fn dispatch_ended_proposal_notifications(
                                     .replace('\'', "&#39;"),
                                 short_url,
                                 result,
-                                if voted { "🟢 Voted" } else { "🔴 Did not vote" },
+                                if voted { "⚫️ Voted" } else { "🚫 Didn't vote" },
                             ),
                         ).disable_web_page_preview(true)
                         .await
@@ -161,7 +161,7 @@ pub async fn dispatch_ended_proposal_notifications(
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
-                                "🗳️ <a href=\"{}\"><b>{}</b></a> {} proposal <b>just ended.</b> \n<a href=\"{}\"><i>{}</i></a> \n<i>🚫 No Quorum</i> \n<b>{}</b> ",
+                                "🗳️ <a href=\"{}\"><b>{}</b></a> {} proposal <b>just ended.</b> \n<a href=\"{}\"><i>{}</i></a> \n<i>❌ No Quorum</i> \n<b>{}</b> ",
                                 decoder.governancePortal,
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
@@ -176,7 +176,7 @@ pub async fn dispatch_ended_proposal_notifications(
                                     .replace('\"', "&quot;")
                                     .replace('\'', "&#39;"),
                                 short_url,
-                                if voted { "🟢 Voted" } else { "🔴 Did not vote" },
+                                if voted { "⚫️ Voted" } else { "🚫 Didn't vote" },
                             ),
                         ).disable_web_page_preview(true)
                         .await
