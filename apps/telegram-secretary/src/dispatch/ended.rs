@@ -125,7 +125,7 @@ pub async fn dispatch_ended_proposal_notifications(
                     && proposal.scorestotal.as_f64().unwrap() > 0.0
                 {
                     let result = format!(
-                        "{} {}%",
+                        "<b>{}</b> {}%",
                         proposal.choices.as_array().unwrap()[result_index]
                             .as_str()
                             .unwrap(),
@@ -136,7 +136,7 @@ pub async fn dispatch_ended_proposal_notifications(
                         .send_message(
                             ChatId(user.telegramchatid.parse().unwrap()),
                             format!(
-                                "🗳️ <a href=\"{}\"><b>{}</b></a> {} proposal <b>just ended.</b> \n<a href=\"{}\"><i>{}</i></a> \n<b>✅ {}</b>\n<b>{}</b>  ",
+                                "🗳️ <a href=\"{}\"><b>{}</b></a> {} proposal <b>just ended.</b> \n<a href=\"{}\"><i>{}</i></a> \n✅ {}\n<b>{}</b>  ",
                                 decoder.governancePortal,
                                 proposal.dao.name,
                                 if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
