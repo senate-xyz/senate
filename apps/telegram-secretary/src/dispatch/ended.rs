@@ -144,13 +144,13 @@ pub async fn dispatch_ended_proposal_notifications(
                                 } else {
                                     "onchain"
                                 },
+                                short_url,
                                 proposal.name
                                     .replace('&', "&amp;")
                                     .replace('<', "&lt;")
                                     .replace('>', "&gt;")
                                     .replace('\"', "&quot;")
                                     .replace('\'', "&#39;"),
-                                short_url,
                                 result,
                                 if voted { "⚫️ Voted" } else { "🚫 Didn't vote" },
                             ),
@@ -169,13 +169,13 @@ pub async fn dispatch_ended_proposal_notifications(
                                 } else {
                                     "onchain"
                                 },
+                                short_url,
                                 proposal.name
                                     .replace('&', "&amp;")
                                     .replace('<', "&lt;")
                                     .replace('>', "&gt;")
                                     .replace('\"', "&quot;")
                                     .replace('\'', "&#39;"),
-                                short_url,
                                 if voted { "⚫️ Voted" } else { "🚫 Didn't vote" },
                             ),
                         ).disable_web_page_preview(true)
