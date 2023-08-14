@@ -167,7 +167,7 @@ const RemindersSetting = ({ endingSoon }: { endingSoon: boolean }) => {
   return (
     <div className="flex max-w-[382px] flex-row items-center justify-between gap-4">
       <div className="font-[18px] leading-[23px] text-white">
-        Ending soon reminders
+        Ending in 24 hours reminder
       </div>
       <label className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500">
         <input
