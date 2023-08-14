@@ -1,5 +1,7 @@
 use std::{env, sync::Arc, time::Duration};
 
+use prisma_client_rust::serde_json;
+use serde::Deserialize;
 use teloxide::types::InlineKeyboardButtonKind;
 use teloxide::{
     adaptors::{DefaultParseMode, Throttle},
@@ -16,6 +18,7 @@ use crate::prisma::{
     self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
     NotificationType, PrismaClient,
 };
+use crate::utils::vote::get_vote;
 
 use anyhow::Result;
 
@@ -91,6 +94,26 @@ pub async fn dispatch_ending_soon_notifications(
                         .collect::<String>()
                 );
 
+                let voted = get_vote(
+                    notification.clone().userid,
+                    notification.clone().proposalid.unwrap(),
+                    client,
+                )
+                .await?;
+
+                #[allow(non_snake_case)]
+                #[derive(Debug, Deserialize)]
+                struct Decoder {
+                    governancePortal: String,
+                }
+
+                let decoder: Decoder = match serde_json::from_value(proposal.daohandler.decoder) {
+                    Ok(data) => data,
+                    Err(_) => Decoder {
+                        governancePortal: "https://senate.app".to_string(),
+                    },
+                };
+
                 let message_content = match notification.r#type {
                     NotificationType::QuorumNotReachedEmail => todo!(),
                     NotificationType::NewProposalDiscord => todo!(),
@@ -101,26 +124,42 @@ pub async fn dispatch_ending_soon_notifications(
                     NotificationType::NewProposalTelegram => todo!(),
                     NotificationType::FirstReminderTelegram => {
                         format!(
-                            "⌛ <b>{}</b> {} proposal <b>ends in 2️⃣4️⃣ hours.</b> 🕒 \nVote here 👉 {}",
+                            "⌛ <a href=\"{}\"><b>{}</b></a> {} proposal <b>ends in 2️⃣4️⃣ hours.</b> 🕒 \n <i>{}</i> \n {}",
+                            decoder.governancePortal,
                             proposal.dao.name,
                             if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                 "offchain"
                             } else {
                                 "onchain"
                             },
-                            short_url
+                            proposal
+                                .name
+                                .replace('&', "&amp;")
+                                .replace('<', "&lt;")
+                                .replace('>', "&gt;")
+                                .replace('\"', "&quot;")
+                                .replace('\'', "&#39;"),
+                            if voted {"⚫️ Voted"} else {"⭕️ Didn't vote yet"}
                         )
                     }
                     NotificationType::SecondReminderTelegram => {
                         format!(
-                            "🚨 <b>{}</b> {} proposal <b>ends in 6️⃣ hours.</b> 🕒 \nVote here 👉 {}",
+                            "🚨 <a href=\"{}\"><b>{}</b></a> {} proposal <b>ends in 6️⃣ hours.</b> 🕒 \n <i>{}</i> \n {}",
+                            decoder.governancePortal,
                             proposal.dao.name,
                             if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                 "offchain"
                             } else {
                                 "onchain"
                             },
-                            short_url
+                            proposal
+                                .name
+                                .replace('&', "&amp;")
+                                .replace('<', "&lt;")
+                                .replace('>', "&gt;")
+                                .replace('\"', "&quot;")
+                                .replace('\'', "&#39;"),
+                            if voted {"⚫️ Voted"} else {"⭕️ Didn't vote yet"}
                         )
                     }
                     NotificationType::ThirdReminderTelegram => todo!(),
@@ -135,8 +174,12 @@ pub async fn dispatch_ending_soon_notifications(
                     )
                     .reply_markup(InlineKeyboardMarkup::default().append_row(vec![
                         InlineKeyboardButton::url(
-                            "Vote".to_string(),
-                            url::Url::parse(proposal.url.as_str()).unwrap(),
+                            if !voted {
+                                "🗳️ Vote".to_string()
+                            } else {
+                                "🗳️ See Proposal".to_string()
+                            },
+                            url::Url::parse(short_url.as_str()).unwrap(),
                         ),
                     ]))
                     .disable_web_page_preview(true)

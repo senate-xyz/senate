@@ -173,11 +173,8 @@ const Enabled = (props: {
                   </div>
                 </div>
                 <div className="flex flex-row gap-16">
+                  <IncludeVotesSetting includeVotes={props.includeVotes} />
                   <RemindersSetting endingSoon={props.reminders} />
-
-                  <PostHogFeature flag="discord-extended-menu" match={true}>
-                    <IncludeVotesSetting includeVotes={props.includeVotes} />
-                  </PostHogFeature>
                 </div>
               </div>
             )}
@@ -219,7 +216,7 @@ const RemindersSetting = ({ endingSoon }: { endingSoon: boolean }) => {
   return (
     <div className="flex max-w-[382px] flex-row items-center justify-between gap-4">
       <div className="font-[18px] leading-[23px] text-white">
-        Ending soon reminders
+        Ending in 24 hours reminder
       </div>
       <label className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500">
         <input

@@ -6,6 +6,7 @@ use std::{env, sync::Arc};
 
 use dotenv::dotenv;
 use log::{debug, info};
+use prisma::notification;
 use teloxide::{
     adaptors::{throttle::Limits, DefaultParseMode, Throttle},
     dispatching::dialogue::GetChatId,
@@ -93,19 +94,19 @@ async fn main() {
                 ),
             };
 
-            match generate_ending_soon_notifications(
-                &client_for_ending_soon,
-                NotificationType::SecondReminderTelegram,
-            )
-            .await
-            {
-                Ok(_) => event!(Level::INFO, "generate_ending_soon_notifications ok"),
-                Err(e) => event!(
-                    Level::ERROR,
-                    err = e.to_string(),
-                    "failed to generate ending"
-                ),
-            };
+            // match generate_ending_soon_notifications(
+            //     &client_for_ending_soon,
+            //     NotificationType::SecondReminderTelegram,
+            // )
+            // .await
+            // {
+            //     Ok(_) => event!(Level::INFO, "generate_ending_soon_notifications ok"),
+            //     Err(e) => event!(
+            //         Level::ERROR,
+            //         err = e.to_string(),
+            //         "failed to generate ending"
+            //     ),
+            // };
 
             match dispatch_ending_soon_notifications(&client_for_ending_soon, &bot_for_ending_soon)
                 .await
@@ -234,7 +235,7 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
                                             ),
                                             prisma::user::telegramchattitle::set(
                                                 if msg.chat.is_private() {
-                                                    msg.chat.first_name().unwrap().to_string()
+                                                    msg.chat.username().unwrap().to_string()
                                                 } else {
                                                     msg.chat.title().unwrap().to_string()
                                                 },
@@ -251,6 +252,22 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
                                     .exec()
                                     .await
                                     .unwrap()
+                                    .unwrap();
+
+                                prisma_client
+                                    .notification()
+                                    .delete_many(vec![
+                                        notification::userid::equals(user.id),
+                                        notification::r#type::in_vec(vec![
+                                            NotificationType::NewProposalTelegram,
+                                            NotificationType::EndedProposalTelegram,
+                                            NotificationType::FirstReminderTelegram,
+                                            NotificationType::ThirdReminderTelegram,
+                                            NotificationType::SecondReminderTelegram,
+                                        ]),
+                                    ])
+                                    .exec()
+                                    .await
                                     .unwrap();
 
                                 bot.send_message(
