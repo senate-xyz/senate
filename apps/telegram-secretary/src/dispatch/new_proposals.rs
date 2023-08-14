@@ -80,7 +80,7 @@ pub async fn dispatch_new_proposal_notifications(
                         .into_iter()
                         .rev()
                         .collect::<String>(),
-                    "d",
+                    "t",
                     user.clone()
                         .id
                         .chars()

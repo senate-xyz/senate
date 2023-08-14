@@ -94,14 +94,18 @@ const Enabled = (props: {
             {props.chatTitle.length > 0 && (
               <div className="flex flex-col text-white">
                 {Number(props.chatId) > 0 ? (
-                  <div>
-                    Sending notifications to a private chat with @
-                    {props.chatTitle}
+                  <div className="flex gap-1">
+                    Sending notifications to a private chat with{" "}
+                    <div className="text-[15px] font-light text-[#ABABAB]">
+                      @{props.chatTitle}
+                    </div>
                   </div>
                 ) : (
-                  <div>
+                  <div className="flex gap-1">
                     Sending notifications to a group chat called{" "}
-                    {props.chatTitle}
+                    <div className="text-[15px] font-light text-[#ABABAB]">
+                      {props.chatTitle}
+                    </div>
                   </div>
                 )}
                 {!change && (
