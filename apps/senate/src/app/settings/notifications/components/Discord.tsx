@@ -173,9 +173,7 @@ const Enabled = (props: {
                   </div>
                 </div>
                 <div className="flex flex-row gap-16">
-                  <PostHogFeature flag="discord-extended-menu" match={true}>
-                    <IncludeVotesSetting includeVotes={props.includeVotes} />
-                  </PostHogFeature>
+                  <IncludeVotesSetting includeVotes={props.includeVotes} />
                   <RemindersSetting endingSoon={props.reminders} />
                 </div>
               </div>
