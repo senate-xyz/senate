@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@senate/database": "*",
-    "next": "13.4.16",
+    "next": "13.4.17",
     "posthog-node": "^3.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
@@ -35,7 +35,7 @@
     "@typescript-eslint/parser": "^6.4.0",
     "autoprefixer": "^10.4.15",
     "eslint": "^8.47.0",
-    "eslint-config-next": "^13.4.16",
+    "eslint-config-next": "^13.4.17",
     "postcss": "^8.4.28",
     "prettier": "^3",
     "typescript": "5.1.6"
