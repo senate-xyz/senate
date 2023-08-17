@@ -31,7 +31,7 @@
     "cuid": "^3.0.0",
     "dotenv": "^16.3.1",
     "drizzle-orm": "^0.28.2",
-    "ethers": "^6.7.0",
+    "ethers": "^6.7.1",
     "mysql2": "^3.6.0",
     "type-fest": "^4.2.0",
     "url": "^0.11.1"
@@ -39,11 +39,11 @@
   "devDependencies": {
     "@types/eslint": "^8.44.2",
     "@types/prettier": "^2.7.3",
-    "@typescript-eslint/eslint-plugin": "^6.3.0",
-    "@typescript-eslint/parser": "^6.3.0",
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "@typescript-eslint/parser": "^6.4.0",
     "drizzle-kit": "^0.19.12",
     "eslint": "^8.47.0",
-    "prettier": "^3.0.1",
+    "prettier": "^3.0.2",
     "prisma": "5.1.1",
     "tsup": "^7.2.0",
     "typescript": "^5.1.6"
