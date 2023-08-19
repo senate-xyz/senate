@@ -5,6 +5,7 @@ use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use ethers::{
     abi::Address,
     prelude::LogMeta,
+    providers::{Http, Provider},
     types::{H256, U256},
     utils::to_checksum,
 };
@@ -23,7 +24,7 @@ use tracing::{debug_span, instrument, Instrument};
 use crate::{
     contracts::{makerexecutive, makerexecutive::LogNoteFilter},
     daohandler_with_dao,
-    prisma::{daohandler, ProposalState},
+    prisma::{daohandler, PrismaClient, ProposalState},
     router::chain_proposals::ChainProposal,
     utils::etherscan::estimate_block,
     Ctx,
@@ -42,7 +43,7 @@ const VOTE_SINGLE_ACTION_TOPIC: &str =
     "0xa69beaba00000000000000000000000000000000000000000000000000000000";
 
 pub async fn maker_executive_proposals(
-    ctx: &Ctx,
+    rpc: &Arc<Provider<Http>>,
     dao_handler: &daohandler_with_dao::Data,
     from_block: &i64,
     to_block: &i64,
@@ -51,8 +52,7 @@ pub async fn maker_executive_proposals(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract =
-        makerexecutive::makerexecutive::makerexecutive::new(address, ctx.rpc.clone());
+    let gov_contract = makerexecutive::makerexecutive::makerexecutive::new(address, rpc.clone());
 
     let single_spell_events = gov_contract
         .log_note_filter()

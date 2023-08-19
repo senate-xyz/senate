@@ -6,11 +6,13 @@ const seedData = async () => {
   console.log("Inserting daos");
 
   const aave_id = cuid();
+
   await db.insert(dao).ignore().values({
     id: aave_id,
     name: "Aave",
     picture: "/assets/Project_Icons/aave",
     quorumwarningemailsupport: true,
+    backgroundcolor: "#a5a9c6",
   });
 
   await db
@@ -25,6 +27,7 @@ const seedData = async () => {
         decoder: {
           address: "0xEC568fffba86c094cf06b22134B23074DFE2252c",
           proposalUrl: "https://app.aave.com/governance/proposal/?proposalId=",
+          governancePortal: "https://app.aave.com/governance",
         },
       },
       {
@@ -33,6 +36,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "aave.eth",
+          governancePortal: "https://snapshot.org/#/aave.eth",
         },
       },
     ]);
@@ -43,6 +47,7 @@ const seedData = async () => {
     name: "MakerDAO",
     picture: "/assets/Project_Icons/makerdao",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#68baaa",
   });
 
   await db
@@ -57,6 +62,7 @@ const seedData = async () => {
         decoder: {
           address: "0x0a3f6849f78076aefaDf113F5BED87720274dDC0",
           proposalUrl: "https://vote.makerdao.com/executive/",
+          governancePortal: "https://vote.makerdao.com/executive",
         },
       },
       {
@@ -67,6 +73,7 @@ const seedData = async () => {
           address_create: "0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d",
           address_vote: "0xD3A9FE267852281a1e6307a1C37CDfD76d39b133",
           proposalUrl: "https://vote.makerdao.com/polling/",
+          governancePortal: "https://vote.makerdao.com/polling",
         },
       },
       {
@@ -75,6 +82,7 @@ const seedData = async () => {
         type: "MAKER_POLL_ARBITRUM",
         decoder: {
           address_vote: "0x4f4e551b4920a5417F8d4e7f8f099660dAdadcEC",
+          governancePortal: "https://vote.makerdao.com/polling",
         },
       },
     ]);
@@ -85,6 +93,7 @@ const seedData = async () => {
     name: "Balancer",
     picture: "/assets/Project_Icons/balancer",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#747474",
   });
   await db
     .insert(daohandler)
@@ -96,6 +105,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "balancer.eth",
+          governancePortal: "https://snapshot.org/#/balancer.eth",
         },
       },
     ]);
@@ -106,6 +116,7 @@ const seedData = async () => {
     name: "Optimism",
     picture: "/assets/Project_Icons/optimism",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#ff444b",
   });
   await db
     .insert(daohandler)
@@ -117,6 +128,17 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "opcollective.eth",
+          governancePortal: "https://snapshot.org/#/opcollective.eth",
+        },
+      },
+      {
+        id: cuid(),
+        daoid: optimism_id,
+        type: "OPTIMISM_CHAIN",
+        decoder: {
+          address: "0xcDF27F107725988f2261Ce2256bDfCdE8B382B10",
+          proposalUrl: "https://vote.optimism.io/proposals/",
+          governancePortal: "https://vote.optimism.io/proposals",
         },
       },
     ]);
@@ -127,6 +149,7 @@ const seedData = async () => {
     name: "Element",
     picture: "/assets/Project_Icons/element-dao",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#6f7d83",
   });
   await db
     .insert(daohandler)
@@ -138,6 +161,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "elfi.eth",
+          governancePortal: "https://snapshot.org/#/elfi.eth",
         },
       },
     ]);
@@ -148,6 +172,7 @@ const seedData = async () => {
     name: "1inch",
     picture: "/assets/Project_Icons/1inch",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#646573",
   });
   await db
     .insert(daohandler)
@@ -159,6 +184,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "1inch.eth",
+          governancePortal: "https://snapshot.org/#/1inch.eth",
         },
       },
     ]);
@@ -169,6 +195,7 @@ const seedData = async () => {
     name: "Hop Protocol",
     picture: "/assets/Project_Icons/hop-protocol",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#d27ecc",
   });
   await db
     .insert(daohandler)
@@ -180,6 +207,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "hop.eth",
+          governancePortal: "https://snapshot.org/#/hop.eth",
         },
       },
       {
@@ -189,6 +217,7 @@ const seedData = async () => {
         decoder: {
           address: "0xed8Bdb5895B8B7f9Fdb3C087628FD8410E853D48",
           proposalUrl: "https://www.tally.xyz/gov/hop/proposal/",
+          governancePortal: "https://www.tally.xyz/gov/hop",
         },
       },
     ]);
@@ -199,6 +228,7 @@ const seedData = async () => {
     name: "SafeDAO",
     picture: "/assets/Project_Icons/safedao",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#737375",
   });
   await db
     .insert(daohandler)
@@ -210,6 +240,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "safe.eth",
+          governancePortal: "https://snapshot.org/#/safe.eth",
         },
       },
     ]);
@@ -220,6 +251,7 @@ const seedData = async () => {
     name: "Compound",
     picture: "/assets/Project_Icons/compound",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#00573e",
   });
   await db
     .insert(daohandler)
@@ -231,6 +263,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "comp-vote.eth",
+          governancePortal: "https://snapshot.org/#/comp-vote.eth",
         },
       },
       {
@@ -241,6 +274,7 @@ const seedData = async () => {
           address: "0xc0Da02939E1441F497fd74F78cE7Decb17B66529",
           proxyAddress: "0xeF3B6E9e13706A8F01fe98fdCf66335dc5CfdEED",
           proposalUrl: "https://compound.finance/governance/proposals/",
+          governancePortal: "https://compound.finance/governance",
         },
       },
     ]);
@@ -251,6 +285,7 @@ const seedData = async () => {
     name: "Synthetix",
     picture: "/assets/Project_Icons/synthetix",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#0d506b",
   });
   await db
     .insert(daohandler)
@@ -262,6 +297,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "snxgov.eth",
+          governancePortal: "https://snapshot.org/#/snxgov.eth",
         },
       },
     ]);
@@ -272,6 +308,7 @@ const seedData = async () => {
     name: "dYdX",
     picture: "/assets/Project_Icons/dYdX",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#51515a",
   });
   await db
     .insert(daohandler)
@@ -283,6 +320,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "dydxgov.eth",
+          governancePortal: "https://snapshot.org/#/dydxgov.eth",
         },
       },
       {
@@ -292,6 +330,7 @@ const seedData = async () => {
         decoder: {
           address: "0x7E9B1672616FF6D6629Ef2879419aaE79A9018D2",
           proposalUrl: "https://dydx.community/dashboard/proposal/",
+          governancePortal: "https://dydx.community/dashboard",
         },
       },
     ]);
@@ -302,6 +341,7 @@ const seedData = async () => {
     name: "Uniswap",
     picture: "/assets/Project_Icons/uniswap",
     quorumwarningemailsupport: true,
+    backgroundcolor: "#ffd5f5",
   });
   await db
     .insert(daohandler)
@@ -313,6 +353,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "uniswap",
+          governancePortal: "https://snapshot.org/#/uniswap",
         },
       },
       {
@@ -323,6 +364,7 @@ const seedData = async () => {
           address: "0x408ED6354d4973f66138C91495F2f2FCbd8724C3",
           proxyAddress: "0x53a328f4086d7c0f1fa19e594c9b842125263026",
           proposalUrl: "https://app.uniswap.org/#/vote/2/",
+          governancePortal: "https://app.uniswap.org/#/vote",
         },
       },
     ]);
@@ -333,6 +375,7 @@ const seedData = async () => {
     name: "ENS",
     picture: "/assets/Project_Icons/ens",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#6daef6",
   });
   await db
     .insert(daohandler)
@@ -344,6 +387,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "ens.eth",
+          governancePortal: "https://snapshot.org/#/ens.eth",
         },
       },
       {
@@ -353,6 +397,7 @@ const seedData = async () => {
         decoder: {
           address: "0x323A76393544d5ecca80cd6ef2A560C6a395b7E3",
           proposalUrl: "https://www.tally.xyz/gov/ens/proposal/",
+          governancePortal: "https://www.tally.xyz/gov/ens",
         },
       },
     ]);
@@ -363,6 +408,7 @@ const seedData = async () => {
     name: "FWB",
     picture: "/assets/Project_Icons/friends-with-benefits",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#5a5a5a",
   });
   await db
     .insert(daohandler)
@@ -374,6 +420,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "friendswithbenefits.eth",
+          governancePortal: "https://snapshot.org/#/friendswithbenefits.eth",
         },
       },
     ]);
@@ -384,6 +431,7 @@ const seedData = async () => {
     name: "GnosisDAO",
     picture: "/assets/Project_Icons/gnosis",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#7b837f",
   });
   await db
     .insert(daohandler)
@@ -395,6 +443,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "gnosis.eth",
+          governancePortal: "https://snapshot.org/#/gnosis.eth",
         },
       },
     ]);
@@ -405,6 +454,7 @@ const seedData = async () => {
     name: "Index Coop",
     picture: "/assets/Project_Icons/index-coop",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#797979",
   });
   await db
     .insert(daohandler)
@@ -416,6 +466,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "index-coop.eth",
+          governancePortal: "https://snapshot.org/#/index-coop.eth",
         },
       },
     ]);
@@ -426,6 +477,7 @@ const seedData = async () => {
     name: "Paladin",
     picture: "/assets/Project_Icons/paladin",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#86411c",
   });
   await db
     .insert(daohandler)
@@ -437,6 +489,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "palvote.eth",
+          governancePortal: "https://snapshot.org/#/palvote.eth",
         },
       },
     ]);
@@ -447,6 +500,7 @@ const seedData = async () => {
     name: "Sushi",
     picture: "/assets/Project_Icons/sushiswap",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#7e6c7c",
   });
   await db
     .insert(daohandler)
@@ -458,6 +512,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "sushigov.eth",
+          governancePortal: "https://snapshot.org/#/sushigov.eth",
         },
       },
     ]);
@@ -468,6 +523,7 @@ const seedData = async () => {
     name: "Instadapp",
     picture: "/assets/Project_Icons/instadapp",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#8fa6ff",
   });
   await db
     .insert(daohandler)
@@ -479,6 +535,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "instadapp-gov.eth",
+          governancePortal: "https://snapshot.org/#/instadapp-gov.eth",
         },
       },
     ]);
@@ -489,6 +546,7 @@ const seedData = async () => {
     name: "Gitcoin",
     picture: "/assets/Project_Icons/gitcoin",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#05d4a2",
   });
   await db
     .insert(daohandler)
@@ -500,16 +558,17 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "gitcoindao.eth",
+          governancePortal: "https://snapshot.org/#/gitcoindao.eth",
         },
       },
       {
         id: cuid(),
         daoid: gitcoin_id,
         type: "GITCOIN_CHAIN",
-
         decoder: {
           address: "0xDbD27635A534A3d3169Ef0498beB56Fb9c937489",
           proposalUrl: "https://www.tally.xyz/gov/gitcoin/proposal/",
+          governancePortal: "https://www.tally.xyz/gov/gitcoin",
         },
       },
     ]);
@@ -520,6 +579,7 @@ const seedData = async () => {
     name: "Gearbox",
     picture: "/assets/Project_Icons/gearbox",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#735462",
   });
   await db
     .insert(daohandler)
@@ -531,6 +591,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "gearbox.eth",
+          governancePortal: "https://snapshot.org/#/gearbox.eth",
         },
       },
     ]);
@@ -541,6 +602,7 @@ const seedData = async () => {
     name: "Euler",
     picture: "/assets/Project_Icons/euler",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#4d4641",
   });
   await db
     .insert(daohandler)
@@ -552,6 +614,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "eulerdao.eth",
+          governancePortal: "https://snapshot.org/#/eulerdao.eth",
         },
       },
     ]);
@@ -562,6 +625,7 @@ const seedData = async () => {
     name: "Aura Finance",
     picture: "/assets/Project_Icons/aura-finance",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#9166ef",
   });
   await db
     .insert(daohandler)
@@ -573,6 +637,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "aurafinance.eth",
+          governancePortal: "https://snapshot.org/#/aurafinance.eth",
         },
       },
     ]);
@@ -583,6 +648,7 @@ const seedData = async () => {
     name: "Developer DAO",
     picture: "/assets/Project_Icons/developerdao",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#484848",
   });
   await db
     .insert(daohandler)
@@ -594,6 +660,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "devdao.eth",
+          governancePortal: "https://snapshot.org/#/devdao.eth",
         },
       },
     ]);
@@ -604,6 +671,7 @@ const seedData = async () => {
     name: "APWine",
     picture: "/assets/Project_Icons/APWine",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#d5d9fa",
   });
   await db
     .insert(daohandler)
@@ -615,6 +683,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "apwine.eth",
+          governancePortal: "https://snapshot.org/#/apwine.eth",
         },
       },
     ]);
@@ -625,6 +694,7 @@ const seedData = async () => {
     name: "Morpho",
     picture: "/assets/Project_Icons/morpho",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#546275",
   });
   await db
     .insert(daohandler)
@@ -636,6 +706,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "morpho.eth",
+          governancePortal: "https://snapshot.org/#/morpho.eth",
         },
       },
     ]);
@@ -646,6 +717,7 @@ const seedData = async () => {
     name: "Lido DAO",
     picture: "/assets/Project_Icons/lido",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#f8afa3",
   });
   await db
     .insert(daohandler)
@@ -657,6 +729,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "lido-snapshot.eth",
+          governancePortal: "https://snapshot.org/#/lido-snapshot.eth",
         },
       },
     ]);
@@ -667,6 +740,7 @@ const seedData = async () => {
     name: "Starknet",
     picture: "/assets/Project_Icons/starknet",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#635672",
   });
   await db
     .insert(daohandler)
@@ -678,6 +752,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "starknet.eth",
+          governancePortal: "https://snapshot.org/#/starknet.eth",
         },
       },
     ]);
@@ -688,6 +763,7 @@ const seedData = async () => {
     name: "Arbitrum DAO",
     picture: "/assets/Project_Icons/arbitrum",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#55677b",
   });
   await db
     .insert(daohandler)
@@ -699,6 +775,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "arbitrumfoundation.eth",
+          governancePortal: "https://snapshot.org/#/arbitrumfoundation.eth",
         },
       },
     ]);
@@ -709,6 +786,7 @@ const seedData = async () => {
     name: "dOrg",
     picture: "/assets/Project_Icons/dOrg",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#382b22",
   });
   await db
     .insert(daohandler)
@@ -720,6 +798,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "dorg.eth",
+          governancePortal: "https://snapshot.org/#/dorg.eth",
         },
       },
     ]);
@@ -730,6 +809,7 @@ const seedData = async () => {
     name: "Solace DAO",
     picture: "/assets/Project_Icons/solace-dao",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#3a3632",
   });
   await db
     .insert(daohandler)
@@ -741,6 +821,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "solace-dao.eth",
+          governancePortal: "https://snapshot.org/#/solace-dao.eth",
         },
       },
     ]);
@@ -751,6 +832,7 @@ const seedData = async () => {
     name: "Interest Protocol",
     picture: "/assets/Project_Icons/interest",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#c3d1bc",
   });
   await db
     .insert(daohandler)
@@ -764,6 +846,7 @@ const seedData = async () => {
           address: "0x266d1020A84B9E8B0ed320831838152075F8C4cA",
           proxyAddress: "0x6b91A0Ba78Acc4a8C7919f96c181a895D5b31563",
           proposalUrl: "https://interestprotocol.io/#/proposal/",
+          governancePortal: "https://interestprotocol.io/#/proposal",
         },
       },
     ]);
@@ -774,6 +857,7 @@ const seedData = async () => {
     name: "Rocket Pool",
     picture: "/assets/Project_Icons/rocket-pool",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#f79070",
   });
   await db
     .insert(daohandler)
@@ -785,6 +869,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "rocketpool-dao.eth",
+          governancePortal: "https://snapshot.org/#/rocketpool-dao.eth",
         },
       },
     ]);
@@ -795,6 +880,7 @@ const seedData = async () => {
     name: "0x Protocol",
     picture: "/assets/Project_Icons/0x-protocol",
     quorumwarningemailsupport: false,
+    backgroundcolor: "#636364",
   });
   await db
     .insert(daohandler)
@@ -806,6 +892,7 @@ const seedData = async () => {
         type: "SNAPSHOT",
         decoder: {
           space: "0xgov.eth",
+          governancePortal: "https://snapshot.org/#/0xgov.eth",
         },
       },
       {
@@ -815,6 +902,7 @@ const seedData = async () => {
         decoder: {
           address: "0x0bB1810061C2f5b2088054eE184E6C79e1591101",
           proposalUrl: "https://governance.0xprotocol.org/vote/proposal/",
+          governancePortal: "https://governance.0xprotocol.org/vote",
         },
       },
     ]);

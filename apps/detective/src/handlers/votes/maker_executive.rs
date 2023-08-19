@@ -1,8 +1,9 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, sync::Arc};
 
 use anyhow::{bail, Result};
 use ethers::{
     prelude::LogMeta,
+    providers::{Http, Provider},
     types::{Address, H160, H256, U256},
     utils::to_checksum,
 };
@@ -15,7 +16,7 @@ use tracing::{debug_span, instrument, Instrument};
 use crate::{
     contracts::makerexecutive::{self, LogNoteFilter},
     daohandler_with_dao,
-    prisma::{daohandler, proposal},
+    prisma::{daohandler, proposal, PrismaClient},
     router::chain_votes::{Vote, VoteResult},
     Ctx,
 };
@@ -32,7 +33,8 @@ const VOTE_SINGLE_ACTION_TOPIC: &str =
     "0xa69beaba00000000000000000000000000000000000000000000000000000000";
 
 pub async fn makerexecutive_votes(
-    ctx: &Ctx,
+    db: &Arc<PrismaClient>,
+    rpc: &Arc<Provider<Http>>,
     dao_handler: &daohandler_with_dao::Data,
     from_block: i64,
     to_block: i64,
@@ -48,8 +50,7 @@ pub async fn makerexecutive_votes(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract =
-        makerexecutive::makerexecutive::makerexecutive::new(address, ctx.rpc.clone());
+    let gov_contract = makerexecutive::makerexecutive::makerexecutive::new(address, rpc.clone());
 
     let single_spell_events = gov_contract
         .log_note_filter()
@@ -96,7 +97,7 @@ pub async fn makerexecutive_votes(
                 spells_for_voter.to_vec(),
                 dao_handler.clone(),
                 voter_address.clone(),
-                ctx,
+                db.clone(),
             )
             .await
         });
@@ -121,13 +122,12 @@ async fn get_votes_for_voter(
     spell_addresses: Vec<String>,
     dao_handler: daohandler_with_dao::Data,
     voter_address: String,
-    ctx: &Ctx,
+    db: Arc<PrismaClient>,
 ) -> Result<VoteResult> {
     let mut votes: Vec<Vote> = vec![];
 
     for spell in spell_addresses {
-        let p = ctx
-            .db
+        let p = db
             .proposal()
             .find_first(vec![
                 proposal::externalid::equals(spell.to_string()),

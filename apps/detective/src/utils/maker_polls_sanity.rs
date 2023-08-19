@@ -63,7 +63,7 @@ async fn sanitize(
         .expect("bad address");
 
     let gov_contract =
-        makerpollcreate::makerpollcreate::makerpollcreate::new(address, ctx.rpc.clone());
+        makerpollcreate::makerpollcreate::makerpollcreate::new(address, ctx.eth_rpc.clone());
 
     let events = gov_contract
         .poll_withdrawn_filter()

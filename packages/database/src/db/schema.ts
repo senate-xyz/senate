@@ -99,6 +99,7 @@ export const daohandler = mysqlTable(
       "MAKER_POLL_ARBITRUM",
       "INTEREST_PROTOCOL_CHAIN",
       "ZEROX_PROTOCOL_CHAIN",
+      "OPTIMISM_CHAIN",
       "SNAPSHOT",
     ]).notNull(),
     decoder: json("decoder").notNull(),

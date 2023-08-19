@@ -18,6 +18,7 @@ pub mod makerexecutive;
 pub mod makerpollcreate;
 pub mod makerpollvote;
 pub mod makerpollvotearbitrum;
+pub mod optimismgov;
 pub mod shared_types;
 pub mod uniswapgov;
 pub mod zeroxtreasury;

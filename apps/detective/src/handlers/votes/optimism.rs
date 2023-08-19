@@ -4,7 +4,7 @@ use anyhow::{bail, Result};
 use ethers::{
     prelude::LogMeta,
     providers::{Http, Provider},
-    types::{Address, Filter, H160, H256},
+    types::{Address, Filter},
 };
 use futures::stream::{FuturesUnordered, StreamExt};
 use prisma_client_rust::{bigdecimal::ToPrimitive, chrono::Utc};
@@ -12,7 +12,7 @@ use serde::Deserialize;
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
-    contracts::ensgov::{self, VoteCastFilter},
+    contracts::optimismgov::{self, VoteCastFilter},
     daohandler_with_dao,
     prisma::{daohandler, proposal, PrismaClient},
     router::chain_votes::{Vote, VoteResult},
@@ -25,7 +25,7 @@ struct Decoder {
     address: String,
 }
 
-pub async fn ens_votes(
+pub async fn optimism_votes(
     db: &Arc<PrismaClient>,
     rpc: &Arc<Provider<Http>>,
     dao_handler: &daohandler_with_dao::Data,
@@ -37,17 +37,10 @@ pub async fn ens_votes(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = ensgov::ensgov::ensgov::new(address, rpc.clone());
-
-    let voters_addresses: Vec<H256> = voters
-        .clone()
-        .into_iter()
-        .map(|v| H256::from(v.parse::<H160>().unwrap()))
-        .collect();
+    let gov_contract = optimismgov::optimismgov::optimismgov::new(address, rpc.clone());
 
     let events = gov_contract
-        .event::<ensgov::VoteCastFilter>()
-        .topic1(voters_addresses)
+        .event::<optimismgov::VoteCastFilter>()
         .from_block(from_block)
         .to_block(to_block);
 
@@ -127,8 +120,8 @@ async fn get_votes_for_voter(
             dao_id: dao_handler.clone().daoid.to_string(),
             proposal_id: proposal.id,
             dao_handler_id: dao_handler.clone().id.to_string(),
-            choice: if log.support == 1 { 1.into() } else { 3.into() },
-            reason: "".to_string(),
+            choice: log.support.into(),
+            reason: log.reason.to_string(),
             voting_power: log.weight.as_u128().into(),
             proposal_active: proposal.timeend > Utc::now(),
         })

@@ -1,9 +1,9 @@
-use std::str;
+use std::{str, sync::Arc};
 
 use anyhow::Result;
 use ethers::{
     prelude::LogMeta,
-    providers::Middleware,
+    providers::{Http, Middleware, Provider},
     types::{Address, Filter},
 };
 use futures::stream::{FuturesUnordered, StreamExt};
@@ -17,7 +17,7 @@ use tracing::{debug_span, instrument, Instrument};
 use crate::{
     contracts::{gitcoingov, gitcoingov::ProposalCreatedFilter},
     daohandler_with_dao,
-    prisma::{daohandler, ProposalState},
+    prisma::{daohandler, PrismaClient, ProposalState},
     router::chain_proposals::ChainProposal,
     utils::etherscan::estimate_timestamp,
     Ctx,
@@ -31,7 +31,7 @@ struct Decoder {
 }
 
 pub async fn gitcoin_proposals(
-    ctx: &Ctx,
+    rpc: &Arc<Provider<Http>>,
     dao_handler: &daohandler_with_dao::Data,
     from_block: &i64,
     to_block: &i64,
@@ -40,7 +40,7 @@ pub async fn gitcoin_proposals(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = gitcoingov::gitcoingov::gitcoingov::new(address, ctx.rpc.clone());
+    let gov_contract = gitcoingov::gitcoingov::gitcoingov::new(address, rpc.clone());
 
     let events = gov_contract
         .proposal_created_filter()
@@ -53,7 +53,7 @@ pub async fn gitcoin_proposals(
 
     for p in proposals.iter() {
         futures.push(async {
-            data_for_proposal(p.clone(), ctx, &decoder, dao_handler, gov_contract.clone()).await
+            data_for_proposal(p.clone(), rpc, &decoder, dao_handler, gov_contract.clone()).await
         });
     }
 
@@ -67,7 +67,7 @@ pub async fn gitcoin_proposals(
 
 async fn data_for_proposal(
     p: (gitcoingov::gitcoingov::ProposalCreatedFilter, LogMeta),
-    ctx: &Ctx,
+    rpc: &Arc<Provider<Http>>,
     decoder: &Decoder,
     dao_handler: &daohandler_with_dao::Data,
     gov_contract: gitcoingov::gitcoingov::gitcoingov<
@@ -77,7 +77,7 @@ async fn data_for_proposal(
     let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
 
     let created_block_number = meta.block_number.as_u64().to_i64().unwrap();
-    let created_block = ctx.rpc.get_block(meta.block_number).await?;
+    let created_block = rpc.get_block(meta.block_number).await?;
     let created_block_timestamp = created_block.expect("bad block").time()?;
 
     let voting_start_block_number = log.start_block.as_u64().to_i64().unwrap();
