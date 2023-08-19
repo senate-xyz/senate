@@ -119,6 +119,18 @@ export const UnsubscribedDAO = (props: {
                       alt="chain proposals"
                     />
                   );
+                case "OPTIMISM_CHAIN":
+                  return (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      key={index}
+                      width="24"
+                      height="24"
+                      src="/assets/Chain/Optimism/On_Dark.svg"
+                      alt="chain proposals"
+                    />
+                  );
                 default:
                   return (
                     <Image
