@@ -6,6 +6,8 @@
 extern crate rocket;
 
 use std::{env, process, sync::Arc};
+use tracing_loki as _;
+use tracing_opentelemetry as _;
 
 use metrics::{self as _, counter, register_counter};
 

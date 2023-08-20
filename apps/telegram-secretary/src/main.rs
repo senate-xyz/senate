@@ -17,6 +17,8 @@ use teloxide::{
 use tokio::{time::sleep, try_join};
 use tracing::event;
 use tracing::Level;
+use tracing_loki as _;
+use tracing_opentelemetry as _;
 
 use crate::{
     dispatch::{

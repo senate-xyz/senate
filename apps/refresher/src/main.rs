@@ -15,6 +15,8 @@ use serde_json as _;
 use std::{collections::HashMap, env, sync::Arc, time::Duration};
 use tokio::{time::sleep, try_join};
 use tracing::{debug, debug_span, event, Instrument, Level};
+use tracing_loki as _;
+use tracing_opentelemetry as _;
 use tracing_subscriber::{fmt, prelude::*};
 
 use config::{load_config_from_db, CONFIG};

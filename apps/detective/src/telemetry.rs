@@ -26,22 +26,22 @@ pub fn setup() {
     let exec_env = env::var("EXEC_ENV").expect("$EXEC_ENV is not set");
     let debug_level = env::var("DEBUG_LEVEL").expect("$DEBUG_LEVEL is not set");
 
-    let (logging_layer, task) = tracing_loki::builder()
-        .label("app", app_name)
-        .unwrap()
-        .label("env", exec_env.clone())
-        .unwrap()
-        .build_url(
-            Url::parse(
-                format!(
-                    "https://340656:{}@logs-prod-013.grafana.net/",
-                    telemetry_key
-                )
-                .as_str(),
-            )
-            .unwrap(),
-        )
-        .unwrap();
+    // let (logging_layer, task) = tracing_loki::builder()
+    //     .label("app", app_name)
+    //     .unwrap()
+    //     .label("env", exec_env.clone())
+    //     .unwrap()
+    //     .build_url(
+    //         Url::parse(
+    //             format!(
+    //                 "https://340656:{}@logs-prod-013.grafana.net/",
+    //                 telemetry_key
+    //             )
+    //             .as_str(),
+    //         )
+    //         .unwrap(),
+    //     )
+    //     .unwrap();
 
     opentelemetry::global::set_text_map_propagator(TraceContextPropagator::new());
 
@@ -57,31 +57,31 @@ pub fn setup() {
         format!("Basic {}", encoded).parse().unwrap(),
     );
 
-    let tracer = opentelemetry_otlp::new_pipeline()
-        .tracing()
-        .with_exporter(
-            opentelemetry_otlp::new_exporter()
-                .tonic()
-                .with_endpoint("https://tempo-prod-08-prod-eu-west-3.grafana.net:443")
-                .with_metadata(map),
-        )
-        .with_trace_config(trace::config().with_resource(Resource::new(vec![
-            KeyValue::new("service.name", app_name),
-            KeyValue::new("service.env", exec_env.clone()),
-        ])))
-        .install_batch(opentelemetry::runtime::Tokio)
-        .unwrap();
+    // let tracer = opentelemetry_otlp::new_pipeline()
+    //     .tracing()
+    //     .with_exporter(
+    //         opentelemetry_otlp::new_exporter()
+    //             .tonic()
+    //             .with_endpoint("https://tempo-prod-08-prod-eu-west-3.grafana.net:443")
+    //             .with_metadata(map),
+    //     )
+    //     .with_trace_config(trace::config().with_resource(Resource::new(vec![
+    //         KeyValue::new("service.name", app_name),
+    //         KeyValue::new("service.env", exec_env.clone()),
+    //     ])))
+    //     .install_batch(opentelemetry::runtime::Tokio)
+    //     .unwrap();
 
-    let telemetry_layer = tracing_opentelemetry::layer().with_tracer(tracer);
+    //let telemetry_layer = tracing_opentelemetry::layer().with_tracer(tracer);
 
     tracing_subscriber::registry()
         .with(env_filter)
         .with(tracing_subscriber::fmt::Layer::default())
-        .with(logging_layer)
-        .with(telemetry_layer)
+        // .with(logging_layer)
+        // .with(telemetry_layer)
         .init();
 
-    tokio::spawn(task);
+    //tokio::spawn(task);
 
     thread::sleep(Duration::from_secs(5));
 
