@@ -102,10 +102,7 @@ async fn get_votes_for_voter(
         let proposal = match p {
             Some(r) => r,
             None => {
-                bail!(
-                    "proposal {} for vote does not exist",
-                    log.proposal_id.to_string()
-                )
+                continue;
             }
         };
 
