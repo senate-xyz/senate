@@ -89,6 +89,8 @@ pub async fn produce_chain_votes_queue(
 
         let domain_limit = if dao_handler.r#type == prisma::DaoHandlerType::MakerPollArbitrum {
             200_000_000
+        } else if dao_handler.r#type == prisma::DaoHandlerType::OptimismChain {
+            200_000_000
         } else {
             20_000_000
         };
