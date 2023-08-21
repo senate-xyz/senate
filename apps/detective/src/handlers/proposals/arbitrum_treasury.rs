@@ -142,8 +142,7 @@ async fn data_for_proposal(
         onchain_proposal.2.as_u128(),
     ];
 
-    let scores_total =
-        onchain_proposal.0.as_u128() + onchain_proposal.1.as_u128() + onchain_proposal.2.as_u128();
+    let scores_total = onchain_proposal.0.as_u128() + onchain_proposal.1.as_u128();
 
     let proposal_snapshot_block = gov_contract
         .proposal_snapshot(log.proposal_id)
