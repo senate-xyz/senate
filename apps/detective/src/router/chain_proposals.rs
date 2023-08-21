@@ -82,7 +82,10 @@ pub async fn update_chain_proposals<'a>(
 
         let mut from_block = min_block;
 
-        let rpc = if dao_handler.r#type == DaoHandlerType::MakerPollArbitrum {
+        let rpc = if dao_handler.r#type == DaoHandlerType::MakerPollArbitrum
+            || dao_handler.r#type == DaoHandlerType::ArbitrumCoreChain
+            || dao_handler.r#type == DaoHandlerType::ArbitrumTreasuryChain
+        {
             &ctx.arbitrum_rpc
         } else if dao_handler.r#type == DaoHandlerType::OptimismChain {
             &ctx.optimism_rpc
