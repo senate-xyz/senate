@@ -17,10 +17,19 @@ use tracing::{
 use crate::{
     daohandler_with_dao,
     handlers::proposals::{
-        aave::aave_proposals, compound::compound_proposals, dydx::dydx_proposals,
-        ens::ens_proposals, gitcoin::gitcoin_proposals, hop::hop_proposals,
-        interest_protocol::interest_protocol_proposals, maker_executive::maker_executive_proposals,
-        maker_poll::maker_poll_proposals, optimism::optimism_proposals, uniswap::uniswap_proposals,
+        aave::aave_proposals,
+        arbitrum_core::{self, arbitrum_core_proposals},
+        arbitrum_treasury::arbitrum_treasury_proposals,
+        compound::compound_proposals,
+        dydx::dydx_proposals,
+        ens::ens_proposals,
+        gitcoin::gitcoin_proposals,
+        hop::hop_proposals,
+        interest_protocol::interest_protocol_proposals,
+        maker_executive::maker_executive_proposals,
+        maker_poll::maker_poll_proposals,
+        optimism::optimism_proposals,
+        uniswap::uniswap_proposals,
         zeroxtreasury::zeroxtreasury_proposals,
     },
     prisma::{dao, daohandler, proposal, DaoHandlerType, PrismaClient, ProposalState},
@@ -200,6 +209,16 @@ async fn get_results(
         }
         DaoHandlerType::OptimismChain => {
             let p = optimism_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(p, from_block, to_block, db, dao_handler.clone()).await;
+            Ok(())
+        }
+        DaoHandlerType::ArbitrumCoreChain => {
+            let p = arbitrum_core_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(p, from_block, to_block, db, dao_handler.clone()).await;
+            Ok(())
+        }
+        DaoHandlerType::ArbitrumTreasuryChain => {
+            let p = arbitrum_treasury_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
             let _ = insert_proposals(p, from_block, to_block, db, dao_handler.clone()).await;
             Ok(())
         }

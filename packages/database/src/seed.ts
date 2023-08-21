@@ -778,6 +778,26 @@ const seedData = async () => {
           governancePortal: "https://snapshot.org/#/arbitrumfoundation.eth",
         },
       },
+      {
+        id: cuid(),
+        daoid: arbitrum_id,
+        type: "ARBITRUM_CORE_CHAIN",
+        decoder: {
+          address: "0xf07DeD9dC292157749B6Fd268E37DF6EA38395B9",
+          proposalUrl: "https://www.tally.xyz/gov/arbitrum/proposal/",
+          governancePortal: "https://www.tally.xyz/gov/arbitrum",
+        },
+      },
+      {
+        id: cuid(),
+        daoid: arbitrum_id,
+        type: "ARBITRUM_TREASURY_CHAIN",
+        decoder: {
+          address: "0x789fC99093B09aD01C34DC7251D0C89ce743e5a4",
+          proposalUrl: "https://www.tally.xyz/gov/arbitrum/proposal/",
+          governancePortal: "https://www.tally.xyz/gov/arbitrum",
+        },
+      },
     ]);
 
   const dorg_id = cuid();

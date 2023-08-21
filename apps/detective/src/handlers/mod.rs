@@ -1,5 +1,7 @@
 pub mod proposals {
     pub mod aave;
+    pub mod arbitrum_core;
+    pub mod arbitrum_treasury;
     pub mod compound;
     pub mod dydx;
     pub mod ens;
@@ -15,6 +17,8 @@ pub mod proposals {
 
 pub mod votes {
     pub mod aave;
+    pub mod arbitrum_core;
+    pub mod arbitrum_treasury;
     pub mod compound;
     pub mod dydx;
     pub mod ens;

@@ -108,6 +108,8 @@ export const UnsubscribedDAO = (props: {
                     />
                   );
                 case "MAKER_POLL_ARBITRUM":
+                case "ARBITRUM_CORE_CHAIN":
+                case "ARBITRUM_TREASURY_CHAIN":
                   return (
                     <Image
                       loading="eager"

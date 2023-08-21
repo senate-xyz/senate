@@ -6,6 +6,8 @@
 pub mod aaveexecutor;
 pub mod aavegov;
 pub mod aavestrategy;
+pub mod arbitrumcore;
+pub mod arbitrumtreasury;
 pub mod compoundgov;
 pub mod dydxexecutor;
 pub mod dydxgov;

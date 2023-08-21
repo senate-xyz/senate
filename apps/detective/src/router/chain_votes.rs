@@ -3,11 +3,12 @@ use std::{cmp, env, ops::Div, sync::Arc};
 use crate::{
     daohandler_with_dao,
     handlers::votes::{
-        aave::aave_votes, compound::compound_votes, dydx::dydx_votes, ens::ens_votes,
-        gitcoin::gitcoin_votes, hop::hop_votes, interest_protocol::interest_protocol_votes,
-        maker_executive::makerexecutive_votes, maker_poll::makerpoll_votes,
-        maker_poll_arbitrum::makerpollarbitrum_votes, optimism::optimism_votes,
-        uniswap::uniswap_votes, zeroxtreasury::zeroxtreasury_votes,
+        aave::aave_votes, arbitrum_core::arbitrum_core_votes,
+        arbitrum_treasury::arbitrum_treasury_votes, compound::compound_votes, dydx::dydx_votes,
+        ens::ens_votes, gitcoin::gitcoin_votes, hop::hop_votes,
+        interest_protocol::interest_protocol_votes, maker_executive::makerexecutive_votes,
+        maker_poll::makerpoll_votes, maker_poll_arbitrum::makerpollarbitrum_votes,
+        optimism::optimism_votes, uniswap::uniswap_votes, zeroxtreasury::zeroxtreasury_votes,
     },
     prisma::{dao, daohandler, proposal, vote, voter, voterhandler, DaoHandlerType, PrismaClient},
     voterhandler_with_voter, Ctx, VotesRequest, VotesResponse,
@@ -253,6 +254,19 @@ async fn get_results(
         DaoHandlerType::OptimismChain => {
             let r =
                 optimism_votes(db, rpc, dao_handler, from_block, to_block, voters.clone()).await?;
+            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            Ok(ok_v)
+        }
+        DaoHandlerType::ArbitrumCoreChain => {
+            let r = arbitrum_core_votes(db, rpc, dao_handler, from_block, to_block, voters.clone())
+                .await?;
+            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            Ok(ok_v)
+        }
+        DaoHandlerType::ArbitrumTreasuryChain => {
+            let r =
+                arbitrum_treasury_votes(db, rpc, dao_handler, from_block, to_block, voters.clone())
+                    .await?;
             let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
             Ok(ok_v)
         }

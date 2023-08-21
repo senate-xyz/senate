@@ -40,6 +40,8 @@ pub async fn produce_chain_votes_queue(
         prisma::DaoHandlerType::InterestProtocolChain,
         prisma::DaoHandlerType::ZeroxProtocolChain,
         prisma::DaoHandlerType::OptimismChain,
+        prisma::DaoHandlerType::ArbitrumCoreChain,
+        prisma::DaoHandlerType::ArbitrumTreasuryChain,
     ];
 
     let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
