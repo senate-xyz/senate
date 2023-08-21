@@ -131,7 +131,7 @@ async fn data_for_proposal(
 
     let onchain_proposal = gov_contract.proposals(log.id).call().await?;
 
-    let choices = vec!["For", "Abstain", "Against"];
+    let choices = vec!["For", "Against", "Abstain"];
 
     let scores = vec![
         onchain_proposal.5.as_u128(),
