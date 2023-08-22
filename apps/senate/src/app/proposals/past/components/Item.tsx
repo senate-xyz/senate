@@ -295,7 +295,7 @@ export default function Item(props: {
                     Connect wallet to see your vote status
                   </div>
                 )}
-                {/*    {vote == "LOADING" && (
+                {!props.item.uptodate && (
                   <Image
                     loading="eager"
                     priority={true}
@@ -304,33 +304,39 @@ export default function Item(props: {
                     width={32}
                     height={32}
                   />
-                )} */}
-                {isConnected && props.item.votes!.length > 0 && (
-                  <div className="flex w-full flex-col items-center">
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      src="/assets/Icon/Voted.svg"
-                      alt="voted"
-                      width={32}
-                      height={32}
-                    />
-                    <div className="text-[18px]">Voted</div>
-                  </div>
                 )}
-                {isConnected && props.item.votes!.length == 0 && (
-                  <div className="flex w-full flex-col items-center">
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      src="/assets/Icon/DidntVote.svg"
-                      alt="voted"
-                      width={32}
-                      height={32}
-                    />
-                    <div className="text-[18px]">Didn’t Vote</div>
-                  </div>
-                )}
+
+                {props.item.uptodate &&
+                  isConnected &&
+                  props.item.votes!.length > 0 && (
+                    <div className="flex w-full flex-col items-center">
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        src="/assets/Icon/Voted.svg"
+                        alt="voted"
+                        width={32}
+                        height={32}
+                      />
+                      <div className="text-[18px]">Voted</div>
+                    </div>
+                  )}
+
+                {props.item.uptodate &&
+                  isConnected &&
+                  props.item.votes!.length == 0 && (
+                    <div className="flex w-full flex-col items-center">
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        src="/assets/Icon/NotVotedYet.svg"
+                        alt="voted"
+                        width={32}
+                        height={32}
+                      />
+                      <div className="text-[18px]">Not Voted Yet</div>
+                    </div>
+                  )}
               </div>
             </Suspense>
           </div>
@@ -569,7 +575,7 @@ export default function Item(props: {
                     </div>
                   )}
 
-                  {/* {vote == "LOADING" && (
+                  {!props.item.uptodate && (
                     <Image
                       loading="eager"
                       priority={true}
@@ -578,33 +584,39 @@ export default function Item(props: {
                       width={32}
                       height={32}
                     />
-                  )} */}
-
-                  {isConnected && props.item.votes!.length > 0 && (
-                    <div className="flex w-full flex-col items-center">
-                      <Image
-                        loading="eager"
-                        priority={true}
-                        src="/assets/Icon/Voted.svg"
-                        alt="voted"
-                        width={32}
-                        height={32}
-                      />
-                    </div>
                   )}
 
-                  {isConnected && props.item.votes!.length == 0 && (
-                    <div className="flex w-full flex-col items-center">
-                      <Image
-                        loading="eager"
-                        priority={true}
-                        src="/assets/Icon/NotVotedYet.svg"
-                        alt="voted"
-                        width={32}
-                        height={32}
-                      />
-                    </div>
-                  )}
+                  {props.item.uptodate &&
+                    isConnected &&
+                    props.item.votes!.length > 0 && (
+                      <div className="flex w-full flex-col items-center">
+                        <Image
+                          loading="eager"
+                          priority={true}
+                          src="/assets/Icon/Voted.svg"
+                          alt="voted"
+                          width={32}
+                          height={32}
+                        />
+                        <div className="text-[18px]">Voted</div>
+                      </div>
+                    )}
+
+                  {props.item.uptodate &&
+                    isConnected &&
+                    props.item.votes!.length == 0 && (
+                      <div className="flex w-full flex-col items-center">
+                        <Image
+                          loading="eager"
+                          priority={true}
+                          src="/assets/Icon/NotVotedYet.svg"
+                          alt="voted"
+                          width={32}
+                          height={32}
+                        />
+                        <div className="text-[18px]">Not Voted Yet</div>
+                      </div>
+                    )}
                 </div>
               </Suspense>
             </div>

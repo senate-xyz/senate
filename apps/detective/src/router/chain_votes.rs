@@ -142,6 +142,7 @@ pub async fn update_chain_votes<'a>(
             to_block,
             voters.clone(),
             voter_handlers,
+            current_block,
         )
         .await;
 
@@ -181,96 +182,112 @@ async fn get_results(
     to_block: i64,
     voters: Vec<String>,
     voter_handlers: Vec<voterhandler_with_voter::Data>,
+    current_block: i64,
 ) -> Result<Vec<VoteResult>> {
     match dao_handler.r#type {
         DaoHandlerType::AaveChain => {
             let r = aave_votes(db, rpc, dao_handler, from_block, to_block, voters.clone()).await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::CompoundChain => {
             let r =
                 compound_votes(db, rpc, dao_handler, from_block, to_block, voters.clone()).await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::UniswapChain => {
             let r =
                 uniswap_votes(db, rpc, dao_handler, from_block, to_block, voters.clone()).await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::EnsChain => {
             let r = ens_votes(db, rpc, dao_handler, from_block, to_block, voters.clone()).await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::GitcoinChain => {
             let r =
                 gitcoin_votes(db, rpc, dao_handler, from_block, to_block, voters.clone()).await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::HopChain => {
             let r = hop_votes(db, rpc, dao_handler, from_block, to_block, voters.clone()).await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::DydxChain => {
             let r = dydx_votes(db, rpc, dao_handler, from_block, to_block, voters.clone()).await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::MakerExecutive => {
             let r =
                 makerexecutive_votes(db, rpc, dao_handler, from_block, to_block, voters.clone())
                     .await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::MakerPoll => {
             let r =
                 makerpoll_votes(db, rpc, dao_handler, from_block, to_block, voters.clone()).await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::MakerPollArbitrum => {
             let r =
                 makerpollarbitrum_votes(db, rpc, dao_handler, from_block, to_block, voters.clone())
                     .await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::InterestProtocolChain => {
             let r =
                 interest_protocol_votes(db, rpc, dao_handler, from_block, to_block, voters.clone())
                     .await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::ZeroxProtocolChain => {
             let r = zeroxtreasury_votes(db, rpc, dao_handler, from_block, to_block, voters.clone())
                 .await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::OptimismChain => {
             let r =
                 optimism_votes(db, rpc, dao_handler, from_block, to_block, voters.clone()).await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::ArbitrumCoreChain => {
             let r = arbitrum_core_votes(db, rpc, dao_handler, from_block, to_block, voters.clone())
                 .await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::ArbitrumTreasuryChain => {
             let r =
                 arbitrum_treasury_votes(db, rpc, dao_handler, from_block, to_block, voters.clone())
                     .await?;
-            let ok_v = insert_votes(r, to_block, db, dao_handler, voter_handlers).await?;
+            let ok_v =
+                insert_votes(r, to_block, db, dao_handler, voter_handlers, current_block).await?;
             Ok(ok_v)
         }
         DaoHandlerType::Snapshot => bail!("not implemented"),
@@ -284,6 +301,7 @@ async fn insert_votes(
     db: &Arc<PrismaClient>,
     dao_handler: &daohandler_with_dao::Data,
     voter_handlers: Vec<voterhandler_with_voter::Data>,
+    current_block: i64,
 ) -> Result<Vec<VoteResult>> {
     let successful_votes: Vec<Vote> = votes
         .iter()
@@ -372,16 +390,11 @@ async fn insert_votes(
         daochainindex
     };
 
-    let mut uptodate = false;
-
-    if (daochainindex - new_index < 1000 && dao_handler.uptodate) {
-        uptodate = true;
-    }
-
     if dao_handler.r#type == DaoHandlerType::MakerPollArbitrum {
-        uptodate = true;
         new_index = to_block;
     }
+
+    let uptodate = current_block - new_index < 1000;
 
     event!(
         Level::INFO,
