@@ -27,10 +27,10 @@
   },
   "dependencies": {
     "@planetscale/database": "^1.11.0",
-    "@prisma/client": "5.1.1",
+    "@prisma/client": "5.2.0",
     "cuid": "^3.0.0",
     "dotenv": "^16.3.1",
-    "drizzle-orm": "^0.28.2",
+    "drizzle-orm": "^0.28.3",
     "ethers": "^6.7.1",
     "mysql2": "^3.6.0",
     "type-fest": "^4.2.0",
@@ -44,7 +44,7 @@
     "drizzle-kit": "^0.19.13",
     "eslint": "^8.47.0",
     "prettier": "^3.0.2",
-    "prisma": "5.1.1",
+    "prisma": "5.2.0",
     "tsup": "^7.2.0",
     "typescript": "^5.1.6"
   },
