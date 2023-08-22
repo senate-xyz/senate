@@ -88,6 +88,7 @@ async fn get_votes_for_voter(
 
     let mut votes: Vec<Vote> = vec![];
 
+    let mut success = true;
     for (log, meta) in voter_logs {
         let p = db
             .proposal()
@@ -102,6 +103,7 @@ async fn get_votes_for_voter(
         let proposal = match p {
             Some(r) => r,
             None => {
+                success = false;
                 continue;
             }
         };
@@ -126,7 +128,7 @@ async fn get_votes_for_voter(
 
     Ok(VoteResult {
         voter_address: voter_address.clone(),
-        success: true,
+        success: success,
         votes,
     })
 }
