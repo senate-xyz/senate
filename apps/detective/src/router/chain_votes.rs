@@ -109,7 +109,11 @@ pub async fn update_chain_votes<'a>(
 
         let batch_size = (data.refreshspeed).div(voters.len() as i64);
 
-        let mut from_block = cmp::min(vh_index, dao_handler.chainindex);
+        let mut from_block = if dao_handler.r#type == DaoHandlerType::MakerPollArbitrum {
+            vh_index
+        } else {
+            cmp::min(vh_index, dao_handler.chainindex)
+        };
 
         let to_block = if current_block - from_block > batch_size {
             from_block + batch_size
@@ -394,7 +398,7 @@ async fn insert_votes(
         new_index = to_block;
     }
 
-    let uptodate = current_block - new_index < 1000;
+    let uptodate = current_block - new_index < 100000 && new_index == daochainindex;
 
     event!(
         Level::INFO,
