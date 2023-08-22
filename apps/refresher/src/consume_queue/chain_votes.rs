@@ -100,7 +100,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                         if !nok_voters_response.is_empty() {
                             dao_handler_r.votersrefreshspeed = cmp::max(
                                 dao_handler_r.votersrefreshspeed
-                                    - (dao_handler_r.votersrefreshspeed * 25 / 100),
+                                    - (dao_handler_r.votersrefreshspeed * 50 / 100),
                                 100,
                             );
 
@@ -136,7 +136,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                         }
                         dao_handler_r.votersrefreshspeed = cmp::max(
                             dao_handler_r.votersrefreshspeed
-                                - (dao_handler_r.votersrefreshspeed * 25 / 100),
+                                - (dao_handler_r.votersrefreshspeed * 50 / 100),
                             100,
                         );
                     }
@@ -157,7 +157,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                 }
                 dao_handler_r.votersrefreshspeed = cmp::max(
                     dao_handler_r.votersrefreshspeed
-                        - (dao_handler_r.votersrefreshspeed * 25 / 100),
+                        - (dao_handler_r.votersrefreshspeed * 50 / 100),
                     100,
                 );
             }
