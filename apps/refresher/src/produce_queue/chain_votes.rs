@@ -89,9 +89,11 @@ pub async fn produce_chain_votes_queue(
             .map(|voter_handler| voter_handler.chainindex)
             .collect();
 
-        let domain_limit = if dao_handler.r#type == prisma::DaoHandlerType::MakerPollArbitrum {
-            200_000_000
-        } else if dao_handler.r#type == prisma::DaoHandlerType::OptimismChain {
+        let domain_limit = if dao_handler.r#type == prisma::DaoHandlerType::MakerPollArbitrum
+            || dao_handler.r#type == prisma::DaoHandlerType::OptimismChain
+            || dao_handler.r#type == prisma::DaoHandlerType::ArbitrumCoreChain
+            || dao_handler.r#type == prisma::DaoHandlerType::ArbitrumTreasuryChain
+        {
             200_000_000
         } else {
             20_000_000
