@@ -145,7 +145,10 @@ async fn data_for_proposal(
         .await
         .unwrap();
 
-    let quorum = gov_contract.quorum(proposal_snapshot_block).call().await?;
+    let quorum = match gov_contract.quorum(proposal_snapshot_block).await {
+        Ok(r) => r,
+        Err(_) => U256::from(0),
+    };
 
     let proposal_state = gov_contract.state(log.proposal_id).call().await?;
 
