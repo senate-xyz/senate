@@ -61,7 +61,7 @@
 
           <mj-raw>{{#each . }}</mj-raw>
           <tr style="border-bottom: 1px solid #ecedee">
-            <td width="48px" style="vertical-align:top;">
+            <td width="48px" style="vertical-align:middle;">
               <table cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
@@ -70,7 +70,7 @@
                 </tr>
                 <tr>
                   <td>
-                    <img width="48" src="{{chainLogoUrl}}" alt="Chain Icon" />
+                    <img style="vertical-align:top;" width="48" src="{{chainLogoUrl}}" alt="Chain Icon" />
                   </td>
                 </tr>
               </table>
@@ -157,7 +157,7 @@
 
           <mj-raw>{{#each . }}</mj-raw>
           <tr style="border-bottom: 1px solid #ecedee">
-            <td width="48px" style="vertical-align:top;">
+            <td width="48px" style="vertical-align:middle;">
               <table cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
@@ -166,7 +166,7 @@
                 </tr>
                 <tr>
                   <td>
-                    <img width="48" src="{{chainLogoUrl}}" alt="Chain Icon" />
+                    <img style="vertical-align:top;" width="48" src="{{chainLogoUrl}}" alt="Chain Icon" />
                   </td>
                 </tr>
               </table>
@@ -253,7 +253,7 @@
 
           <mj-raw>{{#each . }}</mj-raw>
           <tr style="border-bottom: 1px solid #ecedee">
-            <td width="48px" style="vertical-align:top;">
+            <td width="48px" style="vertical-align:middle;">
               <table cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
@@ -262,7 +262,7 @@
                 </tr>
                 <tr>
                   <td>
-                    <img width="48" src="{{chainLogoUrl}}" alt="Chain Icon" />
+                    <img style="vertical-align:top;" width="48" src="{{chainLogoUrl}}" alt="Chain Icon" />
                   </td>
                 </tr>
               </table>
