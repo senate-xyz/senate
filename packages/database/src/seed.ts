@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import cuid from "cuid";
-import { db, dao, daohandler, user, subscription, voter } from "./index";
+import { db, dao, daohandler, user, subscription, voter, eq } from "./index";
 
 const seedData = async () => {
   console.log("Inserting daos");
 
   const aave_id = cuid();
-
   await db.insert(dao).ignore().values({
     id: aave_id,
     name: "Aave",
@@ -15,14 +14,15 @@ const seedData = async () => {
     backgroundcolor: "#a5a9c6",
   });
 
+  const aave = await db.select().from(dao).where(eq(dao.name, "Aave"));
+
   await db
     .insert(daohandler)
-    .ignore()
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: aave_id,
+        daoid: aave[0].id,
         type: "AAVE_CHAIN",
         decoder: {
           address: "0xEC568fffba86c094cf06b22134B23074DFE2252c",
@@ -32,7 +32,7 @@ const seedData = async () => {
       },
       {
         id: cuid(),
-        daoid: aave_id,
+        daoid: aave[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "aave.eth",
@@ -50,14 +50,15 @@ const seedData = async () => {
     backgroundcolor: "#68baaa",
   });
 
+  const maker = await db.select().from(dao).where(eq(dao.name, "MakerDAO"));
+
   await db
     .insert(daohandler)
-    .ignore()
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: maker_id,
+        daoid: maker[0].id,
         type: "MAKER_EXECUTIVE",
         decoder: {
           address: "0x0a3f6849f78076aefaDf113F5BED87720274dDC0",
@@ -67,7 +68,7 @@ const seedData = async () => {
       },
       {
         id: cuid(),
-        daoid: maker_id,
+        daoid: maker[0].id,
         type: "MAKER_POLL",
         decoder: {
           address_create: "0xf9be8f0945acddeedaa64dfca5fe9629d0cf8e5d",
@@ -78,7 +79,7 @@ const seedData = async () => {
       },
       {
         id: cuid(),
-        daoid: maker_id,
+        daoid: maker[0].id,
         type: "MAKER_POLL_ARBITRUM",
         decoder: {
           address_vote: "0x4f4e551b4920a5417F8d4e7f8f099660dAdadcEC",
@@ -95,13 +96,16 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#747474",
   });
+
+  const balancer = await db.select().from(dao).where(eq(dao.name, "Balancer"));
+
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: balancer_id,
+        daoid: balancer[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "balancer.eth",
@@ -118,13 +122,15 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#ff444b",
   });
+
+  const optimism = await db.select().from(dao).where(eq(dao.name, "Optimism"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: optimism_id,
+        daoid: optimism[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "opcollective.eth",
@@ -133,7 +139,7 @@ const seedData = async () => {
       },
       {
         id: cuid(),
-        daoid: optimism_id,
+        daoid: optimism[0].id,
         type: "OPTIMISM_CHAIN",
         decoder: {
           address: "0xcDF27F107725988f2261Ce2256bDfCdE8B382B10",
@@ -151,13 +157,16 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#6f7d83",
   });
+
+  const element = await db.select().from(dao).where(eq(dao.name, "Element"));
+
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: element_id,
+        daoid: element[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "elfi.eth",
@@ -174,13 +183,15 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#646573",
   });
+
+  const oneinch = await db.select().from(dao).where(eq(dao.name, "1inch"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: oneinch_id,
+        daoid: oneinch[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "1inch.eth",
@@ -197,13 +208,17 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#d27ecc",
   });
+  const hopprotocol = await db
+    .select()
+    .from(dao)
+    .where(eq(dao.name, "Hop Protocol"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: hopprotocol_id,
+        daoid: hopprotocol[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "hop.eth",
@@ -212,7 +227,7 @@ const seedData = async () => {
       },
       {
         id: cuid(),
-        daoid: hopprotocol_id,
+        daoid: hopprotocol[0].id,
         type: "HOP_CHAIN",
         decoder: {
           address: "0xed8Bdb5895B8B7f9Fdb3C087628FD8410E853D48",
@@ -230,13 +245,15 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#737375",
   });
+
+  const safe = await db.select().from(dao).where(eq(dao.name, "SafeDAO"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: safe_id,
+        daoid: safe[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "safe.eth",
@@ -253,13 +270,15 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#00573e",
   });
+
+  const compound = await db.select().from(dao).where(eq(dao.name, "Compound"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: compound_id,
+        daoid: compound[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "comp-vote.eth",
@@ -268,7 +287,7 @@ const seedData = async () => {
       },
       {
         id: cuid(),
-        daoid: compound_id,
+        daoid: compound[0].id,
         type: "COMPOUND_CHAIN",
         decoder: {
           address: "0xc0Da02939E1441F497fd74F78cE7Decb17B66529",
@@ -287,13 +306,18 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#0d506b",
   });
+
+  const synthetix = await db
+    .select()
+    .from(dao)
+    .where(eq(dao.name, "Synthetix"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: synthetix_id,
+        daoid: synthetix[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "snxgov.eth",
@@ -310,13 +334,15 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#51515a",
   });
+
+  const dydx = await db.select().from(dao).where(eq(dao.name, "dYdX"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: dydx_id,
+        daoid: dydx[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "dydxgov.eth",
@@ -325,7 +351,7 @@ const seedData = async () => {
       },
       {
         id: cuid(),
-        daoid: dydx_id,
+        daoid: dydx[0].id,
         type: "DYDX_CHAIN",
         decoder: {
           address: "0x7E9B1672616FF6D6629Ef2879419aaE79A9018D2",
@@ -343,13 +369,14 @@ const seedData = async () => {
     quorumwarningemailsupport: true,
     backgroundcolor: "#ffd5f5",
   });
+  const uniswap = await db.select().from(dao).where(eq(dao.name, "Uniswap"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: uniswap_id,
+        daoid: uniswap[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "uniswap",
@@ -358,7 +385,7 @@ const seedData = async () => {
       },
       {
         id: cuid(),
-        daoid: uniswap_id,
+        daoid: uniswap[0].id,
         type: "UNISWAP_CHAIN",
         decoder: {
           address: "0x408ED6354d4973f66138C91495F2f2FCbd8724C3",
@@ -377,13 +404,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#6daef6",
   });
+  const ens = await db.select().from(dao).where(eq(dao.name, "ENS"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: ens_id,
+        daoid: ens[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "ens.eth",
@@ -392,7 +420,7 @@ const seedData = async () => {
       },
       {
         id: cuid(),
-        daoid: ens_id,
+        daoid: ens[0].id,
         type: "ENS_CHAIN",
         decoder: {
           address: "0x323A76393544d5ecca80cd6ef2A560C6a395b7E3",
@@ -410,13 +438,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#5a5a5a",
   });
+  const fwb = await db.select().from(dao).where(eq(dao.name, "FWB"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: fwb_id,
+        daoid: fwb[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "friendswithbenefits.eth",
@@ -433,13 +462,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#7b837f",
   });
+  const gnosis = await db.select().from(dao).where(eq(dao.name, "GnosisDAO"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: gnosis_id,
+        daoid: gnosis[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "gnosis.eth",
@@ -456,13 +486,17 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#797979",
   });
+  const indexcoop = await db
+    .select()
+    .from(dao)
+    .where(eq(dao.name, "Index Coop"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: index_coop_id,
+        daoid: indexcoop[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "index-coop.eth",
@@ -479,13 +513,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#86411c",
   });
+  const paladin = await db.select().from(dao).where(eq(dao.name, "Paladin"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: paladin_id,
+        daoid: paladin[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "palvote.eth",
@@ -502,13 +537,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#7e6c7c",
   });
+  const sushi = await db.select().from(dao).where(eq(dao.name, "Sushi"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: sushi_id,
+        daoid: sushi[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "sushigov.eth",
@@ -525,13 +561,17 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#8fa6ff",
   });
+  const instadapp = await db
+    .select()
+    .from(dao)
+    .where(eq(dao.name, "Instadapp"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: instadapp_id,
+        daoid: instadapp[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "instadapp-gov.eth",
@@ -548,13 +588,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#05d4a2",
   });
+  const gitcoin = await db.select().from(dao).where(eq(dao.name, "Gitcoin"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: gitcoin_id,
+        daoid: gitcoin[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "gitcoindao.eth",
@@ -563,7 +604,7 @@ const seedData = async () => {
       },
       {
         id: cuid(),
-        daoid: gitcoin_id,
+        daoid: gitcoin[0].id,
         type: "GITCOIN_CHAIN",
         decoder: {
           address: "0xDbD27635A534A3d3169Ef0498beB56Fb9c937489",
@@ -581,13 +622,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#735462",
   });
+  const gearbox = await db.select().from(dao).where(eq(dao.name, "Gearbox"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: gearbox_id,
+        daoid: gearbox[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "gearbox.eth",
@@ -604,13 +646,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#4d4641",
   });
+  const euler = await db.select().from(dao).where(eq(dao.name, "Euler"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: euler_id,
+        daoid: euler[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "eulerdao.eth",
@@ -627,13 +670,17 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#9166ef",
   });
+  const aurafinance = await db
+    .select()
+    .from(dao)
+    .where(eq(dao.name, "Aura Finance"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: aura_finance_id,
+        daoid: aurafinance[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "aurafinance.eth",
@@ -650,13 +697,17 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#484848",
   });
+  const developerdao = await db
+    .select()
+    .from(dao)
+    .where(eq(dao.name, "Developer DAO"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: developerdao_id,
+        daoid: developerdao[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "devdao.eth",
@@ -673,13 +724,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#d5d9fa",
   });
+  const apwine = await db.select().from(dao).where(eq(dao.name, "APWine"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: apwine_id,
+        daoid: apwine[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "apwine.eth",
@@ -696,13 +748,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#546275",
   });
+  const morpho = await db.select().from(dao).where(eq(dao.name, "Morpho"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: morpho_id,
+        daoid: morpho[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "morpho.eth",
@@ -719,13 +772,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#f8afa3",
   });
+  const lido = await db.select().from(dao).where(eq(dao.name, "Lido DAO"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: lido_id,
+        daoid: lido[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "lido-snapshot.eth",
@@ -742,13 +796,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#635672",
   });
+  const starknet = await db.select().from(dao).where(eq(dao.name, "Starknet"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: starknet_id,
+        daoid: starknet[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "starknet.eth",
@@ -765,13 +820,17 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#55677b",
   });
+  const arbitrum = await db
+    .select()
+    .from(dao)
+    .where(eq(dao.name, "Arbitrum DAO"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: arbitrum_id,
+        daoid: arbitrum[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "arbitrumfoundation.eth",
@@ -780,7 +839,7 @@ const seedData = async () => {
       },
       {
         id: cuid(),
-        daoid: arbitrum_id,
+        daoid: arbitrum[0].id,
         type: "ARBITRUM_CORE_CHAIN",
         decoder: {
           address: "0xf07DeD9dC292157749B6Fd268E37DF6EA38395B9",
@@ -790,7 +849,7 @@ const seedData = async () => {
       },
       {
         id: cuid(),
-        daoid: arbitrum_id,
+        daoid: arbitrum[0].id,
         type: "ARBITRUM_TREASURY_CHAIN",
         decoder: {
           address: "0x789fC99093B09aD01C34DC7251D0C89ce743e5a4",
@@ -808,13 +867,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#382b22",
   });
+  const dorg = await db.select().from(dao).where(eq(dao.name, "dOrg"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: dorg_id,
+        daoid: dorg[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "dorg.eth",
@@ -831,13 +891,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#3a3632",
   });
+  const solace = await db.select().from(dao).where(eq(dao.name, "Solace DAO"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: solace_id,
+        daoid: solace[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "solace-dao.eth",
@@ -854,13 +915,17 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#c3d1bc",
   });
+  const interestprotocol = await db
+    .select()
+    .from(dao)
+    .where(eq(dao.name, "Interest Protocol"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: interest_protocol_id,
+        daoid: interestprotocol[0].id,
         type: "INTEREST_PROTOCOL_CHAIN",
         decoder: {
           address: "0x266d1020A84B9E8B0ed320831838152075F8C4cA",
@@ -879,13 +944,17 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#f79070",
   });
+  const rocketpool = await db
+    .select()
+    .from(dao)
+    .where(eq(dao.name, "Rocket Pool"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: rocket_pool_id,
+        daoid: rocketpool[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "rocketpool-dao.eth",
@@ -902,13 +971,14 @@ const seedData = async () => {
     quorumwarningemailsupport: false,
     backgroundcolor: "#636364",
   });
+  const zerox = await db.select().from(dao).where(eq(dao.name, "0x Protocol"));
   await db
     .insert(daohandler)
     .ignore()
     .values([
       {
         id: cuid(),
-        daoid: zerox_protocol_id,
+        daoid: zerox[0].id,
         type: "SNAPSHOT",
         decoder: {
           space: "0xgov.eth",
@@ -917,7 +987,7 @@ const seedData = async () => {
       },
       {
         id: cuid(),
-        daoid: zerox_protocol_id,
+        daoid: zerox[0].id,
         type: "ZEROX_PROTOCOL_CHAIN",
         decoder: {
           address: "0x0bB1810061C2f5b2088054eE184E6C79e1591101",
