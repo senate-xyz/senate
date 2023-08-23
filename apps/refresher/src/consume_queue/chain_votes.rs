@@ -82,14 +82,6 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                                 1000000000,
                             );
 
-                            if entry.handler_type == prisma::DaoHandlerType::MakerPollArbitrum {
-                                dao_handler_r.votersrefreshspeed = cmp::min(
-                                    dao_handler_r.votersrefreshspeed
-                                        + (dao_handler_r.votersrefreshspeed * 10 / 100),
-                                    1000000000,
-                                );
-                            }
-
                             event!(
                                 Level::INFO,
                                 daohandler = dao_handler_r.dao_handler_id,
