@@ -6,6 +6,8 @@
 extern crate rocket;
 
 use std::{env, process, sync::Arc};
+use tracing_loki as _;
+use tracing_opentelemetry as _;
 
 use metrics::{self as _, counter, register_counter};
 
@@ -32,15 +34,19 @@ mod router;
 mod telemetry;
 
 pub mod utils {
+    pub mod arbriscan;
     pub mod etherscan;
     pub mod maker_polls_sanity;
+    pub mod optimiscan;
     pub mod snapshot_sanity;
 }
 
 #[derive(Clone, Debug)]
 pub struct Context {
     pub db: Arc<PrismaClient>,
-    pub rpc: Arc<Provider<Http>>,
+    pub eth_rpc: Arc<Provider<Http>>,
+    pub arbitrum_rpc: Arc<Provider<Http>>,
+    pub optimism_rpc: Arc<Provider<Http>>,
 }
 
 pub type Ctx = rocket::State<Context>;
@@ -97,10 +103,14 @@ async fn rocket() -> _ {
     dotenv().ok();
     telemetry::setup();
 
-    let rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
+    let eth_rpc_url = env::var("ALCHEMY_NODE_URL").expect("$ALCHEMY_NODE_URL is not set");
+    let arbitrum_rpc_url = env::var("ARBITRUM_NODE_URL").expect("$ARBITRUM_NODE_URL is not set");
+    let optimism_rpc_url = env::var("OPTIMISM_NODE_URL").expect("$OPTIMISM_NODE_URL is not set");
 
-    let provider = Provider::<Http>::try_from(rpc_url).unwrap();
-    let rpc = Arc::new(provider);
+    let eth_rpc = Arc::new(Provider::<Http>::try_from(eth_rpc_url).unwrap());
+    let arbitrum_rpc = Arc::new(Provider::<Http>::try_from(arbitrum_rpc_url).unwrap());
+    let optimism_rpc = Arc::new(Provider::<Http>::try_from(optimism_rpc_url).unwrap());
+
     let db = Arc::new(
         prisma::new_client()
             .await
@@ -108,22 +118,26 @@ async fn rocket() -> _ {
     );
 
     let context = Context {
-        db: db.clone(),
-        rpc: rpc.clone(),
+        db: db,
+        eth_rpc: eth_rpc,
+        arbitrum_rpc: arbitrum_rpc,
+        optimism_rpc: optimism_rpc,
     };
+
+    let context_clone = context.clone();
 
     tokio::spawn(async move {
         let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(60 * 5));
         loop {
             interval.tick().await;
 
-            let _ = maker_polls_sanity_check(&context).await;
-            let _ = snapshot_sanity_check(&context).await;
+            let _ = maker_polls_sanity_check(&context_clone).await;
+            let _ = snapshot_sanity_check(&context_clone).await;
         }
     });
 
     rocket::build()
-        .manage(Context { db, rpc })
+        .manage(context)
         .mount("/", routes![index])
         .mount("/health", routes![health])
         .mount(

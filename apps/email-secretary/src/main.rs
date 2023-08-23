@@ -12,6 +12,8 @@ use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 use tokio::{time::sleep, try_join};
 use tracing::{debug, event, Level};
+use tracing_loki as _;
+use tracing_opentelemetry as _;
 
 use crate::{
     bulletin::bulletin_emails::{send_bulletin_emails, send_triggered_emails},

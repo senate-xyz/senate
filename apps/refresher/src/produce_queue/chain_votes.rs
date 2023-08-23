@@ -39,6 +39,9 @@ pub async fn produce_chain_votes_queue(
         prisma::DaoHandlerType::DydxChain,
         prisma::DaoHandlerType::InterestProtocolChain,
         prisma::DaoHandlerType::ZeroxProtocolChain,
+        prisma::DaoHandlerType::OptimismChain,
+        prisma::DaoHandlerType::ArbitrumCoreChain,
+        prisma::DaoHandlerType::ArbitrumTreasuryChain,
     ];
 
     let mut daos_refresh_status = DAOS_REFRESH_STATUS.lock().await;
@@ -86,7 +89,11 @@ pub async fn produce_chain_votes_queue(
             .map(|voter_handler| voter_handler.chainindex)
             .collect();
 
-        let domain_limit = if dao_handler.r#type == prisma::DaoHandlerType::MakerPollArbitrum {
+        let domain_limit = if dao_handler.r#type == prisma::DaoHandlerType::MakerPollArbitrum
+            || dao_handler.r#type == prisma::DaoHandlerType::OptimismChain
+            || dao_handler.r#type == prisma::DaoHandlerType::ArbitrumCoreChain
+            || dao_handler.r#type == prisma::DaoHandlerType::ArbitrumTreasuryChain
+        {
             200_000_000
         } else {
             20_000_000

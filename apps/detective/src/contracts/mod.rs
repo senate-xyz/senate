@@ -6,6 +6,8 @@
 pub mod aaveexecutor;
 pub mod aavegov;
 pub mod aavestrategy;
+pub mod arbitrumcore;
+pub mod arbitrumtreasury;
 pub mod compoundgov;
 pub mod dydxexecutor;
 pub mod dydxgov;
@@ -18,6 +20,7 @@ pub mod makerexecutive;
 pub mod makerpollcreate;
 pub mod makerpollvote;
 pub mod makerpollvotearbitrum;
+pub mod optimismgov;
 pub mod shared_types;
 pub mod uniswapgov;
 pub mod zeroxtreasury;

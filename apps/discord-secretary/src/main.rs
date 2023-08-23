@@ -2,11 +2,12 @@
 #![allow(unused_imports)]
 #![allow(unused_parens)]
 
-use std::{env, sync::Arc};
-
 use dotenv::dotenv;
+use std::{env, sync::Arc};
 use tokio::{time::sleep, try_join};
 use tracing::{debug, event, info, Level};
+use tracing_loki as _;
+use tracing_opentelemetry as _;
 
 use dispatch::{
     ended::dispatch_ended_proposal_notifications, ending_soon::dispatch_ending_soon_notifications,

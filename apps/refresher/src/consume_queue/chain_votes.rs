@@ -82,14 +82,6 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                                 1000000000,
                             );
 
-                            if entry.handler_type == prisma::DaoHandlerType::MakerPollArbitrum {
-                                dao_handler_r.votersrefreshspeed = cmp::min(
-                                    dao_handler_r.votersrefreshspeed
-                                        + (dao_handler_r.votersrefreshspeed * 10 / 100),
-                                    10000000000,
-                                );
-                            }
-
                             event!(
                                 Level::INFO,
                                 daohandler = dao_handler_r.dao_handler_id,
@@ -100,7 +92,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                         if !nok_voters_response.is_empty() {
                             dao_handler_r.votersrefreshspeed = cmp::max(
                                 dao_handler_r.votersrefreshspeed
-                                    - (dao_handler_r.votersrefreshspeed * 25 / 100),
+                                    - (dao_handler_r.votersrefreshspeed * 50 / 100),
                                 100,
                             );
 
@@ -136,7 +128,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                         }
                         dao_handler_r.votersrefreshspeed = cmp::max(
                             dao_handler_r.votersrefreshspeed
-                                - (dao_handler_r.votersrefreshspeed * 25 / 100),
+                                - (dao_handler_r.votersrefreshspeed * 50 / 100),
                             100,
                         );
                     }
@@ -157,7 +149,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                 }
                 dao_handler_r.votersrefreshspeed = cmp::max(
                     dao_handler_r.votersrefreshspeed
-                        - (dao_handler_r.votersrefreshspeed * 25 / 100),
+                        - (dao_handler_r.votersrefreshspeed * 50 / 100),
                     100,
                 );
             }

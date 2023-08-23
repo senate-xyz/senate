@@ -38,15 +38,15 @@ pub async fn snapshot_sanity_check(ctx: &Context) -> Result<()> {
     let sanitize_to: chrono::DateTime<Utc> = Utc::now() - Duration::minutes(5);
 
     let dao_handlers = ctx
-        .db
         .clone()
+        .db
         .daohandler()
         .find_many(vec![daohandler::r#type::equals(DaoHandlerType::Snapshot)])
         .exec()
         .await?;
 
     for dao_handler in dao_handlers {
-        sanitize(dao_handler, sanitize_from, sanitize_to, ctx).await?;
+        sanitize(dao_handler, sanitize_from, sanitize_to, ctx.clone()).await?;
     }
 
     Ok(())
@@ -57,7 +57,7 @@ async fn sanitize(
     dao_handler: daohandler::Data,
     sanitize_from: chrono::DateTime<Utc>,
     sanitize_to: chrono::DateTime<Utc>,
-    ctx: &Context,
+    ctx: Context,
 ) -> Result<()> {
     let database_proposals = ctx
         .db

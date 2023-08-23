@@ -15,7 +15,7 @@ use tracing::{debug_span, instrument, Instrument};
 use crate::{
     contracts::makerpollvotearbitrum::{self, VotedFilter},
     daohandler_with_dao,
-    prisma::{daohandler, proposal},
+    prisma::{daohandler, proposal, PrismaClient},
     router::chain_votes::{Vote, VoteResult},
     Ctx,
 };
@@ -27,16 +27,13 @@ struct Decoder {
 }
 
 pub async fn makerpollarbitrum_votes(
-    ctx: &Ctx,
+    db: &Arc<PrismaClient>,
+    rpc: &Arc<Provider<Http>>,
     dao_handler: &daohandler_with_dao::Data,
     from_block: i64,
     to_block: i64,
     voters: Vec<String>,
 ) -> Result<Vec<VoteResult>> {
-    let rpc_url = env::var("ARBITRUM_NODE_URL").expect("$ARBITRUM_NODE_URL is not set");
-    let provider = Provider::<Http>::try_from(rpc_url).unwrap();
-    let rpc = Arc::new(provider);
-
     let decoder: Decoder = serde_json::from_value(dao_handler.clone().decoder)?;
 
     let address = decoder
@@ -64,7 +61,7 @@ pub async fn makerpollarbitrum_votes(
                 logs.clone(),
                 dao_handler.clone(),
                 voter_address.clone(),
-                ctx,
+                db.clone(),
             )
             .await
         });
@@ -89,7 +86,7 @@ async fn get_votes_for_voter(
     logs: Vec<(VotedFilter, LogMeta)>,
     dao_handler: daohandler_with_dao::Data,
     voter_address: String,
-    ctx: &Ctx,
+    db: Arc<PrismaClient>,
 ) -> Result<VoteResult> {
     let voter_logs: Vec<(VotedFilter, LogMeta)> = logs
         .into_iter()
@@ -99,8 +96,7 @@ async fn get_votes_for_voter(
     let mut votes: Vec<Vote> = vec![];
 
     for (log, meta) in voter_logs {
-        let p = ctx
-            .db
+        let p = db
             .proposal()
             .find_first(vec![
                 proposal::externalid::equals(log.poll_id.to_string()),
