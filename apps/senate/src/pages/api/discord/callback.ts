@@ -61,7 +61,8 @@ export default async function handler(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     result.webhook.url == undefined
   )
-    res.send("Oops, somethign went wrong!");
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    res.send(`Oops, something went wrong! ${result.body}`);
 
   await db
     .update(user)
