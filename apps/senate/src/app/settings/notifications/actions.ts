@@ -246,6 +246,7 @@ export const userDiscord = async () => {
 
   if (!session || !session.user || !session.user.name)
     return {
+      id: "",
       enabled: false,
       webhook: "",
       reminders: false,
@@ -257,6 +258,7 @@ export const userDiscord = async () => {
 
   if (!u)
     return {
+      id: "",
       enabled: false,
       webhook: "",
       reminders: false,
@@ -264,6 +266,7 @@ export const userDiscord = async () => {
     };
 
   return {
+    id: u.id ?? "",
     enabled: u.discordnotifications ?? false,
     webhook: u.discordwebhook ?? "",
     reminders: u.discordreminders,
@@ -323,7 +326,6 @@ export const setWebhookAndEnableDiscord = async (input: string) => {
     distinctId: userAddress ?? "unknown",
     event: "discord_webhook_sets",
     properties: {
-      email: input,
       props: {
         app: "web-backend",
       },
@@ -334,7 +336,6 @@ export const setWebhookAndEnableDiscord = async (input: string) => {
     distinctId: userAddress ?? "unknown",
     event: "discord_enable",
     properties: {
-      email: input,
       props: {
         app: "web-backend",
       },

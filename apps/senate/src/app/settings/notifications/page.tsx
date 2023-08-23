@@ -15,6 +15,7 @@ export default async function Home() {
   } = await userEmail();
 
   const {
+    id: discordUserId,
     enabled: discordEnabled,
     webhook: discordWebhook,
     reminders: discordReminders,
@@ -60,6 +61,7 @@ export default async function Home() {
         webhook={discordWebhook}
         reminders={discordReminders}
         includeVotes={discordIncludeVotes}
+        userId={discordUserId}
       />
 
       <Telegram
