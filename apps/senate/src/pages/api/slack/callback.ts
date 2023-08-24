@@ -54,7 +54,7 @@ export default async function handler(
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     console.log(result);
-    res.send(`Oops, something went wrong!`);
+    res.send(`Oops, something went wrong! ${result}`);
     return;
   }
 
