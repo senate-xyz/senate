@@ -67,7 +67,7 @@ export default function Item(props: {
                 priority={true}
                 width={64}
                 height={64}
-                src={`${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${
+                src={`${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/${
                   props.item.dao!.picture
                 }.svg`}
                 alt={props.item.dao!.name}
@@ -389,8 +389,8 @@ export default function Item(props: {
                   priority={true}
                   width={68}
                   height={68}
-                  src={`${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${props.item.dao
-                    ?.picture}.svg`}
+                  src={`${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/${props.item
+                    .dao?.picture}.svg`}
                   alt={props.item.dao!.name}
                 />
               </div>

@@ -85,7 +85,7 @@ const getSubscribedDAOs = async () => {
       let backgroundColor = "#5A5A5A";
       if (cur.dao.backgroundcolor == "#5A5A5A") {
         const newBgColor = await getAverageColor(
-          `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${cur.dao.picture}.svg`,
+          `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/${cur.dao.picture}.svg`,
           {
             mode: "precision",
             algorithm: "sqrt",
@@ -158,7 +158,7 @@ const getUnsubscribedDAOs = async () => {
       let backgroundColor = "#5A5A5A";
       if (cur.dao.backgroundcolor == "#5A5A5A") {
         const newBgColor = await getAverageColor(
-          `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${cur.dao.picture}.svg`,
+          `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/${cur.dao.picture}.svg`,
           {
             mode: "precision",
             algorithm: "sqrt",
