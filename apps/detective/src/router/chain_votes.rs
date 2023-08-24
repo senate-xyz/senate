@@ -412,7 +412,7 @@ async fn insert_votes(
     );
 
     for voter_handler in voter_handlers {
-        if (new_index > voter_handler.chainindex && new_index - voter_handler.chainindex > 1000)
+        if (new_index > voter_handler.chainindex && new_index - voter_handler.chainindex > 100)
             || uptodate != voter_handler.uptodate
         {
             event!(
