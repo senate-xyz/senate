@@ -84,7 +84,10 @@ const Enabled = (props: {
   const [, startTransition] = useTransition();
   const [currentWebhook, setCurrentWebhook] = useState(props.webhook);
 
-  const slackUrl = `https://slack.com/oauth/v2/authorize?client_id=5703914501122.5797273172388&scope=incoming-webhook&state=${props.userId}`;
+  const slackUrl = `https://slack.com/oauth/v2/authorize?client_id=5703914501122.5797273172388&scope=incoming-webhook&redirect_uri=${process.env.NEXT_PUBLIC_WEB_URL?.replace(
+    "http://",
+    "https://",
+  ).replace("3000", "3001")}/api/slack/callback&state=${props.userId}`;
   return (
     <div className="flex flex-col gap-2">
       {isAdmin ? (
