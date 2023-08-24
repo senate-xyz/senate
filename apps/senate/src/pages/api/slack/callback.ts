@@ -48,13 +48,13 @@ export default async function handler(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     result.incoming_webhook.url == undefined ||
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    result.team_name == undefined ||
+    result.team.name == undefined ||
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     result.incoming_webhook.channel == undefined
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    console.log(result);
-    res.send(`Oops, something went wrong! ${result}`);
+    console.log(JSON.stringify(result));
+    res.send(`Oops, something went wrong! ${JSON.stringify(result)}`);
     return;
   }
 
@@ -65,7 +65,7 @@ export default async function handler(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       slackwebhook: result.incoming_webhook.url,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      slackchannelname: `${result.team_name}${result.incoming_webhook.channel}`,
+      slackchannelname: `${result.team.name}${result.incoming_webhook.channel}`,
     })
     .where(eq(user.id, userid as string));
   const [u] = await db
