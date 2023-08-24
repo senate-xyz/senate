@@ -71,7 +71,7 @@ pub async fn dispatch_ending_soon_notifications(
                 };
 
                 let short_url = format!(
-                    "{}/{}/{}/{}",
+                    "{}{}/{}/{}",
                     shortner_url,
                     proposal
                         .id
