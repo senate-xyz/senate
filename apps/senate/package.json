@@ -12,7 +12,7 @@
     "test:senate": "start-server-and-test dev http://localhost:3001 test:e2e",
     "start": "next start",
     "start:senate": "next start",
-    "dev": "next dev -p 3000",
+    "dev": "next dev -p 3000 | npx local-ssl-proxy --source 3001 --target 3000",
     "dev:senate": "next dev",
     "clean": "rimraf .next .turbo node_modules dist yarn-error.log tests/e2e/screenshots tests/e2e/videos",
     "lint": "next lint",

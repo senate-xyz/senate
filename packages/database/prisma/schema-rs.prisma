@@ -34,26 +34,36 @@ datasource db {
 }
 
 model user {
-  id                     String         @id @default(cuid())
-  address                String?        @unique
-  email                  String?        @unique
-  verifiedaddress        Boolean        @default(false)
-  verifiedemail          Boolean        @default(false)
-  isuniswapuser          MagicUserState @default(DISABLED)
-  isaaveuser             MagicUserState @default(DISABLED)
-  challengecode          String         @default("")
-  emaildailybulletin     Boolean        @default(false)
-  emptydailybulletin     Boolean        @default(false)
-  emailquorumwarning     Boolean        @default(true)
-  discordnotifications   Boolean        @default(false)
-  discordreminders       Boolean        @default(true)
-  discordincludevotes    Boolean        @default(true)
-  discordwebhook         String         @default("")
-  telegramnotifications  Boolean        @default(false)
-  telegramreminders      Boolean        @default(true)
-  telegramincludevotes   Boolean        @default(true)
-  telegramchatid         String         @default("")
-  telegramchattitle      String         @default("")
+  id              String         @id @default(cuid())
+  address         String?        @unique
+  email           String?        @unique
+  verifiedaddress Boolean        @default(false)
+  verifiedemail   Boolean        @default(false)
+  isuniswapuser   MagicUserState @default(DISABLED)
+  isaaveuser      MagicUserState @default(DISABLED)
+  challengecode   String         @default("")
+
+  emaildailybulletin Boolean @default(false)
+  emptydailybulletin Boolean @default(false)
+  emailquorumwarning Boolean @default(true)
+
+  discordnotifications Boolean @default(false)
+  discordreminders     Boolean @default(true)
+  discordincludevotes  Boolean @default(true)
+  discordwebhook       String  @default("")
+
+  telegramnotifications Boolean @default(false)
+  telegramreminders     Boolean @default(true)
+  telegramincludevotes  Boolean @default(true)
+  telegramchatid        String  @default("")
+  telegramchattitle     String  @default("")
+
+  slacknotifications Boolean @default(false)
+  slackreminders     Boolean @default(true)
+  slackincludevotes  Boolean @default(true)
+  slackwebhook       String  @default("")
+  slackchannelname   String  @default("")
+
   acceptedterms          Boolean        @default(false)
   acceptedtermstimestamp DateTime?
   firstactive            DateTime       @default(now())

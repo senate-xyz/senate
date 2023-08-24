@@ -3,17 +3,8 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { PostHog } from "posthog-node";
 import { db, user, eq } from "@senate/database";
 
-const scope = ["webhook.incoming"].join(" ");
-const REDIRECT_URI = `${process.env.NEXT_PUBLIC_WEB_URL}/api/discord/callback`;
-
-const OAUTH_QS = new URLSearchParams({
-  client_id: process.env.DISCORD_CLIENT_ID ?? "",
-  redirect_uri: REDIRECT_URI,
-  response_type: "code",
-  scope,
-}).toString();
-
-const OAUTH_URI = `https://discord.com/api/oauth2/authorize?${OAUTH_QS}`;
+const scope = ["incoming-webhook"].join(" ");
+const REDIRECT_URI = `${process.env.NEXT_PUBLIC_WEB_URL}/api/slack/callback`;
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
@@ -28,11 +19,11 @@ export default async function handler(
 
   const { code = null, state: userid } = req.query;
 
-  if (!code || typeof code !== "string") return res.redirect(OAUTH_URI);
+  if (!code || typeof code !== "string") return res.redirect("/");
 
   const body = new URLSearchParams({
-    client_id: process.env.DISCORD_CLIENT_ID ?? "",
-    client_secret: process.env.DISCORD_CLIENT_SECRET ?? "",
+    client_id: process.env.SLACK_CLIENT_ID ?? "",
+    client_secret: process.env.SLACK_CLIENT_SECRET ?? "",
     grant_type: "authorization_code",
     redirect_uri: REDIRECT_URI,
     code,
@@ -41,7 +32,7 @@ export default async function handler(
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   const result = await fetch(
-    "https://discord.com/api/oauth2/token",
+    "https://slack.com/api/oauth.v2.access",
     {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       method: "POST",
@@ -53,9 +44,13 @@ export default async function handler(
   if (
     result == undefined ||
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    result.webhook == undefined ||
+    result.incoming_webhook == undefined ||
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    result.webhook.url == undefined
+    result.incoming_webhook.url == undefined ||
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    result.team_name == undefined ||
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    result.incoming_webhook.channel == undefined
   )
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     res.send(`Oops, something went wrong! ${result.body}`);
@@ -63,9 +58,11 @@ export default async function handler(
   await db
     .update(user)
     .set({
-      discordnotifications: true,
+      slacknotifications: true,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      discordwebhook: result.webhook.url,
+      slackwebhook: result.incoming_webhook.url,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      slackchannelname: `${result.team_name}${result.incoming_webhook.channel}`,
     })
     .where(eq(user.id, userid as string));
   const [u] = await db

@@ -3,48 +3,49 @@
 import Image from "next/image";
 import { useState, useTransition } from "react";
 import {
-  setDiscord,
-  setDiscordIncludeVotes,
-  setDiscordReminders,
-  setWebhookAndEnableDiscord,
+  setSlack,
+  setSlackIncludeVotes,
+  setSlackReminders,
+  setWebhookAndEnableSlack,
 } from "../actions";
 import Link from "next/link";
 import { PostHogFeature } from "posthog-js/react";
 
-export const Discord = (props: {
+export const Slack = (props: {
   enabled: boolean;
   webhook: string;
   reminders: boolean;
   includeVotes: boolean;
   userId: string;
+  channelName: string;
 }) => {
-  const [discordEnabled, setDiscordEnabled] = useState(props.enabled);
+  const [slackEnabled, setSlackEnabled] = useState(props.enabled);
   const [, startTransition] = useTransition();
 
   return (
-    <PostHogFeature flag="discord-secretary" match={true}>
+    <PostHogFeature flag="slack-secretary" match={true}>
       <div className="flex max-w-[800px] flex-col gap-4 bg-black p-4">
         <div className="flex flex-row justify-between">
           <div className="flex flex-row gap-4">
             <Image
-              src="/assets/Senate_Logo/settings_discord_icon.svg"
+              src="/assets/Senate_Logo/settings_slack_icon.svg"
               alt={""}
               width={24}
               height={24}
             />
             <div className="font-[18px] leading-[23px] text-white">
-              Discord Notifications
+              Slack Notifications
             </div>
           </div>
           <label className="relative inline-flex cursor-pointer items-center bg-gray-400 hover:bg-gray-500">
             <input
               type="checkbox"
-              checked={discordEnabled}
+              checked={slackEnabled}
               onChange={(e) => {
-                setDiscordEnabled(e.target.checked);
-                if (!e.target.checked) startTransition(() => setDiscord(false));
+                setSlackEnabled(e.target.checked);
+                if (!e.target.checked) startTransition(() => setSlack(false));
                 if (e.target.checked) {
-                  if (props.webhook) startTransition(() => setDiscord(true));
+                  if (props.webhook) startTransition(() => setSlack(true));
                 }
               }}
               className="peer sr-only"
@@ -53,16 +54,16 @@ export const Discord = (props: {
           </label>
         </div>
         <div className="max-w-[610px] text-[15px] text-white">
-          Receive instant notifications in your Discord server about proposals
+          Receive instant notifications in your Slack server about proposals
           from all organisations you follow on Senate. This will help ensure
           that you and your team always remember to vote.
         </div>
-        {discordEnabled && (
+        {slackEnabled && (
           <Enabled
             webhook={props.webhook}
             reminders={props.reminders}
             includeVotes={props.includeVotes}
-            setDiscordEnabled={setDiscordEnabled}
+            setSlackEnabled={setSlackEnabled}
             userId={props.userId}
           />
         )}
@@ -75,7 +76,7 @@ const Enabled = (props: {
   webhook: string;
   reminders: boolean;
   includeVotes: boolean;
-  setDiscordEnabled: (value: boolean) => void;
+  setSlackEnabled: (value: boolean) => void;
   userId: string;
 }) => {
   const [isAdmin, setIsAdmin] = useState(props.webhook ? true : false);
@@ -83,21 +84,14 @@ const Enabled = (props: {
   const [, startTransition] = useTransition();
   const [currentWebhook, setCurrentWebhook] = useState(props.webhook);
 
-  const discordUrl = process.env.NEXT_PUBLIC_WEB_URL?.includes("localhost")
-    ? `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`
-    : process.env.NEXT_PUBLIC_WEB_URL?.includes("dev")
-    ? `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=https%3A%2F%2Fdev.senatelabs.xyz%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`
-    : process.env.NEXT_PUBLIC_WEB_URL?.includes("staging")
-    ? `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=https%3A%2F%2Fstaging.senatelabs.xyz%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`
-    : `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=https%3A%2F%2Fwww.senatelabs.xyz%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`;
-
+  const slackUrl = `https://slack.com/oauth/v2/authorize?client_id=5703914501122.5797273172388&scope=incoming-webhook&state=${props.userId}`;
   return (
     <div className="flex flex-col gap-2">
       {isAdmin ? (
         <div className="flex flex-col gap-1">
           <div className="flex flex-row items-end gap-2">
             <div className="text-[18px] font-light text-white">
-              Discord Webhook URL
+              Slack Webhook URL
             </div>
           </div>
           <div>
@@ -115,12 +109,12 @@ const Enabled = (props: {
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         startTransition(() =>
-                          setWebhookAndEnableDiscord(currentWebhook),
+                          setWebhookAndEnableSlack(currentWebhook),
                         );
                         setEdit(false);
                       }
                     }}
-                    placeholder="https://discord.com/webhook/"
+                    placeholder="https://slack.com/webhook/"
                   />
 
                   <div
@@ -128,7 +122,7 @@ const Enabled = (props: {
                   bg-[#ABABAB] text-center hover:bg-[#999999]`}
                     onClick={() => {
                       startTransition(() =>
-                        setWebhookAndEnableDiscord(currentWebhook),
+                        setWebhookAndEnableSlack(currentWebhook),
                       );
                       setEdit(false);
                     }}
@@ -149,7 +143,7 @@ const Enabled = (props: {
                   </div>
                   <Link
                     className="w-fit cursor-pointer text-[15px] font-light text-[#ABABAB] underline"
-                    href={discordUrl}
+                    href={slackUrl}
                   >
                     Change Webhook
                   </Link>
@@ -164,19 +158,19 @@ const Enabled = (props: {
         </div>
       ) : (
         <div className="flex flex-col gap-2 text-white">
-          Are you an admin in a Discord server?
+          Are you an admin in a Slack server?
           <div className="flex flex-row gap-8">
             <Link
               className="flex h-[44px] w-[320px] cursor-pointer flex-col justify-center bg-white text-center text-black"
-              href={discordUrl}
+              href={slackUrl}
             >
-              Yes, I&apos;m a Discord server admin!
+              Yes, I&apos;m a Slack server admin!
             </Link>
             <div
               className="flex h-[44px] w-[120px] cursor-pointer flex-col justify-center bg-black text-center text-white underline"
               onClick={() => {
                 setIsAdmin(false);
-                props.setDiscordEnabled(false);
+                props.setSlackEnabled(false);
               }}
             >
               No, I&apos;m not.
@@ -201,7 +195,7 @@ const RemindersSetting = ({ endingSoon }: { endingSoon: boolean }) => {
           type="checkbox"
           checked={rem}
           onChange={(e) => {
-            startTransition(() => setDiscordReminders(e.target.checked));
+            startTransition(() => setSlackReminders(e.target.checked));
             setRem(e.target.checked);
           }}
           className="peer sr-only"
@@ -225,7 +219,7 @@ const IncludeVotesSetting = ({ includeVotes }: { includeVotes: boolean }) => {
           type="checkbox"
           checked={IV}
           onChange={(e) => {
-            startTransition(() => setDiscordIncludeVotes(e.target.checked));
+            startTransition(() => setSlackIncludeVotes(e.target.checked));
             setIV(e.target.checked);
           }}
           className="peer sr-only"
