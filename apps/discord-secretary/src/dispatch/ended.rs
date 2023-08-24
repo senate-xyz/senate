@@ -130,7 +130,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
                         };
 
                         let short_url = format!(
-                            "{}/{}/{}/{}",
+                            "{}{}/{}/{}",
                             shortner_url,
                             proposal
                                 .id

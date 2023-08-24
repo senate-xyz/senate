@@ -90,7 +90,7 @@ pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) ->
             match proposal {
                 Some(proposal) => {
                     let short_url = format!(
-                        "{}/{}/{}/{}",
+                        "{}{}/{}/{}",
                         shortner_url,
                         proposal
                             .id

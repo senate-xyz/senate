@@ -101,7 +101,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
         };
 
         let short_url = format!(
-            "{}/{}/{}/{}",
+            "{}{}/{}/{}",
             shortner_url,
             proposal
                 .clone()
