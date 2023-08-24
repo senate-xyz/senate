@@ -6,7 +6,6 @@ import {
   setDiscord,
   setDiscordIncludeVotes,
   setDiscordReminders,
-  setWebhookAndEnableDiscord,
 } from "../actions";
 import Link from "next/link";
 import { PostHogFeature } from "posthog-js/react";
@@ -79,9 +78,6 @@ const Enabled = (props: {
   userId: string;
 }) => {
   const [isAdmin, setIsAdmin] = useState(props.webhook ? true : false);
-  const [edit, setEdit] = useState(false);
-  const [, startTransition] = useTransition();
-  const [currentWebhook, setCurrentWebhook] = useState(props.webhook);
 
   const discordUrl = process.env.NEXT_PUBLIC_WEB_URL?.includes("localhost")
     ? `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`
@@ -101,65 +97,27 @@ const Enabled = (props: {
             </div>
           </div>
           <div>
-            {edit ? (
-              <div className="flex flex-col gap-2">
-                <div
-                  className={`flex h-[46px] max-w-[382px] flex-row items-center`}
+            <div className={`flex flex-col gap-4`}>
+              <div className={`flex flex-col gap-1`}>
+                <div className="truncate text-[18px] font-light text-[#D9D9D9]">
+                  {
+                    props.webhook.split("/")[
+                      props.webhook.split("/").length - 1
+                    ]
+                  }
+                </div>
+                <Link
+                  className="w-fit cursor-pointer text-[15px] font-light text-[#ABABAB] underline"
+                  href={discordUrl}
                 >
-                  <input
-                    className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
-                    value={currentWebhook}
-                    onChange={(e) => {
-                      setCurrentWebhook(String(e.target.value));
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        startTransition(() =>
-                          setWebhookAndEnableDiscord(currentWebhook),
-                        );
-                        setEdit(false);
-                      }
-                    }}
-                    placeholder="https://discord.com/webhook/"
-                  />
-
-                  <div
-                    className={`flex h-full w-[72px] cursor-pointer flex-col justify-center
-                  bg-[#ABABAB] text-center hover:bg-[#999999]`}
-                    onClick={() => {
-                      startTransition(() =>
-                        setWebhookAndEnableDiscord(currentWebhook),
-                      );
-                      setEdit(false);
-                    }}
-                  >
-                    Save
-                  </div>
-                </div>
+                  Change Webhook
+                </Link>
               </div>
-            ) : (
-              <div className={`flex flex-col gap-4`}>
-                <div className={`flex flex-col gap-1`}>
-                  <div className="truncate text-[18px] font-light text-[#D9D9D9]">
-                    {
-                      currentWebhook.split("/")[
-                        currentWebhook.split("/").length - 1
-                      ]
-                    }
-                  </div>
-                  <Link
-                    className="w-fit cursor-pointer text-[15px] font-light text-[#ABABAB] underline"
-                    href={discordUrl}
-                  >
-                    Change Webhook
-                  </Link>
-                </div>
-                <div className="flex flex-row gap-16">
-                  <IncludeVotesSetting includeVotes={props.includeVotes} />
-                  <RemindersSetting endingSoon={props.reminders} />
-                </div>
+              <div className="flex flex-row gap-16">
+                <IncludeVotesSetting includeVotes={props.includeVotes} />
+                <RemindersSetting endingSoon={props.reminders} />
               </div>
-            )}
+            </div>
           </div>
         </div>
       ) : (

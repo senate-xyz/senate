@@ -2,12 +2,7 @@
 
 import Image from "next/image";
 import { useState, useTransition } from "react";
-import {
-  setSlack,
-  setSlackIncludeVotes,
-  setSlackReminders,
-  setWebhookAndEnableSlack,
-} from "../actions";
+import { setSlack, setSlackIncludeVotes, setSlackReminders } from "../actions";
 import Link from "next/link";
 import { PostHogFeature } from "posthog-js/react";
 
@@ -65,6 +60,7 @@ export const Slack = (props: {
             includeVotes={props.includeVotes}
             setSlackEnabled={setSlackEnabled}
             userId={props.userId}
+            channelName={props.channelName}
           />
         )}
       </div>
@@ -78,11 +74,9 @@ const Enabled = (props: {
   includeVotes: boolean;
   setSlackEnabled: (value: boolean) => void;
   userId: string;
+  channelName: string;
 }) => {
   const [isAdmin, setIsAdmin] = useState(props.webhook ? true : false);
-  const [edit, setEdit] = useState(false);
-  const [, startTransition] = useTransition();
-  const [currentWebhook, setCurrentWebhook] = useState(props.webhook);
 
   const slackUrl = `https://slack.com/oauth/v2/authorize?client_id=5703914501122.5797273172388&scope=incoming-webhook&redirect_uri=${process.env.NEXT_PUBLIC_WEB_URL?.replace(
     "http://",
@@ -92,71 +86,28 @@ const Enabled = (props: {
     <div className="flex flex-col gap-2">
       {isAdmin ? (
         <div className="flex flex-col gap-1">
-          <div className="flex flex-row items-end gap-2">
-            <div className="text-[18px] font-light text-white">
-              Slack Webhook URL
-            </div>
-          </div>
+          <div className="flex flex-row items-end gap-2"></div>
           <div>
-            {edit ? (
-              <div className="flex flex-col gap-2">
-                <div
-                  className={`flex h-[46px] max-w-[382px] flex-row items-center`}
+            <div className={`flex flex-col gap-4`}>
+              <div className={`flex flex-col gap-1`}>
+                <div className="flex gap-1 text-white items-end">
+                  Sending notifications to{" "}
+                  <div className="text-[15px] font-light text-[#D9D9D9]">
+                    {props.channelName}
+                  </div>
+                </div>
+                <Link
+                  className="w-fit cursor-pointer text-[15px] font-light text-[#ABABAB] underline"
+                  href={slackUrl}
                 >
-                  <input
-                    className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
-                    value={currentWebhook}
-                    onChange={(e) => {
-                      setCurrentWebhook(String(e.target.value));
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        startTransition(() =>
-                          setWebhookAndEnableSlack(currentWebhook),
-                        );
-                        setEdit(false);
-                      }
-                    }}
-                    placeholder="https://slack.com/webhook/"
-                  />
-
-                  <div
-                    className={`flex h-full w-[72px] cursor-pointer flex-col justify-center
-                  bg-[#ABABAB] text-center hover:bg-[#999999]`}
-                    onClick={() => {
-                      startTransition(() =>
-                        setWebhookAndEnableSlack(currentWebhook),
-                      );
-                      setEdit(false);
-                    }}
-                  >
-                    Save
-                  </div>
-                </div>
+                  Change Channel
+                </Link>
               </div>
-            ) : (
-              <div className={`flex flex-col gap-4`}>
-                <div className={`flex flex-col gap-1`}>
-                  <div className="truncate text-[18px] font-light text-[#D9D9D9]">
-                    {
-                      currentWebhook.split("/")[
-                        currentWebhook.split("/").length - 1
-                      ]
-                    }
-                  </div>
-                  <Link
-                    className="w-fit cursor-pointer text-[15px] font-light text-[#ABABAB] underline"
-                    href={slackUrl}
-                  >
-                    Change Webhook
-                  </Link>
-                </div>
-                <div className="flex flex-row gap-16">
-                  <IncludeVotesSetting includeVotes={props.includeVotes} />
-                  <RemindersSetting endingSoon={props.reminders} />
-                </div>
+              <div className="flex flex-row gap-16">
+                <IncludeVotesSetting includeVotes={props.includeVotes} />
+                <RemindersSetting endingSoon={props.reminders} />
               </div>
-            )}
+            </div>
           </div>
         </div>
       ) : (
