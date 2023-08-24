@@ -91,7 +91,7 @@ const Enabled = (props: {
             <div className={`flex flex-col gap-4`}>
               <div className={`flex flex-col gap-1`}>
                 <div className="flex gap-1 text-white items-end">
-                  Sending notifications to{" "}
+                  Sending notifications to team{" "}
                   <div className="text-[15px] font-light text-[#D9D9D9]">
                     {props.channelName}
                   </div>

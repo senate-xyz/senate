@@ -65,7 +65,7 @@ export default async function handler(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       slackwebhook: result.incoming_webhook.url,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      slackchannelname: `${result.team.name}${result.incoming_webhook.channel}`,
+      slackchannelname: `${result.team.name} > ${result.incoming_webhook.channel}`,
     })
     .where(eq(user.id, userid as string));
   const [u] = await db
