@@ -32,7 +32,7 @@ export default async function handler(
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   const result = await fetch(
-    "https://slack.com/api/oauth.access",
+    "https://slack.com/api/oauth.v2.access",
     {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       method: "POST",
