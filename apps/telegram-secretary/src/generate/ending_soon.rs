@@ -81,12 +81,7 @@ pub async fn generate_ending_soon_notifications(
         let mut ending_not_voted_proposals = vec![];
 
         for proposal in ending_proposals {
-            if !get_vote(user.clone().id, proposal.clone().id, client)
-                .await
-                .unwrap()
-            {
-                ending_not_voted_proposals.push(proposal);
-            }
+            ending_not_voted_proposals.push(proposal);
         }
         client
             .notification()

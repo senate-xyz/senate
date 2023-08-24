@@ -4,7 +4,7 @@ use anyhow::{Context, Result};
 use chrono::Duration;
 use ethers::{
     prelude::LogMeta,
-    providers::Middleware,
+    providers::{Http, Middleware, Provider},
     types::{Address, Filter},
 };
 use futures::stream::{FuturesUnordered, StreamExt};
@@ -26,7 +26,7 @@ use tracing::{debug_span, instrument, Instrument};
 use crate::{
     contracts::{makerpollcreate, makerpollcreate::PollCreatedFilter},
     daohandler_with_dao,
-    prisma::{daohandler, ProposalState},
+    prisma::{daohandler, PrismaClient, ProposalState},
     router::chain_proposals::ChainProposal,
     Ctx,
 };
@@ -39,7 +39,7 @@ struct Decoder {
 }
 
 pub async fn maker_poll_proposals(
-    ctx: &Ctx,
+    rpc: &Arc<Provider<Http>>,
     dao_handler: &daohandler_with_dao::Data,
     from_block: &i64,
     to_block: &i64,
@@ -51,8 +51,7 @@ pub async fn maker_poll_proposals(
         .parse::<Address>()
         .expect("bad address");
 
-    let gov_contract =
-        makerpollcreate::makerpollcreate::makerpollcreate::new(address, ctx.rpc.clone());
+    let gov_contract = makerpollcreate::makerpollcreate::makerpollcreate::new(address, rpc.clone());
 
     let events = gov_contract
         .poll_created_filter()
@@ -64,7 +63,7 @@ pub async fn maker_poll_proposals(
     let mut futures = FuturesUnordered::new();
 
     for p in proposals.iter() {
-        futures.push(async { data_for_proposal(p.clone(), ctx, &decoder, dao_handler).await });
+        futures.push(async { data_for_proposal(p.clone(), rpc, &decoder, dao_handler).await });
     }
 
     let mut result = Vec::new();
@@ -77,14 +76,14 @@ pub async fn maker_poll_proposals(
 
 async fn data_for_proposal(
     p: (makerpollcreate::makerpollcreate::PollCreatedFilter, LogMeta),
-    ctx: &Ctx,
+    rpc: &Arc<Provider<Http>>,
     decoder: &Decoder,
     dao_handler: &daohandler_with_dao::Data,
 ) -> Result<ChainProposal> {
     let (log, meta): (PollCreatedFilter, LogMeta) = p.clone();
 
     let created_block_number = meta.block_number.as_u64().to_i64().unwrap();
-    let created_block = ctx.rpc.get_block(meta.clone().block_number).await?;
+    let created_block = rpc.get_block(meta.clone().block_number).await?;
     let created_block_timestamp = created_block.expect("bad block").time()?;
 
     let mut voting_starts_timestamp = DateTime::from_utc(

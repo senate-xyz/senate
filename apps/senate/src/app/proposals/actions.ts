@@ -18,6 +18,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
 import { userTovoter } from "@senate/database";
 import { PostHog } from "posthog-node";
+import { voterhandler } from "@senate/database";
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
   host: `${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/ingest`,
@@ -149,6 +150,11 @@ export async function fetchItems(
       ? proxies.map((p) => (p.voter ? p.voter?.address : "unknown"))
       : [proxy];
 
+  const votersIds =
+    proxy == "any"
+      ? proxies.map((p) => (p.voter ? p.voter?.id : "unknown"))
+      : [proxy];
+
   const subscribedDaos = await db
     .select()
     .from(subscription)
@@ -170,7 +176,6 @@ export async function fetchItems(
     )
     .leftJoin(dao, eq(proposal.daoid, dao.id))
     .leftJoin(daohandler, eq(proposal.daohandlerid, daohandler.id))
-
     .where(
       and(
         voted == "no" ? isNull(vote.id) : undefined,
@@ -208,26 +213,51 @@ export async function fetchItems(
 
   type ConsolidatedProposalResult = Omit<(typeof p)[0], "vote"> & {
     votes?: (typeof p)[0]["vote"][];
+    uptodate?: boolean;
   };
 
-  const consolidatedResults = p.reduce(
-    (acc: ConsolidatedProposalResult[], curr) => {
-      const existingProposal = acc.find(
-        (p) => p.proposal.id === curr.proposal.id,
+  const consolidatedResults: ConsolidatedProposalResult[] = [];
+
+  for (const curr of p) {
+    const existingProposal = consolidatedResults.find(
+      (proposal) => proposal.proposal?.id === curr.proposal?.id,
+    );
+
+    const voterHandlers = await db
+      .select()
+      .from(voterhandler)
+      .where(
+        and(
+          eq(voterhandler.daohandlerid, curr.proposal.daohandlerid),
+          votersIds.length > 0
+            ? inArray(voterhandler.voterid, votersIds)
+            : inArray(voterhandler.voterid, ["undefined"]),
+        ),
       );
 
-      if (existingProposal) {
-        existingProposal.votes!.push(curr.vote);
-      } else {
-        acc.push(curr);
-        if (curr.vote) (curr as ConsolidatedProposalResult).votes = [curr.vote];
-        else (curr as ConsolidatedProposalResult).votes = [];
-      }
+    let uptodate = true;
+    for (const vh of voterHandlers) {
+      if (!vh.uptodate) uptodate = vh.uptodate;
+    }
 
-      return acc;
-    },
-    [],
-  );
+    if (
+      !curr.daohandler?.uptodate &&
+      curr.daohandler?.type != "MAKER_POLL_ARBITRUM"
+    ) {
+      uptodate = false;
+    }
+
+    if (existingProposal) {
+      existingProposal.votes!.push(curr.vote);
+      existingProposal.uptodate = uptodate;
+    } else {
+      if (curr.vote) (curr as ConsolidatedProposalResult).votes = [curr.vote];
+      else (curr as ConsolidatedProposalResult).votes = [];
+
+      (curr as ConsolidatedProposalResult).uptodate = uptodate;
+      consolidatedResults.push(curr as ConsolidatedProposalResult);
+    }
+  }
 
   return consolidatedResults;
 }

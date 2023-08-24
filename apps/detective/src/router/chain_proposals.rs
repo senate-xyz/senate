@@ -1,5 +1,11 @@
+use std::sync::Arc;
+
 use anyhow::{bail, Result};
-use ethers::{prelude::k256::elliptic_curve::PrimeField, providers::Middleware, types::U64};
+use ethers::{
+    prelude::k256::elliptic_curve::PrimeField,
+    providers::{Http, Middleware, Provider},
+    types::U64,
+};
 use prisma_client_rust::chrono::{DateTime, FixedOffset, Utc};
 use reqwest::header::HeaderMap;
 use rocket::serde::json::Json;
@@ -11,13 +17,22 @@ use tracing::{
 use crate::{
     daohandler_with_dao,
     handlers::proposals::{
-        aave::aave_proposals, compound::compound_proposals, dydx::dydx_proposals,
-        ens::ens_proposals, gitcoin::gitcoin_proposals, hop::hop_proposals,
-        interest_protocol::interest_protocol_proposals, maker_executive::maker_executive_proposals,
-        maker_poll::maker_poll_proposals, uniswap::uniswap_proposals,
+        aave::aave_proposals,
+        arbitrum_core::{self, arbitrum_core_proposals},
+        arbitrum_treasury::arbitrum_treasury_proposals,
+        compound::compound_proposals,
+        dydx::dydx_proposals,
+        ens::ens_proposals,
+        gitcoin::gitcoin_proposals,
+        hop::hop_proposals,
+        interest_protocol::interest_protocol_proposals,
+        maker_executive::maker_executive_proposals,
+        maker_poll::maker_poll_proposals,
+        optimism::optimism_proposals,
+        uniswap::uniswap_proposals,
         zeroxtreasury::zeroxtreasury_proposals,
     },
-    prisma::{dao, daohandler, proposal, DaoHandlerType, ProposalState},
+    prisma::{dao, daohandler, proposal, DaoHandlerType, PrismaClient, ProposalState},
     Ctx, ProposalsRequest, ProposalsResponse,
 };
 
@@ -67,8 +82,18 @@ pub async fn update_chain_proposals<'a>(
 
         let mut from_block = min_block;
 
-        let current_block = ctx
-            .rpc
+        let rpc = if dao_handler.r#type == DaoHandlerType::MakerPollArbitrum
+            || dao_handler.r#type == DaoHandlerType::ArbitrumCoreChain
+            || dao_handler.r#type == DaoHandlerType::ArbitrumTreasuryChain
+        {
+            &ctx.arbitrum_rpc
+        } else if dao_handler.r#type == DaoHandlerType::OptimismChain {
+            &ctx.optimism_rpc
+        } else {
+            &ctx.eth_rpc
+        };
+
+        let current_block = rpc
             .get_block_number()
             .await
             .unwrap_or(U64::from(from_block))
@@ -101,7 +126,15 @@ pub async fn update_chain_proposals<'a>(
             "refresh interval"
         );
 
-        let result = get_results(ctx, from_block, to_block, dao_handler).await;
+        let result = get_results(
+            &ctx.db,
+            rpc,
+            from_block,
+            to_block,
+            dao_handler,
+            current_block,
+        )
+        .await;
 
         match result {
             Ok(_) => Json(ProposalsResponse {
@@ -123,65 +156,194 @@ pub async fn update_chain_proposals<'a>(
 
 #[instrument(skip_all)]
 async fn get_results(
-    ctx: &Ctx,
+    db: &Arc<PrismaClient>,
+    rpc: &Arc<Provider<Http>>,
     from_block: i64,
     to_block: i64,
     dao_handler: daohandler_with_dao::Data,
+    current_block: i64,
 ) -> Result<()> {
     match dao_handler.r#type {
         DaoHandlerType::AaveChain => {
-            let p = aave_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let p = aave_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
             Ok(())
         }
         DaoHandlerType::CompoundChain => {
-            let p = compound_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let p = compound_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
             Ok(())
         }
         DaoHandlerType::UniswapChain => {
-            let p = uniswap_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let p = uniswap_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
             Ok(())
         }
         DaoHandlerType::EnsChain => {
-            let p = ens_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let p = ens_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
             Ok(())
         }
         DaoHandlerType::GitcoinChain => {
-            let p = gitcoin_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let p = gitcoin_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
             Ok(())
         }
         DaoHandlerType::HopChain => {
-            let p = hop_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let p = hop_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
             Ok(())
         }
         DaoHandlerType::DydxChain => {
-            let p = dydx_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let p = dydx_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
             Ok(())
         }
         DaoHandlerType::MakerPoll => {
-            let p = maker_poll_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let p = maker_poll_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
             Ok(())
         }
         DaoHandlerType::MakerExecutive => {
-            let p = maker_executive_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let p = maker_executive_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
             Ok(())
         }
         DaoHandlerType::InterestProtocolChain => {
-            let p = interest_protocol_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let p = interest_protocol_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
             Ok(())
         }
         DaoHandlerType::ZeroxProtocolChain => {
-            let p = zeroxtreasury_proposals(ctx, &dao_handler, &from_block, &to_block).await?;
-            let _ = insert_proposals(p, to_block, ctx, dao_handler.clone()).await;
+            let p = zeroxtreasury_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
+            Ok(())
+        }
+        DaoHandlerType::OptimismChain => {
+            let p = optimism_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
+            Ok(())
+        }
+        DaoHandlerType::ArbitrumCoreChain => {
+            let p = arbitrum_core_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
+            Ok(())
+        }
+        DaoHandlerType::ArbitrumTreasuryChain => {
+            let p = arbitrum_treasury_proposals(rpc, &dao_handler, &from_block, &to_block).await?;
+            let _ = insert_proposals(
+                p,
+                from_block,
+                to_block,
+                db,
+                dao_handler.clone(),
+                current_block,
+            )
+            .await;
             Ok(())
         }
         DaoHandlerType::MakerPollArbitrum => bail!("not implemeneted"),
@@ -192,13 +354,14 @@ async fn get_results(
 #[instrument(skip_all)]
 async fn insert_proposals(
     proposals: Vec<ChainProposal>,
+    from_block: i64,
     to_block: i64,
-    ctx: &Ctx,
+    db: &Arc<PrismaClient>,
     dao_handler: daohandler_with_dao::Data,
+    current_block: i64,
 ) -> Result<()> {
     for proposal in proposals.clone() {
-        let existing = ctx
-            .db
+        let existing = db
             .proposal()
             .find_unique(proposal::externalid_daoid(
                 proposal.external_id.to_string(),
@@ -223,8 +386,7 @@ async fn insert_proposals(
                         dao_handler_id = dao_handler.id,
                         "update proposal"
                     );
-                    ctx.db
-                        .proposal()
+                    db.proposal()
                         .update(
                             proposal::externalid_daoid(
                                 proposal.external_id.to_string(),
@@ -269,8 +431,7 @@ async fn insert_proposals(
                     "insert proposal"
                 );
 
-                ctx.db
-                    .proposal()
+                db.proposal()
                     .create_unchecked(
                         proposal.name.clone(),
                         proposal.external_id.clone(),
@@ -310,17 +471,21 @@ async fn insert_proposals(
         .cloned()
         .collect();
 
-    let new_index = if !open_proposals.is_empty() {
+    let mut new_index = if !open_proposals.is_empty() {
         open_proposals
             .iter()
             .map(|p| p.block_created)
-            .min()
+            .max()
             .unwrap_or_default()
     } else {
         to_block
     };
 
-    let uptodate = dao_handler.chainindex - new_index < 1000;
+    if new_index == from_block && new_index < to_block {
+        new_index = to_block;
+    }
+
+    let uptodate = current_block - new_index < 1000;
 
     event!(
         Level::INFO,
@@ -344,8 +509,7 @@ async fn insert_proposals(
             dao_handler_id = dao_handler.id,
             "set new index"
         );
-        ctx.db
-            .daohandler()
+        db.daohandler()
             .update(
                 daohandler::id::equals(dao_handler.id.to_string()),
                 vec![

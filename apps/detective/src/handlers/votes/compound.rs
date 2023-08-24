@@ -1,6 +1,9 @@
+use std::sync::Arc;
+
 use anyhow::{bail, Result};
 use ethers::{
     prelude::LogMeta,
+    providers::{Http, Provider},
     types::{Address, Filter, H160, H256},
 };
 use futures::stream::{FuturesUnordered, StreamExt};
@@ -11,7 +14,7 @@ use tracing::{debug_span, instrument, Instrument};
 use crate::{
     contracts::compoundgov::{self, VoteCastFilter},
     daohandler_with_dao,
-    prisma::{daohandler, proposal},
+    prisma::{daohandler, proposal, PrismaClient},
     router::chain_votes::{Vote, VoteResult},
     Ctx,
 };
@@ -23,7 +26,8 @@ struct Decoder {
 }
 
 pub async fn compound_votes(
-    ctx: &Ctx,
+    db: &Arc<PrismaClient>,
+    rpc: &Arc<Provider<Http>>,
     dao_handler: &daohandler_with_dao::Data,
     from_block: i64,
     to_block: i64,
@@ -33,7 +37,7 @@ pub async fn compound_votes(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = compoundgov::compoundgov::compoundgov::new(address, ctx.rpc.clone());
+    let gov_contract = compoundgov::compoundgov::compoundgov::new(address, rpc.clone());
 
     let voters_addresses: Vec<H256> = voters
         .clone()
@@ -57,7 +61,7 @@ pub async fn compound_votes(
                 logs.clone(),
                 dao_handler.clone(),
                 voter_address.clone(),
-                ctx,
+                db.clone(),
             )
             .await
         });
@@ -82,7 +86,7 @@ async fn get_votes_for_voter(
     logs: Vec<(VoteCastFilter, LogMeta)>,
     dao_handler: daohandler_with_dao::Data,
     voter_address: String,
-    ctx: &Ctx,
+    db: Arc<PrismaClient>,
 ) -> Result<VoteResult> {
     let voter_logs: Vec<(VoteCastFilter, LogMeta)> = logs
         .into_iter()
@@ -92,8 +96,7 @@ async fn get_votes_for_voter(
     let mut votes: Vec<Vote> = vec![];
 
     for (log, meta) in voter_logs {
-        let p = ctx
-            .db
+        let p = db
             .proposal()
             .find_first(vec![
                 proposal::externalid::equals(log.proposal_id.to_string()),

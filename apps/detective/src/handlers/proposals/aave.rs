@@ -3,7 +3,7 @@ use std::{str, sync::Arc, time::Duration};
 use anyhow::Result;
 use ethers::{
     prelude::LogMeta,
-    providers::Middleware,
+    providers::{Http, Middleware, Provider},
     types::{Address, Filter, U256},
     utils::hex,
 };
@@ -27,7 +27,7 @@ use crate::{
         aavestrategy,
     },
     daohandler_with_dao,
-    prisma::{daohandler, ProposalState},
+    prisma::{daohandler, PrismaClient, ProposalState},
     router::chain_proposals::ChainProposal,
     utils::etherscan::estimate_timestamp,
     Ctx,
@@ -41,7 +41,7 @@ struct Decoder {
 }
 
 pub async fn aave_proposals(
-    ctx: &Ctx,
+    rpc: &Arc<Provider<Http>>,
     dao_handler: &daohandler_with_dao::Data,
     from_block: &i64,
     to_block: &i64,
@@ -50,7 +50,7 @@ pub async fn aave_proposals(
 
     let address = decoder.address.parse::<Address>().expect("bad address");
 
-    let gov_contract = aavegov::aavegov::aavegov::new(address, ctx.rpc.clone());
+    let gov_contract = aavegov::aavegov::aavegov::new(address, rpc.clone());
 
     let events = gov_contract
         .proposal_created_filter()
@@ -63,7 +63,7 @@ pub async fn aave_proposals(
 
     for p in proposals.iter() {
         futures.push(async {
-            data_for_proposal(p.clone(), ctx, &decoder, dao_handler, gov_contract.clone()).await
+            data_for_proposal(p.clone(), rpc, &decoder, dao_handler, gov_contract.clone()).await
         });
     }
 
@@ -77,7 +77,7 @@ pub async fn aave_proposals(
 
 async fn data_for_proposal(
     p: (aavegov::aavegov::ProposalCreatedFilter, LogMeta),
-    ctx: &Ctx,
+    rpc: &Arc<Provider<Http>>,
     decoder: &Decoder,
     dao_handler: &daohandler_with_dao::Data,
     gov_contract: aavegov::aavegov::aavegov<ethers::providers::Provider<ethers::providers::Http>>,
@@ -85,7 +85,7 @@ async fn data_for_proposal(
     let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
 
     let created_block_number = meta.block_number.as_u64().to_i64().unwrap();
-    let created_block = ctx.rpc.get_block(meta.block_number).await?;
+    let created_block = rpc.get_block(meta.block_number).await?;
     let created_block_timestamp = created_block.expect("bad block").time()?;
 
     let voting_start_block_number = log.start_block.as_u64().to_i64().unwrap();
@@ -120,10 +120,10 @@ async fn data_for_proposal(
     let proposal_external_id = log.id.to_string();
 
     let executor_contract =
-        aaveexecutor::aaveexecutor::aaveexecutor::new(log.executor, ctx.rpc.clone());
+        aaveexecutor::aaveexecutor::aaveexecutor::new(log.executor, rpc.clone());
 
     let strategy_contract =
-        aavestrategy::aavestrategy::aavestrategy::new(log.strategy, ctx.rpc.clone());
+        aavestrategy::aavestrategy::aavestrategy::new(log.strategy, rpc.clone());
 
     let total_voting_power = strategy_contract
         .get_total_voting_supply_at(U256::from(meta.block_number.as_u64()))

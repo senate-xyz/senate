@@ -17,6 +17,7 @@ export const Discord = (props: {
   webhook: string;
   reminders: boolean;
   includeVotes: boolean;
+  userId: string;
 }) => {
   const [discordEnabled, setDiscordEnabled] = useState(props.enabled);
   const [, startTransition] = useTransition();
@@ -63,6 +64,7 @@ export const Discord = (props: {
             reminders={props.reminders}
             includeVotes={props.includeVotes}
             setDiscordEnabled={setDiscordEnabled}
+            userId={props.userId}
           />
         )}
       </div>
@@ -75,12 +77,21 @@ const Enabled = (props: {
   reminders: boolean;
   includeVotes: boolean;
   setDiscordEnabled: (value: boolean) => void;
+  userId: string;
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(props.webhook ? true : false);
   const [edit, setEdit] = useState(false);
   const [, startTransition] = useTransition();
   const [currentWebhook, setCurrentWebhook] = useState(props.webhook);
+
+  const discordUrl = process.env.NEXT_PUBLIC_WEB_URL?.includes("localhost")
+    ? `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`
+    : process.env.NEXT_PUBLIC_WEB_URL?.includes("dev")
+    ? `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=https%3A%2F%2Fdev.senatelabs.xyz%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`
+    : process.env.NEXT_PUBLIC_WEB_URL?.includes("staging")
+    ? `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=https%3A%2F%2Fstaging.senatelabs.xyz%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`
+    : `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=https%3A%2F%2Fsenatelabs.xyz%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`;
 
   return (
     <div className="flex flex-col gap-2">
@@ -163,14 +174,12 @@ const Enabled = (props: {
                       ]
                     }
                   </div>
-                  <div
+                  <Link
                     className="w-fit cursor-pointer text-[15px] font-light text-[#ABABAB] underline"
-                    onClick={() => {
-                      setEdit(true);
-                    }}
+                    href={discordUrl}
                   >
                     Change Webhook
-                  </div>
+                  </Link>
                 </div>
                 <div className="flex flex-row gap-16">
                   <IncludeVotesSetting includeVotes={props.includeVotes} />
@@ -184,16 +193,12 @@ const Enabled = (props: {
         <div className="flex flex-col gap-2 text-white">
           Are you an admin in a Discord server?
           <div className="flex flex-row gap-8">
-            <div
+            <Link
               className="flex h-[44px] w-[320px] cursor-pointer flex-col justify-center bg-white text-center text-black"
-              onClick={() => {
-                setIsAdmin(true);
-                setShowModal(true);
-                setEdit(true);
-              }}
+              href={discordUrl}
             >
               Yes, I&apos;m a Discord server admin!
-            </div>
+            </Link>
             <div
               className="flex h-[44px] w-[120px] cursor-pointer flex-col justify-center bg-black text-center text-white underline"
               onClick={() => {

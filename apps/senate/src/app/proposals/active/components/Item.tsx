@@ -27,7 +27,7 @@ export default function Item(props: {
                 priority={true}
                 width={64}
                 height={64}
-                src={`${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${
+                src={`${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/${
                   props.item.dao!.picture
                 }.svg`}
                 alt={props.item.dao!.name}
@@ -39,25 +39,61 @@ export default function Item(props: {
               </div>
 
               <div>
-                {props.item.daohandler!.type == "SNAPSHOT" ? (
-                  <Image
-                    loading="eager"
-                    priority={true}
-                    width={94}
-                    height={26}
-                    src={"/assets/Icon/OffChainProposal.svg"}
-                    alt="off-chain"
-                  />
-                ) : (
-                  <Image
-                    loading="eager"
-                    priority={true}
-                    width={94}
-                    height={26}
-                    src={"/assets/Icon/OnChainProposal.svg"}
-                    alt="on-chain"
-                  />
-                )}
+                <div
+                  className={`w-[87px] h-[26px] flex items-center justify-center gap-1 leading-[19px] ${
+                    props.item.daohandler?.type == "SNAPSHOT"
+                      ? "bg-[#262626]"
+                      : "bg-[#D9D9D9]"
+                  } ${
+                    props.item.daohandler?.type == "SNAPSHOT"
+                      ? "text-[#ABABAB]"
+                      : "text-[#262626]"
+                  } text-[15px]`}
+                >
+                  {props.item.daohandler?.type == "SNAPSHOT" ? (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      width={16}
+                      height={16}
+                      src={"/assets/Icon/Chains/snapshot.svg"}
+                      alt="off-chain"
+                    />
+                  ) : props.item.daohandler?.type == "ARBITRUM_CORE_CHAIN" ||
+                    props.item.daohandler?.type == "ARBITRUM_TREASURY_CHAIN" ? (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      width={16}
+                      height={16}
+                      src={"/assets/Icon/Chains/arbitrum.svg"}
+                      alt="off-chain"
+                    />
+                  ) : props.item.daohandler?.type == "OPTIMISM_CHAIN" ? (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      width={16}
+                      height={16}
+                      src={"/assets/Icon/Chains/optimism.svg"}
+                      alt="off-chain"
+                    />
+                  ) : (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      width={16}
+                      height={16}
+                      src={"/assets/Icon/Chains/ethereum.svg"}
+                      alt="off-chain"
+                    />
+                  )}
+                  <div>
+                    {props.item.daohandler?.type == "SNAPSHOT"
+                      ? "offchain"
+                      : "onchain"}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -106,7 +142,8 @@ export default function Item(props: {
                     Connect wallet to see your vote status
                   </div>
                 )}
-                {/* {vote == "LOADING" && (
+
+                {!props.item.uptodate && (
                   <Image
                     loading="eager"
                     priority={true}
@@ -115,33 +152,39 @@ export default function Item(props: {
                     width={32}
                     height={32}
                   />
-                )} */}
-                {isConnected && props.item.votes!.length > 0 && (
-                  <div className="flex w-full flex-col items-center">
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      src="/assets/Icon/Voted.svg"
-                      alt="voted"
-                      width={32}
-                      height={32}
-                    />
-                    <div className="text-[18px]">Voted</div>
-                  </div>
                 )}
-                {isConnected && props.item.votes!.length == 0 && (
-                  <div className="flex w-full flex-col items-center">
-                    <Image
-                      loading="eager"
-                      priority={true}
-                      src="/assets/Icon/NotVotedYet.svg"
-                      alt="voted"
-                      width={32}
-                      height={32}
-                    />
-                    <div className="text-[18px]">Not Voted Yet</div>
-                  </div>
-                )}
+
+                {props.item.uptodate &&
+                  isConnected &&
+                  props.item.votes!.length > 0 && (
+                    <div className="flex w-full flex-col items-center">
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        src="/assets/Icon/Voted.svg"
+                        alt="voted"
+                        width={32}
+                        height={32}
+                      />
+                      <div className="text-[18px]">Voted</div>
+                    </div>
+                  )}
+
+                {props.item.uptodate &&
+                  isConnected &&
+                  props.item.votes!.length == 0 && (
+                    <div className="flex w-full flex-col items-center">
+                      <Image
+                        loading="eager"
+                        priority={true}
+                        src="/assets/Icon/NotVotedYet.svg"
+                        alt="voted"
+                        width={32}
+                        height={32}
+                      />
+                      <div className="text-[18px]">Not Voted Yet</div>
+                    </div>
+                  )}
               </div>
             </Suspense>
           </div>
@@ -152,13 +195,13 @@ export default function Item(props: {
         <div className="flex w-full flex-col gap-2 p-2">
           <div className="flex flex-row gap-2">
             <div className="flex flex-col items-center gap-2">
-              <div className="w-[48px] border border-b-2 border-l-0 border-r-2 border-t-0">
+              <div className="w-[68px] border border-b-2 border-l-0 border-r-2 border-t-0">
                 <Image
                   loading="eager"
                   priority={true}
-                  width={48}
-                  height={48}
-                  src={`${process.env.NEXT_PUBLIC_WEB_URL ?? ""}${
+                  width={68}
+                  height={68}
+                  src={`${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/${
                     props.item.dao!.picture
                   }.svg`}
                   alt={props.item.dao!.name}
@@ -166,25 +209,61 @@ export default function Item(props: {
               </div>
 
               <div>
-                {props.item.daohandler!.type == "SNAPSHOT" ? (
-                  <Image
-                    loading="eager"
-                    priority={true}
-                    width={50}
-                    height={15}
-                    src={"/assets/Icon/OnChainProposal.svg"}
-                    alt="off-chain"
-                  />
-                ) : (
-                  <Image
-                    loading="eager"
-                    priority={true}
-                    width={50}
-                    height={14}
-                    src={"/assets/Icon/OffChainProposal.svg"}
-                    alt="on-chain"
-                  />
-                )}
+                <div
+                  className={`w-[68px] h-[20px] flex items-center justify-center gap-1 leading-[19px] ${
+                    props.item.daohandler?.type == "SNAPSHOT"
+                      ? "bg-[#262626]"
+                      : "bg-[#D9D9D9]"
+                  } ${
+                    props.item.daohandler?.type == "SNAPSHOT"
+                      ? "text-[#ABABAB]"
+                      : "text-[#262626]"
+                  } text-[12px]`}
+                >
+                  {props.item.daohandler?.type == "SNAPSHOT" ? (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      width={12}
+                      height={12}
+                      src={"/assets/Icon/Chains/snapshot.svg"}
+                      alt="off-chain"
+                    />
+                  ) : props.item.daohandler?.type == "ARBITRUM_CORE_CHAIN" ||
+                    props.item.daohandler?.type == "ARBITRUM_TREASURY_CHAIN" ? (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      width={12}
+                      height={12}
+                      src={"/assets/Icon/Chains/arbitrum.svg"}
+                      alt="off-chain"
+                    />
+                  ) : props.item.daohandler?.type == "OPTIMISM_CHAIN" ? (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      width={12}
+                      height={12}
+                      src={"/assets/Icon/Chains/optimism.svg"}
+                      alt="off-chain"
+                    />
+                  ) : (
+                    <Image
+                      loading="eager"
+                      priority={true}
+                      width={12}
+                      height={12}
+                      src={"/assets/Icon/Chains/ethereum.svg"}
+                      alt="off-chain"
+                    />
+                  )}
+                  <div>
+                    {props.item.daohandler?.type == "SNAPSHOT"
+                      ? "offchain"
+                      : "onchain"}
+                  </div>
+                </div>
               </div>
             </div>
             <div className="cursor-pointer self-center pb-5 hover:underline">
@@ -235,7 +314,7 @@ export default function Item(props: {
                     </div>
                   )}
 
-                  {/*  {vote == "LOADING" && (
+                  {!props.item.uptodate && (
                     <Image
                       loading="eager"
                       priority={true}
@@ -244,33 +323,37 @@ export default function Item(props: {
                       width={32}
                       height={32}
                     />
-                  )} */}
-
-                  {isConnected && props.item.votes!.length > 0 && (
-                    <div className="flex w-full flex-col items-center">
-                      <Image
-                        loading="eager"
-                        priority={true}
-                        src="/assets/Icon/Voted.svg"
-                        alt="voted"
-                        width={32}
-                        height={32}
-                      />
-                    </div>
                   )}
 
-                  {isConnected && props.item.votes!.length == 0 && (
-                    <div className="flex w-full flex-col items-center">
-                      <Image
-                        loading="eager"
-                        priority={true}
-                        src="/assets/Icon/NotVotedYet.svg"
-                        alt="voted"
-                        width={32}
-                        height={32}
-                      />
-                    </div>
-                  )}
+                  {props.item.uptodate &&
+                    isConnected &&
+                    props.item.votes!.length > 0 && (
+                      <div className="flex w-full flex-col items-center">
+                        <Image
+                          loading="eager"
+                          priority={true}
+                          src="/assets/Icon/Voted.svg"
+                          alt="voted"
+                          width={32}
+                          height={32}
+                        />
+                      </div>
+                    )}
+
+                  {props.item.uptodate &&
+                    isConnected &&
+                    props.item.votes!.length == 0 && (
+                      <div className="flex w-full flex-col items-center">
+                        <Image
+                          loading="eager"
+                          priority={true}
+                          src="/assets/Icon/NotVotedYet.svg"
+                          alt="voted"
+                          width={32}
+                          height={32}
+                        />
+                      </div>
+                    )}
                 </div>
               </Suspense>
             </div>

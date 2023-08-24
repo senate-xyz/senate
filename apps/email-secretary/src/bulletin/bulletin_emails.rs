@@ -423,7 +423,7 @@ async fn get_ending_soon_proposals(
         );
         EndingSoonProposals {
             daoLogoUrl: format!(
-                "{}{}{}",
+                "{}/{}{}",
                 env::var_os("NEXT_PUBLIC_WEB_URL")
                     .unwrap()
                     .into_string()
@@ -438,9 +438,15 @@ async fn get_ending_soon_proposals(
                     .into_string()
                     .unwrap(),
                 if p.daohandler.r#type == DaoHandlerType::Snapshot {
-                    "/assets/Emails/off-chain-rectangle.png"
+                    "/assets/Emails/Chains/snapshot.png"
+                } else if p.daohandler.r#type == DaoHandlerType::ArbitrumCoreChain
+                    || p.daohandler.r#type == DaoHandlerType::ArbitrumTreasuryChain
+                {
+                    "/assets/Emails/Chains/arbitrum.png"
+                } else if p.daohandler.r#type == DaoHandlerType::OptimismChain {
+                    "/assets/Emails/Chains/optimism.png"
                 } else {
-                    "/assets/Emails/on-chain-rectangle.png"
+                    "/assets/Emails/Chains/ethereum.png"
                 }
             ),
             url: short_url,
@@ -520,7 +526,7 @@ async fn get_new_proposals(
 
         NewProposals {
             daoLogoUrl: format!(
-                "{}{}{}",
+                "{}/{}{}",
                 env::var_os("NEXT_PUBLIC_WEB_URL")
                     .unwrap()
                     .into_string()
@@ -535,9 +541,15 @@ async fn get_new_proposals(
                     .into_string()
                     .unwrap(),
                 if p.daohandler.r#type == DaoHandlerType::Snapshot {
-                    "/assets/Emails/off-chain-rectangle.png"
+                    "/assets/Emails/Chains/snapshot.png"
+                } else if p.daohandler.r#type == DaoHandlerType::ArbitrumCoreChain
+                    || p.daohandler.r#type == DaoHandlerType::ArbitrumTreasuryChain
+                {
+                    "/assets/Emails/Chains/arbitrum.png"
+                } else if p.daohandler.r#type == DaoHandlerType::OptimismChain {
+                    "/assets/Emails/Chains/optimism.png"
                 } else {
-                    "/assets/Emails/on-chain-rectangle.png"
+                    "/assets/Emails/Chains/ethereum.png"
                 }
             ),
             url: short_url,
@@ -626,7 +638,7 @@ async fn get_ended_proposals(
 
         EndedProposals {
             daoLogoUrl: format!(
-                "{}{}{}",
+                "{}/{}{}",
                 env::var_os("NEXT_PUBLIC_WEB_URL")
                     .unwrap()
                     .into_string()
@@ -641,9 +653,15 @@ async fn get_ended_proposals(
                     .into_string()
                     .unwrap(),
                 if p.daohandler.r#type == DaoHandlerType::Snapshot {
-                    "/assets/Emails/off-chain-rectangle.png"
+                    "/assets/Emails/Chains/snapshot.png"
+                } else if p.daohandler.r#type == DaoHandlerType::ArbitrumCoreChain
+                    || p.daohandler.r#type == DaoHandlerType::ArbitrumTreasuryChain
+                {
+                    "/assets/Emails/Chains/arbitrum.png"
+                } else if p.daohandler.r#type == DaoHandlerType::OptimismChain {
+                    "/assets/Emails/Chains/optimism.png"
                 } else {
-                    "/assets/Emails/on-chain-rectangle.png"
+                    "/assets/Emails/Chains/ethereum.png"
                 }
             ),
             url: short_url,
