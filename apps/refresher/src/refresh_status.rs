@@ -66,14 +66,8 @@ pub async fn create_daos_refresh_statuses(client: &PrismaClient) {
                 },
                 votersrefreshspeed: if daohandler.r#type == DaoHandlerType::Snapshot {
                     1000
-                } else if daohandler.r#type == DaoHandlerType::MakerPollArbitrum
-                    || daohandler.r#type == DaoHandlerType::OptimismChain
-                    || daohandler.r#type == DaoHandlerType::ArbitrumCoreChain
-                    || daohandler.r#type == DaoHandlerType::ArbitrumTreasuryChain
-                {
-                    100000000
                 } else {
-                    10000000
+                    10000000000
                 },
             };
 
