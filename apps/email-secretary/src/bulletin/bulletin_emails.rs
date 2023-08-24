@@ -423,7 +423,7 @@ async fn get_ending_soon_proposals(
         );
         EndingSoonProposals {
             daoLogoUrl: format!(
-                "{}{}{}",
+                "{}/{}{}",
                 env::var_os("NEXT_PUBLIC_WEB_URL")
                     .unwrap()
                     .into_string()
@@ -526,7 +526,7 @@ async fn get_new_proposals(
 
         NewProposals {
             daoLogoUrl: format!(
-                "{}{}{}",
+                "{}/{}{}",
                 env::var_os("NEXT_PUBLIC_WEB_URL")
                     .unwrap()
                     .into_string()
@@ -638,7 +638,7 @@ async fn get_ended_proposals(
 
         EndedProposals {
             daoLogoUrl: format!(
-                "{}{}{}",
+                "{}/{}{}",
                 env::var_os("NEXT_PUBLIC_WEB_URL")
                     .unwrap()
                     .into_string()

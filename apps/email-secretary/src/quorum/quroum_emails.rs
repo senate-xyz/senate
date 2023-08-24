@@ -167,7 +167,7 @@ pub async fn dispatch_quorum_notifications(db: &Arc<prisma::PrismaClient>) -> Re
                 "on-chain".to_string()
             },
             daoLogoUrl: format!(
-                "{}{}{}",
+                "{}/{}{}",
                 env::var_os("NEXT_PUBLIC_WEB_URL")
                     .unwrap()
                     .into_string()

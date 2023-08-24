@@ -54,6 +54,16 @@ export default async function handler(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   ).then((res) => res.json());
 
+  if (
+    result == undefined ||
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    result.webhook == undefined ||
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    result.webhook.url == undefined
+  )
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    res.send(`Oops, something went wrong! ${result.body}`);
+
   await db
     .update(user)
     .set({
