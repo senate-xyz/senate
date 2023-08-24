@@ -394,11 +394,11 @@ async fn insert_votes(
         daochainindex
     };
 
-    let mut uptodate = current_block - new_index < 100000 && new_index == daochainindex;
+    let mut uptodate = current_block - to_block < 100000 && to_block >= daochainindex;
 
     if dao_handler.r#type == DaoHandlerType::MakerPollArbitrum {
         new_index = to_block;
-        uptodate = current_block - new_index < 100000
+        uptodate = current_block - to_block < 100000
     }
 
     event!(
