@@ -91,7 +91,7 @@ const Enabled = (props: {
     ? `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=https%3A%2F%2Fdev.senatelabs.xyz%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`
     : process.env.NEXT_PUBLIC_WEB_URL?.includes("staging")
     ? `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=https%3A%2F%2Fstaging.senatelabs.xyz%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`
-    : `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=https%3A%2F%2Fsenatelabs.xyz%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`;
+    : `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=https%3A%2F%2Fwww.senatelabs.xyz%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`;
 
   return (
     <div className="flex flex-col gap-2">
