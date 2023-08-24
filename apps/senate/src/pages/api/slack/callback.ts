@@ -3,7 +3,7 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { PostHog } from "posthog-node";
 import { db, user, eq } from "@senate/database";
 
-const scope = ["incoming-webhook"].join(" ");
+const scope = ["incoming-webhook identify.team"].join(" ");
 const REDIRECT_URI = `${process.env.NEXT_PUBLIC_WEB_URL}/api/slack/callback`;
 
 const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
@@ -32,7 +32,7 @@ export default async function handler(
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   const result = await fetch(
-    "https://slack.com/api/oauth.v2.access",
+    "https://slack.com/api/oauth.access",
     {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       method: "POST",
