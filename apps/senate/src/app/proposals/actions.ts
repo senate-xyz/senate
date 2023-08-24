@@ -194,7 +194,7 @@ export async function fetchItems(
         inArray(
           proposal.state,
           active
-            ? ["ACTIVE", "PENDING"]
+            ? ["ACTIVE"]
             : [
                 "QUEUED",
                 "DEFEATED",
