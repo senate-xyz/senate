@@ -79,7 +79,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                             dao_handler_r.votersrefreshspeed = cmp::min(
                                 dao_handler_r.votersrefreshspeed
                                     + (dao_handler_r.votersrefreshspeed * 10 / 100),
-                                1000000000,
+                                10000000000,
                             );
 
                             event!(
@@ -93,7 +93,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                             dao_handler_r.votersrefreshspeed = cmp::max(
                                 dao_handler_r.votersrefreshspeed
                                     - (dao_handler_r.votersrefreshspeed * 50 / 100),
-                                100,
+                                100000,
                             );
 
                             event!(
@@ -129,7 +129,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                         dao_handler_r.votersrefreshspeed = cmp::max(
                             dao_handler_r.votersrefreshspeed
                                 - (dao_handler_r.votersrefreshspeed * 50 / 100),
-                            100,
+                            100000,
                         );
                     }
                 }
@@ -150,7 +150,7 @@ pub(crate) async fn consume_chain_votes(entry: RefreshEntry) -> Result<()> {
                 dao_handler_r.votersrefreshspeed = cmp::max(
                     dao_handler_r.votersrefreshspeed
                         - (dao_handler_r.votersrefreshspeed * 50 / 100),
-                    100,
+                    100000,
                 );
             }
         }
