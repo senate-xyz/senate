@@ -21,6 +21,7 @@
     "build:email-secretary": "turbo run build:email-secretary",
     "build:discord-secretary": "turbo run build:discord-secretary",
     "build:telegram-secretary": "turbo run build:telegram-secretary",
+    "build:slack-secretary": "turbo run build:slack-secretary",
     "build:db": "turbo run build:db",
     "build:db:node": "turbo run build:db:node",
     "start": "turbo run start",

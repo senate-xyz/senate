@@ -25,6 +25,10 @@
       "path": "../apps/telegram-secretary"
     },
     {
+      "name": "🦀 @senate/slack-secretary",
+      "path": "../apps/slack-secretary"
+    },
+    {
       "name": "🌐 @senate/senate",
       "path": "../apps/senate"
     },

@@ -178,6 +178,7 @@ export const notification = mysqlTable(
     discordmessageid: varchar("discordmessageid", { length: 191 }),
     telegramchatid: varchar("telegramchatid", { length: 191 }),
     telegrammessageid: varchar("telegrammessageid", { length: 191 }),
+    slackmessageid: varchar("slackmessageid", { length: 191 }),
     emailtemplate: varchar("emailtemplate", { length: 191 }),
   },
   (table) => {
