@@ -5,8 +5,14 @@ use prisma_client_rust::chrono::{Duration, Utc};
 use tracing::{debug_span, instrument, Instrument};
 
 use crate::prisma::{
-    notification, proposal, subscription, user, NotificationDispatchedState, NotificationType,
-    PrismaClient, ProposalState,
+    notification,
+    proposal,
+    subscription,
+    user,
+    NotificationDispatchedState,
+    NotificationType,
+    PrismaClient,
+    ProposalState,
 };
 
 proposal::include!(proposal_with_dao { dao daohandler });

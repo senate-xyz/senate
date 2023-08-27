@@ -8,13 +8,23 @@ use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use rocket::serde::json::Json;
 use serde::Deserialize;
 use tracing::{
-    debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
+    debug_span,
+    event,
+    info_span,
+    instrument,
+    span,
+    trace_span,
+    Instrument,
+    Level,
+    Span,
 };
 
 use crate::{
     daohandler_with_dao,
     prisma::{dao, daohandler, proposal, ProposalState},
-    Ctx, ProposalsRequest, ProposalsResponse,
+    Ctx,
+    ProposalsRequest,
+    ProposalsResponse,
 };
 
 #[derive(Debug, Deserialize)]

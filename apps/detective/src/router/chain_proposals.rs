@@ -11,7 +11,15 @@ use reqwest::header::HeaderMap;
 use rocket::serde::json::Json;
 use serde_json::Value;
 use tracing::{
-    debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
+    debug_span,
+    event,
+    info_span,
+    instrument,
+    span,
+    trace_span,
+    Instrument,
+    Level,
+    Span,
 };
 
 use crate::{
@@ -33,7 +41,9 @@ use crate::{
         zeroxtreasury::zeroxtreasury_proposals,
     },
     prisma::{dao, daohandler, proposal, DaoHandlerType, PrismaClient, ProposalState},
-    Ctx, ProposalsRequest, ProposalsResponse,
+    Ctx,
+    ProposalsRequest,
+    ProposalsResponse,
 };
 
 #[allow(dead_code)]

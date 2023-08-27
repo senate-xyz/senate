@@ -14,7 +14,9 @@ use crate::{
     config::Config,
     prisma::{self, voterhandler},
     refresh_status::{DAOS_REFRESH_STATUS, VOTERS_REFRESH_STATUS},
-    RefreshEntry, RefreshStatus, RefreshType,
+    RefreshEntry,
+    RefreshStatus,
+    RefreshType,
 };
 
 #[instrument(skip_all)]

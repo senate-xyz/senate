@@ -21,14 +21,16 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::{
-        optimismgov, optimismgov::ProposalCreated1Filter, optimismgov::ProposalCreated2Filter,
+        optimismgov,
+        optimismgov::{ProposalCreated1Filter, ProposalCreated2Filter},
         optimismvotemodule_5_4a_8f,
     },
     daohandler_with_dao,
     prisma::{daohandler, ProposalState},
     router::chain_proposals::ChainProposal,
     utils::optimiscan::estimate_timestamp,
-    Context, Ctx,
+    Context,
+    Ctx,
 };
 
 #[allow(non_snake_case)]

@@ -7,8 +7,14 @@ use tracing::{debug_span, event, instrument, warn, Instrument, Level};
 use crate::{
     dispatch::new_proposals,
     prisma::{
-        self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
-        NotificationType, PrismaClient,
+        self,
+        notification,
+        proposal,
+        user,
+        DaoHandlerType,
+        NotificationDispatchedState,
+        NotificationType,
+        PrismaClient,
     },
     utils::posthog::posthog_event,
 };

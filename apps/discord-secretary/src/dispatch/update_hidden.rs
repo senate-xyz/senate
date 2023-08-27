@@ -14,7 +14,13 @@ use tracing::{debug_span, event, instrument, warn, Instrument, Level};
 
 use crate::{
     prisma::{
-        self, notification, proposal, user, DaoHandlerType, NotificationType, PrismaClient,
+        self,
+        notification,
+        proposal,
+        user,
+        DaoHandlerType,
+        NotificationType,
+        PrismaClient,
         ProposalState,
     },
     utils::vote::get_vote,
