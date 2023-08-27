@@ -78,8 +78,8 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
 
         match new_notification {
             Some(new_notification) => {
-                let initial_message_id: u64 =
-                    new_notification.slackmessageid.unwrap().parse().unwrap();
+                // let initial_message_id: u64 =
+                //     new_notification.slackmessageid.unwrap().parse().unwrap();
 
                 match proposal {
                     Some(proposal) => {
