@@ -174,6 +174,11 @@ pub async fn dispatch_ending_soon_notifications(
                     NotificationType::ThirdReminderTelegram => todo!(),
                     NotificationType::EndedProposalTelegram => todo!(),
                     NotificationType::BulletinEmail => todo!(),
+                    NotificationType::NewProposalSlack => todo!(),
+                    NotificationType::FirstReminderSlack => todo!(),
+                    NotificationType::SecondReminderSlack => todo!(),
+                    NotificationType::ThirdReminderSlack => todo!(),
+                    NotificationType::EndedProposalSlack => todo!(),
                 };
 
                 let message = bot

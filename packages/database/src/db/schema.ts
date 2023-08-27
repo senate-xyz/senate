@@ -156,6 +156,11 @@ export const notification = mysqlTable(
       "SECOND_REMINDER_TELEGRAM",
       "THIRD_REMINDER_TELEGRAM",
       "ENDED_PROPOSAL_TELEGRAM",
+      "NEW_PROPOSAL_SLACK",
+      "FIRST_REMINDER_SLACK",
+      "SECOND_REMINDER_SLACK",
+      "THIRD_REMINDER_SLACK",
+      "ENDED_PROPOSAL_SLACK",
     ]).notNull(),
     dispatchstatus: mysqlEnum("dispatchstatus", [
       "NOT_DISPATCHED",
