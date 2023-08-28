@@ -2,14 +2,8 @@ use std::{env, sync::Arc, time::Duration};
 
 use anyhow::Result;
 
-use slack_morphism::{
-    prelude::{SlackApiPostWebhookMessageRequest, SlackClientHyperConnector},
-    SlackClient,
-    SlackMessageContent,
-};
 use tokio::time::sleep;
 use tracing::{debug_span, event, instrument, warn, Instrument, Level};
-use url::Url;
 
 use crate::{
     prisma::{
@@ -31,6 +25,7 @@ prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 #[instrument(skip_all)]
 pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> Result<()> {
+    let reqwest_client = reqwest::Client::new();
     let notifications = client
         .notification()
         .find_many(vec![
@@ -52,9 +47,6 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> 
             .exec()
             .await?
             .unwrap();
-
-        let slack_client = SlackClient::new(SlackClientHyperConnector::new());
-        let webhook_url: Url = Url::parse(user.slackwebhook.as_str())?;
 
         let proposal = client
             .proposal()
@@ -98,7 +90,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> 
                         .collect::<String>()
                 );
 
-                let image = if user.slackincludevotes {
+                let image = if user.discordincludevotes {
                     if voted {
                         "https://www.senatelabs.xyz/assets/Discord/active-vote2x.png"
                     } else {
@@ -108,38 +100,71 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> 
                     "https://www.senatelabs.xyz/assets/Discord/placeholder2x.png"
                 };
 
-                slack_client
-                    .post_webhook_message(
-                        &webhook_url,
-                        &SlackApiPostWebhookMessageRequest::new(
-                            SlackMessageContent::new().with_text(format!(
-                                "**{}** {} proposal ending **<t:{}:R>**",
-                                proposal.dao.name,
-                                if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                    "offchain"
-                                } else {
-                                    "onchain"
-                                },
-                                proposal.timeend.timestamp()
-                            )),
-                        ),
-                    )
+                let repsonse = reqwest_client
+                    .post(user.clone().slackwebhook)
+                    .body("this is an new proposal message")
+                    .header("Content-Type", "application/json")
+                    .send()
+                    .await?
+                    .text()
                     .await?;
 
-                event!(
-                    Level::INFO,
-                    user = user.address.clone().unwrap(),
-                    proposal_name = proposal.name,
-                    dao = proposal.dao.name,
-                    "new notification"
-                );
+                let update_data = match repsonse.as_str() {
+                    "ok" => {
+                        event!(
+                            Level::INFO,
+                            user = user.address.clone().unwrap(),
+                            proposal_name = proposal.name,
+                            dao = proposal.dao.name,
+                            "new notification"
+                        );
 
-                // posthog_event(
-                //     "slack_new_notification",
-                //     user.address.unwrap(),
-                //     proposal.name,
-                //     proposal.dao.name,
-                // );
+                        posthog_event(
+                            "slack_new_notification",
+                            user.address.unwrap(),
+                            proposal.name,
+                            proposal.dao.name,
+                        );
+
+                        vec![notification::dispatchstatus::set(
+                            NotificationDispatchedState::Dispatched,
+                        )]
+                    }
+                    _ => {
+                        posthog_event(
+                            "slack_new_notification_fail",
+                            user.address.unwrap(),
+                            proposal.name,
+                            proposal.dao.name,
+                        );
+
+                        match notification.dispatchstatus {
+                            NotificationDispatchedState::NotDispatched => {
+                                vec![notification::dispatchstatus::set(
+                                    NotificationDispatchedState::FirstRetry,
+                                )]
+                            }
+                            NotificationDispatchedState::FirstRetry => {
+                                vec![notification::dispatchstatus::set(
+                                    NotificationDispatchedState::SecondRetry,
+                                )]
+                            }
+                            NotificationDispatchedState::SecondRetry => {
+                                vec![notification::dispatchstatus::set(
+                                    NotificationDispatchedState::ThirdRetry,
+                                )]
+                            }
+                            NotificationDispatchedState::ThirdRetry => {
+                                vec![notification::dispatchstatus::set(
+                                    NotificationDispatchedState::Failed,
+                                )]
+                            }
+                            NotificationDispatchedState::Dispatched => todo!(),
+                            NotificationDispatchedState::Deleted => todo!(),
+                            NotificationDispatchedState::Failed => todo!(),
+                        }
+                    }
+                };
 
                 client
                     .notification()
@@ -149,9 +174,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> 
                             notification::proposalid::equals(proposal.id.into()),
                             notification::r#type::equals(NotificationType::NewProposalSlack),
                         ],
-                        vec![notification::dispatchstatus::set(
-                            NotificationDispatchedState::Dispatched,
-                        )],
+                        update_data,
                     )
                     .exec()
                     .await?;

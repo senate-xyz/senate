@@ -1,13 +1,7 @@
 use std::{env, sync::Arc, time::Duration};
 
-use slack_morphism::{
-    prelude::{SlackApiPostWebhookMessageRequest, SlackClientHyperConnector},
-    SlackClient,
-    SlackMessageContent,
-};
 use tokio::time::sleep;
 use tracing::{debug_span, event, instrument, warn, Instrument, Level};
-use url::Url;
 
 use crate::{
     dispatch::new_proposals,
@@ -30,6 +24,8 @@ use anyhow::Result;
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
 pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> Result<()> {
+    let reqwest_client = reqwest::Client::new();
+
     let notifications = client
         .notification()
         .find_many(vec![
@@ -53,7 +49,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
             .find_first(vec![
                 notification::userid::equals(notification.clone().userid),
                 notification::proposalid::equals(notification.clone().proposalid),
-                notification::r#type::equals(NotificationType::NewProposalSlack),
+                notification::r#type::equals(NotificationType::NewProposalDiscord),
             ])
             .exec()
             .await?;
@@ -64,9 +60,6 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
             .exec()
             .await?
             .unwrap();
-
-        let slack_client = SlackClient::new(SlackClientHyperConnector::new());
-        let webhook_url: Url = Url::parse(user.slackwebhook.as_str())?;
 
         let proposal = client
             .proposal()
@@ -127,83 +120,71 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
                 .collect::<String>()
         );
 
-        let message_content = match notification.r#type {
-            NotificationType::QuorumNotReachedEmail => todo!(),
-            NotificationType::NewProposalDiscord => todo!(),
-            NotificationType::FirstReminderDiscord => todo!(),
-            NotificationType::SecondReminderDiscord => todo!(),
-            NotificationType::ThirdReminderDiscord => todo!(),
-            NotificationType::EndedProposalDiscord => todo!(),
-            NotificationType::NewProposalTelegram => todo!(),
-            NotificationType::FirstReminderTelegram => todo!(),
-            NotificationType::SecondReminderTelegram => todo!(),
-            NotificationType::ThirdReminderTelegram => todo!(),
-            NotificationType::EndedProposalTelegram => todo!(),
-            NotificationType::BulletinEmail => todo!(),
-            NotificationType::NewProposalSlack => todo!(),
-            NotificationType::FirstReminderSlack => {
-                format!(
-                    "⌛ **{}** {} proposal {} **ends in 2️⃣4️⃣ hours.** 🕒 \nVote here 👉 <{}>",
-                    proposal.clone().unwrap().dao.name,
-                    if proposal.clone().unwrap().daohandler.r#type == DaoHandlerType::Snapshot {
-                        "offchain"
-                    } else {
-                        "on-chain"
-                    },
-                    match new_notification {
-                        Some(new_notification) => new_notification
-                            .discordmessagelink
-                            .unwrap_or(proposal.clone().unwrap().name),
-                        None => proposal.clone().unwrap().name,
-                    },
-                    short_url
-                )
-            }
-            NotificationType::SecondReminderSlack => {
-                format!(
-                    "🚨 **{}** {} proposal {} **ends in :six: hours.** 🕒 \nVote here 👉 <{}>",
-                    proposal.clone().unwrap().dao.name,
-                    if proposal.clone().unwrap().daohandler.r#type == DaoHandlerType::Snapshot {
-                        "offchain"
-                    } else {
-                        "on-chain"
-                    },
-                    match new_notification {
-                        Some(new_notification) => new_notification
-                            .discordmessagelink
-                            .unwrap_or(proposal.clone().unwrap().name),
-                        None => proposal.clone().unwrap().name,
-                    },
-                    short_url
-                )
-            }
-            NotificationType::ThirdReminderSlack => todo!(),
-            NotificationType::EndedProposalSlack => todo!(),
-        };
-
-        slack_client
-            .post_webhook_message(
-                &webhook_url,
-                &SlackApiPostWebhookMessageRequest::new(
-                    SlackMessageContent::new().with_text(message_content),
-                ),
-            )
+        let repsonse = reqwest_client
+            .post(user.clone().slackwebhook)
+            .body("this is an ending soon proposal message")
+            .header("Content-Type", "application/json")
+            .send()
+            .await?
+            .text()
             .await?;
 
-        event!(
-            Level::INFO,
-            user = user.address.clone().unwrap(),
-            proposal_name = proposal.clone().unwrap().name,
-            dao = proposal.clone().unwrap().dao.name,
-            "new notification"
-        );
+        let update_data = match repsonse.as_str() {
+            "ok" => {
+                event!(
+                    Level::INFO,
+                    user = user.address.clone().unwrap(),
+                    proposal_name = proposal.clone().unwrap().name,
+                    dao = proposal.clone().unwrap().dao.name,
+                    "new notification"
+                );
 
-        // posthog_event(
-        //     "slack_ending_soon_notification",
-        //     user.address.unwrap(),
-        //     proposal.clone().unwrap().name,
-        //     proposal.clone().unwrap().dao.name,
-        // );
+                posthog_event(
+                    "slack_ending_soon_notification",
+                    user.address.unwrap(),
+                    proposal.clone().unwrap().name,
+                    proposal.clone().unwrap().dao.name,
+                );
+
+                vec![notification::dispatchstatus::set(
+                    NotificationDispatchedState::Dispatched,
+                )]
+            }
+            _ => {
+                posthog_event(
+                    "slack_ending_soon_notification_fail",
+                    user.address.unwrap(),
+                    proposal.clone().unwrap().name,
+                    proposal.clone().unwrap().dao.name,
+                );
+
+                match notification.dispatchstatus {
+                    NotificationDispatchedState::NotDispatched => {
+                        vec![notification::dispatchstatus::set(
+                            NotificationDispatchedState::FirstRetry,
+                        )]
+                    }
+                    NotificationDispatchedState::FirstRetry => {
+                        vec![notification::dispatchstatus::set(
+                            NotificationDispatchedState::SecondRetry,
+                        )]
+                    }
+                    NotificationDispatchedState::SecondRetry => {
+                        vec![notification::dispatchstatus::set(
+                            NotificationDispatchedState::ThirdRetry,
+                        )]
+                    }
+                    NotificationDispatchedState::ThirdRetry => {
+                        vec![notification::dispatchstatus::set(
+                            NotificationDispatchedState::Failed,
+                        )]
+                    }
+                    NotificationDispatchedState::Dispatched => todo!(),
+                    NotificationDispatchedState::Deleted => todo!(),
+                    NotificationDispatchedState::Failed => todo!(),
+                }
+            }
+        };
 
         client
             .notification()
@@ -213,9 +194,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
                     notification::proposalid::equals(notification.clone().proposalid),
                     notification::r#type::equals(notification.clone().r#type),
                 ],
-                vec![notification::dispatchstatus::set(
-                    NotificationDispatchedState::Dispatched,
-                )],
+                update_data,
             )
             .exec()
             .await?;
