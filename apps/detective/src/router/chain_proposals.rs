@@ -491,7 +491,7 @@ async fn insert_proposals(
         to_block
     };
 
-    let uptodate = current_block - new_index < 1000;
+    let uptodate = current_block - to_block < 100000;
 
     event!(
         Level::INFO,
