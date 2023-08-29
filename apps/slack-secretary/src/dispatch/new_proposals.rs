@@ -60,47 +60,6 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> 
 
         match proposal {
             Some(proposal) => {
-                let voted = get_vote(user.clone().id, proposal.clone().id, client).await?;
-
-                let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
-                    Some(v) => v.into_string().unwrap(),
-                    None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
-                };
-
-                let short_url = format!(
-                    "{}{}/{}/{}",
-                    shortner_url,
-                    proposal
-                        .id
-                        .chars()
-                        .rev()
-                        .take(7)
-                        .collect::<Vec<char>>()
-                        .into_iter()
-                        .rev()
-                        .collect::<String>(),
-                    "d",
-                    user.clone()
-                        .id
-                        .chars()
-                        .rev()
-                        .take(7)
-                        .collect::<Vec<char>>()
-                        .into_iter()
-                        .rev()
-                        .collect::<String>()
-                );
-
-                let image = if user.discordincludevotes {
-                    if voted {
-                        "https://www.senatelabs.xyz/assets/Discord/active-vote2x.png"
-                    } else {
-                        "https://www.senatelabs.xyz/assets/Discord/active-no-vote2x.png"
-                    }
-                } else {
-                    "https://www.senatelabs.xyz/assets/Discord/placeholder2x.png"
-                };
-
                 let payload = serde_json::json!({
                     "blocks": [
                         {

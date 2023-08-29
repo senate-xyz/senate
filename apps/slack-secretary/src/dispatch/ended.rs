@@ -71,81 +71,8 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
             .await?;
 
         match new_notification {
-            Some(new_notification) => match proposal {
+            Some(_) => match proposal {
                 Some(proposal) => {
-                    let (result_index, max_score) = proposal
-                        .scores
-                        .as_array()
-                        .unwrap()
-                        .iter()
-                        .map(|score| score.as_f64().unwrap())
-                        .enumerate()
-                        .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
-                        .unwrap_or((100, 0.0));
-
-                    let message_content = if result_index == 100 {
-                        "❓ Could not fetch results".to_string()
-                    } else if proposal.scorestotal.as_f64().unwrap()
-                        >= proposal.quorum.as_f64().unwrap()
-                        && proposal.scorestotal.as_f64().unwrap() > 0.0
-                    {
-                        format!(
-                            ":ballot_box_with_check: **{}** {}%",
-                            &proposal.choices.as_array().unwrap()[result_index]
-                                .as_str()
-                                .unwrap(),
-                            (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
-                        )
-                    } else {
-                        ":regional_indicator_x: No Quorum".to_string()
-                    };
-
-                    let voted = get_vote(
-                        new_notification.userid,
-                        new_notification.proposalid.unwrap(),
-                        client,
-                    )
-                    .await?;
-
-                    let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
-                        Some(v) => v.into_string().unwrap(),
-                        None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
-                    };
-
-                    let short_url = format!(
-                        "{}{}/{}/{}",
-                        shortner_url,
-                        proposal
-                            .id
-                            .chars()
-                            .rev()
-                            .take(7)
-                            .collect::<Vec<char>>()
-                            .into_iter()
-                            .rev()
-                            .collect::<String>(),
-                        "d",
-                        user.clone()
-                            .id
-                            .chars()
-                            .rev()
-                            .take(7)
-                            .collect::<Vec<char>>()
-                            .into_iter()
-                            .rev()
-                            .collect::<String>()
-                    );
-
-                    let image = if user.slackincludevotes {
-                        if voted {
-                            "https://www.senatelabs.xyz/assets/Discord/past-vote2x.png"
-                        } else {
-                            "https://www.senatelabs.xyz/assets/Discord/past-no-vote2x.png"
-                        }
-                    } else {
-                        "https://www.senatelabs.xyz/assets/Discord/placeholder2x.png"
-                    };
-
                     let payload = serde_json::json!({
                         "blocks": [
                             {

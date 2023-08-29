@@ -44,16 +44,6 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
         .await?;
 
     for notification in notifications {
-        let new_notification = client
-            .notification()
-            .find_first(vec![
-                notification::userid::equals(notification.clone().userid),
-                notification::proposalid::equals(notification.clone().proposalid),
-                notification::r#type::equals(NotificationType::NewProposalDiscord),
-            ])
-            .exec()
-            .await?;
-
         let user = client
             .user()
             .find_first(vec![user::id::equals(notification.clone().userid)])
@@ -88,37 +78,6 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
 
             continue;
         }
-
-        let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
-            Some(v) => v.into_string().unwrap(),
-            None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
-        };
-
-        let short_url = format!(
-            "{}{}/{}/{}",
-            shortner_url,
-            proposal
-                .clone()
-                .unwrap()
-                .id
-                .chars()
-                .rev()
-                .take(7)
-                .collect::<Vec<char>>()
-                .into_iter()
-                .rev()
-                .collect::<String>(),
-            "d",
-            user.clone()
-                .id
-                .chars()
-                .rev()
-                .take(7)
-                .collect::<Vec<char>>()
-                .into_iter()
-                .rev()
-                .collect::<String>()
-        );
 
         let payload = serde_json::json!({
             "blocks": [

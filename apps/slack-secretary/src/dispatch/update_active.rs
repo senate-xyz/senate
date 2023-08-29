@@ -23,7 +23,7 @@ use anyhow::Result;
 
 prisma::proposal::include!(proposal_with_dao { dao daohandler });
 
-pub async fn update_active_proposal_notifications(client: &Arc<PrismaClient>) -> Result<()> {
+pub async fn update_active_proposal_notifications(_client: &Arc<PrismaClient>) -> Result<()> {
     // let active_proposals = client
     //     .proposal()
     //     .find_many(vec![prisma::proposal::state::equals(ProposalState::Active)])

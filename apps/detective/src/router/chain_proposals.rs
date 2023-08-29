@@ -364,7 +364,7 @@ async fn get_results(
 #[instrument(skip_all)]
 async fn insert_proposals(
     proposals: Vec<ChainProposal>,
-    from_block: i64,
+    _from_block: i64,
     to_block: i64,
     db: &Arc<PrismaClient>,
     dao_handler: daohandler_with_dao::Data,

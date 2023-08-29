@@ -1,6 +1,6 @@
 use std::env;
 
-pub fn posthog_event(event: &str, user: String, proposal_name: String, dao_name: String) {
+pub fn _posthog_event(event: &str, user: String, proposal_name: String, dao_name: String) {
     let mut event = posthog_rs::Event::new(event, user.as_str());
     event.insert_prop("proposal", proposal_name).unwrap();
     event.insert_prop("dao", dao_name).unwrap();
