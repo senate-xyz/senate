@@ -2,6 +2,7 @@ use std::{env, sync::Arc, time::Duration};
 
 use anyhow::Result;
 
+use prisma_client_rust::serde_json;
 use tokio::time::sleep;
 use tracing::{debug_span, event, instrument, warn, Instrument, Level};
 
@@ -16,7 +17,7 @@ use crate::{
         NotificationType,
         PrismaClient,
     },
-    utils::{posthog::posthog_event, vote::get_vote},
+    utils::vote::get_vote,
 };
 
 use super::utils::notification_retry::update_notification_retry;
@@ -100,9 +101,21 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> 
                     "https://www.senatelabs.xyz/assets/Discord/placeholder2x.png"
                 };
 
+                let payload = serde_json::json!({
+                    "blocks": [
+                        {
+                            "type": "section",
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": format!("New proposal {:}", proposal.name)
+                            }
+                        }
+                    ]
+                });
+
                 let repsonse = reqwest_client
                     .post(user.clone().slackwebhook)
-                    .body("this is an new proposal message")
+                    .json(&payload)
                     .header("Content-Type", "application/json")
                     .send()
                     .await?
@@ -119,23 +132,17 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> 
                             "new notification"
                         );
 
-                        posthog_event(
-                            "slack_new_notification",
-                            user.address.unwrap(),
-                            proposal.name,
-                            proposal.dao.name,
-                        );
-
                         vec![notification::dispatchstatus::set(
                             NotificationDispatchedState::Dispatched,
                         )]
                     }
                     _ => {
-                        posthog_event(
-                            "slack_new_notification_fail",
-                            user.address.unwrap(),
-                            proposal.name,
-                            proposal.dao.name,
+                        event!(
+                            Level::WARN,
+                            user = user.address.clone().unwrap(),
+                            proposal_name = proposal.name,
+                            dao = proposal.dao.name,
+                            "new notification"
                         );
 
                         match notification.dispatchstatus {

@@ -1,7 +1,7 @@
 use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
 
 use anyhow::Result;
-use prisma_client_rust::bigdecimal::ToPrimitive;
+use prisma_client_rust::{bigdecimal::ToPrimitive, serde_json};
 
 use tokio::time::sleep;
 use tracing::{debug_span, event, instrument, warn, Instrument, Level};
@@ -17,7 +17,7 @@ use crate::{
         NotificationType,
         PrismaClient,
     },
-    utils::{posthog::posthog_event, vote::get_vote},
+    utils::vote::get_vote,
 };
 
 use super::utils::notification_retry::update_notification_retry;
@@ -146,9 +146,21 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
                         "https://www.senatelabs.xyz/assets/Discord/placeholder2x.png"
                     };
 
+                    let payload = serde_json::json!({
+                        "blocks": [
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": format!("Ended proposal {:}", proposal.name)
+                                }
+                            }
+                        ]
+                    });
+
                     let repsonse = reqwest_client
                         .post(user.clone().slackwebhook)
-                        .body("this is an ended proposal message")
+                        .json(&payload)
                         .header("Content-Type", "application/json")
                         .send()
                         .await?
@@ -165,51 +177,35 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
                                 "new notification"
                             );
 
-                            posthog_event(
-                                "slack_ended_notification",
-                                user.address.unwrap(),
-                                proposal.name,
-                                proposal.dao.name,
-                            );
-
                             vec![notification::dispatchstatus::set(
                                 NotificationDispatchedState::Dispatched,
                             )]
                         }
-                        _ => {
-                            posthog_event(
-                                "slack_ended_notification_fail",
-                                user.address.unwrap(),
-                                proposal.name,
-                                proposal.dao.name,
-                            );
-
-                            match notification.dispatchstatus {
-                                NotificationDispatchedState::NotDispatched => {
-                                    vec![notification::dispatchstatus::set(
-                                        NotificationDispatchedState::FirstRetry,
-                                    )]
-                                }
-                                NotificationDispatchedState::FirstRetry => {
-                                    vec![notification::dispatchstatus::set(
-                                        NotificationDispatchedState::SecondRetry,
-                                    )]
-                                }
-                                NotificationDispatchedState::SecondRetry => {
-                                    vec![notification::dispatchstatus::set(
-                                        NotificationDispatchedState::ThirdRetry,
-                                    )]
-                                }
-                                NotificationDispatchedState::ThirdRetry => {
-                                    vec![notification::dispatchstatus::set(
-                                        NotificationDispatchedState::Failed,
-                                    )]
-                                }
-                                NotificationDispatchedState::Dispatched => todo!(),
-                                NotificationDispatchedState::Deleted => todo!(),
-                                NotificationDispatchedState::Failed => todo!(),
+                        _ => match notification.dispatchstatus {
+                            NotificationDispatchedState::NotDispatched => {
+                                vec![notification::dispatchstatus::set(
+                                    NotificationDispatchedState::FirstRetry,
+                                )]
                             }
-                        }
+                            NotificationDispatchedState::FirstRetry => {
+                                vec![notification::dispatchstatus::set(
+                                    NotificationDispatchedState::SecondRetry,
+                                )]
+                            }
+                            NotificationDispatchedState::SecondRetry => {
+                                vec![notification::dispatchstatus::set(
+                                    NotificationDispatchedState::ThirdRetry,
+                                )]
+                            }
+                            NotificationDispatchedState::ThirdRetry => {
+                                vec![notification::dispatchstatus::set(
+                                    NotificationDispatchedState::Failed,
+                                )]
+                            }
+                            NotificationDispatchedState::Dispatched => todo!(),
+                            NotificationDispatchedState::Deleted => todo!(),
+                            NotificationDispatchedState::Failed => todo!(),
+                        },
                     };
 
                     client
@@ -244,9 +240,21 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
             },
             None => {
                 if let Some(proposal) = proposal {
+                    let payload = serde_json::json!({
+                        "blocks": [
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": format!("Ended proposal {:}", proposal.name)
+                                }
+                            }
+                        ]
+                    });
+
                     let repsonse = reqwest_client
                         .post(user.clone().slackwebhook)
-                        .body("this is an ended proposal message")
+                        .json(&payload)
                         .header("Content-Type", "application/json")
                         .send()
                         .await?

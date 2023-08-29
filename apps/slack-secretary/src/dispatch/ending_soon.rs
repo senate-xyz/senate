@@ -1,5 +1,6 @@
 use std::{env, sync::Arc, time::Duration};
 
+use prisma_client_rust::serde_json;
 use tokio::time::sleep;
 use tracing::{debug_span, event, instrument, warn, Instrument, Level};
 
@@ -15,7 +16,6 @@ use crate::{
         NotificationType,
         PrismaClient,
     },
-    utils::posthog::posthog_event,
 };
 
 use super::utils::notification_retry::update_notification_retry;
@@ -120,9 +120,21 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
                 .collect::<String>()
         );
 
+        let payload = serde_json::json!({
+            "blocks": [
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": format!("Ending soon proposal {:}", proposal.clone().unwrap().name)
+                    }
+                }
+            ]
+        });
+
         let repsonse = reqwest_client
             .post(user.clone().slackwebhook)
-            .body("this is an ending soon proposal message")
+            .json(&payload)
             .header("Content-Type", "application/json")
             .send()
             .await?
@@ -139,51 +151,35 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
                     "new notification"
                 );
 
-                posthog_event(
-                    "slack_ending_soon_notification",
-                    user.address.unwrap(),
-                    proposal.clone().unwrap().name,
-                    proposal.clone().unwrap().dao.name,
-                );
-
                 vec![notification::dispatchstatus::set(
                     NotificationDispatchedState::Dispatched,
                 )]
             }
-            _ => {
-                posthog_event(
-                    "slack_ending_soon_notification_fail",
-                    user.address.unwrap(),
-                    proposal.clone().unwrap().name,
-                    proposal.clone().unwrap().dao.name,
-                );
-
-                match notification.dispatchstatus {
-                    NotificationDispatchedState::NotDispatched => {
-                        vec![notification::dispatchstatus::set(
-                            NotificationDispatchedState::FirstRetry,
-                        )]
-                    }
-                    NotificationDispatchedState::FirstRetry => {
-                        vec![notification::dispatchstatus::set(
-                            NotificationDispatchedState::SecondRetry,
-                        )]
-                    }
-                    NotificationDispatchedState::SecondRetry => {
-                        vec![notification::dispatchstatus::set(
-                            NotificationDispatchedState::ThirdRetry,
-                        )]
-                    }
-                    NotificationDispatchedState::ThirdRetry => {
-                        vec![notification::dispatchstatus::set(
-                            NotificationDispatchedState::Failed,
-                        )]
-                    }
-                    NotificationDispatchedState::Dispatched => todo!(),
-                    NotificationDispatchedState::Deleted => todo!(),
-                    NotificationDispatchedState::Failed => todo!(),
+            _ => match notification.dispatchstatus {
+                NotificationDispatchedState::NotDispatched => {
+                    vec![notification::dispatchstatus::set(
+                        NotificationDispatchedState::FirstRetry,
+                    )]
                 }
-            }
+                NotificationDispatchedState::FirstRetry => {
+                    vec![notification::dispatchstatus::set(
+                        NotificationDispatchedState::SecondRetry,
+                    )]
+                }
+                NotificationDispatchedState::SecondRetry => {
+                    vec![notification::dispatchstatus::set(
+                        NotificationDispatchedState::ThirdRetry,
+                    )]
+                }
+                NotificationDispatchedState::ThirdRetry => {
+                    vec![notification::dispatchstatus::set(
+                        NotificationDispatchedState::Failed,
+                    )]
+                }
+                NotificationDispatchedState::Dispatched => todo!(),
+                NotificationDispatchedState::Deleted => todo!(),
+                NotificationDispatchedState::Failed => todo!(),
+            },
         };
 
         client
