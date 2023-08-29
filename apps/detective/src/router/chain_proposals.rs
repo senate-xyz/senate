@@ -11,7 +11,15 @@ use reqwest::header::HeaderMap;
 use rocket::serde::json::Json;
 use serde_json::Value;
 use tracing::{
-    debug_span, event, info_span, instrument, span, trace_span, Instrument, Level, Span,
+    debug_span,
+    event,
+    info_span,
+    instrument,
+    span,
+    trace_span,
+    Instrument,
+    Level,
+    Span,
 };
 
 use crate::{
@@ -33,7 +41,9 @@ use crate::{
         zeroxtreasury::zeroxtreasury_proposals,
     },
     prisma::{dao, daohandler, proposal, DaoHandlerType, PrismaClient, ProposalState},
-    Ctx, ProposalsRequest, ProposalsResponse,
+    Ctx,
+    ProposalsRequest,
+    ProposalsResponse,
 };
 
 #[allow(dead_code)]
@@ -354,7 +364,7 @@ async fn get_results(
 #[instrument(skip_all)]
 async fn insert_proposals(
     proposals: Vec<ChainProposal>,
-    from_block: i64,
+    _from_block: i64,
     to_block: i64,
     db: &Arc<PrismaClient>,
     dao_handler: daohandler_with_dao::Data,
@@ -463,15 +473,21 @@ async fn insert_proposals(
     let open_proposals: Vec<ChainProposal> = proposals
         .iter()
         .filter(|p| {
-            p.state == ProposalState::Pending
-                || p.state == ProposalState::Active
-                || p.state == ProposalState::Succeeded
-                || p.state == ProposalState::Queued
+            if dao_handler.r#type == DaoHandlerType::OptimismChain {
+                p.state == ProposalState::Pending
+                    || p.state == ProposalState::Active
+                    || p.state == ProposalState::Queued
+            } else {
+                p.state == ProposalState::Pending
+                    || p.state == ProposalState::Active
+                    || p.state == ProposalState::Succeeded
+                    || p.state == ProposalState::Queued
+            }
         })
         .cloned()
         .collect();
 
-    let mut new_index = if !open_proposals.is_empty() {
+    let new_index = if !open_proposals.is_empty() {
         open_proposals
             .iter()
             .map(|p| p.block_created)
@@ -481,11 +497,7 @@ async fn insert_proposals(
         to_block
     };
 
-    if new_index == from_block && new_index < to_block {
-        new_index = to_block;
-    }
-
-    let uptodate = current_block - new_index < 1000;
+    let uptodate = current_block - to_block < 100000;
 
     event!(
         Level::INFO,

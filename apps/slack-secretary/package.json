@@ -1,0 +1,19 @@
+{
+  "name": "@senate/slack-secretary",
+  "version": "1.0.0",
+  "description": "This service takes care of sending Slack notifications",
+  "author": "Senate",
+  "private": true,
+  "license": "GNU GPLv3",
+  "scripts": {
+    "build": "cargo b",
+    "build:slack-secretary": "cargo b",
+    "start": "cargo r",
+    "start:slack-secretary": "cargo r",
+    "clean": "cargo clean",
+    "lint:fix": "cargo clippy --fix --allow-dirty",
+    "prettier:fix": "cargo fmt",
+    "db:generate": "cargo generate",
+    "update": "cargo update"
+  }
+}

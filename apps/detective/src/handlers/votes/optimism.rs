@@ -128,7 +128,7 @@ async fn get_votes_for_voter(
 
     Ok(VoteResult {
         voter_address: voter_address.clone(),
-        success: success,
+        success,
         votes,
     })
 }

@@ -33,6 +33,10 @@
       "dependsOn": ["^db:generate"],
       "cache": false
     },
+    "build:slack-secretary": {
+      "dependsOn": ["^db:generate"],
+      "cache": false
+    },
     "build:db": {
       "cache": false,
       "dependsOn": ["^db:generate"]

@@ -217,27 +217,32 @@ export default function Item(props: {
                       {highestScoreChoice}
                     </div>
                   </div>
-                  <div className="mt-1 bg-[#262626]">
-                    <div
-                      style={{
-                        width: `${(
-                          (highestScore /
-                            (props.item.proposal!.scorestotal as number)) *
-                          100
-                        ).toFixed(0)}%`,
-                      }}
-                      className={`h-full bg-[#EDEDED]`}
-                    >
-                      <div className="px-2 text-black">
-                        {(
-                          (highestScore /
-                            (props.item.proposal!.scorestotal as number)) *
-                          100
-                        ).toFixed(2)}
-                        %
+                  {!(
+                    props.item.daohandler!.type == "OPTIMISM_CHAIN" &&
+                    highestScoreChoice.includes("Options")
+                  ) && (
+                    <div className="mt-1 bg-[#262626]">
+                      <div
+                        style={{
+                          width: `${(
+                            (highestScore /
+                              (props.item.proposal!.scorestotal as number)) *
+                            100
+                          ).toFixed(0)}%`,
+                        }}
+                        className={`h-full bg-[#EDEDED]`}
+                      >
+                        <div className="px-2 text-black">
+                          {(
+                            (highestScore /
+                              (props.item.proposal!.scorestotal as number)) *
+                            100
+                          ).toFixed(2)}
+                          %
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               )}
 
@@ -389,8 +394,9 @@ export default function Item(props: {
                   priority={true}
                   width={68}
                   height={68}
-                  src={`${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/${props.item
-                    .dao?.picture}.svg`}
+                  src={`${process.env.NEXT_PUBLIC_WEB_URL ?? ""}/${
+                    props.item.dao!.picture
+                  }.svg`}
                   alt={props.item.dao!.name}
                 />
               </div>

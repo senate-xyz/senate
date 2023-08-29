@@ -21,6 +21,7 @@
     "build:email-secretary": "turbo run build:email-secretary",
     "build:discord-secretary": "turbo run build:discord-secretary",
     "build:telegram-secretary": "turbo run build:telegram-secretary",
+    "build:slack-secretary": "turbo run build:slack-secretary",
     "build:db": "turbo run build:db",
     "build:db:node": "turbo run build:db:node",
     "start": "turbo run start",
@@ -51,7 +52,7 @@
     "@synthetixio/synpress": "^3.7.1",
     "dotenv": "^16.3.1",
     "husky": "^8.0.3",
-    "prettier": "^3.0.2",
+    "prettier": "^3.0.3",
     "tsx": "^3.12.7",
     "turbo": "^1.10.13"
   },

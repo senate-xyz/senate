@@ -11,13 +11,22 @@ use reqwest::{
 use serde::Deserialize;
 use tokio::task;
 use tracing::{
-    debug, debug_span, error_span, event, info_span, instrument, warn_span, Instrument, Level,
+    debug,
+    debug_span,
+    error_span,
+    event,
+    info_span,
+    instrument,
+    warn_span,
+    Instrument,
+    Level,
 };
 
 use crate::{
     prisma::{self, daohandler, PrismaClient},
     refresh_status::{DAOS_REFRESH_STATUS, VOTERS_REFRESH_STATUS},
-    RefreshEntry, RefreshStatus,
+    RefreshEntry,
+    RefreshStatus,
 };
 
 #[allow(non_snake_case)]

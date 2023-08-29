@@ -391,6 +391,159 @@ export const setDiscordIncludeVotes = async (value: boolean) => {
   });
 };
 
+export const userSlack = async () => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name)
+    return {
+      id: "",
+      enabled: false,
+      webhook: "",
+      reminders: false,
+      includeVotes: false,
+      channelName: "",
+    };
+  const userAddress = session.user.name;
+
+  const [u] = await db.select().from(user).where(eq(user.address, userAddress));
+
+  if (!u)
+    return {
+      id: "",
+      enabled: false,
+      webhook: "",
+      reminders: false,
+      includeVotes: false,
+      channelName: "",
+    };
+
+  return {
+    id: u.id ?? "",
+    enabled: u.slacknotifications ?? false,
+    webhook: u.slackwebhook ?? "",
+    reminders: u.slackreminders,
+    includeVotes: u.slackincludevotes ?? false,
+    channelName: u.slackchannelname ?? "",
+  };
+};
+
+export const setSlack = async (value: boolean) => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name) return;
+  const userAddress = session.user.name;
+
+  await db
+    .update(user)
+    .set({
+      slacknotifications: value,
+    })
+    .where(eq(user.address, userAddress));
+
+  posthog.capture({
+    distinctId: userAddress ?? "unknown",
+    event: value ? "slack_enable" : "slack_disable",
+    properties: {
+      props: {
+        app: "web-backend",
+      },
+    },
+  });
+};
+
+export const setWebhookAndEnableSlack = async (input: string) => {
+  const session = await getServerSession(authOptions());
+
+  const schema = z.coerce.string().includes("slack");
+
+  try {
+    schema.parse(input);
+  } catch {
+    return;
+  }
+
+  if (!session || !session.user || !session.user.name) return;
+  const userAddress = session.user.name;
+
+  revalidateTag("slack");
+
+  await db
+    .update(user)
+    .set({
+      slacknotifications: true,
+      slackwebhook: input,
+    })
+    .where(eq(user.address, userAddress));
+
+  posthog.capture({
+    distinctId: userAddress ?? "unknown",
+    event: "slack_webhook_sets",
+    properties: {
+      props: {
+        app: "web-backend",
+      },
+    },
+  });
+
+  posthog.capture({
+    distinctId: userAddress ?? "unknown",
+    event: "slack_enable",
+    properties: {
+      props: {
+        app: "web-backend",
+      },
+    },
+  });
+};
+
+export const setSlackReminders = async (value: boolean) => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name) return;
+  const userAddress = session.user.name;
+
+  await db
+    .update(user)
+    .set({
+      slackreminders: value,
+    })
+    .where(eq(user.address, userAddress));
+
+  posthog.capture({
+    distinctId: userAddress ?? "unknown",
+    event: value ? "slack_reminders_enable" : "slack_reminders_disable",
+    properties: {
+      props: {
+        app: "web-backend",
+      },
+    },
+  });
+};
+
+export const setSlackIncludeVotes = async (value: boolean) => {
+  const session = await getServerSession(authOptions());
+
+  if (!session || !session.user || !session.user.name) return;
+  const userAddress = session.user.name;
+
+  await db
+    .update(user)
+    .set({
+      slackincludevotes: value,
+    })
+    .where(eq(user.address, userAddress));
+
+  posthog.capture({
+    distinctId: userAddress ?? "unknown",
+    event: value ? "slack_votes_enable" : "slack_votes_disable",
+    properties: {
+      props: {
+        app: "web-backend",
+      },
+    },
+  });
+};
+
 export const userTelegram = async () => {
   const session = await getServerSession(authOptions());
 

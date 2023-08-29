@@ -12,8 +12,15 @@ use tracing::{debug_span, event, info, instrument, warn, Instrument, Level};
 
 use crate::{
     prisma::{
-        self, notification, proposal, user, DaoHandlerType, MagicUserState,
-        NotificationDispatchedState, NotificationType, ProposalState,
+        self,
+        notification,
+        proposal,
+        user,
+        DaoHandlerType,
+        MagicUserState,
+        NotificationDispatchedState,
+        NotificationType,
+        ProposalState,
     },
     utils::{countdown::countdown_gif, posthog::posthog_bulletin_event, vote::get_vote},
 };

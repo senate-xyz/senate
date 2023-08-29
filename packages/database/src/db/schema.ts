@@ -156,6 +156,11 @@ export const notification = mysqlTable(
       "SECOND_REMINDER_TELEGRAM",
       "THIRD_REMINDER_TELEGRAM",
       "ENDED_PROPOSAL_TELEGRAM",
+      "NEW_PROPOSAL_SLACK",
+      "FIRST_REMINDER_SLACK",
+      "SECOND_REMINDER_SLACK",
+      "THIRD_REMINDER_SLACK",
+      "ENDED_PROPOSAL_SLACK",
     ]).notNull(),
     dispatchstatus: mysqlEnum("dispatchstatus", [
       "NOT_DISPATCHED",
@@ -173,6 +178,7 @@ export const notification = mysqlTable(
     discordmessageid: varchar("discordmessageid", { length: 191 }),
     telegramchatid: varchar("telegramchatid", { length: 191 }),
     telegrammessageid: varchar("telegrammessageid", { length: 191 }),
+    slackmessageid: varchar("slackmessageid", { length: 191 }),
     emailtemplate: varchar("emailtemplate", { length: 191 }),
   },
   (table) => {
@@ -319,14 +325,7 @@ export const user = mysqlTable(
     emaildailybulletin: boolean("emaildailybulletin").default(false).notNull(),
     emptydailybulletin: boolean("emptydailybulletin").default(false).notNull(),
     emailquorumwarning: boolean("emailquorumwarning").default(true).notNull(),
-    discordnotifications: boolean("discordnotifications")
-      .default(false)
-      .notNull(),
-    discordreminders: boolean("discordreminders").default(true).notNull(),
-    discordincludevotes: boolean("discordincludevotes").default(true).notNull(),
-    discordwebhook: varchar("discordwebhook", { length: 191 })
-      .default("")
-      .notNull(),
+
     telegramnotifications: boolean("telegramnotifications")
       .default(false)
       .notNull(),
@@ -337,9 +336,29 @@ export const user = mysqlTable(
     telegramchatid: varchar("telegramchatid", { length: 191 })
       .default("")
       .notNull(),
+
     telegramchattitle: varchar("telegramchattitle", { length: 1024 })
       .default("")
       .notNull(),
+    discordnotifications: boolean("discordnotifications")
+      .default(false)
+      .notNull(),
+    discordreminders: boolean("discordreminders").default(true).notNull(),
+    discordincludevotes: boolean("discordincludevotes").default(true).notNull(),
+    discordwebhook: varchar("discordwebhook", { length: 191 })
+      .default("")
+      .notNull(),
+
+    slacknotifications: boolean("slacknotifications").default(false).notNull(),
+    slackreminders: boolean("slackreminders").default(true).notNull(),
+    slackincludevotes: boolean("slackincludevotes").default(true).notNull(),
+    slackwebhook: varchar("slackwebhook", { length: 191 })
+      .default("")
+      .notNull(),
+    slackchannelname: varchar("slackchannelname", { length: 1024 })
+      .default("")
+      .notNull(),
+
     acceptedterms: boolean("acceptedterms").default(false).notNull(),
     acceptedtermstimestamp: datetime("acceptedtermstimestamp", {
       mode: "date",

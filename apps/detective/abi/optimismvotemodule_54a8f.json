@@ -1,0 +1,179 @@
+[
+  { "inputs": [], "name": "ExistingProposal", "type": "error" },
+  { "inputs": [], "name": "InvalidParams", "type": "error" },
+  { "inputs": [], "name": "InvalidVoteType", "type": "error" },
+  { "inputs": [], "name": "MaxApprovalsExceeded", "type": "error" },
+  { "inputs": [], "name": "MaxChoicesExceeded", "type": "error" },
+  { "inputs": [], "name": "NotGovernor", "type": "error" },
+  { "inputs": [], "name": "OptionsNotStrictlyAscending", "type": "error" },
+  { "inputs": [], "name": "VoteAlreadyCast", "type": "error" },
+  {
+    "inputs": [],
+    "name": "COUNTING_MODE",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "PROPOSAL_DATA_ENCODING",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "VOTE_PARAMS_ENCODING",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalId", "type": "uint256" },
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "_accountVotes",
+    "outputs": [{ "internalType": "uint8", "name": "votes", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalId", "type": "uint256" },
+      { "internalType": "address", "name": "account", "type": "address" },
+      { "internalType": "uint8", "name": "support", "type": "uint8" },
+      { "internalType": "uint256", "name": "weight", "type": "uint256" },
+      { "internalType": "bytes", "name": "params", "type": "bytes" }
+    ],
+    "name": "_countVote",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalId", "type": "uint256" },
+      { "internalType": "bytes", "name": "proposalData", "type": "bytes" }
+    ],
+    "name": "_formatExecuteParams",
+    "outputs": [
+      { "internalType": "address[]", "name": "targets", "type": "address[]" },
+      { "internalType": "uint256[]", "name": "values", "type": "uint256[]" },
+      { "internalType": "bytes[]", "name": "calldatas", "type": "bytes[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalId", "type": "uint256" }
+    ],
+    "name": "_proposals",
+    "outputs": [
+      { "internalType": "address", "name": "governor", "type": "address" },
+      {
+        "components": [
+          { "internalType": "uint128", "name": "forVotes", "type": "uint128" },
+          {
+            "internalType": "uint128",
+            "name": "abstainVotes",
+            "type": "uint128"
+          }
+        ],
+        "internalType": "struct ProposalVotes",
+        "name": "votes",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          { "internalType": "uint8", "name": "maxApprovals", "type": "uint8" },
+          { "internalType": "uint8", "name": "criteria", "type": "uint8" },
+          {
+            "internalType": "address",
+            "name": "budgetToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint128",
+            "name": "criteriaValue",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "budgetAmount",
+            "type": "uint128"
+          }
+        ],
+        "internalType": "struct ProposalSettings",
+        "name": "settings",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalId", "type": "uint256" },
+      { "internalType": "uint256", "name": "quorum", "type": "uint256" }
+    ],
+    "name": "_quorumReached",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalId", "type": "uint256" }
+    ],
+    "name": "_voteSucceeded",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalId", "type": "uint256" },
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "hasVoted",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalId", "type": "uint256" }
+    ],
+    "name": "proposalVotes",
+    "outputs": [
+      { "internalType": "uint256", "name": "forVotes", "type": "uint256" },
+      { "internalType": "uint256", "name": "abstainVotes", "type": "uint256" },
+      {
+        "internalType": "uint128[]",
+        "name": "optionVotes",
+        "type": "uint128[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalId", "type": "uint256" },
+      { "internalType": "bytes", "name": "proposalData", "type": "bytes" }
+    ],
+    "name": "propose",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "version",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "pure",
+    "type": "function"
+  }
+]
