@@ -20,7 +20,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilte
 use url::Url;
 
 pub fn setup() {
-    let app_name = "discordsecretary";
+    let app_name = "slacksecretary";
 
     let telemetry_key = env::var("TELEMETRY_KEY").expect("$TELEMETRY_KEY is not set");
     let exec_env = env::var("EXEC_ENV").expect("$EXEC_ENV is not set");
