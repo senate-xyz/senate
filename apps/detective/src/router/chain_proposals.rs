@@ -481,7 +481,7 @@ async fn insert_proposals(
         .cloned()
         .collect();
 
-    let mut new_index = if !open_proposals.is_empty() {
+    let new_index = if !open_proposals.is_empty() {
         open_proposals
             .iter()
             .map(|p| p.block_created)
@@ -490,10 +490,6 @@ async fn insert_proposals(
     } else {
         to_block
     };
-
-    if new_index == from_block && new_index < to_block {
-        new_index = to_block;
-    }
 
     let uptodate = current_block - new_index < 1000;
 
