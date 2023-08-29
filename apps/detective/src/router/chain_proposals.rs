@@ -473,10 +473,16 @@ async fn insert_proposals(
     let open_proposals: Vec<ChainProposal> = proposals
         .iter()
         .filter(|p| {
-            p.state == ProposalState::Pending
-                || p.state == ProposalState::Active
-                || p.state == ProposalState::Succeeded
-                || p.state == ProposalState::Queued
+            if dao_handler.r#type == DaoHandlerType::OptimismChain {
+                p.state == ProposalState::Pending
+                    || p.state == ProposalState::Active
+                    || p.state == ProposalState::Queued
+            } else {
+                p.state == ProposalState::Pending
+                    || p.state == ProposalState::Active
+                    || p.state == ProposalState::Succeeded
+                    || p.state == ProposalState::Queued
+            }
         })
         .cloned()
         .collect();

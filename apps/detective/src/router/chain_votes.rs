@@ -426,8 +426,10 @@ async fn insert_votes(
         dao_name = dao_handler.dao.name,
         dao_handler_type = dao_handler.r#type.to_string(),
         dao_handler_id = dao_handler.id,
+        daochainindex = daochainindex,
         new_index = new_index,
         uptodate = uptodate,
+        to_block = to_block,
         "new index"
     );
 
