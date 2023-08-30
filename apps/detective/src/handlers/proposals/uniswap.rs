@@ -83,7 +83,7 @@ async fn data_for_proposal(
 
     let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number).await {
         Ok(r) => r,
-        Err(_) => DateTime::from_utc(
+        Err(_) => DateTime::from_naive_utc_and_offset(
             NaiveDateTime::from_timestamp_millis(
                 created_block_timestamp.timestamp() * 1000
                     + (voting_start_block_number - created_block_number) * 12 * 1000,
@@ -95,7 +95,7 @@ async fn data_for_proposal(
 
     let voting_ends_timestamp = match estimate_timestamp(voting_end_block_number).await {
         Ok(r) => r,
-        Err(_) => DateTime::from_utc(
+        Err(_) => DateTime::from_naive_utc_and_offset(
             NaiveDateTime::from_timestamp_millis(
                 created_block_timestamp.timestamp() * 1000
                     + (voting_end_block_number - created_block_number) * 12 * 1000,
