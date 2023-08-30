@@ -87,13 +87,13 @@ async fn data_for_proposal(
     let created_block = rpc.get_block(meta.clone().block_number).await?;
     let created_block_timestamp = created_block.expect("bad block").time()?;
 
-    let mut voting_starts_timestamp = DateTime::from_utc(
+    let mut voting_starts_timestamp = DateTime::from_naive_utc_and_offset(
         NaiveDateTime::from_timestamp_millis(log.start_date.as_u64().to_i64().unwrap() * 1000)
             .expect("bad timestamp"),
         Utc,
     );
 
-    let mut voting_ends_timestamp = DateTime::from_utc(
+    let mut voting_ends_timestamp = DateTime::from_naive_utc_and_offset(
         NaiveDateTime::from_timestamp_millis(log.end_date.as_u64().to_i64().unwrap() * 1000)
             .expect("bad timestamp"),
         Utc,
@@ -131,12 +131,16 @@ async fn data_for_proposal(
 
     //do some sanity here because mkr is weird
     if voting_starts_timestamp - Utc::now() > Duration::days(365) {
-        voting_starts_timestamp =
-            DateTime::from_utc(NaiveDateTime::from_timestamp_millis(0).unwrap(), Utc)
+        voting_starts_timestamp = DateTime::from_naive_utc_and_offset(
+            NaiveDateTime::from_timestamp_millis(0).unwrap(),
+            Utc,
+        )
     }
     if voting_ends_timestamp - Utc::now() > Duration::days(365) {
-        voting_ends_timestamp =
-            DateTime::from_utc(NaiveDateTime::from_timestamp_millis(0).unwrap(), Utc)
+        voting_ends_timestamp = DateTime::from_naive_utc_and_offset(
+            NaiveDateTime::from_timestamp_millis(0).unwrap(),
+            Utc,
+        )
     }
 
     let proposal = ChainProposal {

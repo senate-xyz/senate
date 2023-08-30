@@ -271,17 +271,17 @@ async fn update_proposals(
                         proposal.scores_total.into(),
                         proposal.quorum.into(),
                         state,
-                        DateTime::from_utc(
+                        DateTime::from_naive_utc_and_offset(
                             NaiveDateTime::from_timestamp_millis(proposal.created * 1000)
                                 .expect("can not create timecreated"),
                             FixedOffset::east_opt(0).unwrap(),
                         ),
-                        DateTime::from_utc(
+                        DateTime::from_naive_utc_and_offset(
                             NaiveDateTime::from_timestamp_millis(proposal.start * 1000)
                                 .expect("can not create timestart"),
                             FixedOffset::east_opt(0).unwrap(),
                         ),
-                        DateTime::from_utc(
+                        DateTime::from_naive_utc_and_offset(
                             NaiveDateTime::from_timestamp_millis(proposal.end * 1000)
                                 .expect("can not create timeend"),
                             FixedOffset::east_opt(0).unwrap(),
@@ -330,7 +330,7 @@ async fn update_proposals(
 
     let uptodate = old_index - new_index < 60 * 60;
 
-    let new_index_date: DateTime<FixedOffset> = DateTime::from_utc(
+    let new_index_date: DateTime<FixedOffset> = DateTime::from_naive_utc_and_offset(
         NaiveDateTime::from_timestamp_millis(new_index * 1000).expect("bad new_index timestamp"),
         FixedOffset::east_opt(0).unwrap(),
     );
@@ -363,7 +363,7 @@ async fn update_proposals(
             .update(
                 daohandler::id::equals(dao_handler.id),
                 vec![
-                    daohandler::snapshotindex::set(DateTime::from_utc(
+                    daohandler::snapshotindex::set(DateTime::from_naive_utc_and_offset(
                         NaiveDateTime::from_timestamp_millis(new_index * 1000)
                             .expect("can not create snapshotindex"),
                         FixedOffset::east_opt(0).unwrap(),
