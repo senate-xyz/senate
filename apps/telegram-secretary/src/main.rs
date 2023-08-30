@@ -15,8 +15,7 @@ use teloxide::{
     utils::command::BotCommands,
 };
 use tokio::{time::sleep, try_join};
-use tracing::event;
-use tracing::Level;
+use tracing::{event, Level};
 use tracing_loki as _;
 use tracing_opentelemetry as _;
 

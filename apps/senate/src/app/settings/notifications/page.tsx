@@ -1,9 +1,16 @@
 import { MagicUser } from "./components/MagicUser";
 import { Email } from "./components/Email";
-import { getMagicUser, userDiscord, userEmail, userTelegram } from "./actions";
+import {
+  getMagicUser,
+  userDiscord,
+  userEmail,
+  userSlack,
+  userTelegram,
+} from "./actions";
 import { Discord } from "./components/Discord";
 import { ClientComponent } from "./components/ClientComponent";
 import { Telegram } from "./components/Telegram";
+import { Slack } from "./components/Slack";
 
 export default async function Home() {
   const {
@@ -30,6 +37,15 @@ export default async function Home() {
     chatId: telegramChatId,
     chatTitle: telegramChatTitle,
   } = await userTelegram();
+
+  const {
+    id: slackUserId,
+    enabled: slackEnabled,
+    webhook: slackWebhook,
+    reminders: slackReminders,
+    includeVotes: slackIncludeVotes,
+    channelName: slackChannelName,
+  } = await userSlack();
 
   const { aave: aaveMagicUser, uniswap: uniswapMagicUser } =
     await getMagicUser();
@@ -62,6 +78,15 @@ export default async function Home() {
         reminders={discordReminders}
         includeVotes={discordIncludeVotes}
         userId={discordUserId}
+      />
+
+      <Slack
+        enabled={slackEnabled}
+        webhook={slackWebhook}
+        reminders={slackReminders}
+        includeVotes={slackIncludeVotes}
+        userId={slackUserId}
+        channelName={slackChannelName}
       />
 
       <Telegram

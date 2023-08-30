@@ -1,14 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { Fragment, useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import {
   setDiscord,
   setDiscordIncludeVotes,
   setDiscordReminders,
-  setWebhookAndEnableDiscord,
 } from "../actions";
-import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
 import { PostHogFeature } from "posthog-js/react";
 
@@ -79,11 +77,7 @@ const Enabled = (props: {
   setDiscordEnabled: (value: boolean) => void;
   userId: string;
 }) => {
-  const [showModal, setShowModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(props.webhook ? true : false);
-  const [edit, setEdit] = useState(false);
-  const [, startTransition] = useTransition();
-  const [currentWebhook, setCurrentWebhook] = useState(props.webhook);
 
   const discordUrl = process.env.NEXT_PUBLIC_WEB_URL?.includes("localhost")
     ? `https://discord.com/api/oauth2/authorize?client_id=1143964929645363210&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fdiscord%2Fcallback&response_type=code&scope=webhook.incoming&state=${props.userId}`
@@ -95,7 +89,6 @@ const Enabled = (props: {
 
   return (
     <div className="flex flex-col gap-2">
-      <VideoModal show={showModal} />
       {isAdmin ? (
         <div className="flex flex-col gap-1">
           <div className="flex flex-row items-end gap-2">
@@ -104,89 +97,27 @@ const Enabled = (props: {
             </div>
           </div>
           <div>
-            {edit ? (
-              <div className="flex flex-col gap-2">
-                <div
-                  className={`flex h-[46px] max-w-[382px] flex-row items-center`}
+            <div className={`flex flex-col gap-4`}>
+              <div className={`flex flex-col gap-1`}>
+                <div className="truncate text-[18px] font-light text-[#D9D9D9]">
+                  {
+                    props.webhook.split("/")[
+                      props.webhook.split("/").length - 1
+                    ]
+                  }
+                </div>
+                <Link
+                  className="w-fit cursor-pointer text-[15px] font-light text-[#ABABAB] underline"
+                  href={discordUrl}
                 >
-                  <input
-                    className={`h-full w-full bg-[#D9D9D9] px-2 text-black focus:outline-none lg:w-[320px] `}
-                    value={currentWebhook}
-                    onChange={(e) => {
-                      setCurrentWebhook(String(e.target.value));
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        startTransition(() =>
-                          setWebhookAndEnableDiscord(currentWebhook),
-                        );
-                        setEdit(false);
-                      }
-                    }}
-                    placeholder="https://discord.com/webhook/"
-                  />
-
-                  <div
-                    className={`flex h-full w-[72px] cursor-pointer flex-col justify-center
-                  bg-[#ABABAB] text-center hover:bg-[#999999]`}
-                    onClick={() => {
-                      startTransition(() =>
-                        setWebhookAndEnableDiscord(currentWebhook),
-                      );
-                      setEdit(false);
-                    }}
-                  >
-                    Save
-                  </div>
-                </div>
-                <div>
-                  <div className="flex flex-row gap-2">
-                    <Link
-                      className="cursor-pointer text-[15px] font-light text-[#D9D9D9] underline"
-                      href={
-                        "https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"
-                      }
-                      target="_blank"
-                    >
-                      What is a Discord webhook?
-                    </Link>
-                    <div
-                      className="cursor-pointer text-[15px] font-light text-[#D9D9D9] underline"
-                      onClick={() => {
-                        setShowModal(false);
-                        setTimeout(() => {
-                          setShowModal(true);
-                        }, 100);
-                      }}
-                    >
-                      How do I get a webhook URL?
-                    </div>
-                  </div>
-                </div>
+                  Change Webhook
+                </Link>
               </div>
-            ) : (
-              <div className={`flex flex-col gap-4`}>
-                <div className={`flex flex-col gap-1`}>
-                  <div className="truncate text-[18px] font-light text-[#D9D9D9]">
-                    {
-                      currentWebhook.split("/")[
-                        currentWebhook.split("/").length - 1
-                      ]
-                    }
-                  </div>
-                  <Link
-                    className="w-fit cursor-pointer text-[15px] font-light text-[#ABABAB] underline"
-                    href={discordUrl}
-                  >
-                    Change Webhook
-                  </Link>
-                </div>
-                <div className="flex flex-row gap-16">
-                  <IncludeVotesSetting includeVotes={props.includeVotes} />
-                  <RemindersSetting endingSoon={props.reminders} />
-                </div>
+              <div className="flex flex-row gap-16">
+                <IncludeVotesSetting includeVotes={props.includeVotes} />
+                <RemindersSetting endingSoon={props.reminders} />
               </div>
-            )}
+            </div>
           </div>
         </div>
       ) : (
@@ -262,46 +193,3 @@ const IncludeVotesSetting = ({ includeVotes }: { includeVotes: boolean }) => {
     </div>
   );
 };
-
-function VideoModal(props: { show: boolean }) {
-  const [isOpen, setIsOpen] = useState(props.show);
-
-  useEffect(() => {
-    setIsOpen(props.show);
-  }, [props.show]);
-
-  function closeModal() {
-    setIsOpen(false);
-  }
-
-  return (
-    <>
-      <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-20" onClose={closeModal}>
-          <div className="op fixed inset-0 overflow-y-auto bg-[#1e1b207e]">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-              >
-                <Dialog.Panel className="align-middleshadow-xl w-full max-w-[1280px] transform overflow-hidden bg-black p-6 text-left transition-all">
-                  <iframe
-                    className="aspect-video w-full"
-                    src="/assets/Discord/discord_webhooks_high.mp4"
-                    allow="autoplay *; fullscreen *"
-                    allowFullScreen
-                  />
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
-          </div>
-        </Dialog>
-      </Transition>
-    </>
-  );
-}

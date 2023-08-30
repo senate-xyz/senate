@@ -7,7 +7,13 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     prisma::{
-        notification, proposal, subscription, user, NotificationType, PrismaClient, ProposalState,
+        notification,
+        proposal,
+        subscription,
+        user,
+        NotificationType,
+        PrismaClient,
+        ProposalState,
     },
     utils::vote::get_vote,
 };
@@ -32,6 +38,11 @@ pub async fn generate_ending_soon_notifications(
         NotificationType::ThirdReminderTelegram => todo!(),
         NotificationType::EndedProposalTelegram => todo!(),
         NotificationType::BulletinEmail => todo!(),
+        NotificationType::NewProposalSlack => todo!(),
+        NotificationType::FirstReminderSlack => todo!(),
+        NotificationType::SecondReminderSlack => todo!(),
+        NotificationType::ThirdReminderSlack => todo!(),
+        NotificationType::EndedProposalSlack => todo!(),
     };
 
     let users = client

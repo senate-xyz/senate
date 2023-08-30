@@ -216,9 +216,7 @@ export const SubscribedDAO = (props: {
             >
               {props.activeProposals ? (
                 <Link
-                  href={`/proposals/active?from=${props.daoName
-                    .toLowerCase()
-                    .replace(" ", "")}`}
+                  href={`/proposals/active?from=${props.daoName.toLowerCase()}`}
                 >
                   {`${props.activeProposals} Active Proposals`}
                 </Link>

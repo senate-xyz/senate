@@ -1,0 +1,6 @@
+[alias]
+prisma = "run -p prisma-cli --"
+generate = "run -p prisma-cli -- generate --schema=../../packages/database/prisma/schema-rs.prisma"
+leaksprofile = "instruments --time-limit 300000 -t Leaks"
+cpusprofile = "instruments --time-limit 300000 -t time"
+allocprofile = "instruments --time-limit 300000 -t alloc"

@@ -5,8 +5,10 @@ use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
 use tracing::{event, instrument, Level};
 
-use crate::prisma::{self, dao, voterhandler, DaoHandlerType, PrismaClient};
-use crate::RefreshStatus;
+use crate::{
+    prisma::{self, dao, voterhandler, DaoHandlerType, PrismaClient},
+    RefreshStatus,
+};
 
 #[derive(Debug, Clone)]
 pub struct DaoHandlerRefreshStatus {

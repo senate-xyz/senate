@@ -15,7 +15,8 @@ use prisma_client_rust::{
 use regex::Regex;
 use reqwest::{
     header::{ACCEPT, USER_AGENT},
-    Client, StatusCode,
+    Client,
+    StatusCode,
 };
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};

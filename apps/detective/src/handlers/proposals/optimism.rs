@@ -1,10 +1,12 @@
 use std::{env, pin::Pin, str, sync::Arc, task::Poll};
 
 use anyhow::Result;
+
 use ethers::{
     prelude::LogMeta,
     providers::{Http, Middleware, Provider},
     types::{Address, Filter},
+    utils::hex,
 };
 use futures::{
     stream::{FuturesUnordered, StreamExt},
@@ -19,13 +21,16 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::{
-        optimismgov, optimismgov::ProposalCreated1Filter, optimismgov::ProposalCreated2Filter,
+        optimismgov,
+        optimismgov::{ProposalCreated1Filter, ProposalCreated2Filter},
+        optimismvotemodule_5_4a_8f,
     },
     daohandler_with_dao,
     prisma::{daohandler, ProposalState},
     router::chain_proposals::ChainProposal,
     utils::optimiscan::estimate_timestamp,
-    Context, Ctx,
+    Context,
+    Ctx,
 };
 
 #[allow(non_snake_case)]
@@ -168,14 +173,27 @@ async fn data_for_proposal1(
 
     let proposal_external_id = log.proposal_id.to_string();
 
-    let choices = vec!["For", "Against", "Abstain"];
+    let voting_module =
+        if (log.voting_module.to_string() == "0x54a8fcbbf05ac14bef782a2060a8c752c7cc13a5") {
+            optimismvotemodule_5_4a_8f::optimismvotemodule_5_4a_8f::optimismvotemodule_54a8f::new(
+                log.voting_module,
+                rpc.clone(),
+            )
+        } else {
+            //same thing because there's a single votemodule now
+            optimismvotemodule_5_4a_8f::optimismvotemodule_5_4a_8f::optimismvotemodule_54a8f::new(
+                log.voting_module,
+                rpc.clone(),
+            )
+        };
+
+    let votes = voting_module.proposal_votes(log.proposal_id).await?;
+
+    let choices = vec![format!("{} Options", votes.2.len())];
 
     let proposal_state = gov_contract.state(log.proposal_id).await?;
 
-    let (against_votes, for_votes, abstain_votes) =
-        gov_contract.proposal_votes(log.proposal_id).await?;
-
-    let scores_total = for_votes.as_u128() + against_votes.as_u128() + abstain_votes.as_u128();
+    let scores_total: u128 = votes.2.iter().sum();
 
     let quorum = gov_contract.quorum(log.start_block).await?;
 
@@ -201,12 +219,7 @@ async fn data_for_proposal1(
         time_created: created_block_timestamp,
         block_created: created_block_number,
         choices: choices.into(),
-        scores: vec![
-            for_votes.as_u128(),
-            against_votes.as_u128(),
-            abstain_votes.as_u128(),
-        ]
-        .into(),
+        scores: vec![scores_total].into(),
         scores_total: scores_total.into(),
         quorum: quorum.as_u128().into(),
         url: proposal_url,

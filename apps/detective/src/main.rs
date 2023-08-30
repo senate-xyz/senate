@@ -23,8 +23,10 @@ use prisma::{daohandler, proposal, voterhandler, PrismaClient};
 use utils::{maker_polls_sanity::maker_polls_sanity_check, snapshot_sanity::snapshot_sanity_check};
 
 use crate::router::{
-    chain_proposals::update_chain_proposals, chain_votes::update_chain_votes,
-    snapshot_proposals::update_snapshot_proposals, snapshot_votes::update_snapshot_votes,
+    chain_proposals::update_chain_proposals,
+    chain_votes::update_chain_votes,
+    snapshot_proposals::update_snapshot_proposals,
+    snapshot_votes::update_snapshot_votes,
 };
 
 pub mod contracts;
@@ -118,10 +120,10 @@ async fn rocket() -> _ {
     );
 
     let context = Context {
-        db: db,
-        eth_rpc: eth_rpc,
-        arbitrum_rpc: arbitrum_rpc,
-        optimism_rpc: optimism_rpc,
+        db,
+        eth_rpc,
+        arbitrum_rpc,
+        optimism_rpc,
     };
 
     let context_clone = context.clone();

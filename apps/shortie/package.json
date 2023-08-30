@@ -27,18 +27,18 @@
   },
   "devDependencies": {
     "@types/eslint": "^8.44.2",
-    "@types/node": "20.5.4",
+    "@types/node": "20.5.7",
     "@types/prettier": "^2.7.3",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
-    "@typescript-eslint/eslint-plugin": "^6.4.1",
-    "@typescript-eslint/parser": "^6.4.1",
+    "@typescript-eslint/eslint-plugin": "^6.5.0",
+    "@typescript-eslint/parser": "^6.5.0",
     "autoprefixer": "^10.4.15",
-    "eslint": "^8.47.0",
+    "eslint": "^8.48.0",
     "eslint-config-next": "^13.4.19",
-    "postcss": "^8.4.28",
+    "postcss": "^8.4.29",
     "prettier": "^3",
-    "typescript": "5.1.6"
+    "typescript": "5.2.2"
   },
   "packageManager": "yarn@1.22.19",
   "ct3aMetadata": {

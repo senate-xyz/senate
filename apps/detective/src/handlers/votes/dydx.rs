@@ -13,7 +13,8 @@ use tracing::{debug_span, instrument, Instrument};
 
 use crate::{
     contracts::dydxgov::{
-        VoteEmittedFilter, {self},
+        VoteEmittedFilter,
+        {self},
     },
     daohandler_with_dao,
     prisma::{daohandler, proposal, PrismaClient},

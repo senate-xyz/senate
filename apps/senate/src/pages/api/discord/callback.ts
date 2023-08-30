@@ -26,11 +26,7 @@ export default async function handler(
 ) {
   if (req.method !== "GET") return res.redirect("/");
 
-  const { code = null, error = null, state: userid } = req.query;
-
-  if (error) {
-    return res.redirect(`/?error=${req.query.error as string}`);
-  }
+  const { code = null, state: userid } = req.query;
 
   if (!code || typeof code !== "string") return res.redirect(OAUTH_URI);
 

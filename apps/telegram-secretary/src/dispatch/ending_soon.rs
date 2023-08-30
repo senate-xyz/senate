@@ -2,23 +2,30 @@ use std::{env, sync::Arc, time::Duration};
 
 use prisma_client_rust::serde_json;
 use serde::Deserialize;
-use teloxide::types::InlineKeyboardButtonKind;
 use teloxide::{
     adaptors::{DefaultParseMode, Throttle},
     payloads::SendMessageSetters,
     requests::Requester,
-    types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup},
+    types::{ChatId, InlineKeyboardButton, InlineKeyboardButtonKind, InlineKeyboardMarkup},
     Bot,
 };
 
 use tokio::time::sleep;
 use tracing::{debug, debug_span, event, instrument, warn, Instrument, Level};
 
-use crate::prisma::{
-    self, notification, proposal, user, DaoHandlerType, NotificationDispatchedState,
-    NotificationType, PrismaClient,
+use crate::{
+    prisma::{
+        self,
+        notification,
+        proposal,
+        user,
+        DaoHandlerType,
+        NotificationDispatchedState,
+        NotificationType,
+        PrismaClient,
+    },
+    utils::vote::get_vote,
 };
-use crate::utils::vote::get_vote;
 
 use anyhow::Result;
 
@@ -167,6 +174,11 @@ pub async fn dispatch_ending_soon_notifications(
                     NotificationType::ThirdReminderTelegram => todo!(),
                     NotificationType::EndedProposalTelegram => todo!(),
                     NotificationType::BulletinEmail => todo!(),
+                    NotificationType::NewProposalSlack => todo!(),
+                    NotificationType::FirstReminderSlack => todo!(),
+                    NotificationType::SecondReminderSlack => todo!(),
+                    NotificationType::ThirdReminderSlack => todo!(),
+                    NotificationType::EndedProposalSlack => todo!(),
                 };
 
                 let message = bot
