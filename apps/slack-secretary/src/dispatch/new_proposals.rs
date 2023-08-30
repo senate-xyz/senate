@@ -58,16 +58,66 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> 
             .exec()
             .await?;
 
+        let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+            Some(v) => v.into_string().unwrap(),
+            None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+        };
+
         match proposal {
             Some(proposal) => {
+                let short_url = format!(
+                    "{}{}/{}/{}",
+                    shortner_url,
+                    proposal
+                        .id
+                        .chars()
+                        .rev()
+                        .take(7)
+                        .collect::<Vec<char>>()
+                        .into_iter()
+                        .rev()
+                        .collect::<String>(),
+                    "s",
+                    user.clone()
+                        .id
+                        .chars()
+                        .rev()
+                        .take(7)
+                        .collect::<Vec<char>>()
+                        .into_iter()
+                        .rev()
+                        .collect::<String>()
+                );
+
                 let payload = serde_json::json!({
                     "blocks": [
                         {
                             "type": "section",
                             "text": {
                                 "type": "mrkdwn",
-                                "text": format!("New proposal {:}", proposal.name)
+                                "text": format!("📢 New *{}* onchain proposal ending *{}*", proposal.dao.name, proposal.timeend.format("%B %d at %H:%M UTC"))
                             }
+                        },
+                        {
+                            "type": "section",
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": format!("_{}_", proposal.name)
+                            },
+                            "accessory": {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "🗳️ Cast Vote",
+                                    "emoji": true
+                                },
+                                "value": "click_me_123",
+                                "url": short_url,
+                                "action_id": "button-action"
+                            }
+                        },
+                        {
+                            "type": "divider"
                         }
                     ]
                 });
