@@ -108,12 +108,12 @@ pub async fn produce_chain_votes_queue(
             .filter_map(|bucket| {
                 let bucket_vh: Vec<_> = voter_handlers
                     .iter()
-                    .cloned()
-                    .filter(|voter_handler| {
+                    .filter(|&voter_handler| {
                         let index = voter_handler.chainindex;
                         bucket.min <= index && index < bucket.max
                     })
                     .take(config.batch_chain_votes.try_into().unwrap())
+                    .cloned()
                     .collect();
 
                 voter_handler_to_refresh.extend(bucket_vh.clone());
