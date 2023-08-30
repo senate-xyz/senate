@@ -494,7 +494,7 @@ async fn get_new_proposals(
                     .map(|s| s.daoid)
                     .collect(),
             ),
-            proposal::state::not_in_vec(vec![ProposalState::Canceled]),
+            proposal::state::in_vec(vec![ProposalState::Active]),
             proposal::visible::equals(true),
         ])
         .order_by(proposal::timeend::order(Direction::Asc))
