@@ -332,7 +332,7 @@ async fn update_or_create_votes(
                                 proposal_id.clone(),
                             ),
                             vec![
-                                vote::timecreated::set(Some(DateTime::from_utc(
+                                vote::timecreated::set(Some(DateTime::from_naive_utc_and_offset(
                                     NaiveDateTime::from_timestamp_millis(vote.created * 1000)
                                         .expect("bad created timestamp"),
                                     FixedOffset::east_opt(0).unwrap(),
@@ -367,11 +367,13 @@ async fn update_or_create_votes(
                         proposal::id::equals(proposal_id.clone()),
                         dao::id::equals(dao_handler.daoid.clone()),
                         daohandler::id::equals(dao_handler.id.clone()),
-                        vec![vote::timecreated::set(Some(DateTime::from_utc(
-                            NaiveDateTime::from_timestamp_millis(vote.created * 1000)
-                                .expect("bad created timestamp"),
-                            FixedOffset::east_opt(0).unwrap(),
-                        )))],
+                        vec![vote::timecreated::set(Some(
+                            DateTime::from_naive_utc_and_offset(
+                                NaiveDateTime::from_timestamp_millis(vote.created * 1000)
+                                    .expect("bad created timestamp"),
+                                FixedOffset::east_opt(0).unwrap(),
+                            ),
+                        ))],
                     )
                     .exec()
                     .await?;
@@ -420,7 +422,7 @@ async fn update_refresh_statuses(
         uptodate = true;
     }
 
-    let new_index_date: DateTime<FixedOffset> = DateTime::from_utc(
+    let new_index_date: DateTime<FixedOffset> = DateTime::from_naive_utc_and_offset(
         NaiveDateTime::from_timestamp_millis(new_index * 1000).expect("bad new_index timestamp"),
         FixedOffset::east_opt(0).unwrap(),
     );

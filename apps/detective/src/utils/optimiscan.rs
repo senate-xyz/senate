@@ -41,7 +41,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
     if block_number < current_block.as_u64().to_i64().unwrap() {
         let block = provider.get_block(block_number.to_u64().unwrap()).await?;
 
-        let result: DateTime<Utc> = DateTime::from_utc(
+        let result: DateTime<Utc> = DateTime::from_naive_utc_and_offset(
             NaiveDateTime::from_timestamp_millis(
                 block.unwrap().timestamp.as_u64().to_i64().unwrap() * 1000,
             )
@@ -83,7 +83,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
             Ok(res) => {
                 let contents = res.text().await?;
                 let data = match serde_json::from_str::<EstimateTimestamp>(&contents) {
-                    Ok(d) => DateTime::from_utc(
+                    Ok(d) => DateTime::from_naive_utc_and_offset(
                         NaiveDateTime::from_timestamp_millis(
                             Utc::now().timestamp() * 1000
                                 + d.result.EstimateTimeInSec.parse::<f64>()?.to_i64().unwrap()
@@ -104,7 +104,7 @@ pub async fn estimate_timestamp(block_number: i64) -> Result<DateTime<Utc>> {
                 tokio::time::sleep(backoff_duration).await;
             }
             _ => {
-                return Ok(DateTime::from_utc(
+                return Ok(DateTime::from_naive_utc_and_offset(
                     NaiveDateTime::from_timestamp_millis(Utc::now().timestamp() * 1000)
                         .expect("bad timestamp"),
                     Utc,
