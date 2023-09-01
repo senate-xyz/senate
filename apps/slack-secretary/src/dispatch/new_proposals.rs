@@ -95,29 +95,34 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> 
                             "type": "section",
                             "text": {
                                 "type": "mrkdwn",
-                                "text": format!("📢 New *{}* onchain proposal ending *{}*", proposal.dao.name, proposal.timeend.format("%B %d at %H:%M UTC"))
-                            }
-                        },
-                        {
-                            "type": "section",
-                            "text": {
-                                "type": "mrkdwn",
-                                "text": format!("_{}_", proposal.name)
+                                "text": format!("*<{}|{}>*\n*{}* {} proposal ending on *<!date^1392734382^{{date}} at {{time}}|February 18th, 2014 at 6:39 AM PST>*", proposal.url, proposal.name,proposal.dao.name,if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                        "offchain"
+                                    } else {
+                                        "onchain"
+                                    })
                             },
                             "accessory": {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "🗳️ Cast Vote",
-                                    "emoji": true
-                                },
-                                "value": "click_me_123",
-                                "url": short_url,
-                                "action_id": "button-action"
+                                "type": "image",
+                                "image_url": format!(
+                                    "https://www.senatelabs.xyz/{}_medium.png",
+                                    proposal.dao.picture
+                                ),
+                                "alt_text": proposal.dao.name
                             }
                         },
                         {
-                            "type": "divider"
+                            "type": "actions",
+                            "elements": [
+                                {
+                                    "type": "button",
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "🗳️ Vote on this proposal",
+                                        "emoji": true
+                                    },
+                                    "url": short_url
+                                }
+                            ]
                         }
                     ]
                 });
