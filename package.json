@@ -53,7 +53,7 @@
     "dotenv": "^16.3.1",
     "husky": "^8.0.3",
     "prettier": "^3.0.3",
-    "tsx": "^3.12.7",
+    "tsx": "^3.12.8",
     "turbo": "^1.10.13"
   },
   "packageManager": "yarn@1.22.19",
