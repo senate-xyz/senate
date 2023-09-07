@@ -1028,136 +1028,159 @@ pub mod makerexecutive {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <GovCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GovCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Gov(decoded));
             }
-            if let Ok(decoded)
-                = <IouCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <IouCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Iou(decoded));
             }
-            if let Ok(decoded)
-                = <MaxYaysCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <MaxYaysCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::MaxYays(decoded));
             }
-            if let Ok(decoded)
-                = <ApprovalsCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ApprovalsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Approvals(decoded));
             }
-            if let Ok(decoded)
-                = <AuthorityCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <AuthorityCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Authority(decoded));
             }
-            if let Ok(decoded)
-                = <CanCallCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CanCallCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::CanCall(decoded));
             }
-            if let Ok(decoded)
-                = <DepositsCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <DepositsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Deposits(decoded));
             }
-            if let Ok(decoded)
-                = <EtchCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <EtchCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Etch(decoded));
             }
-            if let Ok(decoded)
-                = <FreeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <FreeCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Free(decoded));
             }
-            if let Ok(decoded)
-                = <GetCapabilityRolesCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetCapabilityRolesCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetCapabilityRoles(decoded));
             }
-            if let Ok(decoded)
-                = <GetUserRolesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetUserRolesCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetUserRoles(decoded));
             }
-            if let Ok(decoded)
-                = <HasUserRoleCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <HasUserRoleCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::HasUserRole(decoded));
             }
-            if let Ok(decoded)
-                = <HatCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <HatCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Hat(decoded));
             }
-            if let Ok(decoded)
-                = <IsCapabilityPublicCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <IsCapabilityPublicCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::IsCapabilityPublic(decoded));
             }
-            if let Ok(decoded)
-                = <IsUserRootCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <IsUserRootCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::IsUserRoot(decoded));
             }
-            if let Ok(decoded)
-                = <LastCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <LastCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Last(decoded));
             }
-            if let Ok(decoded)
-                = <LaunchCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <LaunchCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Launch(decoded));
             }
-            if let Ok(decoded)
-                = <LiftCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <LiftCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Lift(decoded));
             }
-            if let Ok(decoded)
-                = <LiveCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <LiveCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Live(decoded));
             }
-            if let Ok(decoded)
-                = <LockCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <LockCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Lock(decoded));
             }
-            if let Ok(decoded)
-                = <OwnerCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <OwnerCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Owner(decoded));
             }
-            if let Ok(decoded)
-                = <SetAuthorityCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <SetAuthorityCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::SetAuthority(decoded));
             }
-            if let Ok(decoded)
-                = <SetOwnerCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <SetOwnerCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::SetOwner(decoded));
             }
-            if let Ok(decoded)
-                = <SetPublicCapabilityCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <SetPublicCapabilityCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::SetPublicCapability(decoded));
             }
-            if let Ok(decoded)
-                = <SetRoleCapabilityCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <SetRoleCapabilityCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::SetRoleCapability(decoded));
             }
-            if let Ok(decoded)
-                = <SetRootUserCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <SetRootUserCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::SetRootUser(decoded));
             }
-            if let Ok(decoded)
-                = <SetUserRoleCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <SetUserRoleCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::SetUserRole(decoded));
             }
-            if let Ok(decoded)
-                = <SlatesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <SlatesCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Slates(decoded));
             }
-            if let Ok(decoded)
-                = <VoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VoteCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Vote(decoded));
             }
-            if let Ok(decoded)
-                = <VoteWithYaysCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VoteWithYaysCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::VoteWithYays(decoded));
             }
-            if let Ok(decoded)
-                = <VotesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VotesCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Votes(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())

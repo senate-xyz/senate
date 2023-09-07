@@ -1075,140 +1075,139 @@ pub mod aaveexecutor {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <GracePeriodCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GracePeriodCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GracePeriod(decoded));
             }
-            if let Ok(decoded)
-                = <MaximumDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <MaximumDelayCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::MaximumDelay(decoded));
             }
-            if let Ok(decoded)
-                = <MinimumDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <MinimumDelayCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::MinimumDelay(decoded));
             }
-            if let Ok(decoded)
-                = <MinimumQuorumCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <MinimumQuorumCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::MinimumQuorum(decoded));
             }
-            if let Ok(decoded)
-                = <OneHundredWithPrecisionCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <OneHundredWithPrecisionCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::OneHundredWithPrecision(decoded));
             }
-            if let Ok(decoded)
-                = <PropositionThresholdCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <PropositionThresholdCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::PropositionThreshold(decoded));
             }
-            if let Ok(decoded)
-                = <VoteDifferentialCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <VoteDifferentialCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::VoteDifferential(decoded));
             }
-            if let Ok(decoded)
-                = <VotingDurationCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VotingDurationCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::VotingDuration(decoded));
             }
-            if let Ok(decoded)
-                = <AcceptAdminCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <AcceptAdminCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::AcceptAdmin(decoded));
             }
-            if let Ok(decoded)
-                = <CancelTransactionCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <CancelTransactionCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::CancelTransaction(decoded));
             }
-            if let Ok(decoded)
-                = <ExecuteTransactionCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <ExecuteTransactionCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::ExecuteTransaction(decoded));
             }
-            if let Ok(decoded)
-                = <GetAdminCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetAdminCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetAdmin(decoded));
             }
-            if let Ok(decoded)
-                = <GetDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetDelayCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetDelay(decoded));
             }
-            if let Ok(decoded)
-                = <GetMinimumPropositionPowerNeededCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetMinimumPropositionPowerNeededCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetMinimumPropositionPowerNeeded(decoded));
             }
-            if let Ok(decoded)
-                = <GetMinimumVotingPowerNeededCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetMinimumVotingPowerNeededCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetMinimumVotingPowerNeeded(decoded));
             }
-            if let Ok(decoded)
-                = <GetPendingAdminCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetPendingAdminCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetPendingAdmin(decoded));
             }
-            if let Ok(decoded)
-                = <IsActionQueuedCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <IsActionQueuedCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::IsActionQueued(decoded));
             }
-            if let Ok(decoded)
-                = <IsProposalOverGracePeriodCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <IsProposalOverGracePeriodCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::IsProposalOverGracePeriod(decoded));
             }
-            if let Ok(decoded)
-                = <IsProposalPassedCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <IsProposalPassedCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::IsProposalPassed(decoded));
             }
-            if let Ok(decoded)
-                = <IsPropositionPowerEnoughCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <IsPropositionPowerEnoughCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::IsPropositionPowerEnough(decoded));
             }
-            if let Ok(decoded)
-                = <IsQuorumValidCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <IsQuorumValidCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::IsQuorumValid(decoded));
             }
-            if let Ok(decoded)
-                = <IsVoteDifferentialValidCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <IsVoteDifferentialValidCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::IsVoteDifferentialValid(decoded));
             }
-            if let Ok(decoded)
-                = <QueueTransactionCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <QueueTransactionCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::QueueTransaction(decoded));
             }
-            if let Ok(decoded)
-                = <SetDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <SetDelayCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::SetDelay(decoded));
             }
-            if let Ok(decoded)
-                = <SetPendingAdminCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <SetPendingAdminCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::SetPendingAdmin(decoded));
             }
-            if let Ok(decoded)
-                = <ValidateCreatorOfProposalCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <ValidateCreatorOfProposalCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::ValidateCreatorOfProposal(decoded));
             }
-            if let Ok(decoded)
-                = <ValidateProposalCancellationCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <ValidateProposalCancellationCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::ValidateProposalCancellation(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())

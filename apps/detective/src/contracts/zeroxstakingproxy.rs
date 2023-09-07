@@ -2059,260 +2059,254 @@ pub mod zeroxstakingproxy {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <AddAuthorizedAddressCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <AddAuthorizedAddressCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::AddAuthorizedAddress(decoded));
             }
-            if let Ok(decoded)
-                = <AddExchangeAddressCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <AddExchangeAddressCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::AddExchangeAddress(decoded));
             }
-            if let Ok(decoded)
-                = <AggregatedStatsByEpochCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <AggregatedStatsByEpochCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::AggregatedStatsByEpoch(decoded));
             }
-            if let Ok(decoded)
-                = <AuthoritiesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <AuthoritiesCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Authorities(decoded));
             }
-            if let Ok(decoded)
-                = <AuthorizedCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <AuthorizedCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Authorized(decoded));
             }
-            if let Ok(decoded)
-                = <CobbDouglasAlphaDenominatorCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <CobbDouglasAlphaDenominatorCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::CobbDouglasAlphaDenominator(decoded));
             }
-            if let Ok(decoded)
-                = <CobbDouglasAlphaNumeratorCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <CobbDouglasAlphaNumeratorCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::CobbDouglasAlphaNumerator(decoded));
             }
-            if let Ok(decoded)
-                = <ComputeRewardBalanceOfDelegatorCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <ComputeRewardBalanceOfDelegatorCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::ComputeRewardBalanceOfDelegator(decoded));
             }
-            if let Ok(decoded)
-                = <ComputeRewardBalanceOfOperatorCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <ComputeRewardBalanceOfOperatorCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::ComputeRewardBalanceOfOperator(decoded));
             }
-            if let Ok(decoded)
-                = <CreateStakingPoolCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <CreateStakingPoolCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::CreateStakingPool(decoded));
             }
-            if let Ok(decoded)
-                = <CurrentEpochCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CurrentEpochCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::CurrentEpoch(decoded));
             }
-            if let Ok(decoded)
-                = <CurrentEpochStartTimeInSecondsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <CurrentEpochStartTimeInSecondsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::CurrentEpochStartTimeInSeconds(decoded));
             }
-            if let Ok(decoded)
-                = <DecreaseStakingPoolOperatorShareCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <DecreaseStakingPoolOperatorShareCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::DecreaseStakingPoolOperatorShare(decoded));
             }
-            if let Ok(decoded)
-                = <EndEpochCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <EndEpochCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::EndEpoch(decoded));
             }
-            if let Ok(decoded)
-                = <EpochDurationInSecondsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <EpochDurationInSecondsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::EpochDurationInSeconds(decoded));
             }
-            if let Ok(decoded)
-                = <FinalizePoolCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <FinalizePoolCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::FinalizePool(decoded));
             }
-            if let Ok(decoded)
-                = <GetAuthorizedAddressesCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetAuthorizedAddressesCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetAuthorizedAddresses(decoded));
             }
-            if let Ok(decoded)
-                = <GetCurrentEpochEarliestEndTimeInSecondsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetCurrentEpochEarliestEndTimeInSecondsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetCurrentEpochEarliestEndTimeInSeconds(decoded));
             }
-            if let Ok(decoded)
-                = <GetGlobalStakeByStatusCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetGlobalStakeByStatusCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetGlobalStakeByStatus(decoded));
             }
-            if let Ok(decoded)
-                = <GetOwnerStakeByStatusCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetOwnerStakeByStatusCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetOwnerStakeByStatus(decoded));
             }
-            if let Ok(decoded)
-                = <GetParamsCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetParamsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetParams(decoded));
             }
-            if let Ok(decoded)
-                = <GetStakeDelegatedToPoolByOwnerCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetStakeDelegatedToPoolByOwnerCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetStakeDelegatedToPoolByOwner(decoded));
             }
-            if let Ok(decoded)
-                = <GetStakingPoolCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetStakingPoolCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetStakingPool(decoded));
             }
-            if let Ok(decoded)
-                = <GetStakingPoolStatsThisEpochCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetStakingPoolStatsThisEpochCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetStakingPoolStatsThisEpoch(decoded));
             }
-            if let Ok(decoded)
-                = <GetTotalStakeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetTotalStakeCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetTotalStake(decoded));
             }
-            if let Ok(decoded)
-                = <GetTotalStakeDelegatedToPoolCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetTotalStakeDelegatedToPoolCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetTotalStakeDelegatedToPool(decoded));
             }
-            if let Ok(decoded)
-                = <GetWethContractCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetWethContractCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetWethContract(decoded));
             }
-            if let Ok(decoded)
-                = <GetZrxVaultCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetZrxVaultCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetZrxVault(decoded));
             }
-            if let Ok(decoded)
-                = <InitCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <InitCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Init(decoded));
             }
-            if let Ok(decoded)
-                = <JoinStakingPoolAsMakerCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <JoinStakingPoolAsMakerCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::JoinStakingPoolAsMaker(decoded));
             }
-            if let Ok(decoded)
-                = <LastPoolIdCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <LastPoolIdCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::LastPoolId(decoded));
             }
-            if let Ok(decoded)
-                = <MinimumPoolStakeCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <MinimumPoolStakeCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::MinimumPoolStake(decoded));
             }
-            if let Ok(decoded)
-                = <MoveStakeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <MoveStakeCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::MoveStake(decoded));
             }
-            if let Ok(decoded)
-                = <OwnerCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <OwnerCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Owner(decoded));
             }
-            if let Ok(decoded)
-                = <PayProtocolFeeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <PayProtocolFeeCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::PayProtocolFee(decoded));
             }
-            if let Ok(decoded)
-                = <PoolIdByMakerCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <PoolIdByMakerCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::PoolIdByMaker(decoded));
             }
-            if let Ok(decoded)
-                = <PoolStatsByEpochCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <PoolStatsByEpochCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::PoolStatsByEpoch(decoded));
             }
-            if let Ok(decoded)
-                = <RemoveAuthorizedAddressCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <RemoveAuthorizedAddressCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::RemoveAuthorizedAddress(decoded));
             }
-            if let Ok(decoded)
-                = <RemoveAuthorizedAddressAtIndexCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <RemoveAuthorizedAddressAtIndexCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::RemoveAuthorizedAddressAtIndex(decoded));
             }
-            if let Ok(decoded)
-                = <RemoveExchangeAddressCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <RemoveExchangeAddressCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::RemoveExchangeAddress(decoded));
             }
-            if let Ok(decoded)
-                = <RewardDelegatedStakeWeightCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <RewardDelegatedStakeWeightCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::RewardDelegatedStakeWeight(decoded));
             }
-            if let Ok(decoded)
-                = <RewardsByPoolIdCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <RewardsByPoolIdCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::RewardsByPoolId(decoded));
             }
-            if let Ok(decoded)
-                = <SetParamsCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <SetParamsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::SetParams(decoded));
             }
-            if let Ok(decoded)
-                = <StakeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <StakeCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Stake(decoded));
             }
-            if let Ok(decoded)
-                = <StakingContractCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <StakingContractCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::StakingContract(decoded));
             }
-            if let Ok(decoded)
-                = <TransferOwnershipCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <TransferOwnershipCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::TransferOwnership(decoded));
             }
-            if let Ok(decoded)
-                = <UnstakeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <UnstakeCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Unstake(decoded));
             }
-            if let Ok(decoded)
-                = <ValidExchangesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ValidExchangesCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::ValidExchanges(decoded));
             }
-            if let Ok(decoded)
-                = <WethReservedForPoolRewardsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <WethReservedForPoolRewardsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::WethReservedForPoolRewards(decoded));
             }
-            if let Ok(decoded)
-                = <WithdrawDelegatorRewardsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <WithdrawDelegatorRewardsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::WithdrawDelegatorRewards(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())
