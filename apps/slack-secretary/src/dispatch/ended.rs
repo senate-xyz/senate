@@ -177,6 +177,9 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
                                     "type": "mrkdwn",
                                     "text": if voted {"⚫️ *Voted*"} else {"🚫 *Didn't vote*"}
                                 }
+                            },
+                            {
+                                "type": "divider"
                             }
                         ]
                     });
