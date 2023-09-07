@@ -3,6 +3,7 @@ use std::{cmp::Ordering, env, result, sync::Arc, time::Duration};
 use anyhow::Result;
 use prisma_client_rust::{bigdecimal::ToPrimitive, serde_json};
 
+use serde::Deserialize;
 use tokio::time::sleep;
 use tracing::{debug_span, event, instrument, warn, Instrument, Level};
 
@@ -42,6 +43,11 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
         .exec()
         .await?;
 
+    let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+        Some(v) => v.into_string().unwrap(),
+        None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+    };
+
     for notification in notifications {
         let new_notification = client
             .notification()
@@ -73,13 +79,103 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
         match new_notification {
             Some(_) => match proposal {
                 Some(proposal) => {
+                    #[allow(non_snake_case)]
+                    #[derive(Debug, Deserialize)]
+                    struct Decoder {
+                        governancePortal: String,
+                    }
+
+                    let decoder: Decoder = match serde_json::from_value(proposal.daohandler.decoder)
+                    {
+                        Ok(data) => data,
+                        Err(_) => Decoder {
+                            governancePortal: "https://senate.app".to_string(),
+                        },
+                    };
+
+                    let voted = get_vote(
+                        notification.clone().userid,
+                        notification.clone().proposalid.unwrap(),
+                        client,
+                    )
+                    .await?;
+
+                    let short_url = format!(
+                        "{}{}/{}/{}",
+                        shortner_url,
+                        proposal
+                            .id
+                            .chars()
+                            .rev()
+                            .take(7)
+                            .collect::<Vec<char>>()
+                            .into_iter()
+                            .rev()
+                            .collect::<String>(),
+                        "s",
+                        user.clone()
+                            .id
+                            .chars()
+                            .rev()
+                            .take(7)
+                            .collect::<Vec<char>>()
+                            .into_iter()
+                            .rev()
+                            .collect::<String>()
+                    );
+
+                    let (result_index, max_score) = proposal
+                        .scores
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|score| score.as_f64().unwrap())
+                        .enumerate()
+                        .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
+                        .unwrap_or((100, 0.0));
+
+                    let result = if result_index == 100 {
+                        "❓ Could not fetch results".to_string()
+                    } else if proposal.scorestotal.as_f64().unwrap()
+                        >= proposal.quorum.as_f64().unwrap()
+                        && proposal.scorestotal.as_f64().unwrap() > 0.0
+                    {
+                        format!(
+                            "✅ *{}* {}%",
+                            &proposal.choices.as_array().unwrap()[result_index]
+                                .as_str()
+                                .unwrap(),
+                            (max_score / proposal.scorestotal.as_f64().unwrap() * 100.0).round()
+                        )
+                    } else {
+                        "❌ *No Quorum*".to_string()
+                    };
+
                     let payload = serde_json::json!({
                         "blocks": [
                             {
                                 "type": "section",
                                 "text": {
                                     "type": "mrkdwn",
-                                    "text": format!("Ended proposal {:}", proposal.name)
+                                    "text": format!("🗳️ *<{}|{}>* {} proposal *just ended*.\n_<{}|{}>_",decoder.governancePortal, proposal.dao.name,if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                        "offchain"
+                                    } else {
+                                        "onchain"
+                                    },short_url,proposal.name)
+                                }
+                            },
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": result
+                                }
+                            },
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": if voted {"⚫️ *Voted*"} else {"🚫 *Didn't vote*"}
                                 }
                             }
                         ]
