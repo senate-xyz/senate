@@ -89,12 +89,6 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> 
                         .collect::<String>()
                 );
 
-                println!("{}", format!("*<{}|{}>*\n📢 New *{}* {} proposal ending on *<!date^{}^{{date}} at {{time}}|January 1st, 2000 at 0:00 AM UTC>*", proposal.url, proposal.name,proposal.dao.name,if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
-                                        "offchain"
-                                    } else {
-                                        "onchain"
-                                    }, proposal.timeend.timestamp()));
-
                 let payload = serde_json::json!({
                     "blocks": [
                         {
