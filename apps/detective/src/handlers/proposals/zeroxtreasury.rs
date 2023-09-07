@@ -103,19 +103,11 @@ async fn data_for_proposal(
     let created_block = rpc.get_block(meta.block_number).await?;
     let created_block_timestamp = created_block.expect("bad block").time()?;
 
-    let voting_period_seconds = gov_contract
-        .voting_period()
-        .call()
-        .await?
-        .as_u64()
-        .to_i64()
-        .unwrap();
-
     let voting_starts_timestamp = staking_proxy_contract
         .current_epoch_start_time_in_seconds()
         .await?
         .as_u64()
-        + 2 * staking_proxy_contract
+        + staking_proxy_contract
             .epoch_duration_in_seconds()
             .await?
             .as_u64();
@@ -126,7 +118,20 @@ async fn data_for_proposal(
         Utc,
     );
 
-    let voting_ends_timestamp = voting_starts_time + Duration::seconds(voting_period_seconds);
+    let voting_ends_timestamp = staking_proxy_contract
+        .current_epoch_start_time_in_seconds()
+        .await?
+        .as_u64()
+        + 2 * staking_proxy_contract
+            .epoch_duration_in_seconds()
+            .await?
+            .as_u64();
+
+    let voting_ends_time = DateTime::from_naive_utc_and_offset(
+        NaiveDateTime::from_timestamp_millis(voting_ends_timestamp.to_i64().unwrap() * 1000)
+            .expect("bad timestamp"),
+        Utc,
+    );
 
     let mut title = format!(
         "{:.120}",
@@ -162,10 +167,10 @@ async fn data_for_proposal(
 
     let proposal_state = onchain_proposal.5;
 
-    let state = if voting_starts_time < Utc::now() {
+    let state = if voting_starts_time > Utc::now() {
         ProposalState::Pending
     } else {
-        if voting_ends_timestamp > Utc::now() {
+        if voting_ends_time > Utc::now() {
             match proposal_state {
                 false => ProposalState::Active,
                 true => ProposalState::Executed,
@@ -184,7 +189,7 @@ async fn data_for_proposal(
         dao_id: dao_handler.clone().daoid,
         dao_handler_id: dao_handler.clone().id,
         time_start: voting_starts_time,
-        time_end: voting_ends_timestamp,
+        time_end: voting_ends_time,
         time_created: created_block_timestamp,
         block_created: created_block_number,
         choices: choices.into(),

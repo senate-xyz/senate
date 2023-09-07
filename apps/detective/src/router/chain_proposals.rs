@@ -417,6 +417,11 @@ async fn insert_proposals(
                                 ));
                                 update_v.push(proposal::quorum::set(proposal.quorum));
                                 update_v.push(proposal::state::set(proposal.state));
+                                update_v.push(proposal::timestart::set(
+                                    proposal
+                                        .time_start
+                                        .with_timezone(&FixedOffset::east_opt(0).unwrap()),
+                                ));
                                 update_v.push(proposal::timeend::set(
                                     proposal
                                         .time_end
