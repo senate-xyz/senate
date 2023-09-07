@@ -162,15 +162,19 @@ async fn data_for_proposal(
 
     let proposal_state = onchain_proposal.5;
 
-    let state = if voting_ends_timestamp > Utc::now() {
-        match proposal_state {
-            false => ProposalState::Active,
-            true => ProposalState::Executed,
-        }
+    let state = if voting_starts_time < Utc::now() {
+        ProposalState::Pending
     } else {
-        match proposal_state {
-            false => ProposalState::Defeated,
-            true => ProposalState::Executed,
+        if voting_ends_timestamp > Utc::now() {
+            match proposal_state {
+                false => ProposalState::Active,
+                true => ProposalState::Executed,
+            }
+        } else {
+            match proposal_state {
+                false => ProposalState::Defeated,
+                true => ProposalState::Executed,
+            }
         }
     };
 
