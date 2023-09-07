@@ -24,4 +24,5 @@ pub mod optimismgov;
 pub mod optimismvotemodule_5_4a_8f;
 pub mod shared_types;
 pub mod uniswapgov;
+pub mod zeroxstakingproxy;
 pub mod zeroxtreasury;

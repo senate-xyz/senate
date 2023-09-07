@@ -16,7 +16,7 @@ use serde::Deserialize;
 use tracing::{debug_span, event, instrument, Instrument};
 
 use crate::{
-    contracts::{zeroxtreasury, zeroxtreasury::ProposalCreatedFilter},
+    contracts::{zeroxstakingproxy, zeroxtreasury, zeroxtreasury::ProposalCreatedFilter},
     daohandler_with_dao,
     prisma::{daohandler, PrismaClient, ProposalState},
     router::chain_proposals::ChainProposal,
@@ -28,6 +28,7 @@ use crate::{
 #[derive(Debug, Deserialize)]
 struct Decoder {
     address: String,
+    stakingProxy: String,
     proposalUrl: String,
 }
 
@@ -43,6 +44,16 @@ pub async fn zeroxtreasury_proposals(
 
     let gov_contract = zeroxtreasury::zeroxtreasury::zeroxtreasury::new(address, rpc.clone());
 
+    let staking_proxy_address = decoder
+        .stakingProxy
+        .parse::<Address>()
+        .expect("bad address");
+
+    let staking_proxy_contract = zeroxstakingproxy::zeroxstakingproxy::zeroxstakingproxy::new(
+        staking_proxy_address,
+        rpc.clone(),
+    );
+
     let events = gov_contract
         .proposal_created_filter()
         .from_block(*from_block)
@@ -54,7 +65,15 @@ pub async fn zeroxtreasury_proposals(
 
     for p in proposals.iter() {
         futures.push(async {
-            data_for_proposal(p.clone(), rpc, &decoder, dao_handler, gov_contract.clone()).await
+            data_for_proposal(
+                p.clone(),
+                rpc,
+                &decoder,
+                dao_handler,
+                gov_contract.clone(),
+                staking_proxy_contract.clone(),
+            )
+            .await
         });
     }
 
@@ -74,14 +93,15 @@ async fn data_for_proposal(
     gov_contract: zeroxtreasury::zeroxtreasury::zeroxtreasury<
         ethers::providers::Provider<ethers::providers::Http>,
     >,
+    staking_proxy_contract: zeroxstakingproxy::zeroxstakingproxy::zeroxstakingproxy<
+        ethers::providers::Provider<ethers::providers::Http>,
+    >,
 ) -> Result<ChainProposal> {
     let (log, meta): (ProposalCreatedFilter, LogMeta) = p.clone();
 
     let created_block_number = meta.block_number.as_u64().to_i64().unwrap();
     let created_block = rpc.get_block(meta.block_number).await?;
     let created_block_timestamp = created_block.expect("bad block").time()?;
-
-    let voting_start_block_number = created_block_number;
 
     let voting_period_seconds = gov_contract
         .voting_period()
@@ -91,19 +111,22 @@ async fn data_for_proposal(
         .to_i64()
         .unwrap();
 
-    let voting_starts_timestamp = match estimate_timestamp(voting_start_block_number).await {
-        Ok(r) => r,
-        Err(_) => DateTime::from_naive_utc_and_offset(
-            NaiveDateTime::from_timestamp_millis(
-                created_block_timestamp.timestamp() * 1000
-                    + (voting_start_block_number - created_block_number) * 12 * 1000,
-            )
-            .expect("bad timestamp"),
-            Utc,
-        ),
-    };
+    let voting_starts_timestamp = staking_proxy_contract
+        .current_epoch_start_time_in_seconds()
+        .await?
+        .as_u64()
+        + 2 * staking_proxy_contract
+            .epoch_duration_in_seconds()
+            .await?
+            .as_u64();
 
-    let voting_ends_timestamp = voting_starts_timestamp + Duration::seconds(voting_period_seconds);
+    let voting_starts_time = DateTime::from_naive_utc_and_offset(
+        NaiveDateTime::from_timestamp_millis(voting_starts_timestamp.to_i64().unwrap() * 1000)
+            .expect("bad timestamp"),
+        Utc,
+    );
+
+    let voting_ends_timestamp = voting_starts_time + Duration::seconds(voting_period_seconds);
 
     let mut title = format!(
         "{:.120}",
@@ -156,7 +179,7 @@ async fn data_for_proposal(
         name: title,
         dao_id: dao_handler.clone().daoid,
         dao_handler_id: dao_handler.clone().id,
-        time_start: voting_starts_timestamp,
+        time_start: voting_starts_time,
         time_end: voting_ends_timestamp,
         time_created: created_block_timestamp,
         block_created: created_block_number,
