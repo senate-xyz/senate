@@ -139,7 +139,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": format!("⌛ *<{}|{}>* {} proposal ends in 2️⃣4️⃣ *hours*. 🕒\n_<{}|{}>_", decoder.governancePortal, proposal.clone().unwrap().dao.name,if proposal.clone().unwrap().daohandler.r#type == DaoHandlerType::Snapshot {
+                        "text": format!("*<{}|{}>* {} proposal ends in 2️⃣4️⃣ *hours*. :hourglass_flowing_sand:\n_<{}|{}>_", decoder.governancePortal, proposal.clone().unwrap().dao.name,if proposal.clone().unwrap().daohandler.r#type == DaoHandlerType::Snapshot {
                                         "offchain"
                                     } else {
                                         "onchain"
@@ -169,7 +169,10 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
                     ]
                 }
             )}
-            else{serde_json::json!({})}
+            else{serde_json::json!({})},
+            {
+                "type": "divider"
+            }
             ]
         });
 

@@ -95,7 +95,7 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> 
                             "type": "section",
                             "text": {
                                 "type": "mrkdwn",
-                                "text": format!("*<{}|{}>*\n📢 New *{}* {} proposal ending on *<!date^{}^{{date}} at {{time}}|January 1st, 2000 at 0:00 AM UTC>*", proposal.url, proposal.name,proposal.dao.name,if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                "text": format!("*<{}|{}>*\nNew *{}* {} proposal ending on *<!date^{}^{{date}} at {{time}}|January 1st, 2000 at 0:00 AM UTC>*", proposal.url, proposal.name,proposal.dao.name,if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                         "offchain"
                                     } else {
                                         "onchain"
@@ -123,6 +123,9 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> 
                                     "url": short_url
                                 }
                             ]
+                        },
+                        {
+                            "type": "divider"
                         }
                     ]
                 });

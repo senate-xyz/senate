@@ -157,7 +157,7 @@ pub async fn dispatch_ended_proposal_notifications(client: &Arc<PrismaClient>) -
                                 "type": "section",
                                 "text": {
                                     "type": "mrkdwn",
-                                    "text": format!("🗳️ *<{}|{}>* {} proposal *just ended*.\n_<{}|{}>_",decoder.governancePortal, proposal.dao.name,if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                    "text": format!("*<{}|{}>* {} proposal *just ended*. 🗳️\n_<{}|{}>_",decoder.governancePortal, proposal.dao.name,if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
                                         "offchain"
                                     } else {
                                         "onchain"
