@@ -143,7 +143,7 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
                                         "offchain"
                                     } else {
                                         "onchain"
-                                    }, proposal.clone().unwrap().url,proposal.clone().unwrap().name)
+                                    }, short_url, proposal.clone().unwrap().name)
                     }
                 },
                 {
