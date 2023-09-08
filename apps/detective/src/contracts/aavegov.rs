@@ -1131,128 +1131,129 @@ pub mod aavegov {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <DomainTypehashCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <DomainTypehashCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::DomainTypehash(decoded));
             }
-            if let Ok(decoded)
-                = <NameCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <NameCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Name(decoded));
             }
-            if let Ok(decoded)
-                = <VoteEmittedTypehashCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <VoteEmittedTypehashCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::VoteEmittedTypehash(decoded));
             }
-            if let Ok(decoded)
-                = <AbdicateCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <AbdicateCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Abdicate(decoded));
             }
-            if let Ok(decoded)
-                = <AuthorizeExecutorsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <AuthorizeExecutorsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::AuthorizeExecutors(decoded));
             }
-            if let Ok(decoded)
-                = <CancelCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CancelCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Cancel(decoded));
             }
-            if let Ok(decoded)
-                = <CreateCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CreateCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Create(decoded));
             }
-            if let Ok(decoded)
-                = <ExecuteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ExecuteCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Execute(decoded));
             }
-            if let Ok(decoded)
-                = <GetGovernanceStrategyCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetGovernanceStrategyCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetGovernanceStrategy(decoded));
             }
-            if let Ok(decoded)
-                = <GetGuardianCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetGuardianCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetGuardian(decoded));
             }
-            if let Ok(decoded)
-                = <GetProposalByIdCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetProposalByIdCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetProposalById(decoded));
             }
-            if let Ok(decoded)
-                = <GetProposalStateCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetProposalStateCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetProposalState(decoded));
             }
-            if let Ok(decoded)
-                = <GetProposalsCountCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetProposalsCountCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetProposalsCount(decoded));
             }
-            if let Ok(decoded)
-                = <GetVoteOnProposalCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetVoteOnProposalCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetVoteOnProposal(decoded));
             }
-            if let Ok(decoded)
-                = <GetVotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetVotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetVotingDelay(decoded));
             }
-            if let Ok(decoded)
-                = <IsExecutorAuthorizedCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <IsExecutorAuthorizedCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::IsExecutorAuthorized(decoded));
             }
-            if let Ok(decoded)
-                = <OwnerCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <OwnerCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Owner(decoded));
             }
-            if let Ok(decoded)
-                = <QueueCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <QueueCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Queue(decoded));
             }
-            if let Ok(decoded)
-                = <RenounceOwnershipCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <RenounceOwnershipCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::RenounceOwnership(decoded));
             }
-            if let Ok(decoded)
-                = <SetGovernanceStrategyCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <SetGovernanceStrategyCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::SetGovernanceStrategy(decoded));
             }
-            if let Ok(decoded)
-                = <SetVotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <SetVotingDelayCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::SetVotingDelay(decoded));
             }
-            if let Ok(decoded)
-                = <SubmitVoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <SubmitVoteCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::SubmitVote(decoded));
             }
-            if let Ok(decoded)
-                = <SubmitVoteBySignatureCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <SubmitVoteBySignatureCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::SubmitVoteBySignature(decoded));
             }
-            if let Ok(decoded)
-                = <TransferOwnershipCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <TransferOwnershipCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::TransferOwnership(decoded));
             }
-            if let Ok(decoded)
-                = <UnauthorizeExecutorsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <UnauthorizeExecutorsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::UnauthorizeExecutors(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())

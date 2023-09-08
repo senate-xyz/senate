@@ -374,32 +374,34 @@ pub mod makerpollvote {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <CreatePollCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CreatePollCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::CreatePoll(decoded));
             }
-            if let Ok(decoded)
-                = <NpollCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <NpollCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Npoll(decoded));
             }
-            if let Ok(decoded)
-                = <VoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VoteCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Vote(decoded));
             }
-            if let Ok(decoded)
-                = <VoteWithPollIdAndOptionIdCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <VoteWithPollIdAndOptionIdCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::VoteWithPollIdAndOptionId(decoded));
             }
-            if let Ok(decoded)
-                = <WithdrawPollCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <WithdrawPollCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::WithdrawPoll(decoded));
             }
-            if let Ok(decoded)
-                = <WithdrawPollWithPollIdsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <WithdrawPollWithPollIdsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::WithdrawPollWithPollIds(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())

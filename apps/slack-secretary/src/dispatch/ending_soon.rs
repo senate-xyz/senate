@@ -1,6 +1,7 @@
 use std::{env, sync::Arc, time::Duration};
 
 use prisma_client_rust::serde_json;
+use serde::Deserialize;
 use tokio::time::sleep;
 use tracing::{debug_span, event, instrument, warn, Instrument, Level};
 
@@ -16,6 +17,7 @@ use crate::{
         NotificationType,
         PrismaClient,
     },
+    utils::vote::get_vote,
 };
 
 use super::utils::notification_retry::update_notification_retry;
@@ -42,6 +44,11 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
         ])
         .exec()
         .await?;
+
+    let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+        Some(v) => v.into_string().unwrap(),
+        None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+    };
 
     for notification in notifications {
         let user = client
@@ -79,15 +86,93 @@ pub async fn dispatch_ending_soon_notifications(client: &Arc<PrismaClient>) -> R
             continue;
         }
 
+        #[allow(non_snake_case)]
+        #[derive(Debug, Deserialize)]
+        struct Decoder {
+            governancePortal: String,
+        }
+
+        let decoder: Decoder =
+            match serde_json::from_value(proposal.clone().unwrap().daohandler.decoder) {
+                Ok(data) => data,
+                Err(_) => Decoder {
+                    governancePortal: "https://senate.app".to_string(),
+                },
+            };
+
+        let voted = get_vote(
+            notification.clone().userid,
+            notification.clone().proposalid.unwrap(),
+            client,
+        )
+        .await?;
+
+        let short_url = format!(
+            "{}{}/{}/{}",
+            shortner_url,
+            proposal
+                .clone()
+                .unwrap()
+                .id
+                .chars()
+                .rev()
+                .take(7)
+                .collect::<Vec<char>>()
+                .into_iter()
+                .rev()
+                .collect::<String>(),
+            "s",
+            user.clone()
+                .id
+                .chars()
+                .rev()
+                .take(7)
+                .collect::<Vec<char>>()
+                .into_iter()
+                .rev()
+                .collect::<String>()
+        );
+
         let payload = serde_json::json!({
             "blocks": [
                 {
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": format!("Ending soon proposal {:}", proposal.clone().unwrap().name)
+                        "text": format!("*<{}|{}>* {} proposal ends in 2️⃣4️⃣ *hours*. :hourglass_flowing_sand:\n_<{}|{}>_", decoder.governancePortal, proposal.clone().unwrap().dao.name,if proposal.clone().unwrap().daohandler.r#type == DaoHandlerType::Snapshot {
+                                        "offchain"
+                                    } else {
+                                        "onchain"
+                                    }, proposal.clone().unwrap().url,proposal.clone().unwrap().name)
                     }
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": if voted {"⚫️ *Voted*"} else {"⭕️ *Didn't vote yet*"}
+                    }
+                },
+                if user.slackincludevotes {
+                    serde_json::json!({
+                    "type": "actions",
+                    "elements": [
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": if voted {"🗳️ See Proposal"} else {"🗳️ Vote on this proposal"},
+                                "emoji": true
+                            },
+                            "url": short_url
+                        }
+                    ]
                 }
+            )}
+            else{serde_json::json!({})},
+            {
+                "type": "divider"
+            }
             ]
         });
 

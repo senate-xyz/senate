@@ -76,7 +76,6 @@ pub enum RefreshStatus {
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-
     telemetry::setup();
 
     let client = Arc::new(PrismaClient::_builder().build().await.unwrap());

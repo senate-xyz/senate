@@ -991,6 +991,7 @@ const seedData = async () => {
         type: "ZEROX_PROTOCOL_CHAIN",
         decoder: {
           address: "0x0bB1810061C2f5b2088054eE184E6C79e1591101",
+          stakingProxy: "0xa26e80e7dea86279c6d778d702cc413e6cffa777",
           proposalUrl: "https://governance.0xprotocol.org/vote/proposal/",
           governancePortal: "https://governance.0xprotocol.org/vote",
         },

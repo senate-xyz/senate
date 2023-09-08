@@ -334,46 +334,49 @@ pub mod optimismvotemodule_5_4a_8f {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <::std::string::String as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <::std::string::String as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::RevertString(decoded));
             }
-            if let Ok(decoded)
-                = <ExistingProposal as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ExistingProposal as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::ExistingProposal(decoded));
             }
-            if let Ok(decoded)
-                = <InvalidParams as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <InvalidParams as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::InvalidParams(decoded));
             }
-            if let Ok(decoded)
-                = <InvalidVoteType as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <InvalidVoteType as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::InvalidVoteType(decoded));
             }
-            if let Ok(decoded)
-                = <MaxApprovalsExceeded as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <MaxApprovalsExceeded as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::MaxApprovalsExceeded(decoded));
             }
-            if let Ok(decoded)
-                = <MaxChoicesExceeded as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <MaxChoicesExceeded as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::MaxChoicesExceeded(decoded));
             }
-            if let Ok(decoded)
-                = <NotGovernor as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <NotGovernor as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::NotGovernor(decoded));
             }
-            if let Ok(decoded)
-                = <OptionsNotStrictlyAscending as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <OptionsNotStrictlyAscending as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::OptionsNotStrictlyAscending(decoded));
             }
-            if let Ok(decoded)
-                = <VoteAlreadyCast as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VoteAlreadyCast as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::VoteAlreadyCast(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())
@@ -740,62 +743,69 @@ pub mod optimismvotemodule_5_4a_8f {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <CountingModeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CountingModeCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::CountingMode(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalDataEncodingCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <ProposalDataEncodingCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::ProposalDataEncoding(decoded));
             }
-            if let Ok(decoded)
-                = <VoteParamsEncodingCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <VoteParamsEncodingCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::VoteParamsEncoding(decoded));
             }
-            if let Ok(decoded)
-                = <AccountVotesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <AccountVotesCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::AccountVotes(decoded));
             }
-            if let Ok(decoded)
-                = <CountVoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CountVoteCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::CountVote(decoded));
             }
-            if let Ok(decoded)
-                = <FormatExecuteParamsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <FormatExecuteParamsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::FormatExecuteParams(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalsCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ProposalsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Proposals(decoded));
             }
-            if let Ok(decoded)
-                = <QuorumReachedCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <QuorumReachedCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::QuorumReached(decoded));
             }
-            if let Ok(decoded)
-                = <VoteSucceededCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VoteSucceededCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::VoteSucceeded(decoded));
             }
-            if let Ok(decoded)
-                = <HasVotedCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <HasVotedCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::HasVoted(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalVotesCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ProposalVotesCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::ProposalVotes(decoded));
             }
-            if let Ok(decoded)
-                = <ProposeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ProposeCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Propose(decoded));
             }
-            if let Ok(decoded)
-                = <VersionCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VersionCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Version(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())
