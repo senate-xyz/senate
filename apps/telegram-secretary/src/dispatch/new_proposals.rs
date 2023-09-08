@@ -98,8 +98,6 @@ pub async fn dispatch_new_proposal_notifications(
                         .collect::<String>()
                 );
 
-                debug!("Send message");
-
                 #[allow(non_snake_case)]
                 #[derive(Debug, Deserialize)]
                 struct Decoder {

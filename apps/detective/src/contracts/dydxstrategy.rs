@@ -228,36 +228,34 @@ pub mod dydxstrategy {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <DydxTokenCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <DydxTokenCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::DydxToken(decoded));
             }
-            if let Ok(decoded)
-                = <StakedDydxTokenCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <StakedDydxTokenCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::StakedDydxToken(decoded));
             }
-            if let Ok(decoded)
-                = <GetPropositionPowerAtCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetPropositionPowerAtCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetPropositionPowerAt(decoded));
             }
-            if let Ok(decoded)
-                = <GetTotalPropositionSupplyAtCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetTotalPropositionSupplyAtCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetTotalPropositionSupplyAt(decoded));
             }
-            if let Ok(decoded)
-                = <GetTotalVotingSupplyAtCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetTotalVotingSupplyAtCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetTotalVotingSupplyAt(decoded));
             }
-            if let Ok(decoded)
-                = <GetVotingPowerAtCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <GetVotingPowerAtCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetVotingPowerAt(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())

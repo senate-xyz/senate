@@ -65,6 +65,7 @@ enum Type {
   EMAIL_QUORUM = "email_quorum_click",
   DISCORD = "discord_click",
   TELEGRAM = "telegram_click",
+  SLACK = "slack_click",
   UNKNOWN = "unknown_click",
 }
 
@@ -93,6 +94,10 @@ export default async function Page({ params }: { params: { slug: string } }) {
     }
     case "t": {
       type = Type.TELEGRAM;
+      break;
+    }
+    case "s": {
+      type = Type.SLACK;
       break;
     }
     default: {

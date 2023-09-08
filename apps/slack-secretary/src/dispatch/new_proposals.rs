@@ -58,16 +58,74 @@ pub async fn dispatch_new_proposal_notifications(client: &Arc<PrismaClient>) -> 
             .exec()
             .await?;
 
+        let shortner_url = match env::var_os("NEXT_PUBLIC_URL_SHORTNER") {
+            Some(v) => v.into_string().unwrap(),
+            None => panic!("$NEXT_PUBLIC_URL_SHORTNER is not set"),
+        };
+
         match proposal {
             Some(proposal) => {
+                let short_url = format!(
+                    "{}{}/{}/{}",
+                    shortner_url,
+                    proposal
+                        .id
+                        .chars()
+                        .rev()
+                        .take(7)
+                        .collect::<Vec<char>>()
+                        .into_iter()
+                        .rev()
+                        .collect::<String>(),
+                    "s",
+                    user.clone()
+                        .id
+                        .chars()
+                        .rev()
+                        .take(7)
+                        .collect::<Vec<char>>()
+                        .into_iter()
+                        .rev()
+                        .collect::<String>()
+                );
+
                 let payload = serde_json::json!({
                     "blocks": [
                         {
                             "type": "section",
                             "text": {
                                 "type": "mrkdwn",
-                                "text": format!("New proposal {:}", proposal.name)
+                                "text": format!("*<{}|{}>*\nNew *{}* {} proposal ending on *<!date^{}^{{date}} at {{time}}|January 1st, 2000 at 0:00 AM UTC>*", proposal.url, proposal.name,proposal.dao.name,if proposal.daohandler.r#type == DaoHandlerType::Snapshot {
+                                        "offchain"
+                                    } else {
+                                        "onchain"
+                                    }, proposal.timeend.timestamp())
+                            },
+                            "accessory": {
+                                "type": "image",
+                                "image_url": format!(
+                                    "https://www.senatelabs.xyz/{}_medium.png",
+                                    proposal.dao.picture
+                                ),
+                                "alt_text": proposal.dao.name
                             }
+                        },
+                        {
+                            "type": "actions",
+                            "elements": [
+                                {
+                                    "type": "button",
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "🗳️ Vote on this proposal",
+                                        "emoji": true
+                                    },
+                                    "url": short_url
+                                }
+                            ]
+                        },
+                        {
+                            "type": "divider"
                         }
                     ]
                 });

@@ -21,12 +21,18 @@ use url::Url;
 
 pub fn setup() {
     let app_name = "slacksecretary";
+    opentelemetry::global::set_text_map_propagator(TraceContextPropagator::new());
 
     let telemetry_key = env::var("TELEMETRY_KEY").expect("$TELEMETRY_KEY is not set");
     let exec_env = env::var("EXEC_ENV").expect("$EXEC_ENV is not set");
     let debug_level = env::var("DEBUG_LEVEL").expect("$DEBUG_LEVEL is not set");
 
-    let (logging_layer, task) = tracing_loki::builder()
+    // filter layers
+    let filter_str = format!("{}={}", app_name, debug_level);
+    let env_filter = EnvFilter::try_new(filter_str).unwrap_or_else(|_| EnvFilter::new("info"));
+
+    // logging layer
+    let (logging_layer, logging_task) = tracing_loki::builder()
         .label("app", app_name)
         .unwrap()
         .label("env", exec_env.clone())
@@ -43,11 +49,7 @@ pub fn setup() {
         )
         .unwrap();
 
-    opentelemetry::global::set_text_map_propagator(TraceContextPropagator::new());
-
-    let filter_str = format!("{}={}", app_name, debug_level);
-    let env_filter = EnvFilter::try_new(filter_str).unwrap_or_else(|_| EnvFilter::new("info"));
-
+    // tracing layer
     let mut map = MetadataMap::with_capacity(3);
 
     let encoded = general_purpose::STANDARD.encode(format!("337169:{}", telemetry_key));
@@ -72,34 +74,21 @@ pub fn setup() {
         .install_batch(opentelemetry::runtime::Tokio)
         .unwrap();
 
-    let telemetry_layer = tracing_opentelemetry::layer().with_tracer(tracer);
+    let tracing_layer = tracing_opentelemetry::layer().with_tracer(tracer);
 
+    // register all layers
     tracing_subscriber::registry()
         .with(env_filter)
         .with(tracing_subscriber::fmt::Layer::default())
         .with(logging_layer)
-        .with(telemetry_layer)
+        .with(tracing_layer)
         .init();
 
-    tokio::spawn(task);
+    // spawn background task
+    tokio::spawn(logging_task);
 
+    // wait for a bit before starting to push logs and traces
     thread::sleep(Duration::from_secs(5));
-
-    Box::leak(Box::new(
-        InfluxBuilder::new()
-            .with_grafana_cloud_api(
-                "https://influx-prod-22-prod-eu-west-3.grafana.net/api/v1/push/influx/write",
-                Some("683371".to_string()),
-                Some(telemetry_key),
-            )
-            .expect("influx api")
-            .with_gzip(false)
-            .add_global_tag("app", app_name)
-            .add_global_tag("env", exec_env)
-            .with_duration(Duration::from_secs(10))
-            .install()
-            .expect("influx install"),
-    ));
 
     tracing::info!("telemetry set up");
 }

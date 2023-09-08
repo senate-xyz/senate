@@ -589,66 +589,74 @@ pub mod zeroxtreasury {
             data: impl AsRef<[u8]>,
         ) -> ::core::result::Result<Self, ::ethers::core::abi::AbiError> {
             let data = data.as_ref();
-            if let Ok(decoded)
-                = <CastVoteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <CastVoteCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::CastVote(decoded));
             }
-            if let Ok(decoded)
-                = <DefaultPoolIdCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <DefaultPoolIdCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::DefaultPoolId(decoded));
             }
-            if let Ok(decoded)
-                = <DefaultPoolOperatorCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <DefaultPoolOperatorCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::DefaultPoolOperator(decoded));
             }
-            if let Ok(decoded)
-                = <ExecuteCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ExecuteCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Execute(decoded));
             }
-            if let Ok(decoded)
-                = <GetVotingPowerCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <GetVotingPowerCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::GetVotingPower(decoded));
             }
-            if let Ok(decoded)
-                = <HasVotedCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <HasVotedCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::HasVoted(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalCountCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ProposalCountCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::ProposalCount(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalThresholdCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <ProposalThresholdCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::ProposalThreshold(decoded));
             }
-            if let Ok(decoded)
-                = <ProposalsCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ProposalsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Proposals(decoded));
             }
-            if let Ok(decoded)
-                = <ProposeCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <ProposeCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::Propose(decoded));
             }
-            if let Ok(decoded)
-                = <QuorumThresholdCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <QuorumThresholdCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::QuorumThreshold(decoded));
             }
-            if let Ok(decoded)
-                = <StakingProxyCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <StakingProxyCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::StakingProxy(decoded));
             }
-            if let Ok(decoded)
-                = <UpdateThresholdsCall as ::ethers::core::abi::AbiDecode>::decode(
-                    data,
-                ) {
+            if let Ok(decoded) = <UpdateThresholdsCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::UpdateThresholds(decoded));
             }
-            if let Ok(decoded)
-                = <VotingPeriodCall as ::ethers::core::abi::AbiDecode>::decode(data) {
+            if let Ok(decoded) = <VotingPeriodCall as ::ethers::core::abi::AbiDecode>::decode(
+                data,
+            ) {
                 return Ok(Self::VotingPeriod(decoded));
             }
             Err(::ethers::core::abi::Error::InvalidData.into())
