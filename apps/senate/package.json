@@ -8,8 +8,8 @@
   "scripts": {
     "build": "next build",
     "build:senate": "next build",
-    "test": "start-server-and-test dev http://localhost:3001 test:e2e",
-    "test:senate": "start-server-and-test dev http://localhost:3001 test:e2e",
+    "test": "start-server-and-test dev http://127.0.0.1:3001 test:e2e",
+    "test:senate": "start-server-and-test dev http://127.0.0.1:3001 test:e2e",
     "start": "next start",
     "start:senate": "next start",
     "dev": "next dev -p 3000 | npx local-ssl-proxy --source 3001 --target 3000",
