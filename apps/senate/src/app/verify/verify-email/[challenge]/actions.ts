@@ -1,5 +1,4 @@
 import { db, eq, user } from "@senate/database";
-import { redirect } from "next/navigation";
 
 export const isValidChallenge = async (challenge: string) => {
   "use server";
@@ -18,6 +17,4 @@ export const verifyUser = async (challenge: string) => {
     .update(user)
     .set({ challengecode: "", verifiedemail: true })
     .where(eq(user.challengecode, challenge));
-
-  redirect("/orgs");
 };

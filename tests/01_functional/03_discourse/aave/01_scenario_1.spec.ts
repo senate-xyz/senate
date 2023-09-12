@@ -12,7 +12,7 @@ test("creates new email account test@test.com using discourse api", async ({}) =
 
   await test.step("calls discourse api for test@test.com", async () => {
     response = await fetch(
-      "http://127.0.0.1:3000/api/discourse/aave-magic-user",
+      "http://localhost:3000/api/discourse/aave-magic-user",
       {
         method: "POST",
         headers: {
@@ -33,15 +33,16 @@ test("creates new email account test@test.com using discourse api", async ({}) =
   await expect(await response.json()).toStrictEqual({
     email: "test@test.com",
     result: "success",
-    url: `http://127.0.0.1:3000/verify/signup-discourse/aave/${newUser?.challengecode}`,
+    url: `http://localhost:3000/verify/signup-discourse/aave/${newUser?.challengecode}`,
   });
 
   await expect(newUser?.email).toBe("test@test.com");
   await expect(newUser?.isaaveuser).toBe("VERIFICATION");
   await expect(newUser?.verifiedaddress).toBe(false);
   await expect(newUser?.verifiedemail).toBe(false);
-  await expect(newUser?.emaildailybulletin).toBe(true);
+  await expect(newUser?.emaildailybulletin).toBe(false);
   await expect(newUser?.emailquorumwarning).toBe(true);
+  await expect(newUser?.challengecode.length).toBeGreaterThan(5);
 });
 
 test_metamask(
@@ -52,13 +53,13 @@ test_metamask(
     });
 
     await page.goto(
-      `http://127.0.0.1:3000/verify/signup-discourse/aave/${newUser?.challengecode}`
+      `http://localhost:3000/verify/signup-discourse/aave/${newUser?.challengecode}`
     );
 
     await page.getByText("Connect Wallet").click();
     await page.getByText("MetaMask").click();
     await metamask.acceptAccess();
-    await page.waitForTimeout(5000);
+
     await metamask.confirmSignatureRequest();
 
     await page.waitForTimeout(10000);
@@ -85,7 +86,7 @@ test_metamask(
     await expect(confirmedUser?.isaaveuser).toBe("ENABLED");
     await expect(confirmedUser?.verifiedaddress).toBe(true);
     await expect(confirmedUser?.verifiedemail).toBe(true);
-    await expect(confirmedUser?.challengecode).toBe("");
+    await expect(confirmedUser?.challengecode.length).toBe(0);
     await expect(confirmedUser?.emaildailybulletin).toBe(true);
     await expect(confirmedUser?.emailquorumwarning).toBe(true);
     await expect(confirmedUser?.subscriptions[0].dao.name).toBe("Aave");

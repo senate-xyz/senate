@@ -2,6 +2,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 import Link from "next/link";
 import { isValidChallenge, verifyUser } from "./actions";
+import { redirect } from "next/navigation";
 
 export default async function Page({
   params,
@@ -20,7 +21,9 @@ export default async function Page({
       </div>
     );
   else {
-    await verifyUser(String(params.challenge));
+    await verifyUser(String(params.challenge)).then(() => {
+      redirect("/orgs?connect");
+    });
 
     return (
       <div className="flex w-full flex-col items-center gap-4 pt-32">
