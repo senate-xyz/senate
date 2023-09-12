@@ -42,8 +42,8 @@
     "start-server": "yarn start:senate",
     "test:ci": "xvfb-run yarn playwright test",
     "test": "yarn playwright test",
-    "test:e2e:ci": "start-server-and-test start-server http://127.0.0.1:3000 test:ci",
-    "test:e2e": "start-server-and-test start-server http://127.0.0.1:3000 test"
+    "test:e2e:ci": "start-server-and-test start-server http://localhost:3000 test:ci",
+    "test:e2e": "start-server-and-test start-server http://localhost:3000 test"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
