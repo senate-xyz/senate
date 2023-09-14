@@ -93,7 +93,7 @@ export default async function handler(
 
       await db
         .update(user)
-        .set({ challengecode: challengeCode })
+        .set({ isuniswapuser: "VERIFICATION", challengecode: challengeCode })
         .where(eq(user.id, existingUser.id));
 
       posthog.capture({
@@ -143,8 +143,6 @@ export default async function handler(
       email: emailInput,
       verifiedemail: false,
       isuniswapuser: "VERIFICATION",
-      emaildailybulletin: true,
-      emailquorumwarning: true,
       challengecode: challengeCode,
     });
 

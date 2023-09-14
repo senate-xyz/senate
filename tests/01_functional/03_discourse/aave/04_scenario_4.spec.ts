@@ -82,7 +82,7 @@ test("subscribes test@test.com to Aave using discourse api", async ({}) => {
 
   await test.step("calls discourse api for test@test.com", async () => {
     response = await fetch(
-      "http://127.0.0.1:3000/api/discourse/aave-magic-user",
+      "http://localhost:3000/api/discourse/aave-magic-user",
       {
         method: "POST",
         headers: {
@@ -103,7 +103,7 @@ test("subscribes test@test.com to Aave using discourse api", async ({}) => {
   await expect(await response.json()).toStrictEqual({
     email: "test@test.com",
     result: "success",
-    url: `http://127.0.0.1:3000/verify/signup-discourse/aave/${newUser?.challengecode}`,
+    url: `http://localhost:3000/verify/signup-discourse/aave/${newUser?.challengecode}`,
   });
 
   await expect(newUser?.email).toBe("test@test.com");
@@ -128,7 +128,7 @@ test_metamask(
     });
 
     await page.goto(
-      `http://127.0.0.1:3000/verify/signup-discourse/aave/${newUser?.challengecode}`
+      `http://localhost:3000/verify/signup-discourse/aave/${newUser?.challengecode}`
     );
 
     await page.getByText("Connect Wallet").click();

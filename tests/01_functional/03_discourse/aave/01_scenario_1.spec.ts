@@ -12,7 +12,7 @@ test("creates new email account test@test.com using discourse api", async ({}) =
 
   await test.step("calls discourse api for test@test.com", async () => {
     response = await fetch(
-      "http://127.0.0.1:3000/api/discourse/aave-magic-user",
+      "http://localhost:3000/api/discourse/aave-magic-user",
       {
         method: "POST",
         headers: {
@@ -33,7 +33,7 @@ test("creates new email account test@test.com using discourse api", async ({}) =
   await expect(await response.json()).toStrictEqual({
     email: "test@test.com",
     result: "success",
-    url: `http://127.0.0.1:3000/verify/signup-discourse/aave/${newUser?.challengecode}`,
+    url: `http://localhost:3000/verify/signup-discourse/aave/${newUser?.challengecode}`,
   });
 
   await expect(newUser?.email).toBe("test@test.com");
@@ -46,14 +46,14 @@ test("creates new email account test@test.com using discourse api", async ({}) =
 });
 
 test_metamask(
-  "confirms new email account test@test.com by signing message",
+  "confirms new email account test@test.com by signing message, subscribes to additional dao",
   async ({ page }) => {
     const newUser = await db.query.user.findFirst({
       where: eq(user.email, "test@test.com"),
     });
 
     await page.goto(
-      `http://127.0.0.1:3000/verify/signup-discourse/aave/${newUser?.challengecode}`
+      `http://localhost:3000/verify/signup-discourse/aave/${newUser?.challengecode}`
     );
 
     await page.getByText("Connect Wallet").click();
@@ -93,11 +93,26 @@ test_metamask(
     await expect(votersAddresses).toContain(confirmedUser?.address);
 
     await expect(page).toHaveURL("/orgs?connect");
+
+    await page.getByText("Connect Wallet").click();
+    await page.getByText("MetaMask").click();
+    await metamask.acceptAccess();
+    await page.waitForTimeout(500);
+    await page.getByText("Send message").click();
+    await page.waitForTimeout(500);
+    await metamask.confirmSignatureRequest();
+    await page.waitForTimeout(500);
+
+    await page
+      .getByTestId("unsubscribed-list")
+      .getByTestId("1inch")
+      .getByTestId("subscribe-button")
+      .click();
   }
 );
 
 test_metamask(
-  "user has test@test.com email verified, bulletin and quorum enabled and is subscribed to Aave",
+  "user has test@test.com email verified, bulletin and quorum enabled and is subscribed to Aave and additional dao",
   async ({ page }) => {
     await page.goto("/orgs");
 
@@ -113,6 +128,12 @@ test_metamask(
     await test.step("be subscribed to Aave", async () => {
       await expect(
         page.getByTestId("subscribed-list").getByTestId("Aave")
+      ).toBeVisible();
+    });
+
+    await test.step("be subscribed to 1inch", async () => {
+      await expect(
+        page.getByTestId("subscribed-list").getByTestId("1inch")
       ).toBeVisible();
     });
 

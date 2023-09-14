@@ -1,11 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { test as test_metamask } from "../../../../fixtures";
 import * as metamask from "@synthetixio/synpress/commands/metamask";
-import { db, eq, user, userTovoter, voter } from "@senate/database";
+import { db, eq, sql, user, userTovoter, voter } from "@senate/database";
 
 test("deletes test user test@test.com start", async ({}) => {
   await db.delete(user).where(eq(user.email, "test@test.com"));
 });
+
+let numberOfUsers;
 
 test_metamask(
   "creates new address user, subscribes to Compound, sets email to name@test.com (force confirmed)..",
@@ -40,13 +42,38 @@ test_metamask(
 
     await expect(page.getByTestId("email-unverified")).toBeVisible();
 
-    await db
-      .update(user)
-      .set({
-        challengecode: "",
-        verifiedemail: true,
-      })
-      .where(eq(user.email, "test@test.com"));
+    const newUser = await db.query.user.findFirst({
+      where: eq(user.email, "name@test.com"),
+    });
+
+    await expect(newUser?.email).toBe("name@test.com");
+    await expect(newUser?.isuniswapuser).toBe("DISABLED");
+    await expect(newUser?.verifiedaddress).toBe(true);
+    await expect(newUser?.verifiedemail).toBe(false);
+    await expect(newUser?.emaildailybulletin).toBe(true);
+    await expect(newUser?.emailquorumwarning).toBe(true);
+    await expect(newUser?.challengecode.length).toBeGreaterThan(5);
+
+    await page.goto(`/verify/verify-email/${newUser?.challengecode}`);
+
+    await page.waitForTimeout(5000);
+
+    await expect(page).toHaveURL("/orgs?connect");
+
+    const verifiedUser = await db.query.user.findFirst({
+      where: eq(user.email, "name@test.com"),
+    });
+
+    await expect(verifiedUser?.email).toBe("name@test.com");
+    await expect(verifiedUser?.isuniswapuser).toBe("DISABLED");
+    await expect(verifiedUser?.verifiedaddress).toBe(true);
+    await expect(verifiedUser?.verifiedemail).toBe(true);
+    await expect(verifiedUser?.emaildailybulletin).toBe(true);
+    await expect(verifiedUser?.emailquorumwarning).toBe(true);
+
+    numberOfUsers = await db
+      .select({ count: sql<number>`count(*)`.mapWith(Number) })
+      .from(user);
   }
 );
 
@@ -85,6 +112,12 @@ test("subscribes test@test.com to Uniswap using discourse api", async ({}) => {
   await expect(newUser?.verifiedemail).toBe(false);
   await expect(newUser?.emaildailybulletin).toBe(true);
   await expect(newUser?.emailquorumwarning).toBe(true);
+
+  let newNumberOfUsers = await db
+    .select({ count: sql<number>`count(*)`.mapWith(Number) })
+    .from(user);
+
+  await expect(newNumberOfUsers[0].count).toBe(numberOfUsers[0].count + 1);
 });
 
 test_metamask(
@@ -101,12 +134,18 @@ test_metamask(
     await page.getByText("Connect Wallet").click();
     await page.getByText("MetaMask").click();
     await metamask.acceptAccess();
-    await page.waitForTimeout(5000);
+
     await metamask.confirmSignatureRequest();
 
     await page.waitForTimeout(10000);
 
     await expect(page).toHaveURL("/orgs?connect");
+
+    let newNumberOfUsers = await db
+      .select({ count: sql<number>`count(*)`.mapWith(Number) })
+      .from(user);
+
+    await expect(newNumberOfUsers[0].count).toBe(numberOfUsers[0].count);
   }
 );
 
@@ -135,6 +174,9 @@ test("has email updated to test@test.com, is verified, has bulletin and quorum e
 
   await expect(oldEmailUser).toBeUndefined();
 
+  await expect(confirmedUser?.address).toBe(
+    "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+  );
   await expect(confirmedUser?.email).toBe("test@test.com");
   await expect(confirmedUser?.isuniswapuser).toBe("ENABLED");
   await expect(confirmedUser?.verifiedaddress).toBe(true);
@@ -149,6 +191,12 @@ test("has email updated to test@test.com, is verified, has bulletin and quorum e
     "Compound"
   );
   await expect(votersAddresses).toContain(confirmedUser?.address);
+
+  let newNumberOfUsers = await db
+    .select({ count: sql<number>`count(*)`.mapWith(Number) })
+    .from(user);
+
+  await expect(newNumberOfUsers[0].count).toBe(numberOfUsers[0].count);
 });
 
 test("deletes test user test@test.com end", async ({}) => {

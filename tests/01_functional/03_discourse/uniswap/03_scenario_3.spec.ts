@@ -8,7 +8,7 @@ test("deletes test user test@test.com start", async ({}) => {
 });
 
 test_metamask(
-  "creates new address user, subscribes to Compound, sets email to test@test.com (force confirmed)",
+  "creates new address user, subscribes to Compound, sets email to test@test.com, confirms email",
   async ({ page }) => {
     await page.goto("/orgs");
     await page.getByText("Connect Wallet").click();
@@ -40,13 +40,34 @@ test_metamask(
 
     await expect(page.getByTestId("email-unverified")).toBeVisible();
 
-    await db
-      .update(user)
-      .set({
-        challengecode: "",
-        verifiedemail: true,
-      })
-      .where(eq(user.email, "test@test.com"));
+    const newUser = await db.query.user.findFirst({
+      where: eq(user.email, "test@test.com"),
+    });
+
+    await expect(newUser?.email).toBe("test@test.com");
+    await expect(newUser?.isuniswapuser).toBe("DISABLED");
+    await expect(newUser?.verifiedaddress).toBe(true);
+    await expect(newUser?.verifiedemail).toBe(false);
+    await expect(newUser?.emaildailybulletin).toBe(true);
+    await expect(newUser?.emailquorumwarning).toBe(true);
+    await expect(newUser?.challengecode.length).toBeGreaterThan(5);
+
+    await page.goto(`/verify/verify-email/${newUser?.challengecode}`);
+
+    await page.waitForTimeout(5000);
+
+    await expect(page).toHaveURL("/orgs?connect");
+
+    const verifiedUser = await db.query.user.findFirst({
+      where: eq(user.email, "test@test.com"),
+    });
+
+    await expect(verifiedUser?.email).toBe("test@test.com");
+    await expect(verifiedUser?.isuniswapuser).toBe("DISABLED");
+    await expect(verifiedUser?.verifiedaddress).toBe(true);
+    await expect(verifiedUser?.verifiedemail).toBe(true);
+    await expect(verifiedUser?.emaildailybulletin).toBe(true);
+    await expect(verifiedUser?.emailquorumwarning).toBe(true);
   }
 );
 

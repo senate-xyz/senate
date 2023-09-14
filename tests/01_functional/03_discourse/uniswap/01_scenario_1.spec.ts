@@ -40,8 +40,9 @@ test("creates new email account test@test.com using discourse api", async ({}) =
   await expect(newUser?.isuniswapuser).toBe("VERIFICATION");
   await expect(newUser?.verifiedaddress).toBe(false);
   await expect(newUser?.verifiedemail).toBe(false);
-  await expect(newUser?.emaildailybulletin).toBe(true);
+  await expect(newUser?.emaildailybulletin).toBe(false);
   await expect(newUser?.emailquorumwarning).toBe(true);
+  await expect(newUser?.challengecode.length).toBeGreaterThan(5);
 });
 
 test_metamask(
@@ -58,7 +59,7 @@ test_metamask(
     await page.getByText("Connect Wallet").click();
     await page.getByText("MetaMask").click();
     await metamask.acceptAccess();
-    await page.waitForTimeout(5000);
+
     await metamask.confirmSignatureRequest();
 
     await page.waitForTimeout(10000);
@@ -85,13 +86,28 @@ test_metamask(
     await expect(confirmedUser?.isuniswapuser).toBe("ENABLED");
     await expect(confirmedUser?.verifiedaddress).toBe(true);
     await expect(confirmedUser?.verifiedemail).toBe(true);
-    await expect(confirmedUser?.challengecode).toBe("");
+    await expect(confirmedUser?.challengecode.length).toBe(0);
     await expect(confirmedUser?.emaildailybulletin).toBe(true);
     await expect(confirmedUser?.emailquorumwarning).toBe(true);
     await expect(confirmedUser?.subscriptions[0].dao.name).toBe("Uniswap");
     await expect(votersAddresses).toContain(confirmedUser?.address);
 
     await expect(page).toHaveURL("/orgs?connect");
+
+    await page.getByText("Connect Wallet").click();
+    await page.getByText("MetaMask").click();
+    await metamask.acceptAccess();
+    await page.waitForTimeout(500);
+    await page.getByText("Send message").click();
+    await page.waitForTimeout(500);
+    await metamask.confirmSignatureRequest();
+    await page.waitForTimeout(500);
+
+    await page
+      .getByTestId("unsubscribed-list")
+      .getByTestId("1inch")
+      .getByTestId("subscribe-button")
+      .click();
   }
 );
 
@@ -112,6 +128,12 @@ test_metamask(
     await test.step("be subscribed to Uniswap", async () => {
       await expect(
         page.getByTestId("subscribed-list").getByTestId("Uniswap")
+      ).toBeVisible();
+    });
+
+    await test.step("be subscribed to 1inch", async () => {
+      await expect(
+        page.getByTestId("subscribed-list").getByTestId("1inch")
       ).toBeVisible();
     });
 
