@@ -54,7 +54,7 @@
     "husky": "^8.0.3",
     "prettier": "^3.0.3",
     "tsx": "^3.12.10",
-    "turbo": "^1.10.13"
+    "turbo": "^1.10.14"
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {

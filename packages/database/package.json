@@ -27,24 +27,24 @@
   },
   "dependencies": {
     "@planetscale/database": "^1.11.0",
-    "@prisma/client": "5.3.0",
+    "@prisma/client": "5.3.1",
     "cuid": "^3.0.0",
     "dotenv": "^16.3.1",
     "drizzle-orm": "0.28.6",
     "ethers": "^6.7.1",
     "mysql2": "^3.6.1",
     "type-fest": "^4.3.1",
-    "url": "^0.11.2"
+    "url": "^0.11.3"
   },
   "devDependencies": {
     "@types/eslint": "^8.44.2",
     "@types/prettier": "^2.7.3",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "@typescript-eslint/parser": "^6.7.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
     "drizzle-kit": "^0.19.13",
     "eslint": "^8.49.0",
     "prettier": "^3.0.3",
-    "prisma": "5.3.0",
+    "prisma": "5.3.1",
     "tsup": "^7.2.0",
     "typescript": "^5.2.2"
   },
